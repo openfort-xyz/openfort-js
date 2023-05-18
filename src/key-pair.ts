@@ -2,6 +2,7 @@ import { secp256k1 } from 'ethereum-cryptography/secp256k1';
 import { Hex, bytesToHex } from '@noble/curves/abstract/utils';
 import { LocalStorage } from './storage/local-storage';
 import { FileStorage } from './storage/file-storage';
+import { BaseStorage } from './storage/base-storage';
 
 export class KeyPair {
     private static readonly localStorage = new LocalStorage();
@@ -58,32 +59,47 @@ export class KeyPair {
     }
 
     /**
-     * Save the generated key to the local storage
+     * Save to the storage provided in the parameter of the function
+     * @param storage The implementation of BaseStorage interface to store and load
      */
-    public async saveToLocalStorage(): Promise<void> {
-        await KeyPair.localStorage.save(KeyPair.storageKey, this.privateKey);
+    public async saveToStorage(storage: BaseStorage): Promise<void> {
+        await storage.save(KeyPair.storageKey, this.privateKey);
     }
 
     /**
-     * Load private key from the local storage and generate keypair based on it.
+     * Save the generated key to the local storage
      */
-    public static async loadFromLocalStorage(): Promise<KeyPair | null> {
-        const privateKey = await KeyPair.localStorage.get(KeyPair.storageKey);
-        return privateKey ? new KeyPair(privateKey) : null;
+    public async saveToLocalStorage(): Promise<void> {
+        await this.saveToStorage(KeyPair.localStorage);
     }
 
     /**
      * Save the generated key to the json file in the local file system
      */
     public async saveToFile(): Promise<void> {
-        await KeyPair.fileStorage.save(KeyPair.storageKey, this.privateKey);
+        await this.saveToStorage(KeyPair.fileStorage);
+    }
+
+    /**
+     * Load private key from the json file in the local file system and generate keypair based on it.
+     * @param storage The implementation of BaseStorage interface to store and load
+     */
+    public static async loadFromStorage(storage: BaseStorage): Promise<KeyPair | null> {
+        const privateKey = await storage.get(KeyPair.storageKey);
+        return privateKey ? new KeyPair(privateKey) : null;
+    }
+
+    /**
+     * Load private key from the local storage and generate keypair based on it.
+     */
+    public static async loadFromLocalStorage(): Promise<KeyPair | null> {
+        return KeyPair.loadFromStorage(KeyPair.localStorage);
     }
 
     /**
      * Load private key from the json file in the local file system and generate keypair based on it.
      */
     public static async loadFromFile(): Promise<KeyPair | null> {
-        const privateKey = await KeyPair.fileStorage.get(KeyPair.storageKey);
-        return privateKey ? new KeyPair(privateKey) : null;
+        return KeyPair.loadFromStorage(KeyPair.fileStorage);
     }
 }
