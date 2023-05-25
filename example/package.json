@@ -30,7 +30,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "ethereum-cryptography": "^2.0.0",
-    "@openfort/openfort-js": "file:../src/index.ts"
+    "@openfort/openfort-js": "file:../src/index.ts",
+    "ethereum-cryptography": "^2.0.0"
   }
 }

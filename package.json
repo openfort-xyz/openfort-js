@@ -28,6 +28,8 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "axios": "^1.4.0",
+    "es6-promise": "^4.2.8",
     "ethereum-cryptography": "^2.0.0",
     "path": "^0.12.7"
   }

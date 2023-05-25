@@ -12,7 +12,7 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "declaration": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "strictNullChecks": true,
     "newLine": "LF",
     "noUnusedParameters": false,
