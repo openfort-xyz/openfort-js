@@ -1,25 +1,28 @@
 {
   "name": "@openfort/openfort-js",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "",
-  "main": "index.js",
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openfort-xyz/openfort-js.git"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
-    "test": "jest --config jestconfig.json"
+    "test": "jest --config jestconfig.json",
+    "prepublishOnly": "yarn install && yarn build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/openfort-xyz/openfort-js.git"
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/openfort-xyz/openfort-js/issues"
-  },
-  "homepage": "https://github.com/openfort-xyz/openfort-js#readme",
   "devDependencies": {
     "@types/node": "^20.2.1",
     "prettier": "^2.8.8",
