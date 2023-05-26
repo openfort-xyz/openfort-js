@@ -1,6 +1,7 @@
 import { BaseStorage } from './base-storage';
 import { resolve } from 'path';
 import { readFile, writeFile } from 'fs/promises';
+import {StorageKeys} from "./StorageKeys";
 
 export class FileStorage implements BaseStorage {
     private readonly filePath: string;
@@ -9,19 +10,19 @@ export class FileStorage implements BaseStorage {
         this.filePath = resolve(filePath);
     }
 
-    public async get(key: string): Promise<string | null> {
+    public async get(key: StorageKeys): Promise<string | null> {
         const data = await this.readJsonFile();
         return data?.[key] ?? null;
     }
 
-    public async save(key: string, value: string): Promise<void> {
+    public async save(key: StorageKeys, value: string): Promise<void> {
         const data = this.readJsonFileSafe();
         data[key] = value;
 
         await this.writeJsonFile(data);
     }
 
-    async remove(key: string): Promise<void> {
+    async remove(key: StorageKeys): Promise<void> {
         const data = this.readJsonFileSafe();
         delete data[key];
 

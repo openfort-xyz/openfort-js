@@ -1,4 +1,5 @@
 import { BaseStorage } from './base-storage';
+import {StorageKeys} from "./StorageKeys";
 
 export class LocalStorage implements BaseStorage {
     private static readonly _prefix = 'OPENFORT';
@@ -6,7 +7,7 @@ export class LocalStorage implements BaseStorage {
 
     public constructor(private readonly name?: string) {}
 
-    private formatKey(key: string): string {
+    private formatKey(key: StorageKeys): string {
         return [LocalStorage._prefix, this.name, key].filter((n) => n).join(LocalStorage._separator);
     }
 
@@ -17,15 +18,15 @@ export class LocalStorage implements BaseStorage {
         throw Error('Local storage is not available in the current context');
     }
 
-    public async get(key: string): Promise<string | null> {
+    public async get(key: StorageKeys): Promise<string | null> {
         return LocalStorage.localStorage.getItem(this.formatKey(key));
     }
 
-    public async save(key: string, value: string): Promise<void> {
+    public async save(key: StorageKeys, value: string): Promise<void> {
         LocalStorage.localStorage.setItem(this.formatKey(key), value);
     }
 
-    public async remove(key: string): Promise<void> {
+    public async remove(key: StorageKeys): Promise<void> {
         LocalStorage.localStorage.removeItem(this.formatKey(key));
     }
 }

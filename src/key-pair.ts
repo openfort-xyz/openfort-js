@@ -3,11 +3,11 @@ import { Hex, bytesToHex } from '@noble/curves/abstract/utils';
 import { LocalStorage } from './storage/local-storage';
 import { FileStorage } from './storage/file-storage';
 import { BaseStorage } from './storage/base-storage';
+import {StorageKeys} from "./storage/StorageKeys";
 
 export class KeyPair {
     private static readonly localStorage = new LocalStorage();
     private static readonly fileStorage = new FileStorage();
-    private static readonly storageKey = 'PLAYER-KEY';
 
     private readonly publicKey: string;
 
@@ -63,7 +63,7 @@ export class KeyPair {
      * @param storage The implementation of BaseStorage interface to store and load
      */
     public async saveToStorage(storage: BaseStorage): Promise<void> {
-        await storage.save(KeyPair.storageKey, this.privateKey);
+        await storage.save(StorageKeys.SESSION_KEY, this.privateKey);
     }
 
     /**
@@ -85,7 +85,7 @@ export class KeyPair {
      * @param storage The implementation of BaseStorage interface to store and load
      */
     public static async loadFromStorage(storage: BaseStorage): Promise<KeyPair | null> {
-        const privateKey = await storage.get(KeyPair.storageKey);
+        const privateKey = await storage.get(StorageKeys.SESSION_KEY);
         return privateKey ? new KeyPair(privateKey) : null;
     }
 
