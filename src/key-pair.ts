@@ -1,8 +1,8 @@
-import { secp256k1 } from 'ethereum-cryptography/secp256k1';
-import { Hex, bytesToHex } from '@noble/curves/abstract/utils';
-import { LocalStorage } from './storage/local-storage';
-import { FileStorage } from './storage/file-storage';
-import { BaseStorage } from './storage/base-storage';
+import {secp256k1} from "ethereum-cryptography/secp256k1";
+import {Hex, bytesToHex} from "@noble/curves/abstract/utils";
+import {LocalStorage} from "./storage/local-storage";
+import {FileStorage} from "./storage/file-storage";
+import {BaseStorage} from "./storage/base-storage";
 import {StorageKeys} from "./storage/StorageKeys";
 
 export class KeyPair {

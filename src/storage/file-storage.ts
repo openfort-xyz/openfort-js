@@ -1,12 +1,12 @@
-import { BaseStorage } from './base-storage';
-import { resolve } from 'path';
-import { readFile, writeFile } from 'fs/promises';
+import {BaseStorage} from "./base-storage";
+import {resolve} from "path";
+import {readFile, writeFile} from "fs/promises";
 import {StorageKeys} from "./StorageKeys";
 
 export class FileStorage implements BaseStorage {
     private readonly filePath: string;
 
-    public constructor(filePath: string = 'openfort.data') {
+    public constructor(filePath: string = "openfort.data") {
         this.filePath = resolve(filePath);
     }
 
@@ -30,14 +30,14 @@ export class FileStorage implements BaseStorage {
     }
 
     private async readJsonFile(): Promise<any | null> {
-        const content = await readFile(this.filePath, { encoding: 'utf-8' });
+        const content = await readFile(this.filePath, {encoding: "utf-8"});
         return content ? JSON.parse(content) : null;
     }
 
     private async readJsonFileSafe(): Promise<any | null> {
         return (
             (await this.readJsonFile().catch((e) => {
-                if (e.code !== 'ENOENT') throw e.code;
+                if (e.code !== "ENOENT") throw e.code;
             })) ?? {}
         );
     }

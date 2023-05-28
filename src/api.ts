@@ -12,231 +12,240 @@
  * Do not edit the class manually.
  */
 
-
-import type { Configuration } from './configuration';
-import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
-import globalAxios from 'axios';
+import type {Configuration} from "./configuration";
+import type {AxiosPromise, AxiosInstance, AxiosRequestConfig} from "axios";
+import globalAxios from "axios";
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from './common';
-import type { RequestArgs } from './base';
+import {
+    DUMMY_BASE_URL,
+    assertParamExists,
+    setApiKeyToObject,
+    setBasicAuthToObject,
+    setBearerAuthToObject,
+    setOAuthToObject,
+    setSearchParams,
+    serializeDataIfNeeded,
+    toPathString,
+    createRequestFunction,
+} from "./common";
+import type {RequestArgs} from "./base";
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
+import {BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError} from "./base";
 
 /**
- * 
+ *
  * @export
  * @interface AccountResponse
  */
 export interface AccountResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof AccountResponse
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AccountResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AccountResponse
      */
-    'address': string;
+    address: string;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof AccountResponse
      */
-    'deployed': boolean;
+    deployed: boolean;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AccountResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof AccountResponse
      */
-    'custodial': boolean;
+    custodial: boolean;
     /**
-     * 
+     *
      * @type {number}
      * @memberof AccountResponse
      */
-    'chain_id': number;
+    chain_id: number;
     /**
-     * 
+     *
      * @type {Array<TransactionIntentResponse>}
      * @memberof AccountResponse
      */
-    'transaction_intents': Array<TransactionIntentResponse>;
+    transaction_intents: Array<TransactionIntentResponse>;
 }
 /**
- * 
+ *
  * @export
  * @interface AccountsResponse
  */
 export interface AccountsResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof AccountsResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AccountsResponse
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {Array<AccountResponse>}
      * @memberof AccountsResponse
      */
-    'data': Array<AccountResponse>;
+    data: Array<AccountResponse>;
 }
 /**
- * 
+ *
  * @export
  * @interface AllowFunctionResponse
  */
 export interface AllowFunctionResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof AllowFunctionResponse
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AllowFunctionResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AllowFunctionResponse
      */
-    'type': string;
+    type: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AllowFunctionResponse
      */
-    'function_name'?: string;
+    function_name?: string;
     /**
-     * 
+     *
      * @type {ContractResponse}
      * @memberof AllowFunctionResponse
      */
-    'contract'?: ContractResponse;
+    contract?: ContractResponse;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AllowFunctionResponse
      */
-    'object': string;
+    object: string;
 }
 /**
- * 
+ *
  * @export
  * @interface AllowFunctionsResponse
  */
 export interface AllowFunctionsResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof AllowFunctionsResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AllowFunctionsResponse
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {Array<AllowFunctionResponse>}
      * @memberof AllowFunctionsResponse
      */
-    'data': Array<AllowFunctionResponse>;
+    data: Array<AllowFunctionResponse>;
 }
 /**
- * 
+ *
  * @export
  * @interface ApiKeyResponse
  */
 export interface ApiKeyResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ApiKeyResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ApiKeyResponse
      */
-    'token': string;
+    token: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ApiKeyResponse
      */
-    'name': string;
+    name: string;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ApiKeyResponse
      */
-    'livemode': boolean;
+    livemode: boolean;
 }
 /**
- * 
+ *
  * @export
  * @interface AssetInventory
  */
 export interface AssetInventory {
     /**
-     * 
+     *
      * @type {AssetType}
      * @memberof AssetInventory
      */
-    'asset_type': AssetType;
+    asset_type: AssetType;
     /**
-     * 
+     *
      * @type {string}
      * @memberof AssetInventory
      */
-    'address'?: string;
+    address?: string;
     /**
-     * 
+     *
      * @type {number}
      * @memberof AssetInventory
      */
-    'token_id'?: number;
+    token_id?: number;
     /**
      * amount in Wei
      * @type {number}
      * @memberof AssetInventory
      */
-    'amount'?: number;
+    amount?: number;
 }
 
-
 /**
- * 
+ *
  * @export
  * @enum {string}
  */
@@ -245,1027 +254,1025 @@ export const AssetType = {
     NUMBER_1: 1,
     NUMBER_2: 2,
     NUMBER_3: 3,
-    NUMBER_4: 4
+    NUMBER_4: 4,
 } as const;
 
-export type AssetType = typeof AssetType[keyof typeof AssetType];
-
+export type AssetType = (typeof AssetType)[keyof typeof AssetType];
 
 /**
- * 
+ *
  * @export
  * @interface ContractResponse
  */
 export interface ContractResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponse
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponse
      */
-    'name': string | null;
+    name: string | null;
     /**
-     * 
+     *
      * @type {number}
      * @memberof ContractResponse
      */
-    'chain_id': number;
+    chain_id: number;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponse
      */
-    'address': string;
+    address: string;
     /**
-     * 
+     *
      * @type {ContractResponseAbi}
      * @memberof ContractResponse
      */
-    'abi': ContractResponseAbi;
+    abi: ContractResponseAbi;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ContractResponse
      */
-    'public_verification': boolean;
+    public_verification: boolean;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponse
      */
-    'object': string;
+    object: string;
 }
 /**
- * 
+ *
  * @export
  * @interface ContractResponseAbi
  */
-export interface ContractResponseAbi {
-}
+export interface ContractResponseAbi {}
 /**
- * 
+ *
  * @export
  * @interface ContractResponseAbiAnyOfInner
  */
 export interface ContractResponseAbiAnyOfInner {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'type': string;
+    type: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'name': string;
+    name: string;
     /**
-     * 
+     *
      * @type {object}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'inputs': object;
+    inputs: object;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    '_isFragment': boolean;
+    _isFragment: boolean;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'anonymous'?: boolean;
+    anonymous?: boolean;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'payable'?: boolean;
+    payable?: boolean;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'constant'?: boolean;
+    constant?: boolean;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'stateMutability'?: string;
+    stateMutability?: string;
     /**
-     * 
+     *
      * @type {object}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'outputs'?: object;
+    outputs?: object;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractResponseAbiAnyOfInner
      */
-    'gas'?: string;
+    gas?: string;
 }
 /**
- * 
+ *
  * @export
  * @interface ContractsResponse
  */
 export interface ContractsResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractsResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ContractsResponse
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {Array<ContractResponse>}
      * @memberof ContractsResponse
      */
-    'data': Array<ContractResponse>;
+    data: Array<ContractResponse>;
 }
 /**
- * 
+ *
  * @export
  * @interface Fragment
  */
 export interface Fragment {
     /**
-     * 
+     *
      * @type {string}
      * @memberof Fragment
      */
-    'type': string;
+    type: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof Fragment
      */
-    'name': string;
+    name: string;
     /**
-     * 
+     *
      * @type {Array<ParamType>}
      * @memberof Fragment
      */
-    'inputs': Array<ParamType>;
+    inputs: Array<ParamType>;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof Fragment
      */
-    '_isFragment': boolean;
+    _isFragment: boolean;
 }
 /**
- * 
+ *
  * @export
  * @interface Gas
  */
 export interface Gas {
     /**
-     * 
+     *
      * @type {string}
      * @memberof Gas
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof Gas
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {{ [key: string]: number; }}
      * @memberof Gas
      */
-    'dailyGasUsage': { [key: string]: number; };
+    dailyGasUsage: {[key: string]: number};
 }
 /**
- * 
+ *
  * @export
  * @interface GetProjectResponse
  */
 export interface GetProjectResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof GetProjectResponse
      */
-    'id': string | null;
+    id: string | null;
     /**
-     * 
+     *
      * @type {string}
      * @memberof GetProjectResponse
      */
-    'name'?: string;
+    name?: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof GetProjectResponse
      */
-    'logo_url'?: string | null;
+    logo_url?: string | null;
 }
 /**
- * 
+ *
  * @export
  * @interface Interaction
  */
 export interface Interaction {
     /**
-     * 
+     *
      * @type {string}
      * @memberof Interaction
      */
-    'contract': string | null;
+    contract: string | null;
     /**
-     * 
+     *
      * @type {string}
      * @memberof Interaction
      */
-    'function_name': string;
+    function_name: string;
     /**
-     * 
+     *
      * @type {Array<any>}
      * @memberof Interaction
      */
-    'function_args': Array<any>;
+    function_args: Array<any>;
 }
 /**
- * 
+ *
  * @export
  * @interface InventoryResponse
  */
 export interface InventoryResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof InventoryResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {Array<AssetInventory>}
      * @memberof InventoryResponse
      */
-    'nft_assets'?: Array<AssetInventory>;
+    nft_assets?: Array<AssetInventory>;
     /**
-     * 
+     *
      * @type {AssetInventory}
      * @memberof InventoryResponse
      */
-    'native_asset'?: AssetInventory;
+    native_asset?: AssetInventory;
     /**
-     * 
+     *
      * @type {Array<AssetInventory>}
      * @memberof InventoryResponse
      */
-    'token_assets'?: Array<AssetInventory>;
+    token_assets?: Array<AssetInventory>;
 }
 /**
- * 
+ *
  * @export
  * @interface JsonFragment
  */
 export interface JsonFragment {
     /**
-     * 
+     *
      * @type {string}
      * @memberof JsonFragment
      */
-    'name'?: string;
+    name?: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof JsonFragment
      */
-    'type'?: string;
+    type?: string;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof JsonFragment
      */
-    'anonymous'?: boolean;
+    anonymous?: boolean;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof JsonFragment
      */
-    'payable'?: boolean;
+    payable?: boolean;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof JsonFragment
      */
-    'constant'?: boolean;
+    constant?: boolean;
     /**
-     * 
+     *
      * @type {string}
      * @memberof JsonFragment
      */
-    'stateMutability'?: string;
+    stateMutability?: string;
     /**
-     * 
+     *
      * @type {object}
      * @memberof JsonFragment
      */
-    'inputs'?: object;
+    inputs?: object;
     /**
-     * 
+     *
      * @type {object}
      * @memberof JsonFragment
      */
-    'outputs'?: object;
+    outputs?: object;
     /**
-     * 
+     *
      * @type {string}
      * @memberof JsonFragment
      */
-    'gas'?: string;
+    gas?: string;
 }
 /**
- * 
+ *
  * @export
  * @interface Log
  */
 export interface Log {
     /**
-     * 
+     *
      * @type {string}
      * @memberof Log
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof Log
      */
-    'timestamp': string;
+    timestamp: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof Log
      */
-    'event': string;
+    event: string;
     /**
-     * 
+     *
      * @type {any}
      * @memberof Log
      */
-    'request_body': any;
+    request_body: any;
     /**
-     * 
+     *
      * @type {number}
      * @memberof Log
      */
-    'status': number;
+    status: number;
     /**
-     * 
+     *
      * @type {number}
      * @memberof Log
      */
-    'response_time': number;
+    response_time: number;
     /**
-     * 
+     *
      * @type {any}
      * @memberof Log
      */
-    'response_data': any;
+    response_data: any;
 }
 /**
- * 
+ *
  * @export
  * @interface ParamType
  */
 export interface ParamType {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ParamType
      */
-    'name': string;
+    name: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ParamType
      */
-    'type': string;
+    type: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ParamType
      */
-    'baseType': string;
+    baseType: string;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ParamType
      */
-    'indexed': boolean;
+    indexed: boolean;
     /**
-     * 
+     *
      * @type {Array<ParamType>}
      * @memberof ParamType
      */
-    'components': Array<ParamType>;
+    components: Array<ParamType>;
     /**
-     * 
+     *
      * @type {number}
      * @memberof ParamType
      */
-    'arrayLength': number;
+    arrayLength: number;
     /**
-     * 
+     *
      * @type {ParamType}
      * @memberof ParamType
      */
-    'arrayChildren': ParamType;
+    arrayChildren: ParamType;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ParamType
      */
-    '_isParamType': boolean;
+    _isParamType: boolean;
 }
 /**
- * 
+ *
  * @export
  * @interface PlayerResponse
  */
 export interface PlayerResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayerResponse
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayerResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayerResponse
      */
-    'name': string | null;
+    name: string | null;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof PlayerResponse
      */
-    'livemode': boolean;
+    livemode: boolean;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayerResponse
      */
-    'email': string | null;
+    email: string | null;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayerResponse
      */
-    'description': string | null;
+    description: string | null;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayerResponse
      */
-    'metadata': string;
+    metadata: string;
     /**
-     * 
+     *
      * @type {Array<TransactionIntentResponse>}
      * @memberof PlayerResponse
      */
-    'transaction_intents'?: Array<TransactionIntentResponse>;
+    transaction_intents?: Array<TransactionIntentResponse>;
     /**
-     * 
+     *
      * @type {Array<AccountResponse>}
      * @memberof PlayerResponse
      */
-    'accounts': Array<AccountResponse>;
+    accounts: Array<AccountResponse>;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayerResponse
      */
-    'object': string;
+    object: string;
 }
 /**
- * 
+ *
  * @export
  * @interface PlayersResponse
  */
 export interface PlayersResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayersResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PlayersResponse
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {Array<PlayerResponse>}
      * @memberof PlayersResponse
      */
-    'data': Array<PlayerResponse>;
+    data: Array<PlayerResponse>;
 }
 /**
- * 
+ *
  * @export
  * @interface PoliciesResponse
  */
 export interface PoliciesResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof PoliciesResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PoliciesResponse
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {Array<PolicyResponse>}
      * @memberof PoliciesResponse
      */
-    'data': Array<PolicyResponse>;
+    data: Array<PolicyResponse>;
 }
 /**
- * 
+ *
  * @export
  * @interface PolicyResponse
  */
 export interface PolicyResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof PolicyResponse
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PolicyResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PolicyResponse
      */
-    'name': string | null;
+    name: string | null;
     /**
-     * 
+     *
      * @type {number}
      * @memberof PolicyResponse
      */
-    'chain_id': number;
+    chain_id: number;
     /**
-     * 
+     *
      * @type {Strategy}
      * @memberof PolicyResponse
      */
-    'strategy': Strategy;
+    strategy: Strategy;
     /**
-     * 
+     *
      * @type {Array<any>}
      * @memberof PolicyResponse
      */
-    'transaction_intents': Array<any>;
+    transaction_intents: Array<any>;
     /**
-     * 
+     *
      * @type {Array<AllowFunctionResponse>}
      * @memberof PolicyResponse
      */
-    'allow_functions': Array<AllowFunctionResponse>;
+    allow_functions: Array<AllowFunctionResponse>;
     /**
-     * 
+     *
      * @type {string}
      * @memberof PolicyResponse
      */
-    'object': string;
+    object: string;
 }
 /**
- * 
+ *
  * @export
  * @interface ProjectLogs
  */
 export interface ProjectLogs {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectLogs
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectLogs
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {Array<Log>}
      * @memberof ProjectLogs
      */
-    'data': Array<Log>;
+    data: Array<Log>;
 }
 /**
- * 
+ *
  * @export
  * @interface ProjectResponse
  */
 export interface ProjectResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectResponse
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectResponse
      */
-    'name': string | null;
+    name: string | null;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof ProjectResponse
      */
-    'livemode': boolean;
+    livemode: boolean;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectResponse
      */
-    'logo_url'?: string | null;
+    logo_url?: string | null;
     /**
-     * 
+     *
      * @type {Array<ApiKeyResponse>}
      * @memberof ProjectResponse
      */
-    'apikeys': Array<ApiKeyResponse>;
+    apikeys: Array<ApiKeyResponse>;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectResponse
      */
-    'object': string;
+    object: string;
 }
 /**
- * 
+ *
  * @export
  * @interface ProjectsResponse
  */
 export interface ProjectsResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectsResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ProjectsResponse
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {Array<ProjectResponse>}
      * @memberof ProjectsResponse
      */
-    'data': Array<ProjectResponse>;
+    data: Array<ProjectResponse>;
 }
 /**
- * 
+ *
  * @export
  * @interface ResponseResponse
  */
 export interface ResponseResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ResponseResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {number}
      * @memberof ResponseResponse
      */
-    'block_number': number | null;
+    block_number: number | null;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ResponseResponse
      */
-    'transaction_hash': string | null;
+    transaction_hash: string | null;
     /**
-     * 
+     *
      * @type {number}
      * @memberof ResponseResponse
      */
-    'gas_used': number;
+    gas_used: number;
     /**
-     * 
+     *
      * @type {number}
      * @memberof ResponseResponse
      */
-    'status': number;
+    status: number;
     /**
-     * 
+     *
      * @type {Array<string>}
      * @memberof ResponseResponse
      */
-    'logs': Array<string>;
+    logs: Array<string>;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ResponseResponse
      */
-    'to': string;
+    to: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ResponseResponse
      */
-    'error': string;
+    error: string;
 }
 /**
- * 
+ *
  * @export
  * @interface SessionResponse
  */
 export interface SessionResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof SessionResponse
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof SessionResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof SessionResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof SessionResponse
      */
-    'valid_after'?: string;
+    valid_after?: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof SessionResponse
      */
-    'valid_until'?: string;
+    valid_until?: string;
     /**
-     * 
+     *
      * @type {Array<string>}
      * @memberof SessionResponse
      */
-    'whitelist'?: Array<string>;
+    whitelist?: Array<string>;
     /**
-     * 
+     *
      * @type {number}
      * @memberof SessionResponse
      */
-    'limit'?: number;
+    limit?: number;
     /**
-     * 
+     *
      * @type {object}
      * @memberof SessionResponse
      */
-    'next_action': object | null;
+    next_action: object | null;
 }
 /**
- * 
+ *
  * @export
  * @interface Strategy
  */
 export interface Strategy {
     /**
-     * 
+     *
      * @type {string}
      * @memberof Strategy
      */
-    'sponsor_schema': string;
+    sponsor_schema: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof Strategy
      */
-    'token_contract': string;
+    token_contract: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof Strategy
      */
-    'token_contract_amount': string;
+    token_contract_amount: string;
 }
 /**
- * 
+ *
  * @export
  * @interface SumGas
  */
 export interface SumGas {
     /**
-     * 
+     *
      * @type {string}
      * @memberof SumGas
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof SumGas
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {number}
      * @memberof SumGas
      */
-    'sumGas': number;
+    sumGas: number;
 }
 /**
- * 
+ *
  * @export
  * @interface TransactionIntentResponse
  */
 export interface TransactionIntentResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'id': string;
+    id: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'created_at': string;
+    created_at: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'updated_at': string;
+    updated_at: string;
     /**
-     * 
+     *
      * @type {number}
      * @memberof TransactionIntentResponse
      */
-    'chain_id': number;
+    chain_id: number;
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'user_operation_hash': string | null;
+    user_operation_hash: string | null;
     /**
-     * 
+     *
      * @type {UserOpResult}
      * @memberof TransactionIntentResponse
      */
-    'user_operation'?: UserOpResult;
+    user_operation?: UserOpResult;
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'policy': string | null;
+    policy: string | null;
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'player': string;
+    player: string;
     /**
-     * 
+     *
      * @type {object}
      * @memberof TransactionIntentResponse
      */
-    'next_action': object | null;
+    next_action: object | null;
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'account'?: string;
+    account?: string;
     /**
-     * 
+     *
      * @type {Array<Interaction>}
      * @memberof TransactionIntentResponse
      */
-    'transactions': Array<Interaction>;
+    transactions: Array<Interaction>;
     /**
-     * 
+     *
      * @type {ResponseResponse}
      * @memberof TransactionIntentResponse
      */
-    'response': ResponseResponse | null;
+    response: ResponseResponse | null;
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'object': string;
+    object: string;
 }
 /**
- * 
+ *
  * @export
  * @interface TransactionIntentsResponse
  */
 export interface TransactionIntentsResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentsResponse
      */
-    'object': string;
+    object: string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof TransactionIntentsResponse
      */
-    'url': string;
+    url: string;
     /**
-     * 
+     *
      * @type {Array<TransactionIntentResponse>}
      * @memberof TransactionIntentsResponse
      */
-    'data': Array<TransactionIntentResponse>;
+    data: Array<TransactionIntentResponse>;
 }
 /**
- * 
+ *
  * @export
  * @interface UserOpResult
  */
 export interface UserOpResult {
     /**
-     * 
+     *
      * @type {string}
      * @memberof UserOpResult
      */
-    'transactionHash': string;
+    transactionHash: string;
     /**
-     * 
+     *
      * @type {boolean}
      * @memberof UserOpResult
      */
-    'success': boolean;
+    success: boolean;
 }
 
 /**
@@ -1276,20 +1283,28 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
     return {
         /**
          * Creates an contract object.
-         * @param {string} name 
-         * @param {number} chainId 
-         * @param {string} [address] 
-         * @param {ContractResponseAbi} [abi] 
-         * @param {boolean} [publicVerification] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {number} chainId
+         * @param {string} [address]
+         * @param {ContractResponseAbi} [abi]
+         * @param {boolean} [publicVerification]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createContract: async (name: string, chainId: number, address?: string, abi?: ContractResponseAbi, publicVerification?: boolean, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createContract: async (
+            name: string,
+            chainId: number,
+            address?: string,
+            abi?: ContractResponseAbi,
+            publicVerification?: boolean,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
-            assertParamExists('createContract', 'name', name)
+            assertParamExists("createContract", "name", name);
             // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('createContract', 'chainId', chainId)
+            assertParamExists("createContract", "chainId", chainId);
             const localVarPath = `/v1/contracts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1298,42 +1313,44 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (name !== undefined) {
+                localVarFormParams.set("name", name as any);
+            }
 
-            if (name !== undefined) { 
-                localVarFormParams.set('name', name as any);
+            if (chainId !== undefined) {
+                localVarFormParams.set("chain_id", chainId as any);
             }
-    
-            if (chainId !== undefined) { 
-                localVarFormParams.set('chain_id', chainId as any);
+
+            if (address !== undefined) {
+                localVarFormParams.set("address", address as any);
             }
-    
-            if (address !== undefined) { 
-                localVarFormParams.set('address', address as any);
+
+            if (abi !== undefined) {
+                localVarFormParams.set("abi", abi as any);
             }
-    
-            if (abi !== undefined) { 
-                localVarFormParams.set('abi', abi as any);
+
+            if (publicVerification !== undefined) {
+                localVarFormParams.set("public_verification", publicVerification as any);
             }
-    
-            if (publicVerification !== undefined) { 
-                localVarFormParams.set('public_verification', publicVerification as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -1350,9 +1367,8 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
          */
         getContract: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getContract', 'id', id)
-            const localVarPath = `/v1/contracts/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("getContract", "id", id);
+            const localVarPath = `/v1/contracts/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1360,19 +1376,21 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1394,48 +1412,66 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
                 options: localVarRequestOptions,
             };
         },
-    }
+    };
 };
 
 /**
  * ContractsApi - functional programming interface
  * @export
  */
-export const ContractsApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = ContractsApiAxiosParamCreator(configuration)
+export const ContractsApiFp = function (configuration?: Configuration) {
+    const localVarAxiosParamCreator = ContractsApiAxiosParamCreator(configuration);
     return {
         /**
          * Creates an contract object.
-         * @param {string} name 
-         * @param {number} chainId 
-         * @param {string} [address] 
-         * @param {ContractResponseAbi} [abi] 
-         * @param {boolean} [publicVerification] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {number} chainId
+         * @param {string} [address]
+         * @param {ContractResponseAbi} [abi]
+         * @param {boolean} [publicVerification]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createContract(name: string, chainId: number, address?: string, abi?: ContractResponseAbi, publicVerification?: boolean, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createContract(name, chainId, address, abi, publicVerification, project, options);
+        async createContract(
+            name: string,
+            chainId: number,
+            address?: string,
+            abi?: ContractResponseAbi,
+            publicVerification?: boolean,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createContract(
+                name,
+                chainId,
+                address,
+                abi,
+                publicVerification,
+                project,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1445,7 +1481,11 @@ export const ContractsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getContract(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractResponse>> {
+        async getContract(
+            id: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getContract(id, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1455,11 +1495,14 @@ export const ContractsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getContracts(project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractsResponse>> {
+        async getContracts(
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractsResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getContracts(project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-    }
+    };
 };
 
 /**
@@ -1467,21 +1510,31 @@ export const ContractsApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const ContractsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = ContractsApiFp(configuration)
+    const localVarFp = ContractsApiFp(configuration);
     return {
         /**
          * Creates an contract object.
-         * @param {string} name 
-         * @param {number} chainId 
-         * @param {string} [address] 
-         * @param {ContractResponseAbi} [abi] 
-         * @param {boolean} [publicVerification] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {number} chainId
+         * @param {string} [address]
+         * @param {ContractResponseAbi} [abi]
+         * @param {boolean} [publicVerification]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createContract(name: string, chainId: number, address?: string, abi?: ContractResponseAbi, publicVerification?: boolean, project?: string, options?: any): AxiosPromise<ContractResponse> {
-            return localVarFp.createContract(name, chainId, address, abi, publicVerification, project, options).then((request) => request(axios, basePath));
+        createContract(
+            name: string,
+            chainId: number,
+            address?: string,
+            abi?: ContractResponseAbi,
+            publicVerification?: boolean,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<ContractResponse> {
+            return localVarFp
+                .createContract(name, chainId, address, abi, publicVerification, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Retrieves the details of an existing contract. Supply the unique contract ID from either a contract creation request or the contract list, and Openfort will return the corresponding contract information.
@@ -1514,18 +1567,28 @@ export const ContractsApiFactory = function (configuration?: Configuration, base
 export class ContractsApi extends BaseAPI {
     /**
      * Creates an contract object.
-     * @param {string} name 
-     * @param {number} chainId 
-     * @param {string} [address] 
-     * @param {ContractResponseAbi} [abi] 
-     * @param {boolean} [publicVerification] 
-     * @param {string} [project] 
+     * @param {string} name
+     * @param {number} chainId
+     * @param {string} [address]
+     * @param {ContractResponseAbi} [abi]
+     * @param {boolean} [publicVerification]
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ContractsApi
      */
-    public createContract(name: string, chainId: number, address?: string, abi?: ContractResponseAbi, publicVerification?: boolean, project?: string, options?: AxiosRequestConfig) {
-        return ContractsApiFp(this.configuration).createContract(name, chainId, address, abi, publicVerification, project, options).then((request) => request(this.axios, this.basePath));
+    public createContract(
+        name: string,
+        chainId: number,
+        address?: string,
+        abi?: ContractResponseAbi,
+        publicVerification?: boolean,
+        project?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return ContractsApiFp(this.configuration)
+            .createContract(name, chainId, address, abi, publicVerification, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1537,7 +1600,9 @@ export class ContractsApi extends BaseAPI {
      * @memberof ContractsApi
      */
     public getContract(id: string, project?: string, options?: AxiosRequestConfig) {
-        return ContractsApiFp(this.configuration).getContract(id, project, options).then((request) => request(this.axios, this.basePath));
+        return ContractsApiFp(this.configuration)
+            .getContract(id, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1548,10 +1613,11 @@ export class ContractsApi extends BaseAPI {
      * @memberof ContractsApi
      */
     public getContracts(project?: string, options?: AxiosRequestConfig) {
-        return ContractsApiFp(this.configuration).getContracts(project, options).then((request) => request(this.axios, this.basePath));
+        return ContractsApiFp(this.configuration)
+            .getContracts(project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 }
-
 
 /**
  * DefaultApi - axios parameter creator
@@ -1568,11 +1634,17 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAccount: async (chainId: number, player: string, project?: string, externalOwnerAddress?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createAccount: async (
+            chainId: number,
+            player: string,
+            project?: string,
+            externalOwnerAddress?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('createAccount', 'chainId', chainId)
+            assertParamExists("createAccount", "chainId", chainId);
             // verify required parameter 'player' is not null or undefined
-            assertParamExists('createAccount', 'player', player)
+            assertParamExists("createAccount", "player", player);
             const localVarPath = `/v1/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1581,34 +1653,36 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
+            }
 
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
+            if (chainId !== undefined) {
+                localVarFormParams.set("chain_id", chainId as any);
             }
-    
-            if (chainId !== undefined) { 
-                localVarFormParams.set('chain_id', chainId as any);
+
+            if (player !== undefined) {
+                localVarFormParams.set("player", player as any);
             }
-    
-            if (player !== undefined) { 
-                localVarFormParams.set('player', player as any);
+
+            if (externalOwnerAddress !== undefined) {
+                localVarFormParams.set("external_owner_address", externalOwnerAddress as any);
             }
-    
-            if (externalOwnerAddress !== undefined) { 
-                localVarFormParams.set('external_owner_address', externalOwnerAddress as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -1618,19 +1692,26 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * Creates an allow function object.
-         * @param {string} type 
-         * @param {string} policy 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         * @param {string} type
+         * @param {string} policy
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAllowFunction: async (type: string, policy: string, functionName?: string, project?: string, contract?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createAllowFunction: async (
+            type: string,
+            policy: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'type' is not null or undefined
-            assertParamExists('createAllowFunction', 'type', type)
+            assertParamExists("createAllowFunction", "type", type);
             // verify required parameter 'policy' is not null or undefined
-            assertParamExists('createAllowFunction', 'policy', policy)
+            assertParamExists("createAllowFunction", "policy", policy);
             const localVarPath = `/v1/allow_functions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1639,38 +1720,40 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (type !== undefined) {
+                localVarFormParams.set("type", type as any);
+            }
 
-            if (type !== undefined) { 
-                localVarFormParams.set('type', type as any);
+            if (functionName !== undefined) {
+                localVarFormParams.set("function_name", functionName as any);
             }
-    
-            if (functionName !== undefined) { 
-                localVarFormParams.set('function_name', functionName as any);
+
+            if (policy !== undefined) {
+                localVarFormParams.set("policy", policy as any);
             }
-    
-            if (policy !== undefined) { 
-                localVarFormParams.set('policy', policy as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
+
+            if (contract !== undefined) {
+                localVarFormParams.set("contract", contract as any);
             }
-    
-            if (contract !== undefined) { 
-                localVarFormParams.set('contract', contract as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -1687,9 +1770,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          */
         getAccount: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getAccount', 'id', id)
-            const localVarPath = `/v1/accounts/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("getAccount", "id", id);
+            const localVarPath = `/v1/accounts/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1697,19 +1779,21 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1723,11 +1807,14 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountInventory: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountInventory: async (
+            id: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getAccountInventory', 'id', id)
-            const localVarPath = `/v1/accounts/{id}/inventory`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("getAccountInventory", "id", id);
+            const localVarPath = `/v1/accounts/{id}/inventory`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1735,19 +1822,21 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1761,9 +1850,13 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccounts: async (player: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccounts: async (
+            player: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
-            assertParamExists('getAccounts', 'player', player)
+            assertParamExists("getAccounts", "player", player);
             const localVarPath = `/v1/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1772,23 +1865,25 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (player !== undefined) {
-                localVarQueryParameter['player'] = player;
+                localVarQueryParameter["player"] = player;
             }
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1802,7 +1897,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAllowFunctions: async (project?: string, policy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAllowFunctions: async (
+            project?: string,
+            policy?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             const localVarPath = `/v1/allow_functions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1811,23 +1910,25 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
             if (policy !== undefined) {
-                localVarQueryParameter['policy'] = policy;
+                localVarQueryParameter["policy"] = policy;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1837,23 +1938,30 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Updates your allow functions object.
          * @param {string} id Specifies the unique allow function ID.
-         * @param {string} type 
-         * @param {string} policy 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         * @param {string} type
+         * @param {string} policy
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateAllowFunction: async (id: string, type: string, policy: string, functionName?: string, project?: string, contract?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateAllowFunction: async (
+            id: string,
+            type: string,
+            policy: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateAllowFunction', 'id', id)
+            assertParamExists("updateAllowFunction", "id", id);
             // verify required parameter 'type' is not null or undefined
-            assertParamExists('updateAllowFunction', 'type', type)
+            assertParamExists("updateAllowFunction", "type", type);
             // verify required parameter 'policy' is not null or undefined
-            assertParamExists('updateAllowFunction', 'policy', policy)
-            const localVarPath = `/v1/allow_functions/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("updateAllowFunction", "policy", policy);
+            const localVarPath = `/v1/allow_functions/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1861,38 +1969,40 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (type !== undefined) {
+                localVarFormParams.set("type", type as any);
+            }
 
-            if (type !== undefined) { 
-                localVarFormParams.set('type', type as any);
+            if (functionName !== undefined) {
+                localVarFormParams.set("function_name", functionName as any);
             }
-    
-            if (functionName !== undefined) { 
-                localVarFormParams.set('function_name', functionName as any);
+
+            if (policy !== undefined) {
+                localVarFormParams.set("policy", policy as any);
             }
-    
-            if (policy !== undefined) { 
-                localVarFormParams.set('policy', policy as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
+
+            if (contract !== undefined) {
+                localVarFormParams.set("contract", contract as any);
             }
-    
-            if (contract !== undefined) { 
-                localVarFormParams.set('contract', contract as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -1900,15 +2010,15 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
-    }
+    };
 };
 
 /**
  * DefaultApi - functional programming interface
  * @export
  */
-export const DefaultApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
+export const DefaultApiFp = function (configuration?: Configuration) {
+    const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration);
     return {
         /**
          * Creates an account object.
@@ -1919,22 +2029,48 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAccount(chainId: number, player: string, project?: string, externalOwnerAddress?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createAccount(chainId, player, project, externalOwnerAddress, options);
+        async createAccount(
+            chainId: number,
+            player: string,
+            project?: string,
+            externalOwnerAddress?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAccount(
+                chainId,
+                player,
+                project,
+                externalOwnerAddress,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Creates an allow function object.
-         * @param {string} type 
-         * @param {string} policy 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         * @param {string} type
+         * @param {string} policy
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAllowFunction(type: string, policy: string, functionName?: string, project?: string, contract?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createAllowFunction(type, policy, functionName, project, contract, options);
+        async createAllowFunction(
+            type: string,
+            policy: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAllowFunction(
+                type,
+                policy,
+                functionName,
+                project,
+                contract,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1944,7 +2080,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccount(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
+        async getAccount(
+            id: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccount(id, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1955,7 +2095,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountInventory(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryResponse>> {
+        async getAccountInventory(
+            id: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountInventory(id, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1966,7 +2110,11 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccounts(player: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountsResponse>> {
+        async getAccounts(
+            player: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountsResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccounts(player, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1977,26 +2125,46 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAllowFunctions(project?: string, policy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionsResponse>> {
+        async getAllowFunctions(
+            project?: string,
+            policy?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionsResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAllowFunctions(project, policy, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Updates your allow functions object.
          * @param {string} id Specifies the unique allow function ID.
-         * @param {string} type 
-         * @param {string} policy 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         * @param {string} type
+         * @param {string} policy
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateAllowFunction(id: string, type: string, policy: string, functionName?: string, project?: string, contract?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateAllowFunction(id, type, policy, functionName, project, contract, options);
+        async updateAllowFunction(
+            id: string,
+            type: string,
+            policy: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateAllowFunction(
+                id,
+                type,
+                policy,
+                functionName,
+                project,
+                contract,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-    }
+    };
 };
 
 /**
@@ -2004,7 +2172,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const DefaultApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = DefaultApiFp(configuration)
+    const localVarFp = DefaultApiFp(configuration);
     return {
         /**
          * Creates an account object.
@@ -2015,21 +2183,38 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAccount(chainId: number, player: string, project?: string, externalOwnerAddress?: string, options?: any): AxiosPromise<AccountResponse> {
-            return localVarFp.createAccount(chainId, player, project, externalOwnerAddress, options).then((request) => request(axios, basePath));
+        createAccount(
+            chainId: number,
+            player: string,
+            project?: string,
+            externalOwnerAddress?: string,
+            options?: any,
+        ): AxiosPromise<AccountResponse> {
+            return localVarFp
+                .createAccount(chainId, player, project, externalOwnerAddress, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Creates an allow function object.
-         * @param {string} type 
-         * @param {string} policy 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         * @param {string} type
+         * @param {string} policy
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAllowFunction(type: string, policy: string, functionName?: string, project?: string, contract?: string, options?: any): AxiosPromise<AllowFunctionResponse> {
-            return localVarFp.createAllowFunction(type, policy, functionName, project, contract, options).then((request) => request(axios, basePath));
+        createAllowFunction(
+            type: string,
+            policy: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options?: any,
+        ): AxiosPromise<AllowFunctionResponse> {
+            return localVarFp
+                .createAllowFunction(type, policy, functionName, project, contract, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
@@ -2074,16 +2259,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * Updates your allow functions object.
          * @param {string} id Specifies the unique allow function ID.
-         * @param {string} type 
-         * @param {string} policy 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         * @param {string} type
+         * @param {string} policy
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateAllowFunction(id: string, type: string, policy: string, functionName?: string, project?: string, contract?: string, options?: any): AxiosPromise<AllowFunctionResponse> {
-            return localVarFp.updateAllowFunction(id, type, policy, functionName, project, contract, options).then((request) => request(axios, basePath));
+        updateAllowFunction(
+            id: string,
+            type: string,
+            policy: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options?: any,
+        ): AxiosPromise<AllowFunctionResponse> {
+            return localVarFp
+                .updateAllowFunction(id, type, policy, functionName, project, contract, options)
+                .then((request) => request(axios, basePath));
         },
     };
 };
@@ -2105,23 +2300,40 @@ export class DefaultApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public createAccount(chainId: number, player: string, project?: string, externalOwnerAddress?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).createAccount(chainId, player, project, externalOwnerAddress, options).then((request) => request(this.axios, this.basePath));
+    public createAccount(
+        chainId: number,
+        player: string,
+        project?: string,
+        externalOwnerAddress?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return DefaultApiFp(this.configuration)
+            .createAccount(chainId, player, project, externalOwnerAddress, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Creates an allow function object.
-     * @param {string} type 
-     * @param {string} policy 
-     * @param {string} [functionName] 
-     * @param {string} [project] 
-     * @param {string} [contract] 
+     * @param {string} type
+     * @param {string} policy
+     * @param {string} [functionName]
+     * @param {string} [project]
+     * @param {string} [contract]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public createAllowFunction(type: string, policy: string, functionName?: string, project?: string, contract?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).createAllowFunction(type, policy, functionName, project, contract, options).then((request) => request(this.axios, this.basePath));
+    public createAllowFunction(
+        type: string,
+        policy: string,
+        functionName?: string,
+        project?: string,
+        contract?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return DefaultApiFp(this.configuration)
+            .createAllowFunction(type, policy, functionName, project, contract, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2133,7 +2345,9 @@ export class DefaultApi extends BaseAPI {
      * @memberof DefaultApi
      */
     public getAccount(id: string, project?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getAccount(id, project, options).then((request) => request(this.axios, this.basePath));
+        return DefaultApiFp(this.configuration)
+            .getAccount(id, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2145,7 +2359,9 @@ export class DefaultApi extends BaseAPI {
      * @memberof DefaultApi
      */
     public getAccountInventory(id: string, project?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getAccountInventory(id, project, options).then((request) => request(this.axios, this.basePath));
+        return DefaultApiFp(this.configuration)
+            .getAccountInventory(id, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2157,7 +2373,9 @@ export class DefaultApi extends BaseAPI {
      * @memberof DefaultApi
      */
     public getAccounts(player: string, project?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getAccounts(player, project, options).then((request) => request(this.axios, this.basePath));
+        return DefaultApiFp(this.configuration)
+            .getAccounts(player, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2169,26 +2387,37 @@ export class DefaultApi extends BaseAPI {
      * @memberof DefaultApi
      */
     public getAllowFunctions(project?: string, policy?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getAllowFunctions(project, policy, options).then((request) => request(this.axios, this.basePath));
+        return DefaultApiFp(this.configuration)
+            .getAllowFunctions(project, policy, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Updates your allow functions object.
      * @param {string} id Specifies the unique allow function ID.
-     * @param {string} type 
-     * @param {string} policy 
-     * @param {string} [functionName] 
-     * @param {string} [project] 
-     * @param {string} [contract] 
+     * @param {string} type
+     * @param {string} policy
+     * @param {string} [functionName]
+     * @param {string} [project]
+     * @param {string} [contract]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public updateAllowFunction(id: string, type: string, policy: string, functionName?: string, project?: string, contract?: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).updateAllowFunction(id, type, policy, functionName, project, contract, options).then((request) => request(this.axios, this.basePath));
+    public updateAllowFunction(
+        id: string,
+        type: string,
+        policy: string,
+        functionName?: string,
+        project?: string,
+        contract?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return DefaultApiFp(this.configuration)
+            .updateAllowFunction(id, type, policy, functionName, project, contract, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 }
-
 
 /**
  * LogsApi - axios parameter creator
@@ -2197,14 +2426,19 @@ export class DefaultApi extends BaseAPI {
 export const LogsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
-         * @param {string} [project] 
-         * @param {Array<string>} [method] 
-         * @param {string} [id] 
+         *
+         * @param {string} [project]
+         * @param {Array<string>} [method]
+         * @param {string} [id]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjectLogs: async (project?: string, method?: Array<string>, id?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getProjectLogs: async (
+            project?: string,
+            method?: Array<string>,
+            id?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             const localVarPath = `/v1/logs`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2213,56 +2447,63 @@ export const LogsApiAxiosParamCreator = function (configuration?: Configuration)
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
             if (method) {
-                localVarQueryParameter['method'] = method;
+                localVarQueryParameter["method"] = method;
             }
 
             if (id !== undefined) {
-                localVarQueryParameter['id'] = id;
+                localVarQueryParameter["id"] = id;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
                 options: localVarRequestOptions,
             };
         },
-    }
+    };
 };
 
 /**
  * LogsApi - functional programming interface
  * @export
  */
-export const LogsApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = LogsApiAxiosParamCreator(configuration)
+export const LogsApiFp = function (configuration?: Configuration) {
+    const localVarAxiosParamCreator = LogsApiAxiosParamCreator(configuration);
     return {
         /**
-         * 
-         * @param {string} [project] 
-         * @param {Array<string>} [method] 
-         * @param {string} [id] 
+         *
+         * @param {string} [project]
+         * @param {Array<string>} [method]
+         * @param {string} [id]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjectLogs(project?: string, method?: Array<string>, id?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectLogs>> {
+        async getProjectLogs(
+            project?: string,
+            method?: Array<string>,
+            id?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectLogs>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectLogs(project, method, id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-    }
+    };
 };
 
 /**
@@ -2270,17 +2511,22 @@ export const LogsApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const LogsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = LogsApiFp(configuration)
+    const localVarFp = LogsApiFp(configuration);
     return {
         /**
-         * 
-         * @param {string} [project] 
-         * @param {Array<string>} [method] 
-         * @param {string} [id] 
+         *
+         * @param {string} [project]
+         * @param {Array<string>} [method]
+         * @param {string} [id]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjectLogs(project?: string, method?: Array<string>, id?: string, options?: any): AxiosPromise<ProjectLogs> {
+        getProjectLogs(
+            project?: string,
+            method?: Array<string>,
+            id?: string,
+            options?: any,
+        ): AxiosPromise<ProjectLogs> {
             return localVarFp.getProjectLogs(project, method, id, options).then((request) => request(axios, basePath));
         },
     };
@@ -2294,19 +2540,20 @@ export const LogsApiFactory = function (configuration?: Configuration, basePath?
  */
 export class LogsApi extends BaseAPI {
     /**
-     * 
-     * @param {string} [project] 
-     * @param {Array<string>} [method] 
-     * @param {string} [id] 
+     *
+     * @param {string} [project]
+     * @param {Array<string>} [method]
+     * @param {string} [id]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof LogsApi
      */
     public getProjectLogs(project?: string, method?: Array<string>, id?: string, options?: AxiosRequestConfig) {
-        return LogsApiFp(this.configuration).getProjectLogs(project, method, id, options).then((request) => request(this.axios, this.basePath));
+        return LogsApiFp(this.configuration)
+            .getProjectLogs(project, method, id, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 }
-
 
 /**
  * PlayersApi - axios parameter creator
@@ -2316,15 +2563,20 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * Creates a player object.
-         * @param {string} name 
-         * @param {string} [description] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {string} [description]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayer: async (name: string, description?: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPlayer: async (
+            name: string,
+            description?: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
-            assertParamExists('createPlayer', 'name', name)
+            assertParamExists("createPlayer", "name", name);
             const localVarPath = `/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2333,30 +2585,32 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (name !== undefined) {
+                localVarFormParams.set("name", name as any);
+            }
 
-            if (name !== undefined) { 
-                localVarFormParams.set('name', name as any);
+            if (description !== undefined) {
+                localVarFormParams.set("description", description as any);
             }
-    
-            if (description !== undefined) { 
-                localVarFormParams.set('description', description as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -2373,13 +2627,21 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayerAccount: async (player: string, chainId: number, project?: string, externalOwnerAddress?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPlayerAccount: async (
+            player: string,
+            chainId: number,
+            project?: string,
+            externalOwnerAddress?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
-            assertParamExists('createPlayerAccount', 'player', player)
+            assertParamExists("createPlayerAccount", "player", player);
             // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('createPlayerAccount', 'chainId', chainId)
-            const localVarPath = `/v1/players/{player}/accounts`
-                .replace(`{${"player"}}`, encodeURIComponent(String(player)));
+            assertParamExists("createPlayerAccount", "chainId", chainId);
+            const localVarPath = `/v1/players/{player}/accounts`.replace(
+                `{${"player"}}`,
+                encodeURIComponent(String(player)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2387,30 +2649,32 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
+            }
 
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
+            if (chainId !== undefined) {
+                localVarFormParams.set("chain_id", chainId as any);
             }
-    
-            if (chainId !== undefined) { 
-                localVarFormParams.set('chain_id', chainId as any);
+
+            if (externalOwnerAddress !== undefined) {
+                localVarFormParams.set("external_owner_address", externalOwnerAddress as any);
             }
-    
-            if (externalOwnerAddress !== undefined) { 
-                localVarFormParams.set('external_owner_address', externalOwnerAddress as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -2421,29 +2685,41 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Returns a list of your accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {string} player Specifies the unique player ID.
-         * @param {string} address 
-         * @param {number} chainId 
-         * @param {number} validUntil 
-         * @param {number} validAfter 
-         * @param {string} [policy] 
-         * @param {Array<string>} [whitelist] 
-         * @param {number} [limit] 
+         * @param {string} address
+         * @param {number} chainId
+         * @param {number} validUntil
+         * @param {number} validAfter
+         * @param {string} [policy]
+         * @param {Array<string>} [whitelist]
+         * @param {number} [limit]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayerSession: async (player: string, address: string, chainId: number, validUntil: number, validAfter: number, policy?: string, whitelist?: Array<string>, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPlayerSession: async (
+            player: string,
+            address: string,
+            chainId: number,
+            validUntil: number,
+            validAfter: number,
+            policy?: string,
+            whitelist?: Array<string>,
+            limit?: number,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
-            assertParamExists('createPlayerSession', 'player', player)
+            assertParamExists("createPlayerSession", "player", player);
             // verify required parameter 'address' is not null or undefined
-            assertParamExists('createPlayerSession', 'address', address)
+            assertParamExists("createPlayerSession", "address", address);
             // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('createPlayerSession', 'chainId', chainId)
+            assertParamExists("createPlayerSession", "chainId", chainId);
             // verify required parameter 'validUntil' is not null or undefined
-            assertParamExists('createPlayerSession', 'validUntil', validUntil)
+            assertParamExists("createPlayerSession", "validUntil", validUntil);
             // verify required parameter 'validAfter' is not null or undefined
-            assertParamExists('createPlayerSession', 'validAfter', validAfter)
-            const localVarPath = `/v1/players/{player}/sessions`
-                .replace(`{${"player"}}`, encodeURIComponent(String(player)));
+            assertParamExists("createPlayerSession", "validAfter", validAfter);
+            const localVarPath = `/v1/players/{player}/sessions`.replace(
+                `{${"player"}}`,
+                encodeURIComponent(String(player)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2451,46 +2727,47 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
-
-            if (address !== undefined) { 
-                localVarFormParams.set('address', address as any);
-            }
-    
-            if (policy !== undefined) { 
-                localVarFormParams.set('policy', policy as any);
-            }
-    
-            if (chainId !== undefined) { 
-                localVarFormParams.set('chain_id', chainId as any);
-            }
-    
-            if (validUntil !== undefined) { 
-                localVarFormParams.set('valid_until', validUntil as any);
-            }
-    
-            if (validAfter !== undefined) { 
-                localVarFormParams.set('valid_after', validAfter as any);
-            }
-                if (whitelist) {
-                localVarFormParams.set('whitelist', whitelist.join(COLLECTION_FORMATS.csv));
+            if (address !== undefined) {
+                localVarFormParams.set("address", address as any);
             }
 
-    
-            if (limit !== undefined) { 
-                localVarFormParams.set('limit', limit as any);
+            if (policy !== undefined) {
+                localVarFormParams.set("policy", policy as any);
             }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            if (chainId !== undefined) {
+                localVarFormParams.set("chain_id", chainId as any);
+            }
+
+            if (validUntil !== undefined) {
+                localVarFormParams.set("valid_until", validUntil as any);
+            }
+
+            if (validAfter !== undefined) {
+                localVarFormParams.set("valid_after", validAfter as any);
+            }
+            if (whitelist) {
+                localVarFormParams.set("whitelist", whitelist.join(COLLECTION_FORMATS.csv));
+            }
+
+            if (limit !== undefined) {
+                localVarFormParams.set("limit", limit as any);
+            }
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -2507,9 +2784,8 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
          */
         getPlayer: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPlayer', 'id', id)
-            const localVarPath = `/v1/players/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("getPlayer", "id", id);
+            const localVarPath = `/v1/players/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2517,19 +2793,21 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2543,11 +2821,17 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerAccounts: async (player: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerAccounts: async (
+            player: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
-            assertParamExists('getPlayerAccounts', 'player', player)
-            const localVarPath = `/v1/players/{player}/accounts`
-                .replace(`{${"player"}}`, encodeURIComponent(String(player)));
+            assertParamExists("getPlayerAccounts", "player", player);
+            const localVarPath = `/v1/players/{player}/accounts`.replace(
+                `{${"player"}}`,
+                encodeURIComponent(String(player)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2555,19 +2839,21 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2577,18 +2863,22 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Retrieves the inventory of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
          * @param {string} id Specifies the unique player ID.
-         * @param {number} chainId 
+         * @param {number} chainId
          * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerInventory: async (id: string, chainId: number, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerInventory: async (
+            id: string,
+            chainId: number,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPlayerInventory', 'id', id)
+            assertParamExists("getPlayerInventory", "id", id);
             // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('getPlayerInventory', 'chainId', chainId)
-            const localVarPath = `/v1/players/{id}/inventory`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("getPlayerInventory", "chainId", chainId);
+            const localVarPath = `/v1/players/{id}/inventory`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2596,23 +2886,25 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (chainId !== undefined) {
-                localVarQueryParameter['chain_id'] = chainId;
+                localVarQueryParameter["chain_id"] = chainId;
             }
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2622,14 +2914,21 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Returns a list of your players. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {string} [project] Specifies the unique project ID.
-         * @param {string} [filter] 
-         * @param {string} [order] 
-         * @param {number} [skip] 
-         * @param {number} [take] 
+         * @param {string} [filter]
+         * @param {string} [order]
+         * @param {number} [skip]
+         * @param {number} [take]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayers: async (project?: string, filter?: string, order?: string, skip?: number, take?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayers: async (
+            project?: string,
+            filter?: string,
+            order?: string,
+            skip?: number,
+            take?: number,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             const localVarPath = `/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2638,35 +2937,37 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
             if (filter !== undefined) {
-                localVarQueryParameter['filter'] = filter;
+                localVarQueryParameter["filter"] = filter;
             }
 
             if (order !== undefined) {
-                localVarQueryParameter['order'] = order;
+                localVarQueryParameter["order"] = order;
             }
 
             if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
+                localVarQueryParameter["skip"] = skip;
             }
 
             if (take !== undefined) {
-                localVarQueryParameter['take'] = take;
+                localVarQueryParameter["take"] = take;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2675,20 +2976,25 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * Updates a player object.
-         * @param {string} id 
-         * @param {string} name 
-         * @param {string} [description] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} name
+         * @param {string} [description]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePlayer: async (id: string, name: string, description?: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePlayer: async (
+            id: string,
+            name: string,
+            description?: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('updatePlayer', 'id', id)
+            assertParamExists("updatePlayer", "id", id);
             // verify required parameter 'name' is not null or undefined
-            assertParamExists('updatePlayer', 'name', name)
-            const localVarPath = `/v1/players/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("updatePlayer", "name", name);
+            const localVarPath = `/v1/players/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2696,30 +3002,32 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (name !== undefined) {
+                localVarFormParams.set("name", name as any);
+            }
 
-            if (name !== undefined) { 
-                localVarFormParams.set('name', name as any);
+            if (description !== undefined) {
+                localVarFormParams.set("description", description as any);
             }
-    
-            if (description !== undefined) { 
-                localVarFormParams.set('description', description as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -2727,25 +3035,30 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
-    }
+    };
 };
 
 /**
  * PlayersApi - functional programming interface
  * @export
  */
-export const PlayersApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = PlayersApiAxiosParamCreator(configuration)
+export const PlayersApiFp = function (configuration?: Configuration) {
+    const localVarAxiosParamCreator = PlayersApiAxiosParamCreator(configuration);
     return {
         /**
          * Creates a player object.
-         * @param {string} name 
-         * @param {string} [description] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {string} [description]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPlayer(name: string, description?: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+        async createPlayer(
+            name: string,
+            description?: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayer(name, description, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2758,25 +3071,57 @@ export const PlayersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPlayerAccount(player: string, chainId: number, project?: string, externalOwnerAddress?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerAccount(player, chainId, project, externalOwnerAddress, options);
+        async createPlayerAccount(
+            player: string,
+            chainId: number,
+            project?: string,
+            externalOwnerAddress?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerAccount(
+                player,
+                chainId,
+                project,
+                externalOwnerAddress,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Returns a list of your accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {string} player Specifies the unique player ID.
-         * @param {string} address 
-         * @param {number} chainId 
-         * @param {number} validUntil 
-         * @param {number} validAfter 
-         * @param {string} [policy] 
-         * @param {Array<string>} [whitelist] 
-         * @param {number} [limit] 
+         * @param {string} address
+         * @param {number} chainId
+         * @param {number} validUntil
+         * @param {number} validAfter
+         * @param {string} [policy]
+         * @param {Array<string>} [whitelist]
+         * @param {number} [limit]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPlayerSession(player: string, address: string, chainId: number, validUntil: number, validAfter: number, policy?: string, whitelist?: Array<string>, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options);
+        async createPlayerSession(
+            player: string,
+            address: string,
+            chainId: number,
+            validUntil: number,
+            validAfter: number,
+            policy?: string,
+            whitelist?: Array<string>,
+            limit?: number,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerSession(
+                player,
+                address,
+                chainId,
+                validUntil,
+                validAfter,
+                policy,
+                whitelist,
+                limit,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -2786,7 +3131,11 @@ export const PlayersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayer(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+        async getPlayer(
+            id: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayer(id, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2797,50 +3146,85 @@ export const PlayersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerAccounts(player: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountsResponse>> {
+        async getPlayerAccounts(
+            player: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountsResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerAccounts(player, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Retrieves the inventory of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
          * @param {string} id Specifies the unique player ID.
-         * @param {number} chainId 
+         * @param {number} chainId
          * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerInventory(id: string, chainId: number, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryResponse>> {
+        async getPlayerInventory(
+            id: string,
+            chainId: number,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerInventory(id, chainId, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Returns a list of your players. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {string} [project] Specifies the unique project ID.
-         * @param {string} [filter] 
-         * @param {string} [order] 
-         * @param {number} [skip] 
-         * @param {number} [take] 
+         * @param {string} [filter]
+         * @param {string} [order]
+         * @param {number} [skip]
+         * @param {number} [take]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayers(project?: string, filter?: string, order?: string, skip?: number, take?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayersResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayers(project, filter, order, skip, take, options);
+        async getPlayers(
+            project?: string,
+            filter?: string,
+            order?: string,
+            skip?: number,
+            take?: number,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayersResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayers(
+                project,
+                filter,
+                order,
+                skip,
+                take,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Updates a player object.
-         * @param {string} id 
-         * @param {string} name 
-         * @param {string} [description] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} name
+         * @param {string} [description]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePlayer(id: string, name: string, description?: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlayer(id, name, description, project, options);
+        async updatePlayer(
+            id: string,
+            name: string,
+            description?: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlayer(
+                id,
+                name,
+                description,
+                project,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-    }
+    };
 };
 
 /**
@@ -2848,18 +3232,25 @@ export const PlayersApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const PlayersApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = PlayersApiFp(configuration)
+    const localVarFp = PlayersApiFp(configuration);
     return {
         /**
          * Creates a player object.
-         * @param {string} name 
-         * @param {string} [description] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {string} [description]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayer(name: string, description?: string, project?: string, options?: any): AxiosPromise<PlayerResponse> {
-            return localVarFp.createPlayer(name, description, project, options).then((request) => request(axios, basePath));
+        createPlayer(
+            name: string,
+            description?: string,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<PlayerResponse> {
+            return localVarFp
+                .createPlayer(name, description, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Updates an account object of an existing player.
@@ -2870,24 +3261,54 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayerAccount(player: string, chainId: number, project?: string, externalOwnerAddress?: string, options?: any): AxiosPromise<AccountResponse> {
-            return localVarFp.createPlayerAccount(player, chainId, project, externalOwnerAddress, options).then((request) => request(axios, basePath));
+        createPlayerAccount(
+            player: string,
+            chainId: number,
+            project?: string,
+            externalOwnerAddress?: string,
+            options?: any,
+        ): AxiosPromise<AccountResponse> {
+            return localVarFp
+                .createPlayerAccount(player, chainId, project, externalOwnerAddress, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of your accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {string} player Specifies the unique player ID.
-         * @param {string} address 
-         * @param {number} chainId 
-         * @param {number} validUntil 
-         * @param {number} validAfter 
-         * @param {string} [policy] 
-         * @param {Array<string>} [whitelist] 
-         * @param {number} [limit] 
+         * @param {string} address
+         * @param {number} chainId
+         * @param {number} validUntil
+         * @param {number} validAfter
+         * @param {string} [policy]
+         * @param {Array<string>} [whitelist]
+         * @param {number} [limit]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayerSession(player: string, address: string, chainId: number, validUntil: number, validAfter: number, policy?: string, whitelist?: Array<string>, limit?: number, options?: any): AxiosPromise<SessionResponse> {
-            return localVarFp.createPlayerSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options).then((request) => request(axios, basePath));
+        createPlayerSession(
+            player: string,
+            address: string,
+            chainId: number,
+            validUntil: number,
+            validAfter: number,
+            policy?: string,
+            whitelist?: Array<string>,
+            limit?: number,
+            options?: any,
+        ): AxiosPromise<SessionResponse> {
+            return localVarFp
+                .createPlayerSession(
+                    player,
+                    address,
+                    chainId,
+                    validUntil,
+                    validAfter,
+                    policy,
+                    whitelist,
+                    limit,
+                    options,
+                )
+                .then((request) => request(axios, basePath));
         },
         /**
          * Retrieves the details of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
@@ -2912,38 +3333,62 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
         /**
          * Retrieves the inventory of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
          * @param {string} id Specifies the unique player ID.
-         * @param {number} chainId 
+         * @param {number} chainId
          * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerInventory(id: string, chainId: number, project?: string, options?: any): AxiosPromise<InventoryResponse> {
-            return localVarFp.getPlayerInventory(id, chainId, project, options).then((request) => request(axios, basePath));
+        getPlayerInventory(
+            id: string,
+            chainId: number,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<InventoryResponse> {
+            return localVarFp
+                .getPlayerInventory(id, chainId, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of your players. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {string} [project] Specifies the unique project ID.
-         * @param {string} [filter] 
-         * @param {string} [order] 
-         * @param {number} [skip] 
-         * @param {number} [take] 
+         * @param {string} [filter]
+         * @param {string} [order]
+         * @param {number} [skip]
+         * @param {number} [take]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayers(project?: string, filter?: string, order?: string, skip?: number, take?: number, options?: any): AxiosPromise<PlayersResponse> {
-            return localVarFp.getPlayers(project, filter, order, skip, take, options).then((request) => request(axios, basePath));
+        getPlayers(
+            project?: string,
+            filter?: string,
+            order?: string,
+            skip?: number,
+            take?: number,
+            options?: any,
+        ): AxiosPromise<PlayersResponse> {
+            return localVarFp
+                .getPlayers(project, filter, order, skip, take, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Updates a player object.
-         * @param {string} id 
-         * @param {string} name 
-         * @param {string} [description] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} name
+         * @param {string} [description]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePlayer(id: string, name: string, description?: string, project?: string, options?: any): AxiosPromise<PlayerResponse> {
-            return localVarFp.updatePlayer(id, name, description, project, options).then((request) => request(axios, basePath));
+        updatePlayer(
+            id: string,
+            name: string,
+            description?: string,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<PlayerResponse> {
+            return localVarFp
+                .updatePlayer(id, name, description, project, options)
+                .then((request) => request(axios, basePath));
         },
     };
 };
@@ -2957,15 +3402,17 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
 export class PlayersApi extends BaseAPI {
     /**
      * Creates a player object.
-     * @param {string} name 
-     * @param {string} [description] 
-     * @param {string} [project] 
+     * @param {string} name
+     * @param {string} [description]
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
     public createPlayer(name: string, description?: string, project?: string, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).createPlayer(name, description, project, options).then((request) => request(this.axios, this.basePath));
+        return PlayersApiFp(this.configuration)
+            .createPlayer(name, description, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2978,26 +3425,46 @@ export class PlayersApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public createPlayerAccount(player: string, chainId: number, project?: string, externalOwnerAddress?: string, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).createPlayerAccount(player, chainId, project, externalOwnerAddress, options).then((request) => request(this.axios, this.basePath));
+    public createPlayerAccount(
+        player: string,
+        chainId: number,
+        project?: string,
+        externalOwnerAddress?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return PlayersApiFp(this.configuration)
+            .createPlayerAccount(player, chainId, project, externalOwnerAddress, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Returns a list of your accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
      * @param {string} player Specifies the unique player ID.
-     * @param {string} address 
-     * @param {number} chainId 
-     * @param {number} validUntil 
-     * @param {number} validAfter 
-     * @param {string} [policy] 
-     * @param {Array<string>} [whitelist] 
-     * @param {number} [limit] 
+     * @param {string} address
+     * @param {number} chainId
+     * @param {number} validUntil
+     * @param {number} validAfter
+     * @param {string} [policy]
+     * @param {Array<string>} [whitelist]
+     * @param {number} [limit]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public createPlayerSession(player: string, address: string, chainId: number, validUntil: number, validAfter: number, policy?: string, whitelist?: Array<string>, limit?: number, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).createPlayerSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options).then((request) => request(this.axios, this.basePath));
+    public createPlayerSession(
+        player: string,
+        address: string,
+        chainId: number,
+        validUntil: number,
+        validAfter: number,
+        policy?: string,
+        whitelist?: Array<string>,
+        limit?: number,
+        options?: AxiosRequestConfig,
+    ) {
+        return PlayersApiFp(this.configuration)
+            .createPlayerSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3009,7 +3476,9 @@ export class PlayersApi extends BaseAPI {
      * @memberof PlayersApi
      */
     public getPlayer(id: string, project?: string, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayer(id, project, options).then((request) => request(this.axios, this.basePath));
+        return PlayersApiFp(this.configuration)
+            .getPlayer(id, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3021,52 +3490,72 @@ export class PlayersApi extends BaseAPI {
      * @memberof PlayersApi
      */
     public getPlayerAccounts(player: string, project?: string, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayerAccounts(player, project, options).then((request) => request(this.axios, this.basePath));
+        return PlayersApiFp(this.configuration)
+            .getPlayerAccounts(player, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Retrieves the inventory of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
      * @param {string} id Specifies the unique player ID.
-     * @param {number} chainId 
+     * @param {number} chainId
      * @param {string} [project] Specifies the unique project ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
     public getPlayerInventory(id: string, chainId: number, project?: string, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayerInventory(id, chainId, project, options).then((request) => request(this.axios, this.basePath));
+        return PlayersApiFp(this.configuration)
+            .getPlayerInventory(id, chainId, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Returns a list of your players. The players are returned sorted by creation date, with the most recently created players appearing first.
      * @param {string} [project] Specifies the unique project ID.
-     * @param {string} [filter] 
-     * @param {string} [order] 
-     * @param {number} [skip] 
-     * @param {number} [take] 
+     * @param {string} [filter]
+     * @param {string} [order]
+     * @param {number} [skip]
+     * @param {number} [take]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public getPlayers(project?: string, filter?: string, order?: string, skip?: number, take?: number, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayers(project, filter, order, skip, take, options).then((request) => request(this.axios, this.basePath));
+    public getPlayers(
+        project?: string,
+        filter?: string,
+        order?: string,
+        skip?: number,
+        take?: number,
+        options?: AxiosRequestConfig,
+    ) {
+        return PlayersApiFp(this.configuration)
+            .getPlayers(project, filter, order, skip, take, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Updates a player object.
-     * @param {string} id 
-     * @param {string} name 
-     * @param {string} [description] 
-     * @param {string} [project] 
+     * @param {string} id
+     * @param {string} name
+     * @param {string} [description]
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public updatePlayer(id: string, name: string, description?: string, project?: string, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).updatePlayer(id, name, description, project, options).then((request) => request(this.axios, this.basePath));
+    public updatePlayer(
+        id: string,
+        name: string,
+        description?: string,
+        project?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return PlayersApiFp(this.configuration)
+            .updatePlayer(id, name, description, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 }
-
 
 /**
  * PoliciesApi - axios parameter creator
@@ -3076,18 +3565,24 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * Create a policy object.
-         * @param {string} name 
-         * @param {number} chainId 
-         * @param {Strategy} [strategy] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {number} chainId
+         * @param {Strategy} [strategy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicy: async (name: string, chainId: number, strategy?: Strategy, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPolicy: async (
+            name: string,
+            chainId: number,
+            strategy?: Strategy,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
-            assertParamExists('createPolicy', 'name', name)
+            assertParamExists("createPolicy", "name", name);
             // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('createPolicy', 'chainId', chainId)
+            assertParamExists("createPolicy", "chainId", chainId);
             const localVarPath = `/v1/policies`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3096,34 +3591,36 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (name !== undefined) {
+                localVarFormParams.set("name", name as any);
+            }
 
-            if (name !== undefined) { 
-                localVarFormParams.set('name', name as any);
+            if (chainId !== undefined) {
+                localVarFormParams.set("chain_id", chainId as any);
             }
-    
-            if (chainId !== undefined) { 
-                localVarFormParams.set('chain_id', chainId as any);
+
+            if (strategy !== undefined) {
+                localVarFormParams.set("strategy", strategy as any);
             }
-    
-            if (strategy !== undefined) { 
-                localVarFormParams.set('strategy', strategy as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -3132,22 +3629,31 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} type 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         *
+         * @param {string} policy
+         * @param {string} type
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyAllowFunction: async (policy: string, type: string, functionName?: string, project?: string, contract?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPolicyAllowFunction: async (
+            policy: string,
+            type: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'policy' is not null or undefined
-            assertParamExists('createPolicyAllowFunction', 'policy', policy)
+            assertParamExists("createPolicyAllowFunction", "policy", policy);
             // verify required parameter 'type' is not null or undefined
-            assertParamExists('createPolicyAllowFunction', 'type', type)
-            const localVarPath = `/v1/policies/{policy}/allow_functions`
-                .replace(`{${"policy"}}`, encodeURIComponent(String(policy)));
+            assertParamExists("createPolicyAllowFunction", "type", type);
+            const localVarPath = `/v1/policies/{policy}/allow_functions`.replace(
+                `{${"policy"}}`,
+                encodeURIComponent(String(policy)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3155,34 +3661,36 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (type !== undefined) {
+                localVarFormParams.set("type", type as any);
+            }
 
-            if (type !== undefined) { 
-                localVarFormParams.set('type', type as any);
+            if (functionName !== undefined) {
+                localVarFormParams.set("function_name", functionName as any);
             }
-    
-            if (functionName !== undefined) { 
-                localVarFormParams.set('function_name', functionName as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
+
+            if (contract !== undefined) {
+                localVarFormParams.set("contract", contract as any);
             }
-    
-            if (contract !== undefined) { 
-                localVarFormParams.set('contract', contract as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -3191,8 +3699,8 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3205,19 +3713,21 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3225,17 +3735,16 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} id 
-         * @param {string} [project] 
+         *
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getPolicy: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPolicy', 'id', id)
-            const localVarPath = `/v1/policies/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("getPolicy", "id", id);
+            const localVarPath = `/v1/policies/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3243,19 +3752,21 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3263,17 +3774,23 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [project] 
+         *
+         * @param {string} policy
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyAllowFunctions: async (policy: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyAllowFunctions: async (
+            policy: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'policy' is not null or undefined
-            assertParamExists('getPolicyAllowFunctions', 'policy', policy)
-            const localVarPath = `/v1/policies/{policy}/allow_functions`
-                .replace(`{${"policy"}}`, encodeURIComponent(String(policy)));
+            assertParamExists("getPolicyAllowFunctions", "policy", policy);
+            const localVarPath = `/v1/policies/{policy}/allow_functions`.replace(
+                `{${"policy"}}`,
+                encodeURIComponent(String(policy)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3281,19 +3798,21 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3301,18 +3820,25 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [from] 
-         * @param {string} [to] 
+         *
+         * @param {string} policy
+         * @param {string} [from]
+         * @param {string} [to]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyDailyGasUsage: async (policy: string, from?: string, to?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyDailyGasUsage: async (
+            policy: string,
+            from?: string,
+            to?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'policy' is not null or undefined
-            assertParamExists('getPolicyDailyGasUsage', 'policy', policy)
-            const localVarPath = `/v1/policies/{policy}/daily_gas_usage`
-                .replace(`{${"policy"}}`, encodeURIComponent(String(policy)));
+            assertParamExists("getPolicyDailyGasUsage", "policy", policy);
+            const localVarPath = `/v1/policies/{policy}/daily_gas_usage`.replace(
+                `{${"policy"}}`,
+                encodeURIComponent(String(policy)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3320,23 +3846,25 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (from !== undefined) {
-                localVarQueryParameter['from'] = from;
+                localVarQueryParameter["from"] = from;
             }
 
             if (to !== undefined) {
-                localVarQueryParameter['to'] = to;
+                localVarQueryParameter["to"] = to;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3344,18 +3872,25 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [from] 
-         * @param {string} [to] 
+         *
+         * @param {string} policy
+         * @param {string} [from]
+         * @param {string} [to]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyTotalGasUsage: async (policy: string, from?: string, to?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyTotalGasUsage: async (
+            policy: string,
+            from?: string,
+            to?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'policy' is not null or undefined
-            assertParamExists('getPolicyTotalGasUsage', 'policy', policy)
-            const localVarPath = `/v1/policies/{policy}/gas_usage`
-                .replace(`{${"policy"}}`, encodeURIComponent(String(policy)));
+            assertParamExists("getPolicyTotalGasUsage", "policy", policy);
+            const localVarPath = `/v1/policies/{policy}/gas_usage`.replace(
+                `{${"policy"}}`,
+                encodeURIComponent(String(policy)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3363,23 +3898,25 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (from !== undefined) {
-                localVarQueryParameter['from'] = from;
+                localVarQueryParameter["from"] = from;
             }
 
             if (to !== undefined) {
-                localVarQueryParameter['to'] = to;
+                localVarQueryParameter["to"] = to;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3388,19 +3925,25 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * Updates a policy object.
-         * @param {string} id 
-         * @param {string} [name] 
-         * @param {number} [chainId] 
-         * @param {Strategy} [strategy] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} [name]
+         * @param {number} [chainId]
+         * @param {Strategy} [strategy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicy: async (id: string, name?: string, chainId?: number, strategy?: Strategy, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePolicy: async (
+            id: string,
+            name?: string,
+            chainId?: number,
+            strategy?: Strategy,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('updatePolicy', 'id', id)
-            const localVarPath = `/v1/policies/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("updatePolicy", "id", id);
+            const localVarPath = `/v1/policies/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3408,34 +3951,36 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (name !== undefined) {
+                localVarFormParams.set("name", name as any);
+            }
 
-            if (name !== undefined) { 
-                localVarFormParams.set('name', name as any);
+            if (chainId !== undefined) {
+                localVarFormParams.set("chain_id", chainId as any);
             }
-    
-            if (chainId !== undefined) { 
-                localVarFormParams.set('chain_id', chainId as any);
+
+            if (strategy !== undefined) {
+                localVarFormParams.set("strategy", strategy as any);
             }
-    
-            if (strategy !== undefined) { 
-                localVarFormParams.set('strategy', strategy as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -3444,22 +3989,31 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} id 
-         * @param {string} [type] 
-         * @param {string} [functionName] 
-         * @param {string} [policy2] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         *
+         * @param {string} policy
+         * @param {string} id
+         * @param {string} [type]
+         * @param {string} [functionName]
+         * @param {string} [policy2]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicyAllowFunction: async (policy: string, id: string, type?: string, functionName?: string, policy2?: string, project?: string, contract?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePolicyAllowFunction: async (
+            policy: string,
+            id: string,
+            type?: string,
+            functionName?: string,
+            policy2?: string,
+            project?: string,
+            contract?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'policy' is not null or undefined
-            assertParamExists('updatePolicyAllowFunction', 'policy', policy)
+            assertParamExists("updatePolicyAllowFunction", "policy", policy);
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('updatePolicyAllowFunction', 'id', id)
+            assertParamExists("updatePolicyAllowFunction", "id", id);
             const localVarPath = `/v1/policies/{policy}/allow_functions/{id}`
                 .replace(`{${"policy"}}`, encodeURIComponent(String(policy)))
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
@@ -3470,38 +4024,40 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (type !== undefined) {
+                localVarFormParams.set("type", type as any);
+            }
 
-            if (type !== undefined) { 
-                localVarFormParams.set('type', type as any);
+            if (functionName !== undefined) {
+                localVarFormParams.set("function_name", functionName as any);
             }
-    
-            if (functionName !== undefined) { 
-                localVarFormParams.set('function_name', functionName as any);
+
+            if (policy2 !== undefined) {
+                localVarFormParams.set("policy", policy2 as any);
             }
-    
-            if (policy2 !== undefined) { 
-                localVarFormParams.set('policy', policy2 as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
+
+            if (contract !== undefined) {
+                localVarFormParams.set("contract", contract as any);
             }
-    
-            if (contract !== undefined) { 
-                localVarFormParams.set('contract', contract as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -3509,130 +4065,209 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 options: localVarRequestOptions,
             };
         },
-    }
+    };
 };
 
 /**
  * PoliciesApi - functional programming interface
  * @export
  */
-export const PoliciesApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = PoliciesApiAxiosParamCreator(configuration)
+export const PoliciesApiFp = function (configuration?: Configuration) {
+    const localVarAxiosParamCreator = PoliciesApiAxiosParamCreator(configuration);
     return {
         /**
          * Create a policy object.
-         * @param {string} name 
-         * @param {number} chainId 
-         * @param {Strategy} [strategy] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {number} chainId
+         * @param {Strategy} [strategy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicy(name: string, chainId: number, strategy?: Strategy, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicy(name, chainId, strategy, project, options);
+        async createPolicy(
+            name: string,
+            chainId: number,
+            strategy?: Strategy,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicy(
+                name,
+                chainId,
+                strategy,
+                project,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} type 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         *
+         * @param {string} policy
+         * @param {string} type
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicyAllowFunction(policy: string, type: string, functionName?: string, project?: string, contract?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyAllowFunction(policy, type, functionName, project, contract, options);
+        async createPolicyAllowFunction(
+            policy: string,
+            type: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyAllowFunction(
+                policy,
+                type,
+                functionName,
+                project,
+                contract,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicies(project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PoliciesResponse>> {
+        async getPolicies(
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PoliciesResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicies(project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} id 
-         * @param {string} [project] 
+         *
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicy(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
+        async getPolicy(
+            id: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicy(id, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [project] 
+         *
+         * @param {string} policy
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyAllowFunctions(policy: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionsResponse>> {
+        async getPolicyAllowFunctions(
+            policy: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionsResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyAllowFunctions(policy, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [from] 
-         * @param {string} [to] 
+         *
+         * @param {string} policy
+         * @param {string} [from]
+         * @param {string} [to]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyDailyGasUsage(policy: string, from?: string, to?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Gas>> {
+        async getPolicyDailyGasUsage(
+            policy: string,
+            from?: string,
+            to?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Gas>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyDailyGasUsage(policy, from, to, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [from] 
-         * @param {string} [to] 
+         *
+         * @param {string} policy
+         * @param {string} [from]
+         * @param {string} [to]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyTotalGasUsage(policy: string, from?: string, to?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SumGas>> {
+        async getPolicyTotalGasUsage(
+            policy: string,
+            from?: string,
+            to?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SumGas>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyTotalGasUsage(policy, from, to, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Updates a policy object.
-         * @param {string} id 
-         * @param {string} [name] 
-         * @param {number} [chainId] 
-         * @param {Strategy} [strategy] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} [name]
+         * @param {number} [chainId]
+         * @param {Strategy} [strategy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePolicy(id: string, name?: string, chainId?: number, strategy?: Strategy, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicy(id, name, chainId, strategy, project, options);
+        async updatePolicy(
+            id: string,
+            name?: string,
+            chainId?: number,
+            strategy?: Strategy,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicy(
+                id,
+                name,
+                chainId,
+                strategy,
+                project,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} id 
-         * @param {string} [type] 
-         * @param {string} [functionName] 
-         * @param {string} [policy2] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         *
+         * @param {string} policy
+         * @param {string} id
+         * @param {string} [type]
+         * @param {string} [functionName]
+         * @param {string} [policy2]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePolicyAllowFunction(policy: string, id: string, type?: string, functionName?: string, policy2?: string, project?: string, contract?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyAllowFunction(policy, id, type, functionName, policy2, project, contract, options);
+        async updatePolicyAllowFunction(
+            policy: string,
+            id: string,
+            type?: string,
+            functionName?: string,
+            policy2?: string,
+            project?: string,
+            contract?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AllowFunctionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyAllowFunction(
+                policy,
+                id,
+                type,
+                functionName,
+                policy2,
+                project,
+                contract,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-    }
+    };
 };
 
 /**
@@ -3640,36 +4275,53 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const PoliciesApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = PoliciesApiFp(configuration)
+    const localVarFp = PoliciesApiFp(configuration);
     return {
         /**
          * Create a policy object.
-         * @param {string} name 
-         * @param {number} chainId 
-         * @param {Strategy} [strategy] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {number} chainId
+         * @param {Strategy} [strategy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicy(name: string, chainId: number, strategy?: Strategy, project?: string, options?: any): AxiosPromise<PolicyResponse> {
-            return localVarFp.createPolicy(name, chainId, strategy, project, options).then((request) => request(axios, basePath));
+        createPolicy(
+            name: string,
+            chainId: number,
+            strategy?: Strategy,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<PolicyResponse> {
+            return localVarFp
+                .createPolicy(name, chainId, strategy, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} type 
-         * @param {string} [functionName] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         *
+         * @param {string} policy
+         * @param {string} type
+         * @param {string} [functionName]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyAllowFunction(policy: string, type: string, functionName?: string, project?: string, contract?: string, options?: any): AxiosPromise<AllowFunctionResponse> {
-            return localVarFp.createPolicyAllowFunction(policy, type, functionName, project, contract, options).then((request) => request(axios, basePath));
+        createPolicyAllowFunction(
+            policy: string,
+            type: string,
+            functionName?: string,
+            project?: string,
+            contract?: string,
+            options?: any,
+        ): AxiosPromise<AllowFunctionResponse> {
+            return localVarFp
+                .createPolicyAllowFunction(policy, type, functionName, project, contract, options)
+                .then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3677,9 +4329,9 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getPolicies(project, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} id 
-         * @param {string} [project] 
+         *
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3687,64 +4339,90 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getPolicy(id, project, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [project] 
+         *
+         * @param {string} policy
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getPolicyAllowFunctions(policy: string, project?: string, options?: any): AxiosPromise<AllowFunctionsResponse> {
-            return localVarFp.getPolicyAllowFunctions(policy, project, options).then((request) => request(axios, basePath));
+            return localVarFp
+                .getPolicyAllowFunctions(policy, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [from] 
-         * @param {string} [to] 
+         *
+         * @param {string} policy
+         * @param {string} [from]
+         * @param {string} [to]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getPolicyDailyGasUsage(policy: string, from?: string, to?: string, options?: any): AxiosPromise<Gas> {
-            return localVarFp.getPolicyDailyGasUsage(policy, from, to, options).then((request) => request(axios, basePath));
+            return localVarFp
+                .getPolicyDailyGasUsage(policy, from, to, options)
+                .then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} [from] 
-         * @param {string} [to] 
+         *
+         * @param {string} policy
+         * @param {string} [from]
+         * @param {string} [to]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getPolicyTotalGasUsage(policy: string, from?: string, to?: string, options?: any): AxiosPromise<SumGas> {
-            return localVarFp.getPolicyTotalGasUsage(policy, from, to, options).then((request) => request(axios, basePath));
+            return localVarFp
+                .getPolicyTotalGasUsage(policy, from, to, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Updates a policy object.
-         * @param {string} id 
-         * @param {string} [name] 
-         * @param {number} [chainId] 
-         * @param {Strategy} [strategy] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} [name]
+         * @param {number} [chainId]
+         * @param {Strategy} [strategy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicy(id: string, name?: string, chainId?: number, strategy?: Strategy, project?: string, options?: any): AxiosPromise<PolicyResponse> {
-            return localVarFp.updatePolicy(id, name, chainId, strategy, project, options).then((request) => request(axios, basePath));
+        updatePolicy(
+            id: string,
+            name?: string,
+            chainId?: number,
+            strategy?: Strategy,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<PolicyResponse> {
+            return localVarFp
+                .updatePolicy(id, name, chainId, strategy, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} policy 
-         * @param {string} id 
-         * @param {string} [type] 
-         * @param {string} [functionName] 
-         * @param {string} [policy2] 
-         * @param {string} [project] 
-         * @param {string} [contract] 
+         *
+         * @param {string} policy
+         * @param {string} id
+         * @param {string} [type]
+         * @param {string} [functionName]
+         * @param {string} [policy2]
+         * @param {string} [project]
+         * @param {string} [contract]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicyAllowFunction(policy: string, id: string, type?: string, functionName?: string, policy2?: string, project?: string, contract?: string, options?: any): AxiosPromise<AllowFunctionResponse> {
-            return localVarFp.updatePolicyAllowFunction(policy, id, type, functionName, policy2, project, contract, options).then((request) => request(axios, basePath));
+        updatePolicyAllowFunction(
+            policy: string,
+            id: string,
+            type?: string,
+            functionName?: string,
+            policy2?: string,
+            project?: string,
+            contract?: string,
+            options?: any,
+        ): AxiosPromise<AllowFunctionResponse> {
+            return localVarFp
+                .updatePolicyAllowFunction(policy, id, type, functionName, policy2, project, contract, options)
+                .then((request) => request(axios, basePath));
         },
     };
 };
@@ -3758,127 +4436,173 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
 export class PoliciesApi extends BaseAPI {
     /**
      * Create a policy object.
-     * @param {string} name 
-     * @param {number} chainId 
-     * @param {Strategy} [strategy] 
-     * @param {string} [project] 
+     * @param {string} name
+     * @param {number} chainId
+     * @param {Strategy} [strategy]
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public createPolicy(name: string, chainId: number, strategy?: Strategy, project?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).createPolicy(name, chainId, strategy, project, options).then((request) => request(this.axios, this.basePath));
+    public createPolicy(
+        name: string,
+        chainId: number,
+        strategy?: Strategy,
+        project?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return PoliciesApiFp(this.configuration)
+            .createPolicy(name, chainId, strategy, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} policy 
-     * @param {string} type 
-     * @param {string} [functionName] 
-     * @param {string} [project] 
-     * @param {string} [contract] 
+     *
+     * @param {string} policy
+     * @param {string} type
+     * @param {string} [functionName]
+     * @param {string} [project]
+     * @param {string} [contract]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public createPolicyAllowFunction(policy: string, type: string, functionName?: string, project?: string, contract?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).createPolicyAllowFunction(policy, type, functionName, project, contract, options).then((request) => request(this.axios, this.basePath));
+    public createPolicyAllowFunction(
+        policy: string,
+        type: string,
+        functionName?: string,
+        project?: string,
+        contract?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return PoliciesApiFp(this.configuration)
+            .createPolicyAllowFunction(policy, type, functionName, project, contract, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} [project] 
+     *
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
     public getPolicies(project?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicies(project, options).then((request) => request(this.axios, this.basePath));
+        return PoliciesApiFp(this.configuration)
+            .getPolicies(project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} id 
-     * @param {string} [project] 
+     *
+     * @param {string} id
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
     public getPolicy(id: string, project?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicy(id, project, options).then((request) => request(this.axios, this.basePath));
+        return PoliciesApiFp(this.configuration)
+            .getPolicy(id, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} policy 
-     * @param {string} [project] 
+     *
+     * @param {string} policy
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
     public getPolicyAllowFunctions(policy: string, project?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyAllowFunctions(policy, project, options).then((request) => request(this.axios, this.basePath));
+        return PoliciesApiFp(this.configuration)
+            .getPolicyAllowFunctions(policy, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} policy 
-     * @param {string} [from] 
-     * @param {string} [to] 
+     *
+     * @param {string} policy
+     * @param {string} [from]
+     * @param {string} [to]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
     public getPolicyDailyGasUsage(policy: string, from?: string, to?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyDailyGasUsage(policy, from, to, options).then((request) => request(this.axios, this.basePath));
+        return PoliciesApiFp(this.configuration)
+            .getPolicyDailyGasUsage(policy, from, to, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} policy 
-     * @param {string} [from] 
-     * @param {string} [to] 
+     *
+     * @param {string} policy
+     * @param {string} [from]
+     * @param {string} [to]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
     public getPolicyTotalGasUsage(policy: string, from?: string, to?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyTotalGasUsage(policy, from, to, options).then((request) => request(this.axios, this.basePath));
+        return PoliciesApiFp(this.configuration)
+            .getPolicyTotalGasUsage(policy, from, to, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Updates a policy object.
-     * @param {string} id 
-     * @param {string} [name] 
-     * @param {number} [chainId] 
-     * @param {Strategy} [strategy] 
-     * @param {string} [project] 
+     * @param {string} id
+     * @param {string} [name]
+     * @param {number} [chainId]
+     * @param {Strategy} [strategy]
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public updatePolicy(id: string, name?: string, chainId?: number, strategy?: Strategy, project?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).updatePolicy(id, name, chainId, strategy, project, options).then((request) => request(this.axios, this.basePath));
+    public updatePolicy(
+        id: string,
+        name?: string,
+        chainId?: number,
+        strategy?: Strategy,
+        project?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return PoliciesApiFp(this.configuration)
+            .updatePolicy(id, name, chainId, strategy, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} policy 
-     * @param {string} id 
-     * @param {string} [type] 
-     * @param {string} [functionName] 
-     * @param {string} [policy2] 
-     * @param {string} [project] 
-     * @param {string} [contract] 
+     *
+     * @param {string} policy
+     * @param {string} id
+     * @param {string} [type]
+     * @param {string} [functionName]
+     * @param {string} [policy2]
+     * @param {string} [project]
+     * @param {string} [contract]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public updatePolicyAllowFunction(policy: string, id: string, type?: string, functionName?: string, policy2?: string, project?: string, contract?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).updatePolicyAllowFunction(policy, id, type, functionName, policy2, project, contract, options).then((request) => request(this.axios, this.basePath));
+    public updatePolicyAllowFunction(
+        policy: string,
+        id: string,
+        type?: string,
+        functionName?: string,
+        policy2?: string,
+        project?: string,
+        contract?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return PoliciesApiFp(this.configuration)
+            .updatePolicyAllowFunction(policy, id, type, functionName, policy2, project, contract, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 }
-
 
 /**
  * ProjectsApi - axios parameter creator
@@ -3888,15 +4612,20 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * Creates a project object.
-         * @param {string} name 
-         * @param {boolean} [livemode] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {boolean} [livemode]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createProject: async (name: string, livemode?: boolean, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createProject: async (
+            name: string,
+            livemode?: boolean,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
-            assertParamExists('createProject', 'name', name)
+            assertParamExists("createProject", "name", name);
             const localVarPath = `/v1/projects`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3905,30 +4634,32 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (name !== undefined) {
+                localVarFormParams.set("name", name as any);
+            }
 
-            if (name !== undefined) { 
-                localVarFormParams.set('name', name as any);
+            if (livemode !== undefined) {
+                localVarFormParams.set("livemode", livemode as any);
             }
-    
-            if (livemode !== undefined) { 
-                localVarFormParams.set('livemode', livemode as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -3937,7 +4668,7 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         *
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3950,19 +4681,21 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             // authentication pk required
             // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+            await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3970,16 +4703,15 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} id 
+         *
+         * @param {string} id
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getProject: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getProject', 'id', id)
-            const localVarPath = `/v1/projects/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("getProject", "id", id);
+            const localVarPath = `/v1/projects/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3987,15 +4719,17 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4003,8 +4737,8 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4017,19 +4751,21 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4038,20 +4774,25 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * Updates a project object.
-         * @param {string} id 
-         * @param {string} name 
-         * @param {boolean} [livemode] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} name
+         * @param {boolean} [livemode]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateProject: async (id: string, name: string, livemode?: boolean, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateProject: async (
+            id: string,
+            name: string,
+            livemode?: boolean,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateProject', 'id', id)
+            assertParamExists("updateProject", "id", id);
             // verify required parameter 'name' is not null or undefined
-            assertParamExists('updateProject', 'name', name)
-            const localVarPath = `/v1/projects/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("updateProject", "name", name);
+            const localVarPath = `/v1/projects/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4059,30 +4800,32 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
+            if (name !== undefined) {
+                localVarFormParams.set("name", name as any);
+            }
 
-            if (name !== undefined) { 
-                localVarFormParams.set('name', name as any);
+            if (livemode !== undefined) {
+                localVarFormParams.set("livemode", livemode as any);
             }
-    
-            if (livemode !== undefined) { 
-                localVarFormParams.set('livemode', livemode as any);
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
             }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
-            }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -4090,71 +4833,96 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
                 options: localVarRequestOptions,
             };
         },
-    }
+    };
 };
 
 /**
  * ProjectsApi - functional programming interface
  * @export
  */
-export const ProjectsApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = ProjectsApiAxiosParamCreator(configuration)
+export const ProjectsApiFp = function (configuration?: Configuration) {
+    const localVarAxiosParamCreator = ProjectsApiAxiosParamCreator(configuration);
     return {
         /**
          * Creates a project object.
-         * @param {string} name 
-         * @param {boolean} [livemode] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {boolean} [livemode]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createProject(name: string, livemode?: boolean, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectResponse>> {
+        async createProject(
+            name: string,
+            livemode?: boolean,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createProject(name, livemode, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         *
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async get(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetProjectResponse>> {
+        async get(
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetProjectResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.get(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} id 
+         *
+         * @param {string} id
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProject(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectResponse>> {
+        async getProject(
+            id: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getProject(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjects(project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectsResponse>> {
+        async getProjects(
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectsResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Updates a project object.
-         * @param {string} id 
-         * @param {string} name 
-         * @param {boolean} [livemode] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} name
+         * @param {boolean} [livemode]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateProject(id: string, name: string, livemode?: boolean, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateProject(id, name, livemode, project, options);
+        async updateProject(
+            id: string,
+            name: string,
+            livemode?: boolean,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateProject(
+                id,
+                name,
+                livemode,
+                project,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-    }
+    };
 };
 
 /**
@@ -4162,21 +4930,28 @@ export const ProjectsApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const ProjectsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = ProjectsApiFp(configuration)
+    const localVarFp = ProjectsApiFp(configuration);
     return {
         /**
          * Creates a project object.
-         * @param {string} name 
-         * @param {boolean} [livemode] 
-         * @param {string} [project] 
+         * @param {string} name
+         * @param {boolean} [livemode]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createProject(name: string, livemode?: boolean, project?: string, options?: any): AxiosPromise<ProjectResponse> {
-            return localVarFp.createProject(name, livemode, project, options).then((request) => request(axios, basePath));
+        createProject(
+            name: string,
+            livemode?: boolean,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<ProjectResponse> {
+            return localVarFp
+                .createProject(name, livemode, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
-         * 
+         *
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4184,8 +4959,8 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.get(options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} id 
+         *
+         * @param {string} id
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4193,8 +4968,8 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getProject(id, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4203,15 +4978,23 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * Updates a project object.
-         * @param {string} id 
-         * @param {string} name 
-         * @param {boolean} [livemode] 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} name
+         * @param {boolean} [livemode]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateProject(id: string, name: string, livemode?: boolean, project?: string, options?: any): AxiosPromise<ProjectResponse> {
-            return localVarFp.updateProject(id, name, livemode, project, options).then((request) => request(axios, basePath));
+        updateProject(
+            id: string,
+            name: string,
+            livemode?: boolean,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<ProjectResponse> {
+            return localVarFp
+                .updateProject(id, name, livemode, project, options)
+                .then((request) => request(axios, basePath));
         },
     };
 };
@@ -4225,64 +5008,73 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
 export class ProjectsApi extends BaseAPI {
     /**
      * Creates a project object.
-     * @param {string} name 
-     * @param {boolean} [livemode] 
-     * @param {string} [project] 
+     * @param {string} name
+     * @param {boolean} [livemode]
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProjectsApi
      */
     public createProject(name: string, livemode?: boolean, project?: string, options?: AxiosRequestConfig) {
-        return ProjectsApiFp(this.configuration).createProject(name, livemode, project, options).then((request) => request(this.axios, this.basePath));
+        return ProjectsApiFp(this.configuration)
+            .createProject(name, livemode, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
+     *
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProjectsApi
      */
     public get(options?: AxiosRequestConfig) {
-        return ProjectsApiFp(this.configuration).get(options).then((request) => request(this.axios, this.basePath));
+        return ProjectsApiFp(this.configuration)
+            .get(options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} id 
+     *
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProjectsApi
      */
     public getProject(id: string, options?: AxiosRequestConfig) {
-        return ProjectsApiFp(this.configuration).getProject(id, options).then((request) => request(this.axios, this.basePath));
+        return ProjectsApiFp(this.configuration)
+            .getProject(id, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} [project] 
+     *
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProjectsApi
      */
     public getProjects(project?: string, options?: AxiosRequestConfig) {
-        return ProjectsApiFp(this.configuration).getProjects(project, options).then((request) => request(this.axios, this.basePath));
+        return ProjectsApiFp(this.configuration)
+            .getProjects(project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Updates a project object.
-     * @param {string} id 
-     * @param {string} name 
-     * @param {boolean} [livemode] 
-     * @param {string} [project] 
+     * @param {string} id
+     * @param {string} name
+     * @param {boolean} [livemode]
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProjectsApi
      */
     public updateProject(id: string, name: string, livemode?: boolean, project?: string, options?: AxiosRequestConfig) {
-        return ProjectsApiFp(this.configuration).updateProject(id, name, livemode, project, options).then((request) => request(this.axios, this.basePath));
+        return ProjectsApiFp(this.configuration)
+            .updateProject(id, name, livemode, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 }
-
 
 /**
  * SessionsApi - axios parameter creator
@@ -4292,28 +5084,38 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * Creates the session for the player.
-         * @param {string} player 
-         * @param {string} address 
-         * @param {number} chainId 
-         * @param {number} validUntil 
-         * @param {number} validAfter 
-         * @param {string} [policy] 
-         * @param {Array<string>} [whitelist] 
-         * @param {number} [limit] 
+         * @param {string} player
+         * @param {string} address
+         * @param {number} chainId
+         * @param {number} validUntil
+         * @param {number} validAfter
+         * @param {string} [policy]
+         * @param {Array<string>} [whitelist]
+         * @param {number} [limit]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSession: async (player: string, address: string, chainId: number, validUntil: number, validAfter: number, policy?: string, whitelist?: Array<string>, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createSession: async (
+            player: string,
+            address: string,
+            chainId: number,
+            validUntil: number,
+            validAfter: number,
+            policy?: string,
+            whitelist?: Array<string>,
+            limit?: number,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
-            assertParamExists('createSession', 'player', player)
+            assertParamExists("createSession", "player", player);
             // verify required parameter 'address' is not null or undefined
-            assertParamExists('createSession', 'address', address)
+            assertParamExists("createSession", "address", address);
             // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('createSession', 'chainId', chainId)
+            assertParamExists("createSession", "chainId", chainId);
             // verify required parameter 'validUntil' is not null or undefined
-            assertParamExists('createSession', 'validUntil', validUntil)
+            assertParamExists("createSession", "validUntil", validUntil);
             // verify required parameter 'validAfter' is not null or undefined
-            assertParamExists('createSession', 'validAfter', validAfter)
+            assertParamExists("createSession", "validAfter", validAfter);
             const localVarPath = `/v1/sessions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4322,50 +5124,51 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
-
-            if (player !== undefined) { 
-                localVarFormParams.set('player', player as any);
-            }
-    
-            if (policy !== undefined) { 
-                localVarFormParams.set('policy', policy as any);
-            }
-    
-            if (address !== undefined) { 
-                localVarFormParams.set('address', address as any);
-            }
-    
-            if (chainId !== undefined) { 
-                localVarFormParams.set('chain_id', chainId as any);
-            }
-    
-            if (validUntil !== undefined) { 
-                localVarFormParams.set('valid_until', validUntil as any);
-            }
-    
-            if (validAfter !== undefined) { 
-                localVarFormParams.set('valid_after', validAfter as any);
-            }
-                if (whitelist) {
-                localVarFormParams.set('whitelist', whitelist.join(COLLECTION_FORMATS.csv));
+            if (player !== undefined) {
+                localVarFormParams.set("player", player as any);
             }
 
-    
-            if (limit !== undefined) { 
-                localVarFormParams.set('limit', limit as any);
+            if (policy !== undefined) {
+                localVarFormParams.set("policy", policy as any);
             }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            if (address !== undefined) {
+                localVarFormParams.set("address", address as any);
+            }
+
+            if (chainId !== undefined) {
+                localVarFormParams.set("chain_id", chainId as any);
+            }
+
+            if (validUntil !== undefined) {
+                localVarFormParams.set("valid_until", validUntil as any);
+            }
+
+            if (validAfter !== undefined) {
+                localVarFormParams.set("valid_after", validAfter as any);
+            }
+            if (whitelist) {
+                localVarFormParams.set("whitelist", whitelist.join(COLLECTION_FORMATS.csv));
+            }
+
+            if (limit !== undefined) {
+                localVarFormParams.set("limit", limit as any);
+            }
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -4375,18 +5178,24 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * Confirms the creation of a session with an external owner.
-         * @param {string} session 
-         * @param {string} signature 
+         * @param {string} session
+         * @param {string} signature
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signatureSession: async (session: string, signature: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        signatureSession: async (
+            session: string,
+            signature: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'session' is not null or undefined
-            assertParamExists('signatureSession', 'session', session)
+            assertParamExists("signatureSession", "session", session);
             // verify required parameter 'signature' is not null or undefined
-            assertParamExists('signatureSession', 'signature', signature)
-            const localVarPath = `/v1/sessions/{session}/signature`
-                .replace(`{${"session"}}`, encodeURIComponent(String(session)));
+            assertParamExists("signatureSession", "signature", signature);
+            const localVarPath = `/v1/sessions/{session}/signature`.replace(
+                `{${"session"}}`,
+                encodeURIComponent(String(session)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4394,26 +5203,28 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
             // authentication pk required
             // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+            await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-
-            if (signature !== undefined) { 
-                localVarFormParams.set('signature', signature as any);
+            if (signature !== undefined) {
+                localVarFormParams.set("signature", signature as any);
             }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -4421,45 +5232,69 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
                 options: localVarRequestOptions,
             };
         },
-    }
+    };
 };
 
 /**
  * SessionsApi - functional programming interface
  * @export
  */
-export const SessionsApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = SessionsApiAxiosParamCreator(configuration)
+export const SessionsApiFp = function (configuration?: Configuration) {
+    const localVarAxiosParamCreator = SessionsApiAxiosParamCreator(configuration);
     return {
         /**
          * Creates the session for the player.
-         * @param {string} player 
-         * @param {string} address 
-         * @param {number} chainId 
-         * @param {number} validUntil 
-         * @param {number} validAfter 
-         * @param {string} [policy] 
-         * @param {Array<string>} [whitelist] 
-         * @param {number} [limit] 
+         * @param {string} player
+         * @param {string} address
+         * @param {number} chainId
+         * @param {number} validUntil
+         * @param {number} validAfter
+         * @param {string} [policy]
+         * @param {Array<string>} [whitelist]
+         * @param {number} [limit]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createSession(player: string, address: string, chainId: number, validUntil: number, validAfter: number, policy?: string, whitelist?: Array<string>, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options);
+        async createSession(
+            player: string,
+            address: string,
+            chainId: number,
+            validUntil: number,
+            validAfter: number,
+            policy?: string,
+            whitelist?: Array<string>,
+            limit?: number,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSession(
+                player,
+                address,
+                chainId,
+                validUntil,
+                validAfter,
+                policy,
+                whitelist,
+                limit,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Confirms the creation of a session with an external owner.
-         * @param {string} session 
-         * @param {string} signature 
+         * @param {string} session
+         * @param {string} signature
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signatureSession(session: string, signature: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
+        async signatureSession(
+            session: string,
+            signature: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signatureSession(session, signature, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-    }
+    };
 };
 
 /**
@@ -4467,28 +5302,40 @@ export const SessionsApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const SessionsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = SessionsApiFp(configuration)
+    const localVarFp = SessionsApiFp(configuration);
     return {
         /**
          * Creates the session for the player.
-         * @param {string} player 
-         * @param {string} address 
-         * @param {number} chainId 
-         * @param {number} validUntil 
-         * @param {number} validAfter 
-         * @param {string} [policy] 
-         * @param {Array<string>} [whitelist] 
-         * @param {number} [limit] 
+         * @param {string} player
+         * @param {string} address
+         * @param {number} chainId
+         * @param {number} validUntil
+         * @param {number} validAfter
+         * @param {string} [policy]
+         * @param {Array<string>} [whitelist]
+         * @param {number} [limit]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSession(player: string, address: string, chainId: number, validUntil: number, validAfter: number, policy?: string, whitelist?: Array<string>, limit?: number, options?: any): AxiosPromise<SessionResponse> {
-            return localVarFp.createSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options).then((request) => request(axios, basePath));
+        createSession(
+            player: string,
+            address: string,
+            chainId: number,
+            validUntil: number,
+            validAfter: number,
+            policy?: string,
+            whitelist?: Array<string>,
+            limit?: number,
+            options?: any,
+        ): AxiosPromise<SessionResponse> {
+            return localVarFp
+                .createSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Confirms the creation of a session with an external owner.
-         * @param {string} session 
-         * @param {string} signature 
+         * @param {string} session
+         * @param {string} signature
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4507,35 +5354,48 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
 export class SessionsApi extends BaseAPI {
     /**
      * Creates the session for the player.
-     * @param {string} player 
-     * @param {string} address 
-     * @param {number} chainId 
-     * @param {number} validUntil 
-     * @param {number} validAfter 
-     * @param {string} [policy] 
-     * @param {Array<string>} [whitelist] 
-     * @param {number} [limit] 
+     * @param {string} player
+     * @param {string} address
+     * @param {number} chainId
+     * @param {number} validUntil
+     * @param {number} validAfter
+     * @param {string} [policy]
+     * @param {Array<string>} [whitelist]
+     * @param {number} [limit]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof SessionsApi
      */
-    public createSession(player: string, address: string, chainId: number, validUntil: number, validAfter: number, policy?: string, whitelist?: Array<string>, limit?: number, options?: AxiosRequestConfig) {
-        return SessionsApiFp(this.configuration).createSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options).then((request) => request(this.axios, this.basePath));
+    public createSession(
+        player: string,
+        address: string,
+        chainId: number,
+        validUntil: number,
+        validAfter: number,
+        policy?: string,
+        whitelist?: Array<string>,
+        limit?: number,
+        options?: AxiosRequestConfig,
+    ) {
+        return SessionsApiFp(this.configuration)
+            .createSession(player, address, chainId, validUntil, validAfter, policy, whitelist, limit, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Confirms the creation of a session with an external owner.
-     * @param {string} session 
-     * @param {string} signature 
+     * @param {string} session
+     * @param {string} signature
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof SessionsApi
      */
     public signatureSession(session: string, signature: string, options?: AxiosRequestConfig) {
-        return SessionsApiFp(this.configuration).signatureSession(session, signature, options).then((request) => request(this.axios, this.basePath));
+        return SessionsApiFp(this.configuration)
+            .signatureSession(session, signature, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 }
-
 
 /**
  * TransactionIntentsApi - axios parameter creator
@@ -4545,24 +5405,32 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
     return {
         /**
          * Creates a transaction intent object.
-         * @param {string} player 
-         * @param {number} chainId 
-         * @param {boolean} optimistic 
-         * @param {Array<Interaction>} interactions 
-         * @param {string} [policy] 
-         * @param {string} [project] 
+         * @param {string} player
+         * @param {number} chainId
+         * @param {boolean} optimistic
+         * @param {Array<Interaction>} interactions
+         * @param {string} [policy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createTransactionIntent: async (player: string, chainId: number, optimistic: boolean, interactions: Array<Interaction>, policy?: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createTransactionIntent: async (
+            player: string,
+            chainId: number,
+            optimistic: boolean,
+            interactions: Array<Interaction>,
+            policy?: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
-            assertParamExists('createTransactionIntent', 'player', player)
+            assertParamExists("createTransactionIntent", "player", player);
             // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('createTransactionIntent', 'chainId', chainId)
+            assertParamExists("createTransactionIntent", "chainId", chainId);
             // verify required parameter 'optimistic' is not null or undefined
-            assertParamExists('createTransactionIntent', 'optimistic', optimistic)
+            assertParamExists("createTransactionIntent", "optimistic", optimistic);
             // verify required parameter 'interactions' is not null or undefined
-            assertParamExists('createTransactionIntent', 'interactions', interactions)
+            assertParamExists("createTransactionIntent", "interactions", interactions);
             const localVarPath = `/v1/transaction_intents`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4571,42 +5439,43 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
-
-            if (player !== undefined) { 
-                localVarFormParams.set('player', player as any);
-            }
-    
-            if (chainId !== undefined) { 
-                localVarFormParams.set('chain_id', chainId as any);
-            }
-    
-            if (policy !== undefined) { 
-                localVarFormParams.set('policy', policy as any);
-            }
-    
-            if (project !== undefined) { 
-                localVarFormParams.set('project', project as any);
-            }
-    
-            if (optimistic !== undefined) { 
-                localVarFormParams.set('optimistic', optimistic as any);
-            }
-                if (interactions) {
-                localVarFormParams.set('interactions', interactions.join(COLLECTION_FORMATS.csv));
+            if (player !== undefined) {
+                localVarFormParams.set("player", player as any);
             }
 
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+            if (chainId !== undefined) {
+                localVarFormParams.set("chain_id", chainId as any);
+            }
+
+            if (policy !== undefined) {
+                localVarFormParams.set("policy", policy as any);
+            }
+
+            if (project !== undefined) {
+                localVarFormParams.set("project", project as any);
+            }
+
+            if (optimistic !== undefined) {
+                localVarFormParams.set("optimistic", optimistic as any);
+            }
+            if (interactions) {
+                localVarFormParams.set("interactions", interactions.join(COLLECTION_FORMATS.csv));
+            }
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -4616,16 +5485,19 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * Updates a transaction intent object.
-         * @param {string} id 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntent: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getTransactionIntent: async (
+            id: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getTransactionIntent', 'id', id)
-            const localVarPath = `/v1/transaction_intents/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("getTransactionIntent", "id", id);
+            const localVarPath = `/v1/transaction_intents/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4633,19 +5505,21 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4653,16 +5527,23 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             };
         },
         /**
-         * 
-         * @param {string} [project] 
-         * @param {string} [filter] 
-         * @param {string} [order] 
-         * @param {number} [skip] 
-         * @param {number} [take] 
+         *
+         * @param {string} [project]
+         * @param {string} [filter]
+         * @param {string} [order]
+         * @param {number} [skip]
+         * @param {number} [take]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntents: async (project?: string, filter?: string, order?: string, skip?: number, take?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getTransactionIntents: async (
+            project?: string,
+            filter?: string,
+            order?: string,
+            skip?: number,
+            take?: number,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             const localVarPath = `/v1/transaction_intents`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4671,35 +5552,37 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "GET", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
             if (filter !== undefined) {
-                localVarQueryParameter['filter'] = filter;
+                localVarQueryParameter["filter"] = filter;
             }
 
             if (order !== undefined) {
-                localVarQueryParameter['order'] = order;
+                localVarQueryParameter["order"] = order;
             }
 
             if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
+                localVarQueryParameter["skip"] = skip;
             }
 
             if (take !== undefined) {
-                localVarQueryParameter['take'] = take;
+                localVarQueryParameter["take"] = take;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4708,18 +5591,24 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * Confirms the creation of a transaction intent with an external owner.
-         * @param {string} transactionIntent 
-         * @param {string} signature 
+         * @param {string} transactionIntent
+         * @param {string} signature
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signature: async (transactionIntent: string, signature: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        signature: async (
+            transactionIntent: string,
+            signature: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'transactionIntent' is not null or undefined
-            assertParamExists('signature', 'transactionIntent', transactionIntent)
+            assertParamExists("signature", "transactionIntent", transactionIntent);
             // verify required parameter 'signature' is not null or undefined
-            assertParamExists('signature', 'signature', signature)
-            const localVarPath = `/v1/transaction_intents/{transaction_intent}/signature`
-                .replace(`{${"transaction_intent"}}`, encodeURIComponent(String(transactionIntent)));
+            assertParamExists("signature", "signature", signature);
+            const localVarPath = `/v1/transaction_intents/{transaction_intent}/signature`.replace(
+                `{${"transaction_intent"}}`,
+                encodeURIComponent(String(transactionIntent)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4727,26 +5616,28 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "POST", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new URLSearchParams();
 
             // authentication pk required
             // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+            await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-
-            if (signature !== undefined) { 
-                localVarFormParams.set('signature', signature as any);
+            if (signature !== undefined) {
+                localVarFormParams.set("signature", signature as any);
             }
-    
-    
-            localVarHeaderParameter['Content-Type'] = 'application/x-www-form-urlencoded';
-    
+
+            localVarHeaderParameter["Content-Type"] = "application/x-www-form-urlencoded";
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
             localVarRequestOptions.data = localVarFormParams.toString();
 
             return {
@@ -4755,17 +5646,23 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             };
         },
         /**
-         * 
-         * @param {string} id 
-         * @param {string} [project] 
+         *
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTransactionIntentResponse: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateTransactionIntentResponse: async (
+            id: string,
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateTransactionIntentResponse', 'id', id)
-            const localVarPath = `/v1/transaction_intents/{id}/update_response`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            assertParamExists("updateTransactionIntentResponse", "id", id);
+            const localVarPath = `/v1/transaction_intents/{id}/update_response`.replace(
+                `{${"id"}}`,
+                encodeURIComponent(String(id)),
+            );
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4773,19 +5670,21 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "PUT", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4793,12 +5692,15 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             };
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTransactionIntentsResponse: async (project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateTransactionIntentsResponse: async (
+            project?: string,
+            options: AxiosRequestConfig = {},
+        ): Promise<RequestArgs> => {
             const localVarPath = `/v1/transaction_intents/update_response`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4807,135 +5709,203 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = {method: "PUT", ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
             if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
+                localVarQueryParameter["project"] = project;
             }
 
-
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {
+                ...localVarHeaderParameter,
+                ...headersFromBaseOptions,
+                ...options.headers,
+            };
 
             return {
                 url: toPathString(localVarUrlObj),
                 options: localVarRequestOptions,
             };
         },
-    }
+    };
 };
 
 /**
  * TransactionIntentsApi - functional programming interface
  * @export
  */
-export const TransactionIntentsApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = TransactionIntentsApiAxiosParamCreator(configuration)
+export const TransactionIntentsApiFp = function (configuration?: Configuration) {
+    const localVarAxiosParamCreator = TransactionIntentsApiAxiosParamCreator(configuration);
     return {
         /**
          * Creates a transaction intent object.
-         * @param {string} player 
-         * @param {number} chainId 
-         * @param {boolean} optimistic 
-         * @param {Array<Interaction>} interactions 
-         * @param {string} [policy] 
-         * @param {string} [project] 
+         * @param {string} player
+         * @param {number} chainId
+         * @param {boolean} optimistic
+         * @param {Array<Interaction>} interactions
+         * @param {string} [policy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createTransactionIntent(player: string, chainId: number, optimistic: boolean, interactions: Array<Interaction>, policy?: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createTransactionIntent(player, chainId, optimistic, interactions, policy, project, options);
+        async createTransactionIntent(
+            player: string,
+            chainId: number,
+            optimistic: boolean,
+            interactions: Array<Interaction>,
+            policy?: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createTransactionIntent(
+                player,
+                chainId,
+                optimistic,
+                interactions,
+                policy,
+                project,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Updates a transaction intent object.
-         * @param {string} id 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTransactionIntent(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
+        async getTransactionIntent(
+            id: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntent(id, project, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} [project] 
-         * @param {string} [filter] 
-         * @param {string} [order] 
-         * @param {number} [skip] 
-         * @param {number} [take] 
+         *
+         * @param {string} [project]
+         * @param {string} [filter]
+         * @param {string} [order]
+         * @param {number} [skip]
+         * @param {number} [take]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTransactionIntents(project?: string, filter?: string, order?: string, skip?: number, take?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntents(project, filter, order, skip, take, options);
+        async getTransactionIntents(
+            project?: string,
+            filter?: string,
+            order?: string,
+            skip?: number,
+            take?: number,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntents(
+                project,
+                filter,
+                order,
+                skip,
+                take,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Confirms the creation of a transaction intent with an external owner.
-         * @param {string} transactionIntent 
-         * @param {string} signature 
+         * @param {string} transactionIntent
+         * @param {string} signature
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signature(transactionIntent: string, signature: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
+        async signature(
+            transactionIntent: string,
+            signature: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signature(transactionIntent, signature, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} id 
-         * @param {string} [project] 
+         *
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateTransactionIntentResponse(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTransactionIntentResponse(id, project, options);
+        async updateTransactionIntentResponse(
+            id: string,
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTransactionIntentResponse(
+                id,
+                project,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateTransactionIntentsResponse(project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTransactionIntentsResponse(project, options);
+        async updateTransactionIntentsResponse(
+            project?: string,
+            options?: AxiosRequestConfig,
+        ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTransactionIntentsResponse(
+                project,
+                options,
+            );
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-    }
+    };
 };
 
 /**
  * TransactionIntentsApi - factory interface
  * @export
  */
-export const TransactionIntentsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = TransactionIntentsApiFp(configuration)
+export const TransactionIntentsApiFactory = function (
+    configuration?: Configuration,
+    basePath?: string,
+    axios?: AxiosInstance,
+) {
+    const localVarFp = TransactionIntentsApiFp(configuration);
     return {
         /**
          * Creates a transaction intent object.
-         * @param {string} player 
-         * @param {number} chainId 
-         * @param {boolean} optimistic 
-         * @param {Array<Interaction>} interactions 
-         * @param {string} [policy] 
-         * @param {string} [project] 
+         * @param {string} player
+         * @param {number} chainId
+         * @param {boolean} optimistic
+         * @param {Array<Interaction>} interactions
+         * @param {string} [policy]
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createTransactionIntent(player: string, chainId: number, optimistic: boolean, interactions: Array<Interaction>, policy?: string, project?: string, options?: any): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.createTransactionIntent(player, chainId, optimistic, interactions, policy, project, options).then((request) => request(axios, basePath));
+        createTransactionIntent(
+            player: string,
+            chainId: number,
+            optimistic: boolean,
+            interactions: Array<Interaction>,
+            policy?: string,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<TransactionIntentResponse> {
+            return localVarFp
+                .createTransactionIntent(player, chainId, optimistic, interactions, policy, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Updates a transaction intent object.
-         * @param {string} id 
-         * @param {string} [project] 
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -4943,46 +5913,69 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
             return localVarFp.getTransactionIntent(id, project, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} [project] 
-         * @param {string} [filter] 
-         * @param {string} [order] 
-         * @param {number} [skip] 
-         * @param {number} [take] 
+         *
+         * @param {string} [project]
+         * @param {string} [filter]
+         * @param {string} [order]
+         * @param {number} [skip]
+         * @param {number} [take]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntents(project?: string, filter?: string, order?: string, skip?: number, take?: number, options?: any): AxiosPromise<TransactionIntentsResponse> {
-            return localVarFp.getTransactionIntents(project, filter, order, skip, take, options).then((request) => request(axios, basePath));
+        getTransactionIntents(
+            project?: string,
+            filter?: string,
+            order?: string,
+            skip?: number,
+            take?: number,
+            options?: any,
+        ): AxiosPromise<TransactionIntentsResponse> {
+            return localVarFp
+                .getTransactionIntents(project, filter, order, skip, take, options)
+                .then((request) => request(axios, basePath));
         },
         /**
          * Confirms the creation of a transaction intent with an external owner.
-         * @param {string} transactionIntent 
-         * @param {string} signature 
+         * @param {string} transactionIntent
+         * @param {string} signature
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signature(transactionIntent: string, signature: string, options?: any): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.signature(transactionIntent, signature, options).then((request) => request(axios, basePath));
+        signature(
+            transactionIntent: string,
+            signature: string,
+            options?: any,
+        ): AxiosPromise<TransactionIntentResponse> {
+            return localVarFp
+                .signature(transactionIntent, signature, options)
+                .then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} id 
-         * @param {string} [project] 
+         *
+         * @param {string} id
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTransactionIntentResponse(id: string, project?: string, options?: any): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.updateTransactionIntentResponse(id, project, options).then((request) => request(axios, basePath));
+        updateTransactionIntentResponse(
+            id: string,
+            project?: string,
+            options?: any,
+        ): AxiosPromise<TransactionIntentResponse> {
+            return localVarFp
+                .updateTransactionIntentResponse(id, project, options)
+                .then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {string} [project] 
+         *
+         * @param {string} [project]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         updateTransactionIntentsResponse(project?: string, options?: any): AxiosPromise<TransactionIntentsResponse> {
-            return localVarFp.updateTransactionIntentsResponse(project, options).then((request) => request(axios, basePath));
+            return localVarFp
+                .updateTransactionIntentsResponse(project, options)
+                .then((request) => request(axios, basePath));
         },
     };
 };
@@ -4996,81 +5989,106 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
 export class TransactionIntentsApi extends BaseAPI {
     /**
      * Creates a transaction intent object.
-     * @param {string} player 
-     * @param {number} chainId 
-     * @param {boolean} optimistic 
-     * @param {Array<Interaction>} interactions 
-     * @param {string} [policy] 
-     * @param {string} [project] 
+     * @param {string} player
+     * @param {number} chainId
+     * @param {boolean} optimistic
+     * @param {Array<Interaction>} interactions
+     * @param {string} [policy]
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
-    public createTransactionIntent(player: string, chainId: number, optimistic: boolean, interactions: Array<Interaction>, policy?: string, project?: string, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).createTransactionIntent(player, chainId, optimistic, interactions, policy, project, options).then((request) => request(this.axios, this.basePath));
+    public createTransactionIntent(
+        player: string,
+        chainId: number,
+        optimistic: boolean,
+        interactions: Array<Interaction>,
+        policy?: string,
+        project?: string,
+        options?: AxiosRequestConfig,
+    ) {
+        return TransactionIntentsApiFp(this.configuration)
+            .createTransactionIntent(player, chainId, optimistic, interactions, policy, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Updates a transaction intent object.
-     * @param {string} id 
-     * @param {string} [project] 
+     * @param {string} id
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
     public getTransactionIntent(id: string, project?: string, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).getTransactionIntent(id, project, options).then((request) => request(this.axios, this.basePath));
+        return TransactionIntentsApiFp(this.configuration)
+            .getTransactionIntent(id, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} [project] 
-     * @param {string} [filter] 
-     * @param {string} [order] 
-     * @param {number} [skip] 
-     * @param {number} [take] 
+     *
+     * @param {string} [project]
+     * @param {string} [filter]
+     * @param {string} [order]
+     * @param {number} [skip]
+     * @param {number} [take]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
-    public getTransactionIntents(project?: string, filter?: string, order?: string, skip?: number, take?: number, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).getTransactionIntents(project, filter, order, skip, take, options).then((request) => request(this.axios, this.basePath));
+    public getTransactionIntents(
+        project?: string,
+        filter?: string,
+        order?: string,
+        skip?: number,
+        take?: number,
+        options?: AxiosRequestConfig,
+    ) {
+        return TransactionIntentsApiFp(this.configuration)
+            .getTransactionIntents(project, filter, order, skip, take, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Confirms the creation of a transaction intent with an external owner.
-     * @param {string} transactionIntent 
-     * @param {string} signature 
+     * @param {string} transactionIntent
+     * @param {string} signature
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
     public signature(transactionIntent: string, signature: string, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).signature(transactionIntent, signature, options).then((request) => request(this.axios, this.basePath));
+        return TransactionIntentsApiFp(this.configuration)
+            .signature(transactionIntent, signature, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} id 
-     * @param {string} [project] 
+     *
+     * @param {string} id
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
     public updateTransactionIntentResponse(id: string, project?: string, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).updateTransactionIntentResponse(id, project, options).then((request) => request(this.axios, this.basePath));
+        return TransactionIntentsApiFp(this.configuration)
+            .updateTransactionIntentResponse(id, project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {string} [project] 
+     *
+     * @param {string} [project]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
     public updateTransactionIntentsResponse(project?: string, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).updateTransactionIntentsResponse(project, options).then((request) => request(this.axios, this.basePath));
+        return TransactionIntentsApiFp(this.configuration)
+            .updateTransactionIntentsResponse(project, options)
+            .then((request) => request(this.axios, this.basePath));
     }
 }
-
-

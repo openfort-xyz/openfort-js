@@ -1,20 +1,14 @@
 import {Configuration} from "./configuration";
-import {SessionsApi, TransactionIntentsApi} from "./api";
+import {SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./api";
 import {KeyPair} from "./key-pair";
 import {Hex} from "@noble/curves/abstract/utils";
-import {LocalStorage} from "./storage/local-storage";
-import {FileStorage} from "./storage/file-storage";
-import {StorageKeys} from "./storage/StorageKeys";
+import {httpErrorHandler} from "./utils/httpErrorHandler";
 
 export default class Openfort {
-    private static readonly localStorage = new LocalStorage();
-    private static readonly fileStorage = new FileStorage();
-
     private readonly _configuration: Configuration;
     private _sessionsApi?: SessionsApi;
     private _transactionsApi?: TransactionIntentsApi;
     private _keyPair?: KeyPair | null;
-    private _sessionId?: string | null;
 
     constructor(accessToken: string, basePath?: string) {
         this._configuration = new Configuration({accessToken, basePath});
@@ -46,28 +40,22 @@ export default class Openfort {
         return this._keyPair;
     }
 
-    public async loadSessionFromFile(): Promise<KeyPair | null> {
+    public async loadSessionKeyFromFile(): Promise<KeyPair | null> {
         this._keyPair = await KeyPair.loadFromFile();
-        this._sessionId = await Openfort.fileStorage.get(StorageKeys.SESSION_ID);
         return this._keyPair;
     }
 
-    public async loadSessionFromLocalStorage(): Promise<KeyPair | null> {
+    public async loadSessionKeyFromLocalStorage(): Promise<KeyPair | null> {
         this._keyPair = await KeyPair.loadFromLocalStorage();
-        this._sessionId = await Openfort.localStorage.get(StorageKeys.SESSION_ID);
         return this._keyPair;
     }
 
-    public async saveSessionToFile(sessionId: string): Promise<void> {
-        this._sessionId = sessionId;
-        await Openfort.fileStorage.save(StorageKeys.SESSION_ID, sessionId);
-        await Openfort.fileStorage.save(StorageKeys.SESSION_KEY, this.keyPair.private);
+    public async saveSessionKeyToFile(): Promise<void> {
+        return this.keyPair.saveToFile();
     }
 
-    public async saveSessionToLocalStorage(sessionId: string): Promise<void> {
-        this._sessionId = sessionId;
-        await Openfort.localStorage.save(StorageKeys.SESSION_ID, sessionId);
-        await Openfort.localStorage.save(StorageKeys.SESSION_KEY, this.keyPair.private);
+    public async saveSessionKeyToLocalStorage(): Promise<void> {
+        return this.keyPair.saveToLocalStorage();
     }
 
     public signMessage(message: Hex): string {
@@ -78,10 +66,18 @@ export default class Openfort {
         return this.keyPair.verify(signature, message);
     }
 
-    public sendSignatureSessionRequest(signature: string) {
-        if (!this._sessionId) {
-            throw new Error("Session id is not initialized");
-        }
-        return this.sessionsApi.signatureSession(this._sessionId, signature);
+    @httpErrorHandler()
+    public async sendSignatureSessionRequest(sessionId: string, signature: string): Promise<SessionResponse> {
+        const result = await this.sessionsApi.signatureSession(sessionId, signature);
+        return result.data;
+    }
+
+    @httpErrorHandler()
+    public async sendSignatureTransactionIntentRequest(
+        transactionIntentId: string,
+        signature: string,
+    ): Promise<TransactionIntentResponse> {
+        const result = await this.transactionsApi.signature(transactionIntentId, signature);
+        return result.data;
     }
 }

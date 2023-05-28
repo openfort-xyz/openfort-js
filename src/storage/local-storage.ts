@@ -1,9 +1,9 @@
-import { BaseStorage } from './base-storage';
+import {BaseStorage} from "./base-storage";
 import {StorageKeys} from "./StorageKeys";
 
 export class LocalStorage implements BaseStorage {
-    private static readonly _prefix = 'OPENFORT';
-    private static readonly _separator = '/';
+    private static readonly _prefix = "OPENFORT";
+    private static readonly _separator = "/";
 
     public constructor(private readonly name?: string) {}
 
@@ -12,10 +12,10 @@ export class LocalStorage implements BaseStorage {
     }
 
     private static get localStorage(): LocalStorageInterface {
-        if ('localStorage' in global && global.localStorage) {
+        if ("localStorage" in global && global.localStorage) {
             return global.localStorage as LocalStorageInterface;
         }
-        throw Error('Local storage is not available in the current context');
+        throw Error("Local storage is not available in the current context");
     }
 
     public async get(key: StorageKeys): Promise<string | null> {

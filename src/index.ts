@@ -1,2 +1,2 @@
-export * from './key-pair';
+export * from "./key-pair";
 export * from "./openfort";
