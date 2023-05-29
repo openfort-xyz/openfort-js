@@ -30,7 +30,9 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@ethersproject/bytes": "^5.7.0",
     "@openfort/openfort-js": "file:../src/index.ts",
-    "ethereum-cryptography": "^2.0.0"
+    "ethereum-cryptography": "^2.0.0",
+    "ethers": "^6.4.0"
   }
 }

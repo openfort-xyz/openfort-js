@@ -1,61 +1,30 @@
 import {secp256k1} from "ethereum-cryptography/secp256k1";
-import {Hex, bytesToHex} from "@noble/curves/abstract/utils";
 import {LocalStorage} from "./storage/local-storage";
 import {FileStorage} from "./storage/file-storage";
 import {BaseStorage} from "./storage/base-storage";
-import {StorageKeys} from "./storage/StorageKeys";
+import {StorageKeys} from "./storage/storage-keys";
+import {SigningKey} from "@ethersproject/signing-key";
+import {arrayify, BytesLike, joinSignature} from "@ethersproject/bytes";
+import {Hexable} from "@ethersproject/bytes/src.ts";
 
-export class KeyPair {
+export class KeyPair extends SigningKey {
     private static readonly localStorage = new LocalStorage();
     private static readonly fileStorage = new FileStorage();
-
-    private readonly publicKey: string;
 
     /**
      * Initialize keypair based on the private key, if it is provided or generate a brand new keypair.
      * @param privateKey Optional parameter to initialize private key from
      */
-    public constructor(private readonly privateKey: string = bytesToHex(secp256k1.utils.randomPrivateKey())) {
-        this.publicKey = bytesToHex(secp256k1.getPublicKey(this.privateKey));
+    public constructor(privateKey: BytesLike = secp256k1.utils.randomPrivateKey()) {
+        super(privateKey);
     }
-
-    /**
-     * Returns the hex representation of the private jey
-     */
-    public get private(): string {
-        return this.privateKey;
-    }
-
-    // public get privateHex(): string {
-    //     return bytesToHex(this.private);
-    // }
-
-    /**
-     * Returns the hex representation of the public key
-     */
-    public get public(): string {
-        return this.publicKey;
-    }
-    //
-    // public get publicHex(): string {
-    //     return bytesToHex(this.public);
-    // }
 
     /**
      * Sign the message with the private key
      * @param message Message to sign
      */
-    public sign(message: Hex): string {
-        return secp256k1.sign(message, this.privateKey).toCompactHex();
-    }
-
-    /**
-     * Verify the signature with the public key
-     * @param signature Signed message to verify
-     * @param message Original message
-     */
-    public verify(signature: string, message: Hex): boolean {
-        return secp256k1.verify(signature, message, this.public);
+    public sign(message: BytesLike | Hexable | number): string {
+        return joinSignature(this.signDigest(arrayify(message, {allowMissingPrefix: true})));
     }
 
     /**
@@ -86,7 +55,7 @@ export class KeyPair {
      */
     public static async loadFromStorage(storage: BaseStorage): Promise<KeyPair | null> {
         const privateKey = await storage.get(StorageKeys.SESSION_KEY);
-        return privateKey ? new KeyPair(privateKey) : null;
+        return privateKey ? new KeyPair(arrayify(privateKey)) : null;
     }
 
     /**

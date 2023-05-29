@@ -1,8 +1,9 @@
 import {Configuration} from "./configuration";
 import {SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./api";
 import {KeyPair} from "./key-pair";
-import {Hex} from "@noble/curves/abstract/utils";
-import {httpErrorHandler} from "./utils/httpErrorHandler";
+import {httpErrorHandler} from "./utils/http-error-handler";
+import {BytesLike} from "@ethersproject/bytes";
+import {Hexable} from "@ethersproject/bytes/src.ts";
 
 export default class Openfort {
     private readonly _configuration: Configuration;
@@ -58,12 +59,8 @@ export default class Openfort {
         return this.keyPair.saveToLocalStorage();
     }
 
-    public signMessage(message: Hex): string {
+    public signMessage(message: BytesLike | Hexable | number): string {
         return this.keyPair.sign(message);
-    }
-
-    public verifySignature(signature: string, message: Hex): boolean {
-        return this.keyPair.verify(signature, message);
     }
 
     @httpErrorHandler()

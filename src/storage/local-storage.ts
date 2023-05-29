@@ -1,5 +1,5 @@
 import {BaseStorage} from "./base-storage";
-import {StorageKeys} from "./StorageKeys";
+import {StorageKeys} from "./storage-keys";
 
 export class LocalStorage implements BaseStorage {
     private static readonly _prefix = "OPENFORT";

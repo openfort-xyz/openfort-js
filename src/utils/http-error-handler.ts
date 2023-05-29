@@ -2,7 +2,7 @@ import {AxiosError} from "axios";
 
 function parseAndPrepareHttpError<T>(error: T): Error | T {
     if (error instanceof AxiosError && error.response?.data?.error?.message) {
-        throw Error(error.response?.data?.error?.message);
+        throw new Error(error.response?.data?.error?.message);
     }
     throw error;
 }

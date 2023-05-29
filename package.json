@@ -1,6 +1,6 @@
 {
   "name": "@openfort/openfort-js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "author": "",
   "repository": {
@@ -31,6 +31,8 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@ethersproject/bytes": "^5.7.0",
+    "@ethersproject/signing-key": "^5.7.0",
     "axios": "^1.4.0",
     "es6-promise": "^4.2.8",
     "ethereum-cryptography": "^2.0.0",

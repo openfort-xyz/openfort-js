@@ -1,4 +1,4 @@
-import {StorageKeys} from "./StorageKeys";
+import {StorageKeys} from "./storage-keys";
 
 export interface BaseStorage {
     get(key: StorageKeys): Promise<string | null>;
