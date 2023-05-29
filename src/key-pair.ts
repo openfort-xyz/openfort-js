@@ -4,8 +4,8 @@ import {FileStorage} from "./storage/file-storage";
 import {BaseStorage} from "./storage/base-storage";
 import {StorageKeys} from "./storage/storage-keys";
 import {SigningKey} from "@ethersproject/signing-key";
-import {arrayify, BytesLike, joinSignature} from "@ethersproject/bytes";
-import {Hexable} from "@ethersproject/bytes/src.ts";
+import {arrayify, Bytes, BytesLike, joinSignature} from "@ethersproject/bytes";
+import {hashMessage} from "@ethersproject/hash";
 
 export class KeyPair extends SigningKey {
     private static readonly localStorage = new LocalStorage();
@@ -23,8 +23,8 @@ export class KeyPair extends SigningKey {
      * Sign the message with the private key
      * @param message Message to sign
      */
-    public sign(message: BytesLike | Hexable | number): string {
-        return joinSignature(this.signDigest(arrayify(message, {allowMissingPrefix: true})));
+    public sign(message: Bytes | string): string {
+        return joinSignature(this.signDigest(hashMessage(message)));
     }
 
     /**

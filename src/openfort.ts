@@ -2,8 +2,7 @@ import {Configuration} from "./configuration";
 import {SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./api";
 import {KeyPair} from "./key-pair";
 import {httpErrorHandler} from "./utils/http-error-handler";
-import {BytesLike} from "@ethersproject/bytes";
-import {Hexable} from "@ethersproject/bytes/src.ts";
+import {Bytes} from "@ethersproject/bytes";
 
 export default class Openfort {
     private readonly _configuration: Configuration;
@@ -59,7 +58,7 @@ export default class Openfort {
         return this.keyPair.saveToLocalStorage();
     }
 
-    public signMessage(message: BytesLike | Hexable | number): string {
+    public signMessage(message: Bytes | string): string {
         return this.keyPair.sign(message);
     }
 
