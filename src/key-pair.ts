@@ -8,8 +8,7 @@ import {arrayify, Bytes, BytesLike, joinSignature} from "@ethersproject/bytes";
 import {hashMessage} from "@ethersproject/hash";
 
 export class KeyPair extends SigningKey {
-    private static readonly localStorage = new LocalStorage();
-    private static readonly fileStorage = new FileStorage();
+    private static readonly storage = LocalStorage.isAvailable ? new LocalStorage() : new FileStorage();
 
     /**
      * Initialize keypair based on the private key, if it is provided or generate a brand new keypair.
@@ -28,47 +27,17 @@ export class KeyPair extends SigningKey {
     }
 
     /**
-     * Save to the storage provided in the parameter of the function
-     * @param storage The implementation of BaseStorage interface to store and load
+     * Save to the storage initialized as a static property of the KeyPair class
      */
-    public async saveToStorage(storage: BaseStorage): Promise<void> {
-        await storage.save(StorageKeys.SESSION_KEY, this.privateKey);
+    public async save(): Promise<void> {
+        await KeyPair.storage.save(StorageKeys.SESSION_KEY, this.privateKey);
     }
 
     /**
-     * Save the generated key to the local storage
+     * Load private key from the storage and generate keypair based on it.
      */
-    public async saveToLocalStorage(): Promise<void> {
-        await this.saveToStorage(KeyPair.localStorage);
-    }
-
-    /**
-     * Save the generated key to the json file in the local file system
-     */
-    public async saveToFile(): Promise<void> {
-        await this.saveToStorage(KeyPair.fileStorage);
-    }
-
-    /**
-     * Load private key from the json file in the local file system and generate keypair based on it.
-     * @param storage The implementation of BaseStorage interface to store and load
-     */
-    public static async loadFromStorage(storage: BaseStorage): Promise<KeyPair | null> {
-        const privateKey = await storage.get(StorageKeys.SESSION_KEY);
+    public static async load(): Promise<KeyPair | null> {
+        const privateKey = await KeyPair.storage.get(StorageKeys.SESSION_KEY);
         return privateKey ? new KeyPair(arrayify(privateKey)) : null;
-    }
-
-    /**
-     * Load private key from the local storage and generate keypair based on it.
-     */
-    public static async loadFromLocalStorage(): Promise<KeyPair | null> {
-        return KeyPair.loadFromStorage(KeyPair.localStorage);
-    }
-
-    /**
-     * Load private key from the json file in the local file system and generate keypair based on it.
-     */
-    public static async loadFromFile(): Promise<KeyPair | null> {
-        return KeyPair.loadFromStorage(KeyPair.fileStorage);
     }
 }

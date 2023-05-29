@@ -7,12 +7,16 @@ export class LocalStorage implements BaseStorage {
 
     public constructor(private readonly name?: string) {}
 
+    public static get isAvailable(): boolean {
+        return "localStorage" in global && !!global.localStorage;
+    }
+
     private formatKey(key: StorageKeys): string {
         return [LocalStorage._prefix, this.name, key].filter((n) => n).join(LocalStorage._separator);
     }
 
     private static get localStorage(): LocalStorageInterface {
-        if ("localStorage" in global && global.localStorage) {
+        if (LocalStorage.isAvailable) {
             return global.localStorage as LocalStorageInterface;
         }
         throw Error("Local storage is not available in the current context");

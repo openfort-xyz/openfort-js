@@ -3,10 +3,10 @@ import {getRandomBytesSync} from "ethereum-cryptography/random";
 
 async function example(): Promise<void> {
     const openfort = new Openfort("pk_test_a6508438-48d2-4af9-a557-51b638800a14", "http://localhost:3002");
-    if (!(await openfort.loadSessionKeyFromFile())) {
+    if (!(await openfort.loadSessionKey())) {
         openfort.createSessionKey();
         // TODO: call server to authenticate user and register session
-        await openfort.saveSessionKeyToFile();
+        await openfort.saveSessionKey();
     }
 
     // TODO: replace the message

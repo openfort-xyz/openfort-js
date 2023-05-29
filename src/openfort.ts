@@ -40,22 +40,13 @@ export default class Openfort {
         return this._keyPair;
     }
 
-    public async loadSessionKeyFromFile(): Promise<KeyPair | null> {
-        this._keyPair = await KeyPair.loadFromFile();
+    public async loadSessionKey(): Promise<KeyPair | null> {
+        this._keyPair = await KeyPair.load();
         return this._keyPair;
     }
 
-    public async loadSessionKeyFromLocalStorage(): Promise<KeyPair | null> {
-        this._keyPair = await KeyPair.loadFromLocalStorage();
-        return this._keyPair;
-    }
-
-    public async saveSessionKeyToFile(): Promise<void> {
-        return this.keyPair.saveToFile();
-    }
-
-    public async saveSessionKeyToLocalStorage(): Promise<void> {
-        return this.keyPair.saveToLocalStorage();
+    public async saveSessionKey(): Promise<void> {
+        return this.keyPair.save();
     }
 
     public signMessage(message: Bytes | string): string {
