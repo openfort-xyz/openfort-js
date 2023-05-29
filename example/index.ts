@@ -1,4 +1,4 @@
-import Openfort from "../src";
+import Openfort from "@openfort/openfort-js";
 import {getRandomBytesSync} from "ethereum-cryptography/random";
 
 async function example(): Promise<void> {
