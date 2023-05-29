@@ -13,7 +13,8 @@ async function example(): Promise<void> {
     const message = getRandomBytesSync(32);
     const signature = openfort.signMessage(message);
     const sessionId = "ses";
-    console.log(signature);
+    console.log(`Signature: ${signature}`);
+    console.log(`Address: ${openfort.sessionKey.address}`);
 
     const response = await openfort.sendSignatureSessionRequest(sessionId, signature);
     console.dir(response);

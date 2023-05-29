@@ -8,17 +8,17 @@ export default class Openfort {
     private readonly _configuration: Configuration;
     private _sessionsApi?: SessionsApi;
     private _transactionsApi?: TransactionIntentsApi;
-    private _keyPair?: KeyPair | null;
+    private _sessionKey?: KeyPair | null;
 
     constructor(accessToken: string, basePath?: string) {
         this._configuration = new Configuration({accessToken, basePath});
     }
 
-    public get keyPair(): KeyPair {
-        if (!this._keyPair) {
+    public get sessionKey(): KeyPair {
+        if (!this._sessionKey) {
             throw new Error("Session key is not initialized");
         }
-        return this._keyPair;
+        return this._sessionKey;
     }
 
     protected get sessionsApi(): SessionsApi {
@@ -36,21 +36,21 @@ export default class Openfort {
     }
 
     public createSessionKey(): KeyPair {
-        this._keyPair = new KeyPair();
-        return this._keyPair;
+        this._sessionKey = new KeyPair();
+        return this._sessionKey;
     }
 
     public async loadSessionKey(): Promise<KeyPair | null> {
-        this._keyPair = await KeyPair.load();
-        return this._keyPair;
+        this._sessionKey = await KeyPair.load();
+        return this._sessionKey;
     }
 
     public async saveSessionKey(): Promise<void> {
-        return this.keyPair.save();
+        return this.sessionKey.save();
     }
 
     public signMessage(message: Bytes | string): string {
-        return this.keyPair.sign(message);
+        return this.sessionKey.sign(message);
     }
 
     @httpErrorHandler()

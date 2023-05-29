@@ -1,10 +1,10 @@
 import {secp256k1} from "ethereum-cryptography/secp256k1";
 import {LocalStorage} from "./storage/local-storage";
 import {FileStorage} from "./storage/file-storage";
-import {BaseStorage} from "./storage/base-storage";
 import {StorageKeys} from "./storage/storage-keys";
 import {SigningKey} from "@ethersproject/signing-key";
 import {arrayify, Bytes, BytesLike, joinSignature} from "@ethersproject/bytes";
+import {computeAddress} from "@ethersproject/transactions"
 import {hashMessage} from "@ethersproject/hash";
 
 export class KeyPair extends SigningKey {
@@ -39,5 +39,12 @@ export class KeyPair extends SigningKey {
     public static async load(): Promise<KeyPair | null> {
         const privateKey = await KeyPair.storage.get(StorageKeys.SESSION_KEY);
         return privateKey ? new KeyPair(arrayify(privateKey)) : null;
+    }
+
+    /**
+     * Return the address for the keypair
+     */
+    public get address(): string {
+        return computeAddress(this.privateKey);
     }
 }
