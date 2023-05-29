@@ -1,6 +1,5 @@
 import {secp256k1} from "ethereum-cryptography/secp256k1";
 import {LocalStorage} from "./storage/local-storage";
-import {FileStorage} from "./storage/file-storage";
 import {StorageKeys} from "./storage/storage-keys";
 import {SigningKey} from "@ethersproject/signing-key";
 import {arrayify, Bytes, BytesLike, joinSignature} from "@ethersproject/bytes";
@@ -8,7 +7,7 @@ import {computeAddress} from "@ethersproject/transactions"
 import {hashMessage} from "@ethersproject/hash";
 
 export class KeyPair extends SigningKey {
-    private static readonly storage = LocalStorage.isAvailable ? new LocalStorage() : new FileStorage();
+    private static readonly storage = new LocalStorage();
 
     /**
      * Initialize keypair based on the private key, if it is provided or generate a brand new keypair.
