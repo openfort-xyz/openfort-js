@@ -1,6 +1,5 @@
 import {BaseStorage} from "./base-storage";
 import {resolve} from "path";
-import {readFile, writeFile} from "fs/promises";
 import {StorageKeys} from "./storage-keys";
 
 export class FileStorage implements BaseStorage {
@@ -30,7 +29,8 @@ export class FileStorage implements BaseStorage {
     }
 
     private async readJsonFile(): Promise<any | null> {
-        const content = await readFile(this.filePath, {encoding: "utf-8"});
+        const {readFile} = await import("fs/promises");
+        const content = await readFile(this.filePath, 'utf-8');
         return content ? JSON.parse(content) : null;
     }
 
@@ -44,6 +44,7 @@ export class FileStorage implements BaseStorage {
 
     private async writeJsonFile(data: any): Promise<void> {
         const content = JSON.stringify(data);
+        const {writeFile} = await import("fs/promises");
         await writeFile(this.filePath, content);
     }
 }
