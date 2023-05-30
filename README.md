@@ -74,7 +74,7 @@ await openfort.sendSignatureTransactionIntentRequest(
 - [Next.js application with non-custodial signer](https://github.com/openfort-xyz/samples/tree/main/rainbow-ssv-nextjs)
 - [Next.js application with custodial signer and social login](https://github.com/openfort-xyz/samples/tree/main/ssv-social-nextjs)
 
-[next-action]: [https://dashboard.openfort.xyz/api-keys](https://www.openfort.xyz/docs/api/transaction_intents#the-transaction-intent-object)
+[next-action]: https://www.openfort.xyz/docs/api/transaction_intents#the-transaction-intent-object
 
 <!--
 # vim: set tw=79:
