@@ -48,7 +48,7 @@ const address = openfort.sessionKey.address
 
 #### Register the session key using a non-custodial signer
 
-If the Openfort account is owned by an external signer, the owner must use it to sign and approve the registration of the session key. The hash containing the message to be signed appears in [next_actions][next-action]. 
+If the Openfort account is owned by an external signer, the owner must use it to sign and approve the registration of the session key. The hash containing the message to be signed appears in [next_actions][next-action] from the create session request.
 
 ```typescript
 // Sign the message with the signer
@@ -60,7 +60,7 @@ await openfort.sendSignatureSessionRequest(
 
 ### Use the session key to sign a message
 
-[next_actions][next-action]
+The hash containing the message to be signed appears in [next_actions][next-action] from the create transactionIntent request.
 
 ```typescript
 await openfort.signMessage(message);
@@ -74,7 +74,7 @@ await openfort.sendSignatureTransactionIntentRequest(
 - [Next.js application with non-custodial signer](https://github.com/openfort-xyz/samples/tree/main/rainbow-ssv-nextjs)
 - [Next.js application with custodial signer and social login](https://github.com/openfort-xyz/samples/tree/main/ssv-social-nextjs)
 
-
+[next_actions]: [https://dashboard.openfort.xyz/api-keys](https://www.openfort.xyz/docs/api/transaction_intents#the-transaction-intent-object)
 
 <!--
 # vim: set tw=79:
