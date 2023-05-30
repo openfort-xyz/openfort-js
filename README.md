@@ -22,7 +22,7 @@ value:
 
 ```js
 import Openfort from '@openfort/openfort-js';
-const openfort = new Openfort('sk_test_...');
+const openfort = new Openfort('pk_test_...');
 ```
 
 ### Create and store a new player session key
