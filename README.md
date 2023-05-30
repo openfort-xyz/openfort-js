@@ -1,33 +1,81 @@
-# openfort-typescript-client
+# Openfort.js Library
 
-## Registration of the player session
-1. Create a key pair for the player:
-```typescript
-const playerKey = new KeyPair();
-```
+[![Version](https://img.shields.io/npm/v/stripe.svg)](https://www.npmjs.org/package/@openfort/openfort-js)
 
-2. Authorize player with the game backend service and pass public key to the `openfortClient.players.createSession` api method
+The Openfort js library provides convinient access to handle client session keys and return signed messages back to Openfort from applications written in client-side JavaScript.
 
-3. Save private key. You can use local storage, file storage or any other type of storaged 
-```typescript
-await keyPair.saveToLocalStorage();
-```
-```typescript
-await keyPair.saveToFile();
-```
-```typescript
-await KeyPair.saveToStorage(customeStorageImplementation);
+## Installation
+
+```shell
+npm install @openfort/openfort-js
 ```
 
-4. Use the private key to communicate with openfort api.
+```shell
+yarn add @openfort/openfort-js
+```
 
-5. To the future use one of the load methods to load key pair. Depends on the solution, that was chosen in the step 4.
-```typescript
-const playerKey = await KeyPair.loadFromLocalStorage();
+## Usage
+
+The package needs to be configured with your account's public key, which is
+available in the [Openfort Dashboard][api-keys]. Require it with the key's
+value:
+
+```js
+import Openfort from '@openfort/openfort-js';
+const openfort = new Openfort('sk_test_...');
 ```
+
+### Create and store a new player session key
+
+1. Create a session key pair for the player:
+
 ```typescript
-const playerKey = await KeyPair.loadFromFile();
+openfort.createSessionKey();
 ```
+
+2. Save the generated session key pair on device:
+
 ```typescript
-const playerKey = await KeyPair.loadFromStorage(customeStorageImplementation);
+openfort.saveSessionKey();
 ```
+
+3. Authorize player with the game backend service and passing the address of the session key pair:
+
+```typescript
+const address = openfort.sessionKey.address
+// API call to the game backend with the address to register it
+```
+
+#### Register the session key using a non-custodial signer
+
+If the Openfort account is owned by an external signer, the owner must use it to sign and approve the registration of the session key. The hash containing the message to be signed appears in [next_actions][next-action]. 
+
+```typescript
+// Sign the message with the signer
+await openfort.sendSignatureSessionRequest(
+  session_id,
+  signed_message
+);
+```
+
+### Use the session key to sign a message
+
+[next_actions][next-action]
+
+```typescript
+await openfort.signMessage(message);
+await openfort.sendSignatureTransactionIntentRequest(
+    transactionIntent_id,
+    signed_message
+);
+```
+
+## Usage examples
+- [Next.js application with non-custodial signer]([https://stripe.com/docs/stripe-js](https://github.com/openfort-xyz/samples/tree/main/rainbow-ssv-nextjs))
+- [Next.js application with custodial signer and social login]([https://stripe.com/docs/stripe-js](https://github.com/openfort-xyz/samples/tree/main/ssv-social-nextjs))
+
+
+
+<!--
+# vim: set tw=79:
+-->
