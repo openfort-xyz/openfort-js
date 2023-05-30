@@ -71,8 +71,8 @@ await openfort.sendSignatureTransactionIntentRequest(
 ```
 
 ## Usage examples
-- [Next.js application with non-custodial signer]([https://stripe.com/docs/stripe-js](https://github.com/openfort-xyz/samples/tree/main/rainbow-ssv-nextjs))
-- [Next.js application with custodial signer and social login]([https://stripe.com/docs/stripe-js](https://github.com/openfort-xyz/samples/tree/main/ssv-social-nextjs))
+- [Next.js application with non-custodial signer](https://github.com/openfort-xyz/samples/tree/main/rainbow-ssv-nextjs)
+- [Next.js application with custodial signer and social login](https://github.com/openfort-xyz/samples/tree/main/ssv-social-nextjs)
 
 
 
