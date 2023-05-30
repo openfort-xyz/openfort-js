@@ -22,7 +22,7 @@ export class KeyPair extends SigningKey {
      * @param message Message to sign
      */
     public sign(message: Bytes | string): string {
-        return joinSignature(this.signDigest(hashMessage(message)));
+        return joinSignature(this.signDigest(hashMessage(arrayify(message))));
     }
 
     /**
