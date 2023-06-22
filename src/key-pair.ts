@@ -3,7 +3,7 @@ import {LocalStorage} from "./storage/local-storage";
 import {StorageKeys} from "./storage/storage-keys";
 import {SigningKey} from "@ethersproject/signing-key";
 import {arrayify, Bytes, BytesLike, joinSignature} from "@ethersproject/bytes";
-import {computeAddress} from "@ethersproject/transactions"
+import {computeAddress} from "@ethersproject/transactions";
 import {hashMessage} from "@ethersproject/hash";
 
 export class KeyPair extends SigningKey {
@@ -30,6 +30,13 @@ export class KeyPair extends SigningKey {
      */
     public async save(): Promise<void> {
         await KeyPair.storage.save(StorageKeys.SESSION_KEY, this.privateKey);
+    }
+
+    /**
+     * Remove the keypair from the storage
+     */
+    public async remove(): Promise<void> {
+        await KeyPair.storage.remove(StorageKeys.SESSION_KEY);
     }
 
     /**

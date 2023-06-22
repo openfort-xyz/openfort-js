@@ -49,6 +49,10 @@ export default class Openfort {
         return this.sessionKey.save();
     }
 
+    public async removeSessionKey(): Promise<void> {
+        return this.sessionKey.remove();
+    }
+
     public signMessage(message: Bytes | string): string {
         return this.sessionKey.sign(message);
     }
