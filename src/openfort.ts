@@ -1,5 +1,5 @@
-import {Configuration} from "./configuration";
-import {SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./api";
+import {Configuration} from "./generated/configuration";
+import {SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./generated/api";
 import {KeyPair} from "./key-pair";
 import {httpErrorHandler} from "./utils/http-error-handler";
 import {Bytes} from "@ethersproject/bytes";
@@ -59,7 +59,7 @@ export default class Openfort {
 
     @httpErrorHandler()
     public async sendSignatureSessionRequest(sessionId: string, signature: string): Promise<SessionResponse> {
-        const result = await this.sessionsApi.signatureSession(sessionId, signature);
+        const result = await this.sessionsApi.signatureSession(sessionId, {signature});
         return result.data;
     }
 
@@ -68,7 +68,7 @@ export default class Openfort {
         transactionIntentId: string,
         signature: string,
     ): Promise<TransactionIntentResponse> {
-        const result = await this.transactionsApi.signature(transactionIntentId, signature);
+        const result = await this.transactionsApi.signature(transactionIntentId, {signature});
         return result.data;
     }
 }
