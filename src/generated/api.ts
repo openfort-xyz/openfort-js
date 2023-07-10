@@ -30,12 +30,6 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
  */
 export interface AccountPlayerRequest {
     /**
-     * The project ID
-     * @type {string}
-     * @memberof AccountPlayerRequest
-     */
-    'project'?: string;
-    /**
      * The chain_id
      * @type {number}
      * @memberof AccountPlayerRequest
@@ -54,12 +48,6 @@ export interface AccountPlayerRequest {
  * @interface AccountRequest
  */
 export interface AccountRequest {
-    /**
-     * The project ID
-     * @type {string}
-     * @memberof AccountRequest
-     */
-    'project'?: string;
     /**
      * The chain_id
      * @type {number}
@@ -216,10 +204,10 @@ export interface AssetInventory {
     'token_id'?: number;
     /**
      * amount in Wei
-     * @type {number}
+     * @type {string}
      * @memberof AssetInventory
      */
-    'amount'?: number;
+    'amount'?: string;
 }
 
 
@@ -287,7 +275,7 @@ export interface ContractRequest {
      * @type {string}
      * @memberof ContractRequest
      */
-    'address'?: string;
+    'address': string;
     /**
      * 
      * @type {PrismaJsonValue}
@@ -300,12 +288,6 @@ export interface ContractRequest {
      * @memberof ContractRequest
      */
     'public_verification'?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof ContractRequest
-     */
-    'project'?: string;
 }
 /**
  * 
@@ -390,6 +372,25 @@ export interface ContractsResponse {
 /**
  * 
  * @export
+ * @interface CreatePlayerRequest
+ */
+export interface CreatePlayerRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePlayerRequest
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePlayerRequest
+     */
+    'description'?: string;
+}
+/**
+ * 
+ * @export
  * @interface CreateSessionPlayerRequest
  */
 export interface CreateSessionPlayerRequest {
@@ -405,6 +406,12 @@ export interface CreateSessionPlayerRequest {
      * @memberof CreateSessionPlayerRequest
      */
     'policy'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CreateSessionPlayerRequest
+     */
+    'optimistic'?: boolean;
     /**
      * 
      * @type {string}
@@ -460,6 +467,12 @@ export interface CreateSessionRequest {
      * @memberof CreateSessionRequest
      */
     'policy'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CreateSessionRequest
+     */
+    'optimistic'?: boolean;
     /**
      * 
      * @type {string}
@@ -531,31 +544,6 @@ export interface Gas {
 /**
  * 
  * @export
- * @interface GetProjectResponse
- */
-export interface GetProjectResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof GetProjectResponse
-     */
-    'id': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetProjectResponse
-     */
-    'name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetProjectResponse
-     */
-    'logo_url'?: string | null;
-}
-/**
- * 
- * @export
  * @interface Interaction
  */
 export interface Interaction {
@@ -570,11 +558,48 @@ export interface Interaction {
      * @type {string}
      * @memberof Interaction
      */
+    'value'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof Interaction
+     */
     'function_name': string;
     /**
      * 
      * @type {Array<any>}
      * @memberof Interaction
+     */
+    'function_args': Array<any>;
+}
+/**
+ * 
+ * @export
+ * @interface InteractionResponse
+ */
+export interface InteractionResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof InteractionResponse
+     */
+    'contract': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof InteractionResponse
+     */
+    'value'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof InteractionResponse
+     */
+    'function_name': string;
+    /**
+     * 
+     * @type {Array<any>}
+     * @memberof InteractionResponse
      */
     'function_args': Array<any>;
 }
@@ -608,6 +633,13 @@ export interface InventoryResponse {
      * @memberof InventoryResponse
      */
     'token_assets'?: Array<AssetInventory>;
+}
+/**
+ * From https://github.com/sindresorhus/type-fest/ Matches any valid JSON value.
+ * @export
+ * @interface JsonValue
+ */
+export interface JsonValue {
 }
 /**
  * 
@@ -659,6 +691,21 @@ export interface Log {
     'response_data': any;
 }
 /**
+ * Enums
+ * @export
+ * @enum {string}
+ */
+
+export const PKLocation = {
+    Db: 'DB',
+    GcpKms: 'GCP_KMS',
+    User: 'USER'
+} as const;
+
+export type PKLocation = typeof PKLocation[keyof typeof PKLocation];
+
+
+/**
  * 
  * @export
  * @enum {string}
@@ -690,12 +737,6 @@ export interface PlayerRequest {
      * @memberof PlayerRequest
      */
     'description'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayerRequest
-     */
-    'project'?: string;
 }
 /**
  * 
@@ -727,12 +768,6 @@ export interface PlayerResponse {
      * @memberof PlayerResponse
      */
     'name': string | null;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PlayerResponse
-     */
-    'livemode': boolean;
     /**
      * 
      * @type {string}
@@ -777,12 +812,6 @@ export interface PlayerResponseAccounts {
  * @interface PlayerTransferOwnershipRequest
  */
 export interface PlayerTransferOwnershipRequest {
-    /**
-     * The project ID
-     * @type {string}
-     * @memberof PlayerTransferOwnershipRequest
-     */
-    'project'?: string;
     /**
      * The policy ID
      * @type {string}
@@ -881,12 +910,6 @@ export interface PolicyAllowFunctionRequest {
      * @type {string}
      * @memberof PolicyAllowFunctionRequest
      */
-    'project'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyAllowFunctionRequest
-     */
     'contract': string | null;
 }
 
@@ -940,12 +963,6 @@ export interface PolicyRequest {
      * @memberof PolicyRequest
      */
     'strategy'?: Strategy;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRequest
-     */
-    'project'?: string;
 }
 /**
  * 
@@ -1065,12 +1082,6 @@ export interface PolicyRuleRequest {
      * @memberof PolicyRuleRequest
      */
     'policy': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRuleRequest
-     */
-    'project'?: string;
     /**
      * 
      * @type {string}
@@ -1209,12 +1220,6 @@ export interface PolicyRuleUpdateRequest {
      * @type {string}
      * @memberof PolicyRuleUpdateRequest
      */
-    'project'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRuleUpdateRequest
-     */
     'contract': string | null;
 }
 
@@ -1282,12 +1287,6 @@ export interface PolicyUpdateRequest {
      * @memberof PolicyUpdateRequest
      */
     'strategy'?: Strategy;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyUpdateRequest
-     */
-    'project'?: string;
 }
 /**
  * From https://github.com/sindresorhus/type-fest/ Matches any valid JSON value.
@@ -1335,29 +1334,19 @@ export interface ProjectRequest {
     'name': string;
     /**
      * 
-     * @type {boolean}
+     * @type {PKPolicy}
      * @memberof ProjectRequest
      */
-    'livemode'?: boolean;
+    'pk_policy'?: PKPolicy;
     /**
      * 
-     * @type {string}
+     * @type {PKLocation}
      * @memberof ProjectRequest
      */
-    'project'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProjectRequest
-     */
-    'pk_policy'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProjectRequest
-     */
-    'pk_location'?: string;
+    'pk_location'?: PKLocation;
 }
+
+
 /**
  * 
  * @export
@@ -1393,7 +1382,7 @@ export interface ProjectResponse {
      * @type {string}
      * @memberof ProjectResponse
      */
-    'name': string | null;
+    'name': string;
     /**
      * 
      * @type {PKPolicy}
@@ -1402,32 +1391,13 @@ export interface ProjectResponse {
     'pk_policy': PKPolicy;
     /**
      * 
-     * @type {boolean}
+     * @type {Array<ApiKeyResponse>}
      * @memberof ProjectResponse
      */
-    'livemode': boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProjectResponse
-     */
-    'logo_url'?: string | null;
-    /**
-     * 
-     * @type {ProjectResponseApikeys}
-     * @memberof ProjectResponse
-     */
-    'apikeys': ProjectResponseApikeys | null;
+    'apikeys'?: Array<ApiKeyResponse>;
 }
 
 
-/**
- * 
- * @export
- * @interface ProjectResponseApikeys
- */
-export interface ProjectResponseApikeys {
-}
 /**
  * 
  * @export
@@ -1491,10 +1461,10 @@ export interface ResponseResponse {
     'status'?: number | null;
     /**
      * 
-     * @type {PrismaJsonValue}
+     * @type {JsonValue}
      * @memberof ResponseResponse
      */
-    'logs'?: PrismaJsonValue | null;
+    'logs'?: JsonValue | null;
     /**
      * 
      * @type {string}
@@ -1503,10 +1473,10 @@ export interface ResponseResponse {
     'to'?: string | null;
     /**
      * 
-     * @type {PrismaJsonValue}
+     * @type {JsonValue}
      * @memberof ResponseResponse
      */
-    'error'?: PrismaJsonValue | null;
+    'error'?: JsonValue | null;
 }
 /**
  * 
@@ -1526,6 +1496,12 @@ export interface RevokeSessionPlayerRequest {
      * @memberof RevokeSessionPlayerRequest
      */
     'policy'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof RevokeSessionPlayerRequest
+     */
+    'optimistic'?: boolean;
     /**
      * 
      * @type {number}
@@ -1551,6 +1527,12 @@ export interface RevokeSessionRequest {
      * @memberof RevokeSessionRequest
      */
     'chain_id': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof RevokeSessionRequest
+     */
+    'optimistic'?: boolean;
     /**
      * 
      * @type {string}
@@ -1678,6 +1660,56 @@ export interface SessionsResponse {
 /**
  * 
  * @export
+ * @interface SignPayloadRequest
+ */
+export interface SignPayloadRequest {
+    /**
+     * Payload to sign
+     * @type {string}
+     * @memberof SignPayloadRequest
+     */
+    'payload': string;
+}
+/**
+ * 
+ * @export
+ * @interface SignPayloadResponse
+ */
+export interface SignPayloadResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof SignPayloadResponse
+     */
+    'object': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignPayloadResponse
+     */
+    'account': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignPayloadResponse
+     */
+    'address': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignPayloadResponse
+     */
+    'payload': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignPayloadResponse
+     */
+    'signature': string;
+}
+/**
+ * 
+ * @export
  * @interface SignatureRequest
  */
 export interface SignatureRequest {
@@ -1687,6 +1719,12 @@ export interface SignatureRequest {
      * @memberof SignatureRequest
      */
     'signature': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SignatureRequest
+     */
+    'optimistic'?: boolean;
 }
 /**
  * 
@@ -1784,12 +1822,6 @@ export interface TransactionIntentRequest {
     'external_owner_address'?: string;
     /**
      * 
-     * @type {string}
-     * @memberof TransactionIntentRequest
-     */
-    'project'?: string;
-    /**
-     * 
      * @type {boolean}
      * @memberof TransactionIntentRequest
      */
@@ -1845,10 +1877,10 @@ export interface TransactionIntentResponse {
     'user_operation_hash': string | null;
     /**
      * 
-     * @type {PrismaJsonValue}
+     * @type {JsonValue}
      * @memberof TransactionIntentResponse
      */
-    'user_operation'?: PrismaJsonValue | null;
+    'user_operation'?: JsonValue | null;
     /**
      * 
      * @type {TransactionIntentResponsePolicy}
@@ -1875,10 +1907,10 @@ export interface TransactionIntentResponse {
     'account'?: TransactionIntentResponseAccount;
     /**
      * 
-     * @type {Array<Interaction>}
+     * @type {Array<InteractionResponse>}
      * @memberof TransactionIntentResponse
      */
-    'interactions': Array<Interaction> | null;
+    'interactions': Array<InteractionResponse> | null;
     /**
      * 
      * @type {ResponseResponse}
@@ -1971,12 +2003,6 @@ export interface TransactionIntentResponsePlayer {
      * @memberof TransactionIntentResponsePlayer
      */
     'name': string | null;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof TransactionIntentResponsePlayer
-     */
-    'livemode': boolean;
     /**
      * 
      * @type {string}
@@ -2095,12 +2121,6 @@ export interface TransactionIntentsResponse {
  */
 export interface TransferOwnershipRequest {
     /**
-     * The project ID
-     * @type {string}
-     * @memberof TransferOwnershipRequest
-     */
-    'project'?: string;
-    /**
      * The address of the new owner
      * @type {string}
      * @memberof TransferOwnershipRequest
@@ -2159,11 +2179,10 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
          * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @param {string} id Specifies the unique account ID.
          * @param {Array<string>} [expand] whether to expand the response or not
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccount: async (id: string, expand?: Array<string>, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccount: async (id: string, expand?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getAccount', 'id', id)
             const localVarPath = `/v1/accounts/{id}`
@@ -2183,10 +2202,6 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
                 localVarQueryParameter['expand'] = expand;
             }
 
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
-
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -2201,11 +2216,10 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * Retrieves the inventory of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @param {string} id Specifies the unique account ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountInventory: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountInventory: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getAccountInventory', 'id', id)
             const localVarPath = `/v1/accounts/{id}/inventory`
@@ -2220,10 +2234,6 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
 
 
     
@@ -2241,11 +2251,10 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {string} player Specifies the unique player ID.
          * @param {Array<string>} [expand] whether to expand the response or not
          * @param {number} [limit] amount of results per query
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccounts: async (player: string, expand?: Array<string>, limit?: number, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccounts: async (player: string, expand?: Array<string>, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
             assertParamExists('getAccounts', 'player', player)
             const localVarPath = `/v1/accounts`;
@@ -2272,15 +2281,50 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
                 localVarQueryParameter['limit'] = limit;
             }
 
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
-
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Sign a given payload
+         * @param {string} id Specifies the unique account ID.
+         * @param {SignPayloadRequest} signPayloadRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signPayload: async (id: string, signPayloadRequest: SignPayloadRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('signPayload', 'id', id)
+            // verify required parameter 'signPayloadRequest' is not null or undefined
+            assertParamExists('signPayload', 'signPayloadRequest', signPayloadRequest)
+            const localVarPath = `/v1/accounts/{id}/sign-payload`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(signPayloadRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2350,23 +2394,21 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @param {string} id Specifies the unique account ID.
          * @param {Array<string>} [expand] whether to expand the response or not
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccount(id: string, expand?: Array<string>, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccount(id, expand, project, options);
+        async getAccount(id: string, expand?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccount(id, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Retrieves the inventory of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @param {string} id Specifies the unique account ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountInventory(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountInventory(id, project, options);
+        async getAccountInventory(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountInventory(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -2374,12 +2416,22 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {string} player Specifies the unique player ID.
          * @param {Array<string>} [expand] whether to expand the response or not
          * @param {number} [limit] amount of results per query
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccounts(player: string, expand?: Array<string>, limit?: number, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccounts(player, expand, limit, project, options);
+        async getAccounts(player: string, expand?: Array<string>, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccounts(player, expand, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Sign a given payload
+         * @param {string} id Specifies the unique account ID.
+         * @param {SignPayloadRequest} signPayloadRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async signPayload(id: string, signPayloadRequest: SignPayloadRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignPayloadResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signPayload(id, signPayloadRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -2416,34 +2468,41 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @param {string} id Specifies the unique account ID.
          * @param {Array<string>} [expand] whether to expand the response or not
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccount(id: string, expand?: Array<string>, project?: string, options?: any): AxiosPromise<AccountResponse> {
-            return localVarFp.getAccount(id, expand, project, options).then((request) => request(axios, basePath));
+        getAccount(id: string, expand?: Array<string>, options?: any): AxiosPromise<AccountResponse> {
+            return localVarFp.getAccount(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves the inventory of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @param {string} id Specifies the unique account ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountInventory(id: string, project?: string, options?: any): AxiosPromise<InventoryResponse> {
-            return localVarFp.getAccountInventory(id, project, options).then((request) => request(axios, basePath));
+        getAccountInventory(id: string, options?: any): AxiosPromise<InventoryResponse> {
+            return localVarFp.getAccountInventory(id, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {string} player Specifies the unique player ID.
          * @param {Array<string>} [expand] whether to expand the response or not
          * @param {number} [limit] amount of results per query
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccounts(player: string, expand?: Array<string>, limit?: number, project?: string, options?: any): AxiosPromise<AccountsResponse> {
-            return localVarFp.getAccounts(player, expand, limit, project, options).then((request) => request(axios, basePath));
+        getAccounts(player: string, expand?: Array<string>, limit?: number, options?: any): AxiosPromise<AccountsResponse> {
+            return localVarFp.getAccounts(player, expand, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Sign a given payload
+         * @param {string} id Specifies the unique account ID.
+         * @param {SignPayloadRequest} signPayloadRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signPayload(id: string, signPayloadRequest: SignPayloadRequest, options?: any): AxiosPromise<SignPayloadResponse> {
+            return localVarFp.signPayload(id, signPayloadRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Request the ownership transfer of an account to a given address.
@@ -2480,25 +2539,23 @@ export class AccountsApi extends BaseAPI {
      * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
      * @param {string} id Specifies the unique account ID.
      * @param {Array<string>} [expand] whether to expand the response or not
-     * @param {string} [project] Specifies the unique project ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountsApi
      */
-    public getAccount(id: string, expand?: Array<string>, project?: string, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).getAccount(id, expand, project, options).then((request) => request(this.axios, this.basePath));
+    public getAccount(id: string, expand?: Array<string>, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).getAccount(id, expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Retrieves the inventory of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
      * @param {string} id Specifies the unique account ID.
-     * @param {string} [project] Specifies the unique project ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountsApi
      */
-    public getAccountInventory(id: string, project?: string, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).getAccountInventory(id, project, options).then((request) => request(this.axios, this.basePath));
+    public getAccountInventory(id: string, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).getAccountInventory(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2506,13 +2563,24 @@ export class AccountsApi extends BaseAPI {
      * @param {string} player Specifies the unique player ID.
      * @param {Array<string>} [expand] whether to expand the response or not
      * @param {number} [limit] amount of results per query
-     * @param {string} [project] Specifies the unique project ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountsApi
      */
-    public getAccounts(player: string, expand?: Array<string>, limit?: number, project?: string, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).getAccounts(player, expand, limit, project, options).then((request) => request(this.axios, this.basePath));
+    public getAccounts(player: string, expand?: Array<string>, limit?: number, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).getAccounts(player, expand, limit, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Sign a given payload
+     * @param {string} id Specifies the unique account ID.
+     * @param {SignPayloadRequest} signPayloadRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApi
+     */
+    public signPayload(id: string, signPayloadRequest: SignPayloadRequest, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).signPayload(id, signPayloadRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2606,11 +2674,10 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
         /**
          * Retrieves the details of an existing contract. Supply the unique contract ID from either a contract creation request or the contract list, and Openfort will return the corresponding contract information.
          * @param {string} id Specifies the unique contract ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getContract: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getContract: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getContract', 'id', id)
             const localVarPath = `/v1/contracts/{id}`
@@ -2626,10 +2693,6 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
-
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -2643,12 +2706,13 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
         },
         /**
          * Returns a list of your contracts. The contracts are returned sorted by creation date, with the most recently created contracts appearing first.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {number} [limit] amount of results per query
+         * @param {SortOrder} [order] 
+         * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getContracts: async (project?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getContracts: async (limit?: number, order?: SortOrder, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/contracts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2661,12 +2725,16 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
-
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
             }
 
 
@@ -2713,23 +2781,23 @@ export const ContractsApiFp = function(configuration?: Configuration) {
         /**
          * Retrieves the details of an existing contract. Supply the unique contract ID from either a contract creation request or the contract list, and Openfort will return the corresponding contract information.
          * @param {string} id Specifies the unique contract ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getContract(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getContract(id, project, options);
+        async getContract(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getContract(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Returns a list of your contracts. The contracts are returned sorted by creation date, with the most recently created contracts appearing first.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {number} [limit] amount of results per query
+         * @param {SortOrder} [order] 
+         * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getContracts(project?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getContracts(project, limit, options);
+        async getContracts(limit?: number, order?: SortOrder, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getContracts(limit, order, skip, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -2763,22 +2831,22 @@ export const ContractsApiFactory = function (configuration?: Configuration, base
         /**
          * Retrieves the details of an existing contract. Supply the unique contract ID from either a contract creation request or the contract list, and Openfort will return the corresponding contract information.
          * @param {string} id Specifies the unique contract ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getContract(id: string, project?: string, options?: any): AxiosPromise<ContractResponse> {
-            return localVarFp.getContract(id, project, options).then((request) => request(axios, basePath));
+        getContract(id: string, options?: any): AxiosPromise<ContractResponse> {
+            return localVarFp.getContract(id, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of your contracts. The contracts are returned sorted by creation date, with the most recently created contracts appearing first.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {number} [limit] amount of results per query
+         * @param {SortOrder} [order] 
+         * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getContracts(project?: string, limit?: number, options?: any): AxiosPromise<ContractsResponse> {
-            return localVarFp.getContracts(project, limit, options).then((request) => request(axios, basePath));
+        getContracts(limit?: number, order?: SortOrder, skip?: number, options?: any): AxiosPromise<ContractsResponse> {
+            return localVarFp.getContracts(limit, order, skip, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -2815,25 +2883,25 @@ export class ContractsApi extends BaseAPI {
     /**
      * Retrieves the details of an existing contract. Supply the unique contract ID from either a contract creation request or the contract list, and Openfort will return the corresponding contract information.
      * @param {string} id Specifies the unique contract ID.
-     * @param {string} [project] Specifies the unique project ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ContractsApi
      */
-    public getContract(id: string, project?: string, options?: AxiosRequestConfig) {
-        return ContractsApiFp(this.configuration).getContract(id, project, options).then((request) => request(this.axios, this.basePath));
+    public getContract(id: string, options?: AxiosRequestConfig) {
+        return ContractsApiFp(this.configuration).getContract(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Returns a list of your contracts. The contracts are returned sorted by creation date, with the most recently created contracts appearing first.
-     * @param {string} [project] Specifies the unique project ID.
      * @param {number} [limit] amount of results per query
+     * @param {SortOrder} [order] 
+     * @param {number} [skip] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ContractsApi
      */
-    public getContracts(project?: string, limit?: number, options?: AxiosRequestConfig) {
-        return ContractsApiFp(this.configuration).getContracts(project, limit, options).then((request) => request(this.axios, this.basePath));
+    public getContracts(limit?: number, order?: SortOrder, skip?: number, options?: AxiosRequestConfig) {
+        return ContractsApiFp(this.configuration).getContracts(limit, order, skip, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -2846,13 +2914,13 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * Creates a player object.
-         * @param {PlayerRequest} playerRequest 
+         * @param {CreatePlayerRequest} createPlayerRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayer: async (playerRequest: PlayerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'playerRequest' is not null or undefined
-            assertParamExists('createPlayer', 'playerRequest', playerRequest)
+        createPlayer: async (createPlayerRequest: CreatePlayerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createPlayerRequest' is not null or undefined
+            assertParamExists('createPlayer', 'createPlayerRequest', createPlayerRequest)
             const localVarPath = `/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2872,7 +2940,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(playerRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createPlayerRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2958,14 +3026,13 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Retrieves the details of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
+         * Returns a list of your players for the query. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {string} id Specifies the unique player ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {Array<string>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayer: async (id: string, project?: string, expand?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayer: async (id: string, expand?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlayer', 'id', id)
             const localVarPath = `/v1/players/{id}`
@@ -2980,10 +3047,6 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
 
             if (expand) {
                 localVarQueryParameter['expand'] = expand;
@@ -3004,11 +3067,10 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
          * Returns a list of your accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {string} id Specifies the unique player ID.
          * @param {Array<string>} [expand] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerAccounts: async (id: string, expand?: Array<string>, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerAccounts: async (id: string, expand?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlayerAccounts', 'id', id)
             const localVarPath = `/v1/players/{id}/accounts`
@@ -3028,10 +3090,6 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['expand'] = expand;
             }
 
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
-
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -3047,11 +3105,10 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
          * Retrieves the inventory of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
          * @param {string} id Specifies the unique player ID.
          * @param {number} chainId 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerInventory: async (id: string, chainId: number, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerInventory: async (id: string, chainId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlayerInventory', 'id', id)
             // verify required parameter 'chainId' is not null or undefined
@@ -3073,10 +3130,6 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['chain_id'] = chainId;
             }
 
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
-
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -3092,14 +3145,13 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
          * Returns a list of your players. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
-         * @param {string} [order] 
+         * @param {SortOrder} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayers: async (expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: string, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayers: async (expand?: Array<string>, limit?: number, filter?: string, order?: SortOrder, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3118,10 +3170,6 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
-            }
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
             }
 
             if (filter !== undefined) {
@@ -3276,12 +3324,12 @@ export const PlayersApiFp = function(configuration?: Configuration) {
     return {
         /**
          * Creates a player object.
-         * @param {PlayerRequest} playerRequest 
+         * @param {CreatePlayerRequest} createPlayerRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPlayer(playerRequest: PlayerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayer(playerRequest, options);
+        async createPlayer(createPlayerRequest: CreatePlayerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayer(createPlayerRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3307,54 +3355,50 @@ export const PlayersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Retrieves the details of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
+         * Returns a list of your players for the query. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {string} id Specifies the unique player ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {Array<string>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayer(id: string, project?: string, expand?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayer(id, project, expand, options);
+        async getPlayer(id: string, expand?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayer(id, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Returns a list of your accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {string} id Specifies the unique player ID.
          * @param {Array<string>} [expand] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerAccounts(id: string, expand?: Array<string>, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerAccounts(id, expand, project, options);
+        async getPlayerAccounts(id: string, expand?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerAccounts(id, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Retrieves the inventory of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
          * @param {string} id Specifies the unique player ID.
          * @param {number} chainId 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerInventory(id: string, chainId: number, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerInventory(id, chainId, project, options);
+        async getPlayerInventory(id: string, chainId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerInventory(id, chainId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Returns a list of your players. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
-         * @param {string} [order] 
+         * @param {SortOrder} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayers(expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: string, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayersResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayers(expand, limit, project, filter, order, skip, options);
+        async getPlayers(expand?: Array<string>, limit?: number, filter?: string, order?: SortOrder, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayersResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayers(expand, limit, filter, order, skip, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3402,12 +3446,12 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * Creates a player object.
-         * @param {PlayerRequest} playerRequest 
+         * @param {CreatePlayerRequest} createPlayerRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayer(playerRequest: PlayerRequest, options?: any): AxiosPromise<PlayerResponse> {
-            return localVarFp.createPlayer(playerRequest, options).then((request) => request(axios, basePath));
+        createPlayer(createPlayerRequest: CreatePlayerRequest, options?: any): AxiosPromise<PlayerResponse> {
+            return localVarFp.createPlayer(createPlayerRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Creates an account object for an existing player.
@@ -3430,51 +3474,47 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createPlayerSession(id, createSessionPlayerRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieves the details of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
+         * Returns a list of your players for the query. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {string} id Specifies the unique player ID.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {Array<string>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayer(id: string, project?: string, expand?: Array<string>, options?: any): AxiosPromise<PlayerResponse> {
-            return localVarFp.getPlayer(id, project, expand, options).then((request) => request(axios, basePath));
+        getPlayer(id: string, expand?: Array<string>, options?: any): AxiosPromise<PlayerResponse> {
+            return localVarFp.getPlayer(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of your accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {string} id Specifies the unique player ID.
          * @param {Array<string>} [expand] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerAccounts(id: string, expand?: Array<string>, project?: string, options?: any): AxiosPromise<AccountsResponse> {
-            return localVarFp.getPlayerAccounts(id, expand, project, options).then((request) => request(axios, basePath));
+        getPlayerAccounts(id: string, expand?: Array<string>, options?: any): AxiosPromise<AccountsResponse> {
+            return localVarFp.getPlayerAccounts(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves the inventory of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
          * @param {string} id Specifies the unique player ID.
          * @param {number} chainId 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerInventory(id: string, chainId: number, project?: string, options?: any): AxiosPromise<InventoryResponse> {
-            return localVarFp.getPlayerInventory(id, chainId, project, options).then((request) => request(axios, basePath));
+        getPlayerInventory(id: string, chainId: number, options?: any): AxiosPromise<InventoryResponse> {
+            return localVarFp.getPlayerInventory(id, chainId, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of your players. The players are returned sorted by creation date, with the most recently created players appearing first.
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
-         * @param {string} [order] 
+         * @param {SortOrder} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayers(expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: string, skip?: number, options?: any): AxiosPromise<PlayersResponse> {
-            return localVarFp.getPlayers(expand, limit, project, filter, order, skip, options).then((request) => request(axios, basePath));
+        getPlayers(expand?: Array<string>, limit?: number, filter?: string, order?: SortOrder, skip?: number, options?: any): AxiosPromise<PlayersResponse> {
+            return localVarFp.getPlayers(expand, limit, filter, order, skip, options).then((request) => request(axios, basePath));
         },
         /**
          * Creates a session object for the given player.
@@ -3518,13 +3558,13 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
 export class PlayersApi extends BaseAPI {
     /**
      * Creates a player object.
-     * @param {PlayerRequest} playerRequest 
+     * @param {CreatePlayerRequest} createPlayerRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public createPlayer(playerRequest: PlayerRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).createPlayer(playerRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPlayer(createPlayerRequest: CreatePlayerRequest, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).createPlayer(createPlayerRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3552,58 +3592,54 @@ export class PlayersApi extends BaseAPI {
     }
 
     /**
-     * Retrieves the details of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
+     * Returns a list of your players for the query. The players are returned sorted by creation date, with the most recently created players appearing first.
      * @param {string} id Specifies the unique player ID.
-     * @param {string} [project] Specifies the unique project ID.
      * @param {Array<string>} [expand] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public getPlayer(id: string, project?: string, expand?: Array<string>, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayer(id, project, expand, options).then((request) => request(this.axios, this.basePath));
+    public getPlayer(id: string, expand?: Array<string>, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).getPlayer(id, expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Returns a list of your accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
      * @param {string} id Specifies the unique player ID.
      * @param {Array<string>} [expand] 
-     * @param {string} [project] Specifies the unique project ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public getPlayerAccounts(id: string, expand?: Array<string>, project?: string, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayerAccounts(id, expand, project, options).then((request) => request(this.axios, this.basePath));
+    public getPlayerAccounts(id: string, expand?: Array<string>, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).getPlayerAccounts(id, expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Retrieves the inventory of an existing player. Supply the unique player ID from either a player creation request or the player list, and Openfort will return the corresponding player information.
      * @param {string} id Specifies the unique player ID.
      * @param {number} chainId 
-     * @param {string} [project] Specifies the unique project ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public getPlayerInventory(id: string, chainId: number, project?: string, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayerInventory(id, chainId, project, options).then((request) => request(this.axios, this.basePath));
+    public getPlayerInventory(id: string, chainId: number, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).getPlayerInventory(id, chainId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Returns a list of your players. The players are returned sorted by creation date, with the most recently created players appearing first.
      * @param {Array<string>} [expand] 
      * @param {number} [limit] 
-     * @param {string} [project] Specifies the unique project ID.
      * @param {string} [filter] 
-     * @param {string} [order] 
+     * @param {SortOrder} [order] 
      * @param {number} [skip] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public getPlayers(expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: string, skip?: number, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayers(expand, limit, project, filter, order, skip, options).then((request) => request(this.axios, this.basePath));
+    public getPlayers(expand?: Array<string>, limit?: number, filter?: string, order?: SortOrder, skip?: number, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).getPlayers(expand, limit, filter, order, skip, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3759,13 +3795,13 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * Gets all policy objects for a given project.
-         * @param {string} [project] 
          * @param {number} [limit] 
          * @param {Array<string>} [expand] 
+         * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicies: async (project?: string, limit?: number, expand?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicies: async (limit?: number, expand?: Array<string>, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/policies`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3778,16 +3814,16 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
-
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
             }
 
             if (expand) {
                 localVarQueryParameter['expand'] = expand;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
             }
 
 
@@ -3804,12 +3840,11 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * Gets a policy object for a given project.
          * @param {string} id 
-         * @param {string} [project] 
          * @param {Array<string>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicy: async (id: string, project?: string, expand?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicy: async (id: string, expand?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPolicy', 'id', id)
             const localVarPath = `/v1/policies/{id}`
@@ -3824,10 +3859,6 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
 
             if (expand) {
                 localVarQueryParameter['expand'] = expand;
@@ -3848,11 +3879,10 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
          * 
          * @param {string} id 
          * @param {Array<string>} [expand] 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyAllowFunctions: async (id: string, expand?: Array<string>, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyAllowFunctions: async (id: string, expand?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPolicyAllowFunctions', 'id', id)
             const localVarPath = `/v1/policies/{id}/policy_rules`
@@ -3870,10 +3900,6 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
 
             if (expand) {
                 localVarQueryParameter['expand'] = expand;
-            }
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
             }
 
 
@@ -4098,38 +4124,36 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
         },
         /**
          * Gets all policy objects for a given project.
-         * @param {string} [project] 
          * @param {number} [limit] 
          * @param {Array<string>} [expand] 
+         * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicies(project?: string, limit?: number, expand?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PoliciesResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicies(project, limit, expand, options);
+        async getPolicies(limit?: number, expand?: Array<string>, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PoliciesResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicies(limit, expand, skip, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Gets a policy object for a given project.
          * @param {string} id 
-         * @param {string} [project] 
          * @param {Array<string>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicy(id: string, project?: string, expand?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicy(id, project, expand, options);
+        async getPolicy(id: string, expand?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicy(id, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
          * @param {string} id 
          * @param {Array<string>} [expand] 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyAllowFunctions(id: string, expand?: Array<string>, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRulesResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyAllowFunctions(id, expand, project, options);
+        async getPolicyAllowFunctions(id: string, expand?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRulesResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyAllowFunctions(id, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4219,36 +4243,34 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * Gets all policy objects for a given project.
-         * @param {string} [project] 
          * @param {number} [limit] 
          * @param {Array<string>} [expand] 
+         * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicies(project?: string, limit?: number, expand?: Array<string>, options?: any): AxiosPromise<PoliciesResponse> {
-            return localVarFp.getPolicies(project, limit, expand, options).then((request) => request(axios, basePath));
+        getPolicies(limit?: number, expand?: Array<string>, skip?: number, options?: any): AxiosPromise<PoliciesResponse> {
+            return localVarFp.getPolicies(limit, expand, skip, options).then((request) => request(axios, basePath));
         },
         /**
          * Gets a policy object for a given project.
          * @param {string} id 
-         * @param {string} [project] 
          * @param {Array<string>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicy(id: string, project?: string, expand?: Array<string>, options?: any): AxiosPromise<PolicyResponse> {
-            return localVarFp.getPolicy(id, project, expand, options).then((request) => request(axios, basePath));
+        getPolicy(id: string, expand?: Array<string>, options?: any): AxiosPromise<PolicyResponse> {
+            return localVarFp.getPolicy(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {string} id 
          * @param {Array<string>} [expand] 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyAllowFunctions(id: string, expand?: Array<string>, project?: string, options?: any): AxiosPromise<PolicyRulesResponse> {
-            return localVarFp.getPolicyAllowFunctions(id, expand, project, options).then((request) => request(axios, basePath));
+        getPolicyAllowFunctions(id: string, expand?: Array<string>, options?: any): AxiosPromise<PolicyRulesResponse> {
+            return localVarFp.getPolicyAllowFunctions(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4339,41 +4361,39 @@ export class PoliciesApi extends BaseAPI {
 
     /**
      * Gets all policy objects for a given project.
-     * @param {string} [project] 
      * @param {number} [limit] 
      * @param {Array<string>} [expand] 
+     * @param {number} [skip] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public getPolicies(project?: string, limit?: number, expand?: Array<string>, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicies(project, limit, expand, options).then((request) => request(this.axios, this.basePath));
+    public getPolicies(limit?: number, expand?: Array<string>, skip?: number, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).getPolicies(limit, expand, skip, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Gets a policy object for a given project.
      * @param {string} id 
-     * @param {string} [project] 
      * @param {Array<string>} [expand] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public getPolicy(id: string, project?: string, expand?: Array<string>, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicy(id, project, expand, options).then((request) => request(this.axios, this.basePath));
+    public getPolicy(id: string, expand?: Array<string>, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).getPolicy(id, expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @param {string} id 
      * @param {Array<string>} [expand] 
-     * @param {string} [project] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public getPolicyAllowFunctions(id: string, expand?: Array<string>, project?: string, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyAllowFunctions(id, expand, project, options).then((request) => request(this.axios, this.basePath));
+    public getPolicyAllowFunctions(id: string, expand?: Array<string>, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).getPolicyAllowFunctions(id, expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4505,13 +4525,12 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
         },
         /**
          * Returns a list of your allow functions for the given policy. The allow functions are returned sorted by creation date, with the most recently created allow functions appearing first.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {Array<string>} [expand] 
          * @param {string} [policy] Specifies the unique policy ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyRules: async (project?: string, expand?: Array<string>, policy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyRules: async (expand?: Array<string>, policy?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/policy_rules`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4523,10 +4542,6 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
 
             if (expand) {
                 localVarQueryParameter['expand'] = expand;
@@ -4618,14 +4633,13 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
         },
         /**
          * Returns a list of your allow functions for the given policy. The allow functions are returned sorted by creation date, with the most recently created allow functions appearing first.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {Array<string>} [expand] 
          * @param {string} [policy] Specifies the unique policy ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyRules(project?: string, expand?: Array<string>, policy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRulesResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyRules(project, expand, policy, options);
+        async getPolicyRules(expand?: Array<string>, policy?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRulesResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyRules(expand, policy, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4669,14 +4683,13 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
         },
         /**
          * Returns a list of your allow functions for the given policy. The allow functions are returned sorted by creation date, with the most recently created allow functions appearing first.
-         * @param {string} [project] Specifies the unique project ID.
          * @param {Array<string>} [expand] 
          * @param {string} [policy] Specifies the unique policy ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyRules(project?: string, expand?: Array<string>, policy?: string, options?: any): AxiosPromise<PolicyRulesResponse> {
-            return localVarFp.getPolicyRules(project, expand, policy, options).then((request) => request(axios, basePath));
+        getPolicyRules(expand?: Array<string>, policy?: string, options?: any): AxiosPromise<PolicyRulesResponse> {
+            return localVarFp.getPolicyRules(expand, policy, options).then((request) => request(axios, basePath));
         },
         /**
          * Updates an allow functions object.
@@ -4722,15 +4735,14 @@ export class PolicyRulesApi extends BaseAPI {
 
     /**
      * Returns a list of your allow functions for the given policy. The allow functions are returned sorted by creation date, with the most recently created allow functions appearing first.
-     * @param {string} [project] Specifies the unique project ID.
      * @param {Array<string>} [expand] 
      * @param {string} [policy] Specifies the unique policy ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PolicyRulesApi
      */
-    public getPolicyRules(project?: string, expand?: Array<string>, policy?: string, options?: AxiosRequestConfig) {
-        return PolicyRulesApiFp(this.configuration).getPolicyRules(project, expand, policy, options).then((request) => request(this.axios, this.basePath));
+    public getPolicyRules(expand?: Array<string>, policy?: string, options?: AxiosRequestConfig) {
+        return PolicyRulesApiFp(this.configuration).getPolicyRules(expand, policy, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4790,39 +4802,6 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        get: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/v1/projects/auth`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication pk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4856,11 +4835,10 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjects: async (project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getProjects: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/projects`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4872,10 +4850,6 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
 
 
     
@@ -4949,15 +4923,6 @@ export const ProjectsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async get(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetProjectResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.get(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4968,12 +4933,11 @@ export const ProjectsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjects(project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(project, options);
+        async getProjects(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjects(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5008,14 +4972,6 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        get(options?: any): AxiosPromise<GetProjectResponse> {
-            return localVarFp.get(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -5025,12 +4981,11 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjects(project?: string, options?: any): AxiosPromise<ProjectsResponse> {
-            return localVarFp.getProjects(project, options).then((request) => request(axios, basePath));
+        getProjects(options?: any): AxiosPromise<ProjectsResponse> {
+            return localVarFp.getProjects(options).then((request) => request(axios, basePath));
         },
         /**
          * Updates a project object.
@@ -5065,16 +5020,6 @@ export class ProjectsApi extends BaseAPI {
 
     /**
      * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ProjectsApi
-     */
-    public get(options?: AxiosRequestConfig) {
-        return ProjectsApiFp(this.configuration).get(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -5086,13 +5031,12 @@ export class ProjectsApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} [project] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProjectsApi
      */
-    public getProjects(project?: string, options?: AxiosRequestConfig) {
-        return ProjectsApiFp(this.configuration).getProjects(project, options).then((request) => request(this.axios, this.basePath));
+    public getProjects(options?: AxiosRequestConfig) {
+        return ProjectsApiFp(this.configuration).getProjects(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -5155,14 +5099,13 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {string} player 
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
          * @param {string} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerSessions: async (player: string, expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: string, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerSessions: async (player: string, expand?: Array<string>, limit?: number, filter?: string, order?: string, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
             assertParamExists('getPlayerSessions', 'player', player)
             const localVarPath = `/v1/sessions`;
@@ -5187,10 +5130,6 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
-            }
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
             }
 
             if (filter !== undefined) {
@@ -5319,15 +5258,14 @@ export const SessionsApiFp = function(configuration?: Configuration) {
          * @param {string} player 
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
          * @param {string} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerSessions(player: string, expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: string, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerSessions(player, expand, limit, project, filter, order, skip, options);
+        async getPlayerSessions(player: string, expand?: Array<string>, limit?: number, filter?: string, order?: string, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerSessions(player, expand, limit, filter, order, skip, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5375,15 +5313,14 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
          * @param {string} player 
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
          * @param {string} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerSessions(player: string, expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: string, skip?: number, options?: any): AxiosPromise<SessionsResponse> {
-            return localVarFp.getPlayerSessions(player, expand, limit, project, filter, order, skip, options).then((request) => request(axios, basePath));
+        getPlayerSessions(player: string, expand?: Array<string>, limit?: number, filter?: string, order?: string, skip?: number, options?: any): AxiosPromise<SessionsResponse> {
+            return localVarFp.getPlayerSessions(player, expand, limit, filter, order, skip, options).then((request) => request(axios, basePath));
         },
         /**
          * Revokes the session for the account.
@@ -5430,7 +5367,6 @@ export class SessionsApi extends BaseAPI {
      * @param {string} player 
      * @param {Array<string>} [expand] 
      * @param {number} [limit] 
-     * @param {string} [project] Specifies the unique project ID.
      * @param {string} [filter] 
      * @param {string} [order] 
      * @param {number} [skip] 
@@ -5438,8 +5374,8 @@ export class SessionsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof SessionsApi
      */
-    public getPlayerSessions(player: string, expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: string, skip?: number, options?: AxiosRequestConfig) {
-        return SessionsApiFp(this.configuration).getPlayerSessions(player, expand, limit, project, filter, order, skip, options).then((request) => request(this.axios, this.basePath));
+    public getPlayerSessions(player: string, expand?: Array<string>, limit?: number, filter?: string, order?: string, skip?: number, options?: AxiosRequestConfig) {
+        return SessionsApiFp(this.configuration).getPlayerSessions(player, expand, limit, filter, order, skip, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -5511,11 +5447,10 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
         /**
          * Retrieves a transaction intent object.
          * @param {string} id 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntent: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getTransactionIntent: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getTransactionIntent', 'id', id)
             const localVarPath = `/v1/transaction_intents/{id}`
@@ -5530,10 +5465,6 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
 
 
     
@@ -5550,14 +5481,13 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
          * Returns a list of transaction intents for the given project. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
          * @param {SortOrder} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntents: async (expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: SortOrder, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getTransactionIntents: async (expand?: Array<string>, limit?: number, filter?: string, order?: SortOrder, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/transaction_intents`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5576,10 +5506,6 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
-            }
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
             }
 
             if (filter !== undefined) {
@@ -5651,11 +5577,10 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
         /**
          * 
          * @param {string} id 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTransactionIntentResponse: async (id: string, project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateTransactionIntentResponse: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateTransactionIntentResponse', 'id', id)
             const localVarPath = `/v1/transaction_intents/{id}/update_response`
@@ -5671,10 +5596,6 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
-
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -5688,11 +5609,10 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTransactionIntentsResponse: async (project?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateTransactionIntentsResponse: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/transaction_intents/update_response`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5704,10 +5624,6 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            if (project !== undefined) {
-                localVarQueryParameter['project'] = project;
-            }
 
 
     
@@ -5743,27 +5659,25 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
         /**
          * Retrieves a transaction intent object.
          * @param {string} id 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTransactionIntent(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntent(id, project, options);
+        async getTransactionIntent(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntent(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Returns a list of transaction intents for the given project. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
          * @param {SortOrder} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTransactionIntents(expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: SortOrder, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntents(expand, limit, project, filter, order, skip, options);
+        async getTransactionIntents(expand?: Array<string>, limit?: number, filter?: string, order?: SortOrder, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntents(expand, limit, filter, order, skip, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5780,22 +5694,20 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} id 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateTransactionIntentResponse(id: string, project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTransactionIntentResponse(id, project, options);
+        async updateTransactionIntentResponse(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTransactionIntentResponse(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateTransactionIntentsResponse(project?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTransactionIntentsResponse(project, options);
+        async updateTransactionIntentsResponse(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTransactionIntentsResponse(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -5820,26 +5732,24 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
         /**
          * Retrieves a transaction intent object.
          * @param {string} id 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntent(id: string, project?: string, options?: any): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.getTransactionIntent(id, project, options).then((request) => request(axios, basePath));
+        getTransactionIntent(id: string, options?: any): AxiosPromise<TransactionIntentResponse> {
+            return localVarFp.getTransactionIntent(id, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of transaction intents for the given project. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
          * @param {Array<string>} [expand] 
          * @param {number} [limit] 
-         * @param {string} [project] Specifies the unique project ID.
          * @param {string} [filter] 
          * @param {SortOrder} [order] 
          * @param {number} [skip] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntents(expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: SortOrder, skip?: number, options?: any): AxiosPromise<TransactionIntentsResponse> {
-            return localVarFp.getTransactionIntents(expand, limit, project, filter, order, skip, options).then((request) => request(axios, basePath));
+        getTransactionIntents(expand?: Array<string>, limit?: number, filter?: string, order?: SortOrder, skip?: number, options?: any): AxiosPromise<TransactionIntentsResponse> {
+            return localVarFp.getTransactionIntents(expand, limit, filter, order, skip, options).then((request) => request(axios, basePath));
         },
         /**
          * Confirms the creation of a transaction intent with an external owner.
@@ -5854,21 +5764,19 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
         /**
          * 
          * @param {string} id 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTransactionIntentResponse(id: string, project?: string, options?: any): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.updateTransactionIntentResponse(id, project, options).then((request) => request(axios, basePath));
+        updateTransactionIntentResponse(id: string, options?: any): AxiosPromise<TransactionIntentResponse> {
+            return localVarFp.updateTransactionIntentResponse(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {string} [project] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateTransactionIntentsResponse(project?: string, options?: any): AxiosPromise<TransactionIntentsResponse> {
-            return localVarFp.updateTransactionIntentsResponse(project, options).then((request) => request(axios, basePath));
+        updateTransactionIntentsResponse(options?: any): AxiosPromise<TransactionIntentsResponse> {
+            return localVarFp.updateTransactionIntentsResponse(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -5894,20 +5802,18 @@ export class TransactionIntentsApi extends BaseAPI {
     /**
      * Retrieves a transaction intent object.
      * @param {string} id 
-     * @param {string} [project] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
-    public getTransactionIntent(id: string, project?: string, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).getTransactionIntent(id, project, options).then((request) => request(this.axios, this.basePath));
+    public getTransactionIntent(id: string, options?: AxiosRequestConfig) {
+        return TransactionIntentsApiFp(this.configuration).getTransactionIntent(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Returns a list of transaction intents for the given project. The accounts are returned sorted by creation date, with the most recently created accounts appearing first.
      * @param {Array<string>} [expand] 
      * @param {number} [limit] 
-     * @param {string} [project] Specifies the unique project ID.
      * @param {string} [filter] 
      * @param {SortOrder} [order] 
      * @param {number} [skip] 
@@ -5915,8 +5821,8 @@ export class TransactionIntentsApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
-    public getTransactionIntents(expand?: Array<string>, limit?: number, project?: string, filter?: string, order?: SortOrder, skip?: number, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).getTransactionIntents(expand, limit, project, filter, order, skip, options).then((request) => request(this.axios, this.basePath));
+    public getTransactionIntents(expand?: Array<string>, limit?: number, filter?: string, order?: SortOrder, skip?: number, options?: AxiosRequestConfig) {
+        return TransactionIntentsApiFp(this.configuration).getTransactionIntents(expand, limit, filter, order, skip, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -5934,24 +5840,22 @@ export class TransactionIntentsApi extends BaseAPI {
     /**
      * 
      * @param {string} id 
-     * @param {string} [project] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
-    public updateTransactionIntentResponse(id: string, project?: string, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).updateTransactionIntentResponse(id, project, options).then((request) => request(this.axios, this.basePath));
+    public updateTransactionIntentResponse(id: string, options?: AxiosRequestConfig) {
+        return TransactionIntentsApiFp(this.configuration).updateTransactionIntentResponse(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {string} [project] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
-    public updateTransactionIntentsResponse(project?: string, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).updateTransactionIntentsResponse(project, options).then((request) => request(this.axios, this.basePath));
+    public updateTransactionIntentsResponse(options?: AxiosRequestConfig) {
+        return TransactionIntentsApiFp(this.configuration).updateTransactionIntentsResponse(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
