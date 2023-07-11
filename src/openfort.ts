@@ -58,8 +58,12 @@ export default class Openfort {
     }
 
     @httpErrorHandler()
-    public async sendSignatureSessionRequest(sessionId: string, signature: string): Promise<SessionResponse> {
-        const result = await this.sessionsApi.signatureSession(sessionId, {signature});
+    public async sendSignatureSessionRequest(
+        sessionId: string,
+        signature: string,
+        optimistic?: boolean,
+    ): Promise<SessionResponse> {
+        const result = await this.sessionsApi.signatureSession(sessionId, {signature, optimistic});
         return result.data;
     }
 
