@@ -67,8 +67,9 @@ export default class Openfort {
     public async sendSignatureTransactionIntentRequest(
         transactionIntentId: string,
         signature: string,
+        optimistic?: boolean,
     ): Promise<TransactionIntentResponse> {
-        const result = await this.transactionsApi.signature(transactionIntentId, {signature});
+        const result = await this.transactionsApi.signature(transactionIntentId, {signature, optimistic});
         return result.data;
     }
 }
