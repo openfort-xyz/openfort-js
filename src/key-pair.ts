@@ -1,4 +1,4 @@
-import {secp256k1} from "ethereum-cryptography/secp256k1";
+import {secp256k1} from "@noble/curves/secp256k1";
 import {LocalStorage} from "./storage/local-storage";
 import {StorageKeys} from "./storage/storage-keys";
 import {SigningKey} from "@ethersproject/signing-key";

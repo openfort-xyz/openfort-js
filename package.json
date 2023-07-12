@@ -1,6 +1,6 @@
 {
   "name": "@openfort/openfort-js",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "",
   "author": "",
   "repository": {
@@ -37,9 +37,9 @@
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/hash": "^5.7.0",
     "@ethersproject/signing-key": "^5.7.0",
+    "@noble/curves": "^1.1.0",
     "axios": "^1.4.0",
     "es6-promise": "^4.2.8",
-    "ethereum-cryptography": "^2.0.0",
     "path": "^0.12.7"
   }
 }
