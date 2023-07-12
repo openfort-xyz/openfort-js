@@ -1,8 +1,17 @@
-import Openfnort from "@openfort/openfort-js";
+import Openfort from "@openfort/openfort-js";
 import {getRandomBytesSync} from "ethereum-cryptography/random";
+import * as dotenv from "dotenv";
+
+function getEnvVariable(name: string): string {
+    const result = process.env[name];
+    if (!result) {
+        throw Error(`Environment variable is missing: ${name}`);
+    }
+    return result;
+}
 
 async function example(): Promise<void> {
-    const openfort = new Openfort("pk_test_94876de2-e37c-5f54-97cc-bdbf26f53e81");
+    const openfort = new Openfort(getEnvVariable("OPENFORT_APIKEY"), process.env.OPENFORT_BASEURL);
     openfort.createSessionKey();
 
     // TODO: replace the message
@@ -15,5 +24,7 @@ async function example(): Promise<void> {
     const response = await openfort.sendSignatureSessionRequest(sessionId, signature);
     console.dir(response);
 }
+
+dotenv.config();
 
 example().catch((e) => console.error(e));

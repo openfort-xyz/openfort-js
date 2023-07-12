@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@ethersproject/bytes": "^5.7.0",
-    "@openfort/openfort-js": "file:./../",
+    "@openfort/openfort-js": "file:../src/index.ts",
     "dotenv": "^16.3.1",
     "ethereum-cryptography": "^2.0.0",
     "ethers": "^6.4.0"
