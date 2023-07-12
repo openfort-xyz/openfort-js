@@ -40,16 +40,16 @@ export default class Openfort {
         return this._sessionKey;
     }
 
-    public async loadSessionKey(): Promise<KeyPair | null> {
-        this._sessionKey = await KeyPair.load();
+    public loadSessionKey(): KeyPair | null {
+        this._sessionKey = KeyPair.load();
         return this._sessionKey;
     }
 
-    public async saveSessionKey(): Promise<void> {
+    public saveSessionKey(): void {
         return this.sessionKey.save();
     }
 
-    public async removeSessionKey(): Promise<void> {
+    public removeSessionKey(): void {
         return this.sessionKey.remove();
     }
 

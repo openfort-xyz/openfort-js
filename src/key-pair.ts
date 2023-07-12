@@ -28,22 +28,22 @@ export class KeyPair extends SigningKey {
     /**
      * Save to the storage initialized as a static property of the KeyPair class
      */
-    public async save(): Promise<void> {
-        await KeyPair.storage.save(StorageKeys.SESSION_KEY, this.privateKey);
+    public save(): void {
+        KeyPair.storage.save(StorageKeys.SESSION_KEY, this.privateKey);
     }
 
     /**
      * Remove the keypair from the storage
      */
-    public async remove(): Promise<void> {
-        await KeyPair.storage.remove(StorageKeys.SESSION_KEY);
+    public remove(): void {
+        KeyPair.storage.remove(StorageKeys.SESSION_KEY);
     }
 
     /**
      * Load private key from the storage and generate keypair based on it.
      */
-    public static async load(): Promise<KeyPair | null> {
-        const privateKey = await KeyPair.storage.get(StorageKeys.SESSION_KEY);
+    public static load(): KeyPair | null {
+        const privateKey = KeyPair.storage.get(StorageKeys.SESSION_KEY);
         return privateKey ? new KeyPair(arrayify(privateKey)) : null;
     }
 
