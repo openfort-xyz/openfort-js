@@ -117,10 +117,10 @@ export interface AccountResponse {
     'chain_id': number;
     /**
      * 
-     * @type {PolicyResponseTransactionIntents}
+     * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof AccountResponse
      */
-    'transaction_intents'?: PolicyResponseTransactionIntents;
+    'transaction_intents': Array<PolicyResponseTransactionIntentsInner>;
 }
 /**
  * 
@@ -278,10 +278,10 @@ export interface ContractRequest {
     'address': string;
     /**
      * 
-     * @type {PrismaJsonValue}
+     * @type {any}
      * @memberof ContractRequest
      */
-    'abi'?: PrismaJsonValue | null;
+    'abi'?: any;
     /**
      * 
      * @type {boolean}
@@ -333,10 +333,10 @@ export interface ContractResponse {
     'address': string;
     /**
      * 
-     * @type {PrismaJsonValue}
+     * @type {any}
      * @memberof ContractResponse
      */
-    'abi': PrismaJsonValue | null;
+    'abi': any;
     /**
      * 
      * @type {boolean}
@@ -575,37 +575,6 @@ export interface Interaction {
 /**
  * 
  * @export
- * @interface InteractionResponse
- */
-export interface InteractionResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof InteractionResponse
-     */
-    'contract': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof InteractionResponse
-     */
-    'value'?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof InteractionResponse
-     */
-    'function_name': string;
-    /**
-     * 
-     * @type {Array<any>}
-     * @memberof InteractionResponse
-     */
-    'function_args': Array<any>;
-}
-/**
- * 
- * @export
  * @interface InventoryResponse
  */
 export interface InventoryResponse {
@@ -635,13 +604,6 @@ export interface InventoryResponse {
     'token_assets'?: Array<AssetInventory>;
 }
 /**
- * From https://github.com/sindresorhus/type-fest/ Matches any valid JSON value.
- * @export
- * @interface JsonValue
- */
-export interface JsonValue {
-}
-/**
  * 
  * @export
  * @interface Log
@@ -649,46 +611,58 @@ export interface JsonValue {
 export interface Log {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof Log
      */
-    'id': string;
+    'blockNumber': number;
     /**
      * 
      * @type {string}
      * @memberof Log
      */
-    'timestamp': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Log
-     */
-    'event': string;
-    /**
-     * 
-     * @type {any}
-     * @memberof Log
-     */
-    'request_body': any;
+    'blockHash': string;
     /**
      * 
      * @type {number}
      * @memberof Log
      */
-    'status': number;
+    'transactionIndex': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof Log
+     */
+    'removed': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof Log
+     */
+    'address': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Log
+     */
+    'data': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof Log
+     */
+    'topics': Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof Log
+     */
+    'transactionHash': string;
     /**
      * 
      * @type {number}
      * @memberof Log
      */
-    'response_time': number;
-    /**
-     * 
-     * @type {any}
-     * @memberof Log
-     */
-    'response_data': any;
+    'logIndex': number;
 }
 /**
  * Enums
@@ -719,6 +693,71 @@ export const PKPolicy = {
 export type PKPolicy = typeof PKPolicy[keyof typeof PKPolicy];
 
 
+/**
+ * From T, pick a set of properties whose keys are in the union K
+ * @export
+ * @interface PickAccountResponseId
+ */
+export interface PickAccountResponseId {
+    /**
+     * 
+     * @type {string}
+     * @memberof PickAccountResponseId
+     */
+    'id': string;
+}
+/**
+ * From T, pick a set of properties whose keys are in the union K
+ * @export
+ * @interface PickPlayerResponseId
+ */
+export interface PickPlayerResponseId {
+    /**
+     * 
+     * @type {string}
+     * @memberof PickPlayerResponseId
+     */
+    'id': string;
+}
+/**
+ * From T, pick a set of properties whose keys are in the union K
+ * @export
+ * @interface PickPolicyResponseId
+ */
+export interface PickPolicyResponseId {
+    /**
+     * 
+     * @type {string}
+     * @memberof PickPolicyResponseId
+     */
+    'id': string;
+}
+/**
+ * From T, pick a set of properties whose keys are in the union K
+ * @export
+ * @interface PickPolicyRuleResponseId
+ */
+export interface PickPolicyRuleResponseId {
+    /**
+     * 
+     * @type {string}
+     * @memberof PickPolicyRuleResponseId
+     */
+    'id': string;
+}
+/**
+ * From T, pick a set of properties whose keys are in the union K
+ * @export
+ * @interface PickTransactionIntentResponseId
+ */
+export interface PickTransactionIntentResponseId {
+    /**
+     * 
+     * @type {string}
+     * @memberof PickTransactionIntentResponseId
+     */
+    'id': string;
+}
 /**
  * 
  * @export
@@ -788,23 +827,16 @@ export interface PlayerResponse {
     'metadata': string;
     /**
      * 
-     * @type {PolicyResponseTransactionIntents}
+     * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof PlayerResponse
      */
-    'transaction_intents'?: PolicyResponseTransactionIntents;
+    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
     /**
      * 
-     * @type {PlayerResponseAccounts}
+     * @type {Array<TransactionIntentResponseAccount>}
      * @memberof PlayerResponse
      */
-    'accounts'?: PlayerResponseAccounts;
-}
-/**
- * 
- * @export
- * @interface PlayerResponseAccounts
- */
-export interface PlayerResponseAccounts {
+    'accounts'?: Array<TransactionIntentResponseAccount>;
 }
 /**
  * 
@@ -1008,30 +1040,146 @@ export interface PolicyResponse {
     'strategy': any;
     /**
      * 
-     * @type {PolicyResponseTransactionIntents}
+     * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof PolicyResponse
      */
-    'transaction_intents'?: PolicyResponseTransactionIntents;
+    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
     /**
      * 
-     * @type {PolicyResponsePolicyRules}
+     * @type {Array<PolicyResponsePolicyRulesInner>}
      * @memberof PolicyResponse
      */
-    'policy_rules'?: PolicyResponsePolicyRules;
+    'policy_rules'?: Array<PolicyResponsePolicyRulesInner>;
 }
 /**
  * 
  * @export
- * @interface PolicyResponsePolicyRules
+ * @interface PolicyResponsePolicyRulesInner
  */
-export interface PolicyResponsePolicyRules {
+export interface PolicyResponsePolicyRulesInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponsePolicyRulesInner
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponsePolicyRulesInner
+     */
+    'object': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponsePolicyRulesInner
+     */
+    'created_at': string;
+    /**
+     * 
+     * @type {PolicySchema}
+     * @memberof PolicyResponsePolicyRulesInner
+     */
+    'type': PolicySchema;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponsePolicyRulesInner
+     */
+    'function_name': string | null;
+    /**
+     * 
+     * @type {PolicyRuleResponseContract}
+     * @memberof PolicyResponsePolicyRulesInner
+     */
+    'contract': PolicyRuleResponseContract | null;
 }
+
+
 /**
  * 
  * @export
- * @interface PolicyResponseTransactionIntents
+ * @interface PolicyResponseTransactionIntentsInner
  */
-export interface PolicyResponseTransactionIntents {
+export interface PolicyResponseTransactionIntentsInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'object': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'created_at': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'updated_at': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'chain_id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'user_operation_hash': string | null;
+    /**
+     * 
+     * @type {any}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'user_operation'?: any;
+    /**
+     * 
+     * @type {TransactionIntentResponsePolicy}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'policy': TransactionIntentResponsePolicy | null;
+    /**
+     * 
+     * @type {TransactionIntentResponsePlayer}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'player'?: TransactionIntentResponsePlayer;
+    /**
+     * 
+     * @type {object}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'next_action'?: object | null;
+    /**
+     * 
+     * @type {TransactionIntentResponseAccount}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'account'?: TransactionIntentResponseAccount;
+    /**
+     * 
+     * @type {Array<Interaction>}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'interactions': Array<Interaction> | null;
+    /**
+     * 
+     * @type {ResponseResponse}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'response': ResponseResponse | null;
 }
 /**
  * 
@@ -1180,10 +1328,10 @@ export interface PolicyRuleResponseContract {
     'address': string;
     /**
      * 
-     * @type {PrismaJsonValue}
+     * @type {any}
      * @memberof PolicyRuleResponseContract
      */
-    'abi': PrismaJsonValue | null;
+    'abi': any;
     /**
      * 
      * @type {boolean}
@@ -1287,13 +1435,6 @@ export interface PolicyUpdateRequest {
      * @memberof PolicyUpdateRequest
      */
     'strategy'?: Strategy;
-}
-/**
- * From https://github.com/sindresorhus/type-fest/ Matches any valid JSON value.
- * @export
- * @interface PrismaJsonValue
- */
-export interface PrismaJsonValue {
 }
 /**
  * 
@@ -1461,10 +1602,10 @@ export interface ResponseResponse {
     'status'?: number | null;
     /**
      * 
-     * @type {JsonValue}
+     * @type {Array<Log>}
      * @memberof ResponseResponse
      */
-    'logs'?: JsonValue | null;
+    'logs'?: Array<Log> | null;
     /**
      * 
      * @type {string}
@@ -1473,10 +1614,10 @@ export interface ResponseResponse {
     'to'?: string | null;
     /**
      * 
-     * @type {JsonValue}
+     * @type {any}
      * @memberof ResponseResponse
      */
-    'error'?: JsonValue | null;
+    'error'?: any;
 }
 /**
  * 
@@ -1620,17 +1761,10 @@ export interface SessionResponse {
     'next_action': object | null;
     /**
      * 
-     * @type {SessionResponseTransactionIntents}
+     * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof SessionResponse
      */
-    'transaction_intents': SessionResponseTransactionIntents | null;
-}
-/**
- * 
- * @export
- * @interface SessionResponseTransactionIntents
- */
-export interface SessionResponseTransactionIntents {
+    'transaction_intents': Array<PolicyResponseTransactionIntentsInner> | null;
 }
 /**
  * 
@@ -1704,6 +1838,62 @@ export interface SignPayloadResponse {
      * 
      * @type {string}
      * @memberof SignPayloadResponse
+     */
+    'signature': string;
+}
+/**
+ * 
+ * @export
+ * @interface SignTextRequest
+ */
+export interface SignTextRequest {
+    /**
+     * Text to sign
+     * @type {string}
+     * @memberof SignTextRequest
+     */
+    'text': string;
+}
+/**
+ * 
+ * @export
+ * @interface SignTextResponse
+ */
+export interface SignTextResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof SignTextResponse
+     */
+    'object': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignTextResponse
+     */
+    'account': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignTextResponse
+     */
+    'address': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignTextResponse
+     */
+    'text': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignTextResponse
+     */
+    'digest': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignTextResponse
      */
     'signature': string;
 }
@@ -1877,10 +2067,10 @@ export interface TransactionIntentResponse {
     'user_operation_hash': string | null;
     /**
      * 
-     * @type {JsonValue}
+     * @type {any}
      * @memberof TransactionIntentResponse
      */
-    'user_operation'?: JsonValue | null;
+    'user_operation'?: any;
     /**
      * 
      * @type {TransactionIntentResponsePolicy}
@@ -1907,10 +2097,10 @@ export interface TransactionIntentResponse {
     'account'?: TransactionIntentResponseAccount;
     /**
      * 
-     * @type {Array<InteractionResponse>}
+     * @type {Array<Interaction>}
      * @memberof TransactionIntentResponse
      */
-    'interactions': Array<InteractionResponse> | null;
+    'interactions': Array<Interaction> | null;
     /**
      * 
      * @type {ResponseResponse}
@@ -1968,10 +2158,10 @@ export interface TransactionIntentResponseAccount {
     'chain_id': number;
     /**
      * 
-     * @type {PolicyResponseTransactionIntents}
+     * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof TransactionIntentResponseAccount
      */
-    'transaction_intents'?: PolicyResponseTransactionIntents;
+    'transaction_intents': Array<PolicyResponseTransactionIntentsInner>;
 }
 /**
  * 
@@ -2023,16 +2213,16 @@ export interface TransactionIntentResponsePlayer {
     'metadata': string;
     /**
      * 
-     * @type {PolicyResponseTransactionIntents}
+     * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof TransactionIntentResponsePlayer
      */
-    'transaction_intents'?: PolicyResponseTransactionIntents;
+    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
     /**
      * 
-     * @type {PlayerResponseAccounts}
+     * @type {Array<TransactionIntentResponseAccount>}
      * @memberof TransactionIntentResponsePlayer
      */
-    'accounts'?: PlayerResponseAccounts;
+    'accounts'?: Array<TransactionIntentResponseAccount>;
 }
 /**
  * 
@@ -2078,16 +2268,16 @@ export interface TransactionIntentResponsePolicy {
     'strategy': any;
     /**
      * 
-     * @type {PolicyResponseTransactionIntents}
+     * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof TransactionIntentResponsePolicy
      */
-    'transaction_intents'?: PolicyResponseTransactionIntents;
+    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
     /**
      * 
-     * @type {PolicyResponsePolicyRules}
+     * @type {Array<PolicyResponsePolicyRulesInner>}
      * @memberof TransactionIntentResponsePolicy
      */
-    'policy_rules'?: PolicyResponsePolicyRules;
+    'policy_rules'?: Array<PolicyResponsePolicyRulesInner>;
 }
 /**
  * 
@@ -2332,6 +2522,45 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
+         * Sign a given text
+         * @param {string} id Specifies the unique account ID.
+         * @param {SignTextRequest} signTextRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signText: async (id: string, signTextRequest: SignTextRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('signText', 'id', id)
+            // verify required parameter 'signTextRequest' is not null or undefined
+            assertParamExists('signText', 'signTextRequest', signTextRequest)
+            const localVarPath = `/v1/accounts/{id}/sign-text`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(signTextRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Request the ownership transfer of an account to a given address.
          * @param {string} id Specifies the unique account ID.
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
@@ -2435,6 +2664,17 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Sign a given text
+         * @param {string} id Specifies the unique account ID.
+         * @param {SignTextRequest} signTextRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async signText(id: string, signTextRequest: SignTextRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignTextResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signText(id, signTextRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Request the ownership transfer of an account to a given address.
          * @param {string} id Specifies the unique account ID.
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
@@ -2503,6 +2743,16 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          */
         signPayload(id: string, signPayloadRequest: SignPayloadRequest, options?: any): AxiosPromise<SignPayloadResponse> {
             return localVarFp.signPayload(id, signPayloadRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Sign a given text
+         * @param {string} id Specifies the unique account ID.
+         * @param {SignTextRequest} signTextRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signText(id: string, signTextRequest: SignTextRequest, options?: any): AxiosPromise<SignTextResponse> {
+            return localVarFp.signText(id, signTextRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Request the ownership transfer of an account to a given address.
@@ -2581,6 +2831,18 @@ export class AccountsApi extends BaseAPI {
      */
     public signPayload(id: string, signPayloadRequest: SignPayloadRequest, options?: AxiosRequestConfig) {
         return AccountsApiFp(this.configuration).signPayload(id, signPayloadRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Sign a given text
+     * @param {string} id Specifies the unique account ID.
+     * @param {SignTextRequest} signTextRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApi
+     */
+    public signText(id: string, signTextRequest: SignTextRequest, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).signText(id, signTextRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

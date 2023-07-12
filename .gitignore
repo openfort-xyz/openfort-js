@@ -3,3 +3,5 @@ dist
 .idea
 tsconfig.tsbuildinfo
 example/openfort.data
+example/.env
+yarn-error.log

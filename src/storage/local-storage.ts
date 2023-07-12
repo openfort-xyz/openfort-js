@@ -22,15 +22,15 @@ export class LocalStorage implements BaseStorage {
         throw Error("Local storage is not available in the current context");
     }
 
-    public async get(key: StorageKeys): Promise<string | null> {
+    public get(key: StorageKeys): string {
         return LocalStorage.localStorage.getItem(this.formatKey(key));
     }
 
-    public async save(key: StorageKeys, value: string): Promise<void> {
+    public save(key: StorageKeys, value: string): void {
         LocalStorage.localStorage.setItem(this.formatKey(key), value);
     }
 
-    public async remove(key: StorageKeys): Promise<void> {
+    public remove(key: StorageKeys): void {
         LocalStorage.localStorage.removeItem(this.formatKey(key));
     }
 }
