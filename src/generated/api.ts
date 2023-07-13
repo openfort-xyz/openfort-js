@@ -391,6 +391,31 @@ export interface CreatePlayerRequest {
 /**
  * 
  * @export
+ * @interface CreatePolicyRequest
+ */
+export interface CreatePolicyRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePolicyRequest
+     */
+    'name': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreatePolicyRequest
+     */
+    'chain_id': number;
+    /**
+     * 
+     * @type {PolicyStrategy}
+     * @memberof CreatePolicyRequest
+     */
+    'strategy': PolicyStrategy;
+}
+/**
+ * 
+ * @export
  * @interface CreateSessionPlayerRequest
  */
 export interface CreateSessionPlayerRequest {
@@ -515,6 +540,37 @@ export interface CreateSessionRequest {
      * @memberof CreateSessionRequest
      */
     'whitelist'?: Array<string>;
+}
+/**
+ * 
+ * @export
+ * @interface DomainData
+ */
+export interface DomainData {
+    /**
+     * 
+     * @type {number}
+     * @memberof DomainData
+     */
+    'chainId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof DomainData
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof DomainData
+     */
+    'version'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof DomainData
+     */
+    'verifyingContract'?: string;
 }
 /**
  * 
@@ -974,31 +1030,6 @@ export interface PolicyDeleteResponse {
 /**
  * 
  * @export
- * @interface PolicyRequest
- */
-export interface PolicyRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRequest
-     */
-    'name': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PolicyRequest
-     */
-    'chain_id': number;
-    /**
-     * 
-     * @type {Strategy}
-     * @memberof PolicyRequest
-     */
-    'strategy'?: Strategy;
-}
-/**
- * 
- * @export
  * @interface PolicyResponse
  */
 export interface PolicyResponse {
@@ -1034,10 +1065,10 @@ export interface PolicyResponse {
     'chain_id': number;
     /**
      * 
-     * @type {any}
+     * @type {PolicyStrategy}
      * @memberof PolicyResponse
      */
-    'strategy': any;
+    'strategy': PolicyStrategy;
     /**
      * 
      * @type {Array<PolicyResponseTransactionIntentsInner>}
@@ -1414,28 +1445,30 @@ export type PolicySchema = typeof PolicySchema[keyof typeof PolicySchema];
 /**
  * 
  * @export
- * @interface PolicyUpdateRequest
+ * @interface PolicyStrategy
  */
-export interface PolicyUpdateRequest {
+export interface PolicyStrategy {
+    /**
+     * 
+     * @type {SponsorSchema}
+     * @memberof PolicyStrategy
+     */
+    'sponsor_schema': SponsorSchema;
     /**
      * 
      * @type {string}
-     * @memberof PolicyUpdateRequest
+     * @memberof PolicyStrategy
      */
-    'name'?: string;
+    'token_contract': string | null;
     /**
      * 
-     * @type {number}
-     * @memberof PolicyUpdateRequest
+     * @type {string}
+     * @memberof PolicyStrategy
      */
-    'chain_id'?: number;
-    /**
-     * 
-     * @type {Strategy}
-     * @memberof PolicyUpdateRequest
-     */
-    'strategy'?: Strategy;
+    'token_contract_amount': string | null;
 }
+
+
 /**
  * 
  * @export
@@ -1798,11 +1831,35 @@ export interface SessionsResponse {
  */
 export interface SignPayloadRequest {
     /**
-     * Payload to sign
+     * 
+     * @type {DomainData}
+     * @memberof SignPayloadRequest
+     */
+    'domain': DomainData;
+    /**
+     * 
+     * @type {{ [key: string]: Array<TypedDataField>; }}
+     * @memberof SignPayloadRequest
+     */
+    'types': { [key: string]: Array<TypedDataField>; };
+    /**
+     * 
      * @type {string}
      * @memberof SignPayloadRequest
      */
-    'payload': string;
+    'primaryType'?: string;
+    /**
+     * 
+     * @type {{ [key: string]: any; }}
+     * @memberof SignPayloadRequest
+     */
+    'value': { [key: string]: any; };
+    /**
+     * Hash to verify and that will be signed
+     * @type {string}
+     * @memberof SignPayloadRequest
+     */
+    'hash': string;
 }
 /**
  * 
@@ -1833,67 +1890,11 @@ export interface SignPayloadResponse {
      * @type {string}
      * @memberof SignPayloadResponse
      */
-    'payload': string;
+    'hash': string;
     /**
      * 
      * @type {string}
      * @memberof SignPayloadResponse
-     */
-    'signature': string;
-}
-/**
- * 
- * @export
- * @interface SignTextRequest
- */
-export interface SignTextRequest {
-    /**
-     * Text to sign
-     * @type {string}
-     * @memberof SignTextRequest
-     */
-    'text': string;
-}
-/**
- * 
- * @export
- * @interface SignTextResponse
- */
-export interface SignTextResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof SignTextResponse
-     */
-    'object': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SignTextResponse
-     */
-    'account': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SignTextResponse
-     */
-    'address': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SignTextResponse
-     */
-    'text': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SignTextResponse
-     */
-    'digest': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SignTextResponse
      */
     'signature': string;
 }
@@ -1933,28 +1934,17 @@ export type SortOrder = typeof SortOrder[keyof typeof SortOrder];
 /**
  * 
  * @export
- * @interface Strategy
+ * @enum {string}
  */
-export interface Strategy {
-    /**
-     * 
-     * @type {string}
-     * @memberof Strategy
-     */
-    'sponsor_schema': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Strategy
-     */
-    'token_contract': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof Strategy
-     */
-    'token_contract_amount': string | null;
-}
+
+export const SponsorSchema = {
+    PayForUser: 'pay_for_user',
+    ChargeCustomTokens: 'charge_custom_tokens'
+} as const;
+
+export type SponsorSchema = typeof SponsorSchema[keyof typeof SponsorSchema];
+
+
 /**
  * 
  * @export
@@ -2262,10 +2252,10 @@ export interface TransactionIntentResponsePolicy {
     'chain_id': number;
     /**
      * 
-     * @type {any}
+     * @type {PolicyStrategy}
      * @memberof TransactionIntentResponsePolicy
      */
-    'strategy': any;
+    'strategy': PolicyStrategy;
     /**
      * 
      * @type {Array<PolicyResponseTransactionIntentsInner>}
@@ -2322,6 +2312,50 @@ export interface TransferOwnershipRequest {
      * @memberof TransferOwnershipRequest
      */
     'policy': string;
+}
+/**
+ * 
+ * @export
+ * @interface TypedDataField
+ */
+export interface TypedDataField {
+    /**
+     * 
+     * @type {string}
+     * @memberof TypedDataField
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TypedDataField
+     */
+    'type': string;
+}
+/**
+ * 
+ * @export
+ * @interface UpdatePolicyRequest
+ */
+export interface UpdatePolicyRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdatePolicyRequest
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof UpdatePolicyRequest
+     */
+    'chain_id'?: number;
+    /**
+     * 
+     * @type {PolicyStrategy}
+     * @memberof UpdatePolicyRequest
+     */
+    'strategy'?: PolicyStrategy;
 }
 
 /**
@@ -2522,45 +2556,6 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Sign a given text
-         * @param {string} id Specifies the unique account ID.
-         * @param {SignTextRequest} signTextRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        signText: async (id: string, signTextRequest: SignTextRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('signText', 'id', id)
-            // verify required parameter 'signTextRequest' is not null or undefined
-            assertParamExists('signText', 'signTextRequest', signTextRequest)
-            const localVarPath = `/v1/accounts/{id}/sign-text`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(signTextRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * Request the ownership transfer of an account to a given address.
          * @param {string} id Specifies the unique account ID.
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
@@ -2664,17 +2659,6 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Sign a given text
-         * @param {string} id Specifies the unique account ID.
-         * @param {SignTextRequest} signTextRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async signText(id: string, signTextRequest: SignTextRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignTextResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.signText(id, signTextRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * Request the ownership transfer of an account to a given address.
          * @param {string} id Specifies the unique account ID.
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
@@ -2743,16 +2727,6 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          */
         signPayload(id: string, signPayloadRequest: SignPayloadRequest, options?: any): AxiosPromise<SignPayloadResponse> {
             return localVarFp.signPayload(id, signPayloadRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Sign a given text
-         * @param {string} id Specifies the unique account ID.
-         * @param {SignTextRequest} signTextRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        signText(id: string, signTextRequest: SignTextRequest, options?: any): AxiosPromise<SignTextResponse> {
-            return localVarFp.signText(id, signTextRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Request the ownership transfer of an account to a given address.
@@ -2831,18 +2805,6 @@ export class AccountsApi extends BaseAPI {
      */
     public signPayload(id: string, signPayloadRequest: SignPayloadRequest, options?: AxiosRequestConfig) {
         return AccountsApiFp(this.configuration).signPayload(id, signPayloadRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Sign a given text
-     * @param {string} id Specifies the unique account ID.
-     * @param {SignTextRequest} signTextRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccountsApi
-     */
-    public signText(id: string, signTextRequest: SignTextRequest, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).signText(id, signTextRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3950,13 +3912,13 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * Creates a policy object.
-         * @param {PolicyRequest} policyRequest 
+         * @param {CreatePolicyRequest} createPolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicy: async (policyRequest: PolicyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'policyRequest' is not null or undefined
-            assertParamExists('createPolicy', 'policyRequest', policyRequest)
+        createPolicy: async (createPolicyRequest: CreatePolicyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createPolicyRequest' is not null or undefined
+            assertParamExists('createPolicy', 'createPolicyRequest', createPolicyRequest)
             const localVarPath = `/v1/policies`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3976,7 +3938,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(policyRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createPolicyRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4269,15 +4231,15 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * Updates a policy object.
          * @param {string} id 
-         * @param {PolicyUpdateRequest} policyUpdateRequest 
+         * @param {UpdatePolicyRequest} updatePolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicy: async (id: string, policyUpdateRequest: PolicyUpdateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePolicy: async (id: string, updatePolicyRequest: UpdatePolicyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updatePolicy', 'id', id)
-            // verify required parameter 'policyUpdateRequest' is not null or undefined
-            assertParamExists('updatePolicy', 'policyUpdateRequest', policyUpdateRequest)
+            // verify required parameter 'updatePolicyRequest' is not null or undefined
+            assertParamExists('updatePolicy', 'updatePolicyRequest', updatePolicyRequest)
             const localVarPath = `/v1/policies/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4298,7 +4260,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(policyUpdateRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(updatePolicyRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4360,12 +4322,12 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
     return {
         /**
          * Creates a policy object.
-         * @param {PolicyRequest} policyRequest 
+         * @param {CreatePolicyRequest} createPolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicy(policyRequest: PolicyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicy(policyRequest, options);
+        async createPolicy(createPolicyRequest: CreatePolicyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicy(createPolicyRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4451,12 +4413,12 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
         /**
          * Updates a policy object.
          * @param {string} id 
-         * @param {PolicyUpdateRequest} policyUpdateRequest 
+         * @param {UpdatePolicyRequest} updatePolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePolicy(id: string, policyUpdateRequest: PolicyUpdateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicy(id, policyUpdateRequest, options);
+        async updatePolicy(id: string, updatePolicyRequest: UpdatePolicyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicy(id, updatePolicyRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4483,12 +4445,12 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * Creates a policy object.
-         * @param {PolicyRequest} policyRequest 
+         * @param {CreatePolicyRequest} createPolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicy(policyRequest: PolicyRequest, options?: any): AxiosPromise<PolicyResponse> {
-            return localVarFp.createPolicy(policyRequest, options).then((request) => request(axios, basePath));
+        createPolicy(createPolicyRequest: CreatePolicyRequest, options?: any): AxiosPromise<PolicyResponse> {
+            return localVarFp.createPolicy(createPolicyRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4566,12 +4528,12 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
         /**
          * Updates a policy object.
          * @param {string} id 
-         * @param {PolicyUpdateRequest} policyUpdateRequest 
+         * @param {UpdatePolicyRequest} updatePolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicy(id: string, policyUpdateRequest: PolicyUpdateRequest, options?: any): AxiosPromise<PolicyResponse> {
-            return localVarFp.updatePolicy(id, policyUpdateRequest, options).then((request) => request(axios, basePath));
+        updatePolicy(id: string, updatePolicyRequest: UpdatePolicyRequest, options?: any): AxiosPromise<PolicyResponse> {
+            return localVarFp.updatePolicy(id, updatePolicyRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4596,13 +4558,13 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
 export class PoliciesApi extends BaseAPI {
     /**
      * Creates a policy object.
-     * @param {PolicyRequest} policyRequest 
+     * @param {CreatePolicyRequest} createPolicyRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public createPolicy(policyRequest: PolicyRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).createPolicy(policyRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPolicy(createPolicyRequest: CreatePolicyRequest, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).createPolicy(createPolicyRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4695,13 +4657,13 @@ export class PoliciesApi extends BaseAPI {
     /**
      * Updates a policy object.
      * @param {string} id 
-     * @param {PolicyUpdateRequest} policyUpdateRequest 
+     * @param {UpdatePolicyRequest} updatePolicyRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public updatePolicy(id: string, policyUpdateRequest: PolicyUpdateRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).updatePolicy(id, policyUpdateRequest, options).then((request) => request(this.axios, this.basePath));
+    public updatePolicy(id: string, updatePolicyRequest: UpdatePolicyRequest, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).updatePolicy(id, updatePolicyRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
