@@ -87,10 +87,10 @@ export interface AccountResponse {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof AccountResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -155,10 +155,10 @@ export interface AccountsResponse {
 export interface ApiKeyResponse {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ApiKeyResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -309,10 +309,10 @@ export interface ContractResponse {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ContractResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -797,10 +797,10 @@ export interface PlayerResponse {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof PlayerResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -1016,10 +1016,10 @@ export interface PolicyResponse {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof PolicyResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -1071,10 +1071,10 @@ export interface PolicyResponsePolicyRulesInner {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof PolicyResponsePolicyRulesInner
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {PolicySchema}
@@ -1116,16 +1116,16 @@ export interface PolicyResponseTransactionIntentsInner {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'updated_at': string;
+    'updated_at': number;
     /**
      * 
      * @type {number}
@@ -1259,10 +1259,10 @@ export interface PolicyRuleResponse {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof PolicyRuleResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {PolicySchema}
@@ -1304,10 +1304,10 @@ export interface PolicyRuleResponseContract {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof PolicyRuleResponseContract
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -1508,16 +1508,16 @@ export interface ProjectResponse {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ProjectResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ProjectResponse
      */
-    'updated_at': string;
+    'updated_at': number;
     /**
      * 
      * @type {string}
@@ -1572,10 +1572,10 @@ export interface ProjectsResponse {
 export interface ResponseResponse {
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ResponseResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {number}
@@ -1707,16 +1707,16 @@ export interface SessionResponse {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof SessionResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof SessionResponse
      */
-    'updated_at': string;
+    'updated_at': number;
     /**
      * 
      * @type {boolean}
@@ -2043,16 +2043,16 @@ export interface TransactionIntentResponse {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof TransactionIntentResponse
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof TransactionIntentResponse
      */
-    'updated_at': string;
+    'updated_at': number;
     /**
      * 
      * @type {number}
@@ -2128,10 +2128,10 @@ export interface TransactionIntentResponseAccount {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof TransactionIntentResponseAccount
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -2183,10 +2183,10 @@ export interface TransactionIntentResponsePlayer {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof TransactionIntentResponsePlayer
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -2244,10 +2244,10 @@ export interface TransactionIntentResponsePolicy {
     'object': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof TransactionIntentResponsePolicy
      */
-    'created_at': string;
+    'created_at': number;
     /**
      * 
      * @type {string}
@@ -4060,10 +4060,11 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
          * @param {number} [limit] 
          * @param {Array<string>} [expand] 
          * @param {number} [skip] 
+         * @param {SortOrder} [order] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicies: async (limit?: number, expand?: Array<string>, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicies: async (limit?: number, expand?: Array<string>, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/policies`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4086,6 +4087,10 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
 
             if (skip !== undefined) {
                 localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
             }
 
 
@@ -4389,11 +4394,12 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
          * @param {number} [limit] 
          * @param {Array<string>} [expand] 
          * @param {number} [skip] 
+         * @param {SortOrder} [order] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicies(limit?: number, expand?: Array<string>, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PoliciesResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicies(limit, expand, skip, options);
+        async getPolicies(limit?: number, expand?: Array<string>, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PoliciesResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicies(limit, expand, skip, order, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4508,11 +4514,12 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
          * @param {number} [limit] 
          * @param {Array<string>} [expand] 
          * @param {number} [skip] 
+         * @param {SortOrder} [order] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicies(limit?: number, expand?: Array<string>, skip?: number, options?: any): AxiosPromise<PoliciesResponse> {
-            return localVarFp.getPolicies(limit, expand, skip, options).then((request) => request(axios, basePath));
+        getPolicies(limit?: number, expand?: Array<string>, skip?: number, order?: SortOrder, options?: any): AxiosPromise<PoliciesResponse> {
+            return localVarFp.getPolicies(limit, expand, skip, order, options).then((request) => request(axios, basePath));
         },
         /**
          * Gets a policy object for a given project.
@@ -4626,12 +4633,13 @@ export class PoliciesApi extends BaseAPI {
      * @param {number} [limit] 
      * @param {Array<string>} [expand] 
      * @param {number} [skip] 
+     * @param {SortOrder} [order] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public getPolicies(limit?: number, expand?: Array<string>, skip?: number, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicies(limit, expand, skip, options).then((request) => request(this.axios, this.basePath));
+    public getPolicies(limit?: number, expand?: Array<string>, skip?: number, order?: SortOrder, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).getPolicies(limit, expand, skip, order, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
