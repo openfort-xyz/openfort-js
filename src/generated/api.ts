@@ -26,50 +26,6 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
 /**
  * 
  * @export
- * @interface AccountPlayerRequest
- */
-export interface AccountPlayerRequest {
-    /**
-     * The chain_id
-     * @type {number}
-     * @memberof AccountPlayerRequest
-     */
-    'chain_id': number;
-    /**
-     * The address of the external owner
-     * @type {string}
-     * @memberof AccountPlayerRequest
-     */
-    'external_owner_address'?: string;
-}
-/**
- * 
- * @export
- * @interface AccountRequest
- */
-export interface AccountRequest {
-    /**
-     * The chain_id
-     * @type {number}
-     * @memberof AccountRequest
-     */
-    'chain_id': number;
-    /**
-     * The player ID
-     * @type {string}
-     * @memberof AccountRequest
-     */
-    'player': string;
-    /**
-     * The address of the external owner
-     * @type {string}
-     * @memberof AccountRequest
-     */
-    'external_owner_address'?: string;
-}
-/**
- * 
- * @export
  * @interface AccountResponse
  */
 export interface AccountResponse {
@@ -90,7 +46,7 @@ export interface AccountResponse {
      * @type {number}
      * @memberof AccountResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -114,13 +70,13 @@ export interface AccountResponse {
      * @type {number}
      * @memberof AccountResponse
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof AccountResponse
      */
-    'transaction_intents': Array<PolicyResponseTransactionIntentsInner>;
+    'transactionIntents': Array<PolicyResponseTransactionIntentsInner>;
 }
 /**
  * 
@@ -158,7 +114,7 @@ export interface ApiKeyResponse {
      * @type {number}
      * @memberof ApiKeyResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -189,7 +145,7 @@ export interface AssetInventory {
      * @type {AssetType}
      * @memberof AssetInventory
      */
-    'asset_type': AssetType;
+    'assetType': AssetType;
     /**
      * 
      * @type {string}
@@ -201,7 +157,7 @@ export interface AssetInventory {
      * @type {number}
      * @memberof AssetInventory
      */
-    'token_id'?: number;
+    'tokenId'?: number;
     /**
      * amount in Wei
      * @type {string}
@@ -255,43 +211,6 @@ export interface ContractDeleteResponse {
 /**
  * 
  * @export
- * @interface ContractRequest
- */
-export interface ContractRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof ContractRequest
-     */
-    'name': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ContractRequest
-     */
-    'chain_id': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ContractRequest
-     */
-    'address': string;
-    /**
-     * 
-     * @type {any}
-     * @memberof ContractRequest
-     */
-    'abi'?: any;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ContractRequest
-     */
-    'public_verification'?: boolean;
-}
-/**
- * 
- * @export
  * @interface ContractResponse
  */
 export interface ContractResponse {
@@ -312,7 +231,7 @@ export interface ContractResponse {
      * @type {number}
      * @memberof ContractResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -324,7 +243,7 @@ export interface ContractResponse {
      * @type {number}
      * @memberof ContractResponse
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {string}
@@ -333,16 +252,16 @@ export interface ContractResponse {
     'address': string;
     /**
      * 
-     * @type {any}
+     * @type {Array<JsonFragment>}
      * @memberof ContractResponse
      */
-    'abi': any;
+    'abi': Array<JsonFragment>;
     /**
      * 
      * @type {boolean}
      * @memberof ContractResponse
      */
-    'public_verification': boolean;
+    'publicVerification': boolean;
 }
 /**
  * 
@@ -372,6 +291,87 @@ export interface ContractsResponse {
 /**
  * 
  * @export
+ * @interface CreateAccountRequest
+ */
+export interface CreateAccountRequest {
+    /**
+     * The chain id
+     * @type {number}
+     * @memberof CreateAccountRequest
+     */
+    'chainId': number;
+    /**
+     * The player ID
+     * @type {string}
+     * @memberof CreateAccountRequest
+     */
+    'player': string;
+    /**
+     * The address of the external owner
+     * @type {string}
+     * @memberof CreateAccountRequest
+     */
+    'externalOwnerAddress'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateContractRequest
+ */
+export interface CreateContractRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateContractRequest
+     */
+    'name': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateContractRequest
+     */
+    'chainId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateContractRequest
+     */
+    'address': string;
+    /**
+     * 
+     * @type {any}
+     * @memberof CreateContractRequest
+     */
+    'abi'?: any;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CreateContractRequest
+     */
+    'publicVerification'?: boolean;
+}
+/**
+ * 
+ * @export
+ * @interface CreatePlayerAccountRequest
+ */
+export interface CreatePlayerAccountRequest {
+    /**
+     * The chain id
+     * @type {number}
+     * @memberof CreatePlayerAccountRequest
+     */
+    'chainId': number;
+    /**
+     * The address of the external owner
+     * @type {string}
+     * @memberof CreatePlayerAccountRequest
+     */
+    'externalOwnerAddress'?: string;
+}
+/**
+ * 
+ * @export
  * @interface CreatePlayerRequest
  */
 export interface CreatePlayerRequest {
@@ -391,6 +391,33 @@ export interface CreatePlayerRequest {
 /**
  * 
  * @export
+ * @interface CreatePolicyAllowFunctionRequest
+ */
+export interface CreatePolicyAllowFunctionRequest {
+    /**
+     * 
+     * @type {PolicySchema}
+     * @memberof CreatePolicyAllowFunctionRequest
+     */
+    'type': PolicySchema;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePolicyAllowFunctionRequest
+     */
+    'functionName': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePolicyAllowFunctionRequest
+     */
+    'contract': string | null;
+}
+
+
+/**
+ * 
+ * @export
  * @interface CreatePolicyRequest
  */
 export interface CreatePolicyRequest {
@@ -405,7 +432,7 @@ export interface CreatePolicyRequest {
      * @type {number}
      * @memberof CreatePolicyRequest
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {PolicyStrategy}
@@ -413,6 +440,39 @@ export interface CreatePolicyRequest {
      */
     'strategy': PolicyStrategy;
 }
+/**
+ * 
+ * @export
+ * @interface CreatePolicyRuleRequest
+ */
+export interface CreatePolicyRuleRequest {
+    /**
+     * 
+     * @type {PolicySchema}
+     * @memberof CreatePolicyRuleRequest
+     */
+    'type': PolicySchema;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePolicyRuleRequest
+     */
+    'functionName': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePolicyRuleRequest
+     */
+    'contract': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreatePolicyRuleRequest
+     */
+    'policy': string;
+}
+
+
 /**
  * 
  * @export
@@ -442,25 +502,25 @@ export interface CreateSessionPlayerRequest {
      * @type {string}
      * @memberof CreateSessionPlayerRequest
      */
-    'external_owner_address'?: string;
+    'externalOwnerAddress'?: string;
     /**
      * 
      * @type {number}
      * @memberof CreateSessionPlayerRequest
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {number}
      * @memberof CreateSessionPlayerRequest
      */
-    'valid_until': number;
+    'validUntil': number;
     /**
      * 
      * @type {number}
      * @memberof CreateSessionPlayerRequest
      */
-    'valid_after': number;
+    'validAfter': number;
     /**
      * 
      * @type {number}
@@ -503,7 +563,7 @@ export interface CreateSessionRequest {
      * @type {string}
      * @memberof CreateSessionRequest
      */
-    'external_owner_address'?: string;
+    'externalOwnerAddress'?: string;
     /**
      * 
      * @type {string}
@@ -515,19 +575,19 @@ export interface CreateSessionRequest {
      * @type {number}
      * @memberof CreateSessionRequest
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {number}
      * @memberof CreateSessionRequest
      */
-    'valid_until': number;
+    'validUntil': number;
     /**
      * 
      * @type {number}
      * @memberof CreateSessionRequest
      */
-    'valid_after': number;
+    'validAfter': number;
     /**
      * 
      * @type {number}
@@ -620,13 +680,13 @@ export interface Interaction {
      * @type {string}
      * @memberof Interaction
      */
-    'function_name': string;
+    'functionName': string;
     /**
      * 
      * @type {Array<any>}
      * @memberof Interaction
      */
-    'function_args': Array<any>;
+    'functionArgs': Array<any>;
 }
 /**
  * 
@@ -645,19 +705,80 @@ export interface InventoryResponse {
      * @type {Array<AssetInventory>}
      * @memberof InventoryResponse
      */
-    'nft_assets'?: Array<AssetInventory>;
+    'nftAssets'?: Array<AssetInventory>;
     /**
      * 
      * @type {AssetInventory}
      * @memberof InventoryResponse
      */
-    'native_asset'?: AssetInventory;
+    'nativeAsset'?: AssetInventory;
     /**
      * 
      * @type {Array<AssetInventory>}
      * @memberof InventoryResponse
      */
-    'token_assets'?: Array<AssetInventory>;
+    'tokenAssets'?: Array<AssetInventory>;
+}
+/**
+ * 
+ * @export
+ * @interface JsonFragment
+ */
+export interface JsonFragment {
+    /**
+     * 
+     * @type {string}
+     * @memberof JsonFragment
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JsonFragment
+     */
+    'type'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof JsonFragment
+     */
+    'anonymous'?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof JsonFragment
+     */
+    'payable'?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof JsonFragment
+     */
+    'constant'?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof JsonFragment
+     */
+    'stateMutability'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof JsonFragment
+     */
+    'inputs'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof JsonFragment
+     */
+    'outputs'?: object;
+    /**
+     * 
+     * @type {string}
+     * @memberof JsonFragment
+     */
+    'gas'?: string;
 }
 /**
  * 
@@ -731,13 +852,13 @@ export interface NextActionPayload {
      * @type {any}
      * @memberof NextActionPayload
      */
-    'user_op'?: any;
+    'userOp'?: any;
     /**
      * 
      * @type {string}
      * @memberof NextActionPayload
      */
-    'user_op_hash'?: string;
+    'userOpHash'?: string;
 }
 /**
  * 
@@ -909,7 +1030,7 @@ export interface PlayerResponse {
      * @type {number}
      * @memberof PlayerResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -939,7 +1060,7 @@ export interface PlayerResponse {
      * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof PlayerResponse
      */
-    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
+    'transactionIntents'?: Array<PolicyResponseTransactionIntentsInner>;
     /**
      * 
      * @type {Array<TransactionIntentResponseAccount>}
@@ -960,17 +1081,17 @@ export interface PlayerTransferOwnershipRequest {
      */
     'policy': string;
     /**
-     * The chain_id where the account is.
+     * The chain id where the account is.
      * @type {number}
      * @memberof PlayerTransferOwnershipRequest
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * The address of the new owner
      * @type {string}
      * @memberof PlayerTransferOwnershipRequest
      */
-    'new_owner_address': string;
+    'newOwnerAddress': string;
     /**
      * The player ID
      * @type {string}
@@ -1031,33 +1152,6 @@ export interface PoliciesResponse {
 /**
  * 
  * @export
- * @interface PolicyAllowFunctionRequest
- */
-export interface PolicyAllowFunctionRequest {
-    /**
-     * 
-     * @type {PolicySchema}
-     * @memberof PolicyAllowFunctionRequest
-     */
-    'type': PolicySchema;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyAllowFunctionRequest
-     */
-    'function_name': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyAllowFunctionRequest
-     */
-    'contract': string | null;
-}
-
-
-/**
- * 
- * @export
  * @interface PolicyDeleteResponse
  */
 export interface PolicyDeleteResponse {
@@ -1103,7 +1197,7 @@ export interface PolicyResponse {
      * @type {number}
      * @memberof PolicyResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -1115,7 +1209,7 @@ export interface PolicyResponse {
      * @type {number}
      * @memberof PolicyResponse
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {PolicyStrategy}
@@ -1127,13 +1221,13 @@ export interface PolicyResponse {
      * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof PolicyResponse
      */
-    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
+    'transactionIntents'?: Array<PolicyResponseTransactionIntentsInner>;
     /**
      * 
      * @type {Array<PolicyResponsePolicyRulesInner>}
      * @memberof PolicyResponse
      */
-    'policy_rules'?: Array<PolicyResponsePolicyRulesInner>;
+    'policyRules'?: Array<PolicyResponsePolicyRulesInner>;
 }
 /**
  * 
@@ -1158,7 +1252,7 @@ export interface PolicyResponsePolicyRulesInner {
      * @type {number}
      * @memberof PolicyResponsePolicyRulesInner
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {PolicySchema}
@@ -1170,7 +1264,7 @@ export interface PolicyResponsePolicyRulesInner {
      * @type {string}
      * @memberof PolicyResponsePolicyRulesInner
      */
-    'function_name': string | null;
+    'functionName': string | null;
     /**
      * 
      * @type {PolicyRuleResponseContract}
@@ -1203,37 +1297,37 @@ export interface PolicyResponseTransactionIntentsInner {
      * @type {number}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {number}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'updated_at': number;
+    'updatedAt': number;
     /**
      * 
      * @type {number}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {string}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'user_operation_hash'?: string;
+    'userOperationHash'?: string;
     /**
      * 
      * @type {any}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'user_operation'?: any;
+    'userOperation'?: any;
     /**
      * 
      * @type {NextActionResponse}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'next_action'?: NextActionResponse;
+    'nextAction'?: NextActionResponse;
     /**
      * 
      * @type {ResponseResponse}
@@ -1293,39 +1387,6 @@ export interface PolicyRuleDeleteResponse {
 /**
  * 
  * @export
- * @interface PolicyRuleRequest
- */
-export interface PolicyRuleRequest {
-    /**
-     * 
-     * @type {PolicySchema}
-     * @memberof PolicyRuleRequest
-     */
-    'type': PolicySchema;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRuleRequest
-     */
-    'function_name': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRuleRequest
-     */
-    'policy': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRuleRequest
-     */
-    'contract': string | null;
-}
-
-
-/**
- * 
- * @export
  * @interface PolicyRuleResponse
  */
 export interface PolicyRuleResponse {
@@ -1346,7 +1407,7 @@ export interface PolicyRuleResponse {
      * @type {number}
      * @memberof PolicyRuleResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {PolicySchema}
@@ -1358,7 +1419,7 @@ export interface PolicyRuleResponse {
      * @type {string}
      * @memberof PolicyRuleResponse
      */
-    'function_name': string | null;
+    'functionName': string | null;
     /**
      * 
      * @type {PolicyRuleResponseContract}
@@ -1391,7 +1452,7 @@ export interface PolicyRuleResponseContract {
      * @type {number}
      * @memberof PolicyRuleResponseContract
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -1403,7 +1464,7 @@ export interface PolicyRuleResponseContract {
      * @type {number}
      * @memberof PolicyRuleResponseContract
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {string}
@@ -1412,50 +1473,17 @@ export interface PolicyRuleResponseContract {
     'address': string;
     /**
      * 
-     * @type {any}
+     * @type {Array<JsonFragment>}
      * @memberof PolicyRuleResponseContract
      */
-    'abi': any;
+    'abi': Array<JsonFragment>;
     /**
      * 
      * @type {boolean}
      * @memberof PolicyRuleResponseContract
      */
-    'public_verification': boolean;
+    'publicVerification': boolean;
 }
-/**
- * 
- * @export
- * @interface PolicyRuleUpdateRequest
- */
-export interface PolicyRuleUpdateRequest {
-    /**
-     * 
-     * @type {PolicySchema}
-     * @memberof PolicyRuleUpdateRequest
-     */
-    'type'?: PolicySchema;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRuleUpdateRequest
-     */
-    'function_name': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRuleUpdateRequest
-     */
-    'policy'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PolicyRuleUpdateRequest
-     */
-    'contract': string | null;
-}
-
-
 /**
  * 
  * @export
@@ -1506,19 +1534,19 @@ export interface PolicyStrategy {
      * @type {SponsorSchema}
      * @memberof PolicyStrategy
      */
-    'sponsor_schema': SponsorSchema;
+    'sponsorSchema': SponsorSchema;
     /**
      * 
      * @type {string}
      * @memberof PolicyStrategy
      */
-    'token_contract'?: string;
+    'tokenContract'?: string;
     /**
      * 
      * @type {string}
      * @memberof PolicyStrategy
      */
-    'token_contract_amount'?: string;
+    'tokenContractAmount'?: string;
 }
 
 
@@ -1564,13 +1592,13 @@ export interface ProjectRequest {
      * @type {PKPolicy}
      * @memberof ProjectRequest
      */
-    'pk_policy'?: PKPolicy;
+    'pkPolicy'?: PKPolicy;
     /**
      * 
      * @type {PKLocation}
      * @memberof ProjectRequest
      */
-    'pk_location'?: PKLocation;
+    'pkLocation'?: PKLocation;
 }
 
 
@@ -1597,13 +1625,13 @@ export interface ProjectResponse {
      * @type {number}
      * @memberof ProjectResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {number}
      * @memberof ProjectResponse
      */
-    'updated_at': number;
+    'updatedAt': number;
     /**
      * 
      * @type {string}
@@ -1615,7 +1643,7 @@ export interface ProjectResponse {
      * @type {PKPolicy}
      * @memberof ProjectResponse
      */
-    'pk_policy': PKPolicy;
+    'pkPolicy': PKPolicy;
     /**
      * 
      * @type {Array<ApiKeyResponse>}
@@ -1661,25 +1689,25 @@ export interface ResponseResponse {
      * @type {number}
      * @memberof ResponseResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {number}
      * @memberof ResponseResponse
      */
-    'block_number'?: number;
+    'blockNumber'?: number;
     /**
      * 
      * @type {string}
      * @memberof ResponseResponse
      */
-    'transaction_hash'?: string;
+    'transactionHash'?: string;
     /**
      * 
      * @type {number}
      * @memberof ResponseResponse
      */
-    'gas_used'?: number;
+    'gasUsed'?: number;
     /**
      * 
      * @type {number}
@@ -1734,7 +1762,7 @@ export interface RevokeSessionPlayerRequest {
      * @type {number}
      * @memberof RevokeSessionPlayerRequest
      */
-    'chain_id': number;
+    'chainId': number;
 }
 /**
  * 
@@ -1753,7 +1781,7 @@ export interface RevokeSessionRequest {
      * @type {number}
      * @memberof RevokeSessionRequest
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {boolean}
@@ -1796,19 +1824,19 @@ export interface SessionResponse {
      * @type {number}
      * @memberof SessionResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {number}
      * @memberof SessionResponse
      */
-    'updated_at': number;
+    'updatedAt': number;
     /**
      * 
      * @type {boolean}
      * @memberof SessionResponse
      */
-    'is_active'?: boolean;
+    'isActive'?: boolean;
     /**
      * 
      * @type {string}
@@ -1820,13 +1848,13 @@ export interface SessionResponse {
      * @type {string}
      * @memberof SessionResponse
      */
-    'valid_after'?: string;
+    'validAfter'?: string;
     /**
      * 
      * @type {string}
      * @memberof SessionResponse
      */
-    'valid_until'?: string;
+    'validUntil'?: string;
     /**
      * 
      * @type {Array<string>}
@@ -1844,13 +1872,13 @@ export interface SessionResponse {
      * @type {NextActionResponse}
      * @memberof SessionResponse
      */
-    'next_action'?: NextActionResponse;
+    'nextAction'?: NextActionResponse;
     /**
      * 
      * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof SessionResponse
      */
-    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
+    'transactionIntents'?: Array<PolicyResponseTransactionIntentsInner>;
 }
 /**
  * 
@@ -2040,7 +2068,7 @@ export interface TransactionIntentRequest {
      * @type {number}
      * @memberof TransactionIntentRequest
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {string}
@@ -2052,7 +2080,7 @@ export interface TransactionIntentRequest {
      * @type {string}
      * @memberof TransactionIntentRequest
      */
-    'external_owner_address'?: string;
+    'externalOwnerAddress'?: string;
     /**
      * 
      * @type {boolean}
@@ -2089,37 +2117,37 @@ export interface TransactionIntentResponse {
      * @type {number}
      * @memberof TransactionIntentResponse
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {number}
      * @memberof TransactionIntentResponse
      */
-    'updated_at': number;
+    'updatedAt': number;
     /**
      * 
      * @type {number}
      * @memberof TransactionIntentResponse
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'user_operation_hash'?: string;
+    'userOperationHash'?: string;
     /**
      * 
      * @type {any}
      * @memberof TransactionIntentResponse
      */
-    'user_operation'?: any;
+    'userOperation'?: any;
     /**
      * 
      * @type {NextActionResponse}
      * @memberof TransactionIntentResponse
      */
-    'next_action'?: NextActionResponse;
+    'nextAction'?: NextActionResponse;
     /**
      * 
      * @type {ResponseResponse}
@@ -2174,7 +2202,7 @@ export interface TransactionIntentResponseAccount {
      * @type {number}
      * @memberof TransactionIntentResponseAccount
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -2198,13 +2226,13 @@ export interface TransactionIntentResponseAccount {
      * @type {number}
      * @memberof TransactionIntentResponseAccount
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof TransactionIntentResponseAccount
      */
-    'transaction_intents': Array<PolicyResponseTransactionIntentsInner>;
+    'transactionIntents': Array<PolicyResponseTransactionIntentsInner>;
 }
 /**
  * 
@@ -2229,7 +2257,7 @@ export interface TransactionIntentResponsePlayer {
      * @type {number}
      * @memberof TransactionIntentResponsePlayer
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -2259,7 +2287,7 @@ export interface TransactionIntentResponsePlayer {
      * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof TransactionIntentResponsePlayer
      */
-    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
+    'transactionIntents'?: Array<PolicyResponseTransactionIntentsInner>;
     /**
      * 
      * @type {Array<TransactionIntentResponseAccount>}
@@ -2290,7 +2318,7 @@ export interface TransactionIntentResponsePolicy {
      * @type {number}
      * @memberof TransactionIntentResponsePolicy
      */
-    'created_at': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
@@ -2302,7 +2330,7 @@ export interface TransactionIntentResponsePolicy {
      * @type {number}
      * @memberof TransactionIntentResponsePolicy
      */
-    'chain_id': number;
+    'chainId': number;
     /**
      * 
      * @type {PolicyStrategy}
@@ -2314,13 +2342,13 @@ export interface TransactionIntentResponsePolicy {
      * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof TransactionIntentResponsePolicy
      */
-    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
+    'transactionIntents'?: Array<PolicyResponseTransactionIntentsInner>;
     /**
      * 
      * @type {Array<PolicyResponsePolicyRulesInner>}
      * @memberof TransactionIntentResponsePolicy
      */
-    'policy_rules'?: Array<PolicyResponsePolicyRulesInner>;
+    'policyRules'?: Array<PolicyResponsePolicyRulesInner>;
 }
 /**
  * 
@@ -2358,7 +2386,7 @@ export interface TransferOwnershipRequest {
      * @type {string}
      * @memberof TransferOwnershipRequest
      */
-    'new_owner_address': string;
+    'newOwnerAddress': string;
     /**
      * The policy ID
      * @type {string}
@@ -2402,7 +2430,7 @@ export interface UpdatePolicyRequest {
      * @type {number}
      * @memberof UpdatePolicyRequest
      */
-    'chain_id'?: number;
+    'chainId'?: number;
     /**
      * 
      * @type {PolicyStrategy}
@@ -2410,6 +2438,33 @@ export interface UpdatePolicyRequest {
      */
     'strategy'?: PolicyStrategy;
 }
+/**
+ * 
+ * @export
+ * @interface UpdatePolicyRuleRequest
+ */
+export interface UpdatePolicyRuleRequest {
+    /**
+     * 
+     * @type {PolicySchema}
+     * @memberof UpdatePolicyRuleRequest
+     */
+    'type': PolicySchema;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdatePolicyRuleRequest
+     */
+    'functionName': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdatePolicyRuleRequest
+     */
+    'contract': string | null;
+}
+
+
 
 /**
  * AccountsApi - axios parameter creator
@@ -2419,13 +2474,13 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * Creates an account object.
-         * @param {AccountRequest} accountRequest 
+         * @param {CreateAccountRequest} createAccountRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAccount: async (accountRequest: AccountRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'accountRequest' is not null or undefined
-            assertParamExists('createAccount', 'accountRequest', accountRequest)
+        createAccount: async (createAccountRequest: CreateAccountRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createAccountRequest' is not null or undefined
+            assertParamExists('createAccount', 'createAccountRequest', createAccountRequest)
             const localVarPath = `/v1/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2445,7 +2500,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(accountRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createAccountRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2659,12 +2714,12 @@ export const AccountsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * Creates an account object.
-         * @param {AccountRequest} accountRequest 
+         * @param {CreateAccountRequest} createAccountRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAccount(accountRequest: AccountRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createAccount(accountRequest, options);
+        async createAccount(createAccountRequest: CreateAccountRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAccount(createAccountRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -2734,12 +2789,12 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * Creates an account object.
-         * @param {AccountRequest} accountRequest 
+         * @param {CreateAccountRequest} createAccountRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAccount(accountRequest: AccountRequest, options?: any): AxiosPromise<AccountResponse> {
-            return localVarFp.createAccount(accountRequest, options).then((request) => request(axios, basePath));
+        createAccount(createAccountRequest: CreateAccountRequest, options?: any): AxiosPromise<AccountResponse> {
+            return localVarFp.createAccount(createAccountRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
@@ -2803,13 +2858,13 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
 export class AccountsApi extends BaseAPI {
     /**
      * Creates an account object.
-     * @param {AccountRequest} accountRequest 
+     * @param {CreateAccountRequest} createAccountRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountsApi
      */
-    public createAccount(accountRequest: AccountRequest, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).createAccount(accountRequest, options).then((request) => request(this.axios, this.basePath));
+    public createAccount(createAccountRequest: CreateAccountRequest, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).createAccount(createAccountRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2882,13 +2937,13 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
     return {
         /**
          * Creates a contract object.
-         * @param {ContractRequest} contractRequest 
+         * @param {CreateContractRequest} createContractRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createContract: async (contractRequest: ContractRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'contractRequest' is not null or undefined
-            assertParamExists('createContract', 'contractRequest', contractRequest)
+        createContract: async (createContractRequest: CreateContractRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createContractRequest' is not null or undefined
+            assertParamExists('createContract', 'createContractRequest', createContractRequest)
             const localVarPath = `/v1/contracts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2908,7 +2963,7 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(contractRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createContractRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3037,12 +3092,12 @@ export const ContractsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * Creates a contract object.
-         * @param {ContractRequest} contractRequest 
+         * @param {CreateContractRequest} createContractRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createContract(contractRequest: ContractRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createContract(contractRequest, options);
+        async createContract(createContractRequest: CreateContractRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createContract(createContractRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3089,12 +3144,12 @@ export const ContractsApiFactory = function (configuration?: Configuration, base
     return {
         /**
          * Creates a contract object.
-         * @param {ContractRequest} contractRequest 
+         * @param {CreateContractRequest} createContractRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createContract(contractRequest: ContractRequest, options?: any): AxiosPromise<ContractResponse> {
-            return localVarFp.createContract(contractRequest, options).then((request) => request(axios, basePath));
+        createContract(createContractRequest: CreateContractRequest, options?: any): AxiosPromise<ContractResponse> {
+            return localVarFp.createContract(createContractRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Deletes a contract object.
@@ -3137,13 +3192,13 @@ export const ContractsApiFactory = function (configuration?: Configuration, base
 export class ContractsApi extends BaseAPI {
     /**
      * Creates a contract object.
-     * @param {ContractRequest} contractRequest 
+     * @param {CreateContractRequest} createContractRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ContractsApi
      */
-    public createContract(contractRequest: ContractRequest, options?: AxiosRequestConfig) {
-        return ContractsApiFp(this.configuration).createContract(contractRequest, options).then((request) => request(this.axios, this.basePath));
+    public createContract(createContractRequest: CreateContractRequest, options?: AxiosRequestConfig) {
+        return ContractsApiFp(this.configuration).createContract(createContractRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3227,15 +3282,15 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Creates an account object for an existing player.
          * @param {string} id Specifies the unique player ID.
-         * @param {AccountPlayerRequest} accountPlayerRequest 
+         * @param {CreatePlayerAccountRequest} createPlayerAccountRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayerAccount: async (id: string, accountPlayerRequest: AccountPlayerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPlayerAccount: async (id: string, createPlayerAccountRequest: CreatePlayerAccountRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('createPlayerAccount', 'id', id)
-            // verify required parameter 'accountPlayerRequest' is not null or undefined
-            assertParamExists('createPlayerAccount', 'accountPlayerRequest', accountPlayerRequest)
+            // verify required parameter 'createPlayerAccountRequest' is not null or undefined
+            assertParamExists('createPlayerAccount', 'createPlayerAccountRequest', createPlayerAccountRequest)
             const localVarPath = `/v1/players/{id}/accounts`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -3256,7 +3311,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(accountPlayerRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createPlayerAccountRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3612,12 +3667,12 @@ export const PlayersApiFp = function(configuration?: Configuration) {
         /**
          * Creates an account object for an existing player.
          * @param {string} id Specifies the unique player ID.
-         * @param {AccountPlayerRequest} accountPlayerRequest 
+         * @param {CreatePlayerAccountRequest} createPlayerAccountRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPlayerAccount(id: string, accountPlayerRequest: AccountPlayerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerAccount(id, accountPlayerRequest, options);
+        async createPlayerAccount(id: string, createPlayerAccountRequest: CreatePlayerAccountRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerAccount(id, createPlayerAccountRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3733,12 +3788,12 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
         /**
          * Creates an account object for an existing player.
          * @param {string} id Specifies the unique player ID.
-         * @param {AccountPlayerRequest} accountPlayerRequest 
+         * @param {CreatePlayerAccountRequest} createPlayerAccountRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayerAccount(id: string, accountPlayerRequest: AccountPlayerRequest, options?: any): AxiosPromise<AccountResponse> {
-            return localVarFp.createPlayerAccount(id, accountPlayerRequest, options).then((request) => request(axios, basePath));
+        createPlayerAccount(id: string, createPlayerAccountRequest: CreatePlayerAccountRequest, options?: any): AxiosPromise<AccountResponse> {
+            return localVarFp.createPlayerAccount(id, createPlayerAccountRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Creates a session object for the given player.
@@ -3847,13 +3902,13 @@ export class PlayersApi extends BaseAPI {
     /**
      * Creates an account object for an existing player.
      * @param {string} id Specifies the unique player ID.
-     * @param {AccountPlayerRequest} accountPlayerRequest 
+     * @param {CreatePlayerAccountRequest} createPlayerAccountRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public createPlayerAccount(id: string, accountPlayerRequest: AccountPlayerRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).createPlayerAccount(id, accountPlayerRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPlayerAccount(id: string, createPlayerAccountRequest: CreatePlayerAccountRequest, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).createPlayerAccount(id, createPlayerAccountRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4001,15 +4056,15 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @param {string} id 
-         * @param {PolicyAllowFunctionRequest} policyAllowFunctionRequest 
+         * @param {CreatePolicyAllowFunctionRequest} createPolicyAllowFunctionRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyAllowFunction: async (id: string, policyAllowFunctionRequest: PolicyAllowFunctionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPolicyAllowFunction: async (id: string, createPolicyAllowFunctionRequest: CreatePolicyAllowFunctionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('createPolicyAllowFunction', 'id', id)
-            // verify required parameter 'policyAllowFunctionRequest' is not null or undefined
-            assertParamExists('createPolicyAllowFunction', 'policyAllowFunctionRequest', policyAllowFunctionRequest)
+            // verify required parameter 'createPolicyAllowFunctionRequest' is not null or undefined
+            assertParamExists('createPolicyAllowFunction', 'createPolicyAllowFunctionRequest', createPolicyAllowFunctionRequest)
             const localVarPath = `/v1/policies/{id}/policy_rules`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4030,7 +4085,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(policyAllowFunctionRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createPolicyAllowFunctionRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4324,17 +4379,17 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
          * 
          * @param {string} policy 
          * @param {string} policyRule 
-         * @param {PolicyRuleUpdateRequest} policyRuleUpdateRequest 
+         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicyAllowFunction: async (policy: string, policyRule: string, policyRuleUpdateRequest: PolicyRuleUpdateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePolicyAllowFunction: async (policy: string, policyRule: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'policy' is not null or undefined
             assertParamExists('updatePolicyAllowFunction', 'policy', policy)
             // verify required parameter 'policyRule' is not null or undefined
             assertParamExists('updatePolicyAllowFunction', 'policyRule', policyRule)
-            // verify required parameter 'policyRuleUpdateRequest' is not null or undefined
-            assertParamExists('updatePolicyAllowFunction', 'policyRuleUpdateRequest', policyRuleUpdateRequest)
+            // verify required parameter 'updatePolicyRuleRequest' is not null or undefined
+            assertParamExists('updatePolicyAllowFunction', 'updatePolicyRuleRequest', updatePolicyRuleRequest)
             const localVarPath = `/v1/policies/{policy}/policy_rules/{policy_rule}`
                 .replace(`{${"policy"}}`, encodeURIComponent(String(policy)))
                 .replace(`{${"policy_rule"}}`, encodeURIComponent(String(policyRule)));
@@ -4356,7 +4411,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(policyRuleUpdateRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(updatePolicyRuleRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4386,12 +4441,12 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} id 
-         * @param {PolicyAllowFunctionRequest} policyAllowFunctionRequest 
+         * @param {CreatePolicyAllowFunctionRequest} createPolicyAllowFunctionRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicyAllowFunction(id: string, policyAllowFunctionRequest: PolicyAllowFunctionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyAllowFunction(id, policyAllowFunctionRequest, options);
+        async createPolicyAllowFunction(id: string, createPolicyAllowFunctionRequest: CreatePolicyAllowFunctionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyAllowFunction(id, createPolicyAllowFunctionRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4478,12 +4533,12 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
          * 
          * @param {string} policy 
          * @param {string} policyRule 
-         * @param {PolicyRuleUpdateRequest} policyRuleUpdateRequest 
+         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePolicyAllowFunction(policy: string, policyRule: string, policyRuleUpdateRequest: PolicyRuleUpdateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyAllowFunction(policy, policyRule, policyRuleUpdateRequest, options);
+        async updatePolicyAllowFunction(policy: string, policyRule: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyAllowFunction(policy, policyRule, updatePolicyRuleRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -4508,12 +4563,12 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
         /**
          * 
          * @param {string} id 
-         * @param {PolicyAllowFunctionRequest} policyAllowFunctionRequest 
+         * @param {CreatePolicyAllowFunctionRequest} createPolicyAllowFunctionRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyAllowFunction(id: string, policyAllowFunctionRequest: PolicyAllowFunctionRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
-            return localVarFp.createPolicyAllowFunction(id, policyAllowFunctionRequest, options).then((request) => request(axios, basePath));
+        createPolicyAllowFunction(id: string, createPolicyAllowFunctionRequest: CreatePolicyAllowFunctionRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
+            return localVarFp.createPolicyAllowFunction(id, createPolicyAllowFunctionRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Deletes a policy object.
@@ -4592,12 +4647,12 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
          * 
          * @param {string} policy 
          * @param {string} policyRule 
-         * @param {PolicyRuleUpdateRequest} policyRuleUpdateRequest 
+         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicyAllowFunction(policy: string, policyRule: string, policyRuleUpdateRequest: PolicyRuleUpdateRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
-            return localVarFp.updatePolicyAllowFunction(policy, policyRule, policyRuleUpdateRequest, options).then((request) => request(axios, basePath));
+        updatePolicyAllowFunction(policy: string, policyRule: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
+            return localVarFp.updatePolicyAllowFunction(policy, policyRule, updatePolicyRuleRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -4623,13 +4678,13 @@ export class PoliciesApi extends BaseAPI {
     /**
      * 
      * @param {string} id 
-     * @param {PolicyAllowFunctionRequest} policyAllowFunctionRequest 
+     * @param {CreatePolicyAllowFunctionRequest} createPolicyAllowFunctionRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public createPolicyAllowFunction(id: string, policyAllowFunctionRequest: PolicyAllowFunctionRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).createPolicyAllowFunction(id, policyAllowFunctionRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPolicyAllowFunction(id: string, createPolicyAllowFunctionRequest: CreatePolicyAllowFunctionRequest, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).createPolicyAllowFunction(id, createPolicyAllowFunctionRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4723,13 +4778,13 @@ export class PoliciesApi extends BaseAPI {
      * 
      * @param {string} policy 
      * @param {string} policyRule 
-     * @param {PolicyRuleUpdateRequest} policyRuleUpdateRequest 
+     * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public updatePolicyAllowFunction(policy: string, policyRule: string, policyRuleUpdateRequest: PolicyRuleUpdateRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).updatePolicyAllowFunction(policy, policyRule, policyRuleUpdateRequest, options).then((request) => request(this.axios, this.basePath));
+    public updatePolicyAllowFunction(policy: string, policyRule: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).updatePolicyAllowFunction(policy, policyRule, updatePolicyRuleRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -4742,13 +4797,13 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
     return {
         /**
          * Creates an allow function object.
-         * @param {PolicyRuleRequest} policyRuleRequest 
+         * @param {CreatePolicyRuleRequest} createPolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyRules: async (policyRuleRequest: PolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'policyRuleRequest' is not null or undefined
-            assertParamExists('createPolicyRules', 'policyRuleRequest', policyRuleRequest)
+        createPolicyRules: async (createPolicyRuleRequest: CreatePolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createPolicyRuleRequest' is not null or undefined
+            assertParamExists('createPolicyRules', 'createPolicyRuleRequest', createPolicyRuleRequest)
             const localVarPath = `/v1/policy_rules`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4768,7 +4823,7 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(policyRuleRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createPolicyRuleRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4850,15 +4905,15 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
         /**
          * Updates an allow functions object.
          * @param {string} id Specifies the unique allow function ID.
-         * @param {PolicyRuleRequest} policyRuleRequest 
+         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicyRules: async (id: string, policyRuleRequest: PolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePolicyRules: async (id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updatePolicyRules', 'id', id)
-            // verify required parameter 'policyRuleRequest' is not null or undefined
-            assertParamExists('updatePolicyRules', 'policyRuleRequest', policyRuleRequest)
+            // verify required parameter 'updatePolicyRuleRequest' is not null or undefined
+            assertParamExists('updatePolicyRules', 'updatePolicyRuleRequest', updatePolicyRuleRequest)
             const localVarPath = `/v1/policy_rules/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4879,7 +4934,7 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(policyRuleRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(updatePolicyRuleRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4898,12 +4953,12 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
     return {
         /**
          * Creates an allow function object.
-         * @param {PolicyRuleRequest} policyRuleRequest 
+         * @param {CreatePolicyRuleRequest} createPolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicyRules(policyRuleRequest: PolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyRules(policyRuleRequest, options);
+        async createPolicyRules(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyRules(createPolicyRuleRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4930,12 +4985,12 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
         /**
          * Updates an allow functions object.
          * @param {string} id Specifies the unique allow function ID.
-         * @param {PolicyRuleRequest} policyRuleRequest 
+         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePolicyRules(id: string, policyRuleRequest: PolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyRules(id, policyRuleRequest, options);
+        async updatePolicyRules(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyRules(id, updatePolicyRuleRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -4950,12 +5005,12 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
     return {
         /**
          * Creates an allow function object.
-         * @param {PolicyRuleRequest} policyRuleRequest 
+         * @param {CreatePolicyRuleRequest} createPolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyRules(policyRuleRequest: PolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
-            return localVarFp.createPolicyRules(policyRuleRequest, options).then((request) => request(axios, basePath));
+        createPolicyRules(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
+            return localVarFp.createPolicyRules(createPolicyRuleRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Deletes an polciy rule (allow_functions) object.
@@ -4979,12 +5034,12 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
         /**
          * Updates an allow functions object.
          * @param {string} id Specifies the unique allow function ID.
-         * @param {PolicyRuleRequest} policyRuleRequest 
+         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicyRules(id: string, policyRuleRequest: PolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
-            return localVarFp.updatePolicyRules(id, policyRuleRequest, options).then((request) => request(axios, basePath));
+        updatePolicyRules(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
+            return localVarFp.updatePolicyRules(id, updatePolicyRuleRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -4998,13 +5053,13 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
 export class PolicyRulesApi extends BaseAPI {
     /**
      * Creates an allow function object.
-     * @param {PolicyRuleRequest} policyRuleRequest 
+     * @param {CreatePolicyRuleRequest} createPolicyRuleRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PolicyRulesApi
      */
-    public createPolicyRules(policyRuleRequest: PolicyRuleRequest, options?: AxiosRequestConfig) {
-        return PolicyRulesApiFp(this.configuration).createPolicyRules(policyRuleRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPolicyRules(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: AxiosRequestConfig) {
+        return PolicyRulesApiFp(this.configuration).createPolicyRules(createPolicyRuleRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -5033,13 +5088,13 @@ export class PolicyRulesApi extends BaseAPI {
     /**
      * Updates an allow functions object.
      * @param {string} id Specifies the unique allow function ID.
-     * @param {PolicyRuleRequest} policyRuleRequest 
+     * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PolicyRulesApi
      */
-    public updatePolicyRules(id: string, policyRuleRequest: PolicyRuleRequest, options?: AxiosRequestConfig) {
-        return PolicyRulesApiFp(this.configuration).updatePolicyRules(id, policyRuleRequest, options).then((request) => request(this.axios, this.basePath));
+    public updatePolicyRules(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig) {
+        return PolicyRulesApiFp(this.configuration).updatePolicyRules(id, updatePolicyRuleRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
