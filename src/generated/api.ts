@@ -608,13 +608,13 @@ export interface Interaction {
      * @type {string}
      * @memberof Interaction
      */
-    'contract': string | null;
+    'contract'?: string;
     /**
      * 
      * @type {string}
      * @memberof Interaction
      */
-    'value'?: string | null;
+    'value'?: string;
     /**
      * 
      * @type {string}
@@ -720,6 +720,59 @@ export interface Log {
      */
     'logIndex': number;
 }
+/**
+ * 
+ * @export
+ * @interface NextActionPayload
+ */
+export interface NextActionPayload {
+    /**
+     * 
+     * @type {any}
+     * @memberof NextActionPayload
+     */
+    'user_op'?: any;
+    /**
+     * 
+     * @type {string}
+     * @memberof NextActionPayload
+     */
+    'user_op_hash'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface NextActionResponse
+ */
+export interface NextActionResponse {
+    /**
+     * 
+     * @type {NextActionType}
+     * @memberof NextActionResponse
+     */
+    'type': NextActionType;
+    /**
+     * 
+     * @type {NextActionPayload}
+     * @memberof NextActionResponse
+     */
+    'payload': NextActionPayload;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const NextActionType = {
+    SignWithWallet: 'sign_with_wallet'
+} as const;
+
+export type NextActionType = typeof NextActionType[keyof typeof NextActionType];
+
+
 /**
  * Enums
  * @export
@@ -1168,7 +1221,7 @@ export interface PolicyResponseTransactionIntentsInner {
      * @type {string}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'user_operation_hash': string | null;
+    'user_operation_hash'?: string;
     /**
      * 
      * @type {any}
@@ -1177,22 +1230,28 @@ export interface PolicyResponseTransactionIntentsInner {
     'user_operation'?: any;
     /**
      * 
+     * @type {NextActionResponse}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'next_action'?: NextActionResponse;
+    /**
+     * 
+     * @type {ResponseResponse}
+     * @memberof PolicyResponseTransactionIntentsInner
+     */
+    'response'?: ResponseResponse;
+    /**
+     * 
      * @type {TransactionIntentResponsePolicy}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'policy': TransactionIntentResponsePolicy | null;
+    'policy'?: TransactionIntentResponsePolicy;
     /**
      * 
      * @type {TransactionIntentResponsePlayer}
      * @memberof PolicyResponseTransactionIntentsInner
      */
     'player'?: TransactionIntentResponsePlayer;
-    /**
-     * 
-     * @type {object}
-     * @memberof PolicyResponseTransactionIntentsInner
-     */
-    'next_action'?: object | null;
     /**
      * 
      * @type {TransactionIntentResponseAccount}
@@ -1204,13 +1263,7 @@ export interface PolicyResponseTransactionIntentsInner {
      * @type {Array<Interaction>}
      * @memberof PolicyResponseTransactionIntentsInner
      */
-    'interactions': Array<Interaction> | null;
-    /**
-     * 
-     * @type {ResponseResponse}
-     * @memberof PolicyResponseTransactionIntentsInner
-     */
-    'response': ResponseResponse | null;
+    'interactions'?: Array<Interaction>;
 }
 /**
  * 
@@ -1459,13 +1512,13 @@ export interface PolicyStrategy {
      * @type {string}
      * @memberof PolicyStrategy
      */
-    'token_contract': string | null;
+    'token_contract'?: string;
     /**
      * 
      * @type {string}
      * @memberof PolicyStrategy
      */
-    'token_contract_amount': string | null;
+    'token_contract_amount'?: string;
 }
 
 
@@ -1614,37 +1667,37 @@ export interface ResponseResponse {
      * @type {number}
      * @memberof ResponseResponse
      */
-    'block_number': number | null;
+    'block_number'?: number;
     /**
      * 
      * @type {string}
      * @memberof ResponseResponse
      */
-    'transaction_hash': string | null;
+    'transaction_hash'?: string;
     /**
      * 
      * @type {number}
      * @memberof ResponseResponse
      */
-    'gas_used'?: number | null;
+    'gas_used'?: number;
     /**
      * 
      * @type {number}
      * @memberof ResponseResponse
      */
-    'status'?: number | null;
+    'status'?: number;
     /**
      * 
      * @type {Array<Log>}
      * @memberof ResponseResponse
      */
-    'logs'?: Array<Log> | null;
+    'logs'?: Array<Log>;
     /**
      * 
      * @type {string}
      * @memberof ResponseResponse
      */
-    'to'?: string | null;
+    'to'?: string;
     /**
      * 
      * @type {any}
@@ -1788,16 +1841,16 @@ export interface SessionResponse {
     'limit'?: number;
     /**
      * 
-     * @type {object}
+     * @type {NextActionResponse}
      * @memberof SessionResponse
      */
-    'next_action': object | null;
+    'next_action'?: NextActionResponse;
     /**
      * 
      * @type {Array<PolicyResponseTransactionIntentsInner>}
      * @memberof SessionResponse
      */
-    'transaction_intents': Array<PolicyResponseTransactionIntentsInner> | null;
+    'transaction_intents'?: Array<PolicyResponseTransactionIntentsInner>;
 }
 /**
  * 
@@ -2054,7 +2107,7 @@ export interface TransactionIntentResponse {
      * @type {string}
      * @memberof TransactionIntentResponse
      */
-    'user_operation_hash': string | null;
+    'user_operation_hash'?: string;
     /**
      * 
      * @type {any}
@@ -2063,22 +2116,28 @@ export interface TransactionIntentResponse {
     'user_operation'?: any;
     /**
      * 
+     * @type {NextActionResponse}
+     * @memberof TransactionIntentResponse
+     */
+    'next_action'?: NextActionResponse;
+    /**
+     * 
+     * @type {ResponseResponse}
+     * @memberof TransactionIntentResponse
+     */
+    'response'?: ResponseResponse;
+    /**
+     * 
      * @type {TransactionIntentResponsePolicy}
      * @memberof TransactionIntentResponse
      */
-    'policy': TransactionIntentResponsePolicy | null;
+    'policy'?: TransactionIntentResponsePolicy;
     /**
      * 
      * @type {TransactionIntentResponsePlayer}
      * @memberof TransactionIntentResponse
      */
     'player'?: TransactionIntentResponsePlayer;
-    /**
-     * 
-     * @type {object}
-     * @memberof TransactionIntentResponse
-     */
-    'next_action'?: object | null;
     /**
      * 
      * @type {TransactionIntentResponseAccount}
@@ -2090,13 +2149,7 @@ export interface TransactionIntentResponse {
      * @type {Array<Interaction>}
      * @memberof TransactionIntentResponse
      */
-    'interactions': Array<Interaction> | null;
-    /**
-     * 
-     * @type {ResponseResponse}
-     * @memberof TransactionIntentResponse
-     */
-    'response': ResponseResponse | null;
+    'interactions'?: Array<Interaction>;
 }
 /**
  * 
