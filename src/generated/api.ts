@@ -2505,6 +2505,39 @@ export interface GetSigninUrlResponse {
     'key': string;
 }
 /**
+ * Google oauth configuration
+ * @export
+ * @interface GoogleOAuthConfig
+ */
+export interface GoogleOAuthConfig {
+    /**
+     * Google API client ID.
+     * @type {string}
+     * @memberof GoogleOAuthConfig
+     */
+    'clientId': string;
+    /**
+     * Google API client secret.
+     * @type {string}
+     * @memberof GoogleOAuthConfig
+     */
+    'clientSecret': string;
+    /**
+     * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/auth/v1/google/callback
+     * @type {string}
+     * @memberof GoogleOAuthConfig
+     */
+    'redirectUri': string;
+    /**
+     * 
+     * @type {OAuthProviderGOOGLE}
+     * @memberof GoogleOAuthConfig
+     */
+    'provider': OAuthProviderGOOGLE;
+}
+
+
+/**
  * 
  * @export
  * @interface Interaction
@@ -2864,13 +2897,13 @@ export interface OAuthConfig {
      */
     'baseUrl': string;
     /**
-     * Client ID of your accelbyte gaming service environment.
+     * Google API client ID.
      * @type {string}
      * @memberof OAuthConfig
      */
     'clientId': string;
     /**
-     * Secret of your confidential IAM client.
+     * Google API client secret.
      * @type {string}
      * @memberof OAuthConfig
      */
@@ -2881,6 +2914,12 @@ export interface OAuthConfig {
      * @memberof OAuthConfig
      */
     'provider': OAuthProviderPLAYFAB;
+    /**
+     * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/auth/v1/google/callback
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'redirectUri': string;
     /**
      * Title ID of your Play Fab gaming service environment.
      * @type {string}
@@ -2937,6 +2976,7 @@ export interface OAuthConfigResponse {
 
 export const OAuthProvider = {
     Accelbyte: 'accelbyte',
+    Google: 'google',
     Playfab: 'playfab'
 } as const;
 
@@ -2954,6 +2994,19 @@ export const OAuthProviderACCELBYTE = {
 } as const;
 
 export type OAuthProviderACCELBYTE = typeof OAuthProviderACCELBYTE[keyof typeof OAuthProviderACCELBYTE];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const OAuthProviderGOOGLE = {
+    Google: 'google'
+} as const;
+
+export type OAuthProviderGOOGLE = typeof OAuthProviderGOOGLE[keyof typeof OAuthProviderGOOGLE];
 
 
 /**
@@ -4588,16 +4641,10 @@ export interface ProjectResponse {
     'apikeys'?: Array<ApiKeyResponse>;
     /**
      * 
-     * @type {Array<ProviderResponse>}
+     * @type {Array<WebhookResponse>}
      * @memberof ProjectResponse
      */
-    'providers'?: Array<ProviderResponse>;
-    /**
-     * 
-     * @type {Array<ProviderResponse>}
-     * @memberof ProjectResponse
-     */
-    'webhook'?: Array<ProviderResponse>;
+    'webhook'?: Array<WebhookResponse>;
 }
 
 
@@ -4619,62 +4666,6 @@ export interface ProjectWebhookRequest {
      * @memberof ProjectWebhookRequest
      */
     'apiKey'?: string;
-}
-/**
- * 
- * @export
- * @interface ProviderRequest
- */
-export interface ProviderRequest {
-    /**
-     * The Google client ID.
-     * @type {string}
-     * @memberof ProviderRequest
-     */
-    'googleClientId': string;
-    /**
-     * Specifies whether Google Auth is enabled.
-     * @type {boolean}
-     * @memberof ProviderRequest
-     */
-    'googleEnabled': boolean;
-    /**
-     * The Google client secret.
-     * @type {string}
-     * @memberof ProviderRequest
-     */
-    'googleClientSecret': string;
-}
-/**
- * 
- * @export
- * @interface ProviderResponse
- */
-export interface ProviderResponse {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ProviderResponse
-     */
-    'EXTERNAL_GOOGLE_ENABLED'?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProviderResponse
-     */
-    'EXTERNAL_GOOGLE_CLIENT_ID'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ProviderResponse
-     */
-    'EXTERNAL_GOOGLE_SECRET'?: string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ProviderResponse
-     */
-    'livemode': boolean;
 }
 /**
  * 
@@ -6133,6 +6124,25 @@ export interface UserResponse {
 }
 
 
+/**
+ * 
+ * @export
+ * @interface WebhookResponse
+ */
+export interface WebhookResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof WebhookResponse
+     */
+    'webhook': string | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof WebhookResponse
+     */
+    'livemode': boolean;
+}
 
 /**
  * AccountsApi - axios parameter creator
@@ -7155,117 +7165,6 @@ export class AuthenticationApi extends BaseAPI {
      */
     public verifyAuthToken(token: string, options?: AxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).verifyAuthToken(token, options).then((request) => request(this.axios, this.basePath));
-    }
-}
-
-
-/**
- * ConfigAuthenticationApi - axios parameter creator
- * @export
- */
-export const ConfigAuthenticationApiAxiosParamCreator = function (configuration?: Configuration) {
-    return {
-        /**
-         * 
-         * @summary Configure Google OAuth2.
-         * @param {ProviderRequest} providerRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        editProvider: async (providerRequest: ProviderRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'providerRequest' is not null or undefined
-            assertParamExists('editProvider', 'providerRequest', providerRequest)
-            const localVarPath = `/auth/v1/config`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(providerRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-    }
-};
-
-/**
- * ConfigAuthenticationApi - functional programming interface
- * @export
- */
-export const ConfigAuthenticationApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = ConfigAuthenticationApiAxiosParamCreator(configuration)
-    return {
-        /**
-         * 
-         * @summary Configure Google OAuth2.
-         * @param {ProviderRequest} providerRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async editProvider(providerRequest: ProviderRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.editProvider(providerRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-    }
-};
-
-/**
- * ConfigAuthenticationApi - factory interface
- * @export
- */
-export const ConfigAuthenticationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = ConfigAuthenticationApiFp(configuration)
-    return {
-        /**
-         * 
-         * @summary Configure Google OAuth2.
-         * @param {ProviderRequest} providerRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        editProvider(providerRequest: ProviderRequest, options?: any): AxiosPromise<ProjectResponse> {
-            return localVarFp.editProvider(providerRequest, options).then((request) => request(axios, basePath));
-        },
-    };
-};
-
-/**
- * ConfigAuthenticationApi - object-oriented interface
- * @export
- * @class ConfigAuthenticationApi
- * @extends {BaseAPI}
- */
-export class ConfigAuthenticationApi extends BaseAPI {
-    /**
-     * 
-     * @summary Configure Google OAuth2.
-     * @param {ProviderRequest} providerRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ConfigAuthenticationApi
-     */
-    public editProvider(providerRequest: ProviderRequest, options?: AxiosRequestConfig) {
-        return ConfigAuthenticationApiFp(this.configuration).editProvider(providerRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
