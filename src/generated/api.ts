@@ -128,6 +128,18 @@ export interface AbiType {
  */
 export interface AccelbyteOAuthConfig {
     /**
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof AccelbyteOAuthConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {OAuthProviderACCELBYTE}
+     * @memberof AccelbyteOAuthConfig
+     */
+    'provider': OAuthProviderACCELBYTE;
+    /**
      * Base URI of your accelbyte gaming service environment. E.g. https://mygame.dev.gamingservices.accelbyte.io/
      * @type {string}
      * @memberof AccelbyteOAuthConfig
@@ -145,12 +157,6 @@ export interface AccelbyteOAuthConfig {
      * @memberof AccelbyteOAuthConfig
      */
     'clientSecret': string;
-    /**
-     * 
-     * @type {OAuthProviderACCELBYTE}
-     * @memberof AccelbyteOAuthConfig
-     */
-    'provider': OAuthProviderACCELBYTE;
 }
 
 
@@ -467,25 +473,6 @@ export const AccountResponseExpandable = {
 export type AccountResponseExpandable = typeof AccountResponseExpandable[keyof typeof AccountResponseExpandable];
 
 
-/**
- * 
- * @export
- * @interface AddDepositorAddressRequest
- */
-export interface AddDepositorAddressRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof AddDepositorAddressRequest
-     */
-    'depositorAddress': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddDepositorAddressRequest
-     */
-    'signature': string;
-}
 /**
  * 
  * @export
@@ -832,19 +819,19 @@ export interface AuthPlayerResponsePlayer {
      * @type {string}
      * @memberof AuthPlayerResponsePlayer
      */
-    'name': string | null;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof AuthPlayerResponsePlayer
      */
-    'description': string | null;
+    'description'?: string;
     /**
      * 
-     * @type {string}
+     * @type {{ [key: string]: PlayerMetadataValue; }}
      * @memberof AuthPlayerResponsePlayer
      */
-    'metadata': string;
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
     /**
      * 
      * @type {Array<PlayerResponseTransactionIntentsInner>}
@@ -1287,6 +1274,64 @@ export interface ContractPolicyRuleResponseContract {
 /**
  * 
  * @export
+ * @interface ContractReadQueries
+ */
+export interface ContractReadQueries {
+    /**
+     * The function name of the contract.
+     * @type {string}
+     * @memberof ContractReadQueries
+     */
+    'functionName': string;
+    /**
+     * The function arguments of the contract.
+     * @type {Array<any>}
+     * @memberof ContractReadQueries
+     */
+    'functionArgs'?: Array<any>;
+}
+/**
+ * 
+ * @export
+ * @interface ContractReadResponse
+ */
+export interface ContractReadResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContractReadResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeREADCONTRACT}
+     * @memberof ContractReadResponse
+     */
+    'object': EntityTypeREADCONTRACT;
+    /**
+     * 
+     * @type {number}
+     * @memberof ContractReadResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContractReadResponse
+     */
+    'functionName': string;
+    /**
+     * 
+     * @type {any}
+     * @memberof ContractReadResponse
+     */
+    'result': any;
+}
+
+
+/**
+ * 
+ * @export
  * @interface ContractResponse
  */
 export interface ContractResponse {
@@ -1544,25 +1589,6 @@ export interface CreatePlayerAccountRequest {
 }
 
 
-/**
- * 
- * @export
- * @interface CreatePlayerRequest
- */
-export interface CreatePlayerRequest {
-    /**
-     * Specifies the player name.
-     * @type {string}
-     * @memberof CreatePlayerRequest
-     */
-    'name': string;
-    /**
-     * Specifies the player description.
-     * @type {string}
-     * @memberof CreatePlayerRequest
-     */
-    'description'?: string;
-}
 /**
  * 
  * @export
@@ -1897,7 +1923,7 @@ export interface CreateTransactionIntentRequest {
      */
     'optimistic': boolean;
     /**
-     * Specify the number of blocks after the block with transaction to be assured that transaction is in block. It is possible to use only with optimistic=true
+     * Specify the number of blocks after the block with transaction to be assured that transaction is in block
      * @type {number}
      * @memberof CreateTransactionIntentRequest
      */
@@ -1908,6 +1934,31 @@ export interface CreateTransactionIntentRequest {
      * @memberof CreateTransactionIntentRequest
      */
     'interactions': Array<Interaction>;
+}
+/**
+ * 
+ * @export
+ * @interface CreateWeb3ConnectionRequest
+ */
+export interface CreateWeb3ConnectionRequest {
+    /**
+     * The player ID (starts with pla_).
+     * @type {string}
+     * @memberof CreateWeb3ConnectionRequest
+     */
+    'player': string;
+    /**
+     * The chain ID.
+     * @type {number}
+     * @memberof CreateWeb3ConnectionRequest
+     */
+    'chainId': number;
+    /**
+     * Specifies the URI of the web3Connection.
+     * @type {string}
+     * @memberof CreateWeb3ConnectionRequest
+     */
+    'uri': string;
 }
 /**
  * 
@@ -2027,6 +2078,19 @@ export type EntityTypeINVENTORY = typeof EntityTypeINVENTORY[keyof typeof Entity
  * @enum {string}
  */
 
+export const EntityTypePAYMASTERDEPOSITOR = {
+    PaymasterDepositor: 'paymasterDepositor'
+} as const;
+
+export type EntityTypePAYMASTERDEPOSITOR = typeof EntityTypePAYMASTERDEPOSITOR[keyof typeof EntityTypePAYMASTERDEPOSITOR];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
 export const EntityTypePLAYER = {
     Player: 'player'
 } as const;
@@ -2079,6 +2143,19 @@ export type EntityTypePROJECT = typeof EntityTypePROJECT[keyof typeof EntityType
  * @enum {string}
  */
 
+export const EntityTypeREADCONTRACT = {
+    ReadContract: 'readContract'
+} as const;
+
+export type EntityTypeREADCONTRACT = typeof EntityTypeREADCONTRACT[keyof typeof EntityTypeREADCONTRACT];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
 export const EntityTypeSESSION = {
     Session: 'session'
 } as const;
@@ -2123,6 +2200,32 @@ export const EntityTypeUSER = {
 } as const;
 
 export type EntityTypeUSER = typeof EntityTypeUSER[keyof typeof EntityTypeUSER];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EntityTypeWEB3ACTION = {
+    Web3Action: 'web3Action'
+} as const;
+
+export type EntityTypeWEB3ACTION = typeof EntityTypeWEB3ACTION[keyof typeof EntityTypeWEB3ACTION];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EntityTypeWEB3CONNECTION = {
+    Web3Connection: 'web3Connection'
+} as const;
+
+export type EntityTypeWEB3CONNECTION = typeof EntityTypeWEB3CONNECTION[keyof typeof EntityTypeWEB3CONNECTION];
 
 
 /**
@@ -2230,6 +2333,33 @@ export interface FieldErrorsValue {
      */
     'message': string;
 }
+/**
+ * Firebase configuration
+ * @export
+ * @interface FirebaseOAuthConfig
+ */
+export interface FirebaseOAuthConfig {
+    /**
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof FirebaseOAuthConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {OAuthProviderFIREBASE}
+     * @memberof FirebaseOAuthConfig
+     */
+    'provider': OAuthProviderFIREBASE;
+    /**
+     * Project ID of your Firebase service environment.
+     * @type {string}
+     * @memberof FirebaseOAuthConfig
+     */
+    'projectId': string;
+}
+
+
 /**
  * 
  * @export
@@ -2511,6 +2641,18 @@ export interface GetSigninUrlResponse {
  */
 export interface GoogleOAuthConfig {
     /**
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof GoogleOAuthConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {OAuthProviderGOOGLE}
+     * @memberof GoogleOAuthConfig
+     */
+    'provider': OAuthProviderGOOGLE;
+    /**
      * Google API client ID.
      * @type {string}
      * @memberof GoogleOAuthConfig
@@ -2528,12 +2670,6 @@ export interface GoogleOAuthConfig {
      * @memberof GoogleOAuthConfig
      */
     'redirectUri': string;
-    /**
-     * 
-     * @type {OAuthProviderGOOGLE}
-     * @memberof GoogleOAuthConfig
-     */
-    'provider': OAuthProviderGOOGLE;
 }
 
 
@@ -2689,31 +2825,6 @@ export interface InventoryResponse {
 /**
  * 
  * @export
- * @interface InvitedMemberResponse
- */
-export interface InvitedMemberResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof InvitedMemberResponse
-     */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvitedMemberResponse
-     */
-    'email': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InvitedMemberResponse
-     */
-    'role': string;
-}
-/**
- * 
- * @export
  * @interface Log
  */
 export interface Log {
@@ -2800,19 +2911,6 @@ export interface LoginRequest {
 /**
  * 
  * @export
- * @interface MemberRequest
- */
-export interface MemberRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof MemberRequest
-     */
-    'email': string;
-}
-/**
- * 
- * @export
  * @interface Money
  */
 export interface Money {
@@ -2891,6 +2989,18 @@ export type NextActionType = typeof NextActionType[keyof typeof NextActionType];
  */
 export interface OAuthConfig {
     /**
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof OAuthConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {OAuthProviderFIREBASE}
+     * @memberof OAuthConfig
+     */
+    'provider': OAuthProviderFIREBASE;
+    /**
      * Base URI of your accelbyte gaming service environment. E.g. https://mygame.dev.gamingservices.accelbyte.io/
      * @type {string}
      * @memberof OAuthConfig
@@ -2909,12 +3019,6 @@ export interface OAuthConfig {
      */
     'clientSecret': string;
     /**
-     * 
-     * @type {OAuthProviderPLAYFAB}
-     * @memberof OAuthConfig
-     */
-    'provider': OAuthProviderPLAYFAB;
-    /**
      * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/auth/v1/google/callback
      * @type {string}
      * @memberof OAuthConfig
@@ -2926,6 +3030,12 @@ export interface OAuthConfig {
      * @memberof OAuthConfig
      */
     'titleId': string;
+    /**
+     * Project ID of your Firebase service environment.
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'projectId': string;
 }
 
 
@@ -2943,32 +3053,6 @@ export interface OAuthConfigListResponse {
     'data': Array<OAuthConfig>;
 }
 /**
- * Request for the configuration endpoints for the OAuth providers
- * @export
- * @interface OAuthConfigRequest
- */
-export interface OAuthConfigRequest {
-    /**
-     * 
-     * @type {OAuthConfig}
-     * @memberof OAuthConfigRequest
-     */
-    'config': OAuthConfig;
-}
-/**
- * OAuth provider specific configuration.
- * @export
- * @interface OAuthConfigResponse
- */
-export interface OAuthConfigResponse {
-    /**
-     * 
-     * @type {OAuthConfig}
-     * @memberof OAuthConfigResponse
-     */
-    'config': OAuthConfig;
-}
-/**
  * Enum of the supporting OAuth providers.
  * @export
  * @enum {string}
@@ -2976,6 +3060,7 @@ export interface OAuthConfigResponse {
 
 export const OAuthProvider = {
     Accelbyte: 'accelbyte',
+    Firebase: 'firebase',
     Google: 'google',
     Playfab: 'playfab'
 } as const;
@@ -2994,6 +3079,19 @@ export const OAuthProviderACCELBYTE = {
 } as const;
 
 export type OAuthProviderACCELBYTE = typeof OAuthProviderACCELBYTE[keyof typeof OAuthProviderACCELBYTE];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const OAuthProviderFIREBASE = {
+    Firebase: 'firebase'
+} as const;
+
+export type OAuthProviderFIREBASE = typeof OAuthProviderFIREBASE[keyof typeof OAuthProviderFIREBASE];
 
 
 /**
@@ -3149,6 +3247,71 @@ export interface PayForUserPolicyStrategy {
 /**
  * 
  * @export
+ * @interface PaymasterDepositorCreateRequest
+ */
+export interface PaymasterDepositorCreateRequest {
+    /**
+     * Paymaster depositor address.
+     * @type {string}
+     * @memberof PaymasterDepositorCreateRequest
+     */
+    'depositorAddress': string;
+    /**
+     * Signature to verify the account ownership.
+     * @type {string}
+     * @memberof PaymasterDepositorCreateRequest
+     */
+    'signature': string;
+}
+/**
+ * 
+ * @export
+ * @interface PaymasterDepositorDeleteResponse
+ */
+export interface PaymasterDepositorDeleteResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymasterDepositorDeleteResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypePAYMASTERDEPOSITOR}
+     * @memberof PaymasterDepositorDeleteResponse
+     */
+    'object': EntityTypePAYMASTERDEPOSITOR;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PaymasterDepositorDeleteResponse
+     */
+    'deleted': boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface PaymasterDepositorGetMessageResponse
+ */
+export interface PaymasterDepositorGetMessageResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymasterDepositorGetMessageResponse
+     */
+    'message': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymasterDepositorGetMessageResponse
+     */
+    'depositorAddress': string;
+}
+/**
+ * 
+ * @export
  * @interface PaymasterDepositorListResponse
  */
 export interface PaymasterDepositorListResponse {
@@ -3211,31 +3374,6 @@ export interface PaymasterDepositorResponse {
     'depositorAddress': string;
 }
 /**
- * 
- * @export
- * @interface PaymasterDepositorResponseDeleted
- */
-export interface PaymasterDepositorResponseDeleted {
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymasterDepositorResponseDeleted
-     */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymasterDepositorResponseDeleted
-     */
-    'depositorAddress': string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PaymasterDepositorResponseDeleted
-     */
-    'deleted': boolean;
-}
-/**
  * From T, pick a set of properties whose keys are in the union K
  * @export
  * @interface PickContractResponseId
@@ -3268,17 +3406,23 @@ export interface PickPlayerResponseId {
  */
 export interface PlayFabOAuthConfig {
     /**
-     * Title ID of your Play Fab gaming service environment.
-     * @type {string}
+     * Enable OAuth provider.
+     * @type {boolean}
      * @memberof PlayFabOAuthConfig
      */
-    'titleId': string;
+    'enabled': boolean;
     /**
      * 
      * @type {OAuthProviderPLAYFAB}
      * @memberof PlayFabOAuthConfig
      */
     'provider': OAuthProviderPLAYFAB;
+    /**
+     * Title ID of your Play Fab gaming service environment.
+     * @type {string}
+     * @memberof PlayFabOAuthConfig
+     */
+    'titleId': string;
 }
 
 
@@ -3311,19 +3455,19 @@ export interface Player {
      * @type {string}
      * @memberof Player
      */
-    'name': string | null;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof Player
      */
-    'description': string | null;
+    'description'?: string;
     /**
      * 
-     * @type {string}
+     * @type {{ [key: string]: PlayerMetadataValue; }}
      * @memberof Player
      */
-    'metadata': string;
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
     /**
      * 
      * @type {Array<EntityIdResponse>}
@@ -3358,6 +3502,58 @@ export interface PlayerCancelTransferOwnershipRequest {
      */
     'chainId': number;
 }
+/**
+ * 
+ * @export
+ * @interface PlayerCreateRequest
+ */
+export interface PlayerCreateRequest {
+    /**
+     * Specifies the player name.
+     * @type {string}
+     * @memberof PlayerCreateRequest
+     */
+    'name': string;
+    /**
+     * Specifies the player description.
+     * @type {string}
+     * @memberof PlayerCreateRequest
+     */
+    'description'?: string;
+    /**
+     * 
+     * @type {{ [key: string]: PlayerMetadataValue; }}
+     * @memberof PlayerCreateRequest
+     */
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
+}
+/**
+ * 
+ * @export
+ * @interface PlayerDeleteResponse
+ */
+export interface PlayerDeleteResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof PlayerDeleteResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypePLAYER}
+     * @memberof PlayerDeleteResponse
+     */
+    'object': EntityTypePLAYER;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PlayerDeleteResponse
+     */
+    'deleted': boolean;
+}
+
+
 /**
  * 
  * @export
@@ -3497,21 +3693,9 @@ export interface PlayerListResponse {
 /**
  * 
  * @export
- * @interface PlayerRequest
+ * @interface PlayerMetadataValue
  */
-export interface PlayerRequest {
-    /**
-     * Specifies the player name.
-     * @type {string}
-     * @memberof PlayerRequest
-     */
-    'name'?: string;
-    /**
-     * Specifies the player description.
-     * @type {string}
-     * @memberof PlayerRequest
-     */
-    'description'?: string;
+export interface PlayerMetadataValue {
 }
 /**
  * 
@@ -3542,19 +3726,19 @@ export interface PlayerResponse {
      * @type {string}
      * @memberof PlayerResponse
      */
-    'name': string | null;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof PlayerResponse
      */
-    'description': string | null;
+    'description'?: string;
     /**
      * 
-     * @type {string}
+     * @type {{ [key: string]: PlayerMetadataValue; }}
      * @memberof PlayerResponse
      */
-    'metadata': string;
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
     /**
      * 
      * @type {Array<PlayerResponseTransactionIntentsInner>}
@@ -3776,6 +3960,31 @@ export interface PlayerTransferOwnershipRequest {
      * @memberof PlayerTransferOwnershipRequest
      */
     'player'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface PlayerUpdateRequest
+ */
+export interface PlayerUpdateRequest {
+    /**
+     * Specifies the player name.
+     * @type {string}
+     * @memberof PlayerUpdateRequest
+     */
+    'name'?: string;
+    /**
+     * Specifies the player description.
+     * @type {string}
+     * @memberof PlayerUpdateRequest
+     */
+    'description'?: string;
+    /**
+     * 
+     * @type {{ [key: string]: PlayerMetadataValue; }}
+     * @memberof PlayerUpdateRequest
+     */
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
 }
 /**
  * 
@@ -4997,6 +5206,19 @@ export type SessionResponseExpandable = typeof SessionResponseExpandable[keyof t
 /**
  * 
  * @export
+ * @interface SettingsWebhookUpdateRequest
+ */
+export interface SettingsWebhookUpdateRequest {
+    /**
+     * The webhook url.
+     * @type {string}
+     * @memberof SettingsWebhookUpdateRequest
+     */
+    'url': string;
+}
+/**
+ * 
+ * @export
  * @interface SignPayloadRequest
  */
 export interface SignPayloadRequest {
@@ -5206,6 +5428,25 @@ export interface StartRecoveryRequest {
      * @memberof StartRecoveryRequest
      */
     'policy': string;
+}
+/**
+ * 
+ * @export
+ * @interface SubmitWeb3ActionRequest
+ */
+export interface SubmitWeb3ActionRequest {
+    /**
+     * True to approve the action, false to reject it.
+     * @type {boolean}
+     * @memberof SubmitWeb3ActionRequest
+     */
+    'approve': boolean;
+    /**
+     * The policy ID (starts with pol_)
+     * @type {string}
+     * @memberof SubmitWeb3ActionRequest
+     */
+    'policy'?: string;
 }
 /**
  * 
@@ -5620,19 +5861,19 @@ export interface TransactionIntentResponsePlayer {
      * @type {string}
      * @memberof TransactionIntentResponsePlayer
      */
-    'name': string | null;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof TransactionIntentResponsePlayer
      */
-    'description': string | null;
+    'description'?: string;
     /**
      * 
-     * @type {string}
+     * @type {{ [key: string]: PlayerMetadataValue; }}
      * @memberof TransactionIntentResponsePlayer
      */
-    'metadata': string;
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
     /**
      * 
      * @type {Array<EntityIdResponse>}
@@ -5917,69 +6158,96 @@ export interface UpdateProjectRequest {
 /**
  * 
  * @export
- * @interface UpdateUserProjectRequest
+ * @interface UserProjectCreateRequest
  */
-export interface UpdateUserProjectRequest {
+export interface UserProjectCreateRequest {
+    /**
+     * 
+     * @type {UserProjectCreateRequestRole}
+     * @memberof UserProjectCreateRequest
+     */
+    'role'?: UserProjectCreateRequestRole;
     /**
      * 
      * @type {string}
-     * @memberof UpdateUserProjectRequest
+     * @memberof UserProjectCreateRequest
      */
-    'userId': string;
+    'email': string;
+}
+/**
+ * 
+ * @export
+ * @interface UserProjectCreateRequestRole
+ */
+export interface UserProjectCreateRequestRole {
+}
+/**
+ * 
+ * @export
+ * @interface UserProjectDeleteResponse
+ */
+export interface UserProjectDeleteResponse {
     /**
      * 
-     * @type {UpdateUserProjectRequestRole}
-     * @memberof UpdateUserProjectRequest
+     * @type {string}
+     * @memberof UserProjectDeleteResponse
      */
-    'role': UpdateUserProjectRequestRole;
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeUSER}
+     * @memberof UserProjectDeleteResponse
+     */
+    'object': EntityTypeUSER;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof UserProjectDeleteResponse
+     */
+    'deleted': boolean;
 }
+
+
 /**
  * 
  * @export
- * @interface UpdateUserProjectRequestRole
+ * @interface UserProjectListResponse
  */
-export interface UpdateUserProjectRequestRole {
-}
-/**
- * 
- * @export
- * @interface UserListResponse
- */
-export interface UserListResponse {
+export interface UserProjectListResponse {
     /**
      * 
      * @type {ResponseTypeLIST}
-     * @memberof UserListResponse
+     * @memberof UserProjectListResponse
      */
     'object': ResponseTypeLIST;
     /**
      * 
      * @type {string}
-     * @memberof UserListResponse
+     * @memberof UserProjectListResponse
      */
     'url': string;
     /**
      * 
-     * @type {Array<UserResponse>}
-     * @memberof UserListResponse
+     * @type {Array<UserProjectResponse>}
+     * @memberof UserProjectListResponse
      */
-    'data': Array<UserResponse>;
+    'data': Array<UserProjectResponse>;
     /**
      * 
      * @type {number}
-     * @memberof UserListResponse
+     * @memberof UserProjectListResponse
      */
     'start': number;
     /**
      * 
      * @type {number}
-     * @memberof UserListResponse
+     * @memberof UserProjectListResponse
      */
     'end': number;
     /**
      * 
      * @type {number}
-     * @memberof UserListResponse
+     * @memberof UserProjectListResponse
      */
     'total': number;
 }
@@ -5988,27 +6256,57 @@ export interface UserListResponse {
 /**
  * 
  * @export
- * @interface UserProjectRemoveResponse
+ * @interface UserProjectResponse
  */
-export interface UserProjectRemoveResponse {
+export interface UserProjectResponse {
     /**
      * 
      * @type {string}
-     * @memberof UserProjectRemoveResponse
+     * @memberof UserProjectResponse
      */
     'id': string;
     /**
      * 
      * @type {EntityTypeUSER}
-     * @memberof UserProjectRemoveResponse
+     * @memberof UserProjectResponse
      */
     'object': EntityTypeUSER;
     /**
      * 
-     * @type {boolean}
-     * @memberof UserProjectRemoveResponse
+     * @type {number}
+     * @memberof UserProjectResponse
      */
-    'deleted': boolean;
+    'createdAt': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserProjectResponse
+     */
+    'updatedAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserProjectResponse
+     */
+    'firstName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserProjectResponse
+     */
+    'lastName': string;
+    /**
+     * 
+     * @type {UserProjectRole}
+     * @memberof UserProjectResponse
+     */
+    'role': UserProjectRole;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserProjectResponse
+     */
+    'email': string;
 }
 
 
@@ -6056,71 +6354,307 @@ export type UserProjectRoleMEMBER = typeof UserProjectRoleMEMBER[keyof typeof Us
 /**
  * 
  * @export
- * @interface UserResponse
+ * @interface UserProjectUpdateRequest
  */
-export interface UserResponse {
+export interface UserProjectUpdateRequest {
+    /**
+     * 
+     * @type {UserProjectCreateRequestRole}
+     * @memberof UserProjectUpdateRequest
+     */
+    'role': UserProjectCreateRequestRole;
+}
+/**
+ * 
+ * @export
+ * @interface Web3ActionListResponse
+ */
+export interface Web3ActionListResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof Web3ActionListResponse
+     */
+    'object': ResponseTypeLIST;
     /**
      * 
      * @type {string}
-     * @memberof UserResponse
+     * @memberof Web3ActionListResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<Web3ActionResponse>}
+     * @memberof Web3ActionListResponse
+     */
+    'data': Array<Web3ActionResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof Web3ActionListResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Web3ActionListResponse
+     */
+    'end': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Web3ActionListResponse
+     */
+    'total': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface Web3ActionResponse
+ */
+export interface Web3ActionResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
      */
     'id': string;
     /**
      * 
-     * @type {EntityTypeUSER}
-     * @memberof UserResponse
+     * @type {EntityTypeWEB3ACTION}
+     * @memberof Web3ActionResponse
      */
-    'object': EntityTypeUSER;
+    'object': EntityTypeWEB3ACTION;
     /**
      * 
      * @type {number}
-     * @memberof UserResponse
+     * @memberof Web3ActionResponse
+     */
+    'createdAt': number;
+    /**
+     * The web3_connection ID (starts with web3_).
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'web3_connection': string;
+    /**
+     * 
+     * @type {Web3ActionStatusEnum}
+     * @memberof Web3ActionResponse
+     */
+    'status': Web3ActionStatusEnum;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const Web3ActionStatusEnum = {
+    Pending: 'Pending',
+    Approved: 'Approved',
+    Rejected: 'Rejected',
+    Expired: 'Expired',
+    Failed: 'Failed'
+} as const;
+
+export type Web3ActionStatusEnum = typeof Web3ActionStatusEnum[keyof typeof Web3ActionStatusEnum];
+
+
+/**
+ * 
+ * @export
+ * @interface Web3ConnectionListQueries
+ */
+export interface Web3ConnectionListQueries {
+    /**
+     * Specifies the maximum number of records to return.
+     * @type {number}
+     * @memberof Web3ConnectionListQueries
+     */
+    'limit'?: number;
+    /**
+     * Specifies the offset for the first records to return.
+     * @type {number}
+     * @memberof Web3ConnectionListQueries
+     */
+    'skip'?: number;
+    /**
+     * 
+     * @type {SortOrder}
+     * @memberof Web3ConnectionListQueries
+     */
+    'order'?: SortOrder;
+    /**
+     * Specifies the unique player ID (starts with pla_)
+     * @type {string}
+     * @memberof Web3ConnectionListQueries
+     */
+    'player': string;
+    /**
+     * Specifies connection status
+     * @type {boolean}
+     * @memberof Web3ConnectionListQueries
+     */
+    'disconnected'?: boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface Web3ConnectionListResponse
+ */
+export interface Web3ConnectionListResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof Web3ConnectionListResponse
+     */
+    'object': ResponseTypeLIST;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ConnectionListResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<Web3ConnectionResponse>}
+     * @memberof Web3ConnectionListResponse
+     */
+    'data': Array<Web3ConnectionResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof Web3ConnectionListResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Web3ConnectionListResponse
+     */
+    'end': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Web3ConnectionListResponse
+     */
+    'total': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface Web3ConnectionResponse
+ */
+export interface Web3ConnectionResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ConnectionResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeWEB3CONNECTION}
+     * @memberof Web3ConnectionResponse
+     */
+    'object': EntityTypeWEB3CONNECTION;
+    /**
+     * 
+     * @type {number}
+     * @memberof Web3ConnectionResponse
      */
     'createdAt': number;
     /**
      * 
+     * @type {boolean}
+     * @memberof Web3ConnectionResponse
+     */
+    'disconnected': boolean;
+    /**
+     * 
+     * @type {Web3ConnectionResponsePlayer}
+     * @memberof Web3ConnectionResponse
+     */
+    'player': Web3ConnectionResponsePlayer;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const Web3ConnectionResponseExpandable = {
+    Player: 'player'
+} as const;
+
+export type Web3ConnectionResponseExpandable = typeof Web3ConnectionResponseExpandable[keyof typeof Web3ConnectionResponseExpandable];
+
+
+/**
+ * The player ID (starts with pla_).
+ * @export
+ * @interface Web3ConnectionResponsePlayer
+ */
+export interface Web3ConnectionResponsePlayer {
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ConnectionResponsePlayer
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypePLAYER}
+     * @memberof Web3ConnectionResponsePlayer
+     */
+    'object': EntityTypePLAYER;
+    /**
+     * 
      * @type {number}
-     * @memberof UserResponse
+     * @memberof Web3ConnectionResponsePlayer
      */
-    'updatedAt': number;
+    'createdAt': number;
     /**
      * 
      * @type {string}
-     * @memberof UserResponse
-     * @deprecated
+     * @memberof Web3ConnectionResponsePlayer
      */
-    'first_name': string;
+    'name': string;
     /**
      * 
      * @type {string}
-     * @memberof UserResponse
-     * @deprecated
+     * @memberof Web3ConnectionResponsePlayer
      */
-    'last_name': string;
+    'description'?: string;
     /**
      * 
-     * @type {string}
-     * @memberof UserResponse
+     * @type {{ [key: string]: PlayerMetadataValue; }}
+     * @memberof Web3ConnectionResponsePlayer
      */
-    'firstName': string;
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
     /**
      * 
-     * @type {string}
-     * @memberof UserResponse
+     * @type {Array<EntityIdResponse>}
+     * @memberof Web3ConnectionResponsePlayer
      */
-    'lastName': string;
+    'transactionIntents'?: Array<EntityIdResponse>;
     /**
      * 
-     * @type {UserProjectRole}
-     * @memberof UserResponse
+     * @type {Array<EntityIdResponse>}
+     * @memberof Web3ConnectionResponsePlayer
      */
-    'role': UserProjectRole;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserResponse
-     */
-    'email': string;
+    'accounts'?: Array<EntityIdResponse>;
 }
 
 
@@ -6927,7 +7461,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         login: async (loginRequest: LoginRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginRequest' is not null or undefined
             assertParamExists('login', 'loginRequest', loginRequest)
-            const localVarPath = `/auth/v1/login`;
+            const localVarPath = `/iam/v1/auth/login`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6967,7 +7501,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         signup: async (signupRequest: SignupRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'signupRequest' is not null or undefined
             assertParamExists('signup', 'signupRequest', signupRequest)
-            const localVarPath = `/auth/v1/signup`;
+            const localVarPath = `/iam/v1/auth/signup`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7007,7 +7541,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         verifyAuthToken: async (token: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'token' is not null or undefined
             assertParamExists('verifyAuthToken', 'token', token)
-            const localVarPath = `/auth/v1/verify`;
+            const localVarPath = `/iam/v1/auth/verify`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7361,6 +7895,56 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
             };
         },
         /**
+         * Using this endpoint, you can get the data returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
+         * @summary Read on chain contract data.
+         * @param {string} id Specifies the unique contract ID (starts with con_).
+         * @param {string} functionName The function name of the contract.
+         * @param {Array<any>} [functionArgs] The function arguments of the contract.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        readContract: async (id: string, functionName: string, functionArgs?: Array<any>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('readContract', 'id', id)
+            // verify required parameter 'functionName' is not null or undefined
+            assertParamExists('readContract', 'functionName', functionName)
+            const localVarPath = `/v1/contracts/{id}/read`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (functionName !== undefined) {
+                localVarQueryParameter['functionName'] = functionName;
+            }
+
+            if (functionArgs) {
+                localVarQueryParameter['functionArgs'] = functionArgs;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary Updates a contract object.
          * @param {string} id Specifies the unique contract ID (starts with con_).
@@ -7465,6 +8049,19 @@ export const ContractsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Using this endpoint, you can get the data returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
+         * @summary Read on chain contract data.
+         * @param {string} id Specifies the unique contract ID (starts with con_).
+         * @param {string} functionName The function name of the contract.
+         * @param {Array<any>} [functionArgs] The function arguments of the contract.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async readContract(id: string, functionName: string, functionArgs?: Array<any>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractReadResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.readContract(id, functionName, functionArgs, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 
          * @summary Updates a contract object.
          * @param {string} id Specifies the unique contract ID (starts with con_).
@@ -7531,6 +8128,18 @@ export const ContractsApiFactory = function (configuration?: Configuration, base
          */
         getContracts(limit?: number, skip?: number, order?: SortOrder, name?: string, deleted?: boolean, chainId?: number, address?: string, options?: any): AxiosPromise<ContractListResponse> {
             return localVarFp.getContracts(limit, skip, order, name, deleted, chainId, address, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Using this endpoint, you can get the data returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
+         * @summary Read on chain contract data.
+         * @param {string} id Specifies the unique contract ID (starts with con_).
+         * @param {string} functionName The function name of the contract.
+         * @param {Array<any>} [functionArgs] The function arguments of the contract.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        readContract(id: string, functionName: string, functionArgs?: Array<any>, options?: any): AxiosPromise<ContractReadResponse> {
+            return localVarFp.readContract(id, functionName, functionArgs, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -7608,6 +8217,20 @@ export class ContractsApi extends BaseAPI {
     }
 
     /**
+     * Using this endpoint, you can get the data returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
+     * @summary Read on chain contract data.
+     * @param {string} id Specifies the unique contract ID (starts with con_).
+     * @param {string} functionName The function name of the contract.
+     * @param {Array<any>} [functionArgs] The function arguments of the contract.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ContractsApi
+     */
+    public readContract(id: string, functionName: string, functionArgs?: Array<any>, options?: AxiosRequestConfig) {
+        return ContractsApiFp(this.configuration).readContract(id, functionName, functionArgs, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 
      * @summary Updates a contract object.
      * @param {string} id Specifies the unique contract ID (starts with con_).
@@ -7635,7 +8258,7 @@ export const GoogleAuthenticationApiAxiosParamCreator = function (configuration?
          * @throws {RequiredError}
          */
         getSigninUrl: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/v1/google/signin_url`;
+            const localVarPath = `/iam/v1/oauth/google/signin_url`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7672,7 +8295,7 @@ export const GoogleAuthenticationApiAxiosParamCreator = function (configuration?
         getToken: async (key: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'key' is not null or undefined
             assertParamExists('getToken', 'key', key)
-            const localVarPath = `/auth/v1/google/token`;
+            const localVarPath = `/iam/v1/oauth/google/token`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8637,18 +9260,14 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
-         * @param {OAuthConfigRequest} oAuthConfigRequest Specifies the oauth provider specific configuration.
+         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createOAuthConfig: async (provider: OAuthProvider, oAuthConfigRequest: OAuthConfigRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'provider' is not null or undefined
-            assertParamExists('createOAuthConfig', 'provider', provider)
-            // verify required parameter 'oAuthConfigRequest' is not null or undefined
-            assertParamExists('createOAuthConfig', 'oAuthConfigRequest', oAuthConfigRequest)
-            const localVarPath = `/iam/v1/oauth/{provider}/config`
-                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+        createOAuthConfig: async (body: OAuthConfig, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('createOAuthConfig', 'body', body)
+            const localVarPath = `/iam/v1/oauth`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8671,7 +9290,7 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(oAuthConfigRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -8726,7 +9345,7 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
         getOAuthConfig: async (provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'provider' is not null or undefined
             assertParamExists('getOAuthConfig', 'provider', provider)
-            const localVarPath = `/iam/v1/oauth/{provider}/config`
+            const localVarPath = `/iam/v1/oauth/{provider}`
                 .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -8767,43 +9386,9 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             assertParamExists('getPlayerByExternalId', 'provider', provider)
             // verify required parameter 'externalUserId' is not null or undefined
             assertParamExists('getPlayerByExternalId', 'externalUserId', externalUserId)
-            const localVarPath = `/iam/v1/oauth/{provider}/user/{externalUserId}`
+            const localVarPath = `/iam/v1/oauth/{provider}/user/{external_user_id}`
                 .replace(`{${"provider"}}`, encodeURIComponent(String(provider)))
-                .replace(`{${"externalUserId"}}`, encodeURIComponent(String(externalUserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * The endpoint retrieves the list of oauth configurations for the current project environment.
-         * @summary List of oauth configurations.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listOAuthConfig: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v1/oauth/config`;
+                .replace(`{${"external_user_id"}}`, encodeURIComponent(String(externalUserId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8831,20 +9416,13 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * The endpoint updates oauth configuration for specified provider for the current project environment.
-         * @summary Update oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
-         * @param {OAuthConfigRequest} oAuthConfigRequest Specifies the oauth provider specific configuration.
+         * The endpoint retrieves the list of oauth configurations for the current project environment.
+         * @summary List of oauth configurations.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateOAuthConfig: async (provider: OAuthProvider, oAuthConfigRequest: OAuthConfigRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'provider' is not null or undefined
-            assertParamExists('updateOAuthConfig', 'provider', provider)
-            // verify required parameter 'oAuthConfigRequest' is not null or undefined
-            assertParamExists('updateOAuthConfig', 'oAuthConfigRequest', oAuthConfigRequest)
-            const localVarPath = `/iam/v1/oauth/{provider}/config`
-                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+        listOAuthConfig: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v1/oauth`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8852,7 +9430,7 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -8862,12 +9440,9 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(oAuthConfigRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -8947,13 +9522,12 @@ export const OAuthApiFp = function(configuration?: Configuration) {
         /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
-         * @param {OAuthConfigRequest} oAuthConfigRequest Specifies the oauth provider specific configuration.
+         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createOAuthConfig(provider: OAuthProvider, oAuthConfigRequest: OAuthConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createOAuthConfig(provider, oAuthConfigRequest, options);
+        async createOAuthConfig(body: OAuthConfig, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfig>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createOAuthConfig(body, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -8974,7 +9548,7 @@ export const OAuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfigResponse>> {
+        async getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfig>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOAuthConfig(provider, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -8998,18 +9572,6 @@ export const OAuthApiFp = function(configuration?: Configuration) {
          */
         async listOAuthConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfigListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listOAuthConfig(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * The endpoint updates oauth configuration for specified provider for the current project environment.
-         * @summary Update oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
-         * @param {OAuthConfigRequest} oAuthConfigRequest Specifies the oauth provider specific configuration.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updateOAuthConfig(provider: OAuthProvider, oAuthConfigRequest: OAuthConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateOAuthConfig(provider, oAuthConfigRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -9048,13 +9610,12 @@ export const OAuthApiFactory = function (configuration?: Configuration, basePath
         /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
-         * @param {OAuthConfigRequest} oAuthConfigRequest Specifies the oauth provider specific configuration.
+         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createOAuthConfig(provider: OAuthProvider, oAuthConfigRequest: OAuthConfigRequest, options?: any): AxiosPromise<void> {
-            return localVarFp.createOAuthConfig(provider, oAuthConfigRequest, options).then((request) => request(axios, basePath));
+        createOAuthConfig(body: OAuthConfig, options?: any): AxiosPromise<OAuthConfig> {
+            return localVarFp.createOAuthConfig(body, options).then((request) => request(axios, basePath));
         },
         /**
          * The endpoint deletes oauth configuration for specified provider for the current project environment.
@@ -9073,7 +9634,7 @@ export const OAuthApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOAuthConfig(provider: OAuthProvider, options?: any): AxiosPromise<OAuthConfigResponse> {
+        getOAuthConfig(provider: OAuthProvider, options?: any): AxiosPromise<OAuthConfig> {
             return localVarFp.getOAuthConfig(provider, options).then((request) => request(axios, basePath));
         },
         /**
@@ -9095,17 +9656,6 @@ export const OAuthApiFactory = function (configuration?: Configuration, basePath
          */
         listOAuthConfig(options?: any): AxiosPromise<OAuthConfigListResponse> {
             return localVarFp.listOAuthConfig(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * The endpoint updates oauth configuration for specified provider for the current project environment.
-         * @summary Update oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
-         * @param {OAuthConfigRequest} oAuthConfigRequest Specifies the oauth provider specific configuration.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateOAuthConfig(provider: OAuthProvider, oAuthConfigRequest: OAuthConfigRequest, options?: any): AxiosPromise<void> {
-            return localVarFp.updateOAuthConfig(provider, oAuthConfigRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
@@ -9144,14 +9694,13 @@ export class OAuthApi extends BaseAPI {
     /**
      * The endpoint creates oauth configuration for the current project environment.
      * @summary Create oauth configuration.
-     * @param {OAuthProvider} provider Specifies the oauth provider type.
-     * @param {OAuthConfigRequest} oAuthConfigRequest Specifies the oauth provider specific configuration.
+     * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OAuthApi
      */
-    public createOAuthConfig(provider: OAuthProvider, oAuthConfigRequest: OAuthConfigRequest, options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).createOAuthConfig(provider, oAuthConfigRequest, options).then((request) => request(this.axios, this.basePath));
+    public createOAuthConfig(body: OAuthConfig, options?: AxiosRequestConfig) {
+        return OAuthApiFp(this.configuration).createOAuthConfig(body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -9200,19 +9749,6 @@ export class OAuthApi extends BaseAPI {
      */
     public listOAuthConfig(options?: AxiosRequestConfig) {
         return OAuthApiFp(this.configuration).listOAuthConfig(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * The endpoint updates oauth configuration for specified provider for the current project environment.
-     * @summary Update oauth configuration.
-     * @param {OAuthProvider} provider Specifies the oauth provider type.
-     * @param {OAuthConfigRequest} oAuthConfigRequest Specifies the oauth provider specific configuration.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OAuthApi
-     */
-    public updateOAuthConfig(provider: OAuthProvider, oAuthConfigRequest: OAuthConfigRequest, options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).updateOAuthConfig(provider, oAuthConfigRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -9283,13 +9819,13 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Add a new player to your player list in Openfort.
          * @summary Create a player object.
-         * @param {CreatePlayerRequest} createPlayerRequest 
+         * @param {PlayerCreateRequest} playerCreateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayer: async (createPlayerRequest: CreatePlayerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createPlayerRequest' is not null or undefined
-            assertParamExists('createPlayer', 'createPlayerRequest', createPlayerRequest)
+        createPlayer: async (playerCreateRequest: PlayerCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'playerCreateRequest' is not null or undefined
+            assertParamExists('createPlayer', 'playerCreateRequest', playerCreateRequest)
             const localVarPath = `/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9313,7 +9849,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createPlayerRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(playerCreateRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -9402,6 +9938,44 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createPlayerSessionRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Deletes a player object.
+         * @param {string} id Specifies the unique player ID (starts with pla_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlayer: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deletePlayer', 'id', id)
+            const localVarPath = `/v1/players/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -9735,15 +10309,15 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @summary Updates a player object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {PlayerRequest} playerRequest 
+         * @param {PlayerUpdateRequest} playerUpdateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePlayer: async (id: string, playerRequest: PlayerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePlayer: async (id: string, playerUpdateRequest: PlayerUpdateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updatePlayer', 'id', id)
-            // verify required parameter 'playerRequest' is not null or undefined
-            assertParamExists('updatePlayer', 'playerRequest', playerRequest)
+            // verify required parameter 'playerUpdateRequest' is not null or undefined
+            assertParamExists('updatePlayer', 'playerUpdateRequest', playerUpdateRequest)
             const localVarPath = `/v1/players/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -9768,7 +10342,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(playerRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(playerUpdateRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -9800,12 +10374,12 @@ export const PlayersApiFp = function(configuration?: Configuration) {
         /**
          * Add a new player to your player list in Openfort.
          * @summary Create a player object.
-         * @param {CreatePlayerRequest} createPlayerRequest 
+         * @param {PlayerCreateRequest} playerCreateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPlayer(createPlayerRequest: CreatePlayerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayer(createPlayerRequest, options);
+        async createPlayer(playerCreateRequest: PlayerCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayer(playerCreateRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -9830,6 +10404,17 @@ export const PlayersApiFp = function(configuration?: Configuration) {
          */
         async createPlayerSession(id: string, createPlayerSessionRequest: CreatePlayerSessionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerSession(id, createPlayerSessionRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Deletes a player object.
+         * @param {string} id Specifies the unique player ID (starts with pla_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePlayer(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerDeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePlayer(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -9925,12 +10510,12 @@ export const PlayersApiFp = function(configuration?: Configuration) {
          * 
          * @summary Updates a player object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {PlayerRequest} playerRequest 
+         * @param {PlayerUpdateRequest} playerUpdateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePlayer(id: string, playerRequest: PlayerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlayer(id, playerRequest, options);
+        async updatePlayer(id: string, playerUpdateRequest: PlayerUpdateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePlayer(id, playerUpdateRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -9957,12 +10542,12 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
         /**
          * Add a new player to your player list in Openfort.
          * @summary Create a player object.
-         * @param {CreatePlayerRequest} createPlayerRequest 
+         * @param {PlayerCreateRequest} playerCreateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPlayer(createPlayerRequest: CreatePlayerRequest, options?: any): AxiosPromise<PlayerResponse> {
-            return localVarFp.createPlayer(createPlayerRequest, options).then((request) => request(axios, basePath));
+        createPlayer(playerCreateRequest: PlayerCreateRequest, options?: any): AxiosPromise<PlayerResponse> {
+            return localVarFp.createPlayer(playerCreateRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -9985,6 +10570,16 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
          */
         createPlayerSession(id: string, createPlayerSessionRequest: CreatePlayerSessionRequest, options?: any): AxiosPromise<SessionResponse> {
             return localVarFp.createPlayerSession(id, createPlayerSessionRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Deletes a player object.
+         * @param {string} id Specifies the unique player ID (starts with pla_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePlayer(id: string, options?: any): AxiosPromise<PlayerDeleteResponse> {
+            return localVarFp.deletePlayer(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10072,12 +10667,12 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
          * 
          * @summary Updates a player object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {PlayerRequest} playerRequest 
+         * @param {PlayerUpdateRequest} playerUpdateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePlayer(id: string, playerRequest: PlayerRequest, options?: any): AxiosPromise<PlayerResponse> {
-            return localVarFp.updatePlayer(id, playerRequest, options).then((request) => request(axios, basePath));
+        updatePlayer(id: string, playerUpdateRequest: PlayerUpdateRequest, options?: any): AxiosPromise<PlayerResponse> {
+            return localVarFp.updatePlayer(id, playerUpdateRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -10105,13 +10700,13 @@ export class PlayersApi extends BaseAPI {
     /**
      * Add a new player to your player list in Openfort.
      * @summary Create a player object.
-     * @param {CreatePlayerRequest} createPlayerRequest 
+     * @param {PlayerCreateRequest} playerCreateRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public createPlayer(createPlayerRequest: CreatePlayerRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).createPlayer(createPlayerRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPlayer(playerCreateRequest: PlayerCreateRequest, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).createPlayer(playerCreateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -10138,6 +10733,18 @@ export class PlayersApi extends BaseAPI {
      */
     public createPlayerSession(id: string, createPlayerSessionRequest: CreatePlayerSessionRequest, options?: AxiosRequestConfig) {
         return PlayersApiFp(this.configuration).createPlayerSession(id, createPlayerSessionRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Deletes a player object.
+     * @param {string} id Specifies the unique player ID (starts with pla_).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlayersApi
+     */
+    public deletePlayer(id: string, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).deletePlayer(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -10240,13 +10847,13 @@ export class PlayersApi extends BaseAPI {
      * 
      * @summary Updates a player object.
      * @param {string} id Specifies the unique player ID (starts with pla_).
-     * @param {PlayerRequest} playerRequest 
+     * @param {PlayerUpdateRequest} playerUpdateRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlayersApi
      */
-    public updatePlayer(id: string, playerRequest: PlayerRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).updatePlayer(id, playerRequest, options).then((request) => request(this.axios, this.basePath));
+    public updatePlayer(id: string, playerUpdateRequest: PlayerUpdateRequest, options?: AxiosRequestConfig) {
+        return PlayersApiFp(this.configuration).updatePlayer(id, playerUpdateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -10268,7 +10875,7 @@ export const PlayersAuthenticationApiAxiosParamCreator = function (configuration
          * @throws {RequiredError}
          */
         getAuthenticatedPlayers: async (limit?: number, skip?: number, order?: SortOrder, email?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/v1/players`;
+            const localVarPath = `/iam/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -12135,6 +12742,463 @@ export class SessionsApi extends BaseAPI {
 
 
 /**
+ * SettingsApi - axios parameter creator
+ * @export
+ */
+export const SettingsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Verify signature and add a depositor address to the current project environment.
+         * @summary Add depositor address.
+         * @param {PaymasterDepositorCreateRequest} paymasterDepositorCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addDepositorAddress: async (paymasterDepositorCreateRequest: PaymasterDepositorCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'paymasterDepositorCreateRequest' is not null or undefined
+            assertParamExists('addDepositorAddress', 'paymasterDepositorCreateRequest', paymasterDepositorCreateRequest)
+            const localVarPath = `/v1/settings/depositor_addresses`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(paymasterDepositorCreateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve the list of the depositor addresses for the current project environment.
+         * @summary List of depositor addresses.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDepositorAddresses: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v1/settings/depositor_addresses`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Generate message, which should be signed for verification of the address ownership.
+         * @summary Generate message to sign
+         * @param {string} address Specifies the paymaster depositor address
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMessageForSigningDepositorAddress: async (address: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'address' is not null or undefined
+            assertParamExists('getMessageForSigningDepositorAddress', 'address', address)
+            const localVarPath = `/v1/settings/depositor_addresses/message_to_sign`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (address !== undefined) {
+                localVarQueryParameter['address'] = address;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Remove a depositor address from the current project environment.
+         * @summary Removes depositor address.
+         * @param {string} id Specifies unique identifier of depositor address.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeDepositorAddress: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('removeDepositorAddress', 'id', id)
+            const localVarPath = `/v1/settings/depositor_addresses/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Updated the current project environment settings by removing the webhook address. After that system will stop sending events of the transaction intent state changes
+         * @summary Removes webhook.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeWebhook: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v1/settings/webhook`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Updated the current project environment settings by assigning the webhook address. This address is used to send events about the changes of the transaction intent state.
+         * @summary Update webhook.
+         * @param {SettingsWebhookUpdateRequest} settingsWebhookUpdateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateWebhook: async (settingsWebhookUpdateRequest: SettingsWebhookUpdateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'settingsWebhookUpdateRequest' is not null or undefined
+            assertParamExists('updateWebhook', 'settingsWebhookUpdateRequest', settingsWebhookUpdateRequest)
+            const localVarPath = `/v1/settings/webhook`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(settingsWebhookUpdateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * SettingsApi - functional programming interface
+ * @export
+ */
+export const SettingsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = SettingsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Verify signature and add a depositor address to the current project environment.
+         * @summary Add depositor address.
+         * @param {PaymasterDepositorCreateRequest} paymasterDepositorCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addDepositorAddress(paymasterDepositorCreateRequest: PaymasterDepositorCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymasterDepositorResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addDepositorAddress(paymasterDepositorCreateRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Retrieve the list of the depositor addresses for the current project environment.
+         * @summary List of depositor addresses.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getDepositorAddresses(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymasterDepositorListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDepositorAddresses(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Generate message, which should be signed for verification of the address ownership.
+         * @summary Generate message to sign
+         * @param {string} address Specifies the paymaster depositor address
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getMessageForSigningDepositorAddress(address: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymasterDepositorGetMessageResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMessageForSigningDepositorAddress(address, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Remove a depositor address from the current project environment.
+         * @summary Removes depositor address.
+         * @param {string} id Specifies unique identifier of depositor address.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async removeDepositorAddress(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymasterDepositorDeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removeDepositorAddress(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Updated the current project environment settings by removing the webhook address. After that system will stop sending events of the transaction intent state changes
+         * @summary Removes webhook.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async removeWebhook(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removeWebhook(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Updated the current project environment settings by assigning the webhook address. This address is used to send events about the changes of the transaction intent state.
+         * @summary Update webhook.
+         * @param {SettingsWebhookUpdateRequest} settingsWebhookUpdateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateWebhook(settingsWebhookUpdateRequest: SettingsWebhookUpdateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateWebhook(settingsWebhookUpdateRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * SettingsApi - factory interface
+ * @export
+ */
+export const SettingsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = SettingsApiFp(configuration)
+    return {
+        /**
+         * Verify signature and add a depositor address to the current project environment.
+         * @summary Add depositor address.
+         * @param {PaymasterDepositorCreateRequest} paymasterDepositorCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addDepositorAddress(paymasterDepositorCreateRequest: PaymasterDepositorCreateRequest, options?: any): AxiosPromise<PaymasterDepositorResponse> {
+            return localVarFp.addDepositorAddress(paymasterDepositorCreateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieve the list of the depositor addresses for the current project environment.
+         * @summary List of depositor addresses.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDepositorAddresses(options?: any): AxiosPromise<PaymasterDepositorListResponse> {
+            return localVarFp.getDepositorAddresses(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Generate message, which should be signed for verification of the address ownership.
+         * @summary Generate message to sign
+         * @param {string} address Specifies the paymaster depositor address
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMessageForSigningDepositorAddress(address: string, options?: any): AxiosPromise<PaymasterDepositorGetMessageResponse> {
+            return localVarFp.getMessageForSigningDepositorAddress(address, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Remove a depositor address from the current project environment.
+         * @summary Removes depositor address.
+         * @param {string} id Specifies unique identifier of depositor address.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeDepositorAddress(id: string, options?: any): AxiosPromise<PaymasterDepositorDeleteResponse> {
+            return localVarFp.removeDepositorAddress(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Updated the current project environment settings by removing the webhook address. After that system will stop sending events of the transaction intent state changes
+         * @summary Removes webhook.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeWebhook(options?: any): AxiosPromise<void> {
+            return localVarFp.removeWebhook(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Updated the current project environment settings by assigning the webhook address. This address is used to send events about the changes of the transaction intent state.
+         * @summary Update webhook.
+         * @param {SettingsWebhookUpdateRequest} settingsWebhookUpdateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateWebhook(settingsWebhookUpdateRequest: SettingsWebhookUpdateRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.updateWebhook(settingsWebhookUpdateRequest, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * SettingsApi - object-oriented interface
+ * @export
+ * @class SettingsApi
+ * @extends {BaseAPI}
+ */
+export class SettingsApi extends BaseAPI {
+    /**
+     * Verify signature and add a depositor address to the current project environment.
+     * @summary Add depositor address.
+     * @param {PaymasterDepositorCreateRequest} paymasterDepositorCreateRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public addDepositorAddress(paymasterDepositorCreateRequest: PaymasterDepositorCreateRequest, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).addDepositorAddress(paymasterDepositorCreateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieve the list of the depositor addresses for the current project environment.
+     * @summary List of depositor addresses.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public getDepositorAddresses(options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).getDepositorAddresses(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Generate message, which should be signed for verification of the address ownership.
+     * @summary Generate message to sign
+     * @param {string} address Specifies the paymaster depositor address
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public getMessageForSigningDepositorAddress(address: string, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).getMessageForSigningDepositorAddress(address, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Remove a depositor address from the current project environment.
+     * @summary Removes depositor address.
+     * @param {string} id Specifies unique identifier of depositor address.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public removeDepositorAddress(id: string, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).removeDepositorAddress(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Updated the current project environment settings by removing the webhook address. After that system will stop sending events of the transaction intent state changes
+     * @summary Removes webhook.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public removeWebhook(options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).removeWebhook(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Updated the current project environment settings by assigning the webhook address. This address is used to send events about the changes of the transaction intent state.
+     * @summary Update webhook.
+     * @param {SettingsWebhookUpdateRequest} settingsWebhookUpdateRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public updateWebhook(settingsWebhookUpdateRequest: SettingsWebhookUpdateRequest, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).updateWebhook(settingsWebhookUpdateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
  * TransactionIntentsApi - axios parameter creator
  * @export
  */
@@ -12605,6 +13669,460 @@ export class TransactionIntentsApi extends BaseAPI {
      */
     public signature(id: string, signatureRequest: SignatureRequest, options?: AxiosRequestConfig) {
         return TransactionIntentsApiFp(this.configuration).signature(id, signatureRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * Web3ConnectionsApi - axios parameter creator
+ * @export
+ */
+export const Web3ConnectionsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a WalletConnect pairing URI (see: https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri)
+         * @summary Create a Web3 Connection object.
+         * @param {CreateWeb3ConnectionRequest} createWeb3ConnectionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createWeb3Connection: async (createWeb3ConnectionRequest: CreateWeb3ConnectionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createWeb3ConnectionRequest' is not null or undefined
+            assertParamExists('createWeb3Connection', 'createWeb3ConnectionRequest', createWeb3ConnectionRequest)
+            const localVarPath = `/v1/web3_connections`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createWeb3ConnectionRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a list of web3 actions for the given web3 connection. The actions are returned sorted by creation date, with the most recently received action appearing first. By default, a maximum of ten actions are shown per page.
+         * @summary List Web3 actions from a web3 connection.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWeb3Actions: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getWeb3Actions', 'id', id)
+            const localVarPath = `/v1/web3_connections/{id}/actions`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves the details of an existing web3 connection. Supply the unique web3 connection ID from either a web3 connection creation request or the web3 connection list. Openfort will return the corresponding web3 connection information.
+         * @summary Get a web3Connection object.
+         * @param {string} id Specifies the unique web3Connection ID (starts with web3_).
+         * @param {Array<Web3ConnectionResponseExpandable>} [expand] Specifies the fields to expand.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWeb3Connection: async (id: string, expand?: Array<Web3ConnectionResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getWeb3Connection', 'id', id)
+            const localVarPath = `/v1/web3_connections/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (expand) {
+                localVarQueryParameter['expand'] = expand;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a list of web3 connections for the given player. The connections are returned sorted by creation date, with the most recently created connections appearing first. By default, a maximum of ten connections are shown per page.
+         * @summary List Web3 connections.
+         * @param {string} player Specifies the unique player ID (starts with pla_)
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {boolean} [disconnected] Specifies connection status
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWeb3Connections: async (player: string, limit?: number, skip?: number, order?: SortOrder, disconnected?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'player' is not null or undefined
+            assertParamExists('getWeb3Connections', 'player', player)
+            const localVarPath = `/v1/web3_connections`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (player !== undefined) {
+                localVarQueryParameter['player'] = player;
+            }
+
+            if (disconnected !== undefined) {
+                localVarQueryParameter['disconnected'] = disconnected;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Approve or Reject a web3 action for the given web3 connection.
+         * @summary Approve or Reject a web3 action
+         * @param {string} id 
+         * @param {string} web3Action 
+         * @param {SubmitWeb3ActionRequest} submitWeb3ActionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        submitWeb3Action: async (id: string, web3Action: string, submitWeb3ActionRequest: SubmitWeb3ActionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('submitWeb3Action', 'id', id)
+            // verify required parameter 'web3Action' is not null or undefined
+            assertParamExists('submitWeb3Action', 'web3Action', web3Action)
+            // verify required parameter 'submitWeb3ActionRequest' is not null or undefined
+            assertParamExists('submitWeb3Action', 'submitWeb3ActionRequest', submitWeb3ActionRequest)
+            const localVarPath = `/v1/web3_connections/{id}/actions/{web3_action}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"web3_action"}}`, encodeURIComponent(String(web3Action)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(submitWeb3ActionRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * Web3ConnectionsApi - functional programming interface
+ * @export
+ */
+export const Web3ConnectionsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = Web3ConnectionsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a WalletConnect pairing URI (see: https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri)
+         * @summary Create a Web3 Connection object.
+         * @param {CreateWeb3ConnectionRequest} createWeb3ConnectionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createWeb3Connection(createWeb3ConnectionRequest: CreateWeb3ConnectionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Web3ConnectionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createWeb3Connection(createWeb3ConnectionRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Returns a list of web3 actions for the given web3 connection. The actions are returned sorted by creation date, with the most recently received action appearing first. By default, a maximum of ten actions are shown per page.
+         * @summary List Web3 actions from a web3 connection.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getWeb3Actions(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Web3ActionListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWeb3Actions(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Retrieves the details of an existing web3 connection. Supply the unique web3 connection ID from either a web3 connection creation request or the web3 connection list. Openfort will return the corresponding web3 connection information.
+         * @summary Get a web3Connection object.
+         * @param {string} id Specifies the unique web3Connection ID (starts with web3_).
+         * @param {Array<Web3ConnectionResponseExpandable>} [expand] Specifies the fields to expand.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getWeb3Connection(id: string, expand?: Array<Web3ConnectionResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Web3ConnectionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWeb3Connection(id, expand, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Returns a list of web3 connections for the given player. The connections are returned sorted by creation date, with the most recently created connections appearing first. By default, a maximum of ten connections are shown per page.
+         * @summary List Web3 connections.
+         * @param {string} player Specifies the unique player ID (starts with pla_)
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {boolean} [disconnected] Specifies connection status
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getWeb3Connections(player: string, limit?: number, skip?: number, order?: SortOrder, disconnected?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Web3ConnectionListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWeb3Connections(player, limit, skip, order, disconnected, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Approve or Reject a web3 action for the given web3 connection.
+         * @summary Approve or Reject a web3 action
+         * @param {string} id 
+         * @param {string} web3Action 
+         * @param {SubmitWeb3ActionRequest} submitWeb3ActionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async submitWeb3Action(id: string, web3Action: string, submitWeb3ActionRequest: SubmitWeb3ActionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Web3ActionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.submitWeb3Action(id, web3Action, submitWeb3ActionRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * Web3ConnectionsApi - factory interface
+ * @export
+ */
+export const Web3ConnectionsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = Web3ConnectionsApiFp(configuration)
+    return {
+        /**
+         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a WalletConnect pairing URI (see: https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri)
+         * @summary Create a Web3 Connection object.
+         * @param {CreateWeb3ConnectionRequest} createWeb3ConnectionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createWeb3Connection(createWeb3ConnectionRequest: CreateWeb3ConnectionRequest, options?: any): AxiosPromise<Web3ConnectionResponse> {
+            return localVarFp.createWeb3Connection(createWeb3ConnectionRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns a list of web3 actions for the given web3 connection. The actions are returned sorted by creation date, with the most recently received action appearing first. By default, a maximum of ten actions are shown per page.
+         * @summary List Web3 actions from a web3 connection.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWeb3Actions(id: string, options?: any): AxiosPromise<Web3ActionListResponse> {
+            return localVarFp.getWeb3Actions(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves the details of an existing web3 connection. Supply the unique web3 connection ID from either a web3 connection creation request or the web3 connection list. Openfort will return the corresponding web3 connection information.
+         * @summary Get a web3Connection object.
+         * @param {string} id Specifies the unique web3Connection ID (starts with web3_).
+         * @param {Array<Web3ConnectionResponseExpandable>} [expand] Specifies the fields to expand.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWeb3Connection(id: string, expand?: Array<Web3ConnectionResponseExpandable>, options?: any): AxiosPromise<Web3ConnectionResponse> {
+            return localVarFp.getWeb3Connection(id, expand, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns a list of web3 connections for the given player. The connections are returned sorted by creation date, with the most recently created connections appearing first. By default, a maximum of ten connections are shown per page.
+         * @summary List Web3 connections.
+         * @param {string} player Specifies the unique player ID (starts with pla_)
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {boolean} [disconnected] Specifies connection status
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getWeb3Connections(player: string, limit?: number, skip?: number, order?: SortOrder, disconnected?: boolean, options?: any): AxiosPromise<Web3ConnectionListResponse> {
+            return localVarFp.getWeb3Connections(player, limit, skip, order, disconnected, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Approve or Reject a web3 action for the given web3 connection.
+         * @summary Approve or Reject a web3 action
+         * @param {string} id 
+         * @param {string} web3Action 
+         * @param {SubmitWeb3ActionRequest} submitWeb3ActionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        submitWeb3Action(id: string, web3Action: string, submitWeb3ActionRequest: SubmitWeb3ActionRequest, options?: any): AxiosPromise<Web3ActionResponse> {
+            return localVarFp.submitWeb3Action(id, web3Action, submitWeb3ActionRequest, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * Web3ConnectionsApi - object-oriented interface
+ * @export
+ * @class Web3ConnectionsApi
+ * @extends {BaseAPI}
+ */
+export class Web3ConnectionsApi extends BaseAPI {
+    /**
+     * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a WalletConnect pairing URI (see: https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri)
+     * @summary Create a Web3 Connection object.
+     * @param {CreateWeb3ConnectionRequest} createWeb3ConnectionRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof Web3ConnectionsApi
+     */
+    public createWeb3Connection(createWeb3ConnectionRequest: CreateWeb3ConnectionRequest, options?: AxiosRequestConfig) {
+        return Web3ConnectionsApiFp(this.configuration).createWeb3Connection(createWeb3ConnectionRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns a list of web3 actions for the given web3 connection. The actions are returned sorted by creation date, with the most recently received action appearing first. By default, a maximum of ten actions are shown per page.
+     * @summary List Web3 actions from a web3 connection.
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof Web3ConnectionsApi
+     */
+    public getWeb3Actions(id: string, options?: AxiosRequestConfig) {
+        return Web3ConnectionsApiFp(this.configuration).getWeb3Actions(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves the details of an existing web3 connection. Supply the unique web3 connection ID from either a web3 connection creation request or the web3 connection list. Openfort will return the corresponding web3 connection information.
+     * @summary Get a web3Connection object.
+     * @param {string} id Specifies the unique web3Connection ID (starts with web3_).
+     * @param {Array<Web3ConnectionResponseExpandable>} [expand] Specifies the fields to expand.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof Web3ConnectionsApi
+     */
+    public getWeb3Connection(id: string, expand?: Array<Web3ConnectionResponseExpandable>, options?: AxiosRequestConfig) {
+        return Web3ConnectionsApiFp(this.configuration).getWeb3Connection(id, expand, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns a list of web3 connections for the given player. The connections are returned sorted by creation date, with the most recently created connections appearing first. By default, a maximum of ten connections are shown per page.
+     * @summary List Web3 connections.
+     * @param {string} player Specifies the unique player ID (starts with pla_)
+     * @param {number} [limit] Specifies the maximum number of records to return.
+     * @param {number} [skip] Specifies the offset for the first records to return.
+     * @param {SortOrder} [order] Specifies the order in which to sort the results.
+     * @param {boolean} [disconnected] Specifies connection status
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof Web3ConnectionsApi
+     */
+    public getWeb3Connections(player: string, limit?: number, skip?: number, order?: SortOrder, disconnected?: boolean, options?: AxiosRequestConfig) {
+        return Web3ConnectionsApiFp(this.configuration).getWeb3Connections(player, limit, skip, order, disconnected, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Approve or Reject a web3 action for the given web3 connection.
+     * @summary Approve or Reject a web3 action
+     * @param {string} id 
+     * @param {string} web3Action 
+     * @param {SubmitWeb3ActionRequest} submitWeb3ActionRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof Web3ConnectionsApi
+     */
+    public submitWeb3Action(id: string, web3Action: string, submitWeb3ActionRequest: SubmitWeb3ActionRequest, options?: AxiosRequestConfig) {
+        return Web3ConnectionsApiFp(this.configuration).submitWeb3Action(id, web3Action, submitWeb3ActionRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
