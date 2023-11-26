@@ -777,16 +777,22 @@ export interface AuthPlayerResponse {
     'updatedAt': number;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof AuthPlayerResponse
      */
-    'lastSignInAt'?: number;
+    'externalUserId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthPlayerResponse
+     */
+    'provider': string;
     /**
      * 
      * @type {PrismaInputJsonValue}
      * @memberof AuthPlayerResponse
      */
-    'rawAppMetaData'?: PrismaInputJsonValue;
+    'metadata'?: PrismaInputJsonValue;
 }
 
 
@@ -1992,6 +1998,19 @@ export type DataAccountTypes = typeof DataAccountTypes[keyof typeof DataAccountT
 /**
  * 
  * @export
+ * @interface DeployRequest
+ */
+export interface DeployRequest {
+    /**
+     * The policy ID (starts with pol_)
+     * @type {string}
+     * @memberof DeployRequest
+     */
+    'policy': string;
+}
+/**
+ * 
+ * @export
  * @interface DomainData
  */
 export interface DomainData {
@@ -2665,7 +2684,7 @@ export interface GoogleOAuthConfig {
      */
     'clientSecret': string;
     /**
-     * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/auth/v1/google/callback
+     * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/iam/v1/oauth/google/callback
      * @type {string}
      * @memberof GoogleOAuthConfig
      */
@@ -2909,6 +2928,27 @@ export interface LoginRequest {
     'password': string;
 }
 /**
+ * LootLocker oauth configuration
+ * @export
+ * @interface LootLockerOAuthConfig
+ */
+export interface LootLockerOAuthConfig {
+    /**
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof LootLockerOAuthConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {OAuthProviderLOOTLOCKER}
+     * @memberof LootLockerOAuthConfig
+     */
+    'provider': OAuthProviderLOOTLOCKER;
+}
+
+
+/**
  * 
  * @export
  * @interface Money
@@ -2996,10 +3036,10 @@ export interface OAuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderFIREBASE}
+     * @type {OAuthProviderLOOTLOCKER}
      * @memberof OAuthConfig
      */
-    'provider': OAuthProviderFIREBASE;
+    'provider': OAuthProviderLOOTLOCKER;
     /**
      * Base URI of your accelbyte gaming service environment. E.g. https://mygame.dev.gamingservices.accelbyte.io/
      * @type {string}
@@ -3019,7 +3059,7 @@ export interface OAuthConfig {
      */
     'clientSecret': string;
     /**
-     * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/auth/v1/google/callback
+     * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/iam/v1/oauth/google/callback
      * @type {string}
      * @memberof OAuthConfig
      */
@@ -3062,6 +3102,7 @@ export const OAuthProvider = {
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',
     Google: 'google',
+    Lootlocker: 'lootlocker',
     Playfab: 'playfab'
 } as const;
 
@@ -3105,6 +3146,19 @@ export const OAuthProviderGOOGLE = {
 } as const;
 
 export type OAuthProviderGOOGLE = typeof OAuthProviderGOOGLE[keyof typeof OAuthProviderGOOGLE];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const OAuthProviderLOOTLOCKER = {
+    Lootlocker: 'lootlocker'
+} as const;
+
+export type OAuthProviderLOOTLOCKER = typeof OAuthProviderLOOTLOCKER[keyof typeof OAuthProviderLOOTLOCKER];
 
 
 /**
@@ -4879,6 +4933,62 @@ export interface ProjectWebhookRequest {
 /**
  * 
  * @export
+ * @interface RegisterPlayerEncryptedKeyRequest
+ */
+export interface RegisterPlayerEncryptedKeyRequest {
+    /**
+     * The cipher text of the key to register.
+     * @type {string}
+     * @memberof RegisterPlayerEncryptedKeyRequest
+     */
+    'pk_ciphertext': string;
+    /**
+     * The salt used expand the password of the user.
+     * @type {string}
+     * @memberof RegisterPlayerEncryptedKeyRequest
+     */
+    'salt': string;
+    /**
+     * The address of the owner.
+     * @type {string}
+     * @memberof RegisterPlayerEncryptedKeyRequest
+     */
+    'owner_address': string;
+}
+/**
+ * 
+ * @export
+ * @interface RegisterPlayerEncryptedKeyResponse
+ */
+export interface RegisterPlayerEncryptedKeyResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof RegisterPlayerEncryptedKeyResponse
+     */
+    'player': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegisterPlayerEncryptedKeyResponse
+     */
+    'ownerAddress': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof RegisterPlayerEncryptedKeyResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof RegisterPlayerEncryptedKeyResponse
+     */
+    'updatedAt': number;
+}
+/**
+ * 
+ * @export
  * @interface ResponseResponse
  */
 export interface ResponseResponse {
@@ -4957,6 +5067,49 @@ export const ResponseTypeLIST = {
 export type ResponseTypeLIST = typeof ResponseTypeLIST[keyof typeof ResponseTypeLIST];
 
 
+/**
+ * 
+ * @export
+ * @interface RetrievePlayerEncryptedKeyResponse
+ */
+export interface RetrievePlayerEncryptedKeyResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof RetrievePlayerEncryptedKeyResponse
+     */
+    'player': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RetrievePlayerEncryptedKeyResponse
+     */
+    'ownerAddress': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof RetrievePlayerEncryptedKeyResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof RetrievePlayerEncryptedKeyResponse
+     */
+    'updatedAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof RetrievePlayerEncryptedKeyResponse
+     */
+    'pkCiphertext': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RetrievePlayerEncryptedKeyResponse
+     */
+    'salt': string;
+}
 /**
  * 
  * @export
@@ -5447,6 +5600,12 @@ export interface SubmitWeb3ActionRequest {
      * @memberof SubmitWeb3ActionRequest
      */
     'policy'?: string;
+    /**
+     * signed data by the owner
+     * @type {string}
+     * @memberof SubmitWeb3ActionRequest
+     */
+    'signature'?: string;
 }
 /**
  * 
@@ -6438,13 +6597,67 @@ export interface Web3ActionResponse {
      * @type {string}
      * @memberof Web3ActionResponse
      */
-    'web3_connection': string;
+    'web3Connection': string;
     /**
      * 
      * @type {Web3ActionStatusEnum}
      * @memberof Web3ActionResponse
      */
     'status': Web3ActionStatusEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'chaindId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'method': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'from': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'to'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'data': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'decodedData': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'hashedData': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'value'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Web3ActionResponse
+     */
+    'gas'?: string;
 }
 
 
@@ -6494,7 +6707,7 @@ export interface Web3ConnectionListQueries {
      * @type {string}
      * @memberof Web3ConnectionListQueries
      */
-    'player': string;
+    'player'?: string;
     /**
      * Specifies connection status
      * @type {boolean}
@@ -6686,7 +6899,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request of ownership transfer of an account.
+         * @summary Cancel request to transfer ownership of an account.
          * @param {string} id Specifies the unique account ID.
          * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -6813,6 +7026,50 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
+         * This endpoint can be used to deploy an account that was counterfactually generated.
+         * @summary Deploy an account.
+         * @param {string} id Specifies the unique account ID.
+         * @param {DeployRequest} deployRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deployAccount: async (id: string, deployRequest: DeployRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deployAccount', 'id', id)
+            // verify required parameter 'deployRequest' is not null or undefined
+            assertParamExists('deployAccount', 'deployRequest', deployRequest)
+            const localVarPath = `/v1/accounts/{id}/deploy`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(deployRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @summary Get existing account.
          * @param {string} id Specifies the unique account ID.
@@ -6918,7 +7175,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request ownership transfer of an account.
+         * @summary Request transfer ownership of account.
          * @param {string} id Specifies the unique account ID.
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -6961,7 +7218,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         * Signs the typed data value with types data structure for domain using the EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
          * @param {string} id Specifies the unique account ID.
          * @param {SignPayloadRequest} signPayloadRequest 
@@ -7049,7 +7306,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         * This endpoint updates the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
          * @summary Sync account state with the blockchain
          * @param {string} id Specifies the unique account ID.
          * @param {*} [options] Override http request option.
@@ -7098,7 +7355,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request of ownership transfer of an account.
+         * @summary Cancel request to transfer ownership of an account.
          * @param {string} id Specifies the unique account ID.
          * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -7132,6 +7389,18 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * This endpoint can be used to deploy an account that was counterfactually generated.
+         * @summary Deploy an account.
+         * @param {string} id Specifies the unique account ID.
+         * @param {DeployRequest} deployRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deployAccount(id: string, deployRequest: DeployRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deployAccount(id, deployRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @summary Get existing account.
          * @param {string} id Specifies the unique account ID.
@@ -7160,7 +7429,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
         },
         /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request ownership transfer of an account.
+         * @summary Request transfer ownership of account.
          * @param {string} id Specifies the unique account ID.
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -7171,7 +7440,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Signs the typed data value with types data structure for domain using the EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
          * @param {string} id Specifies the unique account ID.
          * @param {SignPayloadRequest} signPayloadRequest 
@@ -7195,7 +7464,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * This endpoint updates the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
          * @summary Sync account state with the blockchain
          * @param {string} id Specifies the unique account ID.
          * @param {*} [options] Override http request option.
@@ -7217,7 +7486,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request of ownership transfer of an account.
+         * @summary Cancel request to transfer ownership of an account.
          * @param {string} id Specifies the unique account ID.
          * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -7248,6 +7517,17 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.createAccount(createAccountRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * This endpoint can be used to deploy an account that was counterfactually generated.
+         * @summary Deploy an account.
+         * @param {string} id Specifies the unique account ID.
+         * @param {DeployRequest} deployRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deployAccount(id: string, deployRequest: DeployRequest, options?: any): AxiosPromise<AccountResponse> {
+            return localVarFp.deployAccount(id, deployRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @summary Get existing account.
          * @param {string} id Specifies the unique account ID.
@@ -7274,7 +7554,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request ownership transfer of an account.
+         * @summary Request transfer ownership of account.
          * @param {string} id Specifies the unique account ID.
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -7284,7 +7564,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.requestTransferOwnership(id, transferOwnershipRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Signs the typed data value with types data structure for domain using the EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
          * @param {string} id Specifies the unique account ID.
          * @param {SignPayloadRequest} signPayloadRequest 
@@ -7306,7 +7586,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.startRecovery(id, startRecoveryRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * This endpoint updates the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
          * @summary Sync account state with the blockchain
          * @param {string} id Specifies the unique account ID.
          * @param {*} [options] Override http request option.
@@ -7327,7 +7607,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
 export class AccountsApi extends BaseAPI {
     /**
      * This endpoint allows you to cancel a pending transfer of ownership.
-     * @summary Cancel request of ownership transfer of an account.
+     * @summary Cancel request to transfer ownership of an account.
      * @param {string} id Specifies the unique account ID.
      * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
      * @param {*} [options] Override http request option.
@@ -7364,6 +7644,19 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
+     * This endpoint can be used to deploy an account that was counterfactually generated.
+     * @summary Deploy an account.
+     * @param {string} id Specifies the unique account ID.
+     * @param {DeployRequest} deployRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApi
+     */
+    public deployAccount(id: string, deployRequest: DeployRequest, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).deployAccount(id, deployRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
      * @summary Get existing account.
      * @param {string} id Specifies the unique account ID.
@@ -7394,7 +7687,7 @@ export class AccountsApi extends BaseAPI {
 
     /**
      * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-     * @summary Request ownership transfer of an account.
+     * @summary Request transfer ownership of account.
      * @param {string} id Specifies the unique account ID.
      * @param {TransferOwnershipRequest} transferOwnershipRequest 
      * @param {*} [options] Override http request option.
@@ -7406,7 +7699,7 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Signs the typed data value with types data structure for domain using the EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specification.
      * @summary Sign a given payload
      * @param {string} id Specifies the unique account ID.
      * @param {SignPayloadRequest} signPayloadRequest 
@@ -7432,7 +7725,7 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * This endpoint updates the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
      * @summary Sync account state with the blockchain
      * @param {string} id Specifies the unique account ID.
      * @param {*} [options] Override http request option.
@@ -9307,7 +9600,7 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
         deleteOAuthConfig: async (provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'provider' is not null or undefined
             assertParamExists('deleteOAuthConfig', 'provider', provider)
-            const localVarPath = `/iam/v1/oauth/{provider}/config`
+            const localVarPath = `/iam/v1/oauth/{provider}`
                 .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -10128,96 +10421,6 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
-         * @param {string} id 
-         * @param {PlayerCancelTransferOwnershipRequest} playerCancelTransferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        obsoleteCancelTransferAccountOwnership: async (id: string, playerCancelTransferOwnershipRequest: PlayerCancelTransferOwnershipRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('obsoleteCancelTransferAccountOwnership', 'id', id)
-            // verify required parameter 'playerCancelTransferOwnershipRequest' is not null or undefined
-            assertParamExists('obsoleteCancelTransferAccountOwnership', 'playerCancelTransferOwnershipRequest', playerCancelTransferOwnershipRequest)
-            const localVarPath = `/v1/players/{id}/cancel-transfer-ownership`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(playerCancelTransferOwnershipRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {PlayerTransferOwnershipRequest} playerTransferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        obsoleteRequestTransferAccountOwnership: async (id: string, playerTransferOwnershipRequest: PlayerTransferOwnershipRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('obsoleteRequestTransferAccountOwnership', 'id', id)
-            // verify required parameter 'playerTransferOwnershipRequest' is not null or undefined
-            assertParamExists('obsoleteRequestTransferAccountOwnership', 'playerTransferOwnershipRequest', playerTransferOwnershipRequest)
-            const localVarPath = `/v1/players/{id}/request-transfer-ownership`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(playerTransferOwnershipRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
          * @summary Request transfer ownership of account.
          * @param {string} id Specifies the unique player ID (starts with pla_).
@@ -10457,32 +10660,6 @@ export const PlayersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
-         * @param {string} id 
-         * @param {PlayerCancelTransferOwnershipRequest} playerCancelTransferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        async obsoleteCancelTransferAccountOwnership(id: string, playerCancelTransferOwnershipRequest: PlayerCancelTransferOwnershipRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.obsoleteCancelTransferAccountOwnership(id, playerCancelTransferOwnershipRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {PlayerTransferOwnershipRequest} playerTransferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        async obsoleteRequestTransferAccountOwnership(id: string, playerTransferOwnershipRequest: PlayerTransferOwnershipRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.obsoleteRequestTransferAccountOwnership(id, playerTransferOwnershipRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
          * @summary Request transfer ownership of account.
          * @param {string} id Specifies the unique player ID (starts with pla_).
@@ -10616,30 +10793,6 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
          */
         getPlayers(limit?: number, skip?: number, order?: SortOrder, expand?: Array<PlayerResponseExpandable>, name?: string, options?: any): AxiosPromise<PlayerListResponse> {
             return localVarFp.getPlayers(limit, skip, order, expand, name, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
-         * @param {string} id 
-         * @param {PlayerCancelTransferOwnershipRequest} playerCancelTransferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        obsoleteCancelTransferAccountOwnership(id: string, playerCancelTransferOwnershipRequest: PlayerCancelTransferOwnershipRequest, options?: any): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.obsoleteCancelTransferAccountOwnership(id, playerCancelTransferOwnershipRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {PlayerTransferOwnershipRequest} playerTransferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        obsoleteRequestTransferAccountOwnership(id: string, playerTransferOwnershipRequest: PlayerTransferOwnershipRequest, options?: any): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.obsoleteRequestTransferAccountOwnership(id, playerTransferOwnershipRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
@@ -10790,34 +10943,6 @@ export class PlayersApi extends BaseAPI {
     }
 
     /**
-     * This endpoint allows you to cancel a pending transfer of ownership.
-     * @summary Cancel request to transfer ownership of an account.
-     * @param {string} id 
-     * @param {PlayerCancelTransferOwnershipRequest} playerCancelTransferOwnershipRequest 
-     * @param {*} [options] Override http request option.
-     * @deprecated
-     * @throws {RequiredError}
-     * @memberof PlayersApi
-     */
-    public obsoleteCancelTransferAccountOwnership(id: string, playerCancelTransferOwnershipRequest: PlayerCancelTransferOwnershipRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).obsoleteCancelTransferAccountOwnership(id, playerCancelTransferOwnershipRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-     * @summary Request transfer ownership of account.
-     * @param {string} id Specifies the unique player ID (starts with pla_).
-     * @param {PlayerTransferOwnershipRequest} playerTransferOwnershipRequest 
-     * @param {*} [options] Override http request option.
-     * @deprecated
-     * @throws {RequiredError}
-     * @memberof PlayersApi
-     */
-    public obsoleteRequestTransferAccountOwnership(id: string, playerTransferOwnershipRequest: PlayerTransferOwnershipRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).obsoleteRequestTransferAccountOwnership(id, playerTransferOwnershipRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
      * @summary Request transfer ownership of account.
      * @param {string} id Specifies the unique player ID (starts with pla_).
@@ -10918,6 +11043,72 @@ export const PlayersAuthenticationApiAxiosParamCreator = function (configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Register a key for the authenticated player.
+         * @param {RegisterPlayerEncryptedKeyRequest} registerPlayerEncryptedKeyRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerKey: async (registerPlayerEncryptedKeyRequest: RegisterPlayerEncryptedKeyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'registerPlayerEncryptedKeyRequest' is not null or undefined
+            assertParamExists('registerKey', 'registerPlayerEncryptedKeyRequest', registerPlayerEncryptedKeyRequest)
+            const localVarPath = `/iam/v1/players/register_key`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(registerPlayerEncryptedKeyRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Retrieve the key for the authenticated player.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        retrieveKey: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v1/players/retrieve_key`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -10940,6 +11131,27 @@ export const PlayersAuthenticationApiFp = function(configuration?: Configuration
          */
         async getAuthenticatedPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthenticatedPlayers(limit, skip, order, email, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Register a key for the authenticated player.
+         * @param {RegisterPlayerEncryptedKeyRequest} registerPlayerEncryptedKeyRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async registerKey(registerPlayerEncryptedKeyRequest: RegisterPlayerEncryptedKeyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RegisterPlayerEncryptedKeyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.registerKey(registerPlayerEncryptedKeyRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Retrieve the key for the authenticated player.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async retrieveKey(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RetrievePlayerEncryptedKeyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveKey(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -10965,6 +11177,25 @@ export const PlayersAuthenticationApiFactory = function (configuration?: Configu
         getAuthenticatedPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: any): AxiosPromise<AuthPlayerListResponse> {
             return localVarFp.getAuthenticatedPlayers(limit, skip, order, email, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Register a key for the authenticated player.
+         * @param {RegisterPlayerEncryptedKeyRequest} registerPlayerEncryptedKeyRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerKey(registerPlayerEncryptedKeyRequest: RegisterPlayerEncryptedKeyRequest, options?: any): AxiosPromise<RegisterPlayerEncryptedKeyResponse> {
+            return localVarFp.registerKey(registerPlayerEncryptedKeyRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Retrieve the key for the authenticated player.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        retrieveKey(options?: any): AxiosPromise<RetrievePlayerEncryptedKeyResponse> {
+            return localVarFp.retrieveKey(options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -10988,6 +11219,29 @@ export class PlayersAuthenticationApi extends BaseAPI {
      */
     public getAuthenticatedPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: AxiosRequestConfig) {
         return PlayersAuthenticationApiFp(this.configuration).getAuthenticatedPlayers(limit, skip, order, email, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Register a key for the authenticated player.
+     * @param {RegisterPlayerEncryptedKeyRequest} registerPlayerEncryptedKeyRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlayersAuthenticationApi
+     */
+    public registerKey(registerPlayerEncryptedKeyRequest: RegisterPlayerEncryptedKeyRequest, options?: AxiosRequestConfig) {
+        return PlayersAuthenticationApiFp(this.configuration).registerKey(registerPlayerEncryptedKeyRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Retrieve the key for the authenticated player.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PlayersAuthenticationApi
+     */
+    public retrieveKey(options?: AxiosRequestConfig) {
+        return PlayersAuthenticationApiFp(this.configuration).retrieveKey(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -11441,8 +11695,8 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @summary Update a policy rule object of a policy.
-         * @param {string} policy 
-         * @param {string} policyRule 
+         * @param {string} policy Specifies the unique policy ID (starts with pol_).
+         * @param {string} policyRule Specifies the unique policy rule ID (starts with afu_).
          * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -11620,8 +11874,8 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Update a policy rule object of a policy.
-         * @param {string} policy 
-         * @param {string} policyRule 
+         * @param {string} policy Specifies the unique policy ID (starts with pol_).
+         * @param {string} policyRule Specifies the unique policy rule ID (starts with afu_).
          * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -11754,8 +12008,8 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
         /**
          * 
          * @summary Update a policy rule object of a policy.
-         * @param {string} policy 
-         * @param {string} policyRule 
+         * @param {string} policy Specifies the unique policy ID (starts with pol_).
+         * @param {string} policyRule Specifies the unique policy rule ID (starts with afu_).
          * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -11907,8 +12161,8 @@ export class PoliciesApi extends BaseAPI {
     /**
      * 
      * @summary Update a policy rule object of a policy.
-     * @param {string} policy 
-     * @param {string} policyRule 
+     * @param {string} policy Specifies the unique policy ID (starts with pol_).
+     * @param {string} policyRule Specifies the unique policy rule ID (starts with afu_).
      * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -11969,7 +12223,7 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
         /**
          * 
          * @summary Deletes a policy rule object.
-         * @param {string} id Specifies the unique policy rule ID.
+         * @param {string} id Specifies the unique policy rule ID (starts with afu_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -12068,7 +12322,7 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
         /**
          * 
          * @summary Update a policy rule object.
-         * @param {string} id Specifies the unique policy rule ID.
+         * @param {string} id Specifies the unique policy rule ID (starts with afu_).
          * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -12133,7 +12387,7 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Deletes a policy rule object.
-         * @param {string} id Specifies the unique policy rule ID.
+         * @param {string} id Specifies the unique policy rule ID (starts with afu_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -12159,7 +12413,7 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Update a policy rule object.
-         * @param {string} id Specifies the unique policy rule ID.
+         * @param {string} id Specifies the unique policy rule ID (starts with afu_).
          * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -12191,7 +12445,7 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
         /**
          * 
          * @summary Deletes a policy rule object.
-         * @param {string} id Specifies the unique policy rule ID.
+         * @param {string} id Specifies the unique policy rule ID (starts with afu_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -12215,7 +12469,7 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
         /**
          * 
          * @summary Update a policy rule object.
-         * @param {string} id Specifies the unique policy rule ID.
+         * @param {string} id Specifies the unique policy rule ID (starts with afu_).
          * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -12248,7 +12502,7 @@ export class PolicyRulesApi extends BaseAPI {
     /**
      * 
      * @summary Deletes a policy rule object.
-     * @param {string} id Specifies the unique policy rule ID.
+     * @param {string} id Specifies the unique policy rule ID (starts with afu_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PolicyRulesApi
@@ -12276,7 +12530,7 @@ export class PolicyRulesApi extends BaseAPI {
     /**
      * 
      * @summary Update a policy rule object.
-     * @param {string} id Specifies the unique policy rule ID.
+     * @param {string} id Specifies the unique policy rule ID (starts with afu_).
      * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -13722,7 +13976,7 @@ export const Web3ConnectionsApiAxiosParamCreator = function (configuration?: Con
         /**
          * Returns a list of web3 actions for the given web3 connection. The actions are returned sorted by creation date, with the most recently received action appearing first. By default, a maximum of ten actions are shown per page.
          * @summary List Web3 actions from a web3 connection.
-         * @param {string} id 
+         * @param {string} id Specifies the web3Connection ID (starts with web3_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -13803,17 +14057,15 @@ export const Web3ConnectionsApiAxiosParamCreator = function (configuration?: Con
         /**
          * Returns a list of web3 connections for the given player. The connections are returned sorted by creation date, with the most recently created connections appearing first. By default, a maximum of ten connections are shown per page.
          * @summary List Web3 connections.
-         * @param {string} player Specifies the unique player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {string} [player] Specifies the unique player ID (starts with pla_)
          * @param {boolean} [disconnected] Specifies connection status
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWeb3Connections: async (player: string, limit?: number, skip?: number, order?: SortOrder, disconnected?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'player' is not null or undefined
-            assertParamExists('getWeb3Connections', 'player', player)
+        getWeb3Connections: async (limit?: number, skip?: number, order?: SortOrder, player?: string, disconnected?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/web3_connections`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -13864,8 +14116,8 @@ export const Web3ConnectionsApiAxiosParamCreator = function (configuration?: Con
         /**
          * Approve or Reject a web3 action for the given web3 connection.
          * @summary Approve or Reject a web3 action
-         * @param {string} id 
-         * @param {string} web3Action 
+         * @param {string} id Specifies the web3Connection ID (starts with web3_).
+         * @param {string} web3Action Specifies web3_action (starts with act_).
          * @param {SubmitWeb3ActionRequest} submitWeb3ActionRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -13933,7 +14185,7 @@ export const Web3ConnectionsApiFp = function(configuration?: Configuration) {
         /**
          * Returns a list of web3 actions for the given web3 connection. The actions are returned sorted by creation date, with the most recently received action appearing first. By default, a maximum of ten actions are shown per page.
          * @summary List Web3 actions from a web3 connection.
-         * @param {string} id 
+         * @param {string} id Specifies the web3Connection ID (starts with web3_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -13956,23 +14208,23 @@ export const Web3ConnectionsApiFp = function(configuration?: Configuration) {
         /**
          * Returns a list of web3 connections for the given player. The connections are returned sorted by creation date, with the most recently created connections appearing first. By default, a maximum of ten connections are shown per page.
          * @summary List Web3 connections.
-         * @param {string} player Specifies the unique player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {string} [player] Specifies the unique player ID (starts with pla_)
          * @param {boolean} [disconnected] Specifies connection status
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getWeb3Connections(player: string, limit?: number, skip?: number, order?: SortOrder, disconnected?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Web3ConnectionListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getWeb3Connections(player, limit, skip, order, disconnected, options);
+        async getWeb3Connections(limit?: number, skip?: number, order?: SortOrder, player?: string, disconnected?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Web3ConnectionListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWeb3Connections(limit, skip, order, player, disconnected, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Approve or Reject a web3 action for the given web3 connection.
          * @summary Approve or Reject a web3 action
-         * @param {string} id 
-         * @param {string} web3Action 
+         * @param {string} id Specifies the web3Connection ID (starts with web3_).
+         * @param {string} web3Action Specifies web3_action (starts with act_).
          * @param {SubmitWeb3ActionRequest} submitWeb3ActionRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -14004,7 +14256,7 @@ export const Web3ConnectionsApiFactory = function (configuration?: Configuration
         /**
          * Returns a list of web3 actions for the given web3 connection. The actions are returned sorted by creation date, with the most recently received action appearing first. By default, a maximum of ten actions are shown per page.
          * @summary List Web3 actions from a web3 connection.
-         * @param {string} id 
+         * @param {string} id Specifies the web3Connection ID (starts with web3_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -14025,22 +14277,22 @@ export const Web3ConnectionsApiFactory = function (configuration?: Configuration
         /**
          * Returns a list of web3 connections for the given player. The connections are returned sorted by creation date, with the most recently created connections appearing first. By default, a maximum of ten connections are shown per page.
          * @summary List Web3 connections.
-         * @param {string} player Specifies the unique player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {string} [player] Specifies the unique player ID (starts with pla_)
          * @param {boolean} [disconnected] Specifies connection status
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWeb3Connections(player: string, limit?: number, skip?: number, order?: SortOrder, disconnected?: boolean, options?: any): AxiosPromise<Web3ConnectionListResponse> {
-            return localVarFp.getWeb3Connections(player, limit, skip, order, disconnected, options).then((request) => request(axios, basePath));
+        getWeb3Connections(limit?: number, skip?: number, order?: SortOrder, player?: string, disconnected?: boolean, options?: any): AxiosPromise<Web3ConnectionListResponse> {
+            return localVarFp.getWeb3Connections(limit, skip, order, player, disconnected, options).then((request) => request(axios, basePath));
         },
         /**
          * Approve or Reject a web3 action for the given web3 connection.
          * @summary Approve or Reject a web3 action
-         * @param {string} id 
-         * @param {string} web3Action 
+         * @param {string} id Specifies the web3Connection ID (starts with web3_).
+         * @param {string} web3Action Specifies web3_action (starts with act_).
          * @param {SubmitWeb3ActionRequest} submitWeb3ActionRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -14073,7 +14325,7 @@ export class Web3ConnectionsApi extends BaseAPI {
     /**
      * Returns a list of web3 actions for the given web3 connection. The actions are returned sorted by creation date, with the most recently received action appearing first. By default, a maximum of ten actions are shown per page.
      * @summary List Web3 actions from a web3 connection.
-     * @param {string} id 
+     * @param {string} id Specifies the web3Connection ID (starts with web3_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof Web3ConnectionsApi
@@ -14098,24 +14350,24 @@ export class Web3ConnectionsApi extends BaseAPI {
     /**
      * Returns a list of web3 connections for the given player. The connections are returned sorted by creation date, with the most recently created connections appearing first. By default, a maximum of ten connections are shown per page.
      * @summary List Web3 connections.
-     * @param {string} player Specifies the unique player ID (starts with pla_)
      * @param {number} [limit] Specifies the maximum number of records to return.
      * @param {number} [skip] Specifies the offset for the first records to return.
      * @param {SortOrder} [order] Specifies the order in which to sort the results.
+     * @param {string} [player] Specifies the unique player ID (starts with pla_)
      * @param {boolean} [disconnected] Specifies connection status
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof Web3ConnectionsApi
      */
-    public getWeb3Connections(player: string, limit?: number, skip?: number, order?: SortOrder, disconnected?: boolean, options?: AxiosRequestConfig) {
-        return Web3ConnectionsApiFp(this.configuration).getWeb3Connections(player, limit, skip, order, disconnected, options).then((request) => request(this.axios, this.basePath));
+    public getWeb3Connections(limit?: number, skip?: number, order?: SortOrder, player?: string, disconnected?: boolean, options?: AxiosRequestConfig) {
+        return Web3ConnectionsApiFp(this.configuration).getWeb3Connections(limit, skip, order, player, disconnected, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * Approve or Reject a web3 action for the given web3 connection.
      * @summary Approve or Reject a web3 action
-     * @param {string} id 
-     * @param {string} web3Action 
+     * @param {string} id Specifies the web3Connection ID (starts with web3_).
+     * @param {string} web3Action Specifies web3_action (starts with act_).
      * @param {SubmitWeb3ActionRequest} submitWeb3ActionRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

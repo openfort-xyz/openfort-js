@@ -1,46 +1,46 @@
 {
-  "name": "@openfort/openfort-js",
-  "version": "0.3.3",
-  "description": "",
-  "author": "Openfort",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/openfort-xyz/openfort-js.git"
-  },
-  "keywords": [],
-  "license": "MIT",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "scripts": {
-    "prebuild": "node -p \"'export const VERSION = ' + JSON.stringify(require('./package.json').version) + ';\\nexport const PACKAGE = ' + JSON.stringify(require('./package.json').name) + ';'\" > src/version.ts",
-    "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "lint": "eslint ./src",
-    "test": "jest --config jestconfig.json",
-    "prepublishOnly": "yarn install && yarn build"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
-  "devDependencies": {
-    "@types/node": "^20.2.1",
-    "eslint": "^8.44.0",
-    "eslint-config-standard-with-typescript": "^36.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-n": "^15.7.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "prettier": "^2.8.8",
-    "typescript": "^5.0.4"
-  },
-  "dependencies": {
-    "@ethersproject/bytes": "^5.7.0",
-    "@ethersproject/hash": "^5.7.0",
-    "@ethersproject/signing-key": "^5.7.0",
-    "@noble/curves": "^1.1.0",
-    "axios": "^1.4.0",
-    "es6-promise": "^4.2.8",
-    "path": "^0.12.7"
-  }
+    "name": "@openfort/openfort-js",
+    "version": "0.3.4",
+    "description": "",
+    "author": "Openfort",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/openfort-xyz/openfort-js.git"
+    },
+    "keywords": [],
+    "license": "MIT",
+    "main": "./dist/index.js",
+    "exports": {
+        ".": "./dist/index.js"
+    },
+    "scripts": {
+        "prebuild": "node -p \"'export const VERSION = ' + JSON.stringify(require('./package.json').version) + ';\\nexport const PACKAGE = ' + JSON.stringify(require('./package.json').name) + ';'\" > src/version.ts",
+        "build": "tsc",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "lint": "eslint ./src",
+        "test": "jest --config jestconfig.json",
+        "prepublishOnly": "yarn install && yarn build"
+    },
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/"
+    },
+    "devDependencies": {
+        "@types/node": "^20.2.1",
+        "eslint": "^8.44.0",
+        "eslint-config-standard-with-typescript": "^36.0.0",
+        "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-n": "^15.7.0",
+        "eslint-plugin-promise": "^6.1.1",
+        "prettier": "^2.8.8",
+        "typescript": "^5.0.4"
+    },
+    "dependencies": {
+        "@ethersproject/bytes": "^5.7.0",
+        "@ethersproject/hash": "^5.7.0",
+        "@ethersproject/signing-key": "^5.7.0",
+        "@noble/curves": "^1.1.0",
+        "axios": "^1.4.0",
+        "es6-promise": "^4.2.8",
+        "path": "^0.12.7"
+    }
 }
