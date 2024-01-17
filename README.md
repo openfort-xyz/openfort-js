@@ -1,3 +1,27 @@
+![Openfort Protocol][banner-image]
+
+<div align="center">
+  <h4>
+    <a href="https://www.openfort.xyz/">
+      Website
+    </a>
+    <span> | </span>
+    <a href="https://www.openfort.xyz/docs">
+      Documentation
+    </a>
+    <span> | </span>
+    <a href="https://www.openfort.xyz/docs/reference/api/authentication">
+      API Docs
+    </a>
+    <span> | </span>
+    <a href="https://twitter.com/openfortxyz">
+      Twitter
+    </a>
+  </h4>
+</div>
+
+[banner-image]: https://blog-cms.openfort.xyz/uploads/openfortjs_f52fdc3f2d.png
+
 # Openfort.js Library
 
 [![Version](https://img.shields.io/npm/v/@openfort/openfort-js.svg)](https://www.npmjs.org/package/@openfort/openfort-js)
