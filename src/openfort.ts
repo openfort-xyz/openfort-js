@@ -3,15 +3,18 @@ import {SessionResponse, SessionsApi, TransactionIntentResponse, TransactionInte
 import {KeyPair} from "./key-pair";
 import {httpErrorHandler} from "./utils/http-error-handler";
 import {Bytes} from "@ethersproject/bytes";
+import {IframeClient} from "./signature-handler";
 
 export default class Openfort {
     private readonly _configuration: Configuration;
     private _sessionsApi?: SessionsApi;
     private _transactionsApi?: TransactionIntentsApi;
     private _sessionKey?: KeyPair | null;
+    private _iframeClient: IframeClient;
 
     constructor(accessToken: string, basePath?: string) {
         this._configuration = new Configuration({accessToken, basePath});
+        this._iframeClient = new IframeClient(accessToken);
     }
 
     public get sessionKey(): KeyPair {
@@ -75,5 +78,17 @@ export default class Openfort {
     ): Promise<TransactionIntentResponse> {
         const result = await this.transactionsApi.signature(transactionIntentId, {signature, optimistic});
         return result.data;
+    }
+
+    public async generateKey(auth: string, password?: string): Promise<void> {
+        return await this._iframeClient.generateKey(auth, password);
+    }
+
+    public async registerDeviceForExistingAccount(auth: string, password?: string): Promise<void> {
+        return await this._iframeClient.registerDevice(auth, password);
+    }
+
+    public async sendMessage(accountID: string, message: string ): Promise<void> {
+        return await this._iframeClient.sendMessage(message, accountID);
     }
 }
