@@ -23,7 +23,7 @@ export class IframeClient {
         return Promise.resolve();
     }
 
-    async generateKey(auth: string, password?: string): Promise<void> {
+    async createAccount(auth: string, password?: string): Promise<string> {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
@@ -31,7 +31,7 @@ export class IframeClient {
             const handleMessage = (event: MessageEvent) => {
                 if (event.data.action === "keyGenerated") {
                     if (event.data.success) {
-                        resolve();
+                        resolve(event.data.deviceId);
                     } else {
                         reject(new Error(event.data.error || "Key generation failed"));
                     }
@@ -50,7 +50,7 @@ export class IframeClient {
         });
     }
 
-    async registerDevice(auth: string, password?: string): Promise<void> {
+    async registerDevice(auth: string, password?: string): Promise<string> {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
@@ -58,7 +58,7 @@ export class IframeClient {
             const handleMessage = (event: MessageEvent) => {
                 if (event.data.action === "deviceRegistered") {
                     if (event.data.success) {
-                        resolve();
+                        resolve(event.data.deviceId);
                     } else {
                         reject(new Error(event.data.error || "Device registration failed"));
                     }
@@ -77,15 +77,43 @@ export class IframeClient {
         });
     }
 
-    async sendMessage(message: string, auth: string): Promise<void> {
+    async getCurrentDevice(): Promise<string|null> {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
             // Function to handle message event
             const handleMessage = (event: MessageEvent) => {
-                if (event.data.action === "messageValidated") {
+                if (event.data.action === "currentDevice") {
                     if (event.data.success) {
-                        resolve();
+                        if (event.data.deviceId) {
+                            resolve(event.data.deviceId);
+                        }
+
+                        resolve(null);
+                    } else {
+                        reject(new Error(event.data.error || "Getting current device failed"));
+                    }
+                    window.removeEventListener("message", handleMessage);
+                }
+            };
+
+            window.addEventListener("message", handleMessage);
+
+            this._iframe.contentWindow?.postMessage({
+                action: "getCurrentDevice",
+            }, "*");
+        });
+    }
+
+    async sign(message: string, auth: string): Promise<string> {
+        await this.waitForIframeLoad();
+
+        return new Promise((resolve, reject) => {
+            // Function to handle message event
+            const handleMessage = (event: MessageEvent) => {
+                if (event.data.action === "messageSigned") {
+                    if (event.data.success) {
+                        resolve(event.data.signature);
                     } else {
                         reject(new Error(event.data.error || "Message sending failed"));
                     }
@@ -97,7 +125,7 @@ export class IframeClient {
             window.addEventListener("message", handleMessage);
 
             this._iframe.contentWindow?.postMessage({
-                action: "sendMessage",
+                action: "signMessage",
                 message: message,
                 auth: auth,
             }, "*");

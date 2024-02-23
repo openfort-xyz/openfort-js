@@ -48,6 +48,27 @@ value:
 import Openfort from '@openfort/openfort-js';
 const openfort = new Openfort('pk_test_...');
 ```
+In order to sign messages, you have 4 options to choose from:
+* Let Openfort handle the signing process, dont need to pass any signer to the Openfort instance.
+* Sign yourself and pass the signature to Openfort, dont need to pass any signer to the Openfort instance.
+* Use a Session Key to sign messages, you need to pass a SessionSigner to the Openfort instance.
+* Use Embedded Signer to sign messages, you need to pass an Embedded Signer to the Openfort instance.
+
+#### Session Signer
+```ts
+const sessionSigner = new SessionSigner()
+const openfort = new Openfort('pk_test_...', sessionSigner);
+```
+
+#### Embedded Signer
+For the embedded signer, if your player has an account you can pass it to the embedded signer to use it. If the account is not provided, the embedded signer will check if the localstorage has a device which is already registered, if not, it will create a new device and store it in the localstorage.
+For the recovery process, you can ask the user for a password to encrypt the recovery share.
+
+```ts
+const embeddedSigner = new EmbeddedSigner('pk_test_...', 'acc_...', '********');
+const openfort = new Openfort('pk_test_...', embeddedSigner);
+```
+
 
 ### Create and store a new player session key
 
