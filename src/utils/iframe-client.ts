@@ -85,11 +85,7 @@ export class IframeClient {
             const handleMessage = (event: MessageEvent) => {
                 if (event.data.action === "currentDevice") {
                     if (event.data.success) {
-                        if (event.data.deviceId) {
-                            resolve(event.data.deviceId);
-                        }
-
-                        resolve(null);
+                        resolve(event.data.deviceId);
                     } else {
                         reject(new Error(event.data.error || "Getting current device failed"));
                     }
