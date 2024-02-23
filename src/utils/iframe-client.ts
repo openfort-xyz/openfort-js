@@ -54,7 +54,6 @@ export class IframeClient {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
-            // Function to handle message event
             const handleMessage = (event: MessageEvent) => {
                 if (event.data.action === "deviceRegistered") {
                     if (event.data.success) {
@@ -81,7 +80,6 @@ export class IframeClient {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
-            // Function to handle message event
             const handleMessage = (event: MessageEvent) => {
                 if (event.data.action === "currentDevice") {
                     if (event.data.success) {
@@ -105,7 +103,6 @@ export class IframeClient {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
-            // Function to handle message event
             const handleMessage = (event: MessageEvent) => {
                 if (event.data.action === "messageSigned") {
                     if (event.data.success) {
