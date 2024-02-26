@@ -11,8 +11,8 @@ export default class Openfort {
     private _transactionsApi?: TransactionIntentsApi;
     private _signer?: Signer;
 
-    constructor(accessToken: string, signer: Signer, basePath?: string) {
-        this._configuration = new Configuration({accessToken, basePath});
+    constructor(publishableKey: string, signer?: Signer, basePath?: string) {
+        this._configuration = new Configuration({accessToken: publishableKey, basePath});
         this._signer = signer;
     }
 
