@@ -1,12 +1,12 @@
 export class IframeClient {
     private readonly _iframe: HTMLIFrameElement;
-    constructor(accessToken: string) {
+    constructor(publishableKey:string, accessToken: string) {
         if (!document) {
             throw new Error("must be run in a browser");
         }
 
         this._iframe = document.createElement("iframe");
-        this._iframe.src = (process.env.IFRAME_URL || "http://localhost:300") + "/iframe?accessToken=" + accessToken;
+        this._iframe.src = (process.env.IFRAME_URL || "http://localhost:300") + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
         this._iframe.style.display = "none";
         document.body.appendChild(this._iframe);
     }
@@ -23,7 +23,7 @@ export class IframeClient {
         return Promise.resolve();
     }
 
-    async createAccount(auth: string, password?: string): Promise<string> {
+    async createAccount(password?: string): Promise<string> {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
@@ -44,13 +44,12 @@ export class IframeClient {
 
             this._iframe.contentWindow?.postMessage({
                 action: "generateKey",
-                auth: auth,
                 password: password,
             }, "*");
         });
     }
 
-    async registerDevice(auth: string, password?: string): Promise<string> {
+    async registerDevice(account: string, password?: string): Promise<string> {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
@@ -70,7 +69,7 @@ export class IframeClient {
 
             this._iframe.contentWindow?.postMessage({
                 action: "registerDevice",
-                auth: auth,
+                account: account,
                 password: password,
             }, "*");
         });
@@ -99,7 +98,7 @@ export class IframeClient {
         });
     }
 
-    async sign(message: string, auth: string): Promise<string> {
+    async sign(message: string): Promise<string> {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
@@ -120,7 +119,6 @@ export class IframeClient {
             this._iframe.contentWindow?.postMessage({
                 action: "signMessage",
                 message: message,
-                auth: auth,
             }, "*");
         });
     }
