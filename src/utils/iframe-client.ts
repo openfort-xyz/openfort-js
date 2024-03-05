@@ -7,7 +7,7 @@ export class IframeClient {
         }
         this._chainId = chainId;
         this._iframe = document.createElement("iframe");
-        this._iframe.src = (process.env.IFRAME_URL || "http://localhost:3003") + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
+        this._iframe.src = "https://iframe.openfort.xyz/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
         this._iframe.style.display = "none";
         document.body.appendChild(this._iframe);
     }
