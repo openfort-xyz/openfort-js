@@ -15,7 +15,6 @@ export class OpenfortAuth {
         return this._oauthApi;
     }
 
-    // @httpErrorHandler()
     public async authorizeWithOAuthToken(
         provider: OAuthProvider,
         token: string,
