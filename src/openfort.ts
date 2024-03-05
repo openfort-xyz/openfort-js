@@ -1,6 +1,4 @@
-import {Configuration} from "./generated/configuration";
-import {SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./generated/api";
-import {httpErrorHandler} from "./utils/http-error-handler";
+import {Configuration, SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./generated";
 import {Signer} from "./signer/signer";
 
 
@@ -9,7 +7,7 @@ export default class Openfort {
     private readonly _configuration: Configuration;
     private _sessionsApi?: SessionsApi;
     private _transactionsApi?: TransactionIntentsApi;
-    private _signer?: Signer;
+    private readonly _signer?: Signer;
 
     constructor(publishableKey: string, signer?: Signer, basePath?: string) {
         this._configuration = new Configuration({accessToken: publishableKey, basePath});
@@ -30,7 +28,6 @@ export default class Openfort {
         return this._transactionsApi;
     }
 
-    @httpErrorHandler()
     public async sendSignatureSessionRequest(
         sessionId: string,
         signature?: string,
@@ -47,18 +44,22 @@ export default class Openfort {
         return result.data;
     }
 
-    @httpErrorHandler()
     public async sendSignatureTransactionIntentRequest(
         transactionIntentId: string,
+        userOp?: string,
         signature?: string,
         optimistic?: boolean,
     ): Promise<TransactionIntentResponse> {
-        if (!signature) {
+        if (!signature && userOp) {
             if (!this._signer) {
                 throw new Error("No signer nor signature provided");
             }
 
-            signature = await this._signer.sign(transactionIntentId);
+            signature = await this._signer.sign(userOp);
+        }
+
+        if (!signature) {
+            throw new Error("No signature provided");
         }
         const result = await this.transactionsApi.signature(transactionIntentId, {signature, optimistic});
         return result.data;

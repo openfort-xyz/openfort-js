@@ -1,6 +1,4 @@
-import {Configuration} from "./generated/configuration";
-import {AuthorizeWithOAuthToken200Response, OAuthApi, OAuthProvider} from "./generated/api";
-import {httpErrorHandler} from "./utils/http-error-handler";
+import {Configuration, AuthorizeWithOAuthToken200Response, OAuthApi, OAuthProvider} from "./generated";
 
 export class OpenfortAuth {
     private readonly _configuration: Configuration;
@@ -17,7 +15,7 @@ export class OpenfortAuth {
         return this._oauthApi;
     }
 
-    @httpErrorHandler()
+    // @httpErrorHandler()
     public async authorizeWithOAuthToken(
         provider: OAuthProvider,
         token: string,

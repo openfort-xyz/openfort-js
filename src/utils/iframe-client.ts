@@ -1,12 +1,13 @@
 export class IframeClient {
     private readonly _iframe: HTMLIFrameElement;
-    constructor(publishableKey:string, accessToken: string) {
+    private _chainId: number;
+    constructor(publishableKey:string, accessToken: string, chainId: number) {
         if (!document) {
             throw new Error("must be run in a browser");
         }
-
+        this._chainId = chainId;
         this._iframe = document.createElement("iframe");
-        this._iframe.src = (process.env.IFRAME_URL || "http://localhost:300") + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
+        this._iframe.src = (process.env.IFRAME_URL || "http://localhost:3003") + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
         this._iframe.style.display = "none";
         document.body.appendChild(this._iframe);
     }
@@ -45,6 +46,7 @@ export class IframeClient {
             this._iframe.contentWindow?.postMessage({
                 action: "generateKey",
                 password: password,
+                chainId: this._chainId,
             }, "*");
         });
     }
@@ -67,24 +69,31 @@ export class IframeClient {
 
             window.addEventListener("message", handleMessage);
 
-            this._iframe.contentWindow?.postMessage({
-                action: "registerDevice",
-                account: account,
-                password: password,
-            }, "*");
+            setTimeout(() => {
+                if (this._iframe.contentWindow) {
+                    this._iframe.contentWindow.postMessage({
+                        action: "registerDevice",
+                        account: account,
+                        password: password,
+                    }, "*");
+                } else {
+                    console.error("No iframe content window");
+                }
+            }, 1000);
         });
     }
 
     async getCurrentDevice(): Promise<string|null> {
         await this.waitForIframeLoad();
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const handleMessage = (event: MessageEvent) => {
                 if (event.data.action === "currentDevice") {
                     if (event.data.success) {
                         resolve(event.data.deviceId);
                     } else {
-                        reject(new Error(event.data.error || "Getting current device failed"));
+                        // reject(new Error(event.data.error || "Getting current device failed"));
+                        resolve(null);
                     }
                     window.removeEventListener("message", handleMessage);
                 }
@@ -92,9 +101,16 @@ export class IframeClient {
 
             window.addEventListener("message", handleMessage);
 
-            this._iframe.contentWindow?.postMessage({
-                action: "getCurrentDevice",
-            }, "*");
+            setTimeout(() => {
+                if (this._iframe.contentWindow) {
+                    this._iframe.contentWindow.postMessage({
+                        action: "getCurrentDevice",
+                    }, "*");
+                    console.log("event sent");
+                } else {
+                    console.error("No iframe content window");
+                }
+            }, 1000);
         });
     }
 
@@ -116,10 +132,16 @@ export class IframeClient {
 
             window.addEventListener("message", handleMessage);
 
-            this._iframe.contentWindow?.postMessage({
-                action: "signMessage",
-                message: message,
-            }, "*");
+            setTimeout(() => {
+                if (this._iframe.contentWindow) {
+                    this._iframe.contentWindow.postMessage({
+                        action: "signMessage",
+                        message: message,
+                    }, "*");
+                } else {
+                    console.error("No iframe content window");
+                }
+            }, 1000);
         });
     }
 

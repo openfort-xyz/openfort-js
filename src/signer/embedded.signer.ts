@@ -8,20 +8,20 @@ export class EmbeddedSigner implements Signer {
     private readonly _recoverySharePassword?: string;
     private _deviceID: string|null = null;
 
-    constructor(publishableKey: string,accessToken: string, accountUuid?: string, recoverySharePassword?: string) {
-        this._iframeClient = new IframeClient(accessToken, publishableKey);
+    constructor(chainId: number, publishableKey: string,accessToken: string, accountUuid?: string, recoverySharePassword?: string) {
+        this._iframeClient = new IframeClient(publishableKey, accessToken, chainId);
         this._accountUuid = accountUuid;
         this._recoverySharePassword = recoverySharePassword;
     }
 
-    private async getOrCreateDevice(): Promise<void> {
+    public async ensureEmbeddedAccount(): Promise<string> {
         if (this._deviceID) {
-            return;
+            return this._deviceID;
         }
 
         this._deviceID = await this._iframeClient.getCurrentDevice();
         if (this._deviceID) {
-            return;
+            return this._deviceID;
         }
 
         if (!this._accountUuid) {
@@ -29,10 +29,18 @@ export class EmbeddedSigner implements Signer {
         } else {
             this._deviceID = await this._iframeClient.registerDevice(this._accountUuid, this._recoverySharePassword);
         }
+
+        return this._deviceID;
     }
 
     public async sign(message: Bytes | string): Promise<string> {
-        await this.getOrCreateDevice();
+        console.log("Signing message", message);
+        await this.ensureEmbeddedAccount();
+        console.log("Signing message after account creation", message);
         return await this._iframeClient.sign(message as string);
+    }
+
+    public dispose(): void {
+        this._iframeClient.dispose();
     }
 }
