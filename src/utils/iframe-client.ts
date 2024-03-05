@@ -92,7 +92,6 @@ export class IframeClient {
                     if (event.data.success) {
                         resolve(event.data.deviceId);
                     } else {
-                        // reject(new Error(event.data.error || "Getting current device failed"));
                         resolve(null);
                     }
                     window.removeEventListener("message", handleMessage);
