@@ -232,6 +232,12 @@ export interface Account {
      * @memberof Account
      */
     'transactionIntents'?: Array<EntityIdResponse>;
+    /**
+     * 
+     * @type {EntityIdResponse}
+     * @memberof Account
+     */
+    'player': EntityIdResponse;
 }
 
 
@@ -355,6 +361,108 @@ export interface AccountListResponse {
 /**
  * 
  * @export
+ * @interface AccountNotificationTriggerResponse
+ */
+export interface AccountNotificationTriggerResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof AccountNotificationTriggerResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONTRIGGER}
+     * @memberof AccountNotificationTriggerResponse
+     */
+    'object': EntityTypeNOTIFICATIONTRIGGER;
+    /**
+     * 
+     * @type {number}
+     * @memberof AccountNotificationTriggerResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {NotificationTriggerTypeDEVELOPERACCOUNTTRIGGER}
+     * @memberof AccountNotificationTriggerResponse
+     */
+    'type': NotificationTriggerTypeDEVELOPERACCOUNTTRIGGER;
+    /**
+     * 
+     * @type {string}
+     * @memberof AccountNotificationTriggerResponse
+     */
+    'threshold': string;
+    /**
+     * 
+     * @type {AccountNotificationTriggerResponseAccount}
+     * @memberof AccountNotificationTriggerResponse
+     */
+    'account': AccountNotificationTriggerResponseAccount;
+    /**
+     * 
+     * @type {number}
+     * @memberof AccountNotificationTriggerResponse
+     */
+    'chainId': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface AccountNotificationTriggerResponseAccount
+ */
+export interface AccountNotificationTriggerResponseAccount {
+    /**
+     * 
+     * @type {string}
+     * @memberof AccountNotificationTriggerResponseAccount
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeDEVELOPERACCOUNT}
+     * @memberof AccountNotificationTriggerResponseAccount
+     */
+    'object': EntityTypeDEVELOPERACCOUNT;
+    /**
+     * 
+     * @type {number}
+     * @memberof AccountNotificationTriggerResponseAccount
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof AccountNotificationTriggerResponseAccount
+     */
+    'address': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AccountNotificationTriggerResponseAccount
+     */
+    'custodial': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof AccountNotificationTriggerResponseAccount
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {Array<EntityIdResponse>}
+     * @memberof AccountNotificationTriggerResponseAccount
+     */
+    'transactionIntents'?: Array<EntityIdResponse>;
+}
+
+
+/**
+ * 
+ * @export
  * @interface AccountPolicyRuleResponse
  */
 export interface AccountPolicyRuleResponse {
@@ -457,6 +565,12 @@ export interface AccountResponse {
      * @memberof AccountResponse
      */
     'transactionIntents'?: Array<PlayerResponseTransactionIntentsInner>;
+    /**
+     * 
+     * @type {EntityIdResponse}
+     * @memberof AccountResponse
+     */
+    'player': EntityIdResponse;
 }
 
 
@@ -467,7 +581,8 @@ export interface AccountResponse {
  */
 
 export const AccountResponseExpandable = {
-    TransactionIntents: 'transactionIntents'
+    TransactionIntents: 'transactionIntents',
+    Player: 'player'
 } as const;
 
 export type AccountResponseExpandable = typeof AccountResponseExpandable[keyof typeof AccountResponseExpandable];
@@ -765,34 +880,10 @@ export interface AuthPlayerResponse {
     'createdAt': number;
     /**
      * 
-     * @type {string}
+     * @type {Array<LinkedAccountResponse>}
      * @memberof AuthPlayerResponse
      */
-    'email'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof AuthPlayerResponse
-     */
-    'updatedAt': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof AuthPlayerResponse
-     */
-    'externalUserId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AuthPlayerResponse
-     */
-    'provider': string;
-    /**
-     * 
-     * @type {PrismaInputJsonValue}
-     * @memberof AuthPlayerResponse
-     */
-    'metadata'?: PrismaInputJsonValue;
+    'linkedAccounts': Array<LinkedAccountResponse>;
 }
 
 
@@ -854,56 +945,158 @@ export interface AuthPlayerResponsePlayer {
 
 
 /**
+ * Enum of the supporting OAuth providers.
+ * @export
+ * @enum {string}
+ */
+
+export const AuthProvider = {
+    Email: 'email',
+    Accelbyte: 'accelbyte',
+    Firebase: 'firebase',
+    Google: 'google',
+    Lootlocker: 'lootlocker',
+    Playfab: 'playfab',
+    Wallet: 'wallet'
+} as const;
+
+export type AuthProvider = typeof AuthProvider[keyof typeof AuthProvider];
+
+
+/**
  * 
  * @export
  * @interface AuthResponse
  */
 export interface AuthResponse {
     /**
-     * Player\'s identifier.
-     * @type {string}
+     * 
+     * @type {AuthPlayerResponse}
      * @memberof AuthResponse
      */
-    'playerId': string;
+    'player': AuthPlayerResponse;
     /**
-     * JWT token.
+     * JWT access token.
      * @type {string}
      * @memberof AuthResponse
      */
     'token': string;
+    /**
+     * Refresh token.
+     * @type {string}
+     * @memberof AuthResponse
+     */
+    'refreshToken': string;
 }
 /**
  * 
  * @export
- * @interface AuthenticatedPlayerResponse
+ * @interface AuthSessionResponse
  */
-export interface AuthenticatedPlayerResponse {
+export interface AuthSessionResponse {
     /**
-     * Player\'s identifier.
+     * 
+     * @type {boolean}
+     * @memberof AuthSessionResponse
+     */
+    'livemode': boolean;
+    /**
+     * 
      * @type {string}
-     * @memberof AuthenticatedPlayerResponse
+     * @memberof AuthSessionResponse
+     */
+    'projectId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthSessionResponse
      */
     'playerId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthSessionResponse
+     */
+    'issuer': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof AuthSessionResponse
+     */
+    'issuedAt': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof AuthSessionResponse
+     */
+    'expiration': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthSessionResponse
+     */
+    'sessionId': string;
 }
 /**
  * 
  * @export
- * @interface AuthorizeWithOAuthToken200Response
+ * @interface AuthenticateOAuthRequest
  */
-export interface AuthorizeWithOAuthToken200Response {
+export interface AuthenticateOAuthRequest {
     /**
-     * Player\'s identifier.
-     * @type {string}
-     * @memberof AuthorizeWithOAuthToken200Response
+     * 
+     * @type {OAuthProvider}
+     * @memberof AuthenticateOAuthRequest
      */
-    'playerId': string;
+    'provider': OAuthProvider;
     /**
-     * JWT token.
+     * Token to be verified
      * @type {string}
-     * @memberof AuthorizeWithOAuthToken200Response
+     * @memberof AuthenticateOAuthRequest
      */
     'token': string;
 }
+
+
+/**
+ * 
+ * @export
+ * @interface BalanceNotificationTriggerResponse
+ */
+export interface BalanceNotificationTriggerResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof BalanceNotificationTriggerResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONTRIGGER}
+     * @memberof BalanceNotificationTriggerResponse
+     */
+    'object': EntityTypeNOTIFICATIONTRIGGER;
+    /**
+     * 
+     * @type {number}
+     * @memberof BalanceNotificationTriggerResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {NotificationTriggerTypePROJECTBALANCETRIGGER}
+     * @memberof BalanceNotificationTriggerResponse
+     */
+    'type': NotificationTriggerTypePROJECTBALANCETRIGGER;
+    /**
+     * 
+     * @type {string}
+     * @memberof BalanceNotificationTriggerResponse
+     */
+    'threshold': string;
+}
+
+
 /**
  * 
  * @export
@@ -932,11 +1125,101 @@ export interface BalanceResponse {
 /**
  * 
  * @export
+ * @interface BaseEntityListResponseDeviceResponse
+ */
+export interface BaseEntityListResponseDeviceResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof BaseEntityListResponseDeviceResponse
+     */
+    'object': ResponseTypeLIST;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseEntityListResponseDeviceResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<DeviceResponse>}
+     * @memberof BaseEntityListResponseDeviceResponse
+     */
+    'data': Array<DeviceResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseEntityListResponseDeviceResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseEntityListResponseDeviceResponse
+     */
+    'end': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseEntityListResponseDeviceResponse
+     */
+    'total': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface BaseEntityListResponseShareResponse
+ */
+export interface BaseEntityListResponseShareResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof BaseEntityListResponseShareResponse
+     */
+    'object': ResponseTypeLIST;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseEntityListResponseShareResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<ShareResponse>}
+     * @memberof BaseEntityListResponseShareResponse
+     */
+    'data': Array<ShareResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseEntityListResponseShareResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseEntityListResponseShareResponse
+     */
+    'end': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof BaseEntityListResponseShareResponse
+     */
+    'total': number;
+}
+
+
+/**
+ * 
+ * @export
  * @interface CancelTransferOwnershipRequest
  */
 export interface CancelTransferOwnershipRequest {
     /**
-     * The policy ID (starts with pol_)
+     * ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). A policy must be provided.
      * @type {string}
      * @memberof CancelTransferOwnershipRequest
      */
@@ -1024,6 +1307,31 @@ export interface CheckoutResponse {
 /**
  * 
  * @export
+ * @interface CheckoutSubscriptionRequest
+ */
+export interface CheckoutSubscriptionRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CheckoutSubscriptionRequest
+     */
+    'plan': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CheckoutSubscriptionRequest
+     */
+    'cancelUrl'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CheckoutSubscriptionRequest
+     */
+    'successUrl'?: string;
+}
+/**
+ * 
+ * @export
  * @interface CompleteRecoveryRequest
  */
 export interface CompleteRecoveryRequest {
@@ -1034,7 +1342,7 @@ export interface CompleteRecoveryRequest {
      */
     'newOwnerAddress': string;
     /**
-     * Signatures
+     * Signatures by the guardians
      * @type {Array<string>}
      * @memberof CompleteRecoveryRequest
      */
@@ -1172,6 +1480,126 @@ export interface ContractListResponse {
 /**
  * 
  * @export
+ * @interface ContractNotificationTriggerResponse
+ */
+export interface ContractNotificationTriggerResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContractNotificationTriggerResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONTRIGGER}
+     * @memberof ContractNotificationTriggerResponse
+     */
+    'object': EntityTypeNOTIFICATIONTRIGGER;
+    /**
+     * 
+     * @type {number}
+     * @memberof ContractNotificationTriggerResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {NotificationTriggerTypeCONTRACTTRIGGER}
+     * @memberof ContractNotificationTriggerResponse
+     */
+    'type': NotificationTriggerTypeCONTRACTTRIGGER;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContractNotificationTriggerResponse
+     */
+    'threshold': string;
+    /**
+     * 
+     * @type {ContractNotificationTriggerResponseContract}
+     * @memberof ContractNotificationTriggerResponse
+     */
+    'contract': ContractNotificationTriggerResponseContract;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContractNotificationTriggerResponse
+     */
+    'functionName': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ContractNotificationTriggerResponse
+     */
+    'functionArgs': Array<string>;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface ContractNotificationTriggerResponseContract
+ */
+export interface ContractNotificationTriggerResponseContract {
+    /**
+     * 
+     * @type {string}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeCONTRACT}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'object': EntityTypeCONTRACT;
+    /**
+     * 
+     * @type {number}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'name': string | null;
+    /**
+     * The chain ID.
+     * @type {number}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'chainId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'address': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'deleted': boolean;
+    /**
+     * 
+     * @type {Array<Abi>}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'abi': Array<Abi>;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ContractNotificationTriggerResponseContract
+     */
+    'publicVerification': boolean;
+}
+
+
+/**
+ * 
+ * @export
  * @interface ContractPolicyRuleResponse
  */
 export interface ContractPolicyRuleResponse {
@@ -1201,79 +1629,16 @@ export interface ContractPolicyRuleResponse {
     'type': PolicyRuleTypeCONTRACT;
     /**
      * 
-     * @type {ContractPolicyRuleResponseContract}
+     * @type {ContractNotificationTriggerResponseContract}
      * @memberof ContractPolicyRuleResponse
      */
-    'contract': ContractPolicyRuleResponseContract;
+    'contract': ContractNotificationTriggerResponseContract;
     /**
      * 
      * @type {string}
      * @memberof ContractPolicyRuleResponse
      */
     'functionName': string;
-}
-
-
-/**
- * 
- * @export
- * @interface ContractPolicyRuleResponseContract
- */
-export interface ContractPolicyRuleResponseContract {
-    /**
-     * 
-     * @type {string}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'id': string;
-    /**
-     * 
-     * @type {EntityTypeCONTRACT}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'object': EntityTypeCONTRACT;
-    /**
-     * 
-     * @type {number}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'createdAt': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'name': string | null;
-    /**
-     * The chain ID.
-     * @type {number}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'chainId': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'address': string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'deleted': boolean;
-    /**
-     * 
-     * @type {Array<Abi>}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'abi': Array<Abi>;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ContractPolicyRuleResponseContract
-     */
-    'publicVerification': boolean;
 }
 
 
@@ -1290,7 +1655,7 @@ export interface ContractReadQueries {
      */
     'functionName': string;
     /**
-     * The function arguments of the contract.
+     * The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.
      * @type {Array<any>}
      * @memberof ContractReadQueries
      */
@@ -1462,44 +1827,48 @@ export interface CountPerIntervalLimitPolicyRuleResponse {
  */
 export interface CreateAccountRequest {
     /**
-     * The chain id
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof CreateAccountRequest
      */
     'chainId': number;
     /**
-     * The address of the external owner
+     * Use this parameter to create a new Account for Player with the provided owner address.
      * @type {string}
      * @memberof CreateAccountRequest
      */
     'externalOwnerAddress'?: string;
     /**
-     * 
-     * @type {DataAccountTypes}
+     * The type of smart account that will be created (e.g. ERC6551V1, ManagedV5, UpgradeableV5). Defaults to UpgradeableV5.
+     * @type {string}
      * @memberof CreateAccountRequest
      */
-    'accountType'?: DataAccountTypes;
+    'accountType'?: string;
     /**
-     * If ERC6551, the NFT contract to use
+     * For account types that support social recovery, wether to enable Openfort as guardian or not. Defaults to false.
+     * @type {boolean}
+     * @memberof CreateAccountRequest
+     */
+    'defaultGuardian'?: boolean;
+    /**
+     * If ERC6551, the address of the NFT contract to use
      * @type {string}
      * @memberof CreateAccountRequest
      */
     'tokenContract'?: string;
     /**
-     * If ERC6551, the tokenID to serve as owner
+     * If ERC6551, the tokenId from the NFT contract that will serve as owner
      * @type {number}
      * @memberof CreateAccountRequest
      */
     'tokenId'?: number;
     /**
-     * The player ID (starts with pla_)
+     * ID of the player this account belongs to (starts with `pla_`). If none is provided, a new player will be created.
      * @type {string}
      * @memberof CreateAccountRequest
      */
-    'player': string;
+    'player'?: string;
 }
-
-
 /**
  * 
  * @export
@@ -1507,13 +1876,13 @@ export interface CreateAccountRequest {
  */
 export interface CreateApiAuthorizedNetworkRequest {
     /**
-     * 
+     * The name of the authorized network.
      * @type {string}
      * @memberof CreateApiAuthorizedNetworkRequest
      */
     'name': string;
     /**
-     * 
+     * The network address.
      * @type {string}
      * @memberof CreateApiAuthorizedNetworkRequest
      */
@@ -1532,7 +1901,7 @@ export interface CreateContractRequest {
      */
     'name': string;
     /**
-     * Specifies the chain ID of the contract.
+     * Specifies the chain ID of the contract. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof CreateContractRequest
      */
@@ -1559,151 +1928,110 @@ export interface CreateContractRequest {
 /**
  * 
  * @export
- * @interface CreatePlayerAccountRequest
+ * @interface CreateDeviceRequest
  */
-export interface CreatePlayerAccountRequest {
+export interface CreateDeviceRequest {
     /**
-     * The chain id
-     * @type {number}
-     * @memberof CreatePlayerAccountRequest
-     */
-    'chainId': number;
-    /**
-     * The address of the external owner
+     * Specifies the unique account ID (starts with acc_)
      * @type {string}
-     * @memberof CreatePlayerAccountRequest
+     * @memberof CreateDeviceRequest
      */
-    'externalOwnerAddress'?: string;
+    'account': string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateNotificationRequest
+ */
+export interface CreateNotificationRequest {
+    /**
+     * The name of the notification.
+     * @type {string}
+     * @memberof CreateNotificationRequest
+     */
+    'name': string;
+}
+/**
+ * 
+ * @export
+ * @interface CreateNotificationSubscriptionRequest
+ */
+export interface CreateNotificationSubscriptionRequest {
+    /**
+     * The notification ID (starts with not_).
+     * @type {string}
+     * @memberof CreateNotificationSubscriptionRequest
+     */
+    'notification': string;
     /**
      * 
-     * @type {DataAccountTypes}
-     * @memberof CreatePlayerAccountRequest
+     * @type {SubscriptionType}
+     * @memberof CreateNotificationSubscriptionRequest
      */
-    'accountType'?: DataAccountTypes;
+    'method': SubscriptionType;
     /**
-     * If ERC6551, the NFT contract to use
+     * The receiver of notifications.
      * @type {string}
-     * @memberof CreatePlayerAccountRequest
+     * @memberof CreateNotificationSubscriptionRequest
      */
-    'tokenContract'?: string;
-    /**
-     * If ERC6551, the tokenID to serve as owner
-     * @type {number}
-     * @memberof CreatePlayerAccountRequest
-     */
-    'tokenId'?: number;
+    'target': string;
 }
 
 
 /**
  * 
  * @export
- * @interface CreatePlayerSessionRequest
+ * @interface CreateNotificationTriggerRequest
  */
-export interface CreatePlayerSessionRequest {
+export interface CreateNotificationTriggerRequest {
     /**
-     * The address of the session key.
+     * The notification ID (starts with not_).
      * @type {string}
-     * @memberof CreatePlayerSessionRequest
+     * @memberof CreateNotificationTriggerRequest
      */
-    'address': string;
+    'notification': string;
     /**
-     * The chain ID.
-     * @type {number}
-     * @memberof CreatePlayerSessionRequest
+     * 
+     * @type {NotificationTriggerType}
+     * @memberof CreateNotificationTriggerRequest
      */
-    'chainId': number;
+    'type': NotificationTriggerType;
     /**
-     * If no account exists for a given player, create one with this address.
+     * The function name of the contract. Accepts a a function signature as well (e.g. mint(address)).
      * @type {string}
-     * @memberof CreatePlayerSessionRequest
+     * @memberof CreateNotificationTriggerRequest
      */
-    'externalOwnerAddress'?: string;
+    'functionName'?: string;
     /**
-     * Maximum number of times the session key can be used.
-     * @type {number}
-     * @memberof CreatePlayerSessionRequest
-     */
-    'limit'?: number;
-    /**
-     * Whether the transactionIntent is optimistic (resolve before it arrives on chain) or not.
-     * @type {boolean}
-     * @memberof CreatePlayerSessionRequest
-     */
-    'optimistic'?: boolean;
-    /**
-     * The policy ID (starts with pol_).
-     * @type {string}
-     * @memberof CreatePlayerSessionRequest
-     */
-    'policy'?: string;
-    /**
-     * The unix timestamp in seconds when the session key becomes valid.
-     * @type {number}
-     * @memberof CreatePlayerSessionRequest
-     */
-    'validAfter': number;
-    /**
-     * The unix timestamp in seconds when the session key expires.
-     * @type {number}
-     * @memberof CreatePlayerSessionRequest
-     */
-    'validUntil': number;
-    /**
-     * The list of whitelisted addresses (contracts the session key can interact with).
+     * The function arguments of the contract, in string format. If you provide one of a `pla_...`, `con_...` or `acc_...` it will be converted to the corresponding address.
      * @type {Array<string>}
-     * @memberof CreatePlayerSessionRequest
+     * @memberof CreateNotificationTriggerRequest
      */
-    'whitelist'?: Array<string>;
-}
-/**
- * 
- * @export
- * @interface CreatePolicyAllowFunctionRequest
- */
-export interface CreatePolicyAllowFunctionRequest {
+    'functionArgs'?: Array<string>;
     /**
-     * 
-     * @type {PolicyRuleType}
-     * @memberof CreatePolicyAllowFunctionRequest
-     */
-    'type': PolicyRuleType;
-    /**
-     * Name of the function in the contract to allow.
+     * The contract ID you want to interact with. Must have been added to Openfort first, starts with `con_`.
      * @type {string}
-     * @memberof CreatePolicyAllowFunctionRequest
+     * @memberof CreateNotificationTriggerRequest
      */
-    'functionName'?: string | null;
+    'contract'?: string;
     /**
-     * Contract ID to allow.
+     * The threshold value at which (greater or equal) the notification will be triggered.
      * @type {string}
-     * @memberof CreatePolicyAllowFunctionRequest
+     * @memberof CreateNotificationTriggerRequest
      */
-    'contract'?: string | null;
+    'threshold': string;
     /**
-     * Gas limit in WEI.
-     * @type {string}
-     * @memberof CreatePolicyAllowFunctionRequest
-     */
-    'gasLimit'?: string;
-    /**
-     * Number of times the function will be sponsored.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
-     * @memberof CreatePolicyAllowFunctionRequest
+     * @memberof CreateNotificationTriggerRequest
      */
-    'countLimit'?: number;
+    'chainId'?: number;
     /**
-     * 
-     * @type {TimeIntervalType}
-     * @memberof CreatePolicyAllowFunctionRequest
+     * ID of the Developer Account this trigger will check the balance of (starts with `dac_`).
+     * @type {string}
+     * @memberof CreateNotificationTriggerRequest
      */
-    'timeIntervalType'?: TimeIntervalType;
-    /**
-     * Time interval value.
-     * @type {number}
-     * @memberof CreatePolicyAllowFunctionRequest
-     */
-    'timeIntervalValue'?: number;
+    'account'?: string;
 }
 
 
@@ -1720,7 +2048,7 @@ export interface CreatePolicyRequest {
      */
     'name': string;
     /**
-     * The chain ID of the policy.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof CreatePolicyRequest
      */
@@ -1745,19 +2073,19 @@ export interface CreatePolicyRuleRequest {
      */
     'type': PolicyRuleType;
     /**
-     * Name of the function in the contract to allow.
+     * Name of the function in the contract to allow. If you want to allow all functions, use the wildcard \'All functions\'.
      * @type {string}
      * @memberof CreatePolicyRuleRequest
      */
-    'functionName'?: string | null;
+    'functionName'?: string;
     /**
-     * Contract ID to allow.
+     * The contract ID you want to interact with. Must have been added to Openfort first, starts with `con_`.
      * @type {string}
      * @memberof CreatePolicyRuleRequest
      */
-    'contract'?: string | null;
+    'contract'?: string;
     /**
-     * Gas limit in WEI.
+     * Gas limit in WEI (i.e. factor 10^18).
      * @type {string}
      * @memberof CreatePolicyRuleRequest
      */
@@ -1781,7 +2109,7 @@ export interface CreatePolicyRuleRequest {
      */
     'timeIntervalValue'?: number;
     /**
-     * The unique Policy ID to add the rule to.
+     * The unique Policy ID to add the rule to (starts with pol_).
      * @type {string}
      * @memberof CreatePolicyRuleRequest
      */
@@ -1811,7 +2139,7 @@ export interface CreateProjectApiKeyRequest {
  */
 export interface CreateProjectRequest {
     /**
-     * 
+     * Name of the project.
      * @type {string}
      * @memberof CreateProjectRequest
      */
@@ -1838,7 +2166,7 @@ export interface CreateSessionRequest {
      */
     'address': string;
     /**
-     * The chain ID.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof CreateSessionRequest
      */
@@ -1856,13 +2184,13 @@ export interface CreateSessionRequest {
      */
     'limit'?: number;
     /**
-     * Whether the transactionIntent is optimistic (resolve before it arrives on chain) or not.
+     * Set to `true` to indicate that the transactionIntent request should be resolved as soon as possible, after the transactionIntent is created and simulated and before it arrives on chain.
      * @type {boolean}
      * @memberof CreateSessionRequest
      */
     'optimistic'?: boolean;
     /**
-     * The policy ID (starts with pol_).
+     * ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). If no Policy is provided, the own Account native token funds will be used to pay for gas.
      * @type {string}
      * @memberof CreateSessionRequest
      */
@@ -1895,41 +2223,74 @@ export interface CreateSessionRequest {
 /**
  * 
  * @export
+ * @interface CreateShareRequest
+ */
+export interface CreateShareRequest {
+    /**
+     * Specifies the unique share ID (starts with sha_)
+     * @type {string}
+     * @memberof CreateShareRequest
+     */
+    'share': string;
+    /**
+     * 
+     * @type {ShareType}
+     * @memberof CreateShareRequest
+     */
+    'shareType': ShareType;
+    /**
+     * Specifies if the recovery share is encrypted by user entropy
+     * @type {boolean}
+     * @memberof CreateShareRequest
+     */
+    'userEntropy': boolean;
+}
+
+
+/**
+ * 
+ * @export
  * @interface CreateTransactionIntentRequest
  */
 export interface CreateTransactionIntentRequest {
     /**
-     * The player ID (starts with pla_).
-     * @type {string}
-     * @memberof CreateTransactionIntentRequest
-     */
-    'player': string;
-    /**
-     * The chain ID.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof CreateTransactionIntentRequest
      */
     'chainId': number;
     /**
-     * The policy ID (starts with pol_).
+     * ID of the Player this TransactionIntent belongs to, if one exists (starts with `pla_`).  If you omit this parameter a new Player will be created.
+     * @type {string}
+     * @memberof CreateTransactionIntentRequest
+     */
+    'player'?: string;
+    /**
+     * ID of the Account this TransactionIntent is executed with, if one exists (starts with `acc_` or `dac_`).  When providing a Player and ChainID, you can omit this parameter.
+     * @type {string}
+     * @memberof CreateTransactionIntentRequest
+     */
+    'account'?: string;
+    /**
+     * ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). If no Policy is provided, the own Account native token funds will be used to pay for gas.
      * @type {string}
      * @memberof CreateTransactionIntentRequest
      */
     'policy'?: string;
     /**
-     * If no account exists for a given player, create one with this address.
+     * Use this parameter to create a new Account for Player with the provided owner address.  If you omit this parameter and no Account exists for the Player, a custodial Account will be created.
      * @type {string}
      * @memberof CreateTransactionIntentRequest
      */
     'externalOwnerAddress'?: string;
     /**
-     * Whether the transactionIntent is optimistic (resolve before it arrives on chain) or not.
+     * Set to `true` to indicate that the transactionIntent request should be resolved as soon as possible, after the transactionIntent is created and simulated and before it arrives on chain.
      * @type {boolean}
      * @memberof CreateTransactionIntentRequest
      */
-    'optimistic': boolean;
+    'optimistic'?: boolean;
     /**
-     * Specify the number of blocks after the block with transaction to be assured that transaction is in block
+     * Specify the number of confirmation blocks after which the confirmation webhook will be sent when the transaction arrives on-chain. Default is 5.
      * @type {number}
      * @memberof CreateTransactionIntentRequest
      */
@@ -1948,19 +2309,19 @@ export interface CreateTransactionIntentRequest {
  */
 export interface CreateWeb3ConnectionRequest {
     /**
-     * The player ID (starts with pla_).
+     * ID of the Player this Web3Connection belongs to (starts with `pla_`).
      * @type {string}
      * @memberof CreateWeb3ConnectionRequest
      */
     'player': string;
     /**
-     * The chain ID.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof CreateWeb3ConnectionRequest
      */
     'chainId': number;
     /**
-     * Specifies the URI of the web3Connection.
+     * Specifies the URI of WalletConnect.
      * @type {string}
      * @memberof CreateWeb3ConnectionRequest
      */
@@ -1982,22 +2343,6 @@ export type Currency = typeof Currency[keyof typeof Currency];
 /**
  * 
  * @export
- * @enum {string}
- */
-
-export const DataAccountTypes = {
-    Upgradeable: 'Upgradeable',
-    Managed: 'Managed',
-    Erc6551: 'ERC6551',
-    Recoverable: 'Recoverable'
-} as const;
-
-export type DataAccountTypes = typeof DataAccountTypes[keyof typeof DataAccountTypes];
-
-
-/**
- * 
- * @export
  * @interface DeployRequest
  */
 export interface DeployRequest {
@@ -2008,6 +2353,342 @@ export interface DeployRequest {
      */
     'policy': string;
 }
+/**
+ * 
+ * @export
+ * @interface DeveloperAccount
+ */
+export interface DeveloperAccount {
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccount
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeDEVELOPERACCOUNT}
+     * @memberof DeveloperAccount
+     */
+    'object': EntityTypeDEVELOPERACCOUNT;
+    /**
+     * 
+     * @type {number}
+     * @memberof DeveloperAccount
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccount
+     */
+    'address': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof DeveloperAccount
+     */
+    'custodial': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccount
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {Array<EntityIdResponse>}
+     * @memberof DeveloperAccount
+     */
+    'transactionIntents'?: Array<EntityIdResponse>;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface DeveloperAccountCreateRequest
+ */
+export interface DeveloperAccountCreateRequest {
+    /**
+     * The address of the wallet that has deposited funds in the paymaster.
+     * @type {string}
+     * @memberof DeveloperAccountCreateRequest
+     */
+    'address'?: string;
+    /**
+     * Signature to verify the account ownership.
+     * @type {string}
+     * @memberof DeveloperAccountCreateRequest
+     */
+    'signature'?: string;
+    /**
+     * The name of the account.
+     * @type {string}
+     * @memberof DeveloperAccountCreateRequest
+     */
+    'name'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface DeveloperAccountDeleteResponse
+ */
+export interface DeveloperAccountDeleteResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccountDeleteResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeDEVELOPERACCOUNT}
+     * @memberof DeveloperAccountDeleteResponse
+     */
+    'object': EntityTypeDEVELOPERACCOUNT;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof DeveloperAccountDeleteResponse
+     */
+    'deleted': boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface DeveloperAccountGetMessageResponse
+ */
+export interface DeveloperAccountGetMessageResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccountGetMessageResponse
+     */
+    'message': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccountGetMessageResponse
+     */
+    'address': string;
+}
+/**
+ * 
+ * @export
+ * @interface DeveloperAccountListQueries
+ */
+export interface DeveloperAccountListQueries {
+    /**
+     * Specifies the maximum number of records to return.
+     * @type {number}
+     * @memberof DeveloperAccountListQueries
+     */
+    'limit'?: number;
+    /**
+     * Specifies the offset for the first records to return.
+     * @type {number}
+     * @memberof DeveloperAccountListQueries
+     */
+    'skip'?: number;
+    /**
+     * 
+     * @type {SortOrder}
+     * @memberof DeveloperAccountListQueries
+     */
+    'order'?: SortOrder;
+    /**
+     * Specifies the fields to expand in the response.
+     * @type {Array<DeveloperAccountResponseExpandable>}
+     * @memberof DeveloperAccountListQueries
+     */
+    'expand'?: Array<DeveloperAccountResponseExpandable>;
+    /**
+     * Specifies whether to include deleted dev accounts.
+     * @type {boolean}
+     * @memberof DeveloperAccountListQueries
+     */
+    'deleted'?: boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface DeveloperAccountListResponse
+ */
+export interface DeveloperAccountListResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof DeveloperAccountListResponse
+     */
+    'object': ResponseTypeLIST;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccountListResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<DeveloperAccountResponse>}
+     * @memberof DeveloperAccountListResponse
+     */
+    'data': Array<DeveloperAccountResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof DeveloperAccountListResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof DeveloperAccountListResponse
+     */
+    'end': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof DeveloperAccountListResponse
+     */
+    'total': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface DeveloperAccountResponse
+ */
+export interface DeveloperAccountResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccountResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeDEVELOPERACCOUNT}
+     * @memberof DeveloperAccountResponse
+     */
+    'object': EntityTypeDEVELOPERACCOUNT;
+    /**
+     * 
+     * @type {number}
+     * @memberof DeveloperAccountResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccountResponse
+     */
+    'address': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof DeveloperAccountResponse
+     */
+    'custodial': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeveloperAccountResponse
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {Array<PlayerResponseTransactionIntentsInner>}
+     * @memberof DeveloperAccountResponse
+     */
+    'transactionIntents'?: Array<PlayerResponseTransactionIntentsInner>;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const DeveloperAccountResponseExpandable = {
+    TransactionIntents: 'transactionIntents'
+} as const;
+
+export type DeveloperAccountResponseExpandable = typeof DeveloperAccountResponseExpandable[keyof typeof DeveloperAccountResponseExpandable];
+
+
+/**
+ * 
+ * @export
+ * @interface DeviceListQueries
+ */
+export interface DeviceListQueries {
+    /**
+     * Specifies the maximum number of records to return.
+     * @type {number}
+     * @memberof DeviceListQueries
+     */
+    'limit'?: number;
+    /**
+     * Specifies the offset for the first records to return.
+     * @type {number}
+     * @memberof DeviceListQueries
+     */
+    'skip'?: number;
+    /**
+     * 
+     * @type {SortOrder}
+     * @memberof DeviceListQueries
+     */
+    'order'?: SortOrder;
+    /**
+     * Specifies the unique account ID (starts with acc_)
+     * @type {string}
+     * @memberof DeviceListQueries
+     */
+    'account': string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface DeviceResponse
+ */
+export interface DeviceResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof DeviceResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeDEVICE}
+     * @memberof DeviceResponse
+     */
+    'object': EntityTypeDEVICE;
+    /**
+     * 
+     * @type {number}
+     * @memberof DeviceResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeviceResponse
+     */
+    'accountID': string;
+}
+
+
 /**
  * 
  * @export
@@ -2084,6 +2765,32 @@ export type EntityTypeCONTRACT = typeof EntityTypeCONTRACT[keyof typeof EntityTy
  * @enum {string}
  */
 
+export const EntityTypeDEVELOPERACCOUNT = {
+    DeveloperAccount: 'developerAccount'
+} as const;
+
+export type EntityTypeDEVELOPERACCOUNT = typeof EntityTypeDEVELOPERACCOUNT[keyof typeof EntityTypeDEVELOPERACCOUNT];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EntityTypeDEVICE = {
+    Device: 'device'
+} as const;
+
+export type EntityTypeDEVICE = typeof EntityTypeDEVICE[keyof typeof EntityTypeDEVICE];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
 export const EntityTypeINVENTORY = {
     Inventory: 'inventory'
 } as const;
@@ -2097,11 +2804,37 @@ export type EntityTypeINVENTORY = typeof EntityTypeINVENTORY[keyof typeof Entity
  * @enum {string}
  */
 
-export const EntityTypePAYMASTERDEPOSITOR = {
-    PaymasterDepositor: 'paymasterDepositor'
+export const EntityTypeNOTIFICATION = {
+    Notification: 'notification'
 } as const;
 
-export type EntityTypePAYMASTERDEPOSITOR = typeof EntityTypePAYMASTERDEPOSITOR[keyof typeof EntityTypePAYMASTERDEPOSITOR];
+export type EntityTypeNOTIFICATION = typeof EntityTypeNOTIFICATION[keyof typeof EntityTypeNOTIFICATION];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EntityTypeNOTIFICATIONSUBSCRIPTION = {
+    NotificationSubscription: 'notificationSubscription'
+} as const;
+
+export type EntityTypeNOTIFICATIONSUBSCRIPTION = typeof EntityTypeNOTIFICATIONSUBSCRIPTION[keyof typeof EntityTypeNOTIFICATIONSUBSCRIPTION];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EntityTypeNOTIFICATIONTRIGGER = {
+    NotificationTrigger: 'notificationTrigger'
+} as const;
+
+export type EntityTypeNOTIFICATIONTRIGGER = typeof EntityTypeNOTIFICATIONTRIGGER[keyof typeof EntityTypeNOTIFICATIONTRIGGER];
 
 
 /**
@@ -2180,6 +2913,19 @@ export const EntityTypeSESSION = {
 } as const;
 
 export type EntityTypeSESSION = typeof EntityTypeSESSION[keyof typeof EntityTypeSESSION];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EntityTypeSHARE = {
+    Share: 'share'
+} as const;
+
+export type EntityTypeSHARE = typeof EntityTypeSHARE[keyof typeof EntityTypeSHARE];
 
 
 /**
@@ -2522,117 +3268,122 @@ export interface GasPerTransactionLimitPolicyRuleResponse {
 export interface GasReport {
     /**
      * 
-     * @type {ResponseTypeLIST}
+     * @type {MonthRange}
      * @memberof GasReport
      */
-    'object': ResponseTypeLIST;
-    /**
-     * 
-     * @type {Array<GasReportDataInner>}
-     * @memberof GasReport
-     */
-    'data': Array<GasReportDataInner>;
-}
-
-
-/**
- * 
- * @export
- * @interface GasReportDataInner
- */
-export interface GasReportDataInner {
-    /**
-     * 
-     * @type {Array<GasReportDataInnerTransactionIntentsInner>}
-     * @memberof GasReportDataInner
-     */
-    'transactionIntents': Array<GasReportDataInnerTransactionIntentsInner>;
+    'period': MonthRange;
     /**
      * 
      * @type {string}
-     * @memberof GasReportDataInner
+     * @memberof GasReport
      */
-    'totalTransactionFeeInUSD': string;
+    'averageTransactionFee': string;
     /**
      * 
      * @type {string}
-     * @memberof GasReportDataInner
+     * @memberof GasReport
+     */
+    'totalTransactionFeeInCustomTokens': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GasReport
      */
     'totalTransactionFee': string;
     /**
      * 
      * @type {string}
-     * @memberof GasReportDataInner
+     * @memberof GasReport
      */
-    'averageTransactionFee': string;
+    'totalTransactionFeeInUSD': string;
     /**
      * 
-     * @type {GasReportDataInnerPeriod}
-     * @memberof GasReportDataInner
+     * @type {Array<GasReportTransactionIntentsInner>}
+     * @memberof GasReport
      */
-    'period': GasReportDataInnerPeriod;
-    /**
-     * 
-     * @type {number}
-     * @memberof GasReportDataInner
-     */
-    'periodNumber': number;
+    'transactionIntents': Array<GasReportTransactionIntentsInner>;
 }
 /**
  * 
  * @export
- * @interface GasReportDataInnerPeriod
+ * @interface GasReportListResponse
  */
-export interface GasReportDataInnerPeriod {
+export interface GasReportListResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof GasReportListResponse
+     */
+    'object': ResponseTypeLIST;
+    /**
+     * 
+     * @type {string}
+     * @memberof GasReportListResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<GasReport>}
+     * @memberof GasReportListResponse
+     */
+    'data': Array<GasReport>;
     /**
      * 
      * @type {number}
-     * @memberof GasReportDataInnerPeriod
+     * @memberof GasReportListResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof GasReportListResponse
      */
     'end': number;
     /**
      * 
      * @type {number}
-     * @memberof GasReportDataInnerPeriod
+     * @memberof GasReportListResponse
      */
-    'start': number;
+    'total': number;
 }
+
+
 /**
  * 
  * @export
- * @interface GasReportDataInnerTransactionIntentsInner
+ * @interface GasReportTransactionIntentsInner
  */
-export interface GasReportDataInnerTransactionIntentsInner {
+export interface GasReportTransactionIntentsInner {
     /**
      * 
      * @type {string}
-     * @memberof GasReportDataInnerTransactionIntentsInner
+     * @memberof GasReportTransactionIntentsInner
      */
     'gasFeeInUSD': string;
     /**
      * 
      * @type {string}
-     * @memberof GasReportDataInnerTransactionIntentsInner
+     * @memberof GasReportTransactionIntentsInner
      */
     'gasUsed': string;
     /**
      * 
      * @type {string}
-     * @memberof GasReportDataInnerTransactionIntentsInner
+     * @memberof GasReportTransactionIntentsInner
      */
     'gasPrice': string;
     /**
      * 
      * @type {string}
-     * @memberof GasReportDataInnerTransactionIntentsInner
+     * @memberof GasReportTransactionIntentsInner
      */
     'gasFee': string;
     /**
      * 
      * @type {string}
-     * @memberof GasReportDataInnerTransactionIntentsInner
+     * @memberof GasReportTransactionIntentsInner
      */
-    'transactionIntentId': string;
+    'id': string;
 }
 /**
  * 
@@ -2699,31 +3450,31 @@ export interface GoogleOAuthConfig {
  */
 export interface Interaction {
     /**
-     * The address of the contract.
+     * The address of the recipient of native tokens. Use *only* to transfer native tokens. If you provide one of a `pla_...`,  or `acc_...` it will be converted to the corresponding address.
      * @type {string}
      * @memberof Interaction
      */
     'to'?: string;
     /**
-     * The contract interacting with
-     * @type {string}
-     * @memberof Interaction
-     */
-    'contract'?: string;
-    /**
-     * The value of the transaction.
+     * The value intended to be sent with the transaction. Should be a stringified number in WEI (i.e. factor 10^18). * @example \"1000000000000000000\"
      * @type {string}
      * @memberof Interaction
      */
     'value'?: string;
     /**
-     * The function name of the contract.
+     * The contract ID you want to interact with. Must have been added to Openfort first, starts with `con_`.
+     * @type {string}
+     * @memberof Interaction
+     */
+    'contract'?: string;
+    /**
+     * The function name of the contract. Accepts a a function signature as well (e.g. mint(address)).
      * @type {string}
      * @memberof Interaction
      */
     'functionName'?: string;
     /**
-     * The function arguments of the contract.
+     * The function arguments of the contract, in string format. If you provide one of a `pla_...`, `con_...` or `acc_...` it will be converted to the corresponding address.
      * @type {Array<any>}
      * @memberof Interaction
      */
@@ -2844,6 +3595,140 @@ export interface InventoryResponse {
 /**
  * 
  * @export
+ * @interface JwtKey
+ */
+export interface JwtKey {
+    /**
+     * 
+     * @type {string}
+     * @memberof JwtKey
+     */
+    'kty': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JwtKey
+     */
+    'x': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JwtKey
+     */
+    'y': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JwtKey
+     */
+    'crv': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JwtKey
+     */
+    'kid': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JwtKey
+     */
+    'use': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof JwtKey
+     */
+    'alg': string;
+}
+/**
+ * 
+ * @export
+ * @interface JwtKeyResponse
+ */
+export interface JwtKeyResponse {
+    /**
+     * 
+     * @type {Array<JwtKey>}
+     * @memberof JwtKeyResponse
+     */
+    'keys': Array<JwtKey>;
+}
+/**
+ * The request to verify access token
+ * @export
+ * @interface LinkRequest
+ */
+export interface LinkRequest {
+    /**
+     * 
+     * @type {OAuthProvider}
+     * @memberof LinkRequest
+     */
+    'provider': OAuthProvider;
+    /**
+     * external user id
+     * @type {string}
+     * @memberof LinkRequest
+     */
+    'externalUserId': string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface LinkedAccountResponse
+ */
+export interface LinkedAccountResponse {
+    /**
+     * 
+     * @type {AuthProvider}
+     * @memberof LinkedAccountResponse
+     */
+    'provider': AuthProvider;
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkedAccountResponse
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkedAccountResponse
+     */
+    'externalUserId'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof LinkedAccountResponse
+     */
+    'disabled': boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof LinkedAccountResponse
+     */
+    'updatedAt'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkedAccountResponse
+     */
+    'address'?: string;
+    /**
+     * 
+     * @type {PrismaInputJsonValue}
+     * @memberof LinkedAccountResponse
+     */
+    'metadata'?: PrismaInputJsonValue;
+}
+
+
+/**
+ * 
+ * @export
  * @interface Log
  */
 export interface Log {
@@ -2928,6 +3813,19 @@ export interface LoginRequest {
     'password': string;
 }
 /**
+ * 
+ * @export
+ * @interface LogoutRequest
+ */
+export interface LogoutRequest {
+    /**
+     * Specifies the refresh token.
+     * @type {string}
+     * @memberof LogoutRequest
+     */
+    'refreshToken': string;
+}
+/**
  * LootLocker oauth configuration
  * @export
  * @interface LootLockerOAuthConfig
@@ -2972,6 +3870,25 @@ export interface Money {
 /**
  * 
  * @export
+ * @interface MonthRange
+ */
+export interface MonthRange {
+    /**
+     * 
+     * @type {number}
+     * @memberof MonthRange
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MonthRange
+     */
+    'end': number;
+}
+/**
+ * 
+ * @export
  * @interface NextActionPayload
  */
 export interface NextActionPayload {
@@ -2979,14 +3896,28 @@ export interface NextActionPayload {
      * 
      * @type {any}
      * @memberof NextActionPayload
+     * @deprecated
      */
     'userOp'?: any;
     /**
      * 
      * @type {string}
      * @memberof NextActionPayload
+     * @deprecated
      */
     'userOpHash'?: string;
+    /**
+     * The userOperation.
+     * @type {any}
+     * @memberof NextActionPayload
+     */
+    'userOperation'?: any;
+    /**
+     * The hashed userOperation.
+     * @type {string}
+     * @memberof NextActionPayload
+     */
+    'userOperationHash'?: string;
 }
 /**
  * 
@@ -3020,6 +3951,674 @@ export const NextActionType = {
 } as const;
 
 export type NextActionType = typeof NextActionType[keyof typeof NextActionType];
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationDeleteResponse
+ */
+export interface NotificationDeleteResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationDeleteResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATION}
+     * @memberof NotificationDeleteResponse
+     */
+    'object': EntityTypeNOTIFICATION;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof NotificationDeleteResponse
+     */
+    'deleted': boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationListQueries
+ */
+export interface NotificationListQueries {
+    /**
+     * Specifies the maximum number of records to return.
+     * @type {number}
+     * @memberof NotificationListQueries
+     */
+    'limit'?: number;
+    /**
+     * Specifies the offset for the first records to return.
+     * @type {number}
+     * @memberof NotificationListQueries
+     */
+    'skip'?: number;
+    /**
+     * 
+     * @type {SortOrder}
+     * @memberof NotificationListQueries
+     */
+    'order'?: SortOrder;
+    /**
+     * Specifies the fields to expand in the response.
+     * @type {Array<NotificationResponseExpandable>}
+     * @memberof NotificationListQueries
+     */
+    'expand'?: Array<NotificationResponseExpandable>;
+    /**
+     * Specifies whether to include deleted notifications.
+     * @type {boolean}
+     * @memberof NotificationListQueries
+     */
+    'deleted'?: boolean;
+    /**
+     * Specifies the name of the notifications.
+     * @type {string}
+     * @memberof NotificationListQueries
+     */
+    'name'?: string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationListResponse
+ */
+export interface NotificationListResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof NotificationListResponse
+     */
+    'object': ResponseTypeLIST;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationListResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<NotificationResponse>}
+     * @memberof NotificationListResponse
+     */
+    'data': Array<NotificationResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationListResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationListResponse
+     */
+    'end': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationListResponse
+     */
+    'total': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationResponse
+ */
+export interface NotificationResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATION}
+     * @memberof NotificationResponse
+     */
+    'object': EntityTypeNOTIFICATION;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationResponse
+     */
+    'name': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof NotificationResponse
+     */
+    'deleted': boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationResponse
+     */
+    'updatedAt': number;
+    /**
+     * 
+     * @type {Array<NotificationResponseSubscriptionsInner>}
+     * @memberof NotificationResponse
+     */
+    'subscriptions'?: Array<NotificationResponseSubscriptionsInner>;
+    /**
+     * 
+     * @type {Array<NotificationResponseTriggersInner>}
+     * @memberof NotificationResponse
+     */
+    'triggers'?: Array<NotificationResponseTriggersInner>;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const NotificationResponseExpandable = {
+    Subscriptions: 'subscriptions',
+    Triggers: 'triggers'
+} as const;
+
+export type NotificationResponseExpandable = typeof NotificationResponseExpandable[keyof typeof NotificationResponseExpandable];
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationResponseSubscriptionsInner
+ */
+export interface NotificationResponseSubscriptionsInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationResponseSubscriptionsInner
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONSUBSCRIPTION}
+     * @memberof NotificationResponseSubscriptionsInner
+     */
+    'object': EntityTypeNOTIFICATIONSUBSCRIPTION;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationResponseSubscriptionsInner
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationResponseSubscriptionsInner
+     */
+    'target': string;
+    /**
+     * 
+     * @type {SubscriptionType}
+     * @memberof NotificationResponseSubscriptionsInner
+     */
+    'method': SubscriptionType;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationResponseTriggersInner
+ */
+export interface NotificationResponseTriggersInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONTRIGGER}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'object': EntityTypeNOTIFICATIONTRIGGER;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {NotificationTriggerTypePROJECTBALANCETRIGGER}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'type': NotificationTriggerTypePROJECTBALANCETRIGGER;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'threshold': string;
+    /**
+     * 
+     * @type {ContractNotificationTriggerResponseContract}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'contract': ContractNotificationTriggerResponseContract;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'functionName': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'functionArgs': Array<string>;
+    /**
+     * 
+     * @type {AccountNotificationTriggerResponseAccount}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'account': AccountNotificationTriggerResponseAccount;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationResponseTriggersInner
+     */
+    'chainId': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationSubscription
+ */
+export interface NotificationSubscription {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationSubscription
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONSUBSCRIPTION}
+     * @memberof NotificationSubscription
+     */
+    'object': EntityTypeNOTIFICATIONSUBSCRIPTION;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationSubscription
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationSubscription
+     */
+    'target': string;
+    /**
+     * 
+     * @type {SubscriptionType}
+     * @memberof NotificationSubscription
+     */
+    'method': SubscriptionType;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationSubscriptionDeleteResponse
+ */
+export interface NotificationSubscriptionDeleteResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationSubscriptionDeleteResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONSUBSCRIPTION}
+     * @memberof NotificationSubscriptionDeleteResponse
+     */
+    'object': EntityTypeNOTIFICATIONSUBSCRIPTION;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof NotificationSubscriptionDeleteResponse
+     */
+    'deleted': boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationSubscriptionListQueries
+ */
+export interface NotificationSubscriptionListQueries {
+    /**
+     * Specifies the maximum number of records to return.
+     * @type {number}
+     * @memberof NotificationSubscriptionListQueries
+     */
+    'limit'?: number;
+    /**
+     * Specifies the offset for the first records to return.
+     * @type {number}
+     * @memberof NotificationSubscriptionListQueries
+     */
+    'skip'?: number;
+    /**
+     * 
+     * @type {SortOrder}
+     * @memberof NotificationSubscriptionListQueries
+     */
+    'order'?: SortOrder;
+    /**
+     * Specifies the unique notification ID (starts with not_).
+     * @type {string}
+     * @memberof NotificationSubscriptionListQueries
+     */
+    'notification': string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationSubscriptionListResponse
+ */
+export interface NotificationSubscriptionListResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof NotificationSubscriptionListResponse
+     */
+    'object': ResponseTypeLIST;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationSubscriptionListResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<NotificationSubscription>}
+     * @memberof NotificationSubscriptionListResponse
+     */
+    'data': Array<NotificationSubscription>;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationSubscriptionListResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationSubscriptionListResponse
+     */
+    'end': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationSubscriptionListResponse
+     */
+    'total': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationTriggerDeleteResponse
+ */
+export interface NotificationTriggerDeleteResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTriggerDeleteResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONTRIGGER}
+     * @memberof NotificationTriggerDeleteResponse
+     */
+    'object': EntityTypeNOTIFICATIONTRIGGER;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof NotificationTriggerDeleteResponse
+     */
+    'deleted': boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationTriggerListQueries
+ */
+export interface NotificationTriggerListQueries {
+    /**
+     * Specifies the maximum number of records to return.
+     * @type {number}
+     * @memberof NotificationTriggerListQueries
+     */
+    'limit'?: number;
+    /**
+     * Specifies the offset for the first records to return.
+     * @type {number}
+     * @memberof NotificationTriggerListQueries
+     */
+    'skip'?: number;
+    /**
+     * 
+     * @type {SortOrder}
+     * @memberof NotificationTriggerListQueries
+     */
+    'order'?: SortOrder;
+    /**
+     * Specifies the unique notification ID (starts with not_).
+     * @type {string}
+     * @memberof NotificationTriggerListQueries
+     */
+    'notification': string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationTriggerListResponse
+ */
+export interface NotificationTriggerListResponse {
+    /**
+     * 
+     * @type {ResponseTypeLIST}
+     * @memberof NotificationTriggerListResponse
+     */
+    'object': ResponseTypeLIST;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTriggerListResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {Array<NotificationTriggerResponse>}
+     * @memberof NotificationTriggerListResponse
+     */
+    'data': Array<NotificationTriggerResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTriggerListResponse
+     */
+    'start': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTriggerListResponse
+     */
+    'end': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTriggerListResponse
+     */
+    'total': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface NotificationTriggerResponse
+ */
+export interface NotificationTriggerResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTriggerResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeNOTIFICATIONTRIGGER}
+     * @memberof NotificationTriggerResponse
+     */
+    'object': EntityTypeNOTIFICATIONTRIGGER;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTriggerResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {NotificationTriggerTypePROJECTBALANCETRIGGER}
+     * @memberof NotificationTriggerResponse
+     */
+    'type': NotificationTriggerTypePROJECTBALANCETRIGGER;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTriggerResponse
+     */
+    'threshold': string;
+    /**
+     * 
+     * @type {ContractNotificationTriggerResponseContract}
+     * @memberof NotificationTriggerResponse
+     */
+    'contract': ContractNotificationTriggerResponseContract;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTriggerResponse
+     */
+    'functionName': string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof NotificationTriggerResponse
+     */
+    'functionArgs': Array<string>;
+    /**
+     * 
+     * @type {AccountNotificationTriggerResponseAccount}
+     * @memberof NotificationTriggerResponse
+     */
+    'account': AccountNotificationTriggerResponseAccount;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTriggerResponse
+     */
+    'chainId': number;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const NotificationTriggerType = {
+    ContractTrigger: 'contract_trigger',
+    DeveloperAccountTrigger: 'developer_account_trigger',
+    ProjectBalanceTrigger: 'project_balance_trigger'
+} as const;
+
+export type NotificationTriggerType = typeof NotificationTriggerType[keyof typeof NotificationTriggerType];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const NotificationTriggerTypeCONTRACTTRIGGER = {
+    ContractTrigger: 'contract_trigger'
+} as const;
+
+export type NotificationTriggerTypeCONTRACTTRIGGER = typeof NotificationTriggerTypeCONTRACTTRIGGER[keyof typeof NotificationTriggerTypeCONTRACTTRIGGER];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const NotificationTriggerTypeDEVELOPERACCOUNTTRIGGER = {
+    DeveloperAccountTrigger: 'developer_account_trigger'
+} as const;
+
+export type NotificationTriggerTypeDEVELOPERACCOUNTTRIGGER = typeof NotificationTriggerTypeDEVELOPERACCOUNTTRIGGER[keyof typeof NotificationTriggerTypeDEVELOPERACCOUNTTRIGGER];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const NotificationTriggerTypePROJECTBALANCETRIGGER = {
+    ProjectBalanceTrigger: 'project_balance_trigger'
+} as const;
+
+export type NotificationTriggerTypePROJECTBALANCETRIGGER = typeof NotificationTriggerTypePROJECTBALANCETRIGGER[keyof typeof NotificationTriggerTypePROJECTBALANCETRIGGER];
 
 
 /**
@@ -3092,6 +4691,27 @@ export interface OAuthConfigListResponse {
      */
     'data': Array<OAuthConfig>;
 }
+/**
+ * 
+ * @export
+ * @interface OAuthInitRequest
+ */
+export interface OAuthInitRequest {
+    /**
+     * Access token to be verified
+     * @type {string}
+     * @memberof OAuthInitRequest
+     */
+    'token': string;
+    /**
+     * 
+     * @type {OAuthProvider}
+     * @memberof OAuthInitRequest
+     */
+    'provider': OAuthProvider;
+}
+
+
 /**
  * Enum of the supporting OAuth providers.
  * @export
@@ -3190,96 +4810,6 @@ export interface OAuthRequest {
 /**
  * 
  * @export
- * @interface ObsoleteAssetInventory
- */
-export interface ObsoleteAssetInventory {
-    /**
-     * 
-     * @type {ObsoleteAssetType}
-     * @memberof ObsoleteAssetInventory
-     * @deprecated
-     */
-    'assetType': ObsoleteAssetType;
-    /**
-     * 
-     * @type {string}
-     * @memberof ObsoleteAssetInventory
-     */
-    'address'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ObsoleteAssetInventory
-     */
-    'tokenId'?: number;
-    /**
-     * amount in Wei
-     * @type {string}
-     * @memberof ObsoleteAssetInventory
-     */
-    'amount'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ObsoleteAssetInventory
-     */
-    'lastTransferredAt'?: number;
-}
-
-
-/**
- * 
- * @export
- * @enum {string}
- */
-
-export const ObsoleteAssetType = {
-    NUMBER_1: 1,
-    NUMBER_2: 2,
-    NUMBER_3: 3,
-    NUMBER_4: 4
-} as const;
-
-export type ObsoleteAssetType = typeof ObsoleteAssetType[keyof typeof ObsoleteAssetType];
-
-
-/**
- * 
- * @export
- * @interface ObsoleteInventoryResponse
- */
-export interface ObsoleteInventoryResponse {
-    /**
-     * 
-     * @type {EntityTypeINVENTORY}
-     * @memberof ObsoleteInventoryResponse
-     */
-    'object': EntityTypeINVENTORY;
-    /**
-     * 
-     * @type {Array<ObsoleteAssetInventory>}
-     * @memberof ObsoleteInventoryResponse
-     */
-    'nftAssets'?: Array<ObsoleteAssetInventory>;
-    /**
-     * 
-     * @type {ObsoleteAssetInventory}
-     * @memberof ObsoleteInventoryResponse
-     * @deprecated
-     */
-    'nativeAsset'?: ObsoleteAssetInventory;
-    /**
-     * 
-     * @type {Array<ObsoleteAssetInventory>}
-     * @memberof ObsoleteInventoryResponse
-     */
-    'tokenAssets'?: Array<ObsoleteAssetInventory>;
-}
-
-
-/**
- * 
- * @export
  * @interface PayForUserPolicyStrategy
  */
 export interface PayForUserPolicyStrategy {
@@ -3299,135 +4829,6 @@ export interface PayForUserPolicyStrategy {
 
 
 /**
- * 
- * @export
- * @interface PaymasterDepositorCreateRequest
- */
-export interface PaymasterDepositorCreateRequest {
-    /**
-     * Paymaster depositor address.
-     * @type {string}
-     * @memberof PaymasterDepositorCreateRequest
-     */
-    'depositorAddress': string;
-    /**
-     * Signature to verify the account ownership.
-     * @type {string}
-     * @memberof PaymasterDepositorCreateRequest
-     */
-    'signature': string;
-}
-/**
- * 
- * @export
- * @interface PaymasterDepositorDeleteResponse
- */
-export interface PaymasterDepositorDeleteResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymasterDepositorDeleteResponse
-     */
-    'id': string;
-    /**
-     * 
-     * @type {EntityTypePAYMASTERDEPOSITOR}
-     * @memberof PaymasterDepositorDeleteResponse
-     */
-    'object': EntityTypePAYMASTERDEPOSITOR;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof PaymasterDepositorDeleteResponse
-     */
-    'deleted': boolean;
-}
-
-
-/**
- * 
- * @export
- * @interface PaymasterDepositorGetMessageResponse
- */
-export interface PaymasterDepositorGetMessageResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymasterDepositorGetMessageResponse
-     */
-    'message': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymasterDepositorGetMessageResponse
-     */
-    'depositorAddress': string;
-}
-/**
- * 
- * @export
- * @interface PaymasterDepositorListResponse
- */
-export interface PaymasterDepositorListResponse {
-    /**
-     * 
-     * @type {ResponseTypeLIST}
-     * @memberof PaymasterDepositorListResponse
-     */
-    'object': ResponseTypeLIST;
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymasterDepositorListResponse
-     */
-    'url': string;
-    /**
-     * 
-     * @type {Array<PaymasterDepositorResponse>}
-     * @memberof PaymasterDepositorListResponse
-     */
-    'data': Array<PaymasterDepositorResponse>;
-    /**
-     * 
-     * @type {number}
-     * @memberof PaymasterDepositorListResponse
-     */
-    'start': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PaymasterDepositorListResponse
-     */
-    'end': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PaymasterDepositorListResponse
-     */
-    'total': number;
-}
-
-
-/**
- * 
- * @export
- * @interface PaymasterDepositorResponse
- */
-export interface PaymasterDepositorResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymasterDepositorResponse
-     */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymasterDepositorResponse
-     */
-    'depositorAddress': string;
-}
-/**
  * From T, pick a set of properties whose keys are in the union K
  * @export
  * @interface PickContractResponseId
@@ -3443,6 +4844,19 @@ export interface PickContractResponseId {
 /**
  * From T, pick a set of properties whose keys are in the union K
  * @export
+ * @interface PickDeveloperAccountId
+ */
+export interface PickDeveloperAccountId {
+    /**
+     * 
+     * @type {string}
+     * @memberof PickDeveloperAccountId
+     */
+    'id': string;
+}
+/**
+ * From T, pick a set of properties whose keys are in the union K
+ * @export
  * @interface PickPlayerResponseId
  */
 export interface PickPlayerResponseId {
@@ -3452,6 +4866,65 @@ export interface PickPlayerResponseId {
      * @memberof PickPlayerResponseId
      */
     'id': string;
+}
+/**
+ * 
+ * @export
+ * @interface Plan
+ */
+export interface Plan {
+    /**
+     * 
+     * @type {string}
+     * @memberof Plan
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Plan
+     */
+    'name': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Plan
+     */
+    'price': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof Plan
+     */
+    'is_current': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof Plan
+     */
+    'change_type': PlanChangeTypeEnum;
+}
+
+export const PlanChangeTypeEnum = {
+    Upgrade: 'upgrade',
+    Downgrade: 'downgrade',
+    None: 'none'
+} as const;
+
+export type PlanChangeTypeEnum = typeof PlanChangeTypeEnum[keyof typeof PlanChangeTypeEnum];
+
+/**
+ * 
+ * @export
+ * @interface PlansResponse
+ */
+export interface PlansResponse {
+    /**
+     * 
+     * @type {Array<Plan>}
+     * @memberof PlansResponse
+     */
+    'plans': Array<Plan>;
 }
 /**
  * PlayFab oauth configuration
@@ -3544,13 +5017,13 @@ export interface Player {
  */
 export interface PlayerCancelTransferOwnershipRequest {
     /**
-     * The policy ID (starts with pol_)
+     * ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). A policy must be provided.
      * @type {string}
      * @memberof PlayerCancelTransferOwnershipRequest
      */
     'policy': string;
     /**
-     * The chain id where the account is.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof PlayerCancelTransferOwnershipRequest
      */
@@ -3567,7 +5040,7 @@ export interface PlayerCreateRequest {
      * @type {string}
      * @memberof PlayerCreateRequest
      */
-    'name': string;
+    'name'?: string;
     /**
      * Specifies the player description.
      * @type {string}
@@ -3637,7 +5110,7 @@ export interface PlayerInventoryListQueries {
      * @type {Array<string>}
      * @memberof PlayerInventoryListQueries
      */
-    'contractId'?: Array<string>;
+    'contract'?: Array<string>;
     /**
      * Filter by chain id.
      * @type {number}
@@ -3880,6 +5353,12 @@ export interface PlayerResponseAccountsInner {
      * @memberof PlayerResponseAccountsInner
      */
     'transactionIntents'?: Array<EntityIdResponse>;
+    /**
+     * 
+     * @type {EntityIdResponse}
+     * @memberof PlayerResponseAccountsInner
+     */
+    'player': EntityIdResponse;
 }
 
 
@@ -3974,7 +5453,7 @@ export interface PlayerResponseTransactionIntentsInner {
      * @type {EntityIdResponse}
      * @memberof PlayerResponseTransactionIntentsInner
      */
-    'player': EntityIdResponse;
+    'player'?: EntityIdResponse;
     /**
      * 
      * @type {EntityIdResponse}
@@ -3991,13 +5470,13 @@ export interface PlayerResponseTransactionIntentsInner {
  */
 export interface PlayerTransferOwnershipRequest {
     /**
-     * The policy ID (starts with pol_)
+     * ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). A policy must be provided.
      * @type {string}
      * @memberof PlayerTransferOwnershipRequest
      */
     'policy': string;
     /**
-     * The chain id where the account is.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof PlayerTransferOwnershipRequest
      */
@@ -4009,7 +5488,7 @@ export interface PlayerTransferOwnershipRequest {
      */
     'newOwnerAddress': string;
     /**
-     * The player ID (starts with pla_)
+     * ID of the Player that has the Account you want to transfer ownership from (starts with `pla_`).
      * @type {string}
      * @memberof PlayerTransferOwnershipRequest
      */
@@ -4112,6 +5591,31 @@ export interface Policy {
 /**
  * 
  * @export
+ * @interface PolicyBalanceWithdrawResponse
+ */
+export interface PolicyBalanceWithdrawResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyBalanceWithdrawResponse
+     */
+    'policy': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyBalanceWithdrawResponse
+     */
+    'balance': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PolicyBalanceWithdrawResponse
+     */
+    'contract': string;
+}
+/**
+ * 
+ * @export
  * @interface PolicyDeleteResponse
  */
 export interface PolicyDeleteResponse {
@@ -4173,7 +5677,7 @@ export interface PolicyListQueries {
      */
     'name'?: string;
     /**
-     * Specifies whether to include deleted contracts.
+     * Specifies whether to include deleted policies.
      * @type {boolean}
      * @memberof PolicyListQueries
      */
@@ -4185,7 +5689,7 @@ export interface PolicyListQueries {
      */
     'chainId'?: number;
     /**
-     * Specifies whether to include enabled contracts.
+     * Specifies whether to include enabled policies.
      * @type {boolean}
      * @memberof PolicyListQueries
      */
@@ -4407,10 +5911,10 @@ export interface PolicyResponsePolicyRulesInner {
     'type': PolicyRuleTypeRATELIMIT;
     /**
      * 
-     * @type {ContractPolicyRuleResponseContract}
+     * @type {ContractNotificationTriggerResponseContract}
      * @memberof PolicyResponsePolicyRulesInner
      */
-    'contract': ContractPolicyRuleResponseContract;
+    'contract': ContractNotificationTriggerResponseContract;
     /**
      * 
      * @type {PolicyRateLimitCOUNTPERINTERVAL}
@@ -4592,10 +6096,10 @@ export interface PolicyRuleResponse {
     'type': PolicyRuleTypeRATELIMIT;
     /**
      * 
-     * @type {ContractPolicyRuleResponseContract}
+     * @type {ContractNotificationTriggerResponseContract}
      * @memberof PolicyRuleResponse
      */
-    'contract': ContractPolicyRuleResponseContract;
+    'contract': ContractNotificationTriggerResponseContract;
     /**
      * 
      * @type {PolicyRateLimitCOUNTPERINTERVAL}
@@ -4741,7 +6245,7 @@ export interface PolicyStrategyRequest {
      */
     'tokenContractAmount'?: string;
     /**
-     * If the you want to use your own native tokens to pay for gas, specify the depositor ID (starts with dep_)
+     * If the you want to use your own native tokens to pay for gas, specify the developer account ID (starts with dac_)
      * @type {string}
      * @memberof PolicyStrategyRequest
      */
@@ -4914,11 +6418,47 @@ export interface ProjectResponse {
 /**
  * 
  * @export
+ * @interface ProjectStatsRequest
+ */
+export interface ProjectStatsRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ProjectStatsRequest
+     */
+    'timeFrame': ProjectStatsRequestTimeFrameEnum;
+}
+
+export const ProjectStatsRequestTimeFrameEnum = {
+    Day: 'day',
+    Week: 'week',
+    Month: 'month',
+    All: 'all'
+} as const;
+
+export type ProjectStatsRequestTimeFrameEnum = typeof ProjectStatsRequestTimeFrameEnum[keyof typeof ProjectStatsRequestTimeFrameEnum];
+
+/**
+ * 
+ * @export
+ * @interface ProjectStatsResponse
+ */
+export interface ProjectStatsResponse {
+    /**
+     * 
+     * @type {Array<Stat>}
+     * @memberof ProjectStatsResponse
+     */
+    'transactionIntents': Array<Stat>;
+}
+/**
+ * 
+ * @export
  * @interface ProjectWebhookRequest
  */
 export interface ProjectWebhookRequest {
     /**
-     * 
+     * The webhook url.
      * @type {string}
      * @memberof ProjectWebhookRequest
      */
@@ -4933,58 +6473,15 @@ export interface ProjectWebhookRequest {
 /**
  * 
  * @export
- * @interface RegisterPlayerEncryptedKeyRequest
+ * @interface RefreshTokenRequest
  */
-export interface RegisterPlayerEncryptedKeyRequest {
+export interface RefreshTokenRequest {
     /**
-     * The cipher text of the key to register.
+     * Specifies the session.
      * @type {string}
-     * @memberof RegisterPlayerEncryptedKeyRequest
+     * @memberof RefreshTokenRequest
      */
-    'pk_ciphertext': string;
-    /**
-     * The salt used expand the password of the user.
-     * @type {string}
-     * @memberof RegisterPlayerEncryptedKeyRequest
-     */
-    'salt': string;
-    /**
-     * The address of the owner.
-     * @type {string}
-     * @memberof RegisterPlayerEncryptedKeyRequest
-     */
-    'owner_address': string;
-}
-/**
- * 
- * @export
- * @interface RegisterPlayerEncryptedKeyResponse
- */
-export interface RegisterPlayerEncryptedKeyResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof RegisterPlayerEncryptedKeyResponse
-     */
-    'player': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RegisterPlayerEncryptedKeyResponse
-     */
-    'ownerAddress': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof RegisterPlayerEncryptedKeyResponse
-     */
-    'createdAt': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof RegisterPlayerEncryptedKeyResponse
-     */
-    'updatedAt': number;
+    'refreshToken': string;
 }
 /**
  * 
@@ -5011,24 +6508,29 @@ export interface ResponseResponse {
      */
     'transactionHash'?: string;
     /**
-     * 
-     * @type {string}
-     * @memberof ResponseResponse
-     * @deprecated
-     */
-    'userOpHash'?: string;
-    /**
-     * The gas used by the transaction of this log.
+     * The l1 gas used by the transaction of this log.
      * @type {string}
      * @memberof ResponseResponse
      */
     'l1GasUsed'?: string;
     /**
      * The gas used by the transaction of this log.
-     * @type {number}
+     * @type {string}
      * @memberof ResponseResponse
      */
-    'gasUsed'?: number;
+    'gasUsed'?: string;
+    /**
+     * The gas fee by the transaction of this log.
+     * @type {string}
+     * @memberof ResponseResponse
+     */
+    'gasFee'?: string;
+    /**
+     * The l1 gas fee by the transaction of this log.
+     * @type {string}
+     * @memberof ResponseResponse
+     */
+    'l1GasFee'?: string;
     /**
      * The status of the transaction of this log.
      * @type {number}
@@ -5070,80 +6572,6 @@ export type ResponseTypeLIST = typeof ResponseTypeLIST[keyof typeof ResponseType
 /**
  * 
  * @export
- * @interface RetrievePlayerEncryptedKeyResponse
- */
-export interface RetrievePlayerEncryptedKeyResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof RetrievePlayerEncryptedKeyResponse
-     */
-    'player': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RetrievePlayerEncryptedKeyResponse
-     */
-    'ownerAddress': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof RetrievePlayerEncryptedKeyResponse
-     */
-    'createdAt': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof RetrievePlayerEncryptedKeyResponse
-     */
-    'updatedAt': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof RetrievePlayerEncryptedKeyResponse
-     */
-    'pkCiphertext': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RetrievePlayerEncryptedKeyResponse
-     */
-    'salt': string;
-}
-/**
- * 
- * @export
- * @interface RevokeSessionPlayerRequest
- */
-export interface RevokeSessionPlayerRequest {
-    /**
-     * The address of the session key to revoke.
-     * @type {string}
-     * @memberof RevokeSessionPlayerRequest
-     */
-    'address': string;
-    /**
-     * The policy ID (starts with pol_)
-     * @type {string}
-     * @memberof RevokeSessionPlayerRequest
-     */
-    'policy'?: string;
-    /**
-     * Whether the transactionIntent is optimistic (resolve before it arrives on chain) or not.
-     * @type {boolean}
-     * @memberof RevokeSessionPlayerRequest
-     */
-    'optimistic'?: boolean;
-    /**
-     * The chain ID.
-     * @type {number}
-     * @memberof RevokeSessionPlayerRequest
-     */
-    'chainId': number;
-}
-/**
- * 
- * @export
  * @interface RevokeSessionRequest
  */
 export interface RevokeSessionRequest {
@@ -5154,7 +6582,7 @@ export interface RevokeSessionRequest {
      */
     'address': string;
     /**
-     * The policy ID (starts with pol_)
+     * ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). If no Policy is provided, the own Account native token funds will be used to pay for gas.
      * @type {string}
      * @memberof RevokeSessionRequest
      */
@@ -5166,7 +6594,7 @@ export interface RevokeSessionRequest {
      */
     'optimistic'?: boolean;
     /**
-     * The chain ID.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof RevokeSessionRequest
      */
@@ -5177,6 +6605,75 @@ export interface RevokeSessionRequest {
      * @memberof RevokeSessionRequest
      */
     'player': string;
+}
+/**
+ * 
+ * @export
+ * @interface SIWEAuthenticateRequest
+ */
+export interface SIWEAuthenticateRequest {
+    /**
+     * Signature of the EIP-712 message with the user\'s wallet.
+     * @type {string}
+     * @memberof SIWEAuthenticateRequest
+     */
+    'signature': string;
+    /**
+     * The EIP-712 message to sign.
+     * @type {string}
+     * @memberof SIWEAuthenticateRequest
+     */
+    'message': string;
+    /**
+     * The wallet client of the user
+     * @type {string}
+     * @memberof SIWEAuthenticateRequest
+     */
+    'walletClientType': string;
+    /**
+     * The connector type of the user
+     * @type {string}
+     * @memberof SIWEAuthenticateRequest
+     */
+    'connectorType': string;
+}
+/**
+ * 
+ * @export
+ * @interface SIWEInitResponse
+ */
+export interface SIWEInitResponse {
+    /**
+     * The address of the player.
+     * @type {string}
+     * @memberof SIWEInitResponse
+     */
+    'address': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SIWEInitResponse
+     */
+    'nonce': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof SIWEInitResponse
+     */
+    'expiresAt': number;
+}
+/**
+ * 
+ * @export
+ * @interface SIWERequest
+ */
+export interface SIWERequest {
+    /**
+     * The address of the user.
+     * @type {string}
+     * @memberof SIWERequest
+     */
+    'address': string;
 }
 /**
  * 
@@ -5372,6 +6869,65 @@ export interface SettingsWebhookUpdateRequest {
 /**
  * 
  * @export
+ * @interface ShareResponse
+ */
+export interface ShareResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof ShareResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeSHARE}
+     * @memberof ShareResponse
+     */
+    'object': EntityTypeSHARE;
+    /**
+     * 
+     * @type {number}
+     * @memberof ShareResponse
+     */
+    'createdAt': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ShareResponse
+     */
+    'share': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ShareResponse
+     */
+    'userEntropy': boolean;
+    /**
+     * 
+     * @type {ShareType}
+     * @memberof ShareResponse
+     */
+    'type': ShareType;
+}
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const ShareType = {
+    Auth: 'auth',
+    Recovery: 'recovery'
+} as const;
+
+export type ShareType = typeof ShareType[keyof typeof ShareType];
+
+
+/**
+ * 
+ * @export
  * @interface SignPayloadRequest
  */
 export interface SignPayloadRequest {
@@ -5458,7 +7014,7 @@ export interface SignatureRequest {
      */
     'signature': string;
     /**
-     * Whether the transactionIntent is optimistic (resolve before it arrives on chain) or not.
+     * Set to `true` to indicate that the transactionIntent request should be resolved as soon as possible, after the transactionIntent is created and simulated and before it arrives on chain.
      * @type {boolean}
      * @memberof SignatureRequest
      */
@@ -5585,6 +7141,37 @@ export interface StartRecoveryRequest {
 /**
  * 
  * @export
+ * @interface Stat
+ */
+export interface Stat {
+    /**
+     * 
+     * @type {string}
+     * @memberof Stat
+     */
+    'timestamp': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Stat
+     */
+    'total': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Stat
+     */
+    'successful': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Stat
+     */
+    'gasUsed': string;
+}
+/**
+ * 
+ * @export
  * @interface SubmitWeb3ActionRequest
  */
 export interface SubmitWeb3ActionRequest {
@@ -5595,7 +7182,7 @@ export interface SubmitWeb3ActionRequest {
      */
     'approve': boolean;
     /**
-     * The policy ID (starts with pol_)
+     * ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). If no Policy is provided, the own Account native token funds will be used to pay for gas.
      * @type {string}
      * @memberof SubmitWeb3ActionRequest
      */
@@ -5607,6 +7194,76 @@ export interface SubmitWeb3ActionRequest {
      */
     'signature'?: string;
 }
+/**
+ * 
+ * @export
+ * @interface SubscriptionResponse
+ */
+export interface SubscriptionResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof SubscriptionResponse
+     */
+    'currentPeriodEnd': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SubscriptionResponse
+     */
+    'currentPeriodStart': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SubscriptionResponse
+     */
+    'canceledAt': string;
+    /**
+     * 
+     * @type {SubscriptionResponsePlan}
+     * @memberof SubscriptionResponse
+     */
+    'plan': SubscriptionResponsePlan;
+}
+/**
+ * 
+ * @export
+ * @interface SubscriptionResponsePlan
+ */
+export interface SubscriptionResponsePlan {
+    /**
+     * 
+     * @type {number}
+     * @memberof SubscriptionResponsePlan
+     */
+    'price': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof SubscriptionResponsePlan
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SubscriptionResponsePlan
+     */
+    'id': string;
+}
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const SubscriptionType = {
+    Email: 'Email',
+    Webhook: 'Webhook'
+} as const;
+
+export type SubscriptionType = typeof SubscriptionType[keyof typeof SubscriptionType];
+
+
 /**
  * 
  * @export
@@ -5701,7 +7358,7 @@ export interface TransactionIntent {
      * @type {EntityIdResponse}
      * @memberof TransactionIntent
      */
-    'player': EntityIdResponse;
+    'player'?: EntityIdResponse;
     /**
      * 
      * @type {EntityIdResponse}
@@ -5742,29 +7399,35 @@ export interface TransactionIntentListQueries {
      */
     'expand'?: Array<TransactionIntentResponseExpandable>;
     /**
-     * The chain ID.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof TransactionIntentListQueries
      */
     'chainId'?: number;
     /**
-     * Filter by account ID.
+     * Filter by account ID or developer account (starts with acc_ or dac_ respectively).
      * @type {Array<string>}
      * @memberof TransactionIntentListQueries
      */
-    'accountId'?: Array<string>;
+    'account'?: Array<string>;
     /**
      * Filter by player ID (starts with pla_).
      * @type {Array<string>}
      * @memberof TransactionIntentListQueries
      */
-    'playerId'?: Array<string>;
+    'player'?: Array<string>;
+    /**
+     * Filter by successful (1) or failed (0) transaction intents.
+     * @type {number}
+     * @memberof TransactionIntentListQueries
+     */
+    'status'?: number;
     /**
      * Filter by policy ID (starts with pol_).
      * @type {Array<string>}
      * @memberof TransactionIntentListQueries
      */
-    'policyId'?: Array<string>;
+    'policy'?: Array<string>;
 }
 
 
@@ -5890,7 +7553,7 @@ export interface TransactionIntentResponse {
      * @type {TransactionIntentResponsePlayer}
      * @memberof TransactionIntentResponse
      */
-    'player': TransactionIntentResponsePlayer;
+    'player'?: TransactionIntentResponsePlayer;
     /**
      * 
      * @type {TransactionIntentResponseAccount}
@@ -5901,7 +7564,7 @@ export interface TransactionIntentResponse {
 
 
 /**
- * The account ID.
+ * The account ID (starts with acc_).
  * @export
  * @interface TransactionIntentResponseAccount
  */
@@ -5914,10 +7577,10 @@ export interface TransactionIntentResponseAccount {
     'id': string;
     /**
      * 
-     * @type {EntityTypeACCOUNT}
+     * @type {EntityTypeDEVELOPERACCOUNT}
      * @memberof TransactionIntentResponseAccount
      */
-    'object': EntityTypeACCOUNT;
+    'object': EntityTypeDEVELOPERACCOUNT;
     /**
      * 
      * @type {number}
@@ -5972,6 +7635,18 @@ export interface TransactionIntentResponseAccount {
      * @memberof TransactionIntentResponseAccount
      */
     'transactionIntents'?: Array<EntityIdResponse>;
+    /**
+     * 
+     * @type {EntityIdResponse}
+     * @memberof TransactionIntentResponseAccount
+     */
+    'player': EntityIdResponse;
+    /**
+     * 
+     * @type {string}
+     * @memberof TransactionIntentResponseAccount
+     */
+    'name'?: string;
 }
 
 
@@ -5982,9 +7657,8 @@ export interface TransactionIntentResponseAccount {
  */
 
 export const TransactionIntentResponseExpandable = {
-    NextAction: 'nextAction',
-    Policy: 'policy',
     Player: 'player',
+    Policy: 'policy',
     Account: 'account'
 } as const;
 
@@ -6130,7 +7804,7 @@ export interface TransferOwnershipRequest {
      */
     'newOwnerAddress': string;
     /**
-     * The policy ID (starts with pol_)
+     * ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). A policy must be provided.
      * @type {string}
      * @memberof TransferOwnershipRequest
      */
@@ -6168,7 +7842,7 @@ export interface UpdateContractRequest {
      */
     'name'?: string;
     /**
-     * Specifies the chain ID of the contract.
+     * Specifies the chain ID of the contract. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof UpdateContractRequest
      */
@@ -6211,7 +7885,7 @@ export interface UpdatePolicyRequest {
      */
     'name'?: string;
     /**
-     * The chain ID of the policy.
+     * The chain ID. Must be a [supported chain](/chains).
      * @type {number}
      * @memberof UpdatePolicyRequest
      */
@@ -6242,19 +7916,19 @@ export interface UpdatePolicyRuleRequest {
      */
     'type': PolicyRuleType;
     /**
-     * Name of the function in the contract to allow.
+     * Name of the function in the contract to allow. If you want to allow all functions, use the wildcard \'All functions\'.
      * @type {string}
      * @memberof UpdatePolicyRuleRequest
      */
-    'functionName'?: string | null;
+    'functionName'?: string;
     /**
-     * Contract ID to allow.
+     * The contract ID you want to interact with. Must have been added to Openfort first, starts with `con_`.
      * @type {string}
      * @memberof UpdatePolicyRuleRequest
      */
-    'contract'?: string | null;
+    'contract'?: string;
     /**
-     * Gas limit in WEI.
+     * Gas limit in WEI (i.e. factor 10^18).
      * @type {string}
      * @memberof UpdatePolicyRuleRequest
      */
@@ -6293,7 +7967,7 @@ export interface UpdateProjectApiKeyRequest {
      */
     'type': ApiKeyType;
     /**
-     * 
+     * The API key to update.
      * @type {string}
      * @memberof UpdateProjectApiKeyRequest
      */
@@ -6308,7 +7982,7 @@ export interface UpdateProjectApiKeyRequest {
  */
 export interface UpdateProjectRequest {
     /**
-     * 
+     * Name of the project.
      * @type {string}
      * @memberof UpdateProjectRequest
      */
@@ -6327,14 +8001,14 @@ export interface UserProjectCreateRequest {
      */
     'role'?: UserProjectCreateRequestRole;
     /**
-     * 
+     * The email of the user to add.
      * @type {string}
      * @memberof UserProjectCreateRequest
      */
     'email': string;
 }
 /**
- * 
+ * The role of the user.
  * @export
  * @interface UserProjectCreateRequestRole
  */
@@ -6890,6 +8564,25 @@ export interface WebhookResponse {
      */
     'livemode': boolean;
 }
+/**
+ * 
+ * @export
+ * @interface WithdrawalPolicyRequest
+ */
+export interface WithdrawalPolicyRequest {
+    /**
+     * ID of the Dev Account this TransactionIntent will send the specified amount of tokens to (starts with `dac_`).
+     * @type {string}
+     * @memberof WithdrawalPolicyRequest
+     */
+    'account': string;
+    /**
+     * Amount in WEI to withdraw (i.e. factor 10^18)..
+     * @type {string}
+     * @memberof WithdrawalPolicyRequest
+     */
+    'amount': string;
+}
 
 /**
  * AccountsApi - axios parameter creator
@@ -6898,9 +8591,9 @@ export interface WebhookResponse {
 export const AccountsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * This endpoint allows you to cancel a pending transfer of ownership.
+         * Cancel a pending transfer of ownership.
          * @summary Cancel request to transfer ownership of an account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -6944,7 +8637,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @summary Complete a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {CompleteRecoveryRequest} completeRecoveryRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -6986,7 +8679,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * This endpoint allows you to add a new account to your Openfort player. Only one account can be active per chain per player.
+         * Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.  Account creation does not consume any gas. All accounts of a player will use the same address across blockchains.  Each player can only have one account per chain.
          * @summary Create an account object.
          * @param {CreateAccountRequest} createAccountRequest 
          * @param {*} [options] Override http request option.
@@ -7026,9 +8719,9 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * This endpoint can be used to deploy an account that was counterfactually generated.
+         * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
          * @summary Deploy an account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {DeployRequest} deployRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7070,9 +8763,9 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
+         * Retrieves the details of an existing account.  Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @summary Get existing account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {Array<AccountResponseExpandable>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7113,7 +8806,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Returns a list of accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first. By default, a maximum of ten accounts are shown per page.
+         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 accounts are shown per page.
          * @summary List accounts of a player.
          * @param {string} player Specifies the unique player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -7174,9 +8867,9 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
+         * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
          * @summary Request transfer ownership of account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7218,9 +8911,9 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Signs the typed data value with types data structure for domain using the EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specification.
+         * Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {SignPayloadRequest} signPayloadRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7264,7 +8957,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * 
          * @summary Start a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {StartRecoveryRequest} startRecoveryRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7306,9 +8999,9 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * This endpoint updates the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
+         * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
          * @summary Sync account state with the blockchain
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -7354,9 +9047,9 @@ export const AccountsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AccountsApiAxiosParamCreator(configuration)
     return {
         /**
-         * This endpoint allows you to cancel a pending transfer of ownership.
+         * Cancel a pending transfer of ownership.
          * @summary Cancel request to transfer ownership of an account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7368,7 +9061,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Complete a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {CompleteRecoveryRequest} completeRecoveryRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7378,7 +9071,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This endpoint allows you to add a new account to your Openfort player. Only one account can be active per chain per player.
+         * Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.  Account creation does not consume any gas. All accounts of a player will use the same address across blockchains.  Each player can only have one account per chain.
          * @summary Create an account object.
          * @param {CreateAccountRequest} createAccountRequest 
          * @param {*} [options] Override http request option.
@@ -7389,9 +9082,9 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This endpoint can be used to deploy an account that was counterfactually generated.
+         * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
          * @summary Deploy an account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {DeployRequest} deployRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7401,9 +9094,9 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
+         * Retrieves the details of an existing account.  Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @summary Get existing account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {Array<AccountResponseExpandable>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7413,7 +9106,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Returns a list of accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first. By default, a maximum of ten accounts are shown per page.
+         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 accounts are shown per page.
          * @summary List accounts of a player.
          * @param {string} player Specifies the unique player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -7428,9 +9121,9 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
+         * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
          * @summary Request transfer ownership of account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7440,9 +9133,9 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Signs the typed data value with types data structure for domain using the EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specification.
+         * Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {SignPayloadRequest} signPayloadRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7454,7 +9147,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Start a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {StartRecoveryRequest} startRecoveryRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7464,9 +9157,9 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This endpoint updates the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
+         * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
          * @summary Sync account state with the blockchain
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -7485,9 +9178,9 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = AccountsApiFp(configuration)
     return {
         /**
-         * This endpoint allows you to cancel a pending transfer of ownership.
+         * Cancel a pending transfer of ownership.
          * @summary Cancel request to transfer ownership of an account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7498,7 +9191,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
         /**
          * 
          * @summary Complete a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {CompleteRecoveryRequest} completeRecoveryRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7507,7 +9200,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.completeRecovery(id, completeRecoveryRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * This endpoint allows you to add a new account to your Openfort player. Only one account can be active per chain per player.
+         * Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.  Account creation does not consume any gas. All accounts of a player will use the same address across blockchains.  Each player can only have one account per chain.
          * @summary Create an account object.
          * @param {CreateAccountRequest} createAccountRequest 
          * @param {*} [options] Override http request option.
@@ -7517,9 +9210,9 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.createAccount(createAccountRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * This endpoint can be used to deploy an account that was counterfactually generated.
+         * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
          * @summary Deploy an account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {DeployRequest} deployRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7528,9 +9221,9 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.deployAccount(id, deployRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
+         * Retrieves the details of an existing account.  Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
          * @summary Get existing account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {Array<AccountResponseExpandable>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7539,7 +9232,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getAccount(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * Returns a list of accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first. By default, a maximum of ten accounts are shown per page.
+         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 accounts are shown per page.
          * @summary List accounts of a player.
          * @param {string} player Specifies the unique player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -7553,9 +9246,9 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getAccounts(player, limit, skip, order, expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
+         * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
          * @summary Request transfer ownership of account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {TransferOwnershipRequest} transferOwnershipRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7564,9 +9257,9 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.requestTransferOwnership(id, transferOwnershipRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Signs the typed data value with types data structure for domain using the EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specification.
+         * Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {SignPayloadRequest} signPayloadRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7577,7 +9270,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
         /**
          * 
          * @summary Start a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {StartRecoveryRequest} startRecoveryRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7586,9 +9279,9 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.startRecovery(id, startRecoveryRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * This endpoint updates the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
+         * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
          * @summary Sync account state with the blockchain
-         * @param {string} id Specifies the unique account ID.
+         * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -7606,9 +9299,9 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
  */
 export class AccountsApi extends BaseAPI {
     /**
-     * This endpoint allows you to cancel a pending transfer of ownership.
+     * Cancel a pending transfer of ownership.
      * @summary Cancel request to transfer ownership of an account.
-     * @param {string} id Specifies the unique account ID.
+     * @param {string} id Specifies the unique account ID (starts with acc_).
      * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7621,7 +9314,7 @@ export class AccountsApi extends BaseAPI {
     /**
      * 
      * @summary Complete a recovery process of a recoverable account.
-     * @param {string} id Specifies the unique account ID.
+     * @param {string} id Specifies the unique account ID (starts with acc_).
      * @param {CompleteRecoveryRequest} completeRecoveryRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7632,7 +9325,7 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * This endpoint allows you to add a new account to your Openfort player. Only one account can be active per chain per player.
+     * Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.  Account creation does not consume any gas. All accounts of a player will use the same address across blockchains.  Each player can only have one account per chain.
      * @summary Create an account object.
      * @param {CreateAccountRequest} createAccountRequest 
      * @param {*} [options] Override http request option.
@@ -7644,9 +9337,9 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * This endpoint can be used to deploy an account that was counterfactually generated.
+     * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
      * @summary Deploy an account.
-     * @param {string} id Specifies the unique account ID.
+     * @param {string} id Specifies the unique account ID (starts with acc_).
      * @param {DeployRequest} deployRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7657,9 +9350,9 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * Retrieves the details of an existing account. Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
+     * Retrieves the details of an existing account.  Supply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.
      * @summary Get existing account.
-     * @param {string} id Specifies the unique account ID.
+     * @param {string} id Specifies the unique account ID (starts with acc_).
      * @param {Array<AccountResponseExpandable>} [expand] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7670,7 +9363,7 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * Returns a list of accounts for the given player. The accounts are returned sorted by creation date, with the most recently created accounts appearing first. By default, a maximum of ten accounts are shown per page.
+     * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 accounts are shown per page.
      * @summary List accounts of a player.
      * @param {string} player Specifies the unique player ID (starts with pla_)
      * @param {number} [limit] Specifies the maximum number of records to return.
@@ -7686,9 +9379,9 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
+     * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
      * @summary Request transfer ownership of account.
-     * @param {string} id Specifies the unique account ID.
+     * @param {string} id Specifies the unique account ID (starts with acc_).
      * @param {TransferOwnershipRequest} transferOwnershipRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7699,9 +9392,9 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * Signs the typed data value with types data structure for domain using the EIP-712 (https://eips.ethereum.org/EIPS/eip-712) specification.
+     * Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
      * @summary Sign a given payload
-     * @param {string} id Specifies the unique account ID.
+     * @param {string} id Specifies the unique account ID (starts with acc_).
      * @param {SignPayloadRequest} signPayloadRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7714,7 +9407,7 @@ export class AccountsApi extends BaseAPI {
     /**
      * 
      * @summary Start a recovery process of a recoverable account.
-     * @param {string} id Specifies the unique account ID.
+     * @param {string} id Specifies the unique account ID (starts with acc_).
      * @param {StartRecoveryRequest} startRecoveryRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7725,15 +9418,499 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * This endpoint updates the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
+     * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
      * @summary Sync account state with the blockchain
-     * @param {string} id Specifies the unique account ID.
+     * @param {string} id Specifies the unique account ID (starts with acc_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountsApi
      */
     public syncAccount(id: string, options?: AxiosRequestConfig) {
         return AccountsApiFp(this.configuration).syncAccount(id, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * AdminAuthenticationApi - axios parameter creator
+ * @export
+ */
+export const AdminAuthenticationApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * The endpoint creates oauth configuration for the current project environment.
+         * @summary Create oauth configuration.
+         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createOAuthConfig: async (body: OAuthConfig, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('createOAuthConfig', 'body', body)
+            const localVarPath = `/iam/v1/oauth`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with.
+         * @summary Deletes a player auth object.
+         * @param {string} id Specifies the unique player ID (starts with pla_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteAuthPlayer: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteAuthPlayer', 'id', id)
+            const localVarPath = `/iam/v1/players/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * The endpoint deletes oauth configuration for specified provider for the current project environment.
+         * @summary Delete oauth configuration.
+         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteOAuthConfig: async (provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'provider' is not null or undefined
+            assertParamExists('deleteOAuthConfig', 'provider', provider)
+            const localVarPath = `/iam/v1/oauth/{provider}`
+                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves a list of authenticated players.  Players have linked accounts and are authenticated with a provider.
+         * @summary List authenticated players.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {string} [email] Specifies the email address of the user.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthPlayers: async (limit?: number, skip?: number, order?: SortOrder, email?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v1/players`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (email !== undefined) {
+                localVarQueryParameter['email'] = email;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * The endpoint retrieves oauth configuration for specified provider for the current project environment.
+         * @summary Get oauth configuration.
+         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOAuthConfig: async (provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'provider' is not null or undefined
+            assertParamExists('getOAuthConfig', 'provider', provider)
+            const localVarPath = `/iam/v1/oauth/{provider}`
+                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * List configured OAuth methods for the current project environment.
+         * @summary List of oauth configurations.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listOAuthConfig: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v1/oauth`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AdminAuthenticationApi - functional programming interface
+ * @export
+ */
+export const AdminAuthenticationApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AdminAuthenticationApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * The endpoint creates oauth configuration for the current project environment.
+         * @summary Create oauth configuration.
+         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createOAuthConfig(body: OAuthConfig, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfig>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createOAuthConfig(body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with.
+         * @summary Deletes a player auth object.
+         * @param {string} id Specifies the unique player ID (starts with pla_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteAuthPlayer(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerDeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteAuthPlayer(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * The endpoint deletes oauth configuration for specified provider for the current project environment.
+         * @summary Delete oauth configuration.
+         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteOAuthConfig(provider, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Retrieves a list of authenticated players.  Players have linked accounts and are authenticated with a provider.
+         * @summary List authenticated players.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {string} [email] Specifies the email address of the user.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthPlayers(limit, skip, order, email, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * The endpoint retrieves oauth configuration for specified provider for the current project environment.
+         * @summary Get oauth configuration.
+         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfig>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getOAuthConfig(provider, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * List configured OAuth methods for the current project environment.
+         * @summary List of oauth configurations.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listOAuthConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfigListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listOAuthConfig(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * AdminAuthenticationApi - factory interface
+ * @export
+ */
+export const AdminAuthenticationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AdminAuthenticationApiFp(configuration)
+    return {
+        /**
+         * The endpoint creates oauth configuration for the current project environment.
+         * @summary Create oauth configuration.
+         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createOAuthConfig(body: OAuthConfig, options?: any): AxiosPromise<OAuthConfig> {
+            return localVarFp.createOAuthConfig(body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with.
+         * @summary Deletes a player auth object.
+         * @param {string} id Specifies the unique player ID (starts with pla_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteAuthPlayer(id: string, options?: any): AxiosPromise<PlayerDeleteResponse> {
+            return localVarFp.deleteAuthPlayer(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * The endpoint deletes oauth configuration for specified provider for the current project environment.
+         * @summary Delete oauth configuration.
+         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteOAuthConfig(provider: OAuthProvider, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteOAuthConfig(provider, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves a list of authenticated players.  Players have linked accounts and are authenticated with a provider.
+         * @summary List authenticated players.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {string} [email] Specifies the email address of the user.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: any): AxiosPromise<AuthPlayerListResponse> {
+            return localVarFp.getAuthPlayers(limit, skip, order, email, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * The endpoint retrieves oauth configuration for specified provider for the current project environment.
+         * @summary Get oauth configuration.
+         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOAuthConfig(provider: OAuthProvider, options?: any): AxiosPromise<OAuthConfig> {
+            return localVarFp.getOAuthConfig(provider, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * List configured OAuth methods for the current project environment.
+         * @summary List of oauth configurations.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listOAuthConfig(options?: any): AxiosPromise<OAuthConfigListResponse> {
+            return localVarFp.listOAuthConfig(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AdminAuthenticationApi - object-oriented interface
+ * @export
+ * @class AdminAuthenticationApi
+ * @extends {BaseAPI}
+ */
+export class AdminAuthenticationApi extends BaseAPI {
+    /**
+     * The endpoint creates oauth configuration for the current project environment.
+     * @summary Create oauth configuration.
+     * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public createOAuthConfig(body: OAuthConfig, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).createOAuthConfig(body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with.
+     * @summary Deletes a player auth object.
+     * @param {string} id Specifies the unique player ID (starts with pla_).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public deleteAuthPlayer(id: string, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).deleteAuthPlayer(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * The endpoint deletes oauth configuration for specified provider for the current project environment.
+     * @summary Delete oauth configuration.
+     * @param {OAuthProvider} provider Specifies the oauth provider type.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public deleteOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).deleteOAuthConfig(provider, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves a list of authenticated players.  Players have linked accounts and are authenticated with a provider.
+     * @summary List authenticated players.
+     * @param {number} [limit] Specifies the maximum number of records to return.
+     * @param {number} [skip] Specifies the offset for the first records to return.
+     * @param {SortOrder} [order] Specifies the order in which to sort the results.
+     * @param {string} [email] Specifies the email address of the user.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).getAuthPlayers(limit, skip, order, email, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * The endpoint retrieves oauth configuration for specified provider for the current project environment.
+     * @summary Get oauth configuration.
+     * @param {OAuthProvider} provider Specifies the oauth provider type.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).getOAuthConfig(provider, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * List configured OAuth methods for the current project environment.
+     * @summary List of oauth configurations.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public listOAuthConfig(options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).listOAuthConfig(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -7746,15 +9923,294 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
     return {
         /**
          * 
-         * @summary Login a player.
+         * @summary Authenticate player with oauth token.
+         * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authenticateOAuth: async (authenticateOAuthRequest: AuthenticateOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'authenticateOAuthRequest' is not null or undefined
+            assertParamExists('authenticateOAuth', 'authenticateOAuthRequest', authenticateOAuthRequest)
+            const localVarPath = `/iam/v1/oauth/authenticate`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(authenticateOAuthRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Authenticate player with SIWE
+         * @param {SIWEAuthenticateRequest} sIWEAuthenticateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authenticateSIWE: async (sIWEAuthenticateRequest: SIWEAuthenticateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sIWEAuthenticateRequest' is not null or undefined
+            assertParamExists('authenticateSIWE', 'sIWEAuthenticateRequest', sIWEAuthenticateRequest)
+            const localVarPath = `/iam/v1/siwe/authenticate`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sIWEAuthenticateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
+         * @summary Authorize player with token.
+         * @param {OAuthProvider} provider OAuth provider
+         * @param {OAuthRequest} oAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        authorizeWithOAuthToken: async (provider: OAuthProvider, oAuthRequest: OAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'provider' is not null or undefined
+            assertParamExists('authorizeWithOAuthToken', 'provider', provider)
+            // verify required parameter 'oAuthRequest' is not null or undefined
+            assertParamExists('authorizeWithOAuthToken', 'oAuthRequest', oAuthRequest)
+            const localVarPath = `/iam/v1/oauth/{provider}/authorize`
+                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(oAuthRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get the jwks.json file.  You can use the jwks.json file to verify the signature of a JWT token issued by Openfort Auth.
+         * @summary Get the jwks.json file.
+         * @param {string} publishableKey Specifies the project publishable key (starts with pk_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getJwks: async (publishableKey: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'publishableKey' is not null or undefined
+            assertParamExists('getJwks', 'publishableKey', publishableKey)
+            const localVarPath = `/iam/v1/{publishable_key}/jwks.json`
+                .replace(`{${"publishable_key"}}`, encodeURIComponent(String(publishableKey)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Initialize OAuth.
+         * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        initOAuth: async (oAuthInitRequest: OAuthInitRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'oAuthInitRequest' is not null or undefined
+            assertParamExists('initOAuth', 'oAuthInitRequest', oAuthInitRequest)
+            const localVarPath = `/iam/v1/oauth/init`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(oAuthInitRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create a challenge to link external wallet to the player.
+         * @summary Initialize SIWE.
+         * @param {SIWERequest} sIWERequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        initSIWE: async (sIWERequest: SIWERequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sIWERequest' is not null or undefined
+            assertParamExists('initSIWE', 'sIWERequest', sIWERequest)
+            const localVarPath = `/iam/v1/siwe/init`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sIWERequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Link external wallet.
+         * @param {SIWEAuthenticateRequest} sIWEAuthenticateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSIWE: async (sIWEAuthenticateRequest: SIWEAuthenticateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sIWEAuthenticateRequest' is not null or undefined
+            assertParamExists('linkSIWE', 'sIWEAuthenticateRequest', sIWEAuthenticateRequest)
+            const localVarPath = `/iam/v1/siwe/link`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sIWEAuthenticateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Authenticate a player based on email and password.
+         * @summary Email and password login.
          * @param {LoginRequest} loginRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        login: async (loginRequest: LoginRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        loginEmailPassword: async (loginRequest: LoginRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginRequest' is not null or undefined
-            assertParamExists('login', 'loginRequest', loginRequest)
-            const localVarPath = `/iam/v1/auth/login`;
+            assertParamExists('loginEmailPassword', 'loginRequest', loginRequest)
+            const localVarPath = `/iam/v1/password/login`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7785,16 +10241,88 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             };
         },
         /**
-         * 
-         * @summary Sign up a player.
+         * When using Openfort Auth, the endpoint logs out the player.
+         * @summary Log out a player.
+         * @param {LogoutRequest} logoutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logout: async (logoutRequest: LogoutRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'logoutRequest' is not null or undefined
+            assertParamExists('logout', 'logoutRequest', logoutRequest)
+            const localVarPath = `/iam/v1/sessions/logout`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(logoutRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get or create a new session for the player based on the refresh token.
+         * @summary Refresh or create auth session.
+         * @param {RefreshTokenRequest} refreshTokenRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        refresh: async (refreshTokenRequest: RefreshTokenRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'refreshTokenRequest' is not null or undefined
+            assertParamExists('refresh', 'refreshTokenRequest', refreshTokenRequest)
+            const localVarPath = `/iam/v1/sessions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(refreshTokenRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Create and authenticate a player based on email and password.
+         * @summary Email and password signup.
          * @param {SignupRequest} signupRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signup: async (signupRequest: SignupRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        signupEmailPassword: async (signupRequest: SignupRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'signupRequest' is not null or undefined
-            assertParamExists('signup', 'signupRequest', signupRequest)
-            const localVarPath = `/iam/v1/auth/signup`;
+            assertParamExists('signupEmailPassword', 'signupRequest', signupRequest)
+            const localVarPath = `/iam/v1/password/signup`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7826,7 +10354,79 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         },
         /**
          * 
-         * @summary Verify an auth token.
+         * @summary Unlink OAuth account
+         * @param {LinkRequest} linkRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unlinkOAuth: async (linkRequest: LinkRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'linkRequest' is not null or undefined
+            assertParamExists('unlinkOAuth', 'linkRequest', linkRequest)
+            const localVarPath = `/iam/v1/oauth/unlink`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(linkRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Unlink external wallet.
+         * @param {SIWERequest} sIWERequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unlinkSIWE: async (sIWERequest: SIWERequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sIWERequest' is not null or undefined
+            assertParamExists('unlinkSIWE', 'sIWERequest', sIWERequest)
+            const localVarPath = `/iam/v1/siwe/unlink`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sIWERequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Verifies the token generated by Openfort Auth.
+         * @summary Verify auth token.
          * @param {string} token Specifies the auth token.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -7834,7 +10434,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         verifyAuthToken: async (token: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'token' is not null or undefined
             assertParamExists('verifyAuthToken', 'token', token)
-            const localVarPath = `/iam/v1/auth/verify`;
+            const localVarPath = `/iam/v1/verify`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7865,6 +10465,99 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
+         * @summary Retrieve player by oauth token.
+         * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        verifyOAuth: async (authenticateOAuthRequest: AuthenticateOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'authenticateOAuthRequest' is not null or undefined
+            assertParamExists('verifyOAuth', 'authenticateOAuthRequest', authenticateOAuthRequest)
+            const localVarPath = `/iam/v1/oauth/verify`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(authenticateOAuthRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
+         * @summary Retrieve player by token.
+         * @param {OAuthProvider} provider OAuth provider
+         * @param {OAuthRequest} oAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        verifyOAuthToken: async (provider: OAuthProvider, oAuthRequest: OAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'provider' is not null or undefined
+            assertParamExists('verifyOAuthToken', 'provider', provider)
+            // verify required parameter 'oAuthRequest' is not null or undefined
+            assertParamExists('verifyOAuthToken', 'oAuthRequest', oAuthRequest)
+            const localVarPath = `/iam/v1/oauth/{provider}/verify`
+                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(oAuthRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -7877,35 +10570,182 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Login a player.
+         * @summary Authenticate player with oauth token.
+         * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authenticateOAuth(authenticateOAuthRequest: AuthenticateOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authenticateOAuth(authenticateOAuthRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Authenticate player with SIWE
+         * @param {SIWEAuthenticateRequest} sIWEAuthenticateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authenticateSIWE(sIWEAuthenticateRequest: SIWEAuthenticateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authenticateSIWE(sIWEAuthenticateRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
+         * @summary Authorize player with token.
+         * @param {OAuthProvider} provider OAuth provider
+         * @param {OAuthRequest} oAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        async authorizeWithOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authorizeWithOAuthToken(provider, oAuthRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Get the jwks.json file.  You can use the jwks.json file to verify the signature of a JWT token issued by Openfort Auth.
+         * @summary Get the jwks.json file.
+         * @param {string} publishableKey Specifies the project publishable key (starts with pk_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getJwks(publishableKey: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JwtKeyResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getJwks(publishableKey, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Initialize OAuth.
+         * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async initOAuth(oAuthInitRequest: OAuthInitRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSigninUrlResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.initOAuth(oAuthInitRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Create a challenge to link external wallet to the player.
+         * @summary Initialize SIWE.
+         * @param {SIWERequest} sIWERequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async initSIWE(sIWERequest: SIWERequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SIWEInitResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.initSIWE(sIWERequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Link external wallet.
+         * @param {SIWEAuthenticateRequest} sIWEAuthenticateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkSIWE(sIWEAuthenticateRequest: SIWEAuthenticateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkSIWE(sIWEAuthenticateRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Authenticate a player based on email and password.
+         * @summary Email and password login.
          * @param {LoginRequest} loginRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async login(loginRequest: LoginRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.login(loginRequest, options);
+        async loginEmailPassword(loginRequest: LoginRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.loginEmailPassword(loginRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Sign up a player.
+         * When using Openfort Auth, the endpoint logs out the player.
+         * @summary Log out a player.
+         * @param {LogoutRequest} logoutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async logout(logoutRequest: LogoutRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.logout(logoutRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Get or create a new session for the player based on the refresh token.
+         * @summary Refresh or create auth session.
+         * @param {RefreshTokenRequest} refreshTokenRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async refresh(refreshTokenRequest: RefreshTokenRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.refresh(refreshTokenRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Create and authenticate a player based on email and password.
+         * @summary Email and password signup.
          * @param {SignupRequest} signupRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signup(signupRequest: SignupRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.signup(signupRequest, options);
+        async signupEmailPassword(signupRequest: SignupRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signupEmailPassword(signupRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
-         * @summary Verify an auth token.
+         * @summary Unlink OAuth account
+         * @param {LinkRequest} linkRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async unlinkOAuth(linkRequest: LinkRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkOAuth(linkRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Unlink external wallet.
+         * @param {SIWERequest} sIWERequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async unlinkSIWE(sIWERequest: SIWERequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkSIWE(sIWERequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Verifies the token generated by Openfort Auth.
+         * @summary Verify auth token.
          * @param {string} token Specifies the auth token.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async verifyAuthToken(token: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+        async verifyAuthToken(token: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthSessionResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.verifyAuthToken(token, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
+         * @summary Retrieve player by oauth token.
+         * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async verifyOAuth(authenticateOAuthRequest: AuthenticateOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyOAuth(authenticateOAuthRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
+         * @summary Retrieve player by token.
+         * @param {OAuthProvider} provider OAuth provider
+         * @param {OAuthRequest} oAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        async verifyOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyOAuthToken(provider, oAuthRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -7920,33 +10760,167 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
     return {
         /**
          * 
-         * @summary Login a player.
+         * @summary Authenticate player with oauth token.
+         * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authenticateOAuth(authenticateOAuthRequest: AuthenticateOAuthRequest, options?: any): AxiosPromise<AuthResponse> {
+            return localVarFp.authenticateOAuth(authenticateOAuthRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Authenticate player with SIWE
+         * @param {SIWEAuthenticateRequest} sIWEAuthenticateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authenticateSIWE(sIWEAuthenticateRequest: SIWEAuthenticateRequest, options?: any): AxiosPromise<AuthResponse> {
+            return localVarFp.authenticateSIWE(sIWEAuthenticateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
+         * @summary Authorize player with token.
+         * @param {OAuthProvider} provider OAuth provider
+         * @param {OAuthRequest} oAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        authorizeWithOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: any): AxiosPromise<AuthResponse> {
+            return localVarFp.authorizeWithOAuthToken(provider, oAuthRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get the jwks.json file.  You can use the jwks.json file to verify the signature of a JWT token issued by Openfort Auth.
+         * @summary Get the jwks.json file.
+         * @param {string} publishableKey Specifies the project publishable key (starts with pk_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getJwks(publishableKey: string, options?: any): AxiosPromise<JwtKeyResponse> {
+            return localVarFp.getJwks(publishableKey, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Initialize OAuth.
+         * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        initOAuth(oAuthInitRequest: OAuthInitRequest, options?: any): AxiosPromise<GetSigninUrlResponse> {
+            return localVarFp.initOAuth(oAuthInitRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a challenge to link external wallet to the player.
+         * @summary Initialize SIWE.
+         * @param {SIWERequest} sIWERequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        initSIWE(sIWERequest: SIWERequest, options?: any): AxiosPromise<SIWEInitResponse> {
+            return localVarFp.initSIWE(sIWERequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Link external wallet.
+         * @param {SIWEAuthenticateRequest} sIWEAuthenticateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSIWE(sIWEAuthenticateRequest: SIWEAuthenticateRequest, options?: any): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.linkSIWE(sIWEAuthenticateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Authenticate a player based on email and password.
+         * @summary Email and password login.
          * @param {LoginRequest} loginRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        login(loginRequest: LoginRequest, options?: any): AxiosPromise<AuthResponse> {
-            return localVarFp.login(loginRequest, options).then((request) => request(axios, basePath));
+        loginEmailPassword(loginRequest: LoginRequest, options?: any): AxiosPromise<AuthResponse> {
+            return localVarFp.loginEmailPassword(loginRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Sign up a player.
+         * When using Openfort Auth, the endpoint logs out the player.
+         * @summary Log out a player.
+         * @param {LogoutRequest} logoutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logout(logoutRequest: LogoutRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.logout(logoutRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get or create a new session for the player based on the refresh token.
+         * @summary Refresh or create auth session.
+         * @param {RefreshTokenRequest} refreshTokenRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        refresh(refreshTokenRequest: RefreshTokenRequest, options?: any): AxiosPromise<AuthResponse> {
+            return localVarFp.refresh(refreshTokenRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create and authenticate a player based on email and password.
+         * @summary Email and password signup.
          * @param {SignupRequest} signupRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signup(signupRequest: SignupRequest, options?: any): AxiosPromise<AuthResponse> {
-            return localVarFp.signup(signupRequest, options).then((request) => request(axios, basePath));
+        signupEmailPassword(signupRequest: SignupRequest, options?: any): AxiosPromise<AuthResponse> {
+            return localVarFp.signupEmailPassword(signupRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Verify an auth token.
+         * @summary Unlink OAuth account
+         * @param {LinkRequest} linkRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unlinkOAuth(linkRequest: LinkRequest, options?: any): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.unlinkOAuth(linkRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Unlink external wallet.
+         * @param {SIWERequest} sIWERequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unlinkSIWE(sIWERequest: SIWERequest, options?: any): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.unlinkSIWE(sIWERequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Verifies the token generated by Openfort Auth.
+         * @summary Verify auth token.
          * @param {string} token Specifies the auth token.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        verifyAuthToken(token: string, options?: any): AxiosPromise<PlayerResponse> {
+        verifyAuthToken(token: string, options?: any): AxiosPromise<AuthSessionResponse> {
             return localVarFp.verifyAuthToken(token, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
+         * @summary Retrieve player by oauth token.
+         * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        verifyOAuth(authenticateOAuthRequest: AuthenticateOAuthRequest, options?: any): AxiosPromise<PlayerResponse> {
+            return localVarFp.verifyOAuth(authenticateOAuthRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
+         * @summary Retrieve player by token.
+         * @param {OAuthProvider} provider OAuth provider
+         * @param {OAuthRequest} oAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        verifyOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: any): AxiosPromise<PlayerResponse> {
+            return localVarFp.verifyOAuthToken(provider, oAuthRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -7960,31 +10934,165 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
 export class AuthenticationApi extends BaseAPI {
     /**
      * 
-     * @summary Login a player.
+     * @summary Authenticate player with oauth token.
+     * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public authenticateOAuth(authenticateOAuthRequest: AuthenticateOAuthRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).authenticateOAuth(authenticateOAuthRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Authenticate player with SIWE
+     * @param {SIWEAuthenticateRequest} sIWEAuthenticateRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public authenticateSIWE(sIWEAuthenticateRequest: SIWEAuthenticateRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).authenticateSIWE(sIWEAuthenticateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
+     * @summary Authorize player with token.
+     * @param {OAuthProvider} provider OAuth provider
+     * @param {OAuthRequest} oAuthRequest 
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public authorizeWithOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).authorizeWithOAuthToken(provider, oAuthRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get the jwks.json file.  You can use the jwks.json file to verify the signature of a JWT token issued by Openfort Auth.
+     * @summary Get the jwks.json file.
+     * @param {string} publishableKey Specifies the project publishable key (starts with pk_).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public getJwks(publishableKey: string, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).getJwks(publishableKey, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Initialize OAuth.
+     * @param {OAuthInitRequest} oAuthInitRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public initOAuth(oAuthInitRequest: OAuthInitRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).initOAuth(oAuthInitRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Create a challenge to link external wallet to the player.
+     * @summary Initialize SIWE.
+     * @param {SIWERequest} sIWERequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public initSIWE(sIWERequest: SIWERequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).initSIWE(sIWERequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Link external wallet.
+     * @param {SIWEAuthenticateRequest} sIWEAuthenticateRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public linkSIWE(sIWEAuthenticateRequest: SIWEAuthenticateRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).linkSIWE(sIWEAuthenticateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Authenticate a player based on email and password.
+     * @summary Email and password login.
      * @param {LoginRequest} loginRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthenticationApi
      */
-    public login(loginRequest: LoginRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).login(loginRequest, options).then((request) => request(this.axios, this.basePath));
+    public loginEmailPassword(loginRequest: LoginRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).loginEmailPassword(loginRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @summary Sign up a player.
+     * When using Openfort Auth, the endpoint logs out the player.
+     * @summary Log out a player.
+     * @param {LogoutRequest} logoutRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public logout(logoutRequest: LogoutRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).logout(logoutRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get or create a new session for the player based on the refresh token.
+     * @summary Refresh or create auth session.
+     * @param {RefreshTokenRequest} refreshTokenRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public refresh(refreshTokenRequest: RefreshTokenRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).refresh(refreshTokenRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Create and authenticate a player based on email and password.
+     * @summary Email and password signup.
      * @param {SignupRequest} signupRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthenticationApi
      */
-    public signup(signupRequest: SignupRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).signup(signupRequest, options).then((request) => request(this.axios, this.basePath));
+    public signupEmailPassword(signupRequest: SignupRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).signupEmailPassword(signupRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Verify an auth token.
+     * @summary Unlink OAuth account
+     * @param {LinkRequest} linkRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public unlinkOAuth(linkRequest: LinkRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).unlinkOAuth(linkRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Unlink external wallet.
+     * @param {SIWERequest} sIWERequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public unlinkSIWE(sIWERequest: SIWERequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).unlinkSIWE(sIWERequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Verifies the token generated by Openfort Auth.
+     * @summary Verify auth token.
      * @param {string} token Specifies the auth token.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7992,6 +11100,32 @@ export class AuthenticationApi extends BaseAPI {
      */
     public verifyAuthToken(token: string, options?: AxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).verifyAuthToken(token, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
+     * @summary Retrieve player by oauth token.
+     * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public verifyOAuth(authenticateOAuthRequest: AuthenticateOAuthRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).verifyOAuth(authenticateOAuthRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
+     * @summary Retrieve player by token.
+     * @param {OAuthProvider} provider OAuth provider
+     * @param {OAuthRequest} oAuthRequest 
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public verifyOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).verifyOAuthToken(provider, oAuthRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -8192,7 +11326,7 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
          * @summary Read on chain contract data.
          * @param {string} id Specifies the unique contract ID (starts with con_).
          * @param {string} functionName The function name of the contract.
-         * @param {Array<any>} [functionArgs] The function arguments of the contract.
+         * @param {Array<any>} [functionArgs] The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -8346,7 +11480,7 @@ export const ContractsApiFp = function(configuration?: Configuration) {
          * @summary Read on chain contract data.
          * @param {string} id Specifies the unique contract ID (starts with con_).
          * @param {string} functionName The function name of the contract.
-         * @param {Array<any>} [functionArgs] The function arguments of the contract.
+         * @param {Array<any>} [functionArgs] The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -8427,7 +11561,7 @@ export const ContractsApiFactory = function (configuration?: Configuration, base
          * @summary Read on chain contract data.
          * @param {string} id Specifies the unique contract ID (starts with con_).
          * @param {string} functionName The function name of the contract.
-         * @param {Array<any>} [functionArgs] The function arguments of the contract.
+         * @param {Array<any>} [functionArgs] The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -8514,7 +11648,7 @@ export class ContractsApi extends BaseAPI {
      * @summary Read on chain contract data.
      * @param {string} id Specifies the unique contract ID (starts with con_).
      * @param {string} functionName The function name of the contract.
-     * @param {Array<any>} [functionArgs] The function arguments of the contract.
+     * @param {Array<any>} [functionArgs] The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ContractsApi
@@ -8539,19 +11673,100 @@ export class ContractsApi extends BaseAPI {
 
 
 /**
- * GoogleAuthenticationApi - axios parameter creator
+ * EmbeddedApi - axios parameter creator
  * @export
  */
-export const GoogleAuthenticationApiAxiosParamCreator = function (configuration?: Configuration) {
+export const EmbeddedApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
-         * @summary Get the google oauth signin url.
+         * Creates a new device for a given account.  This object represents the device that the account owner uses to store the device share. It has an equivalent auth share and recovery share associated with it.
+         * @summary Create a device object.
+         * @param {CreateDeviceRequest} createDeviceRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSigninUrl: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v1/oauth/google/signin_url`;
+        createDevice: async (createDeviceRequest: CreateDeviceRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createDeviceRequest' is not null or undefined
+            assertParamExists('createDevice', 'createDeviceRequest', createDeviceRequest)
+            const localVarPath = `/v1/devices`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createDeviceRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Add the share of for existing device.
+         * @summary Create a device share.
+         * @param {string} id Specifies the unique device ID (starts with dev_).
+         * @param {CreateShareRequest} createShareRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createDeviceShare: async (id: string, createShareRequest: CreateShareRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('createDeviceShare', 'id', id)
+            // verify required parameter 'createShareRequest' is not null or undefined
+            assertParamExists('createDeviceShare', 'createShareRequest', createShareRequest)
+            const localVarPath = `/v1/devices/{id}/shares`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createShareRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves the shares of an existing device.
+         * @summary Get existing device shares.
+         * @param {string} id Specifies the unique device ID (starts with dev_).
+         * @param {string} [shareType] Specifies the type of the share ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDeviceShares: async (id: string, shareType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getDeviceShares', 'id', id)
+            const localVarPath = `/v1/devices/{id}/shares`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8563,9 +11778,9 @@ export const GoogleAuthenticationApiAxiosParamCreator = function (configuration?
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication pk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+            if (shareType !== undefined) {
+                localVarQueryParameter['shareType'] = shareType;
+            }
 
 
     
@@ -8579,16 +11794,19 @@ export const GoogleAuthenticationApiAxiosParamCreator = function (configuration?
             };
         },
         /**
-         * 
-         * @summary Get the google oauth token.
-         * @param {string} key Specifies the oauth key.
+         * Returns a list of devices for the given account.  This object represents the devices where the account owner has device share stored.  Devices are returned sorted by creation date, with the most recently created devices appearing first.  By default, a maximum of 10 devices are shown per page.
+         * @summary List devices of account.
+         * @param {string} account Specifies the unique account ID (starts with acc_)
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getToken: async (key: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'key' is not null or undefined
-            assertParamExists('getToken', 'key', key)
-            const localVarPath = `/iam/v1/oauth/google/token`;
+        getDevices: async (account: string, limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'account' is not null or undefined
+            assertParamExists('getDevices', 'account', account)
+            const localVarPath = `/v1/devices`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8600,12 +11818,20 @@ export const GoogleAuthenticationApiAxiosParamCreator = function (configuration?
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication pk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
 
-            if (key !== undefined) {
-                localVarQueryParameter['key'] = key;
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (account !== undefined) {
+                localVarQueryParameter['account'] = account;
             }
 
 
@@ -8623,93 +11849,177 @@ export const GoogleAuthenticationApiAxiosParamCreator = function (configuration?
 };
 
 /**
- * GoogleAuthenticationApi - functional programming interface
+ * EmbeddedApi - functional programming interface
  * @export
  */
-export const GoogleAuthenticationApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = GoogleAuthenticationApiAxiosParamCreator(configuration)
+export const EmbeddedApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = EmbeddedApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
-         * @summary Get the google oauth signin url.
+         * Creates a new device for a given account.  This object represents the device that the account owner uses to store the device share. It has an equivalent auth share and recovery share associated with it.
+         * @summary Create a device object.
+         * @param {CreateDeviceRequest} createDeviceRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSigninUrl(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSigninUrlResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getSigninUrl(options);
+        async createDevice(createDeviceRequest: CreateDeviceRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeviceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createDevice(createDeviceRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Get the google oauth token.
-         * @param {string} key Specifies the oauth key.
+         * Add the share of for existing device.
+         * @summary Create a device share.
+         * @param {string} id Specifies the unique device ID (starts with dev_).
+         * @param {CreateShareRequest} createShareRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getToken(key: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getToken(key, options);
+        async createDeviceShare(id: string, createShareRequest: CreateShareRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShareResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createDeviceShare(id, createShareRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Retrieves the shares of an existing device.
+         * @summary Get existing device shares.
+         * @param {string} id Specifies the unique device ID (starts with dev_).
+         * @param {string} [shareType] Specifies the type of the share ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getDeviceShares(id: string, shareType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseShareResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDeviceShares(id, shareType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Returns a list of devices for the given account.  This object represents the devices where the account owner has device share stored.  Devices are returned sorted by creation date, with the most recently created devices appearing first.  By default, a maximum of 10 devices are shown per page.
+         * @summary List devices of account.
+         * @param {string} account Specifies the unique account ID (starts with acc_)
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getDevices(account: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseDeviceResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDevices(account, limit, skip, order, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
 };
 
 /**
- * GoogleAuthenticationApi - factory interface
+ * EmbeddedApi - factory interface
  * @export
  */
-export const GoogleAuthenticationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = GoogleAuthenticationApiFp(configuration)
+export const EmbeddedApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = EmbeddedApiFp(configuration)
     return {
         /**
-         * 
-         * @summary Get the google oauth signin url.
+         * Creates a new device for a given account.  This object represents the device that the account owner uses to store the device share. It has an equivalent auth share and recovery share associated with it.
+         * @summary Create a device object.
+         * @param {CreateDeviceRequest} createDeviceRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSigninUrl(options?: any): AxiosPromise<GetSigninUrlResponse> {
-            return localVarFp.getSigninUrl(options).then((request) => request(axios, basePath));
+        createDevice(createDeviceRequest: CreateDeviceRequest, options?: any): AxiosPromise<DeviceResponse> {
+            return localVarFp.createDevice(createDeviceRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Get the google oauth token.
-         * @param {string} key Specifies the oauth key.
+         * Add the share of for existing device.
+         * @summary Create a device share.
+         * @param {string} id Specifies the unique device ID (starts with dev_).
+         * @param {CreateShareRequest} createShareRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getToken(key: string, options?: any): AxiosPromise<AuthResponse> {
-            return localVarFp.getToken(key, options).then((request) => request(axios, basePath));
+        createDeviceShare(id: string, createShareRequest: CreateShareRequest, options?: any): AxiosPromise<ShareResponse> {
+            return localVarFp.createDeviceShare(id, createShareRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves the shares of an existing device.
+         * @summary Get existing device shares.
+         * @param {string} id Specifies the unique device ID (starts with dev_).
+         * @param {string} [shareType] Specifies the type of the share ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDeviceShares(id: string, shareType?: string, options?: any): AxiosPromise<BaseEntityListResponseShareResponse> {
+            return localVarFp.getDeviceShares(id, shareType, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns a list of devices for the given account.  This object represents the devices where the account owner has device share stored.  Devices are returned sorted by creation date, with the most recently created devices appearing first.  By default, a maximum of 10 devices are shown per page.
+         * @summary List devices of account.
+         * @param {string} account Specifies the unique account ID (starts with acc_)
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDevices(account: string, limit?: number, skip?: number, order?: SortOrder, options?: any): AxiosPromise<BaseEntityListResponseDeviceResponse> {
+            return localVarFp.getDevices(account, limit, skip, order, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * GoogleAuthenticationApi - object-oriented interface
+ * EmbeddedApi - object-oriented interface
  * @export
- * @class GoogleAuthenticationApi
+ * @class EmbeddedApi
  * @extends {BaseAPI}
  */
-export class GoogleAuthenticationApi extends BaseAPI {
+export class EmbeddedApi extends BaseAPI {
     /**
-     * 
-     * @summary Get the google oauth signin url.
+     * Creates a new device for a given account.  This object represents the device that the account owner uses to store the device share. It has an equivalent auth share and recovery share associated with it.
+     * @summary Create a device object.
+     * @param {CreateDeviceRequest} createDeviceRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof GoogleAuthenticationApi
+     * @memberof EmbeddedApi
      */
-    public getSigninUrl(options?: AxiosRequestConfig) {
-        return GoogleAuthenticationApiFp(this.configuration).getSigninUrl(options).then((request) => request(this.axios, this.basePath));
+    public createDevice(createDeviceRequest: CreateDeviceRequest, options?: AxiosRequestConfig) {
+        return EmbeddedApiFp(this.configuration).createDevice(createDeviceRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @summary Get the google oauth token.
-     * @param {string} key Specifies the oauth key.
+     * Add the share of for existing device.
+     * @summary Create a device share.
+     * @param {string} id Specifies the unique device ID (starts with dev_).
+     * @param {CreateShareRequest} createShareRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof GoogleAuthenticationApi
+     * @memberof EmbeddedApi
      */
-    public getToken(key: string, options?: AxiosRequestConfig) {
-        return GoogleAuthenticationApiFp(this.configuration).getToken(key, options).then((request) => request(this.axios, this.basePath));
+    public createDeviceShare(id: string, createShareRequest: CreateShareRequest, options?: AxiosRequestConfig) {
+        return EmbeddedApiFp(this.configuration).createDeviceShare(id, createShareRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves the shares of an existing device.
+     * @summary Get existing device shares.
+     * @param {string} id Specifies the unique device ID (starts with dev_).
+     * @param {string} [shareType] Specifies the type of the share ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EmbeddedApi
+     */
+    public getDeviceShares(id: string, shareType?: string, options?: AxiosRequestConfig) {
+        return EmbeddedApiFp(this.configuration).getDeviceShares(id, shareType, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns a list of devices for the given account.  This object represents the devices where the account owner has device share stored.  Devices are returned sorted by creation date, with the most recently created devices appearing first.  By default, a maximum of 10 devices are shown per page.
+     * @summary List devices of account.
+     * @param {string} account Specifies the unique account ID (starts with acc_)
+     * @param {number} [limit] Specifies the maximum number of records to return.
+     * @param {number} [skip] Specifies the offset for the first records to return.
+     * @param {SortOrder} [order] Specifies the order in which to sort the results.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EmbeddedApi
+     */
+    public getDevices(account: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig) {
+        return EmbeddedApiFp(this.configuration).getDevices(account, limit, skip, order, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -8721,7 +12031,7 @@ export class GoogleAuthenticationApi extends BaseAPI {
 export const InventoriesApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the cryptocurrency assets of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -8779,46 +12089,7 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * 
-         * @summary Get inventory of account.
-         * @param {string} id Specifies the unique account ID.
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        getAccountInventory: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getAccountInventory', 'id', id)
-            const localVarPath = `/v1/accounts/{id}/inventory`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the native asset of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {*} [options] Override http request option.
@@ -8856,7 +12127,7 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the NFT assets of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -8914,18 +12185,18 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get cryptocurrency list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {Array<string>} [contractId] Filter by contract ID (starts with con_).
+         * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerCryptoCurrencyInventory: async (id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerCryptoCurrencyInventory: async (id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlayerCryptoCurrencyInventory', 'id', id)
             // verify required parameter 'chainId' is not null or undefined
@@ -8959,8 +12230,8 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
                 localVarQueryParameter['order'] = order;
             }
 
-            if (contractId) {
-                localVarQueryParameter['contractId'] = contractId;
+            if (contract) {
+                localVarQueryParameter['contract'] = contract;
             }
 
             if (chainId !== undefined) {
@@ -8979,53 +12250,7 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * 
-         * @summary Get inventory of player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {number} chainId Filter by chain id.
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        getPlayerInventory: async (id: string, chainId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPlayerInventory', 'id', id)
-            // verify required parameter 'chainId' is not null or undefined
-            assertParamExists('getPlayerInventory', 'chainId', chainId)
-            const localVarPath = `/v1/players/{id}/inventory`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (chainId !== undefined) {
-                localVarQueryParameter['chainId'] = chainId;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get native token list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
@@ -9070,18 +12295,18 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get NFTs list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {Array<string>} [contractId] Filter by contract ID (starts with con_).
+         * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerNftInventory: async (id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerNftInventory: async (id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlayerNftInventory', 'id', id)
             // verify required parameter 'chainId' is not null or undefined
@@ -9115,8 +12340,8 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
                 localVarQueryParameter['order'] = order;
             }
 
-            if (contractId) {
-                localVarQueryParameter['contractId'] = contractId;
+            if (contract) {
+                localVarQueryParameter['contract'] = contract;
             }
 
             if (chainId !== undefined) {
@@ -9145,7 +12370,7 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = InventoriesApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the cryptocurrency assets of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -9160,19 +12385,7 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Get inventory of account.
-         * @param {string} id Specifies the unique account ID.
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        async getAccountInventory(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ObsoleteInventoryResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountInventory(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the native asset of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {*} [options] Override http request option.
@@ -9183,7 +12396,7 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the NFT assets of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -9198,36 +12411,23 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get cryptocurrency list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {Array<string>} [contractId] Filter by contract ID (starts with con_).
+         * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerCryptoCurrencyInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerCryptoCurrencyInventory(id, chainId, limit, skip, order, contractId, options);
+        async getPlayerCryptoCurrencyInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerCryptoCurrencyInventory(id, chainId, limit, skip, order, contract, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Get inventory of player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {number} chainId Filter by chain id.
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        async getPlayerInventory(id: string, chainId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ObsoleteInventoryResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerInventory(id, chainId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get native token list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
@@ -9239,19 +12439,19 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get NFTs list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {Array<string>} [contractId] Filter by contract ID (starts with con_).
+         * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerNftInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerNftInventory(id, chainId, limit, skip, order, contractId, options);
+        async getPlayerNftInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerNftInventory(id, chainId, limit, skip, order, contract, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -9265,7 +12465,7 @@ export const InventoriesApiFactory = function (configuration?: Configuration, ba
     const localVarFp = InventoriesApiFp(configuration)
     return {
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the cryptocurrency assets of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -9279,18 +12479,7 @@ export const InventoriesApiFactory = function (configuration?: Configuration, ba
             return localVarFp.getAccountCryptoCurrencyInventory(id, limit, skip, order, contractId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Get inventory of account.
-         * @param {string} id Specifies the unique account ID.
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        getAccountInventory(id: string, options?: any): AxiosPromise<ObsoleteInventoryResponse> {
-            return localVarFp.getAccountInventory(id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the native asset of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {*} [options] Override http request option.
@@ -9300,7 +12489,7 @@ export const InventoriesApiFactory = function (configuration?: Configuration, ba
             return localVarFp.getAccountNativeInventory(id, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Retrieves the NFT assets of an existing account.
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -9314,34 +12503,22 @@ export const InventoriesApiFactory = function (configuration?: Configuration, ba
             return localVarFp.getAccountNftInventory(id, limit, skip, order, contractId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get cryptocurrency list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {Array<string>} [contractId] Filter by contract ID (starts with con_).
+         * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerCryptoCurrencyInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options?: any): AxiosPromise<InventoryListResponse> {
-            return localVarFp.getPlayerCryptoCurrencyInventory(id, chainId, limit, skip, order, contractId, options).then((request) => request(axios, basePath));
+        getPlayerCryptoCurrencyInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options?: any): AxiosPromise<InventoryListResponse> {
+            return localVarFp.getPlayerCryptoCurrencyInventory(id, chainId, limit, skip, order, contract, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Get inventory of player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {number} chainId Filter by chain id.
-         * @param {*} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         */
-        getPlayerInventory(id: string, chainId: number, options?: any): AxiosPromise<ObsoleteInventoryResponse> {
-            return localVarFp.getPlayerInventory(id, chainId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get native token list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
@@ -9352,19 +12529,19 @@ export const InventoriesApiFactory = function (configuration?: Configuration, ba
             return localVarFp.getPlayerNativeInventory(id, chainId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
          * @summary Get NFTs list of player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {Array<string>} [contractId] Filter by contract ID (starts with con_).
+         * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerNftInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options?: any): AxiosPromise<InventoryListResponse> {
-            return localVarFp.getPlayerNftInventory(id, chainId, limit, skip, order, contractId, options).then((request) => request(axios, basePath));
+        getPlayerNftInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options?: any): AxiosPromise<InventoryListResponse> {
+            return localVarFp.getPlayerNftInventory(id, chainId, limit, skip, order, contract, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -9377,7 +12554,7 @@ export const InventoriesApiFactory = function (configuration?: Configuration, ba
  */
 export class InventoriesApi extends BaseAPI {
     /**
-     * 
+     * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
      * @summary Retrieves the cryptocurrency assets of an existing account.
      * @param {string} id Specifies the unique account ID.
      * @param {number} [limit] Specifies the maximum number of records to return.
@@ -9393,20 +12570,7 @@ export class InventoriesApi extends BaseAPI {
     }
 
     /**
-     * 
-     * @summary Get inventory of account.
-     * @param {string} id Specifies the unique account ID.
-     * @param {*} [options] Override http request option.
-     * @deprecated
-     * @throws {RequiredError}
-     * @memberof InventoriesApi
-     */
-    public getAccountInventory(id: string, options?: AxiosRequestConfig) {
-        return InventoriesApiFp(this.configuration).getAccountInventory(id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
+     * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
      * @summary Retrieves the native asset of an existing account.
      * @param {string} id Specifies the unique account ID.
      * @param {*} [options] Override http request option.
@@ -9418,7 +12582,7 @@ export class InventoriesApi extends BaseAPI {
     }
 
     /**
-     * 
+     * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
      * @summary Retrieves the NFT assets of an existing account.
      * @param {string} id Specifies the unique account ID.
      * @param {number} [limit] Specifies the maximum number of records to return.
@@ -9434,38 +12598,24 @@ export class InventoriesApi extends BaseAPI {
     }
 
     /**
-     * 
+     * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
      * @summary Get cryptocurrency list of player.
      * @param {string} id Specifies the unique player ID (starts with pla_).
      * @param {number} chainId Filter by chain id.
      * @param {number} [limit] Specifies the maximum number of records to return.
      * @param {number} [skip] Specifies the offset for the first records to return.
      * @param {SortOrder} [order] Specifies the order in which to sort the results.
-     * @param {Array<string>} [contractId] Filter by contract ID (starts with con_).
+     * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof InventoriesApi
      */
-    public getPlayerCryptoCurrencyInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options?: AxiosRequestConfig) {
-        return InventoriesApiFp(this.configuration).getPlayerCryptoCurrencyInventory(id, chainId, limit, skip, order, contractId, options).then((request) => request(this.axios, this.basePath));
+    public getPlayerCryptoCurrencyInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options?: AxiosRequestConfig) {
+        return InventoriesApiFp(this.configuration).getPlayerCryptoCurrencyInventory(id, chainId, limit, skip, order, contract, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @summary Get inventory of player.
-     * @param {string} id Specifies the unique player ID (starts with pla_).
-     * @param {number} chainId Filter by chain id.
-     * @param {*} [options] Override http request option.
-     * @deprecated
-     * @throws {RequiredError}
-     * @memberof InventoriesApi
-     */
-    public getPlayerInventory(id: string, chainId: number, options?: AxiosRequestConfig) {
-        return InventoriesApiFp(this.configuration).getPlayerInventory(id, chainId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
+     * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
      * @summary Get native token list of player.
      * @param {string} id Specifies the unique player ID (starts with pla_).
      * @param {number} chainId Filter by chain id.
@@ -9478,89 +12628,41 @@ export class InventoriesApi extends BaseAPI {
     }
 
     /**
-     * 
+     * For development purposes only.  Under higher load scenarios, this endpoint may be rate limited.
      * @summary Get NFTs list of player.
      * @param {string} id Specifies the unique player ID (starts with pla_).
      * @param {number} chainId Filter by chain id.
      * @param {number} [limit] Specifies the maximum number of records to return.
      * @param {number} [skip] Specifies the offset for the first records to return.
      * @param {SortOrder} [order] Specifies the order in which to sort the results.
-     * @param {Array<string>} [contractId] Filter by contract ID (starts with con_).
+     * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof InventoriesApi
      */
-    public getPlayerNftInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options?: AxiosRequestConfig) {
-        return InventoriesApiFp(this.configuration).getPlayerNftInventory(id, chainId, limit, skip, order, contractId, options).then((request) => request(this.axios, this.basePath));
+    public getPlayerNftInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options?: AxiosRequestConfig) {
+        return InventoriesApiFp(this.configuration).getPlayerNftInventory(id, chainId, limit, skip, order, contract, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
 
 /**
- * OAuthApi - axios parameter creator
+ * NotificationSubscriptionsApi - axios parameter creator
  * @export
  */
-export const OAuthApiAxiosParamCreator = function (configuration?: Configuration) {
+export const NotificationSubscriptionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
-         * @summary Authorize player with token.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {OAuthRequest} oAuthRequest Request body
+         * Create a subscription for the provided notification.
+         * @summary Create a notification subscription object.
+         * @param {CreateNotificationSubscriptionRequest} createNotificationSubscriptionRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        authorizeWithOAuthToken: async (provider: OAuthProvider, oAuthRequest: OAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'provider' is not null or undefined
-            assertParamExists('authorizeWithOAuthToken', 'provider', provider)
-            // verify required parameter 'oAuthRequest' is not null or undefined
-            assertParamExists('authorizeWithOAuthToken', 'oAuthRequest', oAuthRequest)
-            const localVarPath = `/iam/v1/oauth/{provider}/authorize`
-                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            // authentication pk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(oAuthRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * The endpoint creates oauth configuration for the current project environment.
-         * @summary Create oauth configuration.
-         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createOAuthConfig: async (body: OAuthConfig, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'body' is not null or undefined
-            assertParamExists('createOAuthConfig', 'body', body)
-            const localVarPath = `/iam/v1/oauth`;
+        createNotificationSubscription: async (createNotificationSubscriptionRequest: CreateNotificationSubscriptionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createNotificationSubscriptionRequest' is not null or undefined
+            assertParamExists('createNotificationSubscription', 'createNotificationSubscriptionRequest', createNotificationSubscriptionRequest)
+            const localVarPath = `/v1/notification_subscriptions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9583,7 +12685,7 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createNotificationSubscriptionRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -9591,17 +12693,17 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * The endpoint deletes oauth configuration for specified provider for the current project environment.
-         * @summary Delete oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * Delete a notification subscription by providing its notification subscription id.
+         * @summary Deletes a notification subscription object.
+         * @param {string} id Specifies the unique notification subscription ID (starts with ntr_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteOAuthConfig: async (provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'provider' is not null or undefined
-            assertParamExists('deleteOAuthConfig', 'provider', provider)
-            const localVarPath = `/iam/v1/oauth/{provider}`
-                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+        deleteNotificationSubscription: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteNotificationSubscription', 'id', id)
+            const localVarPath = `/v1/notification_subscriptions/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9629,17 +12731,17 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * The endpoint retrieves oauth configuration for specified provider for the current project environment.
-         * @summary Get oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * Retrieves the details of an existing notification subscription.  Supply the unique notification subscription ID.
+         * @summary Get existing notification subscription.
+         * @param {string} id Specifies the unique notification subscription ID (starts with not_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOAuthConfig: async (provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'provider' is not null or undefined
-            assertParamExists('getOAuthConfig', 'provider', provider)
-            const localVarPath = `/iam/v1/oauth/{provider}`
-                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+        getNotificationSubscription: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getNotificationSubscription', 'id', id)
+            const localVarPath = `/v1/notification_subscriptions/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9667,21 +12769,19 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * Retrieves the player based on his id in the external provider system.
-         * @summary Retrieve player by external id.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {string} externalUserId External user id
+         * Returns a list of subscriptions of a notification.  Subscriptions define the the way you will get notified and the target of the notification.  Subscriptions are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 notification subscriptions are shown per page.
+         * @summary List notification subscriptions of a notification.
+         * @param {string} notification Specifies the unique notification ID (starts with not_).
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerByExternalId: async (provider: OAuthProvider, externalUserId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'provider' is not null or undefined
-            assertParamExists('getPlayerByExternalId', 'provider', provider)
-            // verify required parameter 'externalUserId' is not null or undefined
-            assertParamExists('getPlayerByExternalId', 'externalUserId', externalUserId)
-            const localVarPath = `/iam/v1/oauth/{provider}/user/{external_user_id}`
-                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)))
-                .replace(`{${"external_user_id"}}`, encodeURIComponent(String(externalUserId)));
+        getNotificationSubscriptions: async (notification: string, limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'notification' is not null or undefined
+            assertParamExists('getNotificationSubscriptions', 'notification', notification)
+            const localVarPath = `/v1/notification_subscriptions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9697,39 +12797,21 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * The endpoint retrieves the list of oauth configurations for the current project environment.
-         * @summary List of oauth configurations.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listOAuthConfig: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v1/oauth`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
 
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (notification !== undefined) {
+                localVarQueryParameter['notification'] = notification;
+            }
 
 
     
@@ -9742,21 +12824,196 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+    }
+};
+
+/**
+ * NotificationSubscriptionsApi - functional programming interface
+ * @export
+ */
+export const NotificationSubscriptionsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = NotificationSubscriptionsApiAxiosParamCreator(configuration)
+    return {
         /**
-         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
-         * @summary Retrieve player by token.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {OAuthRequest} oAuthRequest Request body
+         * Create a subscription for the provided notification.
+         * @summary Create a notification subscription object.
+         * @param {CreateNotificationSubscriptionRequest} createNotificationSubscriptionRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        verifyOAuthToken: async (provider: OAuthProvider, oAuthRequest: OAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'provider' is not null or undefined
-            assertParamExists('verifyOAuthToken', 'provider', provider)
-            // verify required parameter 'oAuthRequest' is not null or undefined
-            assertParamExists('verifyOAuthToken', 'oAuthRequest', oAuthRequest)
-            const localVarPath = `/iam/v1/oauth/{provider}/verify`
-                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+        async createNotificationSubscription(createNotificationSubscriptionRequest: CreateNotificationSubscriptionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationSubscription>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createNotificationSubscription(createNotificationSubscriptionRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Delete a notification subscription by providing its notification subscription id.
+         * @summary Deletes a notification subscription object.
+         * @param {string} id Specifies the unique notification subscription ID (starts with ntr_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteNotificationSubscription(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationSubscriptionDeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteNotificationSubscription(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Retrieves the details of an existing notification subscription.  Supply the unique notification subscription ID.
+         * @summary Get existing notification subscription.
+         * @param {string} id Specifies the unique notification subscription ID (starts with not_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getNotificationSubscription(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationSubscription>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getNotificationSubscription(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Returns a list of subscriptions of a notification.  Subscriptions define the the way you will get notified and the target of the notification.  Subscriptions are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 notification subscriptions are shown per page.
+         * @summary List notification subscriptions of a notification.
+         * @param {string} notification Specifies the unique notification ID (starts with not_).
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getNotificationSubscriptions(notification: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationSubscriptionListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getNotificationSubscriptions(notification, limit, skip, order, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * NotificationSubscriptionsApi - factory interface
+ * @export
+ */
+export const NotificationSubscriptionsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = NotificationSubscriptionsApiFp(configuration)
+    return {
+        /**
+         * Create a subscription for the provided notification.
+         * @summary Create a notification subscription object.
+         * @param {CreateNotificationSubscriptionRequest} createNotificationSubscriptionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createNotificationSubscription(createNotificationSubscriptionRequest: CreateNotificationSubscriptionRequest, options?: any): AxiosPromise<NotificationSubscription> {
+            return localVarFp.createNotificationSubscription(createNotificationSubscriptionRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Delete a notification subscription by providing its notification subscription id.
+         * @summary Deletes a notification subscription object.
+         * @param {string} id Specifies the unique notification subscription ID (starts with ntr_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteNotificationSubscription(id: string, options?: any): AxiosPromise<NotificationSubscriptionDeleteResponse> {
+            return localVarFp.deleteNotificationSubscription(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves the details of an existing notification subscription.  Supply the unique notification subscription ID.
+         * @summary Get existing notification subscription.
+         * @param {string} id Specifies the unique notification subscription ID (starts with not_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNotificationSubscription(id: string, options?: any): AxiosPromise<NotificationSubscription> {
+            return localVarFp.getNotificationSubscription(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns a list of subscriptions of a notification.  Subscriptions define the the way you will get notified and the target of the notification.  Subscriptions are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 notification subscriptions are shown per page.
+         * @summary List notification subscriptions of a notification.
+         * @param {string} notification Specifies the unique notification ID (starts with not_).
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNotificationSubscriptions(notification: string, limit?: number, skip?: number, order?: SortOrder, options?: any): AxiosPromise<NotificationSubscriptionListResponse> {
+            return localVarFp.getNotificationSubscriptions(notification, limit, skip, order, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * NotificationSubscriptionsApi - object-oriented interface
+ * @export
+ * @class NotificationSubscriptionsApi
+ * @extends {BaseAPI}
+ */
+export class NotificationSubscriptionsApi extends BaseAPI {
+    /**
+     * Create a subscription for the provided notification.
+     * @summary Create a notification subscription object.
+     * @param {CreateNotificationSubscriptionRequest} createNotificationSubscriptionRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationSubscriptionsApi
+     */
+    public createNotificationSubscription(createNotificationSubscriptionRequest: CreateNotificationSubscriptionRequest, options?: AxiosRequestConfig) {
+        return NotificationSubscriptionsApiFp(this.configuration).createNotificationSubscription(createNotificationSubscriptionRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Delete a notification subscription by providing its notification subscription id.
+     * @summary Deletes a notification subscription object.
+     * @param {string} id Specifies the unique notification subscription ID (starts with ntr_).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationSubscriptionsApi
+     */
+    public deleteNotificationSubscription(id: string, options?: AxiosRequestConfig) {
+        return NotificationSubscriptionsApiFp(this.configuration).deleteNotificationSubscription(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves the details of an existing notification subscription.  Supply the unique notification subscription ID.
+     * @summary Get existing notification subscription.
+     * @param {string} id Specifies the unique notification subscription ID (starts with not_).
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationSubscriptionsApi
+     */
+    public getNotificationSubscription(id: string, options?: AxiosRequestConfig) {
+        return NotificationSubscriptionsApiFp(this.configuration).getNotificationSubscription(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns a list of subscriptions of a notification.  Subscriptions define the the way you will get notified and the target of the notification.  Subscriptions are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 notification subscriptions are shown per page.
+     * @summary List notification subscriptions of a notification.
+     * @param {string} notification Specifies the unique notification ID (starts with not_).
+     * @param {number} [limit] Specifies the maximum number of records to return.
+     * @param {number} [skip] Specifies the offset for the first records to return.
+     * @param {SortOrder} [order] Specifies the order in which to sort the results.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationSubscriptionsApi
+     */
+    public getNotificationSubscriptions(notification: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig) {
+        return NotificationSubscriptionsApiFp(this.configuration).getNotificationSubscriptions(notification, limit, skip, order, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * NotificationTriggersApi - axios parameter creator
+ * @export
+ */
+export const NotificationTriggersApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Create a trigger for the provided notification.
+         * @summary Create a notification trigger object.
+         * @param {CreateNotificationTriggerRequest} createNotificationTriggerRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createNotificationTrigger: async (createNotificationTriggerRequest: CreateNotificationTriggerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createNotificationTriggerRequest' is not null or undefined
+            assertParamExists('createNotificationTrigger', 'createNotificationTriggerRequest', createNotificationTriggerRequest)
+            const localVarPath = `/v1/notification_triggers`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9772,10 +13029,6 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-            // authentication pk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -9783,7 +13036,139 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(oAuthRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createNotificationTriggerRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Delete a notification trigger by providing its notification trigger id.
+         * @summary Deletes a notification trigger object.
+         * @param {string} id Specifies the unique notification trigger ID (starts with ntr_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteNotificationTrigger: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteNotificationTrigger', 'id', id)
+            const localVarPath = `/v1/notification_triggers/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves the details of an existing notification trigger.  Supply the unique notification trigger ID.
+         * @summary Get existing notification trigger.
+         * @param {string} id Specifies the unique notification trigger ID (starts with ntr_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNotificationTrigger: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getNotificationTrigger', 'id', id)
+            const localVarPath = `/v1/notification_triggers/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a list of triggers of a notification.  Triggers define the conditions that will trigger a notification.  Triggers are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 notification triggers are shown per page.
+         * @summary List notification triggers of a notification.
+         * @param {string} notification Specifies the unique notification ID (starts with not_).
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNotificationTriggers: async (notification: string, limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'notification' is not null or undefined
+            assertParamExists('getNotificationTriggers', 'notification', notification)
+            const localVarPath = `/v1/notification_triggers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (notification !== undefined) {
+                localVarQueryParameter['notification'] = notification;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -9794,267 +13179,544 @@ export const OAuthApiAxiosParamCreator = function (configuration?: Configuration
 };
 
 /**
- * OAuthApi - functional programming interface
+ * NotificationTriggersApi - functional programming interface
  * @export
  */
-export const OAuthApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = OAuthApiAxiosParamCreator(configuration)
+export const NotificationTriggersApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = NotificationTriggersApiAxiosParamCreator(configuration)
     return {
         /**
-         * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
-         * @summary Authorize player with token.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {OAuthRequest} oAuthRequest Request body
+         * Create a trigger for the provided notification.
+         * @summary Create a notification trigger object.
+         * @param {CreateNotificationTriggerRequest} createNotificationTriggerRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async authorizeWithOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthorizeWithOAuthToken200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.authorizeWithOAuthToken(provider, oAuthRequest, options);
+        async createNotificationTrigger(createNotificationTriggerRequest: CreateNotificationTriggerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationTriggerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createNotificationTrigger(createNotificationTriggerRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * The endpoint creates oauth configuration for the current project environment.
-         * @summary Create oauth configuration.
-         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+         * Delete a notification trigger by providing its notification trigger id.
+         * @summary Deletes a notification trigger object.
+         * @param {string} id Specifies the unique notification trigger ID (starts with ntr_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createOAuthConfig(body: OAuthConfig, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfig>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createOAuthConfig(body, options);
+        async deleteNotificationTrigger(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationTriggerDeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteNotificationTrigger(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * The endpoint deletes oauth configuration for specified provider for the current project environment.
-         * @summary Delete oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * Retrieves the details of an existing notification trigger.  Supply the unique notification trigger ID.
+         * @summary Get existing notification trigger.
+         * @param {string} id Specifies the unique notification trigger ID (starts with ntr_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteOAuthConfig(provider, options);
+        async getNotificationTrigger(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationTriggerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getNotificationTrigger(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * The endpoint retrieves oauth configuration for specified provider for the current project environment.
-         * @summary Get oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * Returns a list of triggers of a notification.  Triggers define the conditions that will trigger a notification.  Triggers are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 notification triggers are shown per page.
+         * @summary List notification triggers of a notification.
+         * @param {string} notification Specifies the unique notification ID (starts with not_).
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfig>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getOAuthConfig(provider, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Retrieves the player based on his id in the external provider system.
-         * @summary Retrieve player by external id.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {string} externalUserId External user id
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getPlayerByExternalId(provider: OAuthProvider, externalUserId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerByExternalId(provider, externalUserId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * The endpoint retrieves the list of oauth configurations for the current project environment.
-         * @summary List of oauth configurations.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async listOAuthConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfigListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listOAuthConfig(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
-         * @summary Retrieve player by token.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {OAuthRequest} oAuthRequest Request body
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async verifyOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyOAuthToken(provider, oAuthRequest, options);
+        async getNotificationTriggers(notification: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationTriggerListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getNotificationTriggers(notification, limit, skip, order, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
 };
 
 /**
- * OAuthApi - factory interface
+ * NotificationTriggersApi - factory interface
  * @export
  */
-export const OAuthApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = OAuthApiFp(configuration)
+export const NotificationTriggersApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = NotificationTriggersApiFp(configuration)
     return {
         /**
-         * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
-         * @summary Authorize player with token.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {OAuthRequest} oAuthRequest Request body
+         * Create a trigger for the provided notification.
+         * @summary Create a notification trigger object.
+         * @param {CreateNotificationTriggerRequest} createNotificationTriggerRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        authorizeWithOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: any): AxiosPromise<AuthorizeWithOAuthToken200Response> {
-            return localVarFp.authorizeWithOAuthToken(provider, oAuthRequest, options).then((request) => request(axios, basePath));
+        createNotificationTrigger(createNotificationTriggerRequest: CreateNotificationTriggerRequest, options?: any): AxiosPromise<NotificationTriggerResponse> {
+            return localVarFp.createNotificationTrigger(createNotificationTriggerRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * The endpoint creates oauth configuration for the current project environment.
-         * @summary Create oauth configuration.
-         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+         * Delete a notification trigger by providing its notification trigger id.
+         * @summary Deletes a notification trigger object.
+         * @param {string} id Specifies the unique notification trigger ID (starts with ntr_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createOAuthConfig(body: OAuthConfig, options?: any): AxiosPromise<OAuthConfig> {
-            return localVarFp.createOAuthConfig(body, options).then((request) => request(axios, basePath));
+        deleteNotificationTrigger(id: string, options?: any): AxiosPromise<NotificationTriggerDeleteResponse> {
+            return localVarFp.deleteNotificationTrigger(id, options).then((request) => request(axios, basePath));
         },
         /**
-         * The endpoint deletes oauth configuration for specified provider for the current project environment.
-         * @summary Delete oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * Retrieves the details of an existing notification trigger.  Supply the unique notification trigger ID.
+         * @summary Get existing notification trigger.
+         * @param {string} id Specifies the unique notification trigger ID (starts with ntr_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteOAuthConfig(provider: OAuthProvider, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteOAuthConfig(provider, options).then((request) => request(axios, basePath));
+        getNotificationTrigger(id: string, options?: any): AxiosPromise<NotificationTriggerResponse> {
+            return localVarFp.getNotificationTrigger(id, options).then((request) => request(axios, basePath));
         },
         /**
-         * The endpoint retrieves oauth configuration for specified provider for the current project environment.
-         * @summary Get oauth configuration.
-         * @param {OAuthProvider} provider Specifies the oauth provider type.
+         * Returns a list of triggers of a notification.  Triggers define the conditions that will trigger a notification.  Triggers are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 notification triggers are shown per page.
+         * @summary List notification triggers of a notification.
+         * @param {string} notification Specifies the unique notification ID (starts with not_).
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOAuthConfig(provider: OAuthProvider, options?: any): AxiosPromise<OAuthConfig> {
-            return localVarFp.getOAuthConfig(provider, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Retrieves the player based on his id in the external provider system.
-         * @summary Retrieve player by external id.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {string} externalUserId External user id
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPlayerByExternalId(provider: OAuthProvider, externalUserId: string, options?: any): AxiosPromise<PlayerResponse> {
-            return localVarFp.getPlayerByExternalId(provider, externalUserId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * The endpoint retrieves the list of oauth configurations for the current project environment.
-         * @summary List of oauth configurations.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listOAuthConfig(options?: any): AxiosPromise<OAuthConfigListResponse> {
-            return localVarFp.listOAuthConfig(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
-         * @summary Retrieve player by token.
-         * @param {OAuthProvider} provider OAuth provider
-         * @param {OAuthRequest} oAuthRequest Request body
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        verifyOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: any): AxiosPromise<PlayerResponse> {
-            return localVarFp.verifyOAuthToken(provider, oAuthRequest, options).then((request) => request(axios, basePath));
+        getNotificationTriggers(notification: string, limit?: number, skip?: number, order?: SortOrder, options?: any): AxiosPromise<NotificationTriggerListResponse> {
+            return localVarFp.getNotificationTriggers(notification, limit, skip, order, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * OAuthApi - object-oriented interface
+ * NotificationTriggersApi - object-oriented interface
  * @export
- * @class OAuthApi
+ * @class NotificationTriggersApi
  * @extends {BaseAPI}
  */
-export class OAuthApi extends BaseAPI {
+export class NotificationTriggersApi extends BaseAPI {
     /**
-     * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
-     * @summary Authorize player with token.
-     * @param {OAuthProvider} provider OAuth provider
-     * @param {OAuthRequest} oAuthRequest Request body
+     * Create a trigger for the provided notification.
+     * @summary Create a notification trigger object.
+     * @param {CreateNotificationTriggerRequest} createNotificationTriggerRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OAuthApi
+     * @memberof NotificationTriggersApi
      */
-    public authorizeWithOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).authorizeWithOAuthToken(provider, oAuthRequest, options).then((request) => request(this.axios, this.basePath));
+    public createNotificationTrigger(createNotificationTriggerRequest: CreateNotificationTriggerRequest, options?: AxiosRequestConfig) {
+        return NotificationTriggersApiFp(this.configuration).createNotificationTrigger(createNotificationTriggerRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * The endpoint creates oauth configuration for the current project environment.
-     * @summary Create oauth configuration.
-     * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+     * Delete a notification trigger by providing its notification trigger id.
+     * @summary Deletes a notification trigger object.
+     * @param {string} id Specifies the unique notification trigger ID (starts with ntr_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OAuthApi
+     * @memberof NotificationTriggersApi
      */
-    public createOAuthConfig(body: OAuthConfig, options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).createOAuthConfig(body, options).then((request) => request(this.axios, this.basePath));
+    public deleteNotificationTrigger(id: string, options?: AxiosRequestConfig) {
+        return NotificationTriggersApiFp(this.configuration).deleteNotificationTrigger(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * The endpoint deletes oauth configuration for specified provider for the current project environment.
-     * @summary Delete oauth configuration.
-     * @param {OAuthProvider} provider Specifies the oauth provider type.
+     * Retrieves the details of an existing notification trigger.  Supply the unique notification trigger ID.
+     * @summary Get existing notification trigger.
+     * @param {string} id Specifies the unique notification trigger ID (starts with ntr_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OAuthApi
+     * @memberof NotificationTriggersApi
      */
-    public deleteOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).deleteOAuthConfig(provider, options).then((request) => request(this.axios, this.basePath));
+    public getNotificationTrigger(id: string, options?: AxiosRequestConfig) {
+        return NotificationTriggersApiFp(this.configuration).getNotificationTrigger(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * The endpoint retrieves oauth configuration for specified provider for the current project environment.
-     * @summary Get oauth configuration.
-     * @param {OAuthProvider} provider Specifies the oauth provider type.
+     * Returns a list of triggers of a notification.  Triggers define the conditions that will trigger a notification.  Triggers are returned sorted by creation date, with the most recently created accounts appearing first.  By default, a maximum of 10 notification triggers are shown per page.
+     * @summary List notification triggers of a notification.
+     * @param {string} notification Specifies the unique notification ID (starts with not_).
+     * @param {number} [limit] Specifies the maximum number of records to return.
+     * @param {number} [skip] Specifies the offset for the first records to return.
+     * @param {SortOrder} [order] Specifies the order in which to sort the results.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OAuthApi
+     * @memberof NotificationTriggersApi
      */
-    public getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).getOAuthConfig(provider, options).then((request) => request(this.axios, this.basePath));
+    public getNotificationTriggers(notification: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig) {
+        return NotificationTriggersApiFp(this.configuration).getNotificationTriggers(notification, limit, skip, order, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * NotificationsApi - axios parameter creator
+ * @export
+ */
+export const NotificationsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Create a notification object.
+         * @summary Create a notification object.
+         * @param {CreateNotificationRequest} createNotificationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createNotification: async (createNotificationRequest: CreateNotificationRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createNotificationRequest' is not null or undefined
+            assertParamExists('createNotification', 'createNotificationRequest', createNotificationRequest)
+            const localVarPath = `/v1/notifications`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createNotificationRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Delete a notification by providing its notification id.
+         * @summary Deletes a notification object.
+         * @param {string} id Specifies the unique notification ID (starts with not_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteNotification: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteNotification', 'id', id)
+            const localVarPath = `/v1/notifications/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves the details of an existing notification.  Supply the unique notification ID.
+         * @summary Get existing notification.
+         * @param {string} id Specifies the unique notification ID (starts with not_).
+         * @param {Array<NotificationResponseExpandable>} [expand] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNotification: async (id: string, expand?: Array<NotificationResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getNotification', 'id', id)
+            const localVarPath = `/v1/notifications/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (expand) {
+                localVarQueryParameter['expand'] = expand;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a list of notifications.  Notifications are useful to get notified about events that happen on-chain or in your Openfort account.  Notifications are returned sorted by creation date, with the most recently created notifications appearing first.  By default, a maximum of 10 notifications are shown per page.
+         * @summary List notifications.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {Array<NotificationResponseExpandable>} [expand] Specifies the fields to expand in the response.
+         * @param {boolean} [deleted] Specifies whether to include deleted notifications.
+         * @param {string} [name] Specifies the name of the notifications.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNotifications: async (limit?: number, skip?: number, order?: SortOrder, expand?: Array<NotificationResponseExpandable>, deleted?: boolean, name?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v1/notifications`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (expand) {
+                localVarQueryParameter['expand'] = expand;
+            }
+
+            if (deleted !== undefined) {
+                localVarQueryParameter['deleted'] = deleted;
+            }
+
+            if (name !== undefined) {
+                localVarQueryParameter['name'] = name;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * NotificationsApi - functional programming interface
+ * @export
+ */
+export const NotificationsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = NotificationsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Create a notification object.
+         * @summary Create a notification object.
+         * @param {CreateNotificationRequest} createNotificationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createNotification(createNotificationRequest: CreateNotificationRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createNotification(createNotificationRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Delete a notification by providing its notification id.
+         * @summary Deletes a notification object.
+         * @param {string} id Specifies the unique notification ID (starts with not_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteNotification(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationDeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteNotification(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Retrieves the details of an existing notification.  Supply the unique notification ID.
+         * @summary Get existing notification.
+         * @param {string} id Specifies the unique notification ID (starts with not_).
+         * @param {Array<NotificationResponseExpandable>} [expand] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getNotification(id: string, expand?: Array<NotificationResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getNotification(id, expand, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Returns a list of notifications.  Notifications are useful to get notified about events that happen on-chain or in your Openfort account.  Notifications are returned sorted by creation date, with the most recently created notifications appearing first.  By default, a maximum of 10 notifications are shown per page.
+         * @summary List notifications.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {Array<NotificationResponseExpandable>} [expand] Specifies the fields to expand in the response.
+         * @param {boolean} [deleted] Specifies whether to include deleted notifications.
+         * @param {string} [name] Specifies the name of the notifications.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getNotifications(limit?: number, skip?: number, order?: SortOrder, expand?: Array<NotificationResponseExpandable>, deleted?: boolean, name?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getNotifications(limit, skip, order, expand, deleted, name, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * NotificationsApi - factory interface
+ * @export
+ */
+export const NotificationsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = NotificationsApiFp(configuration)
+    return {
+        /**
+         * Create a notification object.
+         * @summary Create a notification object.
+         * @param {CreateNotificationRequest} createNotificationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createNotification(createNotificationRequest: CreateNotificationRequest, options?: any): AxiosPromise<NotificationResponse> {
+            return localVarFp.createNotification(createNotificationRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Delete a notification by providing its notification id.
+         * @summary Deletes a notification object.
+         * @param {string} id Specifies the unique notification ID (starts with not_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteNotification(id: string, options?: any): AxiosPromise<NotificationDeleteResponse> {
+            return localVarFp.deleteNotification(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves the details of an existing notification.  Supply the unique notification ID.
+         * @summary Get existing notification.
+         * @param {string} id Specifies the unique notification ID (starts with not_).
+         * @param {Array<NotificationResponseExpandable>} [expand] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNotification(id: string, expand?: Array<NotificationResponseExpandable>, options?: any): AxiosPromise<NotificationResponse> {
+            return localVarFp.getNotification(id, expand, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns a list of notifications.  Notifications are useful to get notified about events that happen on-chain or in your Openfort account.  Notifications are returned sorted by creation date, with the most recently created notifications appearing first.  By default, a maximum of 10 notifications are shown per page.
+         * @summary List notifications.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {Array<NotificationResponseExpandable>} [expand] Specifies the fields to expand in the response.
+         * @param {boolean} [deleted] Specifies whether to include deleted notifications.
+         * @param {string} [name] Specifies the name of the notifications.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getNotifications(limit?: number, skip?: number, order?: SortOrder, expand?: Array<NotificationResponseExpandable>, deleted?: boolean, name?: string, options?: any): AxiosPromise<NotificationListResponse> {
+            return localVarFp.getNotifications(limit, skip, order, expand, deleted, name, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * NotificationsApi - object-oriented interface
+ * @export
+ * @class NotificationsApi
+ * @extends {BaseAPI}
+ */
+export class NotificationsApi extends BaseAPI {
+    /**
+     * Create a notification object.
+     * @summary Create a notification object.
+     * @param {CreateNotificationRequest} createNotificationRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationsApi
+     */
+    public createNotification(createNotificationRequest: CreateNotificationRequest, options?: AxiosRequestConfig) {
+        return NotificationsApiFp(this.configuration).createNotification(createNotificationRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * Retrieves the player based on his id in the external provider system.
-     * @summary Retrieve player by external id.
-     * @param {OAuthProvider} provider OAuth provider
-     * @param {string} externalUserId External user id
+     * Delete a notification by providing its notification id.
+     * @summary Deletes a notification object.
+     * @param {string} id Specifies the unique notification ID (starts with not_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OAuthApi
+     * @memberof NotificationsApi
      */
-    public getPlayerByExternalId(provider: OAuthProvider, externalUserId: string, options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).getPlayerByExternalId(provider, externalUserId, options).then((request) => request(this.axios, this.basePath));
+    public deleteNotification(id: string, options?: AxiosRequestConfig) {
+        return NotificationsApiFp(this.configuration).deleteNotification(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * The endpoint retrieves the list of oauth configurations for the current project environment.
-     * @summary List of oauth configurations.
+     * Retrieves the details of an existing notification.  Supply the unique notification ID.
+     * @summary Get existing notification.
+     * @param {string} id Specifies the unique notification ID (starts with not_).
+     * @param {Array<NotificationResponseExpandable>} [expand] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OAuthApi
+     * @memberof NotificationsApi
      */
-    public listOAuthConfig(options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).listOAuthConfig(options).then((request) => request(this.axios, this.basePath));
+    public getNotification(id: string, expand?: Array<NotificationResponseExpandable>, options?: AxiosRequestConfig) {
+        return NotificationsApiFp(this.configuration).getNotification(id, expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.
-     * @summary Retrieve player by token.
-     * @param {OAuthProvider} provider OAuth provider
-     * @param {OAuthRequest} oAuthRequest Request body
+     * Returns a list of notifications.  Notifications are useful to get notified about events that happen on-chain or in your Openfort account.  Notifications are returned sorted by creation date, with the most recently created notifications appearing first.  By default, a maximum of 10 notifications are shown per page.
+     * @summary List notifications.
+     * @param {number} [limit] Specifies the maximum number of records to return.
+     * @param {number} [skip] Specifies the offset for the first records to return.
+     * @param {SortOrder} [order] Specifies the order in which to sort the results.
+     * @param {Array<NotificationResponseExpandable>} [expand] Specifies the fields to expand in the response.
+     * @param {boolean} [deleted] Specifies whether to include deleted notifications.
+     * @param {string} [name] Specifies the name of the notifications.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof OAuthApi
+     * @memberof NotificationsApi
      */
-    public verifyOAuthToken(provider: OAuthProvider, oAuthRequest: OAuthRequest, options?: AxiosRequestConfig) {
-        return OAuthApiFp(this.configuration).verifyOAuthToken(provider, oAuthRequest, options).then((request) => request(this.axios, this.basePath));
+    public getNotifications(limit?: number, skip?: number, order?: SortOrder, expand?: Array<NotificationResponseExpandable>, deleted?: boolean, name?: string, options?: AxiosRequestConfig) {
+        return NotificationsApiFp(this.configuration).getNotifications(limit, skip, order, expand, deleted, name, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -10067,7 +13729,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
+         * @summary Cancel request to transfer ownership of a player.
          * @param {string} id 
          * @param {PlayerCancelTransferOwnershipRequest} playerCancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -10110,7 +13772,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Add a new player to your player list in Openfort.
+         * Creates a Player.
          * @summary Create a player object.
          * @param {PlayerCreateRequest} playerCreateRequest 
          * @param {*} [options] Override http request option.
@@ -10143,94 +13805,6 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(playerCreateRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Create account object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {CreatePlayerAccountRequest} createPlayerAccountRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createPlayerAccount: async (id: string, createPlayerAccountRequest: CreatePlayerAccountRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('createPlayerAccount', 'id', id)
-            // verify required parameter 'createPlayerAccountRequest' is not null or undefined
-            assertParamExists('createPlayerAccount', 'createPlayerAccountRequest', createPlayerAccountRequest)
-            const localVarPath = `/v1/players/{id}/accounts`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createPlayerAccountRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Create session object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {CreatePlayerSessionRequest} createPlayerSessionRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createPlayerSession: async (id: string, createPlayerSessionRequest: CreatePlayerSessionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('createPlayerSession', 'id', id)
-            // verify required parameter 'createPlayerSessionRequest' is not null or undefined
-            assertParamExists('createPlayerSession', 'createPlayerSessionRequest', createPlayerSessionRequest)
-            const localVarPath = `/v1/players/{id}/sessions`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createPlayerSessionRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -10287,49 +13861,6 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlayer', 'id', id)
             const localVarPath = `/v1/players/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (expand) {
-                localVarQueryParameter['expand'] = expand;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary List of accounts of a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {Array<AccountResponseExpandable>} [expand] Specifies the expandable fields.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPlayerAccounts: async (id: string, expand?: Array<AccountResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPlayerAccounts', 'id', id)
-            const localVarPath = `/v1/players/{id}/accounts`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -10422,7 +13953,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
+         * @summary Request transfer ownership of a player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {PlayerTransferOwnershipRequest} playerTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -10465,51 +13996,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * 
-         * @summary Revoke session object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {RevokeSessionPlayerRequest} revokeSessionPlayerRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        revokePlayerSession: async (id: string, revokeSessionPlayerRequest: RevokeSessionPlayerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('revokePlayerSession', 'id', id)
-            // verify required parameter 'revokeSessionPlayerRequest' is not null or undefined
-            assertParamExists('revokePlayerSession', 'revokeSessionPlayerRequest', revokeSessionPlayerRequest)
-            const localVarPath = `/v1/players/{id}/sessions/revoke`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(revokeSessionPlayerRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
+         * Updates the specified Player by setting the values of the parameters passed.
          * @summary Updates a player object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {PlayerUpdateRequest} playerUpdateRequest 
@@ -10564,7 +14051,7 @@ export const PlayersApiFp = function(configuration?: Configuration) {
     return {
         /**
          * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
+         * @summary Cancel request to transfer ownership of a player.
          * @param {string} id 
          * @param {PlayerCancelTransferOwnershipRequest} playerCancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -10575,7 +14062,7 @@ export const PlayersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Add a new player to your player list in Openfort.
+         * Creates a Player.
          * @summary Create a player object.
          * @param {PlayerCreateRequest} playerCreateRequest 
          * @param {*} [options] Override http request option.
@@ -10583,30 +14070,6 @@ export const PlayersApiFp = function(configuration?: Configuration) {
          */
         async createPlayer(playerCreateRequest: PlayerCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayer(playerCreateRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Create account object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {CreatePlayerAccountRequest} createPlayerAccountRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createPlayerAccount(id: string, createPlayerAccountRequest: CreatePlayerAccountRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerAccount(id, createPlayerAccountRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Create session object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {CreatePlayerSessionRequest} createPlayerSessionRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createPlayerSession(id: string, createPlayerSessionRequest: CreatePlayerSessionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPlayerSession(id, createPlayerSessionRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -10633,18 +14096,6 @@ export const PlayersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary List of accounts of a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {Array<AccountResponseExpandable>} [expand] Specifies the expandable fields.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getPlayerAccounts(id: string, expand?: Array<AccountResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerAccounts(id, expand, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * By default, a maximum of ten players are shown.
          * @summary List players.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -10661,7 +14112,7 @@ export const PlayersApiFp = function(configuration?: Configuration) {
         },
         /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
+         * @summary Request transfer ownership of a player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {PlayerTransferOwnershipRequest} playerTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -10672,19 +14123,7 @@ export const PlayersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Revoke session object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {RevokeSessionPlayerRequest} revokeSessionPlayerRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async revokePlayerSession(id: string, revokeSessionPlayerRequest: RevokeSessionPlayerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.revokePlayerSession(id, revokeSessionPlayerRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
+         * Updates the specified Player by setting the values of the parameters passed.
          * @summary Updates a player object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {PlayerUpdateRequest} playerUpdateRequest 
@@ -10707,7 +14146,7 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * This endpoint allows you to cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
+         * @summary Cancel request to transfer ownership of a player.
          * @param {string} id 
          * @param {PlayerCancelTransferOwnershipRequest} playerCancelTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -10717,7 +14156,7 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.cancelTransferAccountOwnership(id, playerCancelTransferOwnershipRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Add a new player to your player list in Openfort.
+         * Creates a Player.
          * @summary Create a player object.
          * @param {PlayerCreateRequest} playerCreateRequest 
          * @param {*} [options] Override http request option.
@@ -10725,28 +14164,6 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
          */
         createPlayer(playerCreateRequest: PlayerCreateRequest, options?: any): AxiosPromise<PlayerResponse> {
             return localVarFp.createPlayer(playerCreateRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Create account object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {CreatePlayerAccountRequest} createPlayerAccountRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createPlayerAccount(id: string, createPlayerAccountRequest: CreatePlayerAccountRequest, options?: any): AxiosPromise<AccountResponse> {
-            return localVarFp.createPlayerAccount(id, createPlayerAccountRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Create session object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {CreatePlayerSessionRequest} createPlayerSessionRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createPlayerSession(id: string, createPlayerSessionRequest: CreatePlayerSessionRequest, options?: any): AxiosPromise<SessionResponse> {
-            return localVarFp.createPlayerSession(id, createPlayerSessionRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -10770,17 +14187,6 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getPlayer(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary List of accounts of a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {Array<AccountResponseExpandable>} [expand] Specifies the expandable fields.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPlayerAccounts(id: string, expand?: Array<AccountResponseExpandable>, options?: any): AxiosPromise<AccountListResponse> {
-            return localVarFp.getPlayerAccounts(id, expand, options).then((request) => request(axios, basePath));
-        },
-        /**
          * By default, a maximum of ten players are shown.
          * @summary List players.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -10796,7 +14202,7 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
+         * @summary Request transfer ownership of a player.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {PlayerTransferOwnershipRequest} playerTransferOwnershipRequest 
          * @param {*} [options] Override http request option.
@@ -10806,18 +14212,7 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.requestTransferAccountOwnership(id, playerTransferOwnershipRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Revoke session object for a player.
-         * @param {string} id Specifies the unique player ID (starts with pla_).
-         * @param {RevokeSessionPlayerRequest} revokeSessionPlayerRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        revokePlayerSession(id: string, revokeSessionPlayerRequest: RevokeSessionPlayerRequest, options?: any): AxiosPromise<SessionResponse> {
-            return localVarFp.revokePlayerSession(id, revokeSessionPlayerRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
+         * Updates the specified Player by setting the values of the parameters passed.
          * @summary Updates a player object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {PlayerUpdateRequest} playerUpdateRequest 
@@ -10839,7 +14234,7 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
 export class PlayersApi extends BaseAPI {
     /**
      * This endpoint allows you to cancel a pending transfer of ownership.
-     * @summary Cancel request to transfer ownership of an account.
+     * @summary Cancel request to transfer ownership of a player.
      * @param {string} id 
      * @param {PlayerCancelTransferOwnershipRequest} playerCancelTransferOwnershipRequest 
      * @param {*} [options] Override http request option.
@@ -10851,7 +14246,7 @@ export class PlayersApi extends BaseAPI {
     }
 
     /**
-     * Add a new player to your player list in Openfort.
+     * Creates a Player.
      * @summary Create a player object.
      * @param {PlayerCreateRequest} playerCreateRequest 
      * @param {*} [options] Override http request option.
@@ -10860,32 +14255,6 @@ export class PlayersApi extends BaseAPI {
      */
     public createPlayer(playerCreateRequest: PlayerCreateRequest, options?: AxiosRequestConfig) {
         return PlayersApiFp(this.configuration).createPlayer(playerCreateRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Create account object for a player.
-     * @param {string} id Specifies the unique player ID (starts with pla_).
-     * @param {CreatePlayerAccountRequest} createPlayerAccountRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PlayersApi
-     */
-    public createPlayerAccount(id: string, createPlayerAccountRequest: CreatePlayerAccountRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).createPlayerAccount(id, createPlayerAccountRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Create session object for a player.
-     * @param {string} id Specifies the unique player ID (starts with pla_).
-     * @param {CreatePlayerSessionRequest} createPlayerSessionRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PlayersApi
-     */
-    public createPlayerSession(id: string, createPlayerSessionRequest: CreatePlayerSessionRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).createPlayerSession(id, createPlayerSessionRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -10914,19 +14283,6 @@ export class PlayersApi extends BaseAPI {
     }
 
     /**
-     * 
-     * @summary List of accounts of a player.
-     * @param {string} id Specifies the unique player ID (starts with pla_).
-     * @param {Array<AccountResponseExpandable>} [expand] Specifies the expandable fields.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PlayersApi
-     */
-    public getPlayerAccounts(id: string, expand?: Array<AccountResponseExpandable>, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).getPlayerAccounts(id, expand, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * By default, a maximum of ten players are shown.
      * @summary List players.
      * @param {number} [limit] Specifies the maximum number of records to return.
@@ -10944,7 +14300,7 @@ export class PlayersApi extends BaseAPI {
 
     /**
      * This endpoint allows you to perform a request to change the owner of an account. To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-     * @summary Request transfer ownership of account.
+     * @summary Request transfer ownership of a player.
      * @param {string} id Specifies the unique player ID (starts with pla_).
      * @param {PlayerTransferOwnershipRequest} playerTransferOwnershipRequest 
      * @param {*} [options] Override http request option.
@@ -10956,20 +14312,7 @@ export class PlayersApi extends BaseAPI {
     }
 
     /**
-     * 
-     * @summary Revoke session object for a player.
-     * @param {string} id Specifies the unique player ID (starts with pla_).
-     * @param {RevokeSessionPlayerRequest} revokeSessionPlayerRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PlayersApi
-     */
-    public revokePlayerSession(id: string, revokeSessionPlayerRequest: RevokeSessionPlayerRequest, options?: AxiosRequestConfig) {
-        return PlayersApiFp(this.configuration).revokePlayerSession(id, revokeSessionPlayerRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
+     * Updates the specified Player by setting the values of the parameters passed.
      * @summary Updates a player object.
      * @param {string} id Specifies the unique player ID (starts with pla_).
      * @param {PlayerUpdateRequest} playerUpdateRequest 
@@ -10979,269 +14322,6 @@ export class PlayersApi extends BaseAPI {
      */
     public updatePlayer(id: string, playerUpdateRequest: PlayerUpdateRequest, options?: AxiosRequestConfig) {
         return PlayersApiFp(this.configuration).updatePlayer(id, playerUpdateRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-}
-
-
-/**
- * PlayersAuthenticationApi - axios parameter creator
- * @export
- */
-export const PlayersAuthenticationApiAxiosParamCreator = function (configuration?: Configuration) {
-    return {
-        /**
-         * 
-         * @summary List authenticated players.
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {string} [email] Specifies the email address of the user.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAuthenticatedPlayers: async (limit?: number, skip?: number, order?: SortOrder, email?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v1/players`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
-            }
-
-            if (order !== undefined) {
-                localVarQueryParameter['order'] = order;
-            }
-
-            if (email !== undefined) {
-                localVarQueryParameter['email'] = email;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Register a key for the authenticated player.
-         * @param {RegisterPlayerEncryptedKeyRequest} registerPlayerEncryptedKeyRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        registerKey: async (registerPlayerEncryptedKeyRequest: RegisterPlayerEncryptedKeyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'registerPlayerEncryptedKeyRequest' is not null or undefined
-            assertParamExists('registerKey', 'registerPlayerEncryptedKeyRequest', registerPlayerEncryptedKeyRequest)
-            const localVarPath = `/iam/v1/players/register_key`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(registerPlayerEncryptedKeyRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Retrieve the key for the authenticated player.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        retrieveKey: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v1/players/retrieve_key`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-    }
-};
-
-/**
- * PlayersAuthenticationApi - functional programming interface
- * @export
- */
-export const PlayersAuthenticationApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = PlayersAuthenticationApiAxiosParamCreator(configuration)
-    return {
-        /**
-         * 
-         * @summary List authenticated players.
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {string} [email] Specifies the email address of the user.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getAuthenticatedPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthenticatedPlayers(limit, skip, order, email, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Register a key for the authenticated player.
-         * @param {RegisterPlayerEncryptedKeyRequest} registerPlayerEncryptedKeyRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async registerKey(registerPlayerEncryptedKeyRequest: RegisterPlayerEncryptedKeyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RegisterPlayerEncryptedKeyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.registerKey(registerPlayerEncryptedKeyRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Retrieve the key for the authenticated player.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async retrieveKey(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RetrievePlayerEncryptedKeyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.retrieveKey(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-    }
-};
-
-/**
- * PlayersAuthenticationApi - factory interface
- * @export
- */
-export const PlayersAuthenticationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = PlayersAuthenticationApiFp(configuration)
-    return {
-        /**
-         * 
-         * @summary List authenticated players.
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {string} [email] Specifies the email address of the user.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAuthenticatedPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: any): AxiosPromise<AuthPlayerListResponse> {
-            return localVarFp.getAuthenticatedPlayers(limit, skip, order, email, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Register a key for the authenticated player.
-         * @param {RegisterPlayerEncryptedKeyRequest} registerPlayerEncryptedKeyRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        registerKey(registerPlayerEncryptedKeyRequest: RegisterPlayerEncryptedKeyRequest, options?: any): AxiosPromise<RegisterPlayerEncryptedKeyResponse> {
-            return localVarFp.registerKey(registerPlayerEncryptedKeyRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Retrieve the key for the authenticated player.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        retrieveKey(options?: any): AxiosPromise<RetrievePlayerEncryptedKeyResponse> {
-            return localVarFp.retrieveKey(options).then((request) => request(axios, basePath));
-        },
-    };
-};
-
-/**
- * PlayersAuthenticationApi - object-oriented interface
- * @export
- * @class PlayersAuthenticationApi
- * @extends {BaseAPI}
- */
-export class PlayersAuthenticationApi extends BaseAPI {
-    /**
-     * 
-     * @summary List authenticated players.
-     * @param {number} [limit] Specifies the maximum number of records to return.
-     * @param {number} [skip] Specifies the offset for the first records to return.
-     * @param {SortOrder} [order] Specifies the order in which to sort the results.
-     * @param {string} [email] Specifies the email address of the user.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PlayersAuthenticationApi
-     */
-    public getAuthenticatedPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: AxiosRequestConfig) {
-        return PlayersAuthenticationApiFp(this.configuration).getAuthenticatedPlayers(limit, skip, order, email, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Register a key for the authenticated player.
-     * @param {RegisterPlayerEncryptedKeyRequest} registerPlayerEncryptedKeyRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PlayersAuthenticationApi
-     */
-    public registerKey(registerPlayerEncryptedKeyRequest: RegisterPlayerEncryptedKeyRequest, options?: AxiosRequestConfig) {
-        return PlayersAuthenticationApiFp(this.configuration).registerKey(registerPlayerEncryptedKeyRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Retrieve the key for the authenticated player.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PlayersAuthenticationApi
-     */
-    public retrieveKey(options?: AxiosRequestConfig) {
-        return PlayersAuthenticationApiFp(this.configuration).retrieveKey(options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -11293,19 +14373,19 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @summary Create a policy rule object for a policy.
+         * Transfer ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
+         * @summary Withdraw tokens collected by policy.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {CreatePolicyAllowFunctionRequest} createPolicyAllowFunctionRequest 
+         * @param {WithdrawalPolicyRequest} withdrawalPolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyAllowFunction: async (id: string, createPolicyAllowFunctionRequest: CreatePolicyAllowFunctionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPolicyWithdrawal: async (id: string, withdrawalPolicyRequest: WithdrawalPolicyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('createPolicyAllowFunction', 'id', id)
-            // verify required parameter 'createPolicyAllowFunctionRequest' is not null or undefined
-            assertParamExists('createPolicyAllowFunction', 'createPolicyAllowFunctionRequest', createPolicyAllowFunctionRequest)
-            const localVarPath = `/v1/policies/{id}/policy_rules`
+            assertParamExists('createPolicyWithdrawal', 'id', id)
+            // verify required parameter 'withdrawalPolicyRequest' is not null or undefined
+            assertParamExists('createPolicyWithdrawal', 'withdrawalPolicyRequest', withdrawalPolicyRequest)
+            const localVarPath = `/v1/policies/{id}/withdraw`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -11329,7 +14409,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createPolicyAllowFunctionRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(withdrawalPolicyRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -11451,16 +14531,16 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         * Returns a list of Policies.
          * @summary List policies.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {string} [name] Specifies the name of the policy.
-         * @param {boolean} [deleted] Specifies whether to include deleted contracts.
+         * @param {boolean} [deleted] Specifies whether to include deleted policies.
          * @param {number} [chainId] The chain ID of the policy.
-         * @param {boolean} [enabled] Specifies whether to include enabled contracts.
+         * @param {boolean} [enabled] Specifies whether to include enabled policies.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -11525,7 +14605,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         * Retrieves the details of a Policy that has previously been created.
          * @summary Get a policy object.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
          * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand.
@@ -11568,17 +14648,16 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @summary List policy rules of a policy.
+         * Get the amount of ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
+         * @summary Get amount of tokens paid for gas policy.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {Array<'contract'>} [expand] Specifies the fields to expand.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyAllowFunctions: async (id: string, expand?: Array<'contract'>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyBalance: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPolicyAllowFunctions', 'id', id)
-            const localVarPath = `/v1/policies/{id}/policy_rules`
+            assertParamExists('getPolicyBalance', 'id', id)
+            const localVarPath = `/v1/policies/{id}/withdraw`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -11594,10 +14673,6 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             // authentication sk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (expand) {
-                localVarQueryParameter['expand'] = expand;
-            }
 
 
     
@@ -11692,54 +14767,6 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @summary Update a policy rule object of a policy.
-         * @param {string} policy Specifies the unique policy ID (starts with pol_).
-         * @param {string} policyRule Specifies the unique policy rule ID (starts with afu_).
-         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updatePolicyAllowFunction: async (policy: string, policyRule: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'policy' is not null or undefined
-            assertParamExists('updatePolicyAllowFunction', 'policy', policy)
-            // verify required parameter 'policyRule' is not null or undefined
-            assertParamExists('updatePolicyAllowFunction', 'policyRule', policyRule)
-            // verify required parameter 'updatePolicyRuleRequest' is not null or undefined
-            assertParamExists('updatePolicyAllowFunction', 'updatePolicyRuleRequest', updatePolicyRuleRequest)
-            const localVarPath = `/v1/policies/{policy}/policy_rules/{policy_rule}`
-                .replace(`{${"policy"}}`, encodeURIComponent(String(policy)))
-                .replace(`{${"policy_rule"}}`, encodeURIComponent(String(policyRule)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(updatePolicyRuleRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -11762,15 +14789,15 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Create a policy rule object for a policy.
+         * Transfer ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
+         * @summary Withdraw tokens collected by policy.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {CreatePolicyAllowFunctionRequest} createPolicyAllowFunctionRequest 
+         * @param {WithdrawalPolicyRequest} withdrawalPolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicyAllowFunction(id: string, createPolicyAllowFunctionRequest: CreatePolicyAllowFunctionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyAllowFunction(id, createPolicyAllowFunctionRequest, options);
+        async createPolicyWithdrawal(id: string, withdrawalPolicyRequest: WithdrawalPolicyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyWithdrawal(id, withdrawalPolicyRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -11807,16 +14834,16 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Returns a list of Policies.
          * @summary List policies.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {string} [name] Specifies the name of the policy.
-         * @param {boolean} [deleted] Specifies whether to include deleted contracts.
+         * @param {boolean} [deleted] Specifies whether to include deleted policies.
          * @param {number} [chainId] The chain ID of the policy.
-         * @param {boolean} [enabled] Specifies whether to include enabled contracts.
+         * @param {boolean} [enabled] Specifies whether to include enabled policies.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -11825,7 +14852,7 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Retrieves the details of a Policy that has previously been created.
          * @summary Get a policy object.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
          * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand.
@@ -11837,15 +14864,14 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary List policy rules of a policy.
+         * Get the amount of ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
+         * @summary Get amount of tokens paid for gas policy.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {Array<'contract'>} [expand] Specifies the fields to expand.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyAllowFunctions(id: string, expand?: Array<'contract'>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyAllowFunctions(id, expand, options);
+        async getPolicyBalance(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyBalanceWithdrawResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyBalance(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -11855,7 +14881,7 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyTotalGasUsage(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReport>> {
+        async getPolicyTotalGasUsage(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyTotalGasUsage(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -11869,19 +14895,6 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
          */
         async updatePolicy(id: string, updatePolicyRequest: UpdatePolicyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicy(id, updatePolicyRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Update a policy rule object of a policy.
-         * @param {string} policy Specifies the unique policy ID (starts with pol_).
-         * @param {string} policyRule Specifies the unique policy rule ID (starts with afu_).
-         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updatePolicyAllowFunction(policy: string, policyRule: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyAllowFunction(policy, policyRule, updatePolicyRuleRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -11905,15 +14918,15 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.createPolicy(createPolicyRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Create a policy rule object for a policy.
+         * Transfer ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
+         * @summary Withdraw tokens collected by policy.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {CreatePolicyAllowFunctionRequest} createPolicyAllowFunctionRequest 
+         * @param {WithdrawalPolicyRequest} withdrawalPolicyRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyAllowFunction(id: string, createPolicyAllowFunctionRequest: CreatePolicyAllowFunctionRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
-            return localVarFp.createPolicyAllowFunction(id, createPolicyAllowFunctionRequest, options).then((request) => request(axios, basePath));
+        createPolicyWithdrawal(id: string, withdrawalPolicyRequest: WithdrawalPolicyRequest, options?: any): AxiosPromise<TransactionIntentResponse> {
+            return localVarFp.createPolicyWithdrawal(id, withdrawalPolicyRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -11946,16 +14959,16 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.enablePolicy(id, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Returns a list of Policies.
          * @summary List policies.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {string} [name] Specifies the name of the policy.
-         * @param {boolean} [deleted] Specifies whether to include deleted contracts.
+         * @param {boolean} [deleted] Specifies whether to include deleted policies.
          * @param {number} [chainId] The chain ID of the policy.
-         * @param {boolean} [enabled] Specifies whether to include enabled contracts.
+         * @param {boolean} [enabled] Specifies whether to include enabled policies.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -11963,7 +14976,7 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getPolicies(limit, skip, order, expand, name, deleted, chainId, enabled, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Retrieves the details of a Policy that has previously been created.
          * @summary Get a policy object.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
          * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand.
@@ -11974,15 +14987,14 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getPolicy(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary List policy rules of a policy.
+         * Get the amount of ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
+         * @summary Get amount of tokens paid for gas policy.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {Array<'contract'>} [expand] Specifies the fields to expand.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyAllowFunctions(id: string, expand?: Array<'contract'>, options?: any): AxiosPromise<PolicyRuleListResponse> {
-            return localVarFp.getPolicyAllowFunctions(id, expand, options).then((request) => request(axios, basePath));
+        getPolicyBalance(id: string, options?: any): AxiosPromise<PolicyBalanceWithdrawResponse> {
+            return localVarFp.getPolicyBalance(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -11991,7 +15003,7 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyTotalGasUsage(id: string, options?: any): AxiosPromise<GasReport> {
+        getPolicyTotalGasUsage(id: string, options?: any): AxiosPromise<GasReportListResponse> {
             return localVarFp.getPolicyTotalGasUsage(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12004,18 +15016,6 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
          */
         updatePolicy(id: string, updatePolicyRequest: UpdatePolicyRequest, options?: any): AxiosPromise<PolicyResponse> {
             return localVarFp.updatePolicy(id, updatePolicyRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update a policy rule object of a policy.
-         * @param {string} policy Specifies the unique policy ID (starts with pol_).
-         * @param {string} policyRule Specifies the unique policy rule ID (starts with afu_).
-         * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updatePolicyAllowFunction(policy: string, policyRule: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
-            return localVarFp.updatePolicyAllowFunction(policy, policyRule, updatePolicyRuleRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -12040,16 +15040,16 @@ export class PoliciesApi extends BaseAPI {
     }
 
     /**
-     * 
-     * @summary Create a policy rule object for a policy.
+     * Transfer ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
+     * @summary Withdraw tokens collected by policy.
      * @param {string} id Specifies the unique policy ID (starts with pol_).
-     * @param {CreatePolicyAllowFunctionRequest} createPolicyAllowFunctionRequest 
+     * @param {WithdrawalPolicyRequest} withdrawalPolicyRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public createPolicyAllowFunction(id: string, createPolicyAllowFunctionRequest: CreatePolicyAllowFunctionRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).createPolicyAllowFunction(id, createPolicyAllowFunctionRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPolicyWithdrawal(id: string, withdrawalPolicyRequest: WithdrawalPolicyRequest, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).createPolicyWithdrawal(id, withdrawalPolicyRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -12089,16 +15089,16 @@ export class PoliciesApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Returns a list of Policies.
      * @summary List policies.
      * @param {number} [limit] Specifies the maximum number of records to return.
      * @param {number} [skip] Specifies the offset for the first records to return.
      * @param {SortOrder} [order] Specifies the order in which to sort the results.
      * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand in the response.
      * @param {string} [name] Specifies the name of the policy.
-     * @param {boolean} [deleted] Specifies whether to include deleted contracts.
+     * @param {boolean} [deleted] Specifies whether to include deleted policies.
      * @param {number} [chainId] The chain ID of the policy.
-     * @param {boolean} [enabled] Specifies whether to include enabled contracts.
+     * @param {boolean} [enabled] Specifies whether to include enabled policies.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
@@ -12108,7 +15108,7 @@ export class PoliciesApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Retrieves the details of a Policy that has previously been created.
      * @summary Get a policy object.
      * @param {string} id Specifies the unique policy ID (starts with pol_).
      * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand.
@@ -12121,16 +15121,15 @@ export class PoliciesApi extends BaseAPI {
     }
 
     /**
-     * 
-     * @summary List policy rules of a policy.
+     * Get the amount of ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
+     * @summary Get amount of tokens paid for gas policy.
      * @param {string} id Specifies the unique policy ID (starts with pol_).
-     * @param {Array<'contract'>} [expand] Specifies the fields to expand.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public getPolicyAllowFunctions(id: string, expand?: Array<'contract'>, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyAllowFunctions(id, expand, options).then((request) => request(this.axios, this.basePath));
+    public getPolicyBalance(id: string, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).getPolicyBalance(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -12157,20 +15156,6 @@ export class PoliciesApi extends BaseAPI {
     public updatePolicy(id: string, updatePolicyRequest: UpdatePolicyRequest, options?: AxiosRequestConfig) {
         return PoliciesApiFp(this.configuration).updatePolicy(id, updatePolicyRequest, options).then((request) => request(this.axios, this.basePath));
     }
-
-    /**
-     * 
-     * @summary Update a policy rule object of a policy.
-     * @param {string} policy Specifies the unique policy ID (starts with pol_).
-     * @param {string} policyRule Specifies the unique policy rule ID (starts with afu_).
-     * @param {UpdatePolicyRuleRequest} updatePolicyRuleRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PoliciesApi
-     */
-    public updatePolicyAllowFunction(policy: string, policyRule: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).updatePolicyAllowFunction(policy, policyRule, updatePolicyRuleRequest, options).then((request) => request(this.axios, this.basePath));
-    }
 }
 
 
@@ -12187,9 +15172,9 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyRules: async (createPolicyRuleRequest: CreatePolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createPolicyRule: async (createPolicyRuleRequest: CreatePolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createPolicyRuleRequest' is not null or undefined
-            assertParamExists('createPolicyRules', 'createPolicyRuleRequest', createPolicyRuleRequest)
+            assertParamExists('createPolicyRule', 'createPolicyRuleRequest', createPolicyRuleRequest)
             const localVarPath = `/v1/policy_rules`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -12227,9 +15212,9 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePolicyRules: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        deletePolicyRule: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('deletePolicyRules', 'id', id)
+            assertParamExists('deletePolicyRule', 'id', id)
             const localVarPath = `/v1/policy_rules/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -12259,7 +15244,7 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * 
+         * Returns a list of policy rules of a policy.  The policy rules are returned sorted by creation date, with the most recently created policy rules appearing first.  By default, a maximum of 10 policy rules are shown per page.
          * @summary List policy rules of a policy.
          * @param {string} policy Specifies the unique policy ID (starts with pol_).
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -12327,11 +15312,11 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicyRules: async (id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePolicyRule: async (id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('updatePolicyRules', 'id', id)
+            assertParamExists('updatePolicyRule', 'id', id)
             // verify required parameter 'updatePolicyRuleRequest' is not null or undefined
-            assertParamExists('updatePolicyRules', 'updatePolicyRuleRequest', updatePolicyRuleRequest)
+            assertParamExists('updatePolicyRule', 'updatePolicyRuleRequest', updatePolicyRuleRequest)
             const localVarPath = `/v1/policy_rules/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -12380,8 +15365,8 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicyRules(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyRules(createPolicyRuleRequest, options);
+        async createPolicyRule(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyRule(createPolicyRuleRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -12391,12 +15376,12 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deletePolicyRules(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleDeleteResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePolicyRules(id, options);
+        async deletePolicyRule(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleDeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePolicyRule(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Returns a list of policy rules of a policy.  The policy rules are returned sorted by creation date, with the most recently created policy rules appearing first.  By default, a maximum of 10 policy rules are shown per page.
          * @summary List policy rules of a policy.
          * @param {string} policy Specifies the unique policy ID (starts with pol_).
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -12418,8 +15403,8 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePolicyRules(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyRules(id, updatePolicyRuleRequest, options);
+        async updatePolicyRule(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyRule(id, updatePolicyRuleRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -12439,8 +15424,8 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyRules(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
-            return localVarFp.createPolicyRules(createPolicyRuleRequest, options).then((request) => request(axios, basePath));
+        createPolicyRule(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
+            return localVarFp.createPolicyRule(createPolicyRuleRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -12449,11 +15434,11 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePolicyRules(id: string, options?: any): AxiosPromise<PolicyRuleDeleteResponse> {
-            return localVarFp.deletePolicyRules(id, options).then((request) => request(axios, basePath));
+        deletePolicyRule(id: string, options?: any): AxiosPromise<PolicyRuleDeleteResponse> {
+            return localVarFp.deletePolicyRule(id, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Returns a list of policy rules of a policy.  The policy rules are returned sorted by creation date, with the most recently created policy rules appearing first.  By default, a maximum of 10 policy rules are shown per page.
          * @summary List policy rules of a policy.
          * @param {string} policy Specifies the unique policy ID (starts with pol_).
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -12474,8 +15459,8 @@ export const PolicyRulesApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePolicyRules(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
-            return localVarFp.updatePolicyRules(id, updatePolicyRuleRequest, options).then((request) => request(axios, basePath));
+        updatePolicyRule(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: any): AxiosPromise<PolicyRuleResponse> {
+            return localVarFp.updatePolicyRule(id, updatePolicyRuleRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -12495,8 +15480,8 @@ export class PolicyRulesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PolicyRulesApi
      */
-    public createPolicyRules(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: AxiosRequestConfig) {
-        return PolicyRulesApiFp(this.configuration).createPolicyRules(createPolicyRuleRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPolicyRule(createPolicyRuleRequest: CreatePolicyRuleRequest, options?: AxiosRequestConfig) {
+        return PolicyRulesApiFp(this.configuration).createPolicyRule(createPolicyRuleRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -12507,12 +15492,12 @@ export class PolicyRulesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PolicyRulesApi
      */
-    public deletePolicyRules(id: string, options?: AxiosRequestConfig) {
-        return PolicyRulesApiFp(this.configuration).deletePolicyRules(id, options).then((request) => request(this.axios, this.basePath));
+    public deletePolicyRule(id: string, options?: AxiosRequestConfig) {
+        return PolicyRulesApiFp(this.configuration).deletePolicyRule(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
+     * Returns a list of policy rules of a policy.  The policy rules are returned sorted by creation date, with the most recently created policy rules appearing first.  By default, a maximum of 10 policy rules are shown per page.
      * @summary List policy rules of a policy.
      * @param {string} policy Specifies the unique policy ID (starts with pol_).
      * @param {number} [limit] Specifies the maximum number of records to return.
@@ -12536,8 +15521,8 @@ export class PolicyRulesApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof PolicyRulesApi
      */
-    public updatePolicyRules(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig) {
-        return PolicyRulesApiFp(this.configuration).updatePolicyRules(id, updatePolicyRuleRequest, options).then((request) => request(this.axios, this.basePath));
+    public updatePolicyRule(id: string, updatePolicyRuleRequest: UpdatePolicyRuleRequest, options?: AxiosRequestConfig) {
+        return PolicyRulesApiFp(this.configuration).updatePolicyRule(id, updatePolicyRuleRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -12549,7 +15534,7 @@ export class PolicyRulesApi extends BaseAPI {
 export const SessionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -12589,7 +15574,7 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         * Returns a list of Sessions.
          * @summary List session keys of a player.
          * @param {string} player The player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -12650,7 +15635,7 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         * Retrieves the details of a Session that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -12734,7 +15719,7 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @summary Confirms the creation of a session with an external owner.
+         * @summary Send signed userOperationHash to create session.
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {SignatureRequest} signatureRequest 
          * @param {*} [options] Override http request option.
@@ -12791,7 +15776,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SessionsApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -12802,7 +15787,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Returns a list of Sessions.
          * @summary List session keys of a player.
          * @param {string} player The player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -12817,7 +15802,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Retrieves the details of a Session that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -12841,7 +15826,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Confirms the creation of a session with an external owner.
+         * @summary Send signed userOperationHash to create session.
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {SignatureRequest} signatureRequest 
          * @param {*} [options] Override http request option.
@@ -12862,7 +15847,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = SessionsApiFp(configuration)
     return {
         /**
-         * 
+         * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -12872,7 +15857,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.createSession(createSessionRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Returns a list of Sessions.
          * @summary List session keys of a player.
          * @param {string} player The player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -12886,7 +15871,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getPlayerSessions(player, limit, skip, order, expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Retrieves the details of a Session that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -12908,7 +15893,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
-         * @summary Confirms the creation of a session with an external owner.
+         * @summary Send signed userOperationHash to create session.
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {SignatureRequest} signatureRequest 
          * @param {*} [options] Override http request option.
@@ -12928,7 +15913,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
  */
 export class SessionsApi extends BaseAPI {
     /**
-     * 
+     * Creates a Session.
      * @summary Create a session key.
      * @param {CreateSessionRequest} createSessionRequest 
      * @param {*} [options] Override http request option.
@@ -12940,7 +15925,7 @@ export class SessionsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Returns a list of Sessions.
      * @summary List session keys of a player.
      * @param {string} player The player ID (starts with pla_)
      * @param {number} [limit] Specifies the maximum number of records to return.
@@ -12956,7 +15941,7 @@ export class SessionsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Retrieves the details of a Session that has previously been created.
      * @summary Returns a player session by session id
      * @param {string} id Specifies the unique session ID (starts with ses_).
      * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -12982,7 +15967,7 @@ export class SessionsApi extends BaseAPI {
 
     /**
      * 
-     * @summary Confirms the creation of a session with an external owner.
+     * @summary Send signed userOperationHash to create session.
      * @param {string} id Specifies the unique session ID (starts with ses_).
      * @param {SignatureRequest} signatureRequest 
      * @param {*} [options] Override http request option.
@@ -13002,16 +15987,16 @@ export class SessionsApi extends BaseAPI {
 export const SettingsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Verify signature and add a depositor address to the current project environment.
-         * @summary Add depositor address.
-         * @param {PaymasterDepositorCreateRequest} paymasterDepositorCreateRequest 
+         * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
+         * @summary Create a developer account.
+         * @param {DeveloperAccountCreateRequest} developerAccountCreateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addDepositorAddress: async (paymasterDepositorCreateRequest: PaymasterDepositorCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'paymasterDepositorCreateRequest' is not null or undefined
-            assertParamExists('addDepositorAddress', 'paymasterDepositorCreateRequest', paymasterDepositorCreateRequest)
-            const localVarPath = `/v1/settings/depositor_addresses`;
+        createDeveloperAccount: async (developerAccountCreateRequest: DeveloperAccountCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'developerAccountCreateRequest' is not null or undefined
+            assertParamExists('createDeveloperAccount', 'developerAccountCreateRequest', developerAccountCreateRequest)
+            const localVarPath = `/v1/settings/developer_accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -13034,7 +16019,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(paymasterDepositorCreateRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(developerAccountCreateRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -13042,13 +16027,17 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Retrieve the list of the depositor addresses for the current project environment.
-         * @summary List of depositor addresses.
+         * Delete a developer account from the current project.
+         * @summary Delete a developer account.
+         * @param {string} id Specifies a unique developer account (starts with dac_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDepositorAddresses: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/v1/settings/depositor_addresses`;
+        deleteDeveloperAccount: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteDeveloperAccount', 'id', id)
+            const localVarPath = `/v1/settings/developer_accounts/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -13056,7 +16045,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -13076,16 +16065,118 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Generate message, which should be signed for verification of the address ownership.
-         * @summary Generate message to sign
-         * @param {string} address Specifies the paymaster depositor address
+         * Retrieve a developer account.
+         * @summary Get existing developer account.
+         * @param {string} id Specifies the unique developer account ID (starts with dac_).
+         * @param {Array<DeveloperAccountResponseExpandable>} [expand] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMessageForSigningDepositorAddress: async (address: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getDeveloperAccount: async (id: string, expand?: Array<DeveloperAccountResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getDeveloperAccount', 'id', id)
+            const localVarPath = `/v1/settings/developer_accounts/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (expand) {
+                localVarQueryParameter['expand'] = expand;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve the list of the developer accounts for the current project.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List of developer accounts.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {Array<DeveloperAccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
+         * @param {boolean} [deleted] Specifies whether to include deleted dev accounts.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDeveloperAccounts: async (limit?: number, skip?: number, order?: SortOrder, expand?: Array<DeveloperAccountResponseExpandable>, deleted?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v1/settings/developer_accounts`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (expand) {
+                localVarQueryParameter['expand'] = expand;
+            }
+
+            if (deleted !== undefined) {
+                localVarQueryParameter['deleted'] = deleted;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Generate message, which should be signed by the account your want to add as a developer account.
+         * @summary Generate message to sign
+         * @param {string} address Specifies the address
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getVerificationPayload: async (address: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'address' is not null or undefined
-            assertParamExists('getMessageForSigningDepositorAddress', 'address', address)
-            const localVarPath = `/v1/settings/depositor_addresses/message_to_sign`;
+            assertParamExists('getVerificationPayload', 'address', address)
+            const localVarPath = `/v1/settings/developer_accounts/message_to_sign`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -13104,44 +16195,6 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
             if (address !== undefined) {
                 localVarQueryParameter['address'] = address;
             }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Remove a depositor address from the current project environment.
-         * @summary Removes depositor address.
-         * @param {string} id Specifies unique identifier of depositor address.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        removeDepositorAddress: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('removeDepositorAddress', 'id', id)
-            const localVarPath = `/v1/settings/depositor_addresses/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -13239,46 +16292,63 @@ export const SettingsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SettingsApiAxiosParamCreator(configuration)
     return {
         /**
-         * Verify signature and add a depositor address to the current project environment.
-         * @summary Add depositor address.
-         * @param {PaymasterDepositorCreateRequest} paymasterDepositorCreateRequest 
+         * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
+         * @summary Create a developer account.
+         * @param {DeveloperAccountCreateRequest} developerAccountCreateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addDepositorAddress(paymasterDepositorCreateRequest: PaymasterDepositorCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymasterDepositorResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.addDepositorAddress(paymasterDepositorCreateRequest, options);
+        async createDeveloperAccount(developerAccountCreateRequest: DeveloperAccountCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createDeveloperAccount(developerAccountCreateRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Retrieve the list of the depositor addresses for the current project environment.
-         * @summary List of depositor addresses.
+         * Delete a developer account from the current project.
+         * @summary Delete a developer account.
+         * @param {string} id Specifies a unique developer account (starts with dac_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getDepositorAddresses(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymasterDepositorListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getDepositorAddresses(options);
+        async deleteDeveloperAccount(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountDeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteDeveloperAccount(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Generate message, which should be signed for verification of the address ownership.
+         * Retrieve a developer account.
+         * @summary Get existing developer account.
+         * @param {string} id Specifies the unique developer account ID (starts with dac_).
+         * @param {Array<DeveloperAccountResponseExpandable>} [expand] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getDeveloperAccount(id: string, expand?: Array<DeveloperAccountResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDeveloperAccount(id, expand, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Retrieve the list of the developer accounts for the current project.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List of developer accounts.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {Array<DeveloperAccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
+         * @param {boolean} [deleted] Specifies whether to include deleted dev accounts.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getDeveloperAccounts(limit?: number, skip?: number, order?: SortOrder, expand?: Array<DeveloperAccountResponseExpandable>, deleted?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDeveloperAccounts(limit, skip, order, expand, deleted, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Generate message, which should be signed by the account your want to add as a developer account.
          * @summary Generate message to sign
-         * @param {string} address Specifies the paymaster depositor address
+         * @param {string} address Specifies the address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getMessageForSigningDepositorAddress(address: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymasterDepositorGetMessageResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getMessageForSigningDepositorAddress(address, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Remove a depositor address from the current project environment.
-         * @summary Removes depositor address.
-         * @param {string} id Specifies unique identifier of depositor address.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async removeDepositorAddress(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymasterDepositorDeleteResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.removeDepositorAddress(id, options);
+        async getVerificationPayload(address: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountGetMessageResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getVerificationPayload(address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -13313,43 +16383,59 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = SettingsApiFp(configuration)
     return {
         /**
-         * Verify signature and add a depositor address to the current project environment.
-         * @summary Add depositor address.
-         * @param {PaymasterDepositorCreateRequest} paymasterDepositorCreateRequest 
+         * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
+         * @summary Create a developer account.
+         * @param {DeveloperAccountCreateRequest} developerAccountCreateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addDepositorAddress(paymasterDepositorCreateRequest: PaymasterDepositorCreateRequest, options?: any): AxiosPromise<PaymasterDepositorResponse> {
-            return localVarFp.addDepositorAddress(paymasterDepositorCreateRequest, options).then((request) => request(axios, basePath));
+        createDeveloperAccount(developerAccountCreateRequest: DeveloperAccountCreateRequest, options?: any): AxiosPromise<DeveloperAccountResponse> {
+            return localVarFp.createDeveloperAccount(developerAccountCreateRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieve the list of the depositor addresses for the current project environment.
-         * @summary List of depositor addresses.
+         * Delete a developer account from the current project.
+         * @summary Delete a developer account.
+         * @param {string} id Specifies a unique developer account (starts with dac_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDepositorAddresses(options?: any): AxiosPromise<PaymasterDepositorListResponse> {
-            return localVarFp.getDepositorAddresses(options).then((request) => request(axios, basePath));
+        deleteDeveloperAccount(id: string, options?: any): AxiosPromise<DeveloperAccountDeleteResponse> {
+            return localVarFp.deleteDeveloperAccount(id, options).then((request) => request(axios, basePath));
         },
         /**
-         * Generate message, which should be signed for verification of the address ownership.
+         * Retrieve a developer account.
+         * @summary Get existing developer account.
+         * @param {string} id Specifies the unique developer account ID (starts with dac_).
+         * @param {Array<DeveloperAccountResponseExpandable>} [expand] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDeveloperAccount(id: string, expand?: Array<DeveloperAccountResponseExpandable>, options?: any): AxiosPromise<DeveloperAccountResponse> {
+            return localVarFp.getDeveloperAccount(id, expand, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieve the list of the developer accounts for the current project.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List of developer accounts.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {Array<DeveloperAccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
+         * @param {boolean} [deleted] Specifies whether to include deleted dev accounts.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDeveloperAccounts(limit?: number, skip?: number, order?: SortOrder, expand?: Array<DeveloperAccountResponseExpandable>, deleted?: boolean, options?: any): AxiosPromise<DeveloperAccountListResponse> {
+            return localVarFp.getDeveloperAccounts(limit, skip, order, expand, deleted, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Generate message, which should be signed by the account your want to add as a developer account.
          * @summary Generate message to sign
-         * @param {string} address Specifies the paymaster depositor address
+         * @param {string} address Specifies the address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMessageForSigningDepositorAddress(address: string, options?: any): AxiosPromise<PaymasterDepositorGetMessageResponse> {
-            return localVarFp.getMessageForSigningDepositorAddress(address, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Remove a depositor address from the current project environment.
-         * @summary Removes depositor address.
-         * @param {string} id Specifies unique identifier of depositor address.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        removeDepositorAddress(id: string, options?: any): AxiosPromise<PaymasterDepositorDeleteResponse> {
-            return localVarFp.removeDepositorAddress(id, options).then((request) => request(axios, basePath));
+        getVerificationPayload(address: string, options?: any): AxiosPromise<DeveloperAccountGetMessageResponse> {
+            return localVarFp.getVerificationPayload(address, options).then((request) => request(axios, basePath));
         },
         /**
          * Updated the current project environment settings by removing the webhook address. After that system will stop sending events of the transaction intent state changes
@@ -13381,50 +16467,68 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
  */
 export class SettingsApi extends BaseAPI {
     /**
-     * Verify signature and add a depositor address to the current project environment.
-     * @summary Add depositor address.
-     * @param {PaymasterDepositorCreateRequest} paymasterDepositorCreateRequest 
+     * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
+     * @summary Create a developer account.
+     * @param {DeveloperAccountCreateRequest} developerAccountCreateRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof SettingsApi
      */
-    public addDepositorAddress(paymasterDepositorCreateRequest: PaymasterDepositorCreateRequest, options?: AxiosRequestConfig) {
-        return SettingsApiFp(this.configuration).addDepositorAddress(paymasterDepositorCreateRequest, options).then((request) => request(this.axios, this.basePath));
+    public createDeveloperAccount(developerAccountCreateRequest: DeveloperAccountCreateRequest, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).createDeveloperAccount(developerAccountCreateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * Retrieve the list of the depositor addresses for the current project environment.
-     * @summary List of depositor addresses.
+     * Delete a developer account from the current project.
+     * @summary Delete a developer account.
+     * @param {string} id Specifies a unique developer account (starts with dac_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof SettingsApi
      */
-    public getDepositorAddresses(options?: AxiosRequestConfig) {
-        return SettingsApiFp(this.configuration).getDepositorAddresses(options).then((request) => request(this.axios, this.basePath));
+    public deleteDeveloperAccount(id: string, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).deleteDeveloperAccount(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * Generate message, which should be signed for verification of the address ownership.
+     * Retrieve a developer account.
+     * @summary Get existing developer account.
+     * @param {string} id Specifies the unique developer account ID (starts with dac_).
+     * @param {Array<DeveloperAccountResponseExpandable>} [expand] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public getDeveloperAccount(id: string, expand?: Array<DeveloperAccountResponseExpandable>, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).getDeveloperAccount(id, expand, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieve the list of the developer accounts for the current project.  By default, a maximum of 10 accounts are shown per page.
+     * @summary List of developer accounts.
+     * @param {number} [limit] Specifies the maximum number of records to return.
+     * @param {number} [skip] Specifies the offset for the first records to return.
+     * @param {SortOrder} [order] Specifies the order in which to sort the results.
+     * @param {Array<DeveloperAccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
+     * @param {boolean} [deleted] Specifies whether to include deleted dev accounts.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public getDeveloperAccounts(limit?: number, skip?: number, order?: SortOrder, expand?: Array<DeveloperAccountResponseExpandable>, deleted?: boolean, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).getDeveloperAccounts(limit, skip, order, expand, deleted, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Generate message, which should be signed by the account your want to add as a developer account.
      * @summary Generate message to sign
-     * @param {string} address Specifies the paymaster depositor address
+     * @param {string} address Specifies the address
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof SettingsApi
      */
-    public getMessageForSigningDepositorAddress(address: string, options?: AxiosRequestConfig) {
-        return SettingsApiFp(this.configuration).getMessageForSigningDepositorAddress(address, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Remove a depositor address from the current project environment.
-     * @summary Removes depositor address.
-     * @param {string} id Specifies unique identifier of depositor address.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof SettingsApi
-     */
-    public removeDepositorAddress(id: string, options?: AxiosRequestConfig) {
-        return SettingsApiFp(this.configuration).removeDepositorAddress(id, options).then((request) => request(this.axios, this.basePath));
+    public getVerificationPayload(address: string, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).getVerificationPayload(address, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -13459,7 +16563,7 @@ export class SettingsApi extends BaseAPI {
 export const TransactionIntentsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Retrieve a transaction intent by providing their id on Openfort. Transaction intents that have not been processed yet, have the `response` attribute as undefined.
+         * Creates a TransactionIntent.  A pending TransactionIntent has the `response` attribute as undefined.  After the TransactionIntent is created and broadcasted to the blockchain, `response` will be populated with the transaction hash and a status (1 success, 0 fail).  When using a non-custodial account, a `nextAction` attribute is returned with the `userOperationHash` that must be signed by the owner of the account.
          * @summary Create a transaction intent object.
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
          * @param {*} [options] Override http request option.
@@ -13499,7 +16603,7 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             };
         },
         /**
-         * Estimate the gas cost of creating a transaction intent and putting it on chain. If a policy that includes payment of gas in ERC-20 tokens is provided, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens.
+         * Estimate the gas cost of broadcasting a TransactionIntent.  This is a simulation, it does not send the transaction on-chain.  If a Policy ID is used that includes payment of gas in ERC-20 tokens, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens that will be used.
          * @summary Estimate gas cost of creating a transaction
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
          * @param {*} [options] Override http request option.
@@ -13539,7 +16643,7 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             };
         },
         /**
-         * 
+         * Retrieves the details of a TransactionIntent that has previously been created.
          * @summary Get a transaction intent object.
          * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the expandable fields.
@@ -13582,20 +16686,21 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             };
         },
         /**
-         * 
+         * Returns a list of TransactionIntents.
          * @summary List transaction intents.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the fields to expand in the response.
-         * @param {number} [chainId] The chain ID.
-         * @param {Array<string>} [accountId] Filter by account ID.
-         * @param {Array<string>} [playerId] Filter by player ID (starts with pla_).
-         * @param {Array<string>} [policyId] Filter by policy ID (starts with pol_).
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/chains).
+         * @param {Array<string>} [account] Filter by account ID or developer account (starts with acc_ or dac_ respectively).
+         * @param {Array<string>} [player] Filter by player ID (starts with pla_).
+         * @param {number} [status] Filter by successful (1) or failed (0) transaction intents.
+         * @param {Array<string>} [policy] Filter by policy ID (starts with pol_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntents: async (limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, accountId?: Array<string>, playerId?: Array<string>, policyId?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getTransactionIntents: async (limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, account?: Array<string>, player?: Array<string>, status?: number, policy?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/transaction_intents`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -13632,16 +16737,20 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
                 localVarQueryParameter['chainId'] = chainId;
             }
 
-            if (accountId) {
-                localVarQueryParameter['accountId'] = accountId;
+            if (account) {
+                localVarQueryParameter['account'] = account;
             }
 
-            if (playerId) {
-                localVarQueryParameter['playerId'] = playerId;
+            if (player) {
+                localVarQueryParameter['player'] = player;
             }
 
-            if (policyId) {
-                localVarQueryParameter['policyId'] = policyId;
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
+
+            if (policy) {
+                localVarQueryParameter['policy'] = policy;
             }
 
 
@@ -13656,8 +16765,8 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             };
         },
         /**
-         * This endpoint is used to send the signed userOperationHash.  For non-custodial smart accounts, each on chain action using their wallet, they must sign the userOperationHash received from the `POST` API endpoint that creates a transactionIntent.
-         * @summary Confirms the creation of a transaction intent with an external owner.
+         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.
+         * @summary Send a signed transaction userOperationHash.
          * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
          * @param {SignatureRequest} signatureRequest 
          * @param {*} [options] Override http request option.
@@ -13714,7 +16823,7 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = TransactionIntentsApiAxiosParamCreator(configuration)
     return {
         /**
-         * Retrieve a transaction intent by providing their id on Openfort. Transaction intents that have not been processed yet, have the `response` attribute as undefined.
+         * Creates a TransactionIntent.  A pending TransactionIntent has the `response` attribute as undefined.  After the TransactionIntent is created and broadcasted to the blockchain, `response` will be populated with the transaction hash and a status (1 success, 0 fail).  When using a non-custodial account, a `nextAction` attribute is returned with the `userOperationHash` that must be signed by the owner of the account.
          * @summary Create a transaction intent object.
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
          * @param {*} [options] Override http request option.
@@ -13725,7 +16834,7 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Estimate the gas cost of creating a transaction intent and putting it on chain. If a policy that includes payment of gas in ERC-20 tokens is provided, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens.
+         * Estimate the gas cost of broadcasting a TransactionIntent.  This is a simulation, it does not send the transaction on-chain.  If a Policy ID is used that includes payment of gas in ERC-20 tokens, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens that will be used.
          * @summary Estimate gas cost of creating a transaction
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
          * @param {*} [options] Override http request option.
@@ -13736,7 +16845,7 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Retrieves the details of a TransactionIntent that has previously been created.
          * @summary Get a transaction intent object.
          * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the expandable fields.
@@ -13748,26 +16857,27 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Returns a list of TransactionIntents.
          * @summary List transaction intents.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the fields to expand in the response.
-         * @param {number} [chainId] The chain ID.
-         * @param {Array<string>} [accountId] Filter by account ID.
-         * @param {Array<string>} [playerId] Filter by player ID (starts with pla_).
-         * @param {Array<string>} [policyId] Filter by policy ID (starts with pol_).
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/chains).
+         * @param {Array<string>} [account] Filter by account ID or developer account (starts with acc_ or dac_ respectively).
+         * @param {Array<string>} [player] Filter by player ID (starts with pla_).
+         * @param {number} [status] Filter by successful (1) or failed (0) transaction intents.
+         * @param {Array<string>} [policy] Filter by policy ID (starts with pol_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTransactionIntents(limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, accountId?: Array<string>, playerId?: Array<string>, policyId?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntents(limit, skip, order, expand, chainId, accountId, playerId, policyId, options);
+        async getTransactionIntents(limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, account?: Array<string>, player?: Array<string>, status?: number, policy?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntents(limit, skip, order, expand, chainId, account, player, status, policy, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * This endpoint is used to send the signed userOperationHash.  For non-custodial smart accounts, each on chain action using their wallet, they must sign the userOperationHash received from the `POST` API endpoint that creates a transactionIntent.
-         * @summary Confirms the creation of a transaction intent with an external owner.
+         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.
+         * @summary Send a signed transaction userOperationHash.
          * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
          * @param {SignatureRequest} signatureRequest 
          * @param {*} [options] Override http request option.
@@ -13788,7 +16898,7 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
     const localVarFp = TransactionIntentsApiFp(configuration)
     return {
         /**
-         * Retrieve a transaction intent by providing their id on Openfort. Transaction intents that have not been processed yet, have the `response` attribute as undefined.
+         * Creates a TransactionIntent.  A pending TransactionIntent has the `response` attribute as undefined.  After the TransactionIntent is created and broadcasted to the blockchain, `response` will be populated with the transaction hash and a status (1 success, 0 fail).  When using a non-custodial account, a `nextAction` attribute is returned with the `userOperationHash` that must be signed by the owner of the account.
          * @summary Create a transaction intent object.
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
          * @param {*} [options] Override http request option.
@@ -13798,7 +16908,7 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
             return localVarFp.createTransactionIntent(createTransactionIntentRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Estimate the gas cost of creating a transaction intent and putting it on chain. If a policy that includes payment of gas in ERC-20 tokens is provided, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens.
+         * Estimate the gas cost of broadcasting a TransactionIntent.  This is a simulation, it does not send the transaction on-chain.  If a Policy ID is used that includes payment of gas in ERC-20 tokens, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens that will be used.
          * @summary Estimate gas cost of creating a transaction
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
          * @param {*} [options] Override http request option.
@@ -13808,7 +16918,7 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
             return localVarFp.estimateTransactionIntentCost(createTransactionIntentRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Retrieves the details of a TransactionIntent that has previously been created.
          * @summary Get a transaction intent object.
          * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the expandable fields.
@@ -13819,25 +16929,26 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
             return localVarFp.getTransactionIntent(id, expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Returns a list of TransactionIntents.
          * @summary List transaction intents.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the fields to expand in the response.
-         * @param {number} [chainId] The chain ID.
-         * @param {Array<string>} [accountId] Filter by account ID.
-         * @param {Array<string>} [playerId] Filter by player ID (starts with pla_).
-         * @param {Array<string>} [policyId] Filter by policy ID (starts with pol_).
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/chains).
+         * @param {Array<string>} [account] Filter by account ID or developer account (starts with acc_ or dac_ respectively).
+         * @param {Array<string>} [player] Filter by player ID (starts with pla_).
+         * @param {number} [status] Filter by successful (1) or failed (0) transaction intents.
+         * @param {Array<string>} [policy] Filter by policy ID (starts with pol_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntents(limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, accountId?: Array<string>, playerId?: Array<string>, policyId?: Array<string>, options?: any): AxiosPromise<TransactionIntentListResponse> {
-            return localVarFp.getTransactionIntents(limit, skip, order, expand, chainId, accountId, playerId, policyId, options).then((request) => request(axios, basePath));
+        getTransactionIntents(limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, account?: Array<string>, player?: Array<string>, status?: number, policy?: Array<string>, options?: any): AxiosPromise<TransactionIntentListResponse> {
+            return localVarFp.getTransactionIntents(limit, skip, order, expand, chainId, account, player, status, policy, options).then((request) => request(axios, basePath));
         },
         /**
-         * This endpoint is used to send the signed userOperationHash.  For non-custodial smart accounts, each on chain action using their wallet, they must sign the userOperationHash received from the `POST` API endpoint that creates a transactionIntent.
-         * @summary Confirms the creation of a transaction intent with an external owner.
+         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.
+         * @summary Send a signed transaction userOperationHash.
          * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
          * @param {SignatureRequest} signatureRequest 
          * @param {*} [options] Override http request option.
@@ -13857,7 +16968,7 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
  */
 export class TransactionIntentsApi extends BaseAPI {
     /**
-     * Retrieve a transaction intent by providing their id on Openfort. Transaction intents that have not been processed yet, have the `response` attribute as undefined.
+     * Creates a TransactionIntent.  A pending TransactionIntent has the `response` attribute as undefined.  After the TransactionIntent is created and broadcasted to the blockchain, `response` will be populated with the transaction hash and a status (1 success, 0 fail).  When using a non-custodial account, a `nextAction` attribute is returned with the `userOperationHash` that must be signed by the owner of the account.
      * @summary Create a transaction intent object.
      * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
      * @param {*} [options] Override http request option.
@@ -13869,7 +16980,7 @@ export class TransactionIntentsApi extends BaseAPI {
     }
 
     /**
-     * Estimate the gas cost of creating a transaction intent and putting it on chain. If a policy that includes payment of gas in ERC-20 tokens is provided, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens.
+     * Estimate the gas cost of broadcasting a TransactionIntent.  This is a simulation, it does not send the transaction on-chain.  If a Policy ID is used that includes payment of gas in ERC-20 tokens, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens that will be used.
      * @summary Estimate gas cost of creating a transaction
      * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
      * @param {*} [options] Override http request option.
@@ -13881,7 +16992,7 @@ export class TransactionIntentsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Retrieves the details of a TransactionIntent that has previously been created.
      * @summary Get a transaction intent object.
      * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
      * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the expandable fields.
@@ -13894,27 +17005,28 @@ export class TransactionIntentsApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Returns a list of TransactionIntents.
      * @summary List transaction intents.
      * @param {number} [limit] Specifies the maximum number of records to return.
      * @param {number} [skip] Specifies the offset for the first records to return.
      * @param {SortOrder} [order] Specifies the order in which to sort the results.
      * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the fields to expand in the response.
-     * @param {number} [chainId] The chain ID.
-     * @param {Array<string>} [accountId] Filter by account ID.
-     * @param {Array<string>} [playerId] Filter by player ID (starts with pla_).
-     * @param {Array<string>} [policyId] Filter by policy ID (starts with pol_).
+     * @param {number} [chainId] The chain ID. Must be a [supported chain](/chains).
+     * @param {Array<string>} [account] Filter by account ID or developer account (starts with acc_ or dac_ respectively).
+     * @param {Array<string>} [player] Filter by player ID (starts with pla_).
+     * @param {number} [status] Filter by successful (1) or failed (0) transaction intents.
+     * @param {Array<string>} [policy] Filter by policy ID (starts with pol_).
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof TransactionIntentsApi
      */
-    public getTransactionIntents(limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, accountId?: Array<string>, playerId?: Array<string>, policyId?: Array<string>, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).getTransactionIntents(limit, skip, order, expand, chainId, accountId, playerId, policyId, options).then((request) => request(this.axios, this.basePath));
+    public getTransactionIntents(limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, account?: Array<string>, player?: Array<string>, status?: number, policy?: Array<string>, options?: AxiosRequestConfig) {
+        return TransactionIntentsApiFp(this.configuration).getTransactionIntents(limit, skip, order, expand, chainId, account, player, status, policy, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * This endpoint is used to send the signed userOperationHash.  For non-custodial smart accounts, each on chain action using their wallet, they must sign the userOperationHash received from the `POST` API endpoint that creates a transactionIntent.
-     * @summary Confirms the creation of a transaction intent with an external owner.
+     * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.
+     * @summary Send a signed transaction userOperationHash.
      * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
      * @param {SignatureRequest} signatureRequest 
      * @param {*} [options] Override http request option.
@@ -13934,7 +17046,7 @@ export class TransactionIntentsApi extends BaseAPI {
 export const Web3ConnectionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a WalletConnect pairing URI (see: https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri)
+         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a [WalletConnect pairing URI](https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri).
          * @summary Create a Web3 Connection object.
          * @param {CreateWeb3ConnectionRequest} createWeb3ConnectionRequest 
          * @param {*} [options] Override http request option.
@@ -14172,7 +17284,7 @@ export const Web3ConnectionsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = Web3ConnectionsApiAxiosParamCreator(configuration)
     return {
         /**
-         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a WalletConnect pairing URI (see: https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri)
+         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a [WalletConnect pairing URI](https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri).
          * @summary Create a Web3 Connection object.
          * @param {CreateWeb3ConnectionRequest} createWeb3ConnectionRequest 
          * @param {*} [options] Override http request option.
@@ -14244,7 +17356,7 @@ export const Web3ConnectionsApiFactory = function (configuration?: Configuration
     const localVarFp = Web3ConnectionsApiFp(configuration)
     return {
         /**
-         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a WalletConnect pairing URI (see: https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri)
+         * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a [WalletConnect pairing URI](https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri).
          * @summary Create a Web3 Connection object.
          * @param {CreateWeb3ConnectionRequest} createWeb3ConnectionRequest 
          * @param {*} [options] Override http request option.
@@ -14311,7 +17423,7 @@ export const Web3ConnectionsApiFactory = function (configuration?: Configuration
  */
 export class Web3ConnectionsApi extends BaseAPI {
     /**
-     * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a WalletConnect pairing URI (see: https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri)
+     * This endpoint allows you to create a new web3 connection to your Openfort player. Together with the player ID (pla_), you need to provide a chain ID. The chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections. The `uri` body parameter must contain a [WalletConnect pairing URI](https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri).
      * @summary Create a Web3 Connection object.
      * @param {CreateWeb3ConnectionRequest} createWeb3ConnectionRequest 
      * @param {*} [options] Override http request option.

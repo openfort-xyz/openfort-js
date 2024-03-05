@@ -1,24 +1,17 @@
-import {Configuration} from "./generated/configuration";
-import {SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./generated/api";
-import {KeyPair} from "./key-pair";
-import {httpErrorHandler} from "./utils/http-error-handler";
-import {Bytes} from "@ethersproject/bytes";
+import {Configuration, SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./generated";
+import {Signer} from "./signer/signer";
+
+
 
 export default class Openfort {
     private readonly _configuration: Configuration;
     private _sessionsApi?: SessionsApi;
     private _transactionsApi?: TransactionIntentsApi;
-    private _sessionKey?: KeyPair | null;
+    private readonly _signer?: Signer;
 
-    constructor(accessToken: string, basePath?: string) {
-        this._configuration = new Configuration({accessToken, basePath});
-    }
-
-    public get sessionKey(): KeyPair {
-        if (!this._sessionKey) {
-            throw new Error("Session key is not initialized");
-        }
-        return this._sessionKey;
+    constructor(publishableKey: string, signer?: Signer, basePath?: string) {
+        this._configuration = new Configuration({accessToken: publishableKey, basePath});
+        this._signer = signer;
     }
 
     protected get sessionsApi(): SessionsApi {
@@ -35,44 +28,39 @@ export default class Openfort {
         return this._transactionsApi;
     }
 
-    public createSessionKey(): KeyPair {
-        this._sessionKey = new KeyPair();
-        return this._sessionKey;
-    }
-
-    public loadSessionKey(): KeyPair | null {
-        this._sessionKey = KeyPair.load();
-        return this._sessionKey;
-    }
-
-    public saveSessionKey(): void {
-        return this.sessionKey.save();
-    }
-
-    public removeSessionKey(): void {
-        return this.sessionKey.remove();
-    }
-
-    public signMessage(message: Bytes | string): string {
-        return this.sessionKey.sign(message);
-    }
-
-    @httpErrorHandler()
     public async sendSignatureSessionRequest(
         sessionId: string,
-        signature: string,
+        signature?: string,
         optimistic?: boolean,
     ): Promise<SessionResponse> {
+        if (!signature) {
+            if (!this._signer) {
+                throw new Error("No signer nor signature provided");
+            }
+
+            signature = await this._signer.sign(sessionId);
+        }
         const result = await this.sessionsApi.signatureSession(sessionId, {signature, optimistic});
         return result.data;
     }
 
-    @httpErrorHandler()
     public async sendSignatureTransactionIntentRequest(
         transactionIntentId: string,
-        signature: string,
+        userOp?: string,
+        signature?: string,
         optimistic?: boolean,
     ): Promise<TransactionIntentResponse> {
+        if (!signature && userOp) {
+            if (!this._signer) {
+                throw new Error("No signer nor signature provided");
+            }
+
+            signature = await this._signer.sign(userOp);
+        }
+
+        if (!signature) {
+            throw new Error("No signature provided");
+        }
         const result = await this.transactionsApi.signature(transactionIntentId, {signature, optimistic});
         return result.data;
     }
