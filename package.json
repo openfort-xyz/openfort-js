@@ -39,7 +39,7 @@
         "@ethersproject/hash": "^5.7.0",
         "@ethersproject/signing-key": "^5.7.0",
         "@noble/curves": "^1.1.0",
-        "axios": "^1.4.0",
+        "axios": "1.6.7",
         "es6-promise": "^4.2.8",
         "path": "^0.12.7"
     }
