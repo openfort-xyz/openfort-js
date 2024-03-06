@@ -3,9 +3,8 @@ import {
     OAuthProvider,
     AuthenticationApi, AuthResponse,
 } from "./generated";
-import {createPublicKey} from "crypto";
-import * as jwt from "jsonwebtoken";
-import Openfort from "./openfort";
+import {importJWK, jwtVerify} from "jose";
+import {JWTExpired} from "jose/dist/types/util/errors";
 
 export type Auth = {
     player: string;
@@ -42,17 +41,24 @@ export class OpenfortAuth {
         }
 
         const jwtKey = jwtks.data.keys[0];
-        const pem = this.ecPublicKeyToPem(jwtKey);
+        const ecPublicKey = await importJWK(
+            {
+                kty: jwtKey.kty,
+                crv: jwtKey.crv,
+                x: jwtKey.x,
+                y: jwtKey.y,
+            },
+            jwtKey.alg,
+        );
         try {
-            const decoded = jwt.verify(token, pem, {algorithms: [jwtKey.alg as jwt.Algorithm]});
-            const jwtIdentity = decoded as jwt.JwtPayload;
+            const verification = await jwtVerify(token, ecPublicKey);
             return {
-                player: jwtIdentity.sub,
+                player: verification.payload.sub,
                 accessToken: token,
                 refreshToken,
             };
         } catch (error) {
-            if (error instanceof jwt.TokenExpiredError) {
+            if (error instanceof JWTExpired) {
                 const newToken = await this._oauthApi.refresh({refreshToken});
                 return {
                     player: newToken.data.player.id,
@@ -63,19 +69,5 @@ export class OpenfortAuth {
                 throw error;
             }
         }
-    }
-
-    private ecPublicKeyToPem(jwtKey: { kty: string, x: string, y: string, crv: string }): string {
-        const key = {
-            key: {
-                x: Buffer.from(jwtKey.x, "base64"),
-                y: Buffer.from(jwtKey.y, "base64"),
-                asymmetricKeyType: jwtKey.kty,
-                crv: jwtKey.crv,
-            },
-            format: "jwk",
-        };
-
-        return createPublicKey({key: key, format: "jwk"}).export({format: "pem", type: "spki"}).toString();
     }
 }
