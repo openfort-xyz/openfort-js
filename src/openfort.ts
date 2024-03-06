@@ -10,7 +10,7 @@ export default class Openfort {
     private readonly _signer?: Signer;
 
     constructor(publishableKey: string, signer: Signer = undefined) {
-        const basePath = process.env.OPENFORT_BASE_PATH || undefined;
+        const basePath = process.env.OPENFORT_API_BASE_URL || undefined;
         this._configuration = new Configuration({accessToken: publishableKey, basePath});
         this._signer = signer;
     }
