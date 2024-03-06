@@ -8,8 +8,8 @@ export class EmbeddedSigner implements Signer {
     private readonly _recoverySharePassword?: string;
     private _deviceID: string|null = null;
 
-    constructor(chainId: number, publishableKey: string,accessToken: string, accountUuid?: string, recoverySharePassword?: string) {
-        this._iframeClient = new IframeClient(publishableKey, accessToken, chainId);
+    constructor(chainId: number, publishableKey: string,accessToken: string, accountUuid?: string, recoverySharePassword?: string, iframeURL?: string) {
+        this._iframeClient = new IframeClient(publishableKey, accessToken, chainId, iframeURL);
         this._accountUuid = accountUuid;
         this._recoverySharePassword = recoverySharePassword;
     }

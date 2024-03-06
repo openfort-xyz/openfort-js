@@ -9,8 +9,7 @@ export default class Openfort {
     private _transactionsApi?: TransactionIntentsApi;
     private readonly _signer?: Signer;
 
-    constructor(publishableKey: string, signer: Signer = undefined) {
-        const basePath = process.env.OPENFORT_API_BASE_URL || undefined;
+    constructor(publishableKey: string, signer: Signer = undefined, basePath: string = undefined) {
         this._configuration = new Configuration({accessToken: publishableKey, basePath});
         this._signer = signer;
     }
