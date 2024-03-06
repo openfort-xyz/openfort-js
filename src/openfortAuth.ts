@@ -5,6 +5,7 @@ import {
 } from "./generated";
 import {createPublicKey} from "crypto";
 import * as jwt from "jsonwebtoken";
+import Openfort from "./openfort";
 
 export type Auth = {
     player: string;

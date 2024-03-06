@@ -1,13 +1,14 @@
 export class IframeClient {
     private readonly _iframe: HTMLIFrameElement;
-    private _chainId: number;
+    private readonly _chainId: number;
     constructor(publishableKey:string, accessToken: string, chainId: number) {
         if (!document) {
             throw new Error("must be run in a browser");
         }
         this._chainId = chainId;
         this._iframe = document.createElement("iframe");
-        this._iframe.src = "https://iframe.openfort.xyz/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
+        const baseURL = process.env.OPENFORT_IFRAME_BASE_URL || "https://iframe.openfort.xyz";
+        this._iframe.src = baseURL + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
         this._iframe.style.display = "none";
         document.body.appendChild(this._iframe);
     }
