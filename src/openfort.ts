@@ -1,7 +1,11 @@
-import {Configuration, SessionResponse, SessionsApi, TransactionIntentResponse, TransactionIntentsApi} from "./generated";
+import {
+    Configuration,
+    SessionResponse,
+    SessionsApi,
+    TransactionIntentResponse,
+    TransactionIntentsApi,
+} from "./generated";
 import {Signer} from "./signer/signer";
-
-
 
 export default class Openfort {
     private readonly _configuration: Configuration;

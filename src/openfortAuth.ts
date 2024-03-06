@@ -1,10 +1,5 @@
-import {
-    Configuration,
-    OAuthProvider,
-    AuthenticationApi, AuthResponse,
-} from "./generated";
-import {importJWK, jwtVerify} from "jose";
-import {JWTExpired} from "jose/dist/types/util/errors";
+import {Configuration, OAuthProvider, AuthenticationApi, AuthResponse} from "./generated";
+import {errors, importJWK, jwtVerify} from "jose";
 
 export type Auth = {
     player: string;
@@ -23,18 +18,12 @@ export class OpenfortAuth {
         this._publishableKey = publishableKey;
     }
 
-    public async authorizeWithOAuthToken(
-        provider: OAuthProvider,
-        token: string,
-    ): Promise<AuthResponse> {
+    public async authorizeWithOAuthToken(provider: OAuthProvider, token: string): Promise<AuthResponse> {
         const result = await this._oauthApi.authenticateOAuth({provider, token});
         return result.data;
     }
 
-    public async verifyAndRefreshToken(
-        token: string,
-        refreshToken: string,
-    ): Promise<Auth> {
+    public async verifyAndRefreshToken(token: string, refreshToken: string): Promise<Auth> {
         const jwtks = await this._oauthApi.getJwks(this._publishableKey);
         if (jwtks.data.keys.length === 0) {
             throw new Error("No keys found");
@@ -58,7 +47,7 @@ export class OpenfortAuth {
                 refreshToken,
             };
         } catch (error) {
-            if (error instanceof JWTExpired) {
+            if (error instanceof errors.JWTExpired) {
                 const newToken = await this._oauthApi.refresh({refreshToken});
                 return {
                     player: newToken.data.player.id,

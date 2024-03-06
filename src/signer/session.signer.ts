@@ -14,9 +14,8 @@ export class SessionSigner implements Signer {
     }
 
     public sign(message: Bytes | string): Promise<string> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             resolve(this._sessionKey.sign(message));
         });
     }
 }
-

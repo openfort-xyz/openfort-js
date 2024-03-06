@@ -5,9 +5,15 @@ import {Signer} from "./signer";
 export class EmbeddedSigner implements Signer {
     private readonly _iframeClient: IframeClient;
     private readonly _recoverySharePassword?: string;
-    private _deviceID: string|null = null;
+    private _deviceID: string | null = null;
 
-    constructor(chainId: number, publishableKey: string,accessToken: string, recoverySharePassword?: string, iframeURL?: string) {
+    constructor(
+        chainId: number,
+        publishableKey: string,
+        accessToken: string,
+        recoverySharePassword?: string,
+        iframeURL?: string,
+    ) {
         this._iframeClient = new IframeClient(publishableKey, accessToken, chainId, iframeURL);
         this._recoverySharePassword = recoverySharePassword;
     }

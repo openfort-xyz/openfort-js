@@ -45,11 +45,14 @@ export class IframeClient {
 
             window.addEventListener("message", handleMessage);
 
-            this._iframe.contentWindow?.postMessage({
-                action: "generateKey",
-                password: password,
-                chainId: this._chainId,
-            }, "*");
+            this._iframe.contentWindow?.postMessage(
+                {
+                    action: "generateKey",
+                    password: password,
+                    chainId: this._chainId,
+                },
+                "*",
+            );
         });
     }
 
@@ -73,11 +76,14 @@ export class IframeClient {
 
             setTimeout(() => {
                 if (this._iframe.contentWindow) {
-                    this._iframe.contentWindow.postMessage({
-                        action: "registerDevice",
-                        account: account,
-                        password: password,
-                    }, "*");
+                    this._iframe.contentWindow.postMessage(
+                        {
+                            action: "registerDevice",
+                            account: account,
+                            password: password,
+                        },
+                        "*",
+                    );
                 } else {
                     console.error("No iframe content window");
                 }
@@ -85,7 +91,7 @@ export class IframeClient {
         });
     }
 
-    async getCurrentDevice(): Promise<string|null> {
+    async getCurrentDevice(): Promise<string | null> {
         await this.waitForIframeLoad();
 
         return new Promise((resolve) => {
@@ -104,9 +110,12 @@ export class IframeClient {
 
             setTimeout(() => {
                 if (this._iframe.contentWindow) {
-                    this._iframe.contentWindow.postMessage({
-                        action: "getCurrentDevice",
-                    }, "*");
+                    this._iframe.contentWindow.postMessage(
+                        {
+                            action: "getCurrentDevice",
+                        },
+                        "*",
+                    );
                     console.log("event sent");
                 } else {
                     console.error("No iframe content window");
@@ -135,10 +144,13 @@ export class IframeClient {
 
             setTimeout(() => {
                 if (this._iframe.contentWindow) {
-                    this._iframe.contentWindow.postMessage({
-                        action: "signMessage",
-                        message: message,
-                    }, "*");
+                    this._iframe.contentWindow.postMessage(
+                        {
+                            action: "signMessage",
+                            message: message,
+                        },
+                        "*",
+                    );
                 } else {
                     console.error("No iframe content window");
                 }
