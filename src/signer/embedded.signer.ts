@@ -4,13 +4,11 @@ import {Signer} from "./signer";
 
 export class EmbeddedSigner implements Signer {
     private readonly _iframeClient: IframeClient;
-    private readonly _accountUuid?: string;
     private readonly _recoverySharePassword?: string;
     private _deviceID: string|null = null;
 
-    constructor(chainId: number, publishableKey: string,accessToken: string, accountUuid?: string, recoverySharePassword?: string, iframeURL?: string) {
+    constructor(chainId: number, publishableKey: string,accessToken: string, recoverySharePassword?: string, iframeURL?: string) {
         this._iframeClient = new IframeClient(publishableKey, accessToken, chainId, iframeURL);
-        this._accountUuid = accountUuid;
         this._recoverySharePassword = recoverySharePassword;
     }
 
@@ -24,13 +22,7 @@ export class EmbeddedSigner implements Signer {
             return this._deviceID;
         }
 
-        if (!this._accountUuid) {
-            this._deviceID = await this._iframeClient.createAccount(this._recoverySharePassword);
-        } else {
-            this._deviceID = await this._iframeClient.registerDevice(this._accountUuid, this._recoverySharePassword);
-        }
-
-        return this._deviceID;
+        return await this._iframeClient.createAccount(this._recoverySharePassword);
     }
 
     public async sign(message: Bytes | string): Promise<string> {
