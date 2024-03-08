@@ -1,4 +1,4 @@
-import {Configuration, OAuthProvider, AuthenticationApi, AuthResponse} from "./generated";
+import {Configuration, OAuthProvider, AuthenticationApi} from "./generated";
 import {errors, importJWK, jwtVerify} from "jose";
 
 export type Auth = {
@@ -18,9 +18,31 @@ export class OpenfortAuth {
         this._publishableKey = publishableKey;
     }
 
-    public async authorizeWithOAuthToken(provider: OAuthProvider, token: string): Promise<AuthResponse> {
+    public async authorizeWithOAuthToken(provider: OAuthProvider, token: string): Promise<Auth> {
         const result = await this._oauthApi.authenticateOAuth({provider, token});
-        return result.data;
+        return {
+            player: result.data.player.id,
+            accessToken: result.data.token,
+            refreshToken: result.data.refreshToken,
+        };
+    }
+
+    public async authorizeWithEmailPassword(email: string, password: string): Promise<Auth> {
+        const result = await this._oauthApi.loginEmailPassword({email, password});
+        return {
+            player: result.data.player.id,
+            accessToken: result.data.token,
+            refreshToken: result.data.refreshToken,
+        };
+    }
+
+    public async signUp(email: string, password: string): Promise<Auth> {
+        const result = await this._oauthApi.signupEmailPassword({name: "", email, password});
+        return {
+            player: result.data.player.id,
+            accessToken: result.data.token,
+            refreshToken: result.data.refreshToken,
+        };
     }
 
     public async verifyAndRefreshToken(token: string, refreshToken: string): Promise<Auth> {
