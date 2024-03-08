@@ -12,7 +12,6 @@ import {LocalStorage} from "./storage/local-storage";
 import {SessionSigner} from "./signer/session.signer";
 import {EmbeddedSigner} from "./signer/embedded.signer";
 import {IRecovery} from "./recovery/recovery";
-import {PasswordRecovery} from "./recovery/passwordRecovery";
 
 export default class Openfort {
     private _signer?: ISigner;
