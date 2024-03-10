@@ -31,6 +31,15 @@ export default class Openfort {
         this._transactionsApi = new TransactionIntentsApi(configuration);
     }
 
+    public logout(): void {
+        this._storage.remove(AuthTokenStorageKey);
+        this._storage.remove(RefreshTokenStorageKey);
+        this._storage.remove(PlayerIDStorageKey);
+        if (this._signer) {
+            this._signer.logout();
+        }
+    }
+
     public configureSessionKey(): SessionKey {
         const signer = new SessionSigner(this._storage);
         this._signer = signer;
