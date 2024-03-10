@@ -2,7 +2,7 @@ import {IStorage} from "./storage";
 
 export class LocalStorage implements IStorage {
     constructor() {
-        if (!localStorage) {
+        if (!("localStorage" in global && !!global.localStorage)) {
             throw new Error("Local storage is not available");
         }
     }
