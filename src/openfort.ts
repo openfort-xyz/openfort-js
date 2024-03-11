@@ -98,12 +98,6 @@ export default class Openfort {
         return result.accessToken;
     }
 
-    public async authorizeWithOAuthToken(provider: OAuthProvider, token: string): Promise<string> {
-        const result = await this._openfortAuth.authorizeWithOAuthToken(provider, token);
-        this.storeCredentials(result);
-        return result.accessToken;
-    }
-
     public async signUpWithEmailPassword(email: string, password: string, name?: string): Promise<string> {
         const result = await this._openfortAuth.signupEmailPassword(email, password, name);
         this.storeCredentials(result);

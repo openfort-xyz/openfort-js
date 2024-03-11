@@ -32,15 +32,6 @@ export class OpenfortAuth {
         return this._jwks;
     }
 
-    public async authorizeWithOAuthToken(provider: OAuthProvider, token: string): Promise<Auth> {
-        const result = await this._oauthApi.authenticateOAuth({provider, token});
-        return {
-            player: result.data.player.id,
-            accessToken: result.data.token,
-            refreshToken: result.data.refreshToken,
-        };
-    }
-
     public async initOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
         const result = await this._oauthApi.initOAuth({token: "", provider: provider});
         return {
