@@ -53,7 +53,7 @@ export class OpenfortAuth {
             refreshToken: result.data.refreshToken,
         };
     }
-    
+
     public async getJwks(): Promise<KeyLike | Uint8Array> {
         const jwtks = await this._oauthApi.getJwks(this._publishableKey);
         if (jwtks.data.keys.length === 0) {

@@ -1,8 +1,7 @@
 import {IStorage} from "./storage";
 
 export class LocalStorage implements IStorage {
-    constructor() {
-    }
+    constructor() {}
 
     private validateLocalStorage(): void {
         if (!("localStorage" in global && !!global.localStorage)) {
