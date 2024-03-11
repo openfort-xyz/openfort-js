@@ -1,9 +1,6 @@
 import {IStorage} from "./storage";
 
 export class LocalStorage implements IStorage {
-    constructor() {
-    }
-
     private validateLocalStorage(): void {
         if (!("localStorage" in global && !!global.localStorage)) {
             throw new Error("Local storage is not available");

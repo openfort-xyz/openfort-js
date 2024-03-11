@@ -14,12 +14,7 @@ export class EmbeddedSigner implements ISigner {
     private readonly _storage: IStorage;
     private _recovery: IRecovery;
 
-    constructor(
-        chainId: number,
-        publishableKey: string,
-        storage: IStorage,
-        iframeURL?: string,
-    ) {
+    constructor(chainId: number, publishableKey: string, storage: IStorage, iframeURL?: string) {
         this._storage = storage;
         this._publishableKey = publishableKey;
         this._chainId = chainId;
@@ -39,7 +34,12 @@ export class EmbeddedSigner implements ISigner {
     }
 
     private configureIframeClient(): void {
-        this._iframeClient = new IframeClient(this._publishableKey, this._storage.get(AuthTokenStorageKey), this._chainId, this._iframeURL);
+        this._iframeClient = new IframeClient(
+            this._publishableKey,
+            this._storage.get(AuthTokenStorageKey),
+            this._chainId,
+            this._iframeURL,
+        );
     }
 
     getSingerType(): SignerType {
@@ -76,6 +76,6 @@ export class EmbeddedSigner implements ISigner {
     }
 
     async IsLoaded(): Promise<boolean> {
-        return this._deviceID !== null || await this._iframeClient.getCurrentDevice() !== "";
+        return this._deviceID !== null || (await this._iframeClient.getCurrentDevice()) !== "";
     }
 }

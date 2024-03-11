@@ -7,10 +7,10 @@ export class IframeClient {
             throw new Error("must be run in a browser");
         }
 
-        const actualIframeURL = document.getElementById("openfort-iframe")
+        const actualIframeURL = document.getElementById("openfort-iframe");
         if (actualIframeURL) {
             this._iframe = actualIframeURL as HTMLIFrameElement;
-            return
+            return;
         }
 
         this._chainId = chainId;

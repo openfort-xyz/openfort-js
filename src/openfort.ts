@@ -1,5 +1,6 @@
 import {
-    Configuration, OAuthProvider,
+    Configuration,
+    OAuthProvider,
     SessionResponse,
     SessionsApi,
     TransactionIntentResponse,
@@ -62,7 +63,9 @@ export default class Openfort {
         this._signer = signer;
 
         if (!signer.IsLoaded()) {
-            throw new MissingRecoveryMethod("This device has not been configured, in order to recover your account or create a new one you must provide recovery method");
+            throw new MissingRecoveryMethod(
+                "This device has not been configured, in order to recover your account or create a new one you must provide recovery method",
+            );
         }
     }
 
@@ -75,7 +78,7 @@ export default class Openfort {
             throw new EmbeddedNotConfigured("Signer must be embedded signer");
         }
 
-        const embeddedSigner = (this._signer as EmbeddedSigner);
+        const embeddedSigner = this._signer as EmbeddedSigner;
         embeddedSigner.setRecovery(recovery);
 
         await this.validateAndRefreshToken();
@@ -156,7 +159,10 @@ export default class Openfort {
             return;
         }
 
-        const auth = await this._openfortAuth.verifyAndRefreshToken(this._storage.get(AuthTokenStorageKey), this._storage.get(RefreshTokenStorageKey));
+        const auth = await this._openfortAuth.verifyAndRefreshToken(
+            this._storage.get(AuthTokenStorageKey),
+            this._storage.get(RefreshTokenStorageKey),
+        );
         if (auth.accessToken !== this._storage.get(AuthTokenStorageKey)) {
             this.storeCredentials(auth);
         }
@@ -169,7 +175,7 @@ export default class Openfort {
 export type SessionKey = {
     publicKey: string;
     isRegistered: boolean;
-}
+};
 
 class NotLoggedIn extends Error {
     constructor(message: string) {
