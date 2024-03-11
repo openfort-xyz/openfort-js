@@ -53,12 +53,12 @@ export default class Openfort {
         return {publicKey, isRegistered: true};
     }
 
-    public configureEmbeddedSigner(chainId: number): void {
+    public configureEmbeddedSigner(chainId: number, iframeURL: string = undefined): void {
         if (!this.isLoggedIn()) {
             throw new NotLoggedIn("Must be logged in to configure embedded signer");
         }
 
-        const signer = new EmbeddedSigner(chainId, this._publishableKey, this._storage);
+        const signer = new EmbeddedSigner(chainId, this._publishableKey, this._storage, iframeURL);
         this._signer = signer;
 
         if (!signer.IsLoaded()) {
