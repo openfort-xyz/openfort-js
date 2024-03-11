@@ -29,9 +29,8 @@ export class EmbeddedSigner implements ISigner {
     useCredentials(): boolean {
         return true;
     }
-    updateAuthentication(): void {
-        this.dispose();
-        this.configureIframeClient();
+    async updateAuthentication(): Promise<void> {
+        await this._iframeClient.updateAuthentication(this._storage.get(AuthTokenStorageKey));
     }
 
     private configureIframeClient(): void {
@@ -49,14 +48,18 @@ export class EmbeddedSigner implements ISigner {
 
     public async ensureEmbeddedAccount(): Promise<string> {
         if (this._deviceID) {
+            console.log("device id " + this._deviceID + " is in class memory");
             return this._deviceID;
         }
 
+        console.log("device id is not in class memory, checking iframe client");
         this._deviceID = await this._iframeClient.getCurrentDevice();
         if (this._deviceID) {
+            console.log("device id " + this._deviceID + " is in iframe client");
             return this._deviceID;
         }
 
+        console.log("device id is not in iframe client, creating account");
         if (!this._recovery) {
             throw new Error("Recovery is not set");
         }
@@ -82,5 +85,12 @@ export class EmbeddedSigner implements ISigner {
 
     iFrameLoaded(): boolean {
         return this._iframeClient.isLoaded();
+    }
+
+    async waitForIframeLoad(): Promise<void> {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        while (!this.iFrameLoaded()) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
     }
 }

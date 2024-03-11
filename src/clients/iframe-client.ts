@@ -197,4 +197,38 @@ export class IframeClient {
             }, 1000);
         });
     }
+
+    async updateAuthentication(token: string): Promise<void> {
+        await this.waitForIframeLoad();
+
+        return new Promise((resolve, reject) => {
+            const handleMessage = (event: MessageEvent) => {
+                if (event.data.action === "authenticationUpdated") {
+                    if (event.data.success) {
+                        resolve();
+                    } else {
+                        reject(new Error(event.data.error || "Authentication update failed"));
+                    }
+
+                    window.removeEventListener("message", handleMessage);
+                }
+            };
+
+            window.addEventListener("message", handleMessage);
+
+            setTimeout(() => {
+                if (this._iframe.contentWindow) {
+                    this._iframe.contentWindow.postMessage(
+                        {
+                            action: "updateAuthentication",
+                            token: token,
+                        },
+                        "*",
+                    );
+                } else {
+                    console.error("No iframe content window");
+                }
+            }, 1000);
+        });
+    }
 }

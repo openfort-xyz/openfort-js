@@ -57,19 +57,23 @@ export default class Openfort {
         return {publicKey, isRegistered: true};
     }
 
-    public configureEmbeddedSigner(chainId: number, iframeURL: string = undefined): void {
+    public async configureEmbeddedSigner(chainId: number, iframeURL: string = undefined): Promise<void> {
         if (!this.isAuthenticated()) {
             throw new NotLoggedIn("Must be logged in to configure embedded signer");
         }
 
+        console.log("user is authenticated, configuring embedded signer")
         const signer = new EmbeddedSigner(chainId, this._publishableKey, this._storage, iframeURL);
         this._signer = signer;
 
-        if (!signer.isLoaded()) {
+
+        const loaded = await signer.isLoaded();
+        if (loaded) {
             throw new MissingRecoveryMethod(
                 "This device has not been configured, in order to recover your account or create a new one you must provide recovery method",
             );
         }
+
     }
 
     public async configureEmbeddedSignerRecovery(recovery: IRecovery): Promise<void> {
@@ -196,7 +200,7 @@ export default class Openfort {
             this.storeCredentials(auth);
         }
         if (this._signer && this._signer.useCredentials()) {
-            this._signer.updateAuthentication();
+            await this._signer.updateAuthentication();
         }
     }
 }
@@ -206,7 +210,7 @@ export type SessionKey = {
     isRegistered: boolean;
 };
 
-class NotLoggedIn extends Error {
+export class NotLoggedIn extends Error {
     constructor(message: string) {
         super(message);
         this.name = "NotLoggedIn";
@@ -214,7 +218,7 @@ class NotLoggedIn extends Error {
     }
 }
 
-class MissingRecoveryMethod extends Error {
+export class MissingRecoveryMethod extends Error {
     constructor(message: string) {
         super(message);
         this.name = "MissingRecoveryMethod";
@@ -222,7 +226,7 @@ class MissingRecoveryMethod extends Error {
     }
 }
 
-class EmbeddedNotConfigured extends Error {
+export class EmbeddedNotConfigured extends Error {
     constructor(message: string) {
         super(message);
         this.name = "EmbeddedNotConfigured";
@@ -230,7 +234,7 @@ class EmbeddedNotConfigured extends Error {
     }
 }
 
-class NoSignerConfigured extends Error {
+export class NoSignerConfigured extends Error {
     constructor(message: string) {
         super(message);
         this.name = "NoSignerConfigured";
@@ -238,7 +242,7 @@ class NoSignerConfigured extends Error {
     }
 }
 
-class NothingToSign extends Error {
+export class NothingToSign extends Error {
     constructor(message: string) {
         super(message);
         this.name = "NothingToSign";

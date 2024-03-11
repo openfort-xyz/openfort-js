@@ -9,6 +9,6 @@ export interface ISigner {
     sign(message: Bytes | string): Promise<string>;
     logout(): Promise<void>;
     useCredentials(): boolean;
-    updateAuthentication(): void;
+    updateAuthentication(): Promise<void>;
     getSingerType(): SignerType;
 }
