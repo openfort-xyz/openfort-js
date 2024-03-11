@@ -40,80 +40,49 @@ yarn add @openfort/openfort-js
 
 ## Usage
 
-The package needs to be configured with your account's public key, which is
-available in the [Openfort Dashboard][api-keys]. Require it with the key's
-value:
-
-```js
-import Openfort from '@openfort/openfort-js';
-const openfort = new Openfort('pk_test_...');
-```
-In order to sign messages, you have 4 options to choose from:
-* Let Openfort handle the signing process, dont need to pass any signer to the Openfort instance.
-* Sign yourself and pass the signature to Openfort, dont need to pass any signer to the Openfort instance.
-* Use a Session Key to sign messages, you need to pass a SessionSigner to the Openfort instance.
-* Use Embedded Signer to sign messages, you need to pass an Embedded Signer to the Openfort instance.
-
-#### Session Signer
-```ts
-const sessionSigner = new SessionSigner()
-const openfort = new Openfort('pk_test_...', sessionSigner);
-```
-
-#### Embedded Signer
-For the embedded signer, if your player has an account you can pass it to the embedded signer to use it. If the account is not provided, the embedded signer will check if the localstorage has a device which is already registered, if not, it will create a new device and store it in the localstorage.
-For the recovery process, you can ask the user for a password to encrypt the recovery share.
-
-```ts
-const embeddedSigner = new EmbeddedSigner('pk_test_...', 'acc_...', '********');
-const openfort = new Openfort('pk_test_...', embeddedSigner);
-```
-
-
-### Create and store a new player session key
-
-1. Create a session key pair for the player:
-
+With the Openfort Unity SDK, you can sign transaction intents using one of four methods or signers:
 ```typescript
-openfort.createSessionKey();
+const sdk = new Openfort("pk_test_XXXXXXX");
 ```
 
-2. Save the generated session key pair on device:
+### 1. Session Signer
+The Session Signer allows you to use external signing keys, without needing to provide it every time. Here's how to use it:
 
+- **Configure the Session Key**: Call `configureSessionKey()`. This method returns an Ethereum address and a boolean indicating whether you need to register the key from the backend.
 ```typescript
-openfort.saveSessionKey();
+const sessionKey = sdk.configureSessionKey();
 ```
+- **Register Key and Send Signature Session Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session management](https://www.openfort.xyz/docs/guides/accounts/sessions).
+- **Send Signature Transaction Intent Request**: When calling sendSignatureTransactionIntentRequest, pass the transaction intent ID and the user operation hash. The session signer will handle the signing.
 
-3. Authorize player with the game backend service and passing the address of the session key pair:
+### 2. External Sign
 
+This method allows you to externally sign transaction intents without logging in or additional configurations:
+
+- **Call SendSignatureTransactionIntentRequest**: Simply pass the transaction intent ID and the signature.
 ```typescript
-const address = openfort.sessionKey.address
-// API call to the game backend with the address to register it
+const response = await sdk.sendSignatureTransactionIntentRequest("transactionIntentId", null, "signature");
 ```
 
-#### Register the session key using a non-custodial signer
-
-If the Openfort account is owned by an external signer, the owner must use it to sign and approve the registration of the session key. The hash containing the message to be signed appears in [next_actions][next-action] from the create session request.
-
+### 3. Embedded Signer
+The Embedded Signer uses SSS to manage the private key on the client side. To learn more, visit our [security documentation](https://www.openfort.xyz/docs/security).
+- **Login and Configure the Embedded Signer**: First, ensure the user is logged in, using `LoginWithEmailPassword`, `LoginWithOAuth` or if not registred `SignUpWithEmailPassword`. Then call `ConfigureEmbeddedSigner`. If a `MissingRecoveryMethod` exception is thrown, it indicates there's no share on the device and you have to call `ConfigureEmbeddedRecovery` to provide a recovery method.
 ```typescript
-// Sign the message with the signer
-await openfort.sendSignatureSessionRequest(
-  session_id,
-  signed_message
-);
+try {
+    await sdk.loginWithEmailPassword("email", "password");
+    sdk.configureEmbeddedSigner(chainId);
+} catch (e) {
+    if (e instanceof MissingRecoveryMethod) {
+        await sdk.configureEmbeddedSignerRecovery(new PasswordRecovery("password"));
+    }
+}
 ```
-
-### Use the session key to sign a message
-
-The hash containing the message to be signed appears in [next_actions][next-action] from the create transactionIntent request.
-
+For now the only recovery method available is the `PasswordRecovery` method.
+- **Send Signature Transaction Intent Request**: Similar to the session signer, pass the transaction intent ID and the user operation hash. The embedded signer reconstructs the key and signs the transaction.
 ```typescript
-await openfort.signMessage(message);
-await openfort.sendSignatureTransactionIntentRequest(
-    transactionIntent_id,
-    signed_message
-);
+const response = await sdk.sendSignatureTransactionIntentRequest("transactionIntentId", "userOp");
 ```
+
 
 ## Usage examples
 - [Next.js application with non-custodial signer](https://github.com/openfort-xyz/samples/tree/main/rainbow-ssv-nextjs)

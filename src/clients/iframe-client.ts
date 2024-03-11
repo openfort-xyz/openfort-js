@@ -6,24 +6,30 @@ export class IframeClient {
         if (!document) {
             throw new Error("must be run in a browser");
         }
+
+        const actualIframeURL = document.getElementById("openfort-iframe");
+        if (actualIframeURL) {
+            this._iframe = actualIframeURL as HTMLIFrameElement;
+            return;
+        }
+
         this._chainId = chainId;
         this._iframe = document.createElement("iframe");
         const baseURL = iframeURL || "https://iframe.openfort.xyz";
         this._iframe.src = baseURL + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
         this._iframe.style.display = "none";
+        this._iframe.id = "openfort-iframe";
         document.body.appendChild(this._iframe);
     }
 
-    private waitForIframeLoad(): Promise<void> {
-        if (!this._iframe.contentWindow) {
-            return new Promise((resolve) => {
-                this._iframe.onload = () => {
-                    resolve();
-                };
-            });
-        }
+    public isLoaded(): boolean {
+        return this._iframe.contentWindow !== null;
+    }
 
-        return Promise.resolve();
+    private async waitForIframeLoad(): Promise<void> {
+        while (!this.isLoaded()) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
     }
 
     async createAccount(password?: string): Promise<string> {
@@ -158,7 +164,37 @@ export class IframeClient {
         });
     }
 
-    dispose() {
-        document.body.removeChild(this._iframe);
+    async dispose(): Promise<void> {
+        await this.waitForIframeLoad();
+
+        return new Promise((resolve, reject) => {
+            const handleMessage = (event: MessageEvent) => {
+                if (event.data.action === "loggedOut") {
+                    if (event.data.success) {
+                        document.body.removeChild(this._iframe);
+                        resolve();
+                    } else {
+                        reject(new Error(event.data.error || "Dispose failed"));
+                    }
+
+                    window.removeEventListener("message", handleMessage);
+                }
+            };
+
+            window.addEventListener("message", handleMessage);
+
+            setTimeout(() => {
+                if (this._iframe.contentWindow) {
+                    this._iframe.contentWindow.postMessage(
+                        {
+                            action: "logout",
+                        },
+                        "*",
+                    );
+                } else {
+                    console.error("No iframe content window");
+                }
+            }, 1000);
+        });
     }
 }
