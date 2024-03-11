@@ -24,7 +24,6 @@ export class EmbeddedSigner implements ISigner {
     async logout(): Promise<void> {
         await this.dispose();
         this._deviceID = null;
-        this._chainId = 0;
     }
     useCredentials(): boolean {
         return true;
