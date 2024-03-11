@@ -12,7 +12,6 @@ export type InitAuthResponse = {
     key: string;
 };
 
-
 export class OpenfortAuth {
     private readonly _configuration: Configuration;
     private _oauthApi?: AuthenticationApi;
@@ -47,7 +46,7 @@ export class OpenfortAuth {
         return {
             url: result.data.url,
             key: result.data.key,
-        }
+        };
     }
 
     public async GetTokenAfterSocialLogin(provider: OAuthProvider, key: string): Promise<Auth> {

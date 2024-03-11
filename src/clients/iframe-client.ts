@@ -196,5 +196,5 @@ export class IframeClient {
                 }
             }, 1000);
         });
-    };
+    }
 }
