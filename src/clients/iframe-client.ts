@@ -122,7 +122,6 @@ export class IframeClient {
                         },
                         "*",
                     );
-                    console.log("event sent");
                 } else {
                     console.error("No iframe content window");
                 }

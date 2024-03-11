@@ -53,7 +53,6 @@ export class EmbeddedSigner implements ISigner {
 
         this._deviceID = await this._iframeClient.getCurrentDevice();
         if (this._deviceID) {
-            console.log("device id " + this._deviceID + " is in iframe client");
             return this._deviceID;
         }
 

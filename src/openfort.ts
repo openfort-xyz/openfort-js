@@ -62,10 +62,8 @@ export default class Openfort {
             throw new NotLoggedIn("Must be logged in to configure embedded signer");
         }
 
-        console.log("user is authenticated, configuring embedded signer")
         const signer = new EmbeddedSigner(chainId, this._publishableKey, this._storage, iframeURL);
         this._signer = signer;
-
 
         const loaded = await signer.isLoaded();
         if (loaded) {
@@ -73,7 +71,6 @@ export default class Openfort {
                 "This device has not been configured, in order to recover your account or create a new one you must provide recovery method",
             );
         }
-
     }
 
     public async configureEmbeddedSignerRecovery(recovery: IRecovery): Promise<void> {
