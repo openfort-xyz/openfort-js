@@ -116,7 +116,12 @@ export class OpenfortAuth {
         }
     }
 
-    async logout(refreshToken: string) {
-        await this._oauthApi.logout({refreshToken});
+    async logout(accessToken:string, refreshToken: string) {
+        await this._oauthApi.logout({refreshToken}, {
+            headers: {
+                Authorization: `Bearer ${this._publishableKey}`,
+                "player-token": accessToken,
+            }
+        });
     }
 }

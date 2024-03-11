@@ -34,7 +34,7 @@ export default class Openfort {
 
     public async logout(): Promise<void> {
         if (this.isAuthenticated()) {
-            await this._openfortAuth.logout(this._storage.get(RefreshTokenStorageKey));
+            await this._openfortAuth.logout(this._storage.get(AuthTokenStorageKey), this._storage.get(RefreshTokenStorageKey));
         }
         this._storage.remove(AuthTokenStorageKey);
         this._storage.remove(RefreshTokenStorageKey);
