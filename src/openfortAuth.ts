@@ -7,6 +7,12 @@ export type Auth = {
     refreshToken: string;
 };
 
+export type InitAuthResponse = {
+    url: string;
+    key: string;
+};
+
+
 export class OpenfortAuth {
     private readonly _configuration: Configuration;
     private _oauthApi?: AuthenticationApi;
@@ -29,6 +35,23 @@ export class OpenfortAuth {
 
     public async authorizeWithOAuthToken(provider: OAuthProvider, token: string): Promise<Auth> {
         const result = await this._oauthApi.authenticateOAuth({provider, token});
+        return {
+            player: result.data.player.id,
+            accessToken: result.data.token,
+            refreshToken: result.data.refreshToken,
+        };
+    }
+
+    public async getAuthenticationURL(provider: OAuthProvider): Promise<InitAuthResponse> {
+        const result = await this._oauthApi.initOAuth({token: "", provider: provider});
+        return {
+            url: result.data.url,
+            key: result.data.key,
+        }
+    }
+
+    public async GetTokenAfterSocialLogin(provider: OAuthProvider, key: string): Promise<Auth> {
+        const result = await this._oauthApi.authenticateOAuth({provider: provider, token: key});
         return {
             player: result.data.player.id,
             accessToken: result.data.token,

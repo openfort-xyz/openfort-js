@@ -7,7 +7,7 @@ import {
     TransactionIntentsApi,
 } from "./generated";
 import {ISigner, SignerType} from "./signer/signer";
-import {Auth, OpenfortAuth} from "./openfortAuth";
+import {Auth, InitAuthResponse, OpenfortAuth} from "./openfortAuth";
 import {AuthTokenStorageKey, IStorage, PlayerIDStorageKey, RefreshTokenStorageKey} from "./storage/storage";
 import {LocalStorage} from "./storage/local-storage";
 import {SessionSigner} from "./signer/session.signer";
@@ -99,6 +99,16 @@ export default class Openfort {
 
     public async signUpWithEmailPassword(email: string, password: string): Promise<string> {
         const result = await this._openfortAuth.signUp(email, password);
+        this.storeCredentials(result);
+        return result.accessToken;
+    }
+
+    public async loginWithOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
+        return await this._openfortAuth.getAuthenticationURL(provider);
+    }
+
+    public async getTokenAfterSocialLogin(provider: OAuthProvider, key: string): Promise<string> {
+        const result = await this._openfortAuth.GetTokenAfterSocialLogin(provider, key);
         this.storeCredentials(result);
         return result.accessToken;
     }
