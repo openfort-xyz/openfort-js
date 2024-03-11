@@ -29,9 +29,8 @@ export class EmbeddedSigner implements ISigner {
     useCredentials(): boolean {
         return true;
     }
-    updateAuthentication(): void {
-        this.dispose();
-        this.configureIframeClient();
+    async updateAuthentication(): Promise<void> {
+        await this._iframeClient.updateAuthentication(this._storage.get(AuthTokenStorageKey));
     }
 
     private configureIframeClient(): void {
@@ -82,5 +81,12 @@ export class EmbeddedSigner implements ISigner {
 
     iFrameLoaded(): boolean {
         return this._iframeClient.isLoaded();
+    }
+
+    async waitForIframeLoad(): Promise<void> {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        while (!this.iFrameLoaded()) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
     }
 }

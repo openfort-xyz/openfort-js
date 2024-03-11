@@ -49,7 +49,7 @@ export class SessionSigner implements ISigner {
     useCredentials(): boolean {
         return false;
     }
-    updateAuthentication(): void {
-        return;
+    updateAuthentication(): Promise<void> {
+        return Promise.resolve();
     }
 }
