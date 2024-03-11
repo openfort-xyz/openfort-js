@@ -159,7 +159,7 @@ export default class Openfort {
     }
 
     public isLoaded(): boolean {
-        if (!this._openfortAuth.getJwks()) {
+        if (!this._openfortAuth.jwks) {
             return false;
         }
 
