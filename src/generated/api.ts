@@ -7046,25 +7046,25 @@ export interface SignatureRequest {
  */
 export interface SignupRequest {
     /**
-     * The email address of the user.
+     * The email address of the player.
      * @type {string}
      * @memberof SignupRequest
      */
     'email': string;
     /**
-     * The password of the user.
+     * The password of the player.
      * @type {string}
      * @memberof SignupRequest
      */
     'password': string;
     /**
-     * The name of the user.
+     * The name of the player.
      * @type {string}
      * @memberof SignupRequest
      */
-    'name': string;
+    'name'?: string;
     /**
-     * The description of the user.
+     * The description of the player.
      * @type {string}
      * @memberof SignupRequest
      */

@@ -90,29 +90,29 @@ export default class Openfort {
     }
 
     public async loginWithEmailPassword(email: string, password: string): Promise<string> {
-        const result = await this._openfortAuth.authorizeWithEmailPassword(email, password);
+        const result = await this._openfortAuth.loginEmailPassword(email, password);
         this.storeCredentials(result);
         return result.accessToken;
     }
 
-    public async loginWithOAuthToken(provider: OAuthProvider, token: string): Promise<string> {
+    public async authorizeWithOAuthToken(provider: OAuthProvider, token: string): Promise<string> {
         const result = await this._openfortAuth.authorizeWithOAuthToken(provider, token);
         this.storeCredentials(result);
         return result.accessToken;
     }
 
-    public async signUpWithEmailPassword(email: string, password: string): Promise<string> {
-        const result = await this._openfortAuth.signUp(email, password);
+    public async signUpWithEmailPassword(email: string, password: string, name?: string): Promise<string> {
+        const result = await this._openfortAuth.signupEmailPassword(email, password, name);
         this.storeCredentials(result);
         return result.accessToken;
     }
 
     public async initOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
-        return await this._openfortAuth.getAuthenticationURL(provider);
+        return await this._openfortAuth.initOAuth(provider);
     }
 
     public async authenticateOAuth(provider: OAuthProvider, key: string): Promise<string> {
-        const result = await this._openfortAuth.GetTokenAfterSocialLogin(provider, key);
+        const result = await this._openfortAuth.authenticateOAuth(provider, key);
         this.storeCredentials(result);
         return result.accessToken;
     }

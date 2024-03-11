@@ -41,7 +41,7 @@ export class OpenfortAuth {
         };
     }
 
-    public async getAuthenticationURL(provider: OAuthProvider): Promise<InitAuthResponse> {
+    public async initOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
         const result = await this._oauthApi.initOAuth({token: "", provider: provider});
         return {
             url: result.data.url,
@@ -49,7 +49,7 @@ export class OpenfortAuth {
         };
     }
 
-    public async GetTokenAfterSocialLogin(provider: OAuthProvider, key: string): Promise<Auth> {
+    public async authenticateOAuth(provider: OAuthProvider, key: string): Promise<Auth> {
         const result = await this._oauthApi.authenticateOAuth({provider: provider, token: key});
         return {
             player: result.data.player.id,
@@ -58,7 +58,7 @@ export class OpenfortAuth {
         };
     }
 
-    public async authorizeWithEmailPassword(email: string, password: string): Promise<Auth> {
+    public async loginEmailPassword(email: string, password: string): Promise<Auth> {
         const result = await this._oauthApi.loginEmailPassword({email, password});
         return {
             player: result.data.player.id,
@@ -67,8 +67,8 @@ export class OpenfortAuth {
         };
     }
 
-    public async signUp(email: string, password: string): Promise<Auth> {
-        const result = await this._oauthApi.signupEmailPassword({name: "", email, password});
+    public async signupEmailPassword(email: string, password: string, name?: string): Promise<Auth> {
+        const result = await this._oauthApi.signupEmailPassword({name: name, email, password});
         return {
             player: result.data.player.id,
             accessToken: result.data.token,
