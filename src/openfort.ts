@@ -103,11 +103,11 @@ export default class Openfort {
         return result.accessToken;
     }
 
-    public async loginWithOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
+    public async initOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
         return await this._openfortAuth.getAuthenticationURL(provider);
     }
 
-    public async getTokenAfterSocialLogin(provider: OAuthProvider, key: string): Promise<string> {
+    public async authenticateOAuth(provider: OAuthProvider, key: string): Promise<string> {
         const result = await this._openfortAuth.GetTokenAfterSocialLogin(provider, key);
         this.storeCredentials(result);
         return result.accessToken;
