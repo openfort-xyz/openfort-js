@@ -17,8 +17,10 @@ export class SessionSigner implements ISigner {
         });
     }
 
-    logout(): void {
+    logout(): Promise<void> {
         this._storage.remove(SessionKeyStorageKey);
+        this._sessionKey = null;
+        return Promise.resolve();
     }
     loadKeys(): string {
         if (this._sessionKey !== null) {

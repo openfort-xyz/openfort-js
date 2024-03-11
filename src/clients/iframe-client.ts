@@ -164,7 +164,37 @@ export class IframeClient {
         });
     }
 
-    dispose() {
-        document.body.removeChild(this._iframe);
-    }
+    async dispose(): Promise<void> {
+        await this.waitForIframeLoad();
+
+        return new Promise((resolve, reject) => {
+            const handleMessage = (event: MessageEvent) => {
+                if (event.data.action === "loggedOut") {
+                    if (event.data.success) {
+                        document.body.removeChild(this._iframe);
+                        resolve();
+                    } else {
+                        reject(new Error(event.data.error || "Dispose failed"));
+                    }
+
+                    window.removeEventListener("message", handleMessage);
+                }
+            };
+
+            window.addEventListener("message", handleMessage);
+
+            setTimeout(() => {
+                if (this._iframe.contentWindow) {
+                    this._iframe.contentWindow.postMessage(
+                        {
+                            action: "logout",
+                        },
+                        "*",
+                    );
+                } else {
+                    console.error("No iframe content window");
+                }
+            }, 1000);
+        });
+    };
 }

@@ -32,12 +32,15 @@ export default class Openfort {
         this._transactionsApi = new TransactionIntentsApi(configuration);
     }
 
-    public logout(): void {
+    public async logout(): Promise<void> {
+        if (this.isAuthenticated()) {
+            await this._openfortAuth.logout(this._storage.get(RefreshTokenStorageKey));
+        }
         this._storage.remove(AuthTokenStorageKey);
         this._storage.remove(RefreshTokenStorageKey);
         this._storage.remove(PlayerIDStorageKey);
         if (this._signer) {
-            this._signer.logout();
+            await this._signer.logout();
         }
     }
 

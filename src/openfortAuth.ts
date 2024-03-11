@@ -116,4 +116,8 @@ export class OpenfortAuth {
             }
         }
     }
+
+    async logout(refreshToken: string) {
+        await this._oauthApi.logout({refreshToken});
+    }
 }

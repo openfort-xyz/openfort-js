@@ -7,7 +7,7 @@ export enum SignerType {
 
 export interface ISigner {
     sign(message: Bytes | string): Promise<string>;
-    logout(): void;
+    logout(): Promise<void>;
     useCredentials(): boolean;
     updateAuthentication(): void;
     getSingerType(): SignerType;

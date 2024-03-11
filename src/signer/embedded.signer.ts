@@ -6,10 +6,9 @@ import {IRecovery} from "../recovery/recovery";
 
 export class EmbeddedSigner implements ISigner {
     private _iframeClient: IframeClient;
-    private readonly _recoverySharePassword?: string;
     private _deviceID: string | null = null;
     private readonly _publishableKey: string;
-    private readonly _chainId: number;
+    private _chainId: number;
     private readonly _iframeURL: string | null;
     private readonly _storage: IStorage;
     private _recovery: IRecovery;
@@ -22,8 +21,10 @@ export class EmbeddedSigner implements ISigner {
         this.configureIframeClient();
     }
 
-    logout(): void {
-        this.dispose();
+    async logout(): Promise<void> {
+        await this.dispose();
+        this._deviceID = null;
+        this._chainId = 0;
     }
     useCredentials(): boolean {
         return true;
@@ -67,8 +68,8 @@ export class EmbeddedSigner implements ISigner {
         return await this._iframeClient.sign(message as string);
     }
 
-    public dispose(): void {
-        this._iframeClient.dispose();
+    public async dispose(): Promise<void> {
+        await this._iframeClient.dispose();
     }
 
     public setRecovery(recovery: IRecovery): void {
