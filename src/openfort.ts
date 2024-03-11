@@ -33,8 +33,11 @@ export default class Openfort {
     }
 
     public async logout(): Promise<void> {
-        if (this.isAuthenticated()) {
-            await this._openfortAuth.logout(this._storage.get(AuthTokenStorageKey), this._storage.get(RefreshTokenStorageKey));
+        if (this.credentialsProvided()) {
+            await this._openfortAuth.logout(
+                this._storage.get(AuthTokenStorageKey),
+                this._storage.get(RefreshTokenStorageKey),
+            );
         }
         this._storage.remove(AuthTokenStorageKey);
         this._storage.remove(RefreshTokenStorageKey);
@@ -58,7 +61,7 @@ export default class Openfort {
     }
 
     public async configureEmbeddedSigner(chainId: number, iframeURL: string = undefined): Promise<void> {
-        if (!this.isAuthenticated()) {
+        if (!this.credentialsProvided()) {
             throw new NotLoggedIn("Must be logged in to configure embedded signer");
         }
 
@@ -161,11 +164,24 @@ export default class Openfort {
         return result.data;
     }
 
-    public isAuthenticated() {
+    private credentialsProvided() {
         const token = this._storage.get(AuthTokenStorageKey);
         const refreshToken = this._storage.get(RefreshTokenStorageKey);
         const playerId = this._storage.get(PlayerIDStorageKey);
+
         return token && refreshToken && playerId;
+    }
+
+    public isAuthenticated() {
+        if (!this.credentialsProvided()) {
+            return false;
+        }
+        if (this._signer && this._signer.getSingerType() === SignerType.EMBEDDED) {
+            if ((this._signer as EmbeddedSigner).getDeviceID() === null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public getAccessToken(): string {
@@ -185,7 +201,7 @@ export default class Openfort {
     }
 
     private async validateAndRefreshToken() {
-        if (!this.isAuthenticated()) {
+        if (!this.credentialsProvided()) {
             return;
         }
 

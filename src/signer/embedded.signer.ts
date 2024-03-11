@@ -71,6 +71,10 @@ export class EmbeddedSigner implements ISigner {
         await this._iframeClient.dispose();
     }
 
+    public getDeviceID(): string | null {
+        return this._deviceID;
+    }
+
     public setRecovery(recovery: IRecovery): void {
         this._recovery = recovery;
     }
