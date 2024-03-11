@@ -54,14 +54,14 @@ export default class Openfort {
     }
 
     public configureEmbeddedSigner(chainId: number, iframeURL: string = undefined): void {
-        if (!this.isLoggedIn()) {
+        if (!this.isAuthenticated()) {
             throw new NotLoggedIn("Must be logged in to configure embedded signer");
         }
 
         const signer = new EmbeddedSigner(chainId, this._publishableKey, this._storage, iframeURL);
         this._signer = signer;
 
-        if (!signer.IsLoaded()) {
+        if (!signer.isLoaded()) {
             throw new MissingRecoveryMethod("This device has not been configured, in order to recover your account or create a new one you must provide recovery method");
         }
     }
@@ -144,15 +144,32 @@ export default class Openfort {
         return result.data;
     }
 
-    private isLoggedIn() {
+    public isAuthenticated() {
         const token = this._storage.get(AuthTokenStorageKey);
         const refreshToken = this._storage.get(RefreshTokenStorageKey);
         const playerId = this._storage.get(PlayerIDStorageKey);
         return token && refreshToken && playerId;
     }
 
+    public getAccessToken(): string {
+        return this._storage.get(AuthTokenStorageKey);
+    }
+
+    public isLoaded(): boolean {
+        if (!this._openfortAuth.getJwks()) {
+            return false;
+        }
+
+        if (this._signer && this._signer.getSingerType() === SignerType.EMBEDDED) {
+            return (this._signer as EmbeddedSigner).iFrameLoaded();
+        }
+
+        return true;
+    }
+
+
     private async validateAndRefreshToken() {
-        if (!this.isLoggedIn()) {
+        if (!this.isAuthenticated()) {
             return;
         }
 

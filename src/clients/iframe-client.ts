@@ -22,16 +22,14 @@ export class IframeClient {
         document.body.appendChild(this._iframe);
     }
 
-    private waitForIframeLoad(): Promise<void> {
-        if (!this._iframe.contentWindow) {
-            return new Promise((resolve) => {
-                this._iframe.onload = () => {
-                    resolve();
-                };
-            });
-        }
+    public isLoaded(): boolean {
+        return this._iframe.contentWindow !== null;
+    }
 
-        return Promise.resolve();
+    private async waitForIframeLoad(): Promise<void> {
+        while (!this.isLoaded()) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
     }
 
     async createAccount(password?: string): Promise<string> {

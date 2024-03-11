@@ -75,7 +75,11 @@ export class EmbeddedSigner implements ISigner {
         this._recovery = recovery;
     }
 
-    async IsLoaded(): Promise<boolean> {
+    async isLoaded(): Promise<boolean> {
         return this._deviceID !== null || await this._iframeClient.getCurrentDevice() !== "";
+    }
+
+    iFrameLoaded(): boolean {
+        return this._iframeClient.isLoaded();
     }
 }
