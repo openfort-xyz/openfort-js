@@ -1,14 +1,13 @@
 import {
     Configuration,
     OAuthProvider,
-    SIWEInitResponse,
     SessionResponse,
     SessionsApi,
     TransactionIntentResponse,
     TransactionIntentsApi,
 } from "./generated";
 import {ISigner, SignerType} from "./signer/signer";
-import {Auth, InitAuthResponse, OpenfortAuth} from "./openfortAuth";
+import {Auth, OAuthInitResponse, OpenfortAuth, SIWEInitResponse} from "./openfortAuth";
 import {AuthTokenStorageKey, IStorage, PlayerIDStorageKey, RefreshTokenStorageKey} from "./storage/storage";
 import {LocalStorage} from "./storage/local-storage";
 import {SessionSigner} from "./signer/session.signer";
@@ -117,7 +116,7 @@ export default class Openfort {
             /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
             skipBrowserRedirect?: boolean;
         },
-    ): Promise<InitAuthResponse> {
+    ): Promise<OAuthInitResponse> {
         return await this._openfortAuth.initOAuth(provider, options);
     }
 

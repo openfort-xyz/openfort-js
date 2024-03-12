@@ -1,4 +1,4 @@
-import {Configuration, OAuthProvider, AuthenticationApi, SIWEInitResponse} from "./generated";
+import {Configuration, OAuthProvider, AuthenticationApi} from "./generated";
 import {errors, importJWK, jwtVerify, KeyLike} from "jose";
 import {isBrowser} from "./lib/helpers";
 
@@ -8,9 +8,15 @@ export type Auth = {
     refreshToken: string;
 };
 
-export type InitAuthResponse = {
+export type OAuthInitResponse = {
     url: string;
     key: string;
+};
+
+export type SIWEInitResponse = {
+    address: string;
+    nonce: string;
+    expiresAt: number;
 };
 
 export class OpenfortAuth {
@@ -45,7 +51,7 @@ export class OpenfortAuth {
             /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
             skipBrowserRedirect?: boolean;
         },
-    ): Promise<InitAuthResponse> {
+    ): Promise<OAuthInitResponse> {
         const result = await this._oauthApi.initOAuth({provider, options});
         if (isBrowser() && !options.skipBrowserRedirect) {
             window.location.assign(result.data.url);
