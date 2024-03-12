@@ -104,12 +104,24 @@ export default class Openfort {
         return result.accessToken;
     }
 
-    public async initOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
-        return await this._openfortAuth.initOAuth(provider);
+    public async initOAuth(
+        provider: OAuthProvider,
+        options?: {
+            /** A URL to send the user to after they are confirmed. */
+            redirectTo?: string;
+            /** A space-separated list of scopes granted to the OAuth application. */
+            scopes?: string;
+            /** An object of query params */
+            queryParams?: {[key: string]: string};
+            /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
+            skipBrowserRedirect?: boolean;
+        },
+    ): Promise<InitAuthResponse> {
+        return await this._openfortAuth.initOAuth(provider, options);
     }
 
-    public async authenticateOAuth(provider: OAuthProvider, key: string): Promise<string> {
-        const result = await this._openfortAuth.authenticateOAuth(provider, key);
+    public async authenticateOAuth(provider: OAuthProvider, token: string): Promise<string> {
+        const result = await this._openfortAuth.authenticateOAuth(provider, token);
         this.storeCredentials(result);
         return result.accessToken;
     }

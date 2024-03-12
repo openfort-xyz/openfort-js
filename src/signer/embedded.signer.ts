@@ -80,7 +80,7 @@ export class EmbeddedSigner implements ISigner {
 
     async isLoaded(): Promise<boolean> {
         if (this._deviceID) {
-           return true;
+            return true;
         }
 
         const localStorageDevice = await this._iframeClient.getCurrentDevice();
@@ -89,7 +89,7 @@ export class EmbeddedSigner implements ISigner {
             return true;
         }
 
-        return false
+        return false;
     }
 
     iFrameLoaded(): boolean {

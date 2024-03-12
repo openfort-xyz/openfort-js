@@ -1,5 +1,6 @@
 import {Configuration, OAuthProvider, AuthenticationApi} from "./generated";
 import {errors, importJWK, jwtVerify, KeyLike} from "jose";
+import {isBrowser} from "./lib/helpers";
 
 export type Auth = {
     player: string;
@@ -32,16 +33,31 @@ export class OpenfortAuth {
         return this._jwks;
     }
 
-    public async initOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
-        const result = await this._oauthApi.initOAuth({token: "", provider: provider});
+    public async initOAuth(
+        provider: OAuthProvider,
+        options?: {
+            /** A URL to send the user to after they are confirmed. */
+            redirectTo?: string;
+            /** A space-separated list of scopes granted to the OAuth application. */
+            scopes?: string;
+            /** An object of query params */
+            queryParams?: {[key: string]: string};
+            /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
+            skipBrowserRedirect?: boolean;
+        },
+    ): Promise<InitAuthResponse> {
+        const result = await this._oauthApi.initOAuth({provider, options});
+        if (isBrowser() && !options.skipBrowserRedirect) {
+            window.location.assign(result.data.url);
+        }
         return {
             url: result.data.url,
             key: result.data.key,
         };
     }
 
-    public async authenticateOAuth(provider: OAuthProvider, key: string): Promise<Auth> {
-        const result = await this._oauthApi.authenticateOAuth({provider: provider, token: key});
+    public async authenticateOAuth(provider: OAuthProvider, token: string): Promise<Auth> {
+        const result = await this._oauthApi.authenticateOAuth({provider: provider, token: token});
         return {
             player: result.data.player.id,
             accessToken: result.data.token,
