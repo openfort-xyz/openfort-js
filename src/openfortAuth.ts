@@ -1,4 +1,4 @@
-import {Configuration, OAuthProvider, AuthenticationApi} from "./generated";
+import {Configuration, OAuthProvider, AuthenticationApi, SIWEInitResponse} from "./generated";
 import {errors, importJWK, jwtVerify, KeyLike} from "jose";
 import {isBrowser} from "./lib/helpers";
 
@@ -53,6 +53,29 @@ export class OpenfortAuth {
         return {
             url: result.data.url,
             key: result.data.key,
+        };
+    }
+
+    public async initSIWE(address: string): Promise<SIWEInitResponse> {
+        const result = await this._oauthApi.initSIWE({address});
+        return {
+            address: result.data.address,
+            nonce: result.data.nonce,
+            expiresAt: result.data.expiresAt,
+        };
+    }
+
+    public async authenticateSIWE(
+        signature: string,
+        message: string,
+        walletClientType: string,
+        connectorType: string,
+    ): Promise<Auth> {
+        const result = await this._oauthApi.authenticateSIWE({signature, message, walletClientType, connectorType});
+        return {
+            player: result.data.player.id,
+            accessToken: result.data.token,
+            refreshToken: result.data.refreshToken,
         };
     }
 

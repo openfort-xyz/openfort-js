@@ -1,6 +1,7 @@
 import {
     Configuration,
     OAuthProvider,
+    SIWEInitResponse,
     SessionResponse,
     SessionsApi,
     TransactionIntentResponse,
@@ -104,7 +105,7 @@ export default class Openfort {
         return result.accessToken;
     }
 
-    public async initWithOAuth(
+    public async initOAuth(
         provider: OAuthProvider,
         options?: {
             /** A URL to send the user to after they are confirmed. */
@@ -122,6 +123,22 @@ export default class Openfort {
 
     public async authenticateWithOAuth(provider: OAuthProvider, token: string): Promise<string> {
         const result = await this._openfortAuth.authenticateOAuth(provider, token);
+        this.storeCredentials(result);
+        return result.accessToken;
+    }
+
+    public async initSIWE(address: string): Promise<SIWEInitResponse> {
+        const result = await this._openfortAuth.initSIWE(address);
+        return result;
+    }
+
+    public async authenticateWithSIWE(
+        signature: string,
+        message: string,
+        walletClientType: string,
+        connectorType: string,
+    ): Promise<string> {
+        const result = await this._openfortAuth.authenticateSIWE(signature, message, walletClientType, connectorType);
         this.storeCredentials(result);
         return result.accessToken;
     }
