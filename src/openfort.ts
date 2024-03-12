@@ -104,7 +104,7 @@ export default class Openfort {
         return result.accessToken;
     }
 
-    public async initOAuth(
+    public async initWithOAuth(
         provider: OAuthProvider,
         options?: {
             /** A URL to send the user to after they are confirmed. */
@@ -120,7 +120,7 @@ export default class Openfort {
         return await this._openfortAuth.initOAuth(provider, options);
     }
 
-    public async authenticateOAuth(provider: OAuthProvider, token: string): Promise<string> {
+    public async authenticateWithOAuth(provider: OAuthProvider, token: string): Promise<string> {
         const result = await this._openfortAuth.authenticateOAuth(provider, token);
         this.storeCredentials(result);
         return result.accessToken;
