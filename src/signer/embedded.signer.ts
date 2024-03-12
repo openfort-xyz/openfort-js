@@ -79,7 +79,17 @@ export class EmbeddedSigner implements ISigner {
     }
 
     async isLoaded(): Promise<boolean> {
-        return this._deviceID !== null || (await this._iframeClient.getCurrentDevice()) !== "";
+        if (this._deviceID) {
+           return true;
+        }
+
+        const localStorageDevice = await this._iframeClient.getCurrentDevice();
+        if (localStorageDevice) {
+            this._deviceID = localStorageDevice;
+            return true;
+        }
+
+        return false
     }
 
     iFrameLoaded(): boolean {

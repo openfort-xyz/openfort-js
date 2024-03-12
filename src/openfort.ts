@@ -69,7 +69,7 @@ export default class Openfort {
         this._signer = signer;
 
         const loaded = await signer.isLoaded();
-        if (loaded) {
+        if (!loaded) {
             throw new MissingRecoveryMethod(
                 "This device has not been configured, in order to recover your account or create a new one you must provide recovery method",
             );
