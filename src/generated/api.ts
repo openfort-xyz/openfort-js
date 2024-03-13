@@ -15721,7 +15721,7 @@ export class PolicyRulesApi extends BaseAPI {
 export const SessionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Creates a Session.
+         * Creates a InstanceManager.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -15822,7 +15822,7 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Retrieves the details of a Session that has previously been created.
+         * Retrieves the details of a InstanceManager that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -15963,7 +15963,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SessionsApiAxiosParamCreator(configuration)
     return {
         /**
-         * Creates a Session.
+         * Creates a InstanceManager.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -15989,7 +15989,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Retrieves the details of a Session that has previously been created.
+         * Retrieves the details of a InstanceManager that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -16034,7 +16034,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = SessionsApiFp(configuration)
     return {
         /**
-         * Creates a Session.
+         * Creates a InstanceManager.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -16058,7 +16058,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getPlayerSessions(player, limit, skip, order, expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieves the details of a Session that has previously been created.
+         * Retrieves the details of a InstanceManager that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -16100,7 +16100,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
  */
 export class SessionsApi extends BaseAPI {
     /**
-     * Creates a Session.
+     * Creates a InstanceManager.
      * @summary Create a session key.
      * @param {CreateSessionRequest} createSessionRequest 
      * @param {*} [options] Override http request option.
@@ -16128,7 +16128,7 @@ export class SessionsApi extends BaseAPI {
     }
 
     /**
-     * Retrieves the details of a Session that has previously been created.
+     * Retrieves the details of a InstanceManager that has previously been created.
      * @summary Returns a player session by session id
      * @param {string} id Specifies the unique session ID (starts with ses_).
      * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.

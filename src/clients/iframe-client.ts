@@ -1,8 +1,7 @@
 export class IframeClient {
     private readonly _iframe: HTMLIFrameElement;
-    private readonly _chainId: number;
 
-    constructor(publishableKey: string, accessToken: string, chainId: number, iframeURL?: string) {
+    constructor(publishableKey: string, accessToken: string) {
         if (!document) {
             throw new Error("must be run in a browser");
         }
@@ -13,9 +12,8 @@ export class IframeClient {
             return;
         }
 
-        this._chainId = chainId;
         this._iframe = document.createElement("iframe");
-        const baseURL = iframeURL || "https://iframe.openfort.xyz";
+        const baseURL =  "https://iframe.openfort.xyz";
         this._iframe.src = baseURL + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
         this._iframe.style.display = "none";
         this._iframe.id = "openfort-iframe";
@@ -32,7 +30,7 @@ export class IframeClient {
         }
     }
 
-    async createAccount(password?: string): Promise<string> {
+    async createAccount(chainId: number, password?: string): Promise<string> {
         await this.waitForIframeLoad();
 
         return new Promise((resolve, reject) => {
@@ -55,7 +53,7 @@ export class IframeClient {
                 {
                     action: "generateKey",
                     password: password,
-                    chainId: this._chainId,
+                    chainId: chainId,
                 },
                 "*",
             );

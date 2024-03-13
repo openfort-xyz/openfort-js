@@ -7,49 +7,63 @@ import {
     TransactionIntentsApi,
 } from "./generated";
 import {ISigner, SignerType} from "./signer/signer";
-import {Auth, OAuthInitResponse, OpenfortAuth, SIWEInitResponse} from "./openfortAuth";
-import {AuthTokenStorageKey, IStorage, PlayerIDStorageKey, RefreshTokenStorageKey} from "./storage/storage";
-import {LocalStorage} from "./storage/local-storage";
+import {Auth, InitAuthResponse, InitializeOAuthOptions, OpenfortAuth, SIWEInitResponse} from "./openfortAuth";
+import {LocalStorage} from "./storage/localStorage";
 import {SessionSigner} from "./signer/session.signer";
 import {EmbeddedSigner} from "./signer/embedded.signer";
 import {IRecovery} from "./recovery/recovery";
+import {InstanceManager} from "./instanceManager";
+import {SessionStorage} from "./storage/sessionStorage";
+
 
 export default class Openfort {
     private _signer?: ISigner;
-    private readonly _publishableKey: string;
-    private readonly _openfortAuth: OpenfortAuth;
-    private readonly _storage: IStorage;
+    private _publishableKey: string;
+    private readonly _instanceManager: InstanceManager;
 
-    private _sessionsApi?: SessionsApi;
-    private _transactionsApi?: TransactionIntentsApi;
-
-    constructor(publishableKey: string, basePath: string = undefined) {
+    constructor(publishableKey: string = null) {
+        this._instanceManager = new InstanceManager(new SessionStorage(), new LocalStorage(), new LocalStorage());
         this._publishableKey = publishableKey;
-        this._openfortAuth = new OpenfortAuth(publishableKey, basePath);
-        this._storage = new LocalStorage();
-        const configuration = new Configuration({accessToken: publishableKey, basePath});
-        this._sessionsApi = new SessionsApi(configuration);
-        this._transactionsApi = new TransactionIntentsApi(configuration);
     }
 
     public async logout(): Promise<void> {
         if (this.credentialsProvided()) {
-            await this._openfortAuth.logout(
-                this._storage.get(AuthTokenStorageKey),
-                this._storage.get(RefreshTokenStorageKey),
+            this.recoverPublishableKey();
+            await this.recoverSigner();
+            if (this._signer) {
+                await this._signer.logout();
+            }
+            await OpenfortAuth.Logout(
+                this._publishableKey,
+                this._instanceManager.getAccessToken(),
+                this._instanceManager.getRefreshToken(),
             );
+
+            this._instanceManager.removeAccessToken();
+            this._instanceManager.removeRefreshToken();
         }
-        this._storage.remove(AuthTokenStorageKey);
-        this._storage.remove(RefreshTokenStorageKey);
-        this._storage.remove(PlayerIDStorageKey);
-        if (this._signer) {
-            await this._signer.logout();
-        }
+        this._instanceManager.removeJWK();
+        this._instanceManager.removePublishableKey();
+        this._instanceManager.removeDeviceID();
+        this._instanceManager.removePlayerID();
+        this._instanceManager.removeSignerType();
     }
 
+    private recoverPublishableKey() {
+        if (!this._publishableKey) {
+            this._publishableKey = this._instanceManager.getPublishableKey();
+        } else if (!this._instanceManager.getPublishableKey()) {
+            this._instanceManager.setPublishableKey(this._publishableKey);
+        }
+
+        if (!this._publishableKey) {
+            throw new MissingPublishableKey("Publishable key must be provided");
+        }
+    }
     public configureSessionKey(): SessionKey {
-        const signer = new SessionSigner(this._storage);
+        const signer = new SessionSigner(this._instanceManager);
         this._signer = signer;
+        this._instanceManager.setSignerType(SignerType.SESSION);
 
         const publicKey = signer.loadKeys();
         if (!publicKey) {
@@ -60,13 +74,15 @@ export default class Openfort {
         return {publicKey, isRegistered: true};
     }
 
-    public async configureEmbeddedSigner(chainId: number, iframeURL: string = undefined): Promise<void> {
+    public async configureEmbeddedSigner(): Promise<void> {
         if (!this.credentialsProvided()) {
             throw new NotLoggedIn("Must be logged in to configure embedded signer");
         }
 
-        const signer = new EmbeddedSigner(chainId, this._publishableKey, this._storage, iframeURL);
+        this.recoverPublishableKey();
+        const signer = new EmbeddedSigner(this._publishableKey, this._instanceManager);
         this._signer = signer;
+        this._instanceManager.setSignerType(SignerType.EMBEDDED);
 
         const loaded = await signer.isLoaded();
         if (!loaded) {
@@ -76,9 +92,14 @@ export default class Openfort {
         }
     }
 
-    public async configureEmbeddedSignerRecovery(recovery: IRecovery): Promise<void> {
+    public async configureEmbeddedSignerRecovery(recovery: IRecovery, chainId: number): Promise<void> {
         if (!this._signer) {
-            throw new EmbeddedNotConfigured("No embedded signer configured");
+            if (this._instanceManager.getSignerType() !== SignerType.EMBEDDED) {
+                throw new EmbeddedNotConfigured("No embedded signer configured");
+            }
+
+            this.recoverPublishableKey();
+            this._signer = new EmbeddedSigner(this._instanceManager.getPublishableKey(), this._instanceManager);
         }
 
         if (this._signer.getSingerType() !== SignerType.EMBEDDED) {
@@ -89,46 +110,37 @@ export default class Openfort {
         embeddedSigner.setRecovery(recovery);
 
         await this.validateAndRefreshToken();
-        await embeddedSigner.ensureEmbeddedAccount();
+        await embeddedSigner.ensureEmbeddedAccount(chainId);
     }
 
     public async loginWithEmailPassword(email: string, password: string): Promise<string> {
-        const result = await this._openfortAuth.loginEmailPassword(email, password);
+        this.recoverPublishableKey();
+        const result = await OpenfortAuth.LoginEmailPassword(this._publishableKey,email, password);
         this.storeCredentials(result);
         return result.accessToken;
     }
 
     public async signUpWithEmailPassword(email: string, password: string, name?: string): Promise<string> {
-        const result = await this._openfortAuth.signupEmailPassword(email, password, name);
+        this.recoverPublishableKey();
+        const result = await OpenfortAuth.SignupEmailPassword(this._publishableKey, email, password, name);
         this.storeCredentials(result);
         return result.accessToken;
     }
 
-    public async initOAuth(
-        provider: OAuthProvider,
-        options?: {
-            /** A URL to send the user to after they are confirmed. */
-            redirectTo?: string;
-            /** A space-separated list of scopes granted to the OAuth application. */
-            scopes?: string;
-            /** An object of query params */
-            queryParams?: {[key: string]: string};
-            /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
-            skipBrowserRedirect?: boolean;
-        },
-    ): Promise<OAuthInitResponse> {
-        return await this._openfortAuth.initOAuth(provider, options);
+    public async initOAuth(provider: OAuthProvider, options?: InitializeOAuthOptions): Promise<InitAuthResponse> {
+        this.recoverPublishableKey();
+        return await OpenfortAuth.InitOAuth(this._publishableKey, provider, options);
     }
 
-    public async authenticateWithOAuth(provider: OAuthProvider, token: string): Promise<string> {
-        const result = await this._openfortAuth.authenticateOAuth(provider, token);
+    public async authenticateOAuth(provider: OAuthProvider, token: string): Promise<string> {
+        this.recoverPublishableKey();
+        const result = await OpenfortAuth.AuthenticateOAuth(this._publishableKey, provider, token);
         this.storeCredentials(result);
         return result.accessToken;
     }
 
     public async initSIWE(address: string): Promise<SIWEInitResponse> {
-        const result = await this._openfortAuth.initSIWE(address);
-        return result;
+        return await OpenfortAuth.InitSIWE(this._publishableKey, address);
     }
 
     public async authenticateWithSIWE(
@@ -137,15 +149,16 @@ export default class Openfort {
         walletClientType: string,
         connectorType: string,
     ): Promise<string> {
-        const result = await this._openfortAuth.authenticateSIWE(signature, message, walletClientType, connectorType);
+        this.recoverPublishableKey();
+        const result = await OpenfortAuth.AuthenticateSIWE(this._publishableKey, signature, message, walletClientType, connectorType);
         this.storeCredentials(result);
         return result.accessToken;
     }
 
     private storeCredentials(auth: Auth): void {
-        this._storage.save(AuthTokenStorageKey, auth.accessToken);
-        this._storage.save(RefreshTokenStorageKey, auth.refreshToken);
-        this._storage.save(PlayerIDStorageKey, auth.player);
+        this._instanceManager.setAccessToken(auth.accessToken);
+        this._instanceManager.setRefreshToken(auth.refreshToken);
+        this._instanceManager.setPlayerID(auth.player);
     }
 
     public async sendSignatureTransactionIntentRequest(
@@ -158,6 +171,7 @@ export default class Openfort {
                 throw new NothingToSign("No user operation or signature provided");
             }
 
+            await this.recoverSigner();
             if (!this._signer) {
                 throw new NoSignerConfigured("In order to sign a transaction intent, a signer must be configured");
             }
@@ -166,7 +180,9 @@ export default class Openfort {
             signature = await this._signer.sign(userOp);
         }
 
-        const result = await this._transactionsApi.signature(transactionIntentId, {signature});
+        this.recoverPublishableKey();
+        const transactionsApi = new TransactionIntentsApi(new Configuration({accessToken: this._publishableKey}));
+        const result = await transactionsApi.signature(transactionIntentId, {signature});
         return result.data;
     }
 
@@ -176,29 +192,53 @@ export default class Openfort {
         optimistic?: boolean,
     ): Promise<SessionResponse> {
         if (!signature) {
+            await this.recoverSigner();
             if (!this._signer) {
-                throw new Error("No signer nor signature provided");
+                throw new NoSignerConfigured("No signer nor signature provided");
             }
 
             signature = await this._signer.sign(sessionId);
         }
-        const result = await this._sessionsApi.signatureSession(sessionId, {signature, optimistic});
+
+        this.recoverPublishableKey();
+        const sessionsApi = new SessionsApi(new Configuration({accessToken: this._publishableKey}));
+        const result = await sessionsApi.signatureSession(sessionId, {signature, optimistic});
         return result.data;
     }
 
-    private credentialsProvided() {
-        const token = this._storage.get(AuthTokenStorageKey);
-        const refreshToken = this._storage.get(RefreshTokenStorageKey);
-        const playerId = this._storage.get(PlayerIDStorageKey);
+    private async recoverSigner(): Promise<void> {
+        if (this._signer) {
+            return;
+        }
 
-        return token && refreshToken && playerId;
+        const signerType = this._instanceManager.getSignerType();
+        if (signerType === SignerType.EMBEDDED) {
+            await this.configureEmbeddedSigner();
+            return;
+        }
+
+        if (signerType === SignerType.SESSION) {
+            this.configureSessionKey();
+            return;
+        }
+
+        this._instanceManager.setSignerType(SignerType.NONE);
     }
 
-    public isAuthenticated() {
+    private credentialsProvided() {
+        const token = this._instanceManager.getAccessToken();
+        const refreshToken = this._instanceManager.getRefreshToken();
+
+        return token && refreshToken;
+    }
+
+    public async isAuthenticated(): Promise<boolean> {
         if (!this.credentialsProvided()) {
             return false;
         }
-        if (this._signer && this._signer.getSingerType() === SignerType.EMBEDDED) {
+
+        await this.recoverSigner();
+        if (this._instanceManager.getSignerType() === SignerType.EMBEDDED && this._signer) {
             if ((this._signer as EmbeddedSigner).getDeviceID() === null) {
                 return false;
             }
@@ -207,11 +247,11 @@ export default class Openfort {
     }
 
     public getAccessToken(): string {
-        return this._storage.get(AuthTokenStorageKey);
+        return this._instanceManager.getAccessToken();
     }
 
     public isLoaded(): boolean {
-        if (!this._openfortAuth.jwks) {
+        if (!this._instanceManager.getJWK()) {
             return false;
         }
 
@@ -227,11 +267,12 @@ export default class Openfort {
             return;
         }
 
-        const auth = await this._openfortAuth.verifyAndRefreshToken(
-            this._storage.get(AuthTokenStorageKey),
-            this._storage.get(RefreshTokenStorageKey),
-        );
-        if (auth.accessToken !== this._storage.get(AuthTokenStorageKey)) {
+        this.recoverPublishableKey();
+        const accessToken = this._instanceManager.getAccessToken();
+        const refreshToken = this._instanceManager.getRefreshToken();
+        const jwk = await this._instanceManager.getJWK();
+        const auth = await OpenfortAuth.ValidateCredentials(accessToken, refreshToken, jwk, this._publishableKey);
+        if (auth.accessToken !== accessToken) {
             this.storeCredentials(auth);
         }
         if (this._signer && this._signer.useCredentials()) {
@@ -284,3 +325,12 @@ export class NothingToSign extends Error {
         Object.setPrototypeOf(this, NothingToSign.prototype);
     }
 }
+
+export class MissingPublishableKey extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "MissingPublishableKey";
+        Object.setPrototypeOf(this, MissingPublishableKey.prototype);
+    }
+}
+

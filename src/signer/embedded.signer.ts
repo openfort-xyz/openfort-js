@@ -1,43 +1,36 @@
 import {IframeClient} from "../clients/iframe-client";
 import {Bytes} from "@ethersproject/bytes";
 import {ISigner, SignerType} from "./signer";
-import {AuthTokenStorageKey, IStorage} from "../storage/storage";
 import {IRecovery} from "../recovery/recovery";
+import {InstanceManager} from "../instanceManager";
 
 export class EmbeddedSigner implements ISigner {
     private _iframeClient: IframeClient;
-    private _deviceID: string | null = null;
     private readonly _publishableKey: string;
-    private _chainId: number;
-    private readonly _iframeURL: string | null;
-    private readonly _storage: IStorage;
+    private readonly _instanceManager: InstanceManager;
     private _recovery: IRecovery;
 
-    constructor(chainId: number, publishableKey: string, storage: IStorage, iframeURL?: string) {
-        this._storage = storage;
+    constructor(publishableKey: string, instanceManager: InstanceManager) {
+        this._instanceManager = instanceManager;
         this._publishableKey = publishableKey;
-        this._chainId = chainId;
-        this._iframeURL = iframeURL;
         this.configureIframeClient();
     }
 
     async logout(): Promise<void> {
         await this.dispose();
-        this._deviceID = null;
+        this._instanceManager.removeDeviceID();
     }
     useCredentials(): boolean {
         return true;
     }
     async updateAuthentication(): Promise<void> {
-        await this._iframeClient.updateAuthentication(this._storage.get(AuthTokenStorageKey));
+        await this._iframeClient.updateAuthentication(this._instanceManager.getAccessToken());
     }
 
     private configureIframeClient(): void {
         this._iframeClient = new IframeClient(
             this._publishableKey,
-            this._storage.get(AuthTokenStorageKey),
-            this._chainId,
-            this._iframeURL,
+            this._instanceManager.getAccessToken(),
         );
     }
 
@@ -45,24 +38,33 @@ export class EmbeddedSigner implements ISigner {
         return SignerType.EMBEDDED;
     }
 
-    public async ensureEmbeddedAccount(): Promise<string> {
-        if (this._deviceID) {
-            return this._deviceID;
+    public async ensureEmbeddedAccount(chainId: number): Promise<string> {
+        let deviceID = this._instanceManager.getDeviceID();
+        if (deviceID) {
+            return deviceID;
         }
 
-        this._deviceID = await this._iframeClient.getCurrentDevice();
-        if (this._deviceID) {
-            return this._deviceID;
+        deviceID = await this._iframeClient.getCurrentDevice();
+        if (deviceID) {
+            console.log("setting device id from ensureEmbeddedAccount "+deviceID);
+            this._instanceManager.setDeviceID(deviceID);
+            return deviceID;
         }
 
         if (!this._recovery) {
             throw new Error("Recovery is not set");
         }
-        return await this._iframeClient.createAccount(this._recovery.getRecoveryPassword());
+        deviceID = await this._iframeClient.createAccount(chainId, this._recovery.getRecoveryPassword());
+        this._instanceManager.setDeviceID(deviceID);
+        return deviceID;
     }
 
     public async sign(message: Bytes | string): Promise<string> {
-        await this.ensureEmbeddedAccount();
+        const loaded = await this.isLoaded();
+        if (!loaded) {
+            throw new Error("Signer is not loaded");
+        }
+
         return await this._iframeClient.sign(message as string);
     }
 
@@ -71,7 +73,7 @@ export class EmbeddedSigner implements ISigner {
     }
 
     public getDeviceID(): string | null {
-        return this._deviceID;
+        return this._instanceManager.getDeviceID();
     }
 
     public setRecovery(recovery: IRecovery): void {
@@ -79,13 +81,13 @@ export class EmbeddedSigner implements ISigner {
     }
 
     async isLoaded(): Promise<boolean> {
-        if (this._deviceID) {
+        if (this._instanceManager.getDeviceID()) {
             return true;
         }
 
         const localStorageDevice = await this._iframeClient.getCurrentDevice();
         if (localStorageDevice) {
-            this._deviceID = localStorageDevice;
+            this._instanceManager.setDeviceID(localStorageDevice);
             return true;
         }
 

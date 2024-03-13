@@ -8,7 +8,7 @@ export type Auth = {
     refreshToken: string;
 };
 
-export type OAuthInitResponse = {
+export type InitAuthResponse = {
     url: string;
     key: string;
 };
@@ -19,40 +19,29 @@ export type SIWEInitResponse = {
     expiresAt: number;
 };
 
+export type JWK = {
+    kty: string;
+    crv: string;
+    x: string;
+    y: string;
+    alg: string;
+};
+
+export type InitializeOAuthOptions = {
+    /** A URL to send the user to after they are confirmed. */
+    redirectTo?: string;
+    /** A space-separated list of scopes granted to the OAuth application. */
+    scopes?: string;
+    /** An object of query params */
+    queryParams?: {[key: string]: string};
+    /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
+    skipBrowserRedirect?: boolean;
+}
+
 export class OpenfortAuth {
-    private readonly _configuration: Configuration;
-    private _oauthApi?: AuthenticationApi;
-    private readonly _publishableKey: string;
-    private _jwks: KeyLike | Uint8Array;
-
-    constructor(publishableKey: string, basePath?: string) {
-        this._configuration = new Configuration({accessToken: publishableKey, basePath});
-        this._oauthApi = new AuthenticationApi(this._configuration);
-        this._publishableKey = publishableKey;
-
-        this.getJwks().then((jwtks) => {
-            this._jwks = jwtks;
-        });
-    }
-
-    public get jwks(): KeyLike | Uint8Array {
-        return this._jwks;
-    }
-
-    public async initOAuth(
-        provider: OAuthProvider,
-        options?: {
-            /** A URL to send the user to after they are confirmed. */
-            redirectTo?: string;
-            /** A space-separated list of scopes granted to the OAuth application. */
-            scopes?: string;
-            /** An object of query params */
-            queryParams?: {[key: string]: string};
-            /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
-            skipBrowserRedirect?: boolean;
-        },
-    ): Promise<OAuthInitResponse> {
-        const result = await this._oauthApi.initOAuth({provider, options});
+    public static async InitOAuth(publishableKey: string, provider: OAuthProvider, options?: InitializeOAuthOptions): Promise<InitAuthResponse> {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const result = await oauthApi.initOAuth({provider: provider, options});
         if (isBrowser() && !options.skipBrowserRedirect) {
             window.location.assign(result.data.url);
         }
@@ -62,8 +51,19 @@ export class OpenfortAuth {
         };
     }
 
-    public async initSIWE(address: string): Promise<SIWEInitResponse> {
-        const result = await this._oauthApi.initSIWE({address});
+    public static async AuthenticateOAuth(publishableKey: string, provider: OAuthProvider, token: string): Promise<Auth> {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const result = await oauthApi.authenticateOAuth({provider: provider, token: token});
+        return {
+            player: result.data.player.id,
+            accessToken: result.data.token,
+            refreshToken: result.data.refreshToken,
+        };
+    }
+
+    public static async InitSIWE(publishableKey: string, address: string): Promise<SIWEInitResponse> {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const result = await oauthApi.initSIWE({address});
         return {
             address: result.data.address,
             nonce: result.data.nonce,
@@ -71,13 +71,15 @@ export class OpenfortAuth {
         };
     }
 
-    public async authenticateSIWE(
+    public static async AuthenticateSIWE(
+        publishableKey: string,
         signature: string,
         message: string,
         walletClientType: string,
         connectorType: string,
     ): Promise<Auth> {
-        const result = await this._oauthApi.authenticateSIWE({signature, message, walletClientType, connectorType});
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const result = await oauthApi.authenticateSIWE({signature, message, walletClientType, connectorType});
         return {
             player: result.data.player.id,
             accessToken: result.data.token,
@@ -85,8 +87,9 @@ export class OpenfortAuth {
         };
     }
 
-    public async authenticateOAuth(provider: OAuthProvider, token: string): Promise<Auth> {
-        const result = await this._oauthApi.authenticateOAuth({provider: provider, token: token});
+    public static async LoginEmailPassword(publishableKey: string, email: string, password: string): Promise<Auth> {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const result = await oauthApi.loginEmailPassword({email, password});
         return {
             player: result.data.player.id,
             accessToken: result.data.token,
@@ -94,8 +97,9 @@ export class OpenfortAuth {
         };
     }
 
-    public async loginEmailPassword(email: string, password: string): Promise<Auth> {
-        const result = await this._oauthApi.loginEmailPassword({email, password});
+    public static async SignupEmailPassword(publishableKey: string, email: string, password: string, name?: string): Promise<Auth> {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const result = await oauthApi.signupEmailPassword({name: name, email, password});
         return {
             player: result.data.player.id,
             accessToken: result.data.token,
@@ -103,44 +107,45 @@ export class OpenfortAuth {
         };
     }
 
-    public async signupEmailPassword(email: string, password: string, name?: string): Promise<Auth> {
-        const result = await this._oauthApi.signupEmailPassword({name: name, email, password});
-        return {
-            player: result.data.player.id,
-            accessToken: result.data.token,
-            refreshToken: result.data.refreshToken,
-        };
-    }
-
-    public async getJwks(): Promise<KeyLike | Uint8Array> {
-        const jwtks = await this._oauthApi.getJwks(this._publishableKey);
+    public static async GetJWK(publishableKey: string): Promise<JWK> {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const jwtks = await oauthApi.getJwks(publishableKey);
         if (jwtks.data.keys.length === 0) {
             throw new Error("No keys found");
         }
 
         const jwtKey = jwtks.data.keys[0];
-        return await importJWK(
-            {
-                kty: jwtKey.kty,
-                crv: jwtKey.crv,
-                x: jwtKey.x,
-                y: jwtKey.y,
-            },
-            jwtKey.alg,
-        );
+        return {
+            kty: jwtKey.kty,
+            crv: jwtKey.crv,
+            x: jwtKey.x,
+            y: jwtKey.y,
+            alg: jwtKey.alg,
+        };
     }
 
-    public async verifyAndRefreshToken(token: string, refreshToken: string): Promise<Auth> {
+    public static async ValidateCredentials(accessToken: string, refreshToken: string, jwk: JWK, publishableKey: string): Promise<Auth> {
         try {
-            const verification = await jwtVerify(token, this._jwks);
+            const key = await importJWK(
+                {
+                    kty: jwk.kty,
+                    crv: jwk.crv,
+                    x: jwk.x,
+                    y: jwk.y,
+                },
+                jwk.alg,
+            ) as KeyLike;
+            const verification = await jwtVerify(accessToken, key);
             return {
                 player: verification.payload.sub,
-                accessToken: token,
+                accessToken: accessToken,
                 refreshToken,
             };
         } catch (error) {
             if (error instanceof errors.JWTExpired) {
-                const newToken = await this._oauthApi.refresh({refreshToken});
+                const configuration = new Configuration({accessToken: publishableKey, baseOptions: {withCredentials: true}});
+                const oauthApi = new AuthenticationApi(configuration);
+                const newToken = await oauthApi.refresh({refreshToken});
                 return {
                     player: newToken.data.player.id,
                     accessToken: newToken.data.token,
@@ -152,12 +157,14 @@ export class OpenfortAuth {
         }
     }
 
-    async logout(accessToken: string, refreshToken: string) {
-        await this._oauthApi.logout(
+
+    public static async Logout(publishableKey: string, accessToken: string, refreshToken: string) {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        await oauthApi.logout(
             {refreshToken},
             {
                 headers: {
-                    Authorization: `Bearer ${this._publishableKey}`,
+                    Authorization: `Bearer ${publishableKey}`,
                     "player-token": accessToken,
                 },
             },

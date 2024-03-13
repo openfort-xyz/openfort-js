@@ -1,14 +1,14 @@
 import {KeyPair} from "../crypto/key-pair";
 import {Bytes} from "@ethersproject/bytes";
 import {ISigner, SignerType} from "./signer";
-import {IStorage, SessionKeyStorageKey} from "../storage/storage";
+import {InstanceManager} from "../instanceManager";
 
 export class SessionSigner implements ISigner {
     private _sessionKey: KeyPair;
-    private readonly _storage: IStorage;
+    private readonly _instanceManager: InstanceManager;
 
-    constructor(storage: IStorage) {
-        this._storage = storage;
+    constructor(instanceManager: InstanceManager) {
+        this._instanceManager = instanceManager;
     }
 
     public sign(message: Bytes | string): Promise<string> {
@@ -18,7 +18,7 @@ export class SessionSigner implements ISigner {
     }
 
     logout(): Promise<void> {
-        this._storage.remove(SessionKeyStorageKey);
+        this._instanceManager.removeSessionKey();
         this._sessionKey = null;
         return Promise.resolve();
     }
@@ -27,7 +27,7 @@ export class SessionSigner implements ISigner {
             return this._sessionKey.getPublicKey();
         }
 
-        const sessionKey = this._storage.get(SessionKeyStorageKey);
+        const sessionKey = this._instanceManager.getSessionKey();
         if (!sessionKey) {
             return null;
         }
@@ -38,7 +38,7 @@ export class SessionSigner implements ISigner {
 
     generateKeys(): string {
         this._sessionKey = new KeyPair();
-        this._storage.save(SessionKeyStorageKey, this._sessionKey.getPrivateKey());
+        this._instanceManager.setSessionKey(this._sessionKey.getPrivateKey());
         return this._sessionKey.getPublicKey();
     }
 
