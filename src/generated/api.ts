@@ -3405,25 +3405,6 @@ export interface GasReportTransactionIntentsInner {
     'id': string;
 }
 /**
- * 
- * @export
- * @interface GetSigninUrlResponse
- */
-export interface GetSigninUrlResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof GetSigninUrlResponse
-     */
-    'url': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GetSigninUrlResponse
-     */
-    'key': string;
-}
-/**
  * Google oauth configuration
  * @export
  * @interface GoogleOAuthConfig
@@ -3453,12 +3434,6 @@ export interface GoogleOAuthConfig {
      * @memberof GoogleOAuthConfig
      */
     'clientSecret': string;
-    /**
-     * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/iam/v1/oauth/google/callback
-     * @type {string}
-     * @memberof GoogleOAuthConfig
-     */
-    'redirectUri': string;
 }
 
 
@@ -4677,12 +4652,6 @@ export interface OAuthConfig {
      */
     'clientSecret': string;
     /**
-     * The URI to redirect to after completing the auth request. You can use Openfort redirect URL: https://openfort.xyz/iam/v1/oauth/google/callback
-     * @type {string}
-     * @memberof OAuthConfig
-     */
-    'redirectUri': string;
-    /**
      * Title ID of your Play Fab gaming service environment.
      * @type {string}
      * @memberof OAuthConfig
@@ -4717,11 +4686,11 @@ export interface OAuthConfigListResponse {
  */
 export interface OAuthInitRequest {
     /**
-     * Access token to be verified
-     * @type {string}
+     * 
+     * @type {OAuthInitRequestOptions}
      * @memberof OAuthInitRequest
      */
-    'token': string;
+    'options'?: OAuthInitRequestOptions;
     /**
      * 
      * @type {OAuthProvider}
@@ -4731,6 +4700,37 @@ export interface OAuthInitRequest {
 }
 
 
+/**
+ * 
+ * @export
+ * @interface OAuthInitRequestOptions
+ */
+export interface OAuthInitRequestOptions {
+    /**
+     * If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider.
+     * @type {boolean}
+     * @memberof OAuthInitRequestOptions
+     */
+    'skipBrowserRedirect'?: boolean;
+    /**
+     * An object of query params
+     * @type {{ [key: string]: string; }}
+     * @memberof OAuthInitRequestOptions
+     */
+    'queryParams'?: { [key: string]: string; };
+    /**
+     * A space-separated list of scopes granted to the OAuth application.
+     * @type {string}
+     * @memberof OAuthInitRequestOptions
+     */
+    'scopes'?: string;
+    /**
+     * A URL to send the user to after they are confirmed.
+     * @type {string}
+     * @memberof OAuthInitRequestOptions
+     */
+    'redirectTo'?: string;
+}
 /**
  * Enum of the supporting OAuth providers.
  * @export
@@ -4825,6 +4825,25 @@ export interface OAuthRequest {
      * @memberof OAuthRequest
      */
     'token': string;
+}
+/**
+ * 
+ * @export
+ * @interface OAuthResponse
+ */
+export interface OAuthResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof OAuthResponse
+     */
+    'url': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OAuthResponse
+     */
+    'key': string;
 }
 /**
  * 
@@ -10822,7 +10841,7 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async initOAuth(oAuthInitRequest: OAuthInitRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSigninUrlResponse>> {
+        async initOAuth(oAuthInitRequest: OAuthInitRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.initOAuth(oAuthInitRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -10997,7 +11016,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        initOAuth(oAuthInitRequest: OAuthInitRequest, options?: any): AxiosPromise<GetSigninUrlResponse> {
+        initOAuth(oAuthInitRequest: OAuthInitRequest, options?: any): AxiosPromise<OAuthResponse> {
             return localVarFp.initOAuth(oAuthInitRequest, options).then((request) => request(axios, basePath));
         },
         /**
