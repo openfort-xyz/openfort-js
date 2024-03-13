@@ -45,14 +45,14 @@ With the Openfort Unity SDK, you can sign transaction intents using one of four 
 const sdk = new Openfort("pk_test_XXXXXXX");
 ```
 
-### 1. Session Signer
-The Session Signer allows you to use external signing keys, without needing to provide it every time. Here's how to use it:
+### 1. InstanceManager Signer
+The InstanceManager Signer allows you to use external signing keys, without needing to provide it every time. Here's how to use it:
 
-- **Configure the Session Key**: Call `configureSessionKey()`. This method returns an Ethereum address and a boolean indicating whether you need to register the key from the backend.
+- **Configure the InstanceManager Key**: Call `configureSessionKey()`. This method returns an Ethereum address and a boolean indicating whether you need to register the key from the backend.
 ```typescript
 const sessionKey = sdk.configureSessionKey();
 ```
-- **Register Key and Send Signature Session Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session management](https://www.openfort.xyz/docs/guides/accounts/sessions).
+- **Register Key and Send Signature InstanceManager Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session management](https://www.openfort.xyz/docs/guides/accounts/sessions).
 - **Send Signature Transaction Intent Request**: When calling sendSignatureTransactionIntentRequest, pass the transaction intent ID and the user operation hash. The session signer will handle the signing.
 
 ### 2. External Sign
