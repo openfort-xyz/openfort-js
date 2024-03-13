@@ -7,7 +7,7 @@ import {
     TransactionIntentsApi,
 } from "./generated";
 import {ISigner, SignerType} from "./signer/signer";
-import {Auth, InitAuthResponse, OpenfortAuth} from "./openfortAuth";
+import {Auth, InitAuthResponse, InitializeOAuthOptions, OpenfortAuth, SIWEInitResponse} from "./openfortAuth";
 import {LocalStorage} from "./storage/localStorage";
 import {SessionSigner} from "./signer/session.signer";
 import {EmbeddedSigner} from "./signer/embedded.signer";
@@ -127,14 +127,30 @@ export default class Openfort {
         return result.accessToken;
     }
 
-    public async initOAuth(provider: OAuthProvider): Promise<InitAuthResponse> {
+    public async initOAuth(provider: OAuthProvider, options?: InitializeOAuthOptions): Promise<InitAuthResponse> {
         this.recoverPublishableKey();
-        return await OpenfortAuth.InitOAuth(this._publishableKey, provider);
+        return await OpenfortAuth.InitOAuth(this._publishableKey, provider, options);
     }
 
-    public async authenticateOAuth(provider: OAuthProvider, key: string): Promise<string> {
+    public async authenticateOAuth(provider: OAuthProvider, token: string): Promise<string> {
         this.recoverPublishableKey();
-        const result = await OpenfortAuth.AuthenticateOAuth(this._publishableKey, provider, key);
+        const result = await OpenfortAuth.AuthenticateOAuth(this._publishableKey, provider, token);
+        this.storeCredentials(result);
+        return result.accessToken;
+    }
+
+    public async initSIWE(address: string): Promise<SIWEInitResponse> {
+        return await OpenfortAuth.InitSIWE(this._publishableKey, address);
+    }
+
+    public async authenticateWithSIWE(
+        signature: string,
+        message: string,
+        walletClientType: string,
+        connectorType: string,
+    ): Promise<string> {
+        this.recoverPublishableKey();
+        const result = await OpenfortAuth.AuthenticateSIWE(this._publishableKey, signature, message, walletClientType, connectorType);
         this.storeCredentials(result);
         return result.accessToken;
     }
@@ -317,3 +333,4 @@ export class MissingPublishableKey extends Error {
         Object.setPrototypeOf(this, MissingPublishableKey.prototype);
     }
 }
+

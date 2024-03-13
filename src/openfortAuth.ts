@@ -1,5 +1,6 @@
 import {Configuration, OAuthProvider, AuthenticationApi} from "./generated";
 import {errors, importJWK, jwtVerify, KeyLike} from "jose";
+import {isBrowser} from "./lib/helpers";
 
 export type Auth = {
     player: string;
@@ -12,6 +13,12 @@ export type InitAuthResponse = {
     key: string;
 };
 
+export type SIWEInitResponse = {
+    address: string;
+    nonce: string;
+    expiresAt: number;
+};
+
 export type JWK = {
     kty: string;
     crv: string;
@@ -20,19 +27,59 @@ export type JWK = {
     alg: string;
 };
 
+export type InitializeOAuthOptions = {
+    /** A URL to send the user to after they are confirmed. */
+    redirectTo?: string;
+    /** A space-separated list of scopes granted to the OAuth application. */
+    scopes?: string;
+    /** An object of query params */
+    queryParams?: {[key: string]: string};
+    /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
+    skipBrowserRedirect?: boolean;
+}
+
 export class OpenfortAuth {
-    public static async InitOAuth(publishableKey: string, provider: OAuthProvider): Promise<InitAuthResponse> {
+    public static async InitOAuth(publishableKey: string, provider: OAuthProvider, options?: InitializeOAuthOptions): Promise<InitAuthResponse> {
         const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
-        const result = await oauthApi.initOAuth({token: "", provider: provider});
+        const result = await oauthApi.initOAuth({provider: provider, options});
+        if (isBrowser() && !options.skipBrowserRedirect) {
+            window.location.assign(result.data.url);
+        }
         return {
             url: result.data.url,
             key: result.data.key,
         };
     }
 
-    public static async AuthenticateOAuth(publishableKey: string, provider: OAuthProvider, key: string): Promise<Auth> {
+    public static async AuthenticateOAuth(publishableKey: string, provider: OAuthProvider, token: string): Promise<Auth> {
         const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
-        const result = await oauthApi.authenticateOAuth({provider: provider, token: key});
+        const result = await oauthApi.authenticateOAuth({provider: provider, token: token});
+        return {
+            player: result.data.player.id,
+            accessToken: result.data.token,
+            refreshToken: result.data.refreshToken,
+        };
+    }
+
+    public static async InitSIWE(publishableKey: string, address: string): Promise<SIWEInitResponse> {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const result = await oauthApi.initSIWE({address});
+        return {
+            address: result.data.address,
+            nonce: result.data.nonce,
+            expiresAt: result.data.expiresAt,
+        };
+    }
+
+    public static async AuthenticateSIWE(
+        publishableKey: string,
+        signature: string,
+        message: string,
+        walletClientType: string,
+        connectorType: string,
+    ): Promise<Auth> {
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
+        const result = await oauthApi.authenticateSIWE({signature, message, walletClientType, connectorType});
         return {
             player: result.data.player.id,
             accessToken: result.data.token,
