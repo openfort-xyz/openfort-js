@@ -26,13 +26,10 @@ export default class Openfort {
         this._publishableKey = publishableKey;
     }
 
+
     public async logout(): Promise<void> {
+        await this.flushSigner();
         if (this.credentialsProvided()) {
-            this.recoverPublishableKey();
-            await this.recoverSigner();
-            if (this._signer) {
-                await this._signer.logout();
-            }
             await OpenfortAuth.Logout(
                 this._publishableKey,
                 this._instanceManager.getAccessToken(),
@@ -41,29 +38,51 @@ export default class Openfort {
 
             this._instanceManager.removeAccessToken();
             this._instanceManager.removeRefreshToken();
+            this._instanceManager.removeJWK();
         }
-        this._instanceManager.removeJWK();
         this._instanceManager.removePublishableKey();
-        this._instanceManager.removeDeviceID();
-        this._instanceManager.removePlayerID();
+    }
+
+    private async flushSigner(): Promise<void> {
+        if (!this._signer) {
+            const signerType = this._instanceManager.getSignerType();
+            if (signerType === SignerType.EMBEDDED) {
+                this.recoverPublishableKey();
+                const signer = new EmbeddedSigner(this._publishableKey, this._instanceManager);
+                await signer.logout();
+                this._instanceManager.removeSignerType();
+                return;
+            }
+
+            if (signerType === SignerType.SESSION) {
+                this.configureSessionKey();
+                await  this._signer.logout();
+                this._instanceManager.removeSignerType();
+                return;
+            }
+
+            return;
+        }
+
+        await this._signer.logout();
         this._instanceManager.removeSignerType();
     }
 
     private recoverPublishableKey() {
-        if (!this._publishableKey) {
-            this._publishableKey = this._instanceManager.getPublishableKey();
-        } else if (!this._instanceManager.getPublishableKey()) {
+        if (this._publishableKey) {
             this._instanceManager.setPublishableKey(this._publishableKey);
+            return;
         }
 
+        this._publishableKey = this._instanceManager.getPublishableKey();
         if (!this._publishableKey) {
             throw new MissingPublishableKey("Publishable key must be provided");
         }
     }
+
     public configureSessionKey(): SessionKey {
         const signer = new SessionSigner(this._instanceManager);
         this._signer = signer;
-        this._instanceManager.setSignerType(SignerType.SESSION);
 
         const publicKey = signer.loadKeys();
         if (!publicKey) {
@@ -71,18 +90,12 @@ export default class Openfort {
             return {publicKey: newPublicKey, isRegistered: false};
         }
 
+        this._instanceManager.setSignerType(SignerType.SESSION);
         return {publicKey, isRegistered: true};
     }
 
     public async configureEmbeddedSigner(): Promise<void> {
-        if (!this.credentialsProvided()) {
-            throw new NotLoggedIn("Must be logged in to configure embedded signer");
-        }
-
-        this.recoverPublishableKey();
-        const signer = new EmbeddedSigner(this._publishableKey, this._instanceManager);
-        this._signer = signer;
-        this._instanceManager.setSignerType(SignerType.EMBEDDED);
+        const signer = this.newEmbeddedSigner();
 
         const loaded = await signer.isLoaded();
         if (!loaded) {
@@ -90,27 +103,28 @@ export default class Openfort {
                 "This device has not been configured, in order to recover your account or create a new one you must provide recovery method",
             );
         }
+
+        this._signer = signer;
+        this._instanceManager.setSignerType(SignerType.EMBEDDED);
+    }
+
+    private newEmbeddedSigner(): EmbeddedSigner {
+        if (!this.credentialsProvided()) {
+            throw new NotLoggedIn("Must be logged in to configure embedded signer");
+        }
+
+        this.recoverPublishableKey();
+        return new EmbeddedSigner(this._publishableKey, this._instanceManager);
     }
 
     public async configureEmbeddedSignerRecovery(recovery: IRecovery, chainId: number): Promise<void> {
-        if (!this._signer) {
-            if (this._instanceManager.getSignerType() !== SignerType.EMBEDDED) {
-                throw new EmbeddedNotConfigured("No embedded signer configured");
-            }
-
-            this.recoverPublishableKey();
-            this._signer = new EmbeddedSigner(this._instanceManager.getPublishableKey(), this._instanceManager);
-        }
-
-        if (this._signer.getSingerType() !== SignerType.EMBEDDED) {
-            throw new EmbeddedNotConfigured("Signer must be embedded signer");
-        }
-
-        const embeddedSigner = this._signer as EmbeddedSigner;
-        embeddedSigner.setRecovery(recovery);
+        const signer = this.newEmbeddedSigner();
+        signer.setRecovery(recovery);
 
         await this.validateAndRefreshToken();
-        await embeddedSigner.ensureEmbeddedAccount(chainId);
+        await signer.ensureEmbeddedAccount(chainId);
+        this._signer = signer;
+        this._instanceManager.setSignerType(SignerType.EMBEDDED);
     }
 
     public async loginWithEmailPassword(email: string, password: string): Promise<string> {
@@ -158,7 +172,6 @@ export default class Openfort {
     private storeCredentials(auth: Auth): void {
         this._instanceManager.setAccessToken(auth.accessToken);
         this._instanceManager.setRefreshToken(auth.refreshToken);
-        this._instanceManager.setPlayerID(auth.player);
     }
 
     public async sendSignatureTransactionIntentRequest(
@@ -176,32 +189,37 @@ export default class Openfort {
                 throw new NoSignerConfigured("In order to sign a transaction intent, a signer must be configured");
             }
 
-            await this.validateAndRefreshToken();
+            if (this._signer.useCredentials()) {
+                await this.validateAndRefreshToken();
+            }
+
             signature = await this._signer.sign(userOp);
         }
 
         this.recoverPublishableKey();
-        const transactionsApi = new TransactionIntentsApi(new Configuration({accessToken: this._publishableKey}));
+        const transactionsApi = new TransactionIntentsApi(new Configuration({accessToken: this._publishableKey}), "http://localhost:3000");
         const result = await transactionsApi.signature(transactionIntentId, {signature});
         return result.data;
     }
 
     public async sendSignatureSessionRequest(
         sessionId: string,
-        signature?: string,
+        signature: string,
         optimistic?: boolean,
     ): Promise<SessionResponse> {
-        if (!signature) {
-            await this.recoverSigner();
-            if (!this._signer) {
-                throw new NoSignerConfigured("No signer nor signature provided");
-            }
-
-            signature = await this._signer.sign(sessionId);
+        await this.recoverSigner();
+        if (!this._signer) {
+            throw new NoSignerConfigured("No signer nor signature provided");
         }
 
+        if (this._signer.getSingerType() !== SignerType.SESSION) {
+            throw new NoSignerConfigured("Session signer must be configured to sign a session");
+        }
+
+        signature = await this._signer.sign(sessionId);
+
         this.recoverPublishableKey();
-        const sessionsApi = new SessionsApi(new Configuration({accessToken: this._publishableKey}));
+        const sessionsApi = new SessionsApi(new Configuration({accessToken: this._publishableKey}), "http://localhost:3000");
         const result = await sessionsApi.signatureSession(sessionId, {signature, optimistic});
         return result.data;
     }
@@ -212,6 +230,7 @@ export default class Openfort {
         }
 
         const signerType = this._instanceManager.getSignerType();
+
         if (signerType === SignerType.EMBEDDED) {
             await this.configureEmbeddedSigner();
             return;
@@ -222,8 +241,22 @@ export default class Openfort {
             return;
         }
 
-        this._instanceManager.setSignerType(SignerType.NONE);
+        await this.waitSigner();
     }
+
+    private async waitSigner(): Promise<void> {
+        const retries = 100;
+
+        for (let i = 0; i < retries; i++) {
+            const signerType = this._instanceManager.getSignerType();
+            if (signerType) {
+                return;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+    }
+
+
 
     private credentialsProvided() {
         const token = this._instanceManager.getAccessToken();
@@ -237,13 +270,20 @@ export default class Openfort {
             return false;
         }
 
-        await this.recoverSigner();
-        if (this._instanceManager.getSignerType() === SignerType.EMBEDDED && this._signer) {
-            if ((this._signer as EmbeddedSigner).getDeviceID() === null) {
+        if (!this._signer) {
+            const signerType = this._instanceManager.getSignerType();
+            if (signerType !== SignerType.EMBEDDED) {
                 return false;
             }
+            const signer = this.newEmbeddedSigner();
+            return await signer.isLoaded();
         }
-        return true;
+
+        if (this._signer.getSingerType() !== SignerType.EMBEDDED) {
+            return false;
+        }
+
+        return await (this._signer as EmbeddedSigner).isLoaded();
     }
 
     public getAccessToken(): string {

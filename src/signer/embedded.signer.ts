@@ -17,7 +17,7 @@ export class EmbeddedSigner implements ISigner {
     }
 
     async logout(): Promise<void> {
-        await this.dispose();
+        await this._iframeClient.logout();
         this._instanceManager.removeDeviceID();
     }
     useCredentials(): boolean {
@@ -66,10 +66,6 @@ export class EmbeddedSigner implements ISigner {
         }
 
         return await this._iframeClient.sign(message as string);
-    }
-
-    public async dispose(): Promise<void> {
-        await this._iframeClient.dispose();
     }
 
     public getDeviceID(): string | null {

@@ -4,7 +4,6 @@ import {
     DeviceIDStorageKey,
     IStorage,
     JWKStorageKey,
-    PlayerIDStorageKey,
     PublishableKeyStorageKey,
     RefreshTokenStorageKey, SessionKeyStorageKey,
     SignerTypeStorageKey,
@@ -15,9 +14,7 @@ export class InstanceManager {
     private _publishableKey: string;
     private _authToken: string;
     private _refreshToken: string;
-    private _playerID: string;
     private _signerType: SignerType;
-    private _chainId: number;
     private _jwk: JWK;
     private _sessionKey: string;
     private _deviceID: string;
@@ -89,53 +86,6 @@ export class InstanceManager {
         this._secureStorage.remove(RefreshTokenStorageKey);
     }
 
-    public setPlayerID(playerID: string): void {
-        this._playerID = playerID;
-        this._temporalStorage.save(PlayerIDStorageKey, playerID);
-    }
-
-    public async getPlayerID(): Promise<string> {
-        if (!this._playerID) {
-            this._playerID = this._temporalStorage.get(PlayerIDStorageKey);
-        }
-
-        if (this._playerID) {
-            return this._playerID;
-        }
-
-        const signerType = this.getSignerType();
-        if (signerType !== SignerType.EMBEDDED) {
-            return "";
-        }
-
-        const publishableKey = this.getPublishableKey();
-        if (!publishableKey) {
-            return "";
-        }
-
-        const jwk = await this.getJWK();
-        if (!jwk) {
-            return "";
-        }
-
-        const accessToken = this.getAccessToken();
-        const refreshToken = this.getRefreshToken();
-        if (!accessToken || !refreshToken) {
-            return "";
-        }
-
-        const auth = await OpenfortAuth.ValidateCredentials(accessToken, refreshToken, jwk, publishableKey);
-        this.setAccessToken(auth.accessToken);
-        this.setRefreshToken(auth.refreshToken);
-        this.setPlayerID(auth.player);
-        return this._playerID;
-    }
-
-    public removePlayerID(): void {
-        this._playerID = null;
-        this._temporalStorage.remove(PlayerIDStorageKey);
-    }
-
     public setSignerType(signerType: SignerType): void {
         this._signerType = signerType;
         this._temporalStorage.save(SignerTypeStorageKey, signerType);
@@ -152,13 +102,13 @@ export class InstanceManager {
 
         if (this.getSessionKey()) {
             this._signerType = SignerType.SESSION;
+            return this._signerType;
         } else if (this.getDeviceID()) {
             this._signerType = SignerType.EMBEDDED;
-        } else {
-            this._signerType = SignerType.NONE;
+            return this._signerType;
         }
 
-        return this._signerType;
+        return null;
     }
 
     public removeSignerType(): void {
@@ -169,7 +119,7 @@ export class InstanceManager {
     public setJWK(jwk: JWK): void {
         this._jwk = jwk;
         console.log("Setting JWK "+JSON.stringify(jwk));
-        this._temporalStorage.save(JWKStorageKey, JSON.stringify(jwk));
+        this._temporalStorage.save(JWKStorageKey, this.jwkToString(jwk));
     }
 
     private jwkToString(jwk: JWK): string {
