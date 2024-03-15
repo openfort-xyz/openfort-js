@@ -8,7 +8,7 @@ export class IframeClient {
 
         const actualIframeURL = document.getElementById("openfort-iframe");
         if (actualIframeURL) {
-            actualIframeURL.src = "https://iframe.openfort.xyz/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
+            actualIframeURL.setAttribute("src", "https://iframe.openfort.xyz/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey);
             this._iframe = actualIframeURL as HTMLIFrameElement;
             return;
         }
