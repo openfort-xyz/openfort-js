@@ -8,6 +8,7 @@ export class IframeClient {
 
         const actualIframeURL = document.getElementById("openfort-iframe");
         if (actualIframeURL) {
+            actualIframeURL.setAttribute("src", "https://iframe.openfort.xyz/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey);
             this._iframe = actualIframeURL as HTMLIFrameElement;
             return;
         }
@@ -18,6 +19,13 @@ export class IframeClient {
         this._iframe.style.display = "none";
         this._iframe.id = "openfort-iframe";
         document.body.appendChild(this._iframe);
+    }
+
+    public dispose(): void {
+        const iframe = document.getElementById("openfort-iframe");
+        if (iframe) {
+            iframe.remove();
+        }
     }
 
     public isLoaded(): boolean {
