@@ -129,6 +129,8 @@ export default class Openfort {
 
     public async loginWithEmailPassword(email: string, password: string): Promise<string> {
         this.recoverPublishableKey();
+        this._instanceManager.removeAccessToken();
+        this._instanceManager.removeRefreshToken();
         const result = await OpenfortAuth.LoginEmailPassword(this._publishableKey,email, password);
         this.storeCredentials(result);
         return result.accessToken;
@@ -136,6 +138,8 @@ export default class Openfort {
 
     public async signUpWithEmailPassword(email: string, password: string, name?: string): Promise<string> {
         this.recoverPublishableKey();
+        this._instanceManager.removeAccessToken();
+        this._instanceManager.removeRefreshToken();
         const result = await OpenfortAuth.SignupEmailPassword(this._publishableKey, email, password, name);
         this.storeCredentials(result);
         return result.accessToken;
@@ -148,6 +152,8 @@ export default class Openfort {
 
     public async authenticateOAuth(provider: OAuthProvider, token: string): Promise<string> {
         this.recoverPublishableKey();
+        this._instanceManager.removeAccessToken();
+        this._instanceManager.removeRefreshToken();
         const result = await OpenfortAuth.AuthenticateOAuth(this._publishableKey, provider, token);
         this.storeCredentials(result);
         return result.accessToken;
@@ -164,6 +170,8 @@ export default class Openfort {
         connectorType: string,
     ): Promise<string> {
         this.recoverPublishableKey();
+        this._instanceManager.removeAccessToken();
+        this._instanceManager.removeRefreshToken();
         const result = await OpenfortAuth.AuthenticateSIWE(this._publishableKey, signature, message, walletClientType, connectorType);
         this.storeCredentials(result);
         return result.accessToken;
