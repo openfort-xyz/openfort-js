@@ -6,10 +6,10 @@ export class IframeClient {
             throw new Error("must be run in a browser");
         }
 
-        const actualIframeURL = document.getElementById("openfort-iframe");
+        const actualIframeURL = document.getElementById("openfort-iframe") as HTMLIFrameElement;
         if (actualIframeURL) {
-            actualIframeURL.setAttribute("src", "https://iframe.openfort.xyz/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey);
-            this._iframe = actualIframeURL as HTMLIFrameElement;
+            actualIframeURL.src = "https://iframe.openfort.xyz/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
+            this._iframe = actualIframeURL;
             return;
         }
 
@@ -19,13 +19,6 @@ export class IframeClient {
         this._iframe.style.display = "none";
         this._iframe.id = "openfort-iframe";
         document.body.appendChild(this._iframe);
-    }
-
-    public dispose(): void {
-        const iframe = document.getElementById("openfort-iframe");
-        if (iframe) {
-            iframe.remove();
-        }
     }
 
     public isLoaded(): boolean {
@@ -57,14 +50,16 @@ export class IframeClient {
 
             window.addEventListener("message", handleMessage);
 
-            this._iframe.contentWindow?.postMessage(
-                {
-                    action: "generateKey",
-                    password: password,
-                    chainId: chainId,
-                },
-                "*",
-            );
+            setTimeout(() => {
+                this._iframe.contentWindow?.postMessage(
+                    {
+                        action: "generateKey",
+                        password: password,
+                        chainId: chainId,
+                    },
+                    "*",
+                );
+            }, 1000);
         });
     }
 
