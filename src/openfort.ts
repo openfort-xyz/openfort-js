@@ -15,7 +15,6 @@ import {IRecovery} from "./recovery/recovery";
 import {InstanceManager} from "./instanceManager";
 import {SessionStorage} from "./storage/sessionStorage";
 
-
 export default class Openfort {
     private _signer?: ISigner;
     private _publishableKey: string;
@@ -264,7 +263,25 @@ export default class Openfort {
         }
     }
 
+    public getEmbeddedState(): EmbeddedState {
+        if (!this.credentialsProvided()) {
+            return EmbeddedState.UNAUTHENTICATED;
+        }
 
+        if (!this._signer) {
+            return EmbeddedState.MISSING_RECOVERY_METHOD;
+        }
+
+        if (this._signer.getSingerType() !== SignerType.EMBEDDED) {
+            return EmbeddedState.MISSING_RECOVERY_METHOD;
+        }
+
+        if (!this._instanceManager.getDeviceID()) {
+            return EmbeddedState.CREATING_ACCOUNT;
+        }
+
+        return EmbeddedState.READY;
+    }
 
     private credentialsProvided() {
         const token = this._instanceManager.getAccessToken();
@@ -327,6 +344,14 @@ export default class Openfort {
             await this._signer.updateAuthentication();
         }
     }
+}
+
+export enum EmbeddedState {
+    NONE,
+    UNAUTHENTICATED,
+    MISSING_RECOVERY_METHOD,
+    CREATING_ACCOUNT,
+    READY,
 }
 
 export type SessionKey = {
