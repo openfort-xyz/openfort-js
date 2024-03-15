@@ -19,6 +19,7 @@ export class EmbeddedSigner implements ISigner {
     async logout(): Promise<void> {
         await this._iframeClient.logout();
         this._instanceManager.removeDeviceID();
+        this._iframeClient.dispose();
     }
     useCredentials(): boolean {
         return true;
