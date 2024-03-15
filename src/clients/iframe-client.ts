@@ -13,7 +13,7 @@ export class IframeClient {
         }
 
         this._iframe = document.createElement("iframe");
-        const baseURL = "http://localhost:3003"; // "https://iframe.openfort.xyz";
+        const baseURL = "https://iframe.openfort.xyz";
         this._iframe.src = baseURL + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
         this._iframe.style.display = "none";
         this._iframe.id = "openfort-iframe";

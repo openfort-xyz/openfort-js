@@ -197,7 +197,7 @@ export default class Openfort {
         }
 
         this.recoverPublishableKey();
-        const transactionsApi = new TransactionIntentsApi(new Configuration({accessToken: this._publishableKey}), "http://localhost:3000");
+        const transactionsApi = new TransactionIntentsApi(new Configuration({accessToken: this._publishableKey}));
         const result = await transactionsApi.signature(transactionIntentId, {signature});
         return result.data;
     }
@@ -219,7 +219,7 @@ export default class Openfort {
         signature = await this._signer.sign(sessionId);
 
         this.recoverPublishableKey();
-        const sessionsApi = new SessionsApi(new Configuration({accessToken: this._publishableKey}), "http://localhost:3000");
+        const sessionsApi = new SessionsApi(new Configuration({accessToken: this._publishableKey}));
         const result = await sessionsApi.signatureSession(sessionId, {signature, optimistic});
         return result.data;
     }

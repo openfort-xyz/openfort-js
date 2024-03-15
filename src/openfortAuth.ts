@@ -40,7 +40,7 @@ export type InitializeOAuthOptions = {
 
 export class OpenfortAuth {
     public static async InitOAuth(publishableKey: string, provider: OAuthProvider, options?: InitializeOAuthOptions): Promise<InitAuthResponse> {
-        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}), "http://localhost:3000");
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         const result = await oauthApi.initOAuth({provider: provider, options});
         if (isBrowser() && !options.skipBrowserRedirect) {
             window.location.assign(result.data.url);
@@ -52,7 +52,7 @@ export class OpenfortAuth {
     }
 
     public static async AuthenticateOAuth(publishableKey: string, provider: OAuthProvider, token: string): Promise<Auth> {
-        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}), "http://localhost:3000");
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         const result = await oauthApi.authenticateOAuth({provider: provider, token: token});
         return {
             player: result.data.player.id,
@@ -62,7 +62,7 @@ export class OpenfortAuth {
     }
 
     public static async InitSIWE(publishableKey: string, address: string): Promise<SIWEInitResponse> {
-        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}), "http://localhost:3000");
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         const result = await oauthApi.initSIWE({address});
         return {
             address: result.data.address,
@@ -78,7 +78,7 @@ export class OpenfortAuth {
         walletClientType: string,
         connectorType: string,
     ): Promise<Auth> {
-        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}), "http://localhost:3000");
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         const result = await oauthApi.authenticateSIWE({signature, message, walletClientType, connectorType});
         return {
             player: result.data.player.id,
@@ -88,7 +88,7 @@ export class OpenfortAuth {
     }
 
     public static async LoginEmailPassword(publishableKey: string, email: string, password: string): Promise<Auth> {
-        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}),"http://localhost:3000");
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         const result = await oauthApi.loginEmailPassword({email, password});
         return {
             player: result.data.player.id,
@@ -98,7 +98,7 @@ export class OpenfortAuth {
     }
 
     public static async SignupEmailPassword(publishableKey: string, email: string, password: string, name?: string): Promise<Auth> {
-        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}), "http://localhost:3000");
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         const result = await oauthApi.signupEmailPassword({name: name, email, password});
         return {
             player: result.data.player.id,
@@ -108,7 +108,7 @@ export class OpenfortAuth {
     }
 
     public static async GetJWK(publishableKey: string): Promise<JWK> {
-        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}),"http://localhost:3000");
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         const jwtks = await oauthApi.getJwks(publishableKey);
         if (jwtks.data.keys.length === 0) {
             throw new Error("No keys found");
@@ -144,7 +144,7 @@ export class OpenfortAuth {
         } catch (error) {
             if (error instanceof errors.JWTExpired) {
                 const configuration = new Configuration({accessToken: publishableKey, baseOptions: {withCredentials: true}});
-                const oauthApi = new AuthenticationApi(configuration, "http://localhost:3000");
+                const oauthApi = new AuthenticationApi(configuration);
                 const newToken = await oauthApi.refresh({refreshToken});
                 return {
                     player: newToken.data.player.id,
@@ -159,7 +159,7 @@ export class OpenfortAuth {
 
 
     public static async Logout(publishableKey: string, accessToken: string, refreshToken: string) {
-        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}), "http://localhost:3000");
+        const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         await oauthApi.logout(
             {refreshToken},
             {
