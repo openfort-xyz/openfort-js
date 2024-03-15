@@ -268,12 +268,12 @@ export default class Openfort {
             return EmbeddedState.UNAUTHENTICATED;
         }
 
-        if (!this._signer) {
+        if (this._signer.getSingerType() !== SignerType.EMBEDDED) {
             return EmbeddedState.MISSING_RECOVERY_METHOD;
         }
 
-        if (this._signer.getSingerType() !== SignerType.EMBEDDED) {
-            return EmbeddedState.MISSING_RECOVERY_METHOD;
+        if (!this._signer) {
+            this._signer = this.newEmbeddedSigner();
         }
 
         if (!this._instanceManager.getDeviceID()) {
