@@ -5,7 +5,8 @@ export class IframeClient {
         if (!document) {
             throw new Error("must be run in a browser");
         }
-        const baseURL = process.env.IFRAME_URL || "https://iframe.openfort.xyz";
+
+        const baseURL = process.env.IFRAME_URL || process.env.NEXT_PUBLIC_IFRAME_URL || "https://iframe.openfort.xyz";
 
         const actualIframeURL = document.getElementById("openfort-iframe") as HTMLIFrameElement;
         if (actualIframeURL) {
