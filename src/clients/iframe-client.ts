@@ -5,16 +5,16 @@ export class IframeClient {
         if (!document) {
             throw new Error("must be run in a browser");
         }
+        const baseURL = process.env.IFRAME_URL || "https://iframe.openfort.xyz";
 
         const actualIframeURL = document.getElementById("openfort-iframe") as HTMLIFrameElement;
         if (actualIframeURL) {
-            actualIframeURL.src = "https://iframe.openfort.xyz/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
+            actualIframeURL.src = baseURL + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
             this._iframe = actualIframeURL;
             return;
         }
 
         this._iframe = document.createElement("iframe");
-        const baseURL = "https://iframe.openfort.xyz";
         this._iframe.src = baseURL + "/iframe?accessToken=" + accessToken + "&publishableKey=" + publishableKey;
         this._iframe.style.display = "none";
         this._iframe.id = "openfort-iframe";
