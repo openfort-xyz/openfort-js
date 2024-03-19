@@ -1,12 +1,10 @@
 export class IframeClient {
     private readonly _iframe: HTMLIFrameElement;
 
-    constructor(publishableKey: string, accessToken: string) {
+    constructor(publishableKey: string, accessToken: string, baseURL = "https://iframe.openfort.xyz") {
         if (!document) {
             throw new Error("must be run in a browser");
         }
-
-        const baseURL = process.env.IFRAME_URL || process.env.NEXT_PUBLIC_IFRAME_URL || "https://iframe.openfort.xyz";
 
         const actualIframeURL = document.getElementById("openfort-iframe") as HTMLIFrameElement;
         if (actualIframeURL) {

@@ -18,10 +18,12 @@ import {SessionStorage} from "./storage/sessionStorage";
 export default class Openfort {
     private _signer?: ISigner;
     private _publishableKey: string;
+    private readonly _iframeURL: string;
     private readonly _instanceManager: InstanceManager;
 
-    constructor(publishableKey: string = null) {
+    constructor(publishableKey: string = null, iframeURL = "https://iframe.openfort.xyz") {
         this._instanceManager = new InstanceManager(new SessionStorage(), new LocalStorage(), new LocalStorage());
+        this._iframeURL = iframeURL;
         this._publishableKey = publishableKey;
     }
 
@@ -47,7 +49,7 @@ export default class Openfort {
             const signerType = this._instanceManager.getSignerType();
             if (signerType === SignerType.EMBEDDED) {
                 this.recoverPublishableKey();
-                const signer = new EmbeddedSigner(this._publishableKey, this._instanceManager);
+                const signer = new EmbeddedSigner(this._publishableKey, this._instanceManager, this._iframeURL);
                 await signer.logout();
                 this._instanceManager.removeSignerType();
                 return;
@@ -113,7 +115,7 @@ export default class Openfort {
         }
 
         this.recoverPublishableKey();
-        return new EmbeddedSigner(this._publishableKey, this._instanceManager);
+        return new EmbeddedSigner(this._publishableKey, this._instanceManager, this._iframeURL);
     }
 
     public async configureEmbeddedSignerRecovery(recovery: IRecovery, chainId: number): Promise<void> {

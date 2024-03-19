@@ -9,10 +9,12 @@ export class EmbeddedSigner implements ISigner {
     private readonly _publishableKey: string;
     private readonly _instanceManager: InstanceManager;
     private _recovery: IRecovery;
+    private readonly _baseURL;
 
-    constructor(publishableKey: string, instanceManager: InstanceManager) {
+    constructor(publishableKey: string, instanceManager: InstanceManager, baseURL = "https://iframe.openfort.xyz") {
         this._instanceManager = instanceManager;
         this._publishableKey = publishableKey;
+        this._baseURL = baseURL;
         this.configureIframeClient();
     }
 
@@ -31,6 +33,7 @@ export class EmbeddedSigner implements ISigner {
         this._iframeClient = new IframeClient(
             this._publishableKey,
             this._instanceManager.getAccessToken(),
+            this._baseURL,
         );
     }
 
