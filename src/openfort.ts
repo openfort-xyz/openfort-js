@@ -3,6 +3,7 @@ import {
     OAuthProvider,
     SessionResponse,
     SessionsApi,
+    TokenType,
     TransactionIntentResponse,
     TransactionIntentsApi,
 } from "./generated";
@@ -151,11 +152,11 @@ export default class Openfort {
         return await OpenfortAuth.InitOAuth(this._publishableKey, provider, options);
     }
 
-    public async authenticateOAuth(provider: OAuthProvider, token: string): Promise<string> {
+    public async authenticateWithOAuth(provider: OAuthProvider, token: string, tokenType: TokenType): Promise<string> {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
-        const result = await OpenfortAuth.AuthenticateOAuth(this._publishableKey, provider, token);
+        const result = await OpenfortAuth.AuthenticateOAuth(this._publishableKey, provider, token, tokenType);
         this.storeCredentials(result);
         return result.accessToken;
     }

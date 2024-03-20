@@ -209,6 +209,12 @@ export interface Account {
      */
     'custodial': boolean;
     /**
+     * 
+     * @type {boolean}
+     * @memberof Account
+     */
+    'embeddedSigner': boolean;
+    /**
      * The chain ID.
      * @type {number}
      * @memberof Account
@@ -541,6 +547,12 @@ export interface AccountResponse {
      * @memberof AccountResponse
      */
     'custodial': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AccountResponse
+     */
+    'embeddedSigner': boolean;
     /**
      * The chain ID.
      * @type {number}
@@ -1055,6 +1067,12 @@ export interface AuthenticateOAuthRequest {
      * @memberof AuthenticateOAuthRequest
      */
     'token': string;
+    /**
+     * 
+     * @type {TokenType}
+     * @memberof AuthenticateOAuthRequest
+     */
+    'tokenType': TokenType;
 }
 
 
@@ -2343,6 +2361,39 @@ export type Currency = typeof Currency[keyof typeof Currency];
 /**
  * 
  * @export
+ * @interface CustomAuthConfig
+ */
+export interface CustomAuthConfig {
+    /**
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof CustomAuthConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {OAuthProviderCUSTOM}
+     * @memberof CustomAuthConfig
+     */
+    'provider': OAuthProviderCUSTOM;
+    /**
+     * Headers to send with the request
+     * @type {string}
+     * @memberof CustomAuthConfig
+     */
+    'headers'?: string;
+    /**
+     * URL to send the request to to verify the payload
+     * @type {string}
+     * @memberof CustomAuthConfig
+     */
+    'authenticationUrl': string;
+}
+
+
+/**
+ * 
+ * @export
  * @interface DeployRequest
  */
 export interface DeployRequest {
@@ -2704,7 +2755,7 @@ export interface DeviceResponse {
      * @type {string}
      * @memberof DeviceResponse
      */
-    'accountID': string;
+    'account': string;
 }
 
 
@@ -3648,27 +3699,6 @@ export interface JwtKeyResponse {
      */
     'keys': Array<JwtKey>;
 }
-/**
- * The request to verify access token
- * @export
- * @interface LinkRequest
- */
-export interface LinkRequest {
-    /**
-     * 
-     * @type {OAuthProvider}
-     * @memberof LinkRequest
-     */
-    'provider': OAuthProvider;
-    /**
-     * external user id
-     * @type {string}
-     * @memberof LinkRequest
-     */
-    'externalUserId': string;
-}
-
-
 /**
  * 
  * @export
@@ -4634,6 +4664,24 @@ export interface OAuthConfig {
      */
     'provider': OAuthProviderLOOTLOCKER;
     /**
+     * PEM encoded public key to verify the JWT token
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'publicVerificationKey'?: string;
+    /**
+     * Audience of the JWT token
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'aud': string;
+    /**
+     * JWKS URL to fetch the public key
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'jwksUrl'?: string;
+    /**
      * Base URI of your accelbyte gaming service environment. E.g. https://mygame.dev.gamingservices.accelbyte.io/
      * @type {string}
      * @memberof OAuthConfig
@@ -4663,6 +4711,18 @@ export interface OAuthConfig {
      * @memberof OAuthConfig
      */
     'projectId': string;
+    /**
+     * Headers to send with the request
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'headers'?: string;
+    /**
+     * URL to send the request to to verify the payload
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'authenticationUrl': string;
 }
 
 
@@ -4742,7 +4802,9 @@ export const OAuthProvider = {
     Firebase: 'firebase',
     Google: 'google',
     Lootlocker: 'lootlocker',
-    Playfab: 'playfab'
+    Playfab: 'playfab',
+    Custom: 'custom',
+    Oidc: 'oidc'
 } as const;
 
 export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
@@ -4759,6 +4821,19 @@ export const OAuthProviderACCELBYTE = {
 } as const;
 
 export type OAuthProviderACCELBYTE = typeof OAuthProviderACCELBYTE[keyof typeof OAuthProviderACCELBYTE];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const OAuthProviderCUSTOM = {
+    Custom: 'custom'
+} as const;
+
+export type OAuthProviderCUSTOM = typeof OAuthProviderCUSTOM[keyof typeof OAuthProviderCUSTOM];
 
 
 /**
@@ -4806,6 +4881,19 @@ export type OAuthProviderLOOTLOCKER = typeof OAuthProviderLOOTLOCKER[keyof typeo
  * @enum {string}
  */
 
+export const OAuthProviderOIDC = {
+    Oidc: 'oidc'
+} as const;
+
+export type OAuthProviderOIDC = typeof OAuthProviderOIDC[keyof typeof OAuthProviderOIDC];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
 export const OAuthProviderPLAYFAB = {
     Playfab: 'playfab'
 } as const;
@@ -4845,6 +4933,45 @@ export interface OAuthResponse {
      */
     'key': string;
 }
+/**
+ * 
+ * @export
+ * @interface OIDCAuthConfig
+ */
+export interface OIDCAuthConfig {
+    /**
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof OIDCAuthConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {OAuthProviderOIDC}
+     * @memberof OIDCAuthConfig
+     */
+    'provider': OAuthProviderOIDC;
+    /**
+     * PEM encoded public key to verify the JWT token
+     * @type {string}
+     * @memberof OIDCAuthConfig
+     */
+    'publicVerificationKey'?: string;
+    /**
+     * Audience of the JWT token
+     * @type {string}
+     * @memberof OIDCAuthConfig
+     */
+    'aud': string;
+    /**
+     * JWKS URL to fetch the public key
+     * @type {string}
+     * @memberof OIDCAuthConfig
+     */
+    'jwksUrl'?: string;
+}
+
+
 /**
  * 
  * @export
@@ -5367,6 +5494,12 @@ export interface PlayerResponseAccountsInner {
      * @memberof PlayerResponseAccountsInner
      */
     'custodial': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PlayerResponseAccountsInner
+     */
+    'embeddedSigner': boolean;
     /**
      * The chain ID.
      * @type {number}
@@ -7320,6 +7453,20 @@ export type TimeIntervalType = typeof TimeIntervalType[keyof typeof TimeInterval
 
 
 /**
+ * Enum of the supporting OAuth providers.
+ * @export
+ * @enum {string}
+ */
+
+export const TokenType = {
+    IdToken: 'idToken',
+    CustomToken: 'customToken'
+} as const;
+
+export type TokenType = typeof TokenType[keyof typeof TokenType];
+
+
+/**
  * 
  * @export
  * @interface TransactionIntent
@@ -7650,6 +7797,12 @@ export interface TransactionIntentResponseAccount {
      */
     'custodial': boolean;
     /**
+     * 
+     * @type {boolean}
+     * @memberof TransactionIntentResponseAccount
+     */
+    'embeddedSigner': boolean;
+    /**
      * The chain ID.
      * @type {number}
      * @memberof TransactionIntentResponseAccount
@@ -7867,6 +8020,21 @@ export interface TypedDataField {
      */
     'type': string;
 }
+/**
+ * The request to verify access token
+ * @export
+ * @interface UnlinkRequest
+ */
+export interface UnlinkRequest {
+    /**
+     * 
+     * @type {OAuthProvider}
+     * @memberof UnlinkRequest
+     */
+    'provider': OAuthProvider;
+}
+
+
 /**
  * 
  * @export
@@ -10624,13 +10792,13 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         /**
          * 
          * @summary Unlink OAuth account
-         * @param {LinkRequest} linkRequest 
+         * @param {UnlinkRequest} unlinkRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        unlinkOAuth: async (linkRequest: LinkRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'linkRequest' is not null or undefined
-            assertParamExists('unlinkOAuth', 'linkRequest', linkRequest)
+        unlinkOAuth: async (unlinkRequest: UnlinkRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'unlinkRequest' is not null or undefined
+            assertParamExists('unlinkOAuth', 'unlinkRequest', unlinkRequest)
             const localVarPath = `/iam/v1/oauth/unlink`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -10650,7 +10818,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(linkRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(unlinkRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -10914,12 +11082,12 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Unlink OAuth account
-         * @param {LinkRequest} linkRequest 
+         * @param {UnlinkRequest} unlinkRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async unlinkOAuth(linkRequest: LinkRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkOAuth(linkRequest, options);
+        async unlinkOAuth(unlinkRequest: UnlinkRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkOAuth(unlinkRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -11082,12 +11250,12 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
         /**
          * 
          * @summary Unlink OAuth account
-         * @param {LinkRequest} linkRequest 
+         * @param {UnlinkRequest} unlinkRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        unlinkOAuth(linkRequest: LinkRequest, options?: any): AxiosPromise<AuthPlayerResponse> {
-            return localVarFp.unlinkOAuth(linkRequest, options).then((request) => request(axios, basePath));
+        unlinkOAuth(unlinkRequest: UnlinkRequest, options?: any): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.unlinkOAuth(unlinkRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -11268,13 +11436,13 @@ export class AuthenticationApi extends BaseAPI {
     /**
      * 
      * @summary Unlink OAuth account
-     * @param {LinkRequest} linkRequest 
+     * @param {UnlinkRequest} unlinkRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthenticationApi
      */
-    public unlinkOAuth(linkRequest: LinkRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).unlinkOAuth(linkRequest, options).then((request) => request(this.axios, this.basePath));
+    public unlinkOAuth(unlinkRequest: UnlinkRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).unlinkOAuth(unlinkRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -11855,358 +12023,6 @@ export class ContractsApi extends BaseAPI {
      */
     public updateContract(id: string, updateContractRequest: UpdateContractRequest, options?: AxiosRequestConfig) {
         return ContractsApiFp(this.configuration).updateContract(id, updateContractRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-}
-
-
-/**
- * EmbeddedApi - axios parameter creator
- * @export
- */
-export const EmbeddedApiAxiosParamCreator = function (configuration?: Configuration) {
-    return {
-        /**
-         * Creates a new device for a given account.  This object represents the device that the account owner uses to store the device share. It has an equivalent auth share and recovery share associated with it.
-         * @summary Create a device object.
-         * @param {CreateDeviceRequest} createDeviceRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createDevice: async (createDeviceRequest: CreateDeviceRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createDeviceRequest' is not null or undefined
-            assertParamExists('createDevice', 'createDeviceRequest', createDeviceRequest)
-            const localVarPath = `/v1/devices`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createDeviceRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Add the share of for existing device.
-         * @summary Create a device share.
-         * @param {string} id Specifies the unique device ID (starts with dev_).
-         * @param {CreateShareRequest} createShareRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createDeviceShare: async (id: string, createShareRequest: CreateShareRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('createDeviceShare', 'id', id)
-            // verify required parameter 'createShareRequest' is not null or undefined
-            assertParamExists('createDeviceShare', 'createShareRequest', createShareRequest)
-            const localVarPath = `/v1/devices/{id}/shares`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createShareRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Retrieves the shares of an existing device.
-         * @summary Get existing device shares.
-         * @param {string} id Specifies the unique device ID (starts with dev_).
-         * @param {string} [shareType] Specifies the type of the share ID
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getDeviceShares: async (id: string, shareType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getDeviceShares', 'id', id)
-            const localVarPath = `/v1/devices/{id}/shares`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (shareType !== undefined) {
-                localVarQueryParameter['shareType'] = shareType;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Returns a list of devices for the given account.  This object represents the devices where the account owner has device share stored.  Devices are returned sorted by creation date, with the most recently created devices appearing first.  By default, a maximum of 10 devices are shown per page.
-         * @summary List devices of account.
-         * @param {string} account Specifies the unique account ID (starts with acc_)
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getDevices: async (account: string, limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'account' is not null or undefined
-            assertParamExists('getDevices', 'account', account)
-            const localVarPath = `/v1/devices`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
-            }
-
-            if (order !== undefined) {
-                localVarQueryParameter['order'] = order;
-            }
-
-            if (account !== undefined) {
-                localVarQueryParameter['account'] = account;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-    }
-};
-
-/**
- * EmbeddedApi - functional programming interface
- * @export
- */
-export const EmbeddedApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = EmbeddedApiAxiosParamCreator(configuration)
-    return {
-        /**
-         * Creates a new device for a given account.  This object represents the device that the account owner uses to store the device share. It has an equivalent auth share and recovery share associated with it.
-         * @summary Create a device object.
-         * @param {CreateDeviceRequest} createDeviceRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createDevice(createDeviceRequest: CreateDeviceRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeviceResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createDevice(createDeviceRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Add the share of for existing device.
-         * @summary Create a device share.
-         * @param {string} id Specifies the unique device ID (starts with dev_).
-         * @param {CreateShareRequest} createShareRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createDeviceShare(id: string, createShareRequest: CreateShareRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShareResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createDeviceShare(id, createShareRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Retrieves the shares of an existing device.
-         * @summary Get existing device shares.
-         * @param {string} id Specifies the unique device ID (starts with dev_).
-         * @param {string} [shareType] Specifies the type of the share ID
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getDeviceShares(id: string, shareType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseShareResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getDeviceShares(id, shareType, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Returns a list of devices for the given account.  This object represents the devices where the account owner has device share stored.  Devices are returned sorted by creation date, with the most recently created devices appearing first.  By default, a maximum of 10 devices are shown per page.
-         * @summary List devices of account.
-         * @param {string} account Specifies the unique account ID (starts with acc_)
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getDevices(account: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseDeviceResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getDevices(account, limit, skip, order, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-    }
-};
-
-/**
- * EmbeddedApi - factory interface
- * @export
- */
-export const EmbeddedApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = EmbeddedApiFp(configuration)
-    return {
-        /**
-         * Creates a new device for a given account.  This object represents the device that the account owner uses to store the device share. It has an equivalent auth share and recovery share associated with it.
-         * @summary Create a device object.
-         * @param {CreateDeviceRequest} createDeviceRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createDevice(createDeviceRequest: CreateDeviceRequest, options?: any): AxiosPromise<DeviceResponse> {
-            return localVarFp.createDevice(createDeviceRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Add the share of for existing device.
-         * @summary Create a device share.
-         * @param {string} id Specifies the unique device ID (starts with dev_).
-         * @param {CreateShareRequest} createShareRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createDeviceShare(id: string, createShareRequest: CreateShareRequest, options?: any): AxiosPromise<ShareResponse> {
-            return localVarFp.createDeviceShare(id, createShareRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Retrieves the shares of an existing device.
-         * @summary Get existing device shares.
-         * @param {string} id Specifies the unique device ID (starts with dev_).
-         * @param {string} [shareType] Specifies the type of the share ID
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getDeviceShares(id: string, shareType?: string, options?: any): AxiosPromise<BaseEntityListResponseShareResponse> {
-            return localVarFp.getDeviceShares(id, shareType, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Returns a list of devices for the given account.  This object represents the devices where the account owner has device share stored.  Devices are returned sorted by creation date, with the most recently created devices appearing first.  By default, a maximum of 10 devices are shown per page.
-         * @summary List devices of account.
-         * @param {string} account Specifies the unique account ID (starts with acc_)
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getDevices(account: string, limit?: number, skip?: number, order?: SortOrder, options?: any): AxiosPromise<BaseEntityListResponseDeviceResponse> {
-            return localVarFp.getDevices(account, limit, skip, order, options).then((request) => request(axios, basePath));
-        },
-    };
-};
-
-/**
- * EmbeddedApi - object-oriented interface
- * @export
- * @class EmbeddedApi
- * @extends {BaseAPI}
- */
-export class EmbeddedApi extends BaseAPI {
-    /**
-     * Creates a new device for a given account.  This object represents the device that the account owner uses to store the device share. It has an equivalent auth share and recovery share associated with it.
-     * @summary Create a device object.
-     * @param {CreateDeviceRequest} createDeviceRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof EmbeddedApi
-     */
-    public createDevice(createDeviceRequest: CreateDeviceRequest, options?: AxiosRequestConfig) {
-        return EmbeddedApiFp(this.configuration).createDevice(createDeviceRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Add the share of for existing device.
-     * @summary Create a device share.
-     * @param {string} id Specifies the unique device ID (starts with dev_).
-     * @param {CreateShareRequest} createShareRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof EmbeddedApi
-     */
-    public createDeviceShare(id: string, createShareRequest: CreateShareRequest, options?: AxiosRequestConfig) {
-        return EmbeddedApiFp(this.configuration).createDeviceShare(id, createShareRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Retrieves the shares of an existing device.
-     * @summary Get existing device shares.
-     * @param {string} id Specifies the unique device ID (starts with dev_).
-     * @param {string} [shareType] Specifies the type of the share ID
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof EmbeddedApi
-     */
-    public getDeviceShares(id: string, shareType?: string, options?: AxiosRequestConfig) {
-        return EmbeddedApiFp(this.configuration).getDeviceShares(id, shareType, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Returns a list of devices for the given account.  This object represents the devices where the account owner has device share stored.  Devices are returned sorted by creation date, with the most recently created devices appearing first.  By default, a maximum of 10 devices are shown per page.
-     * @summary List devices of account.
-     * @param {string} account Specifies the unique account ID (starts with acc_)
-     * @param {number} [limit] Specifies the maximum number of records to return.
-     * @param {number} [skip] Specifies the offset for the first records to return.
-     * @param {SortOrder} [order] Specifies the order in which to sort the results.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof EmbeddedApi
-     */
-    public getDevices(account: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig) {
-        return EmbeddedApiFp(this.configuration).getDevices(account, limit, skip, order, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -15721,7 +15537,7 @@ export class PolicyRulesApi extends BaseAPI {
 export const SessionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Creates a InstanceManager.
+         * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -15822,7 +15638,7 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Retrieves the details of a InstanceManager that has previously been created.
+         * Retrieves the details of a Session that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -15963,7 +15779,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SessionsApiAxiosParamCreator(configuration)
     return {
         /**
-         * Creates a InstanceManager.
+         * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -15989,7 +15805,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Retrieves the details of a InstanceManager that has previously been created.
+         * Retrieves the details of a Session that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -16034,7 +15850,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = SessionsApiFp(configuration)
     return {
         /**
-         * Creates a InstanceManager.
+         * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
          * @param {*} [options] Override http request option.
@@ -16058,7 +15874,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getPlayerSessions(player, limit, skip, order, expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieves the details of a InstanceManager that has previously been created.
+         * Retrieves the details of a Session that has previously been created.
          * @summary Returns a player session by session id
          * @param {string} id Specifies the unique session ID (starts with ses_).
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
@@ -16100,7 +15916,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
  */
 export class SessionsApi extends BaseAPI {
     /**
-     * Creates a InstanceManager.
+     * Creates a Session.
      * @summary Create a session key.
      * @param {CreateSessionRequest} createSessionRequest 
      * @param {*} [options] Override http request option.
@@ -16128,7 +15944,7 @@ export class SessionsApi extends BaseAPI {
     }
 
     /**
-     * Retrieves the details of a InstanceManager that has previously been created.
+     * Retrieves the details of a Session that has previously been created.
      * @summary Returns a player session by session id
      * @param {string} id Specifies the unique session ID (starts with ses_).
      * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand.
