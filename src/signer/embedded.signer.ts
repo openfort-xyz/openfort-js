@@ -49,7 +49,7 @@ export class EmbeddedSigner implements ISigner {
 
         deviceID = await this._iframeClient.getCurrentDevice();
         if (deviceID) {
-            console.log("setting device id from ensureEmbeddedAccount "+deviceID);
+            console.log("setting device id from ensureEmbeddedAccount " + deviceID);
             this._instanceManager.setDeviceID(deviceID);
             return deviceID;
         }

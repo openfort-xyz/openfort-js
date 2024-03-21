@@ -5,7 +5,8 @@ import {
     IStorage,
     JWKStorageKey,
     PublishableKeyStorageKey,
-    RefreshTokenStorageKey, SessionKeyStorageKey,
+    RefreshTokenStorageKey,
+    SessionKeyStorageKey,
     SignerTypeStorageKey,
 } from "./storage/storage";
 import {JWK, OpenfortAuth} from "./openfortAuth";
@@ -22,11 +23,7 @@ export class InstanceManager {
     private readonly _persistentStorage: IStorage;
     private readonly _secureStorage: IStorage;
 
-    constructor(
-        temporalStorage: IStorage,
-        persistentStorage: IStorage,
-        secureStorage: IStorage,
-    ) {
+    constructor(temporalStorage: IStorage, persistentStorage: IStorage, secureStorage: IStorage) {
         this._temporalStorage = temporalStorage;
         this._persistentStorage = persistentStorage;
         this._secureStorage = secureStorage;
@@ -118,17 +115,17 @@ export class InstanceManager {
 
     public setJWK(jwk: JWK): void {
         this._jwk = jwk;
-        console.log("Setting JWK "+JSON.stringify(jwk));
+        console.log("Setting JWK " + JSON.stringify(jwk));
         this._temporalStorage.save(JWKStorageKey, this.jwkToString(jwk));
     }
 
     private jwkToString(jwk: JWK): string {
         return JSON.stringify({
-            "kty": jwk.kty,
-            "crv": jwk.crv,
-            "x": jwk.x,
-            "y": jwk.y,
-            "alg": jwk.alg,
+            kty: jwk.kty,
+            crv: jwk.crv,
+            x: jwk.x,
+            y: jwk.y,
+            alg: jwk.alg,
         });
     }
 
@@ -146,7 +143,7 @@ export class InstanceManager {
     public async getJWK(): Promise<JWK> {
         if (!this._jwk) {
             const jwkString = this._temporalStorage.get(JWKStorageKey);
-            if (jwkString){
+            if (jwkString) {
                 this.setJWK(this.stringToJWK(jwkString));
                 return this._jwk;
             }
@@ -193,7 +190,6 @@ export class InstanceManager {
         this._deviceID = deviceID;
         this._persistentStorage.save(DeviceIDStorageKey, deviceID);
     }
-
 
     public getDeviceID(): string {
         if (!this._deviceID) {

@@ -28,7 +28,6 @@ export default class Openfort {
         this._publishableKey = publishableKey;
     }
 
-
     public async logout(): Promise<void> {
         await this.flushSigner();
         if (this.credentialsProvided()) {
@@ -58,7 +57,7 @@ export default class Openfort {
 
             if (signerType === SignerType.SESSION) {
                 this.configureSessionKey();
-                await  this._signer.logout();
+                await this._signer.logout();
                 this._instanceManager.removeSignerType();
                 return;
             }
@@ -89,11 +88,11 @@ export default class Openfort {
         const publicKey = signer.loadKeys();
         if (!publicKey) {
             const newPublicKey = signer.generateKeys();
-            return {publicKey: newPublicKey, isRegistered: false};
+            return {address: newPublicKey, isRegistered: false};
         }
 
         this._instanceManager.setSignerType(SignerType.SESSION);
-        return {publicKey, isRegistered: true};
+        return {address: publicKey, isRegistered: true};
     }
 
     public async configureEmbeddedSigner(): Promise<void> {
@@ -133,7 +132,7 @@ export default class Openfort {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
-        const result = await OpenfortAuth.LoginEmailPassword(this._publishableKey,email, password);
+        const result = await OpenfortAuth.LoginEmailPassword(this._publishableKey, email, password);
         this.storeCredentials(result);
         return result.accessToken;
     }
@@ -174,7 +173,13 @@ export default class Openfort {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
-        const result = await OpenfortAuth.AuthenticateSIWE(this._publishableKey, signature, message, walletClientType, connectorType);
+        const result = await OpenfortAuth.AuthenticateSIWE(
+            this._publishableKey,
+            signature,
+            message,
+            walletClientType,
+            connectorType,
+        );
         this.storeCredentials(result);
         return result.accessToken;
     }
@@ -186,11 +191,11 @@ export default class Openfort {
 
     public async sendSignatureTransactionIntentRequest(
         transactionIntentId: string,
-        userOp: string = null,
+        userOperationHash: string = null,
         signature: string = null,
     ): Promise<TransactionIntentResponse> {
         if (!signature) {
-            if (!userOp) {
+            if (!userOperationHash) {
                 throw new NothingToSign("No user operation or signature provided");
             }
 
@@ -203,7 +208,7 @@ export default class Openfort {
                 await this.validateAndRefreshToken();
             }
 
-            signature = await this._signer.sign(userOp);
+            signature = await this._signer.sign(userOperationHash);
         }
 
         this.recoverPublishableKey();
@@ -358,7 +363,7 @@ export enum EmbeddedState {
 }
 
 export type SessionKey = {
-    publicKey: string;
+    address: string;
     isRegistered: boolean;
 };
 
@@ -409,4 +414,3 @@ export class MissingPublishableKey extends Error {
         Object.setPrototypeOf(this, MissingPublishableKey.prototype);
     }
 }
-
