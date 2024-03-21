@@ -23,7 +23,7 @@ export class SessionSigner implements ISigner {
         return Promise.resolve();
     }
     loadKeys(): string {
-        if (this._sessionKey !== null) {
+        if (this._sessionKey) {
             return this._sessionKey.getPublicKey();
         }
 
