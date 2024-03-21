@@ -217,7 +217,7 @@ export default class Openfort {
         return result.data;
     }
 
-    public async sendSignatureSessionRequest(
+    public async sendRegisterSessionRequest(
         sessionId: string,
         signature: string,
         optimistic?: boolean,
@@ -230,8 +230,6 @@ export default class Openfort {
         if (this._signer.getSingerType() !== SignerType.SESSION) {
             throw new NoSignerConfigured("Session signer must be configured to sign a session");
         }
-
-        signature = await this._signer.sign(sessionId);
 
         this.recoverPublishableKey();
         const sessionsApi = new SessionsApi(new Configuration({accessToken: this._publishableKey}));
