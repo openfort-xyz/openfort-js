@@ -52,7 +52,7 @@ The Session Signer allows you to use external signing keys, without needing to p
 ```typescript
 const sessionKey = sdk.configureSessionKey();
 ```
-- **Register Key and Send Signature Session Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session management](https://www.openfort.xyz/docs/guides/accounts/sessions).
+- **Register Key and Send Signature Session Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session management](https://www.openfort.xyz/docs/guides/accounts/smart/session-keys).
 - **Send Signature Transaction Intent Request**: When calling sendSignatureTransactionIntentRequest, pass the transaction intent ID and the user operation hash. The session signer will handle the signing.
 
 ### 2. External Sign
@@ -66,7 +66,7 @@ const response = await sdk.sendSignatureTransactionIntentRequest("transactionInt
 
 ### 3. Embedded Signer
 The Embedded Signer uses SSS to manage the private key on the client side. To learn more, visit our [security documentation](https://www.openfort.xyz/docs/security).
-- **Login and Configure the Embedded Signer**: First, ensure the user is logged in, using `LoginWithEmailPassword`, `LoginWithOAuth` or if not registred `SignUpWithEmailPassword`. Then call `ConfigureEmbeddedSigner`. If a `MissingRecoveryMethod` exception is thrown, it indicates there's no share on the device and you have to call `ConfigureEmbeddedRecovery` to provide a recovery method.
+- **Login and Configure the Embedded Signer**: First, ensure the user is logged in, using `LoginWithEmailPassword`, `AuthenticateWithOAuth` or if not registred `SignUpWithEmailPassword`. Then call `ConfigureEmbeddedSigner`. If a `MissingRecoveryMethod` exception is thrown, it indicates there's no share on the device and you have to call `ConfigureEmbeddedRecovery` to provide a recovery method.
 ```typescript
 try {
     await sdk.loginWithEmailPassword("email", "password");
