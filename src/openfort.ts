@@ -31,11 +31,15 @@ export default class Openfort {
     public async logout(): Promise<void> {
         await this.flushSigner();
         if (this.credentialsProvided()) {
-            await OpenfortAuth.Logout(
-                this._publishableKey,
-                this._instanceManager.getAccessToken(),
-                this._instanceManager.getRefreshToken(),
-            );
+            try {
+                await OpenfortAuth.Logout(
+                    this._publishableKey,
+                    this._instanceManager.getAccessToken(),
+                    this._instanceManager.getRefreshToken(),
+                );
+            } catch (e) {
+                console.error("Error logging out", e);
+            }
 
             this._instanceManager.removeAccessToken();
             this._instanceManager.removeRefreshToken();
