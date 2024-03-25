@@ -1,3 +1,3 @@
 export interface IRecovery {
-    getRecoveryPassword(): string;
+    getRecoveryPassword(): Promise<string>;
 }

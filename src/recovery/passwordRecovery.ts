@@ -5,7 +5,7 @@ export class PasswordRecovery implements IRecovery {
     constructor(recoveryPassword: string) {
         this.recoveryPassword = recoveryPassword;
     }
-    public getRecoveryPassword(): string {
-        return this.recoveryPassword;
+    public getRecoveryPassword(): Promise<string> {
+        return Promise.resolve(this.recoveryPassword);
     }
 }

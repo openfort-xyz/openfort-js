@@ -57,7 +57,9 @@ export class EmbeddedSigner implements ISigner {
         if (!this._recovery) {
             throw new Error("Recovery is not set");
         }
-        deviceID = await this._iframeClient.createAccount(chainId, this._recovery.getRecoveryPassword());
+
+        const recoveryPassword = await this._recovery.getRecoveryPassword();
+        deviceID = await this._iframeClient.createAccount(chainId, recoveryPassword);
         this._instanceManager.setDeviceID(deviceID);
         return deviceID;
     }
