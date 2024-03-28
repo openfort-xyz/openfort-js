@@ -1,21 +1,17 @@
-import {IframeClient} from "../clients/iframe-client";
+import {IframeClient, IFrameConfiguration} from "../clients/iframe-client";
 import {Bytes} from "@ethersproject/bytes";
 import {ISigner, SignerType} from "./signer";
-import {IRecovery} from "../recovery/recovery";
 import {InstanceManager} from "../instanceManager";
+import {ConfigureRequest} from "../clients/types";
 
+export type Configuration = ConfigureRequest;
 export class EmbeddedSigner implements ISigner {
     private _iframeClient: IframeClient;
-    private readonly _publishableKey: string;
     private readonly _instanceManager: InstanceManager;
-    private _recovery: IRecovery;
-    private readonly _baseURL;
 
-    constructor(publishableKey: string, instanceManager: InstanceManager, baseURL = "https://iframe.openfort.xyz") {
+    constructor(configuration: IFrameConfiguration, instanceManager: InstanceManager) {
         this._instanceManager = instanceManager;
-        this._publishableKey = publishableKey;
-        this._baseURL = baseURL;
-        this.configureIframeClient();
+        this._iframeClient = new IframeClient(configuration);
     }
 
     async logout(): Promise<void> {
@@ -26,40 +22,20 @@ export class EmbeddedSigner implements ISigner {
         return true;
     }
     async updateAuthentication(): Promise<void> {
-        await this._iframeClient.updateAuthentication(this._instanceManager.getAccessToken());
-    }
-
-    private configureIframeClient(): void {
-        this._iframeClient = new IframeClient(
-            this._publishableKey,
-            this._instanceManager.getAccessToken(),
-            this._baseURL,
-        );
+        await this._iframeClient.updateAuthentication(this._instanceManager.getAccessToken().token);
     }
 
     getSingerType(): SignerType {
         return SignerType.EMBEDDED;
     }
 
-    public async ensureEmbeddedAccount(chainId: number): Promise<string> {
+    public async ensureEmbeddedAccount(recoveryPassword?: string): Promise<string> {
         let deviceID = this._instanceManager.getDeviceID();
         if (deviceID) {
             return deviceID;
         }
 
-        deviceID = await this._iframeClient.getCurrentDevice();
-        if (deviceID) {
-            console.log("setting device id from ensureEmbeddedAccount " + deviceID);
-            this._instanceManager.setDeviceID(deviceID);
-            return deviceID;
-        }
-
-        if (!this._recovery) {
-            throw new Error("Recovery is not set");
-        }
-
-        const recoveryPassword = await this._recovery.getRecoveryPassword();
-        deviceID = await this._iframeClient.createAccount(chainId, recoveryPassword);
+        deviceID = await this._iframeClient.configure(recoveryPassword);
         this._instanceManager.setDeviceID(deviceID);
         return deviceID;
     }
@@ -75,10 +51,6 @@ export class EmbeddedSigner implements ISigner {
 
     public getDeviceID(): string | null {
         return this._instanceManager.getDeviceID();
-    }
-
-    public setRecovery(recovery: IRecovery): void {
-        this._recovery = recovery;
     }
 
     async isLoaded(): Promise<boolean> {
@@ -97,12 +69,5 @@ export class EmbeddedSigner implements ISigner {
 
     iFrameLoaded(): boolean {
         return this._iframeClient.isLoaded();
-    }
-
-    async waitForIframeLoad(): Promise<void> {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        while (!this.iFrameLoaded()) {
-            await new Promise((resolve) => setTimeout(resolve, 100));
-        }
     }
 }

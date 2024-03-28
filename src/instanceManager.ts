@@ -7,13 +7,19 @@ import {
     PublishableKeyStorageKey,
     RefreshTokenStorageKey,
     SessionKeyStorageKey,
-    SignerTypeStorageKey,
+    SignerTypeStorageKey, ThirdPartyProviderStorageKey, ThirdPartyProviderTokenTypeStorageKey,
 } from "./storage/storage";
 import {JWK, OpenfortAuth} from "./openfortAuth";
 
+export type AccessToken = {
+    token: string;
+    thirdPartyProvider?: string;
+    thirdPartyTokenType?: string;
+}
+
 export class InstanceManager {
     private _publishableKey: string;
-    private _authToken: string;
+    private _authToken: AccessToken;
     private _refreshToken: string;
     private _signerType: SignerType;
     private _jwk: JWK;
@@ -47,22 +53,34 @@ export class InstanceManager {
         this._temporalStorage.remove(PublishableKeyStorageKey);
     }
 
-    public getAccessToken(): string {
+    public getAccessToken(): AccessToken {
         if (!this._authToken) {
-            this._authToken = this._secureStorage.get(AuthTokenStorageKey);
+            this._authToken = {
+                token: this._secureStorage.get(AuthTokenStorageKey),
+                thirdPartyProvider: this._secureStorage.get(ThirdPartyProviderStorageKey),
+                thirdPartyTokenType: this._secureStorage.get(ThirdPartyProviderTokenTypeStorageKey),
+            };
         }
 
         return this._authToken;
     }
 
-    public setAccessToken(accessToken: string): void {
+    public setAccessToken(accessToken: AccessToken): void {
         this._authToken = accessToken;
-        this._secureStorage.save(AuthTokenStorageKey, accessToken);
+        this._secureStorage.save(AuthTokenStorageKey, accessToken.token);
+        if (accessToken.thirdPartyProvider) {
+            this._secureStorage.save(ThirdPartyProviderStorageKey, accessToken.thirdPartyProvider);
+        }
+        if (accessToken.thirdPartyTokenType) {
+            this._secureStorage.save(ThirdPartyProviderTokenTypeStorageKey, accessToken.thirdPartyTokenType);
+        }
     }
 
     public removeAccessToken(): void {
         this._authToken = null;
         this._secureStorage.remove(AuthTokenStorageKey);
+        this._secureStorage.remove(ThirdPartyProviderStorageKey);
+        this._secureStorage.remove(ThirdPartyProviderTokenTypeStorageKey);
     }
 
     public getRefreshToken(): string {
@@ -115,7 +133,6 @@ export class InstanceManager {
 
     public setJWK(jwk: JWK): void {
         this._jwk = jwk;
-        console.log("Setting JWK " + JSON.stringify(jwk));
         this._temporalStorage.save(JWKStorageKey, this.jwkToString(jwk));
     }
 

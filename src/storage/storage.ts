@@ -1,4 +1,6 @@
 export const AuthTokenStorageKey = "openfort.auth_token";
+export const ThirdPartyProviderStorageKey = "openfort.third_party_provider";
+export const ThirdPartyProviderTokenTypeStorageKey = "openfort.third_party_provider_token_type";
 export const RefreshTokenStorageKey = "openfort.refresh_token";
 export const PlayerIDStorageKey = "openfort.player_id";
 export const SessionKeyStorageKey = "openfort.session_key";
