@@ -1,6 +1,7 @@
 import {Configuration, OAuthProvider, AuthenticationApi, TokenType} from "./generated";
 import {errors, importJWK, jwtVerify, KeyLike} from "jose";
 import {isBrowser} from "./lib/helpers";
+import {AccessToken} from "./instanceManager";
 
 export type Auth = {
     player: string;
