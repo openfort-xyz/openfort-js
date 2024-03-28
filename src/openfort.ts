@@ -381,7 +381,7 @@ export default class Openfort {
         }
 
         if (!this._instanceManager.getRefreshToken()) {
-            throw new NotLoggedIn("No refresh token found");
+            return;
         }
 
         this.recoverPublishableKey();
