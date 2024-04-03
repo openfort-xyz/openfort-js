@@ -202,7 +202,7 @@ export default class Openfort {
         return await OpenfortAuth.InitSIWE(this._publishableKey, address);
     }
 
-    public useThirdPartyProvider(provider: string, token: string, tokenType: string): void {
+    public authenticateWithThirdPartyProvider(provider: string, token: string, tokenType: string): void {
         this._instanceManager.setAccessToken({token, thirdPartyProvider: provider, thirdPartyTokenType: tokenType});
     }
 
