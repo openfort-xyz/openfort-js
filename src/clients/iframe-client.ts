@@ -127,7 +127,7 @@ export class IframeClient {
             shieldAPIKey: this._configuration.shieldAPIKey,
             accessToken: this._configuration.accessToken,
             thirdPartyProvider: this._configuration.thirdPartyProvider,
-            thirdPartyTokenType:  this._configuration.thirdPartyTokenType,
+            thirdPartyTokenType: this._configuration.thirdPartyTokenType,
             encryptionKey: password,
             openfortURL: this._configuration.openfortURL,
             shieldURL: this._configuration.shieldURL,

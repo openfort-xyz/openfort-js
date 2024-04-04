@@ -1,7 +1,6 @@
-import {Configuration, OAuthProvider, AuthenticationApi, TokenType} from "./generated";
+import {Configuration, OAuthProvider, AuthenticationApi, TokenType, AuthResponse} from "./generated";
 import {errors, importJWK, jwtVerify, KeyLike} from "jose";
 import {isBrowser} from "./lib/helpers";
-import {AccessToken} from "./instanceManager";
 
 export type Auth = {
     player: string;
@@ -61,14 +60,10 @@ export class OpenfortAuth {
         provider: OAuthProvider,
         token: string,
         tokenType: TokenType,
-    ): Promise<Auth> {
+    ): Promise<AuthResponse> {
         const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
-        const result = await oauthApi.authenticateOAuth({provider: provider, token: token, tokenType: tokenType});
-        return {
-            player: result.data.player.id,
-            accessToken: result.data.token,
-            refreshToken: result.data.refreshToken,
-        };
+        const response = await oauthApi.authenticateOAuth({provider: provider, token: token, tokenType: tokenType});
+        return response.data;
     }
 
     public static async InitSIWE(publishableKey: string, address: string): Promise<SIWEInitResponse> {
@@ -87,24 +82,20 @@ export class OpenfortAuth {
         message: string,
         walletClientType: string,
         connectorType: string,
-    ): Promise<Auth> {
+    ): Promise<AuthResponse> {
         const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
-        const result = await oauthApi.authenticateSIWE({signature, message, walletClientType, connectorType});
-        return {
-            player: result.data.player.id,
-            accessToken: result.data.token,
-            refreshToken: result.data.refreshToken,
-        };
+        const response = await oauthApi.authenticateSIWE({signature, message, walletClientType, connectorType});
+        return response.data;
     }
 
-    public static async LoginEmailPassword(publishableKey: string, email: string, password: string): Promise<Auth> {
+    public static async LoginEmailPassword(
+        publishableKey: string,
+        email: string,
+        password: string,
+    ): Promise<AuthResponse> {
         const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
-        const result = await oauthApi.loginEmailPassword({email, password});
-        return {
-            player: result.data.player.id,
-            accessToken: result.data.token,
-            refreshToken: result.data.refreshToken,
-        };
+        const response = await oauthApi.loginEmailPassword({email, password});
+        return response.data;
     }
 
     public static async SignupEmailPassword(
@@ -112,14 +103,10 @@ export class OpenfortAuth {
         email: string,
         password: string,
         name?: string,
-    ): Promise<Auth> {
+    ): Promise<AuthResponse> {
         const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
-        const result = await oauthApi.signupEmailPassword({name: name, email, password});
-        return {
-            player: result.data.player.id,
-            accessToken: result.data.token,
-            refreshToken: result.data.refreshToken,
-        };
+        const response = await oauthApi.signupEmailPassword({name: name, email, password});
+        return response.data;
     }
 
     public static async GetJWK(publishableKey: string): Promise<JWK> {

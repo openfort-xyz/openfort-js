@@ -1,4 +1,5 @@
 import {
+    AuthResponse,
     Configuration,
     OAuthProvider,
     SessionResponse,
@@ -26,7 +27,13 @@ export default class Openfort {
     private readonly _shieldURL: string;
     private readonly _instanceManager: InstanceManager;
 
-    constructor(publishableKey: string, shieldAPIKey = null, iframeURL = "https://iframe.openfort.xyz", openfortURL = "https://api.openfort.xyz", shieldURL = "https://shield.openfort.xyz") {
+    constructor(
+        publishableKey: string,
+        shieldAPIKey = null,
+        iframeURL = "https://iframe.openfort.xyz",
+        openfortURL = "https://api.openfort.xyz",
+        shieldURL = "https://shield.openfort.xyz",
+    ) {
         this._instanceManager = new InstanceManager(new SessionStorage(), new LocalStorage(), new LocalStorage());
         this._iframeURL = iframeURL;
         this._openfortURL = openfortURL;
@@ -38,7 +45,10 @@ export default class Openfort {
     public async logout(): Promise<void> {
         await this.flushSigner();
         if (this.credentialsProvided()) {
-            if (this._instanceManager.getAccessToken().thirdPartyProvider == undefined && this._instanceManager.getAccessToken().thirdPartyTokenType == undefined) {
+            if (
+                this._instanceManager.getAccessToken().thirdPartyProvider == undefined &&
+                this._instanceManager.getAccessToken().thirdPartyTokenType == undefined
+            ) {
                 try {
                     await OpenfortAuth.Logout(
                         this._publishableKey,
@@ -158,7 +168,11 @@ export default class Openfort {
         return new EmbeddedSigner(iframeConfiguration, this._instanceManager);
     }
 
-    public async configureEmbeddedSignerRecovery(chainID: number, shieldAuthentication: ShieldAuthentication, recoveryPassword: string): Promise<void> {
+    public async configureEmbeddedSignerRecovery(
+        chainID: number,
+        shieldAuthentication: ShieldAuthentication,
+        recoveryPassword: string,
+    ): Promise<void> {
         const signer = this.newEmbeddedSigner(chainID, shieldAuthentication);
         await this.validateAndRefreshToken();
         await signer.ensureEmbeddedAccount(recoveryPassword);
@@ -166,22 +180,22 @@ export default class Openfort {
         this._instanceManager.setSignerType(SignerType.EMBEDDED);
     }
 
-    public async loginWithEmailPassword(email: string, password: string): Promise<string> {
+    public async loginWithEmailPassword(email: string, password: string): Promise<AuthResponse> {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
         const result = await OpenfortAuth.LoginEmailPassword(this._publishableKey, email, password);
-        this.storeCredentials(result);
-        return result.accessToken;
+        this.storeCredentials({player: result.player.id, accessToken: result.token, refreshToken: result.refreshToken});
+        return result;
     }
 
-    public async signUpWithEmailPassword(email: string, password: string, name?: string): Promise<string> {
+    public async signUpWithEmailPassword(email: string, password: string, name?: string): Promise<AuthResponse> {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
         const result = await OpenfortAuth.SignupEmailPassword(this._publishableKey, email, password, name);
-        this.storeCredentials(result);
-        return result.accessToken;
+        this.storeCredentials({player: result.player.id, accessToken: result.token, refreshToken: result.refreshToken});
+        return result;
     }
 
     public async initOAuth(provider: OAuthProvider, options?: InitializeOAuthOptions): Promise<InitAuthResponse> {
@@ -189,13 +203,17 @@ export default class Openfort {
         return await OpenfortAuth.InitOAuth(this._publishableKey, provider, options);
     }
 
-    public async authenticateWithOAuth(provider: OAuthProvider, token: string, tokenType: TokenType): Promise<string> {
+    public async authenticateWithOAuth(
+        provider: OAuthProvider,
+        token: string,
+        tokenType: TokenType,
+    ): Promise<AuthResponse> {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
         const result = await OpenfortAuth.AuthenticateOAuth(this._publishableKey, provider, token, tokenType);
-        this.storeCredentials(result);
-        return result.accessToken;
+        this.storeCredentials({player: result.player.id, accessToken: result.token, refreshToken: result.refreshToken});
+        return result;
     }
 
     public async initSIWE(address: string): Promise<SIWEInitResponse> {
@@ -211,7 +229,7 @@ export default class Openfort {
         message: string,
         walletClientType: string,
         connectorType: string,
-    ): Promise<string> {
+    ): Promise<AuthResponse> {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
@@ -222,8 +240,8 @@ export default class Openfort {
             walletClientType,
             connectorType,
         );
-        this.storeCredentials(result);
-        return result.accessToken;
+        this.storeCredentials({player: result.player.id, accessToken: result.token, refreshToken: result.refreshToken});
+        return result;
     }
 
     private storeCredentials(auth: Auth): void {
@@ -335,7 +353,7 @@ export default class Openfort {
         const token = this._instanceManager.getAccessToken();
         const refreshToken = this._instanceManager.getRefreshToken();
 
-        return (token.token && token.thirdPartyProvider && token.thirdPartyTokenType) || token.token && refreshToken;
+        return (token.token && token.thirdPartyProvider && token.thirdPartyTokenType) || (token.token && refreshToken);
     }
 
     public async isAuthenticated(): Promise<boolean> {

@@ -9,9 +9,8 @@ export enum Event {
     LOGOUT = "logout",
     LOGGED_OUT = "logged-out",
     GET_CURRENT_DEVICE = "get-current-device",
-    CURRENT_DEVICE = "current-device"
+    CURRENT_DEVICE = "current-device",
 }
-
 
 export interface IEvent {
     uuid: string;
@@ -58,7 +57,19 @@ export class ConfigureRequest implements IEventRequest {
     thirdPartyProvider?: string;
     thirdPartyTokenType?: string;
 
-    constructor(uuid: string, chainId: number, recovery: ShieldAuthentication, publishableKey: string, shieldAPIKey: string, accessToken: string, thirdPartyProvider = undefined, thirdPartyTokenType = undefined, encryptionKey = undefined, openfortURL = undefined, shieldURL = undefined) {
+    constructor(
+        uuid: string,
+        chainId: number,
+        recovery: ShieldAuthentication,
+        publishableKey: string,
+        shieldAPIKey: string,
+        accessToken: string,
+        thirdPartyProvider = undefined,
+        thirdPartyTokenType = undefined,
+        encryptionKey = undefined,
+        openfortURL = undefined,
+        shieldURL = undefined,
+    ) {
         this.uuid = uuid;
         this.chainId = chainId;
         this.recovery = recovery;
@@ -71,7 +82,6 @@ export class ConfigureRequest implements IEventRequest {
         this.openfortURL = openfortURL;
         this.shieldURL = shieldURL;
     }
-
 }
 
 export class LogoutRequest implements IEventRequest {
@@ -94,7 +104,6 @@ export class SignRequest implements IEventRequest {
     }
 }
 
-
 export interface IEventResponse extends IEvent {
     success: boolean;
     action: Event;
@@ -108,13 +117,13 @@ export interface IConfigureResponse extends IEventResponse {
     deviceID: string;
 }
 
-export type IUpdateAuthenticationResponse = IEventResponse
+export type IUpdateAuthenticationResponse = IEventResponse;
 
 export interface ISignResponse extends IEventResponse {
     signature: string;
 }
 
-export type ILogoutResponse = IEventResponse
+export type ILogoutResponse = IEventResponse;
 
 export class ErrorResponse implements IErrorResponse {
     uuid: string;
@@ -200,5 +209,5 @@ export interface ShieldAuthentication {
 
 export enum AuthType {
     OPENFORT = "openfort",
-    CUSTOM = "custom"
+    CUSTOM = "custom",
 }

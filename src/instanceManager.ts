@@ -7,7 +7,9 @@ import {
     PublishableKeyStorageKey,
     RefreshTokenStorageKey,
     SessionKeyStorageKey,
-    SignerTypeStorageKey, ThirdPartyProviderStorageKey, ThirdPartyProviderTokenTypeStorageKey,
+    SignerTypeStorageKey,
+    ThirdPartyProviderStorageKey,
+    ThirdPartyProviderTokenTypeStorageKey,
 } from "./storage/storage";
 import {JWK, OpenfortAuth} from "./openfortAuth";
 
@@ -15,7 +17,7 @@ export type AccessToken = {
     token: string;
     thirdPartyProvider?: string;
     thirdPartyTokenType?: string;
-}
+};
 
 export class InstanceManager {
     private _publishableKey: string;
