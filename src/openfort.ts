@@ -25,11 +25,13 @@ export default class Openfort {
     private readonly _iframeURL: string;
     private readonly _openfortURL: string;
     private readonly _shieldURL: string;
+    private readonly _encryptionPart: string;
     private readonly _instanceManager: InstanceManager;
 
     constructor(
         publishableKey: string,
         shieldAPIKey = null,
+        encryptionShare = "",
         iframeURL = "https://iframe.openfort.xyz",
         openfortURL = "https://api.openfort.xyz",
         shieldURL = "https://shield.openfort.xyz",
@@ -40,6 +42,7 @@ export default class Openfort {
         this._shieldURL = shieldURL;
         this._publishableKey = publishableKey;
         this._shieldAPIKey = shieldAPIKey || publishableKey;
+        this._encryptionPart = encryptionShare;
     }
 
     public async logout(): Promise<void> {
@@ -83,6 +86,7 @@ export default class Openfort {
                     recovery: null,
                     shieldAPIKey: this._shieldAPIKey,
                     shieldURL: this._shieldURL,
+                    encryptionPart: this._encryptionPart,
                 };
                 const signer = new EmbeddedSigner(iframeConfiguration, this._instanceManager);
                 await signer.logout();
@@ -164,6 +168,7 @@ export default class Openfort {
             recovery: shieldAuthentication,
             shieldAPIKey: this._shieldAPIKey,
             shieldURL: this._shieldURL,
+            encryptionPart: this._encryptionPart,
         };
         return new EmbeddedSigner(iframeConfiguration, this._instanceManager);
     }
