@@ -24,6 +24,7 @@ export interface IFrameConfiguration {
     openfortURL?: string;
     shieldURL?: string;
     iframeURL?: string;
+    encryptionPart?: string;
     chainId: number;
 }
 
@@ -129,6 +130,7 @@ export class IframeClient {
             thirdPartyProvider: this._configuration.thirdPartyProvider,
             thirdPartyTokenType: this._configuration.thirdPartyTokenType,
             encryptionKey: password,
+            encryptionPart: this._configuration.encryptionPart,
             openfortURL: this._configuration.openfortURL,
             shieldURL: this._configuration.shieldURL,
         };

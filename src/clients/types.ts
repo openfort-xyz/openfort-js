@@ -52,6 +52,7 @@ export class ConfigureRequest implements IEventRequest {
     accessToken: string;
 
     encryptionKey?: string;
+    encryptionPart?: string;
     openfortURL?: string;
     shieldURL?: string;
     thirdPartyProvider?: string;
@@ -69,6 +70,7 @@ export class ConfigureRequest implements IEventRequest {
         encryptionKey = undefined,
         openfortURL = undefined,
         shieldURL = undefined,
+        encryptionPart = undefined,
     ) {
         this.uuid = uuid;
         this.chainId = chainId;
@@ -81,6 +83,7 @@ export class ConfigureRequest implements IEventRequest {
         this.encryptionKey = encryptionKey;
         this.openfortURL = openfortURL;
         this.shieldURL = shieldURL;
+        this.encryptionPart = encryptionPart;
     }
 }
 
