@@ -31,7 +31,7 @@ export default class Openfort {
     constructor(
         publishableKey: string,
         shieldAPIKey = null,
-        encryptionShare = "",
+        encryptionShare = null,
         iframeURL = "https://iframe.openfort.xyz",
         openfortURL = "https://api.openfort.xyz",
         shieldURL = "https://shield.openfort.xyz",
