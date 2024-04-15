@@ -4,7 +4,8 @@ import {
     AuthenticationApi,
     TokenType,
     AuthResponse,
-    ThirdPartyOAuthProvider, AuthPlayerResponse,
+    ThirdPartyOAuthProvider,
+    AuthPlayerResponse,
 } from "./generated";
 import {errors, importJWK, jwtVerify, KeyLike} from "jose";
 import {isBrowser} from "./lib/helpers";
@@ -81,7 +82,9 @@ export class OpenfortAuth {
     ): Promise<AuthPlayerResponse> {
         const oauthApi = new AuthenticationApi(new Configuration({accessToken: publishableKey}));
         const response = await oauthApi.thirdParty({
-            provider: provider, token: token, tokenType: tokenType,
+            provider: provider,
+            token: token,
+            tokenType: tokenType,
         });
         return response.data;
     }
