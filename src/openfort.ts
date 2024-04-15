@@ -271,7 +271,7 @@ export default class Openfort {
     ): Promise<TransactionIntentResponse> {
         if (!signature) {
             if (!userOperationHash) {
-                throw new NothingToSign("No user operation or signature provided");
+                throw new NothingToSign("No userOperationHash or signature provided");
             }
 
             await this.recoverSigner();
@@ -292,6 +292,17 @@ export default class Openfort {
         return result.data;
     }
 
+    public async signMessage(message: string): Promise<string> {
+        await this.recoverSigner();
+        if (!this._signer) {
+            throw new NoSignerConfigured("No signer configured");
+        }
+        if (this._signer.useCredentials()) {
+            await this.validateAndRefreshToken();
+        }
+        return await this._signer.sign(message);
+    }
+
     public async signTypedData(
         domain: TypedDataDomain,
         types: Record<string, Array<TypedDataField>>,
@@ -299,7 +310,7 @@ export default class Openfort {
     ): Promise<string> {
         await this.recoverSigner();
         if (!this._signer) {
-            throw new NoSignerConfigured("No signer provided");
+            throw new NoSignerConfigured("No signer configured");
         }
         if (this._signer.useCredentials()) {
             await this.validateAndRefreshToken();
@@ -314,7 +325,7 @@ export default class Openfort {
     ): Promise<SessionResponse> {
         await this.recoverSigner();
         if (!this._signer) {
-            throw new NoSignerConfigured("No signer nor signature provided");
+            throw new NoSignerConfigured("No signer configured nor signature provided");
         }
 
         if (this._signer.getSingerType() !== SignerType.SESSION) {
