@@ -149,10 +149,10 @@ export class IframeClient {
         throw new MissingRecoveryPasswordError();
     }
 
-    async sign(message: string): Promise<string> {
+    async sign(message: string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
         await this.waitForIframeLoad();
         const uuid = this.generateShortUUID();
-        const request = new SignRequest(uuid, message);
+        const request = new SignRequest(uuid, message, requireArrayify, requireHash);
         this._iframe.contentWindow?.postMessage(request, "*");
 
         let response: SignResponse;

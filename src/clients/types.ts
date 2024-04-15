@@ -100,10 +100,14 @@ export class SignRequest implements IEventRequest {
     uuid: string;
     action: Event = Event.SIGN;
     message: string;
+    requireArrayify?: boolean;
+    requireHash?: boolean;
 
-    constructor(uuid: string, message: string) {
+    constructor(uuid: string, message: string, requireArrayify?: boolean, requireHash?: boolean) {
         this.uuid = uuid;
         this.message = message;
+        this.requireArrayify = requireArrayify;
+        this.requireHash = requireHash;
     }
 }
 

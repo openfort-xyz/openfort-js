@@ -300,7 +300,7 @@ export default class Openfort {
         if (this._signer.useCredentials()) {
             await this.validateAndRefreshToken();
         }
-        return await this._signer.sign(message);
+        return await this._signer.sign(message, false);
     }
 
     public async signTypedData(
@@ -315,7 +315,7 @@ export default class Openfort {
         if (this._signer.useCredentials()) {
             await this.validateAndRefreshToken();
         }
-        return await this._signer.sign(_TypedDataEncoder.hash(domain, types, value));
+        return await this._signer.sign(_TypedDataEncoder.hash(domain, types, value), false, false);
     }
 
     public async sendRegisterSessionRequest(

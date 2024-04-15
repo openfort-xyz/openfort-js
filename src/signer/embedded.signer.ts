@@ -40,13 +40,13 @@ export class EmbeddedSigner implements ISigner {
         return deviceID;
     }
 
-    public async sign(message: Bytes | string): Promise<string> {
+    public async sign(message: Bytes | string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
         const loaded = await this.isLoaded();
         if (!loaded) {
             throw new Error("Signer is not loaded");
         }
 
-        return await this._iframeClient.sign(message as string);
+        return await this._iframeClient.sign(message as string, requireArrayify, requireHash);
     }
 
     public getDeviceID(): string | null {

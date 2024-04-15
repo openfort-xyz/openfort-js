@@ -11,7 +11,7 @@ export class SessionSigner implements ISigner {
         this._instanceManager = instanceManager;
     }
 
-    public sign(message: Bytes | string): Promise<string> {
+    public sign(message: Bytes | string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
         return new Promise((resolve) => {
             resolve(this._sessionKey.sign(message));
         });
