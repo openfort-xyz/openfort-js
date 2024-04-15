@@ -1,9 +1,11 @@
 import {
+    AuthPlayerResponse,
     AuthResponse,
     Configuration,
     OAuthProvider,
     SessionResponse,
     SessionsApi,
+    ThirdPartyOAuthProvider,
     TokenType,
     TransactionIntentResponse,
     TransactionIntentsApi,
@@ -17,6 +19,8 @@ import {InstanceManager} from "./instanceManager";
 import {SessionStorage} from "./storage/sessionStorage";
 import {IFrameConfiguration, MissingRecoveryPasswordError} from "./clients/iframe-client";
 import {ShieldAuthentication} from "./clients/types";
+import {_TypedDataEncoder} from "@ethersproject/hash";
+import {TypedDataDomain, TypedDataField} from "@ethersproject/abstract-signer";
 
 export default class Openfort {
     private _signer?: ISigner;
@@ -225,8 +229,14 @@ export default class Openfort {
         return await OpenfortAuth.InitSIWE(this._publishableKey, address);
     }
 
-    public authenticateWithThirdPartyProvider(provider: string, token: string, tokenType: string): void {
+    public async authenticateWithThirdPartyProvider(
+        provider: ThirdPartyOAuthProvider,
+        token: string,
+        tokenType: TokenType,
+    ): Promise<AuthPlayerResponse> {
+        const result = await OpenfortAuth.AuthenticateThirdParty(this._publishableKey, provider, token, tokenType);
         this._instanceManager.setAccessToken({token, thirdPartyProvider: provider, thirdPartyTokenType: tokenType});
+        return result;
     }
 
     public async authenticateWithSIWE(
@@ -261,7 +271,7 @@ export default class Openfort {
     ): Promise<TransactionIntentResponse> {
         if (!signature) {
             if (!userOperationHash) {
-                throw new NothingToSign("No user operation or signature provided");
+                throw new NothingToSign("No userOperationHash or signature provided");
             }
 
             await this.recoverSigner();
@@ -282,6 +292,32 @@ export default class Openfort {
         return result.data;
     }
 
+    public async signMessage(message: string): Promise<string> {
+        await this.recoverSigner();
+        if (!this._signer) {
+            throw new NoSignerConfigured("No signer configured");
+        }
+        if (this._signer.useCredentials()) {
+            await this.validateAndRefreshToken();
+        }
+        return await this._signer.sign(message);
+    }
+
+    public async signTypedData(
+        domain: TypedDataDomain,
+        types: Record<string, Array<TypedDataField>>,
+        value: Record<string, any>,
+    ): Promise<string> {
+        await this.recoverSigner();
+        if (!this._signer) {
+            throw new NoSignerConfigured("No signer configured");
+        }
+        if (this._signer.useCredentials()) {
+            await this.validateAndRefreshToken();
+        }
+        return await this._signer.sign(_TypedDataEncoder.hash(domain, types, value));
+    }
+
     public async sendRegisterSessionRequest(
         sessionId: string,
         signature: string,
@@ -289,7 +325,7 @@ export default class Openfort {
     ): Promise<SessionResponse> {
         await this.recoverSigner();
         if (!this._signer) {
-            throw new NoSignerConfigured("No signer nor signature provided");
+            throw new NoSignerConfigured("No signer configured nor signature provided");
         }
 
         if (this._signer.getSingerType() !== SignerType.SESSION) {
@@ -340,7 +376,7 @@ export default class Openfort {
         }
 
         if (this._instanceManager.getSignerType() !== SignerType.EMBEDDED) {
-            return EmbeddedState.MISSING_RECOVERY_METHOD;
+            return EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED;
         }
 
         if (!this._signer) {
@@ -424,7 +460,7 @@ export default class Openfort {
 export enum EmbeddedState {
     NONE,
     UNAUTHENTICATED,
-    MISSING_RECOVERY_METHOD,
+    EMBEDDED_SIGNER_NOT_CONFIGURED,
     CREATING_ACCOUNT,
     READY,
 }

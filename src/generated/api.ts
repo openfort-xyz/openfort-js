@@ -812,6 +812,12 @@ export interface AuthPlayerListQueries {
      * @memberof AuthPlayerListQueries
      */
     'email'?: string;
+    /**
+     * Specifies the external user ID.
+     * @type {string}
+     * @memberof AuthPlayerListQueries
+     */
+    'externalUserId'?: string;
 }
 
 
@@ -1180,51 +1186,6 @@ export interface BaseEntityListResponseDeviceResponse {
      * 
      * @type {number}
      * @memberof BaseEntityListResponseDeviceResponse
-     */
-    'total': number;
-}
-
-
-/**
- * 
- * @export
- * @interface BaseEntityListResponseShareResponse
- */
-export interface BaseEntityListResponseShareResponse {
-    /**
-     * 
-     * @type {ResponseTypeLIST}
-     * @memberof BaseEntityListResponseShareResponse
-     */
-    'object': ResponseTypeLIST;
-    /**
-     * 
-     * @type {string}
-     * @memberof BaseEntityListResponseShareResponse
-     */
-    'url': string;
-    /**
-     * 
-     * @type {Array<ShareResponse>}
-     * @memberof BaseEntityListResponseShareResponse
-     */
-    'data': Array<ShareResponse>;
-    /**
-     * 
-     * @type {number}
-     * @memberof BaseEntityListResponseShareResponse
-     */
-    'start': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof BaseEntityListResponseShareResponse
-     */
-    'end': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof BaseEntityListResponseShareResponse
      */
     'total': number;
 }
@@ -1955,6 +1916,12 @@ export interface CreateDeviceRequest {
      * @memberof CreateDeviceRequest
      */
     'account': string;
+    /**
+     * Specifies the share data
+     * @type {string}
+     * @memberof CreateDeviceRequest
+     */
+    'share': string;
 }
 /**
  * 
@@ -2238,33 +2205,6 @@ export interface CreateSessionRequest {
      */
     'player': string;
 }
-/**
- * 
- * @export
- * @interface CreateShareRequest
- */
-export interface CreateShareRequest {
-    /**
-     * Specifies the unique share ID (starts with sha_)
-     * @type {string}
-     * @memberof CreateShareRequest
-     */
-    'share': string;
-    /**
-     * 
-     * @type {ShareType}
-     * @memberof CreateShareRequest
-     */
-    'shareType': ShareType;
-    /**
-     * Specifies if the recovery share is encrypted by user entropy
-     * @type {boolean}
-     * @memberof CreateShareRequest
-     */
-    'userEntropy': boolean;
-}
-
-
 /**
  * 
  * @export
@@ -2756,6 +2696,18 @@ export interface DeviceResponse {
      * @memberof DeviceResponse
      */
     'account': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof DeviceResponse
+     */
+    'share': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof DeviceResponse
+     */
+    'isPrimary': boolean;
 }
 
 
@@ -2983,19 +2935,6 @@ export const EntityTypeSESSION = {
 } as const;
 
 export type EntityTypeSESSION = typeof EntityTypeSESSION[keyof typeof EntityTypeSESSION];
-
-
-/**
- * 
- * @export
- * @enum {string}
- */
-
-export const EntityTypeSHARE = {
-    Share: 'share'
-} as const;
-
-export type EntityTypeSHARE = typeof EntityTypeSHARE[keyof typeof EntityTypeSHARE];
 
 
 /**
@@ -4664,6 +4603,18 @@ export interface OAuthConfig {
      */
     'provider': OAuthProviderLOOTLOCKER;
     /**
+     * The unique Supabase URL which is supplied when you create a new project in your project dashboard.
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'url': string;
+    /**
+     * The unique Supabase Key which is supplied when you create a new project in your project dashboard.
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'key': string;
+    /**
      * PEM encoded public key to verify the JWT token
      * @type {string}
      * @memberof OAuthConfig
@@ -4804,7 +4755,8 @@ export const OAuthProvider = {
     Lootlocker: 'lootlocker',
     Playfab: 'playfab',
     Custom: 'custom',
-    Oidc: 'oidc'
+    Oidc: 'oidc',
+    Supabase: 'supabase'
 } as const;
 
 export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
@@ -4899,6 +4851,19 @@ export const OAuthProviderPLAYFAB = {
 } as const;
 
 export type OAuthProviderPLAYFAB = typeof OAuthProviderPLAYFAB[keyof typeof OAuthProviderPLAYFAB];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const OAuthProviderSUPABASE = {
+    Supabase: 'supabase'
+} as const;
+
+export type OAuthProviderSUPABASE = typeof OAuthProviderSUPABASE[keyof typeof OAuthProviderSUPABASE];
 
 
 /**
@@ -7040,65 +7005,6 @@ export interface SettingsWebhookUpdateRequest {
 /**
  * 
  * @export
- * @interface ShareResponse
- */
-export interface ShareResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof ShareResponse
-     */
-    'id': string;
-    /**
-     * 
-     * @type {EntityTypeSHARE}
-     * @memberof ShareResponse
-     */
-    'object': EntityTypeSHARE;
-    /**
-     * 
-     * @type {number}
-     * @memberof ShareResponse
-     */
-    'createdAt': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ShareResponse
-     */
-    'share': string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ShareResponse
-     */
-    'userEntropy': boolean;
-    /**
-     * 
-     * @type {ShareType}
-     * @memberof ShareResponse
-     */
-    'type': ShareType;
-}
-
-
-/**
- * 
- * @export
- * @enum {string}
- */
-
-export const ShareType = {
-    Auth: 'auth',
-    Recovery: 'recovery'
-} as const;
-
-export type ShareType = typeof ShareType[keyof typeof ShareType];
-
-
-/**
- * 
- * @export
  * @interface SignPayloadRequest
  */
 export interface SignPayloadRequest {
@@ -7433,6 +7339,85 @@ export const SubscriptionType = {
 } as const;
 
 export type SubscriptionType = typeof SubscriptionType[keyof typeof SubscriptionType];
+
+
+/**
+ * Supabase oauth configuration
+ * @export
+ * @interface SupabaseAuthConfig
+ */
+export interface SupabaseAuthConfig {
+    /**
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof SupabaseAuthConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {OAuthProviderSUPABASE}
+     * @memberof SupabaseAuthConfig
+     */
+    'provider': OAuthProviderSUPABASE;
+    /**
+     * The unique Supabase URL which is supplied when you create a new project in your project dashboard.
+     * @type {string}
+     * @memberof SupabaseAuthConfig
+     */
+    'url': string;
+    /**
+     * The unique Supabase Key which is supplied when you create a new project in your project dashboard.
+     * @type {string}
+     * @memberof SupabaseAuthConfig
+     */
+    'key': string;
+}
+
+
+/**
+ * Enum of the supporting third party auth providers.
+ * @export
+ * @enum {string}
+ */
+
+export const ThirdPartyOAuthProvider = {
+    Accelbyte: 'accelbyte',
+    Firebase: 'firebase',
+    Lootlocker: 'lootlocker',
+    Playfab: 'playfab',
+    Supabase: 'supabase',
+    Custom: 'custom',
+    Oidc: 'oidc'
+} as const;
+
+export type ThirdPartyOAuthProvider = typeof ThirdPartyOAuthProvider[keyof typeof ThirdPartyOAuthProvider];
+
+
+/**
+ * 
+ * @export
+ * @interface ThirdPartyOAuthRequest
+ */
+export interface ThirdPartyOAuthRequest {
+    /**
+     * 
+     * @type {ThirdPartyOAuthProvider}
+     * @memberof ThirdPartyOAuthRequest
+     */
+    'provider': ThirdPartyOAuthProvider;
+    /**
+     * Token to be verified
+     * @type {string}
+     * @memberof ThirdPartyOAuthRequest
+     */
+    'token': string;
+    /**
+     * 
+     * @type {TokenType}
+     * @memberof ThirdPartyOAuthRequest
+     */
+    'tokenType': TokenType;
+}
 
 
 /**
@@ -9766,10 +9751,11 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [email] Specifies the email address of the user.
+         * @param {string} [externalUserId] Specifies the external user ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthPlayers: async (limit?: number, skip?: number, order?: SortOrder, email?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAuthPlayers: async (limit?: number, skip?: number, order?: SortOrder, email?: string, externalUserId?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/iam/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9800,6 +9786,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
 
             if (email !== undefined) {
                 localVarQueryParameter['email'] = email;
+            }
+
+            if (externalUserId !== undefined) {
+                localVarQueryParameter['externalUserId'] = externalUserId;
             }
 
 
@@ -10061,11 +10051,12 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [email] Specifies the email address of the user.
+         * @param {string} [externalUserId] Specifies the external user ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthPlayers(limit, skip, order, email, options);
+        async getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, externalUserId?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthPlayers(limit, skip, order, email, externalUserId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -10171,11 +10162,12 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [email] Specifies the email address of the user.
+         * @param {string} [externalUserId] Specifies the external user ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: any): AxiosPromise<AuthPlayerListResponse> {
-            return localVarFp.getAuthPlayers(limit, skip, order, email, options).then((request) => request(axios, basePath));
+        getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, externalUserId?: string, options?: any): AxiosPromise<AuthPlayerListResponse> {
+            return localVarFp.getAuthPlayers(limit, skip, order, email, externalUserId, options).then((request) => request(axios, basePath));
         },
         /**
          * The endpoint retrieves oauth configuration for specified provider for the current project environment.
@@ -10281,12 +10273,13 @@ export class AdminAuthenticationApi extends BaseAPI {
      * @param {number} [skip] Specifies the offset for the first records to return.
      * @param {SortOrder} [order] Specifies the order in which to sort the results.
      * @param {string} [email] Specifies the email address of the user.
+     * @param {string} [externalUserId] Specifies the external user ID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AdminAuthenticationApi
      */
-    public getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, options?: AxiosRequestConfig) {
-        return AdminAuthenticationApiFp(this.configuration).getAuthPlayers(limit, skip, order, email, options).then((request) => request(this.axios, this.basePath));
+    public getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, externalUserId?: string, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).getAuthPlayers(limit, skip, order, email, externalUserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -10714,6 +10707,35 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             };
         },
         /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        me: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v1/me`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Get or create a new session for the player based on the refresh token.
          * @summary Refresh or create auth session.
          * @param {RefreshTokenRequest} refreshTokenRequest 
@@ -10783,6 +10805,46 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(signupRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        thirdParty: async (thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'thirdPartyOAuthRequest' is not null or undefined
+            assertParamExists('thirdParty', 'thirdPartyOAuthRequest', thirdPartyOAuthRequest)
+            const localVarPath = `/iam/v1/oauth/third_party`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(thirdPartyOAuthRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -11058,6 +11120,15 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async me(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.me(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Get or create a new session for the player based on the refresh token.
          * @summary Refresh or create auth session.
          * @param {RefreshTokenRequest} refreshTokenRequest 
@@ -11077,6 +11148,17 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          */
         async signupEmailPassword(signupRequest: SignupRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signupEmailPassword(signupRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async thirdParty(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.thirdParty(thirdPartyOAuthRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -11228,6 +11310,14 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
             return localVarFp.logout(logoutRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        me(options?: any): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.me(options).then((request) => request(axios, basePath));
+        },
+        /**
          * Get or create a new session for the player based on the refresh token.
          * @summary Refresh or create auth session.
          * @param {RefreshTokenRequest} refreshTokenRequest 
@@ -11246,6 +11336,16 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          */
         signupEmailPassword(signupRequest: SignupRequest, options?: any): AxiosPromise<AuthResponse> {
             return localVarFp.signupEmailPassword(signupRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        thirdParty(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options?: any): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.thirdParty(thirdPartyOAuthRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -11410,6 +11510,16 @@ export class AuthenticationApi extends BaseAPI {
     }
 
     /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public me(options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).me(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Get or create a new session for the player based on the refresh token.
      * @summary Refresh or create auth session.
      * @param {RefreshTokenRequest} refreshTokenRequest 
@@ -11431,6 +11541,18 @@ export class AuthenticationApi extends BaseAPI {
      */
     public signupEmailPassword(signupRequest: SignupRequest, options?: AxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).signupEmailPassword(signupRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Verify oauth token of a third party auth provider.
+     * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public thirdParty(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).thirdParty(thirdPartyOAuthRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
