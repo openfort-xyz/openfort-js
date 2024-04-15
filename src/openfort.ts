@@ -1,9 +1,10 @@
 import {
+    AuthPlayerResponse,
     AuthResponse,
     Configuration,
     OAuthProvider,
     SessionResponse,
-    SessionsApi,
+    SessionsApi, ThirdPartyOAuthProvider,
     TokenType,
     TransactionIntentResponse,
     TransactionIntentsApi,
@@ -225,8 +226,10 @@ export default class Openfort {
         return await OpenfortAuth.InitSIWE(this._publishableKey, address);
     }
 
-    public authenticateWithThirdPartyProvider(provider: string, token: string, tokenType: string): void {
+    public async authenticateWithThirdPartyProvider(provider: ThirdPartyOAuthProvider, token: string, tokenType: TokenType): Promise<AuthPlayerResponse> {
+        const result = await OpenfortAuth.AuthenticateThirdParty(this._publishableKey, provider, token, tokenType);
         this._instanceManager.setAccessToken({token, thirdPartyProvider: provider, thirdPartyTokenType: tokenType});
+        return result;
     }
 
     public async authenticateWithSIWE(
