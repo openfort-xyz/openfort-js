@@ -343,7 +343,7 @@ export default class Openfort {
         }
 
         if (this._instanceManager.getSignerType() !== SignerType.EMBEDDED) {
-            return EmbeddedState.MISSING_RECOVERY_METHOD;
+            return EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED;
         }
 
         if (!this._signer) {
@@ -427,7 +427,7 @@ export default class Openfort {
 export enum EmbeddedState {
     NONE,
     UNAUTHENTICATED,
-    MISSING_RECOVERY_METHOD,
+    EMBEDDED_SIGNER_NOT_CONFIGURED,
     CREATING_ACCOUNT,
     READY,
 }
