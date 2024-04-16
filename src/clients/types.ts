@@ -102,15 +102,16 @@ export class SignRequest implements IEventRequest {
     message: string;
     requireArrayify?: boolean;
     requireHash?: boolean;
+    openfortConfiguration?: OpenfortConfiguration;
 
-    constructor(uuid: string, message: string, requireArrayify?: boolean, requireHash?: boolean) {
+    constructor(uuid: string, message: string, requireArrayify?:boolean, requireHash?:boolean, openfortConfiguration?: OpenfortConfiguration) {
         this.uuid = uuid;
         this.message = message;
         this.requireArrayify = requireArrayify;
         this.requireHash = requireHash;
+        this.openfortConfiguration = openfortConfiguration;
     }
 }
-
 export interface IEventResponse extends IEvent {
     success: boolean;
     action: Event;
@@ -217,4 +218,12 @@ export interface ShieldAuthentication {
 export enum AuthType {
     OPENFORT = "openfort",
     CUSTOM = "custom",
+}
+
+export interface OpenfortConfiguration {
+    token: string;
+    thirdPartyProvider?: string;
+    thirdPartyTokenType?: string;
+    publishableKey: string;
+    openfortURL?: string;
 }

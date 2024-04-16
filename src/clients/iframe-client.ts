@@ -8,6 +8,7 @@ import {
     IEventResponse,
     LogoutRequest,
     LogoutResponse,
+    OpenfortConfiguration,
     ShieldAuthentication,
     SignRequest,
     SignResponse,
@@ -152,9 +153,16 @@ export class IframeClient {
     async sign(message: string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
         await this.waitForIframeLoad();
         const uuid = this.generateShortUUID();
-        const request = new SignRequest(uuid, message, requireArrayify, requireHash);
+        const openfortConfiguration: OpenfortConfiguration = {
+            openfortURL: this._configuration.openfortURL,
+            publishableKey: this._configuration.publishableKey,
+            thirdPartyProvider: this._configuration.thirdPartyProvider,
+            thirdPartyTokenType: this._configuration.thirdPartyTokenType,
+            token: this._configuration.accessToken,
+        };
+        const request = new SignRequest(uuid, message, requireArrayify, requireHash, openfortConfiguration);
         this._iframe.contentWindow?.postMessage(request, "*");
-
+    
         let response: SignResponse;
         try {
             response = await this.waitForResponse<SignResponse>(uuid);
