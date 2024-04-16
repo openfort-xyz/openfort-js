@@ -300,7 +300,7 @@ export default class Openfort {
         if (this._signer.useCredentials()) {
             await this.validateAndRefreshToken();
         }
-        return await this._signer.sign(message, false);
+        return await this._signer.sign(message, false, true);
     }
 
     public async signTypedData(

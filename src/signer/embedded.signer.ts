@@ -31,7 +31,7 @@ export class EmbeddedSigner implements ISigner {
 
     public async ensureEmbeddedAccount(recoveryPassword?: string): Promise<string> {
         let deviceID = this._instanceManager.getDeviceID();
-        if (deviceID) {
+        if (deviceID && !(await this._iframeClient.getCurrentDevice())) {
             return deviceID;
         }
 
