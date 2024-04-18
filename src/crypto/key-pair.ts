@@ -1,6 +1,6 @@
 import {secp256k1} from "@noble/curves/secp256k1";
 import {SigningKey} from "@ethersproject/signing-key";
-import {arrayify, Bytes, BytesLike, joinSignature} from "@ethersproject/bytes";
+import {arrayify, BytesLike, joinSignature} from "@ethersproject/bytes";
 import {computeAddress} from "@ethersproject/transactions";
 import {hashMessage} from "@ethersproject/hash";
 
@@ -17,7 +17,7 @@ export class KeyPair extends SigningKey {
      * Sign the message with the private key
      * @param message Message to sign
      */
-    public sign(message: Bytes | string): string {
+    public sign(message: Uint8Array | string): string {
         return joinSignature(this.signDigest(hashMessage(arrayify(message))));
     }
 

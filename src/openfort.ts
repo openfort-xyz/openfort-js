@@ -292,7 +292,7 @@ export default class Openfort {
         return result.data;
     }
 
-    public async signMessage(message: string): Promise<string> {
+    public async signMessage(message: string | Uint8Array): Promise<string> {
         await this.recoverSigner();
         if (!this._signer) {
             throw new NoSignerConfigured("No signer configured");

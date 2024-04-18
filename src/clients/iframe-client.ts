@@ -150,7 +150,7 @@ export class IframeClient {
         throw new MissingRecoveryPasswordError();
     }
 
-    async sign(message: string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
+    async sign(message: string | Uint8Array, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
         await this.waitForIframeLoad();
         const uuid = this.generateShortUUID();
         const openfortConfiguration: OpenfortConfiguration = {
@@ -162,7 +162,7 @@ export class IframeClient {
         };
         const request = new SignRequest(uuid, message, requireArrayify, requireHash, openfortConfiguration);
         this._iframe.contentWindow?.postMessage(request, "*");
-    
+
         let response: SignResponse;
         try {
             response = await this.waitForResponse<SignResponse>(uuid);

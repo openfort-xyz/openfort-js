@@ -99,12 +99,18 @@ export class LogoutRequest implements IEventRequest {
 export class SignRequest implements IEventRequest {
     uuid: string;
     action: Event = Event.SIGN;
-    message: string;
+    message: string | Uint8Array;
     requireArrayify?: boolean;
     requireHash?: boolean;
     openfortConfiguration?: OpenfortConfiguration;
 
-    constructor(uuid: string, message: string, requireArrayify?:boolean, requireHash?:boolean, openfortConfiguration?: OpenfortConfiguration) {
+    constructor(
+        uuid: string,
+        message: string | Uint8Array,
+        requireArrayify?: boolean,
+        requireHash?: boolean,
+        openfortConfiguration?: OpenfortConfiguration,
+    ) {
         this.uuid = uuid;
         this.message = message;
         this.requireArrayify = requireArrayify;

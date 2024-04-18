@@ -1,5 +1,4 @@
 import {KeyPair} from "../crypto/key-pair";
-import {Bytes} from "@ethersproject/bytes";
 import {ISigner, SignerType} from "./signer";
 import {InstanceManager} from "../instanceManager";
 
@@ -11,7 +10,7 @@ export class SessionSigner implements ISigner {
         this._instanceManager = instanceManager;
     }
 
-    public sign(message: Bytes | string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
+    public sign(message: Uint8Array | string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
         return new Promise((resolve) => {
             resolve(this._sessionKey.sign(message));
         });
