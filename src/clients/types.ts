@@ -39,7 +39,7 @@ export class GetCurrentDeviceResponse implements IEventResponse {
     success: boolean;
     action: Event = Event.CURRENT_DEVICE;
     deviceID: string | null;
-    version = VERSION;
+    version: string | null;
 
     constructor(uuid: string, deviceID: string | null) {
         this.uuid = uuid;
@@ -132,7 +132,7 @@ export class ErrorResponse implements IErrorResponse {
     success: boolean;
     error: string;
     action: Event;
-    version = VERSION;
+    version: string | null;
 
     constructor(uuid: string, action: Event, error: string) {
         this.action = action;
@@ -147,7 +147,7 @@ export class ConfigureResponse implements IConfigureResponse {
     success: boolean;
     deviceID: string;
     action: Event = Event.CONFIGURED;
-    version = VERSION;
+    version: string | null;
 
     constructor(uuid: string, deviceID: string) {
         this.success = true;
@@ -160,7 +160,7 @@ export class UpdateAuthenticationResponse implements IUpdateAuthenticationRespon
     uuid: string;
     success: boolean;
     action: Event = Event.AUTHENTICATION_UPDATED;
-    version = VERSION;
+    version: string | null;
 
     constructor(uuid: string) {
         this.success = true;
@@ -173,7 +173,7 @@ export class SignResponse implements ISignResponse {
     success: boolean;
     signature: string;
     action: Event = Event.SIGNED;
-    version = VERSION;
+    version: string | null;
 
     constructor(uuid: string, signature: string) {
         this.success = true;
@@ -186,7 +186,7 @@ export class LogoutResponse implements ILogoutResponse {
     uuid: string;
     success: boolean;
     action: Event = Event.LOGGED_OUT;
-    version = VERSION;
+    version: string | null;
 
     constructor(uuid: string) {
         this.success = true;

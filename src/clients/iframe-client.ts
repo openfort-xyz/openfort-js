@@ -139,6 +139,7 @@ export class IframeClient {
         let response: ConfigureResponse;
         try {
             response = await this.waitForResponse<ConfigureResponse>(config.uuid);
+            sessionStorage.setItem("iframe-version", response.version);
         } catch (e) {
             throw new NoResponseError();
         }
@@ -169,6 +170,7 @@ export class IframeClient {
         } catch (e) {
             throw new NoResponseError();
         }
+        sessionStorage.setItem("iframe-version", response.version);
         return response.signature;
     }
 
@@ -181,9 +183,11 @@ export class IframeClient {
         let response: GetCurrentDeviceResponse;
         try {
             response = await this.waitForResponse<GetCurrentDeviceResponse>(uuid);
+            sessionStorage.setItem("iframe-version", response.version);
         } catch (e) {
             throw new NoResponseError();
         }
+
         return response.deviceID;
     }
 
