@@ -240,7 +240,7 @@ export default class Openfort {
     ): Promise<AuthPlayerResponse> {
         const result = await OpenfortAuth.AuthenticateThirdParty(this._publishableKey, provider, token, tokenType);
         this._instanceManager.setAccessToken({token, thirdPartyProvider: provider, thirdPartyTokenType: tokenType});
-        this._instanceManager.setPlayerID(result.player.id);
+        this._instanceManager.setPlayerID(result.id);
         return result;
     }
 
