@@ -1,3 +1,5 @@
+import {VERSION} from "../version";
+
 export enum Event {
     LOADED = "loaded",
     CONFIGURE = "configure",
@@ -9,8 +11,9 @@ export enum Event {
     LOGOUT = "logout",
     LOGGED_OUT = "logged-out",
     GET_CURRENT_DEVICE = "get-current-device",
-    CURRENT_DEVICE = "current-device",
+    CURRENT_DEVICE = "current-device"
 }
+
 
 export interface IEvent {
     uuid: string;
@@ -23,9 +26,11 @@ export interface IEventRequest extends IEvent {
 export class GetCurrentDeviceRequest implements IEventRequest {
     uuid: string;
     action: Event = Event.GET_CURRENT_DEVICE;
+    playerID?: string;
 
-    constructor(uuid: string) {
+    constructor(uuid: string, playerId?: string) {
         this.uuid = uuid;
+        this.playerID = playerId;
     }
 }
 
@@ -34,6 +39,7 @@ export class GetCurrentDeviceResponse implements IEventResponse {
     success: boolean;
     action: Event = Event.CURRENT_DEVICE;
     deviceID: string | null;
+    version = VERSION;
 
     constructor(uuid: string, deviceID: string | null) {
         this.uuid = uuid;
@@ -58,20 +64,7 @@ export class ConfigureRequest implements IEventRequest {
     thirdPartyProvider?: string;
     thirdPartyTokenType?: string;
 
-    constructor(
-        uuid: string,
-        chainId: number,
-        recovery: ShieldAuthentication,
-        publishableKey: string,
-        shieldAPIKey: string,
-        accessToken: string,
-        thirdPartyProvider = undefined,
-        thirdPartyTokenType = undefined,
-        encryptionKey = undefined,
-        openfortURL = undefined,
-        shieldURL = undefined,
-        encryptionPart = undefined,
-    ) {
+    constructor(uuid: string, chainId: number, recovery: ShieldAuthentication, publishableKey: string, shieldAPIKey: string, accessToken: string, thirdPartyProvider = undefined, thirdPartyTokenType = undefined, encryptionKey = undefined, openfortURL = undefined, shieldURL = undefined, encryptionPart = undefined) {
         this.uuid = uuid;
         this.chainId = chainId;
         this.recovery = recovery;
@@ -104,13 +97,7 @@ export class SignRequest implements IEventRequest {
     requireHash?: boolean;
     openfortConfiguration?: OpenfortConfiguration;
 
-    constructor(
-        uuid: string,
-        message: string | Uint8Array,
-        requireArrayify?: boolean,
-        requireHash?: boolean,
-        openfortConfiguration?: OpenfortConfiguration,
-    ) {
+    constructor(uuid: string, message:  string | Uint8Array, requireArrayify?:boolean, requireHash?:boolean, openfortConfiguration?: OpenfortConfiguration) {
         this.uuid = uuid;
         this.message = message;
         this.requireArrayify = requireArrayify;
@@ -121,6 +108,7 @@ export class SignRequest implements IEventRequest {
 export interface IEventResponse extends IEvent {
     success: boolean;
     action: Event;
+    version: string
 }
 
 export interface IErrorResponse extends IEventResponse {
@@ -144,6 +132,7 @@ export class ErrorResponse implements IErrorResponse {
     success: boolean;
     error: string;
     action: Event;
+    version = VERSION;
 
     constructor(uuid: string, action: Event, error: string) {
         this.action = action;
@@ -158,6 +147,7 @@ export class ConfigureResponse implements IConfigureResponse {
     success: boolean;
     deviceID: string;
     action: Event = Event.CONFIGURED;
+    version = VERSION;
 
     constructor(uuid: string, deviceID: string) {
         this.success = true;
@@ -170,6 +160,7 @@ export class UpdateAuthenticationResponse implements IUpdateAuthenticationRespon
     uuid: string;
     success: boolean;
     action: Event = Event.AUTHENTICATION_UPDATED;
+    version = VERSION;
 
     constructor(uuid: string) {
         this.success = true;
@@ -182,6 +173,7 @@ export class SignResponse implements ISignResponse {
     success: boolean;
     signature: string;
     action: Event = Event.SIGNED;
+    version = VERSION;
 
     constructor(uuid: string, signature: string) {
         this.success = true;
@@ -194,6 +186,7 @@ export class LogoutResponse implements ILogoutResponse {
     uuid: string;
     success: boolean;
     action: Event = Event.LOGGED_OUT;
+    version = VERSION;
 
     constructor(uuid: string) {
         this.success = true;

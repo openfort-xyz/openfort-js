@@ -172,10 +172,10 @@ export class IframeClient {
         return response.signature;
     }
 
-    async getCurrentDevice(): Promise<string | null> {
+    async getCurrentDevice(playerId: string): Promise<string | null> {
         await this.waitForIframeLoad();
         const uuid = this.generateShortUUID();
-        const request = new GetCurrentDeviceRequest(uuid);
+        const request = new GetCurrentDeviceRequest(uuid, playerId);
         this._iframe.contentWindow?.postMessage(request, "*");
 
         let response: GetCurrentDeviceResponse;

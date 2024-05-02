@@ -3,7 +3,7 @@ import {
     AuthTokenStorageKey,
     DeviceIDStorageKey,
     IStorage,
-    JWKStorageKey,
+    JWKStorageKey, PlayerIDStorageKey,
     PublishableKeyStorageKey,
     RefreshTokenStorageKey,
     SessionKeyStorageKey,
@@ -30,6 +30,7 @@ export class InstanceManager {
     private readonly _temporalStorage: IStorage;
     private readonly _persistentStorage: IStorage;
     private readonly _secureStorage: IStorage;
+    private playerId: string;
 
     constructor(temporalStorage: IStorage, persistentStorage: IStorage, secureStorage: IStorage) {
         this._temporalStorage = temporalStorage;
@@ -101,6 +102,23 @@ export class InstanceManager {
     public removeRefreshToken(): void {
         this._refreshToken = null;
         this._secureStorage.remove(RefreshTokenStorageKey);
+    }
+
+    public setPlayerID(playerID: string): void {
+        this.playerId = playerID;
+        this._persistentStorage.save(PlayerIDStorageKey, playerID);
+    }
+
+    public getPlayerID(): string {
+        if (!this.playerId) {
+            this.playerId = this._persistentStorage.get(PlayerIDStorageKey);
+        }
+        return this._persistentStorage.get(PlayerIDStorageKey);
+    }
+
+    public removePlayerID(): void {
+        this.playerId = null;
+        this._persistentStorage.remove(PlayerIDStorageKey);
     }
 
     public setSignerType(signerType: SignerType): void {

@@ -69,6 +69,7 @@ export default class Openfort {
 
             this._instanceManager.removeAccessToken();
             this._instanceManager.removeRefreshToken();
+            this._instanceManager.removePlayerID();
             this._instanceManager.removeJWK();
         }
         this._instanceManager.removePublishableKey();
@@ -193,6 +194,7 @@ export default class Openfort {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
+        this._instanceManager.removePlayerID();
         const result = await OpenfortAuth.LoginEmailPassword(this._publishableKey, email, password);
         this.storeCredentials({player: result.player.id, accessToken: result.token, refreshToken: result.refreshToken});
         return result;
@@ -202,6 +204,7 @@ export default class Openfort {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
+        this._instanceManager.removePlayerID();
         const result = await OpenfortAuth.SignupEmailPassword(this._publishableKey, email, password, name);
         this.storeCredentials({player: result.player.id, accessToken: result.token, refreshToken: result.refreshToken});
         return result;
@@ -220,6 +223,7 @@ export default class Openfort {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
+        this._instanceManager.removePlayerID();
         const result = await OpenfortAuth.AuthenticateOAuth(this._publishableKey, provider, token, tokenType);
         this.storeCredentials({player: result.player.id, accessToken: result.token, refreshToken: result.refreshToken});
         return result;
@@ -236,6 +240,7 @@ export default class Openfort {
     ): Promise<AuthPlayerResponse> {
         const result = await OpenfortAuth.AuthenticateThirdParty(this._publishableKey, provider, token, tokenType);
         this._instanceManager.setAccessToken({token, thirdPartyProvider: provider, thirdPartyTokenType: tokenType});
+        this._instanceManager.setPlayerID(result.player.id);
         return result;
     }
 
@@ -248,6 +253,7 @@ export default class Openfort {
         this.recoverPublishableKey();
         this._instanceManager.removeAccessToken();
         this._instanceManager.removeRefreshToken();
+        this._instanceManager.removePlayerID();
         const result = await OpenfortAuth.AuthenticateSIWE(
             this._publishableKey,
             signature,
@@ -262,6 +268,7 @@ export default class Openfort {
     private storeCredentials(auth: Auth): void {
         this._instanceManager.setAccessToken({token: auth.accessToken});
         this._instanceManager.setRefreshToken(auth.refreshToken);
+        this._instanceManager.setPlayerID(auth.player);
     }
 
     public async sendSignatureTransactionIntentRequest(

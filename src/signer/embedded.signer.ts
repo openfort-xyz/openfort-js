@@ -30,7 +30,7 @@ export class EmbeddedSigner implements ISigner {
 
     public async ensureEmbeddedAccount(recoveryPassword?: string): Promise<string> {
         let deviceID = this._instanceManager.getDeviceID();
-        if (deviceID && !(await this._iframeClient.getCurrentDevice())) {
+        if (deviceID && !(await this._iframeClient.getCurrentDevice(this._instanceManager.getPlayerID()))) {
             return deviceID;
         }
 
@@ -57,7 +57,7 @@ export class EmbeddedSigner implements ISigner {
             return true;
         }
 
-        const localStorageDevice = await this._iframeClient.getCurrentDevice();
+        const localStorageDevice = await this._iframeClient.getCurrentDevice(this._instanceManager.getPlayerID());
         if (localStorageDevice) {
             this._instanceManager.setDeviceID(localStorageDevice);
             return true;
