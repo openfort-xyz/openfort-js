@@ -8,7 +8,7 @@ import {
     IEventResponse,
     LogoutRequest,
     LogoutResponse,
-    OpenfortConfiguration,
+    OpenfortConfiguration, PingRequest,
     ShieldAuthentication,
     SignRequest,
     SignResponse,
@@ -58,11 +58,10 @@ export class IframeClient {
             if (event.origin === this._configuration.iframeURL) {
                 const data = event.data;
                 if (data.action) {
-                    this._responses.set(data.uuid, data);
-                    if (data.uuid === "FIRST") {
-                        console.log("Received first message");
-                        this._iframe.contentWindow?.postMessage({uuid: "SECOND", action: Event.LOADED}, "*");
+                    if (data.action === Event.PONG) {
+                        this._responses.set("FIRST", data);
                     }
+                    this._responses.set(data.uuid, data);
                 }
             }
         });
@@ -84,6 +83,7 @@ export class IframeClient {
 
     private async waitForIframeLoad(): Promise<void> {
         while (!this.isLoaded()) {
+            this._iframe.contentWindow?.postMessage(new PingRequest(this.generateShortUUID()), "*");
             await new Promise((resolve) => setTimeout(resolve, 100));
         }
     }

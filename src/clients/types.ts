@@ -11,8 +11,9 @@ export enum Event {
     LOGOUT = "logout",
     LOGGED_OUT = "logged-out",
     GET_CURRENT_DEVICE = "get-current-device",
-    CURRENT_DEVICE = "current-device"
-}
+    CURRENT_DEVICE = "current-device",
+    PING = "ping",
+    PONG = "pong"}
 
 
 export interface IEvent {
@@ -31,6 +32,27 @@ export class GetCurrentDeviceRequest implements IEventRequest {
     constructor(uuid: string, playerId?: string) {
         this.uuid = uuid;
         this.playerID = playerId;
+    }
+}
+
+export class PingRequest implements IEventRequest {
+    uuid: string;
+    action: Event = Event.PING;
+
+    constructor(uuid: string) {
+        this.uuid = uuid;
+    }
+}
+
+export class PongResponse implements IEventResponse {
+    uuid: string;
+    success: boolean;
+    action: Event = Event.PONG;
+    version = VERSION;
+
+    constructor(uuid: string) {
+        this.uuid = uuid;
+        this.success = true;
     }
 }
 
