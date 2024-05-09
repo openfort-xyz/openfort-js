@@ -59,6 +59,10 @@ export class IframeClient {
                 const data = event.data;
                 if (data.action) {
                     this._responses.set(data.uuid, data);
+                    if (data.uuid === "FIRST") {
+                        console.log("Received first message");
+                        this._iframe.contentWindow?.postMessage({uuid: "SECOND", action: Event.LOADED}, "*");
+                    }
                 }
             }
         });
