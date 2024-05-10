@@ -241,6 +241,7 @@ export default class Openfort {
         const result = await OpenfortAuth.AuthenticateThirdParty(this._publishableKey, provider, token, tokenType);
         this._instanceManager.setAccessToken({token, thirdPartyProvider: provider, thirdPartyTokenType: tokenType});
         this._instanceManager.setPlayerID(result.id);
+        await this._signer.updateAuthentication();
         return result;
     }
 

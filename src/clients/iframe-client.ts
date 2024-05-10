@@ -209,6 +209,7 @@ export class IframeClient {
     }
 
     async updateAuthentication(token: string): Promise<void> {
+        this._configuration.accessToken = token;
         await this.waitForIframeLoad();
         const uuid = this.generateShortUUID();
         const request = new UpdateAuthenticationRequest(uuid, token);
