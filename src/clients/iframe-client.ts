@@ -118,7 +118,7 @@ export class IframeClient {
           this._responses.delete(uuid);
           // @ts-ignore
           const responseConstructor =
-           // @ts-ignore
+            // @ts-ignore
             this.responseConstructors[response.action];
           if (responseConstructor) {
             resolve(response as T);
