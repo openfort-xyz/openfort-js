@@ -13,8 +13,8 @@ export enum Event {
     GET_CURRENT_DEVICE = "get-current-device",
     CURRENT_DEVICE = "current-device",
     PING = "ping",
-    PONG = "pong"}
-
+    PONG = "pong",
+}
 
 export interface IEvent {
     uuid: string;
@@ -86,7 +86,20 @@ export class ConfigureRequest implements IEventRequest {
     thirdPartyProvider?: string;
     thirdPartyTokenType?: string;
 
-    constructor(uuid: string, chainId: number, recovery: ShieldAuthentication, publishableKey: string, shieldAPIKey: string, accessToken: string, thirdPartyProvider = undefined, thirdPartyTokenType = undefined, encryptionKey = undefined, openfortURL = undefined, shieldURL = undefined, encryptionPart = undefined) {
+    constructor(
+        uuid: string,
+        chainId: number,
+        recovery: ShieldAuthentication,
+        publishableKey: string,
+        shieldAPIKey: string,
+        accessToken: string,
+        thirdPartyProvider = undefined,
+        thirdPartyTokenType = undefined,
+        encryptionKey = undefined,
+        openfortURL = undefined,
+        shieldURL = undefined,
+        encryptionPart = undefined,
+    ) {
         this.uuid = uuid;
         this.chainId = chainId;
         this.recovery = recovery;
@@ -119,7 +132,13 @@ export class SignRequest implements IEventRequest {
     requireHash?: boolean;
     openfortConfiguration?: OpenfortConfiguration;
 
-    constructor(uuid: string, message:  string | Uint8Array, requireArrayify?:boolean, requireHash?:boolean, openfortConfiguration?: OpenfortConfiguration) {
+    constructor(
+        uuid: string,
+        message: string | Uint8Array,
+        requireArrayify?: boolean,
+        requireHash?: boolean,
+        openfortConfiguration?: OpenfortConfiguration,
+    ) {
         this.uuid = uuid;
         this.message = message;
         this.requireArrayify = requireArrayify;
@@ -130,7 +149,7 @@ export class SignRequest implements IEventRequest {
 export interface IEventResponse extends IEvent {
     success: boolean;
     action: Event;
-    version: string
+    version: string;
 }
 
 export interface IErrorResponse extends IEventResponse {
