@@ -1,72 +1,90 @@
-import {IframeClient, IFrameConfiguration} from "../clients/iframe-client";
-import {ISigner, SignerType} from "./signer";
-import {InstanceManager} from "../instanceManager";
-import {ConfigureRequest} from "../clients/types";
+import {IframeClient, IFrameConfiguration} from '../clients/iframe-client';
+import {ISigner, SignerType} from './signer';
+import {InstanceManager} from '../instanceManager';
+import {ConfigureRequest} from '../clients/types';
 
 export type Configuration = ConfigureRequest;
 export class EmbeddedSigner implements ISigner {
-    private _iframeClient: IframeClient;
-    private readonly _instanceManager: InstanceManager;
+  private _iframeClient: IframeClient;
+  private readonly _instanceManager: InstanceManager;
 
-    constructor(configuration: IFrameConfiguration, instanceManager: InstanceManager) {
-        this._instanceManager = instanceManager;
-        this._iframeClient = new IframeClient(configuration);
+  constructor(
+    configuration: IFrameConfiguration,
+    instanceManager: InstanceManager
+  ) {
+    this._instanceManager = instanceManager;
+    this._iframeClient = new IframeClient(configuration);
+  }
+
+  async logout(): Promise<void> {
+    await this._iframeClient.logout();
+    this._instanceManager.removeDeviceID();
+  }
+  useCredentials(): boolean {
+    return true;
+  }
+  async updateAuthentication(): Promise<void> {
+    const accessToken = this._instanceManager.getAccessToken();
+    if (!accessToken) {
+      return;
+    }
+    await this._iframeClient.updateAuthentication(accessToken.token);
+  }
+
+  getSingerType(): SignerType {
+    return SignerType.EMBEDDED;
+  }
+
+  public async ensureEmbeddedAccount(
+    recoveryPassword?: string
+  ): Promise<string> {
+    let deviceID = this._instanceManager.getDeviceID();
+    const playerID = this._instanceManager.getPlayerID();
+
+    if (deviceID && !(await this._iframeClient.getCurrentDevice(playerID!))) {
+      return deviceID;
     }
 
-    async logout(): Promise<void> {
-        await this._iframeClient.logout();
-        this._instanceManager.removeDeviceID();
-    }
-    useCredentials(): boolean {
-        return true;
-    }
-    async updateAuthentication(): Promise<void> {
-        await this._iframeClient.updateAuthentication(this._instanceManager.getAccessToken().token);
-    }
+    deviceID = await this._iframeClient.configure(recoveryPassword);
+    this._instanceManager.setDeviceID(deviceID);
+    return deviceID;
+  }
 
-    getSingerType(): SignerType {
-        return SignerType.EMBEDDED;
-    }
-
-    public async ensureEmbeddedAccount(recoveryPassword?: string): Promise<string> {
-        let deviceID = this._instanceManager.getDeviceID();
-        if (deviceID && !(await this._iframeClient.getCurrentDevice(this._instanceManager.getPlayerID()))) {
-            return deviceID;
-        }
-
-        deviceID = await this._iframeClient.configure(recoveryPassword);
-        this._instanceManager.setDeviceID(deviceID);
-        return deviceID;
+  public async sign(
+    message: Uint8Array | string,
+    requireArrayify?: boolean,
+    requireHash?: boolean
+  ): Promise<string> {
+    const loaded = await this.isLoaded();
+    if (!loaded) {
+      throw new Error('Signer is not loaded');
     }
 
-    public async sign(message: Uint8Array | string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
-        const loaded = await this.isLoaded();
-        if (!loaded) {
-            throw new Error("Signer is not loaded");
-        }
+    return await this._iframeClient.sign(message, requireArrayify, requireHash);
+  }
 
-        return await this._iframeClient.sign(message, requireArrayify, requireHash);
+  public getDeviceID(): string | null {
+    return this._instanceManager.getDeviceID();
+  }
+
+  async isLoaded(): Promise<boolean> {
+    if (this._instanceManager.getDeviceID()) {
+      return true;
+    }
+    const playerID = this._instanceManager.getPlayerID();
+
+    const localStorageDevice = await this._iframeClient.getCurrentDevice(
+      playerID!
+    );
+    if (localStorageDevice) {
+      this._instanceManager.setDeviceID(localStorageDevice);
+      return true;
     }
 
-    public getDeviceID(): string | null {
-        return this._instanceManager.getDeviceID();
-    }
+    return false;
+  }
 
-    async isLoaded(): Promise<boolean> {
-        if (this._instanceManager.getDeviceID()) {
-            return true;
-        }
-
-        const localStorageDevice = await this._iframeClient.getCurrentDevice(this._instanceManager.getPlayerID());
-        if (localStorageDevice) {
-            this._instanceManager.setDeviceID(localStorageDevice);
-            return true;
-        }
-
-        return false;
-    }
-
-    iFrameLoaded(): boolean {
-        return this._iframeClient.isLoaded();
-    }
+  iFrameLoaded(): boolean {
+    return this._iframeClient.isLoaded();
+  }
 }

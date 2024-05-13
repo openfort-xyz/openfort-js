@@ -1,54 +1,63 @@
-import {KeyPair} from "../crypto/key-pair";
-import {ISigner, SignerType} from "./signer";
-import {InstanceManager} from "../instanceManager";
+import {KeyPair} from '../crypto/key-pair';
+import {ISigner, SignerType} from './signer';
+import {InstanceManager} from '../instanceManager';
 
 export class SessionSigner implements ISigner {
-    private _sessionKey: KeyPair;
-    private readonly _instanceManager: InstanceManager;
+  private _sessionKey: KeyPair | null;
+  private readonly _instanceManager: InstanceManager;
 
-    constructor(instanceManager: InstanceManager) {
-        this._instanceManager = instanceManager;
+  constructor(instanceManager: InstanceManager) {
+    this._instanceManager = instanceManager;
+    this._sessionKey = null;
+  }
+
+  public async sign(
+    message: Uint8Array | string,
+    requireArrayify?: boolean,
+    requireHash?: boolean
+  ): Promise<string> {
+    if (this._sessionKey === null) {
+      throw new Error('Session key is not loaded.');
+    }
+    return this._sessionKey.sign(message);
+  }
+
+  public async logout(): Promise<void> {
+    this._instanceManager.removeSessionKey();
+    this._sessionKey = null;
+  }
+
+  public loadKeys(): string | null {
+    if (this._sessionKey) {
+      return this._sessionKey.getPublicKey();
     }
 
-    public sign(message: Uint8Array | string, requireArrayify?: boolean, requireHash?: boolean): Promise<string> {
-        return new Promise((resolve) => {
-            resolve(this._sessionKey.sign(message));
-        });
+    const sessionKey = this._instanceManager.getSessionKey();
+    if (sessionKey === null) {
+      return null;
     }
 
-    logout(): Promise<void> {
-        this._instanceManager.removeSessionKey();
-        this._sessionKey = null;
-        return Promise.resolve();
+    this._sessionKey = KeyPair.load(sessionKey);
+    if (this._sessionKey === null) {
+      return null;
     }
-    loadKeys(): string {
-        if (this._sessionKey) {
-            return this._sessionKey.getPublicKey();
-        }
+    return this._sessionKey.getPublicKey();
+  }
 
-        const sessionKey = this._instanceManager.getSessionKey();
-        if (!sessionKey) {
-            return null;
-        }
+  public generateKeys(): string {
+    this._sessionKey = new KeyPair();
+    this._instanceManager.setSessionKey(this._sessionKey.getPrivateKey());
+    return this._sessionKey.getPublicKey();
+  }
 
-        this._sessionKey = KeyPair.load(sessionKey);
-        return this._sessionKey.getPublicKey();
-    }
+  public getSingerType(): SignerType {
+    return SignerType.SESSION;
+  }
 
-    generateKeys(): string {
-        this._sessionKey = new KeyPair();
-        this._instanceManager.setSessionKey(this._sessionKey.getPrivateKey());
-        return this._sessionKey.getPublicKey();
-    }
-
-    getSingerType(): SignerType {
-        return SignerType.SESSION;
-    }
-
-    useCredentials(): boolean {
-        return false;
-    }
-    updateAuthentication(): Promise<void> {
-        return Promise.resolve();
-    }
+  public useCredentials(): boolean {
+    return false;
+  }
+  public updateAuthentication(): Promise<void> {
+    return Promise.resolve();
+  }
 }

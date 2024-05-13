@@ -2,23 +2,34 @@
     "name": "@openfort/openfort-js",
     "version": "0.6.13",
     "description": "",
-    "author": "Openfort",
+    "author": "Openfort (https://www.openfort.xyz)",
     "repository": {
         "type": "git",
         "url": "https://github.com/openfort-xyz/openfort-js.git"
     },
-    "keywords": [],
+    "keywords": ["Openfort", "Openfort.js"],
     "license": "MIT",
+    "files": [
+        "dist",
+        "lib",
+        "pure",
+        "src"
+      ],
     "main": "./dist/index.js",
     "exports": {
         ".": "./dist/index.js"
     },
     "scripts": {
+        "test": "yarn lint && yarn test:unit && yarn typecheck",
+        "test:unit": "jest",
         "prebuild": "node -p \"'export const VERSION = ' + JSON.stringify(require('./package.json').version) + ';\\nexport const PACKAGE = ' + JSON.stringify(require('./package.json').name) + ';'\" > src/version.ts",
-        "build": "tsc",
-        "format": "prettier --write \"src/**/*.ts\"",
-        "lint": "eslint ./src",
-        "test": "jest --config jestconfig.json",
+        "typecheck": "tsc",
+        "prettier": "prettier --write \"src/**/*.ts\"",
+        "prettier-check": "prettier --check \"src/**/*.ts\"",
+        "lint": "eslint 'src/**/*.ts' && yarn prettier-check",
+        "clean": "rimraf dist",
+        "copy-types": "./scripts/copy-types",
+        "build": "yarn clean && yarn rollup -c && yarn copy-types",
         "prepublishOnly": "yarn install && yarn build"
     },
     "publishConfig": {
@@ -26,13 +37,27 @@
     },
     "devDependencies": {
         "@types/crypto-js": "^4.2.2",
+        "@babel/core": "^7.7.2",
+        "@babel/preset-env": "^7.7.1",
         "@types/node": "^20.2.1",
-        "eslint": "^8.44.0",
-        "eslint-config-standard-with-typescript": "^36.0.0",
-        "eslint-plugin-import": "^2.27.5",
-        "eslint-plugin-n": "^15.7.0",
-        "eslint-plugin-promise": "^6.1.1",
+        "@types/jest": "^24.0.25",
+        "@rollup/plugin-replace": "^2.3.1",
+        "@typescript-eslint/eslint-plugin": "^4.15.2",
+        "@typescript-eslint/parser": "^4.15.2",
+        "babel-eslint": "^10.0.3",
+        "babel-jest": "^24.9.0",
+        "rollup": "^1.29.0",
+        "rollup-plugin-babel": "^4.3.3",
+        "rollup-plugin-typescript2": "^0.25.3",
+        "eslint": "^6.8.0",
+        "eslint-config-prettier": "^6.8.0",
+        "eslint-plugin-import": "^2.18.2",
+        "eslint-plugin-jest": "^22.6.3",
+        "eslint-plugin-prettier": "^3.1.1",
         "prettier": "^2.8.8",
+        "rimraf": "^2.6.2",
+        "jest": "^24.9.0",
+        "ts-jest": "^24.3.0",
         "typescript": "^5.0.4"
     },
     "dependencies": {
