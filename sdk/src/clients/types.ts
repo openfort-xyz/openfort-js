@@ -16,6 +16,8 @@ export enum Event {
   PONG = 'pong',
 }
 
+export const NOT_CONFIGURED_ERROR = 'not-configured-error';
+
 export interface IEvent {
   uuid: string;
 }

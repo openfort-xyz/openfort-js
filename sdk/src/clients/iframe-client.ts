@@ -8,6 +8,7 @@ import {
   IEventResponse,
   LogoutRequest,
   LogoutResponse,
+  NOT_CONFIGURED_ERROR,
   OpenfortConfiguration,
   PingRequest,
   ShieldAuthentication,
@@ -39,7 +40,28 @@ export class MissingRecoveryPasswordError extends Error {
 
 export class NoResponseError extends Error {
   constructor() {
-    super('No response or invalid response from iframe');
+    super('No response from iframe');
+  }
+}
+
+export class UnknownResponseError extends Error {
+  message: string;
+
+  constructor(message: string) {
+    super(`Unknown response from iframe: ${message}`);
+    this.message = message || '';
+  }
+}
+
+export class InvalidResponseError extends Error {
+  constructor() {
+    super('Invalid response from iframe');
+  }
+}
+
+export class NotConfiguredError extends Error {
+  constructor() {
+    super('Not configured');
   }
 }
 
@@ -117,7 +139,7 @@ export class IframeClient {
       const interval = setInterval(() => {
         if (retries > 100) {
           clearInterval(interval);
-          reject(new Error('Iframe response timeout'));
+          reject(NoResponseError);
         }
         retries++;
         const response = this.responses.get(uuid);
@@ -129,9 +151,12 @@ export class IframeClient {
           if (responseConstructor) {
             resolve(response as T);
           } else if (response instanceof ErrorResponse) {
-            reject(new Error(response.error));
+            if (response.error === NOT_CONFIGURED_ERROR) {
+              reject(new NotConfiguredError());
+            }
+            reject(new UnknownResponseError(response.error));
           } else {
-            reject(new Error('Unknown response type'));
+            reject(new InvalidResponseError());
           }
         }
       }, 100);
@@ -156,13 +181,8 @@ export class IframeClient {
       shieldURL: this.configuration.shieldURL,
     };
     this.iframe.contentWindow?.postMessage(config, '*');
-    let response: ConfigureResponse;
-    try {
-      response = await this.waitForResponse<ConfigureResponse>(config.uuid);
-      sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-    } catch (e) {
-      throw new NoResponseError();
-    }
+    const response = await this.waitForResponse<ConfigureResponse>(config.uuid);
+    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
 
     if (response.success) {
       return response.deviceID;
@@ -198,7 +218,12 @@ export class IframeClient {
     try {
       response = await this.waitForResponse<SignResponse>(uuid);
     } catch (e) {
-      throw new NoResponseError();
+      if (e instanceof NotConfiguredError) {
+        await this.configure();
+        return this.sign(message, requireArrayify, requireHash);
+      }
+
+      throw e;
     }
     sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
     return response.signature;
@@ -226,12 +251,7 @@ export class IframeClient {
     const uuid = this.generateShortUUID();
     const request = new LogoutRequest(uuid);
     this.iframe.contentWindow?.postMessage(request, '*');
-
-    try {
-      await this.waitForResponse<LogoutResponse>(uuid);
-    } catch (e) {
-      throw new NoResponseError();
-    }
+    await this.waitForResponse<LogoutResponse>(uuid);
   }
 
   async updateAuthentication(token: string): Promise<void> {
@@ -244,7 +264,12 @@ export class IframeClient {
     try {
       await this.waitForResponse<UpdateAuthenticationResponse>(uuid);
     } catch (e) {
-      throw new NoResponseError();
+      if (e instanceof NotConfiguredError) {
+        await this.configure();
+        await this.updateAuthentication(token);
+        return;
+      }
+      throw e;
     }
   }
 
