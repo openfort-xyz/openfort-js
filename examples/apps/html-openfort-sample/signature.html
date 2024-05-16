@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Account Recovery</title>
+    <link rel="stylesheet" href="./css/base.css" />
+    <script src="../../../packages/platform-bridge/dist/unreal/index.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-auth.js"></script>
+    <script src="./signature.js" defer></script>
+    <script src="./utils.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <h2 class="text-left font-semibold text-2xl">Signature</h2>
+      <div class="mb-5 mt-16">
+   
+        <div class="mb-5 flex justify-center items-center">
+            <div class="relative my-10">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="bg-white px-2 text-gray-500">Message: </span>
+
+                <span class="bg-white px-2 text-gray-500">Hello World</span>
+              </div>
+            </div>
+            <div class="flex justify-center items-center mt-2">
+              <button
+                id="sign-message-button"
+                class="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
+              >
+                Sign message
+              </button>
+          </div>
+        </div>
+      </div>
+      <div id="messages" role="alert" style="overflow-x: auto;"></div>
+      <button
+        id="logout-button"
+        class="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
+      >
+        Logout
+      </button>
+    </main>
+  </body>
+</html>

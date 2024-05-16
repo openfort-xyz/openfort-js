@@ -26,7 +26,7 @@
 
 [![Version](https://img.shields.io/npm/v/@openfort/openfort-js.svg)](https://www.npmjs.org/package/@openfort/openfort-js)
 
-The Openfort js library provides convinient access to handle client session keys and return signed messages back to Openfort from applications written in client-side JavaScript.
+The Openfort js library provides convenient access to handle client session keys and return signed messages back to Openfort from applications written in client-side JavaScript.
 
 ## Installation
 
