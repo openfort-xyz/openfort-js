@@ -135,7 +135,7 @@ export class IframeClient {
                         resolve(response as T);
                     } else if (response instanceof ErrorResponse) {
                         if (response.error === NOT_CONFIGURED_ERROR) {
-                            throw new NotConfiguredError();
+                            reject(new NotConfiguredError());
                         }
                         reject(new UnknownResponseError(response.error));
                     } else {
@@ -192,6 +192,7 @@ export class IframeClient {
             response = await this.waitForResponse<SignResponse>(uuid);
         } catch (e) {
             if (e instanceof NotConfiguredError) {
+                console.log("Not configured, reconfiguring...");
                 await this.configure();
                 return this.sign(message, requireArrayify, requireHash);
             }
