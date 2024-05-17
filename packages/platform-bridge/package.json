@@ -35,7 +35,7 @@
     "js-library": {
       "outputFormat": "global",
       "context": "browser",
-      "source": "src/script.ts",
+      "source": "src/index.ts",
       "engines": {
         "browsers": "Chrome 90"
       }
