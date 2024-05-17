@@ -33,6 +33,10 @@ jobs:
       - name: Typecheck
         run: yarn typecheck
 
+      - name: Configure npm for Authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Release
         run: npm publish --access public
         env:
