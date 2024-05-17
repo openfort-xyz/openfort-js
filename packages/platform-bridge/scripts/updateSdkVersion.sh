@@ -4,7 +4,7 @@ set -e
 set -x
 
 # The files to update
-FILE_PATHS=("./dist/unity/index.html" "./dist/unreal/index.js" "./dist/unreal/index.js.map")
+FILE_PATHS=("./dist/unity/index.html" "./dist/bundle/index.js.map" "./dist/bundle/index.js.map")
 
 # check files exist
 for FILE_PATH in "${FILE_PATHS[@]}"

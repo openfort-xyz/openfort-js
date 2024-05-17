@@ -24,15 +24,7 @@
         "browsers": "Chrome 90"
       }
     },
-    "unreal": {
-      "outputFormat": "global",
-      "context": "browser",
-      "source": "src/index.ts",
-      "engines": {
-        "browsers": "Chrome 90"
-      }
-    },
-    "js-library": {
+    "bundle": {
       "outputFormat": "global",
       "context": "browser",
       "source": "src/index.ts",
