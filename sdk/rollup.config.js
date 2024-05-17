@@ -1,15 +1,21 @@
 import typescript from '@rollup/plugin-typescript';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
-import {readFileSync} from 'fs';
+// import {readFileSync} from 'fs';
 import commonJs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import dts from 'rollup-plugin-dts';
 import replace from '@rollup/plugin-replace';
 import pkg from './package.json' assert {type: 'json'};
 
-const packages = JSON.parse(
-  readFileSync('./workspace-packages.json', {encoding: 'utf8'})
-);
+const packages = [
+  {location: '.', name: 'js-openfort-sdk'},
+  {location: 'packages/platform-bridge', name: '@openfort/platform-bridge'},
+  {location: 'sdk', name: '@openfort/openfort-js'},
+];
+
+// const packages = JSON.parse(
+//   readFileSync('./workspace-packages.json', {encoding: 'utf8'})
+// );
 
 const getPackages = () => packages.map((pkg) => pkg.name);
 
