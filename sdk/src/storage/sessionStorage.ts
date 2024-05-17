@@ -2,7 +2,7 @@ import { IStorage } from './storage';
 
 export class SessionStorage implements IStorage {
   private static validateSessionStorage(): void {
-    if (!('sessionStorage' in global && !!global.sessionStorage)) {
+    if (!(typeof window !== 'undefined' && !!window.localStorage)) {
       throw new Error('Session storage is not available');
     }
   }
