@@ -13,7 +13,8 @@
   },
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "test": "yarn lint && yarn test:unit && yarn typecheck",
