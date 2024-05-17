@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   auth.onIdTokenChanged(async (user) => {
     if (user) {
       const idToken = await user.getIdToken();
-      const player = await openfort.authenticateWithThirdPartyProvider(
+      await openfort.authenticateWithThirdPartyProvider(
         'firebase',
         idToken,
         'idToken'
