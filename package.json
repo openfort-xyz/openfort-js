@@ -5,15 +5,7 @@
     "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
     "homepage": "https://github.com/openfort-xyz/openfort-js#readme",
     "repository": "github.com/openfort-xyz/openfort-js.git",
-    "keywords": [
-        "Openfort",
-        "Openfort.js"
-    ],
     "license": "MIT",
-    "files": [
-        "dist",
-        "src"
-    ],
     "scripts": {
         "test": "wsrun --exclude-missing -e test",
         "typecheck": "wsrun --exclude-missing typecheck",
