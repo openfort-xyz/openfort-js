@@ -1,0 +1,86 @@
+{
+  "name": "@openfort/openfort-js",
+  "version": "0.6.18",
+  "author": "Openfort (https://www.openfort.xyz)",
+  "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
+  "repository": "openfort-xyz/openfort-js.git",
+  "keywords": [
+    "Openfort",
+    "Openfort.js"
+  ],
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "yarn lint && yarn test:unit && yarn typecheck",
+    "test:unit": "jest --passWithNoTests",
+    "prebuild": "node -p \"'export const VERSION = ' + JSON.stringify(require('./package.json').version) + ';\\nexport const PACKAGE = ' + JSON.stringify(require('./package.json').name) + ';'\" > src/version.ts",
+    "test:watch": "jest --watch",
+    "packageList": "./scripts/generate-package-list.sh",
+    "typecheck": "tsc --noEmit --jsx preserve",
+    "lint": "eslint 'src/**/*.ts' --fix",
+    "clean": "rimraf dist",
+    "build": "yarn packageList & yarn clean && NODE_ENV=production rollup --config rollup.config.js && rm -rf dist/types"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@ethersproject/abstract-signer": "^5.7.0",
+    "@ethersproject/bytes": "^5.7.0",
+    "@ethersproject/hash": "^5.7.0",
+    "@ethersproject/signing-key": "^5.7.0",
+    "@ethersproject/transactions": "^5.7.0",
+    "@noble/curves": "^1.1.0",
+    "@openfort/shield-js": "^0.0.3",
+    "axios": "1.6.7",
+    "crypto-js": "^4.2.0",
+    "es6-promise": "^4.2.8",
+    "jose": "^5.2.2",
+    "path": "^0.12.7"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.0",
+    "@parcel/packager-ts": "2.12.0",
+    "@parcel/transformer-typescript-types": "2.12.0",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@swc/jest": "^0.2.24",
+    "@types/crypto-js": "^4.2.2",
+    "@types/jest": "^29.4.3",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "buffer": "^5.5.0||^6.0.0",
+    "eslint": "^8.40.0",
+    "jest": "^29.4.3",
+    "jest-environment-jsdom": "^29.4.3",
+    "parcel": "^2.8.3",
+    "prettier": "^2.8.8",
+    "rimraf": "^2.6.2",
+    "rollup": "^3.17.2",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-polyfill-node": "^0.12.0",
+    "typescript": "^5.0.4"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "type": "module",
+  "types": "./dist/index.d.ts"
+}

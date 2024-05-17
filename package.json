@@ -1,50 +1,51 @@
 {
-    "name": "@openfort/openfort-js",
-    "version": "0.6.17",
-    "description": "",
-    "author": "Openfort",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/openfort-xyz/openfort-js.git"
-    },
-    "keywords": [],
+    "name": "js-openfort-sdk",
+    "version": "0.0.0",
+    "author": "Openfort (https://www.openfort.xyz)",
+    "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
+    "homepage": "https://github.com/openfort-xyz/openfort-js#readme",
+    "repository": "github.com/openfort-xyz/openfort-js.git",
     "license": "MIT",
-    "main": "./dist/index.js",
-    "exports": {
-        ".": "./dist/index.js"
-    },
     "scripts": {
-        "prebuild": "node -p \"'export const VERSION = ' + JSON.stringify(require('./package.json').version) + ';\\nexport const PACKAGE = ' + JSON.stringify(require('./package.json').name) + ';'\" > src/version.ts",
-        "build": "tsc",
-        "format": "prettier --write \"src/**/*.ts\"",
-        "lint": "eslint ./src",
-        "test": "jest --config jestconfig.json",
-        "prepublishOnly": "yarn install && yarn build"
+        "test": "wsrun --exclude-missing -e test",
+        "typecheck": "wsrun --exclude-missing typecheck",
+        "lint": "wsrun --exclude-missing -e lint --no-error-on-unmatched-pattern",
+        "build": "NODE_OPTIONS=--max-old-space-size=14366 wsrun -y 4 -p @openfort/openfort-js -e -r --serial build",
+        "postinstall": "husky install; ./.husky/install_gitleaks.sh",
+        "scan:secrets": "./.husky/run_gitleaks.sh"
     },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/"
     },
-    "devDependencies": {
-        "@types/crypto-js": "^4.2.2",
-        "@types/node": "^20.2.1",
-        "eslint": "^8.44.0",
-        "eslint-config-standard-with-typescript": "^36.0.0",
-        "eslint-plugin-import": "^2.27.5",
-        "eslint-plugin-n": "^15.7.0",
-        "eslint-plugin-promise": "^6.1.1",
-        "prettier": "^2.8.8",
-        "typescript": "^5.0.4"
-    },
+    "packageManager": "yarn@3.6.1",
+    "private": true,
     "dependencies": {
-        "@ethersproject/bytes": "^5.7.0",
-        "@ethersproject/hash": "^5.7.0",
-        "@ethersproject/signing-key": "^5.7.0",
-        "@noble/curves": "^1.1.0",
-        "@openfort/shield-js": "^0.0.3",
-        "axios": "1.6.7",
-        "crypto-js": "^4.2.0",
-        "es6-promise": "^4.2.8",
-        "jose": "^5.2.2",
-        "path": "^0.12.7"
+        "tslib": "^2.6.2"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.57.1",
+        "@typescript-eslint/parser": "^5.57.1",
+        "eslint": "^8.40.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-airbnb-typescript": "^17.0.0",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-jsx-a11y": "^6.8.0",
+        "eslint-plugin-react": "^7.34.1",
+        "husky": "^8.0.3",
+        "lint-staged": "^13.2.0",
+        "wsrun": "^5.2.4"
+    },
+    "lint-staged": {
+        "*": "yarn scan:secrets",
+        "*.{js,jsx,ts,tsx}": "eslint"
+    },
+    "workspaces": {
+        "packages": [
+            "sdk",
+            "packages/platform-bridge"
+        ],
+        "nohoist": [
+            "examples/**"
+        ]
     }
 }

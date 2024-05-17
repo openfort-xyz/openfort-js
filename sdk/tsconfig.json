@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./dist",
+    "rootDirs": ["src"],
     "target": "es2022",
     "module": "esnext",
     "moduleResolution": "node",
@@ -12,11 +15,11 @@
     "esModuleInterop": true,
     "declaration": false,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": false
   },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "commonjs"
-    }
-  }
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

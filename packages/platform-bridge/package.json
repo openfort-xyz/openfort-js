@@ -1,0 +1,44 @@
+{
+  "name": "@openfort/platform-bridge",
+  "version": "0.0.0",
+  "dependencies": {
+    "@openfort/openfort-js": "0.6.13"
+  },
+  "devDependencies": {
+    "eslint": "^8.40.0",
+    "parcel": "^2.8.3"
+  },
+  "scripts": {
+    "build": "yarn build:sdk && parcel build --no-cache --no-scope-hoist && yarn updateSdkVersion",
+    "build:sdk": "cd ../.. && yarn build",
+    "lint": "eslint ./src --ext .ts,.jsx,.tsx --max-warnings=0",
+    "start": "parcel",
+    "updateSdkVersion": "./scripts/updateSdkVersion.sh"
+  },
+  "source": "src/index.html",
+  "targets": {
+    "unity": {
+      "context": "browser",
+      "source": "src/index.html",
+      "engines": {
+        "browsers": "Chrome 90"
+      }
+    },
+    "unreal": {
+      "outputFormat": "global",
+      "context": "browser",
+      "source": "src/index.ts",
+      "engines": {
+        "browsers": "Chrome 90"
+      }
+    },
+    "js-library": {
+      "outputFormat": "global",
+      "context": "browser",
+      "source": "src/script.ts",
+      "engines": {
+        "browsers": "Chrome 90"
+      }
+    }
+  }
+}

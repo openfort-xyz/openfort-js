@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Account Recovery</title>
+    <link rel="stylesheet" href="./css/base.css" />
+    <script src="../../../packages/platform-bridge/dist/js-script/script.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-auth.js"></script>
+    <script src="./recover.js" defer></script>
+    <script src="./utils.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <h2 class="text-left font-semibold text-2xl">Account Recovery</h2>
+      <div class="mb-5 mt-16">
+        <div class="my-5">
+          <input
+            type="password"
+            name="passwordRecovery"
+            placeholder="Password to secure your recovery"
+            class="w-full p-2 border border-gray-200 rounded-lg"
+          />
+        </div>
+        <div class="mb-5 flex justify-center items-center">
+          <div class="w-full">
+            <div class="flex justify-center items-center">
+              <button
+                id="password-recovery-button"
+                class="bg-black text-white p-2.5 rounded-lg w-full"
+              >
+                Continue with Password Recovery
+              </button>
+            </div>
+            <div class="relative my-10">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="bg-white px-2 text-gray-500">Or</span>
+              </div>
+            </div>
+            <div class="flex justify-center items-center mt-2">
+              <button
+                id="automatic-recovery-button"
+                class="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
+              >
+                Continue with Automatic Recovery
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="messages" role="alert" style="overflow-x: auto;"></div>
+    </main>
+  </body>
+</html>

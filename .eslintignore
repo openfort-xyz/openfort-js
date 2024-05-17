@@ -1,0 +1,13 @@
+node_modules/
+
+# build folders
+dist/
+sdk/scripts/
+
+# test configs
+jest.*.js
+
+# Readmes
+**/*.md
+
+# put module specific ignore paths here
