@@ -187,6 +187,7 @@ export interface IErrorResponse extends IEventResponse {
 
 export interface IConfigureResponse extends IEventResponse {
   deviceID: string;
+  accountType?: string;
 }
 
 export type IUpdateAuthenticationResponse = IEventResponse;
@@ -224,15 +225,18 @@ export class ConfigureResponse implements IConfigureResponse {
 
   deviceID: string;
 
+  accountType?: string;
+
   action: Event = Event.CONFIGURED;
 
   version: string | null;
 
-  constructor(uuid: string, deviceID: string) {
+  constructor(uuid: string, deviceID: string, accountType?: string) {
     this.success = true;
     this.deviceID = deviceID;
     this.uuid = uuid;
     this.version = null;
+    this.accountType = accountType;
   }
 }
 
