@@ -30,6 +30,7 @@ export interface IFrameConfiguration {
   iframeURL: string;
   encryptionPart: string | null;
   chainId: number;
+  debug?: boolean;
 }
 
 export class MissingRecoveryPasswordError extends Error {
@@ -79,6 +80,9 @@ export class IframeClient {
 
     this.configuration = configuration;
     this.configuration.iframeURL = configuration.iframeURL || 'https://iframe.openfort.xyz';
+    if (configuration.debug) {
+      this.configuration.iframeURL += '?debug=true';
+    }
 
     window.addEventListener('message', (event) => {
       if (event.origin === this.configuration.iframeURL) {
