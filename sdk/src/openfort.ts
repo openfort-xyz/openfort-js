@@ -116,6 +116,7 @@ export default class Openfort {
     iframeURL: string = 'https://iframe.openfort.xyz',
     openfortURL: string = 'https://api.openfort.xyz',
     shieldURL: string = 'https://shield.openfort.xyz',
+    private readonly debug: boolean = false,
   ) {
     this.instanceManager = new InstanceManager(
       new SessionStorage(),
@@ -207,6 +208,7 @@ export default class Openfort {
       shieldAPIKey: this.shieldAPIKey,
       shieldURL: this.shieldURL,
       encryptionPart: this.encryptionPart,
+      debug: this.debug,
     };
   }
 
@@ -278,6 +280,7 @@ export default class Openfort {
       shieldAPIKey: this.shieldAPIKey,
       shieldURL: this.shieldURL,
       encryptionPart: this.encryptionPart,
+      debug: this.debug,
     };
     return new EmbeddedSigner(iframeConfiguration, this.instanceManager);
   }
