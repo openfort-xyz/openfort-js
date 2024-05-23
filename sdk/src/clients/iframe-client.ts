@@ -80,9 +80,6 @@ export class IframeClient {
 
     this.configuration = configuration;
     this.configuration.iframeURL = configuration.iframeURL || 'https://iframe.openfort.xyz';
-    if (configuration.debug) {
-      this.configuration.iframeURL += '?debug=true';
-    }
 
     window.addEventListener('message', (event) => {
       if (event.origin === this.configuration.iframeURL) {
@@ -106,7 +103,11 @@ export class IframeClient {
     this.iframe.id = 'openfort-iframe';
     document.body.appendChild(this.iframe);
 
-    this.iframe.src = configuration.iframeURL;
+    if (configuration.debug) {
+      this.iframe.src = `${configuration.iframeURL}?debug=true`;
+    } else {
+      this.iframe.src = configuration.iframeURL;
+    }
   }
 
   public isLoaded(): boolean {
