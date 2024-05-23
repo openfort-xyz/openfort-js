@@ -75,11 +75,14 @@ export class GetCurrentDeviceResponse implements IEventResponse {
 
   version: string | null;
 
-  constructor(uuid: string, deviceID: string | null) {
+  accountType?: string;
+
+  constructor(uuid: string, deviceID: string | null, accountType?: string) {
     this.uuid = uuid;
     this.success = true;
     this.deviceID = deviceID;
     this.version = null;
+    this.accountType = accountType;
   }
 }
 
