@@ -10,7 +10,7 @@ export {
   SessionResponse,
   AuthPlayerResponse,
 } from './generated/api';
-export { InitializeOAuthOptions } from './openfortAuth';
+export { InitializeOAuthOptions } from './authManager';
 export { ShieldAuthentication, AuthType } from './clients/types';
 export { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer';
 

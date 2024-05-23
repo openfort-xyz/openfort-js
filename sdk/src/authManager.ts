@@ -48,7 +48,7 @@ export type InitializeOAuthOptions = {
   skipBrowserRedirect?: boolean;
 };
 
-export class OpenfortAuth {
+export class AuthManager {
   public static async initOAuth(
     publishableKey: string,
     provider: OAuthProvider,

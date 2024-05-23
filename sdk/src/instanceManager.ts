@@ -12,7 +12,7 @@ import {
   thirdPartyProviderStorageKey,
   thirdPartyProviderTokenTypeStorageKey,
 } from './storage/storage';
-import { JWK, OpenfortAuth } from './openfortAuth';
+import { JWK, AuthManager } from './authManager';
 
 export type AccessToken = {
   token: string;
@@ -210,7 +210,7 @@ export class InstanceManager {
     if (!this.jwk) {
       const publishableKey = await this.getPublishableKey();
       if (publishableKey) {
-        this.jwk = await OpenfortAuth.getJWK(publishableKey);
+        this.jwk = await AuthManager.getJWK(publishableKey);
       }
     }
 

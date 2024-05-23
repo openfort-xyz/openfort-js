@@ -75,11 +75,26 @@ export class GetCurrentDeviceResponse implements IEventResponse {
 
   version: string | null;
 
-  constructor(uuid: string, deviceID: string | null) {
+  accountType: string | null;
+
+  chainID: number | null;
+
+  address: string | null;
+
+  constructor(
+    uuid: string,
+    deviceID: string | null,
+    accountType: string | null,
+    chainID: number | null,
+    address: string | null,
+  ) {
     this.uuid = uuid;
     this.success = true;
     this.deviceID = deviceID;
     this.version = null;
+    this.accountType = accountType;
+    this.chainID = chainID;
+    this.address = address;
   }
 }
 
@@ -187,7 +202,9 @@ export interface IErrorResponse extends IEventResponse {
 
 export interface IConfigureResponse extends IEventResponse {
   deviceID: string;
-  accountType?: string;
+  address: string;
+  chainID: number;
+  accountType: string;
 }
 
 export type IUpdateAuthenticationResponse = IEventResponse;
@@ -225,18 +242,24 @@ export class ConfigureResponse implements IConfigureResponse {
 
   deviceID: string;
 
-  accountType?: string;
+  address: string;
+
+  chainID: number;
+
+  accountType: string;
 
   action: Event = Event.CONFIGURED;
 
   version: string | null;
 
-  constructor(uuid: string, deviceID: string, accountType?: string) {
+  constructor(uuid: string, deviceID: string, accountType: string, chainID: number, address: string) {
     this.success = true;
     this.deviceID = deviceID;
     this.uuid = uuid;
-    this.version = null;
     this.accountType = accountType;
+    this.chainID = chainID;
+    this.address = address;
+    this.version = null;
   }
 }
 
