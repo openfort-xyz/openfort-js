@@ -248,7 +248,7 @@ export default class Openfort {
     } catch (e) {
       if (e instanceof MissingRecoveryPasswordError) {
         throw new MissingRecoveryMethod(
-          'This device has not been configured, to recover or create your account provide recovery method.',
+          'This embedded signer requires a recovery password.',
         );
       }
     }
