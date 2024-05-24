@@ -486,7 +486,6 @@ export default class Openfort {
     const accountType = this.instanceManager.getAccountType();
     const accountAddress = this.instanceManager.getAccountAddress();
     const chainId = this.instanceManager.getChainID();
-    console.warn('accountType', accountType);
 
     if (accountType === AccountType.UPGRADEABLE_V5) {
       const updatedDomain: TypedDataDomain = {
