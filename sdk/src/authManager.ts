@@ -2,6 +2,9 @@ import {
   errors, importJWK, jwtVerify, KeyLike,
 } from 'jose';
 import {
+  Auth, InitAuthResponse, InitializeOAuthOptions, JWK, SIWEInitResponse,
+} from 'types';
+import {
   Configuration,
   OAuthProvider,
   AuthenticationApi,
@@ -12,43 +15,7 @@ import {
 } from './generated';
 import { isBrowser } from './lib/helpers';
 
-export type Auth = {
-  player: string;
-  accessToken: string;
-  refreshToken: string;
-};
-
-export type InitAuthResponse = {
-  url: string;
-  key: string;
-};
-
-export type SIWEInitResponse = {
-  address: string;
-  nonce: string;
-  expiresAt: number;
-};
-
-export type JWK = {
-  kty: string;
-  crv: string;
-  x: string;
-  y: string;
-  alg: string;
-};
-
-export type InitializeOAuthOptions = {
-  /** A URL to send the user to after they are confirmed. */
-  redirectTo?: string;
-  /** A space-separated list of scopes granted to the OAuth application. */
-  scopes?: string;
-  /** An object of query params */
-  queryParams?: { [key: string]: string };
-  /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
-  skipBrowserRedirect?: boolean;
-};
-
-export class OpenfortAuth {
+export class AuthManager {
   public static async initOAuth(
     publishableKey: string,
     provider: OAuthProvider,

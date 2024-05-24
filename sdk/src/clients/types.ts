@@ -73,13 +73,27 @@ export class GetCurrentDeviceResponse implements IEventResponse {
 
   deviceID: string | null;
 
-  version: string | null;
+  accountType: string | null;
 
-  constructor(uuid: string, deviceID: string | null) {
+  version: string | null = null;
+
+  chainId: number | null;
+
+  address: string | null;
+
+  constructor(
+    uuid: string,
+    deviceID: string | null,
+    accountType: string | null,
+    chainId: number | null,
+    address: string | null,
+  ) {
     this.uuid = uuid;
     this.success = true;
     this.deviceID = deviceID;
-    this.version = null;
+    this.accountType = accountType;
+    this.chainId = chainId;
+    this.address = address;
   }
 }
 
@@ -88,7 +102,7 @@ export class ConfigureRequest implements IEventRequest {
 
   action: Event = Event.CONFIGURE;
 
-  chainId: number;
+  chainId: number | null;
 
   recovery: ShieldAuthentication | null;
 
@@ -98,7 +112,7 @@ export class ConfigureRequest implements IEventRequest {
 
   accessToken: string | null;
 
-  encryptionKey?: string;
+  encryptionKey: string | null;
 
   encryptionPart: string | null;
 
@@ -119,7 +133,7 @@ export class ConfigureRequest implements IEventRequest {
     accessToken: string,
     openfortURL: string,
     shieldURL: string,
-    encryptionKey = undefined,
+    encryptionKey = null,
     thirdPartyProvider = null,
     thirdPartyTokenType = null,
     encryptionPart = null,
@@ -187,12 +201,19 @@ export interface IErrorResponse extends IEventResponse {
 
 export interface IConfigureResponse extends IEventResponse {
   deviceID: string;
+  address: string;
+  chainId: number;
+  accountType: string;
 }
 
 export type IUpdateAuthenticationResponse = IEventResponse;
 
 export interface ISignResponse extends IEventResponse {
   signature: string;
+}
+
+export function isErrorResponse(response: IEventResponse): response is IErrorResponse {
+  return 'error' in response;
 }
 
 export type ILogoutResponse = IEventResponse;
@@ -224,14 +245,23 @@ export class ConfigureResponse implements IConfigureResponse {
 
   deviceID: string;
 
+  address: string;
+
+  chainId: number;
+
+  accountType: string;
+
   action: Event = Event.CONFIGURED;
 
   version: string | null;
 
-  constructor(uuid: string, deviceID: string) {
+  constructor(uuid: string, deviceID: string, accountType: string, chainId: number, address: string) {
     this.success = true;
     this.deviceID = deviceID;
     this.uuid = uuid;
+    this.accountType = accountType;
+    this.chainId = chainId;
+    this.address = address;
     this.version = null;
   }
 }

@@ -1,7 +1,7 @@
 import { IframeClient, IFrameConfiguration } from '../clients/iframe-client';
 import { ISigner, SignerType } from './signer';
 import { InstanceManager } from '../instanceManager';
-import { ConfigureRequest } from '../clients/types';
+import { ConfigureRequest, GetCurrentDeviceResponse } from '../clients/types';
 
 export type Configuration = ConfigureRequest;
 export class EmbeddedSigner implements ISigner {
@@ -42,17 +42,24 @@ export class EmbeddedSigner implements ISigner {
 
   public async ensureEmbeddedAccount(
     recoveryPassword?: string,
-  ): Promise<string> {
-    let deviceID = this.instanceManager.getDeviceID();
+  ): Promise<GetCurrentDeviceResponse> {
     const playerID = this.instanceManager.getPlayerID();
 
-    if (deviceID && !(await this.iframeClient.getCurrentDevice(playerID!))) {
-      return deviceID;
+    let currentUser = await this.iframeClient.getCurrentUser(playerID!);
+    if (currentUser) {
+      return currentUser;
     }
 
-    deviceID = await this.iframeClient.configure(recoveryPassword);
-    this.instanceManager.setDeviceID(deviceID);
-    return deviceID;
+    currentUser = await this.iframeClient.configure(recoveryPassword);
+
+    if (!currentUser.accountType || !currentUser.chainId || !currentUser.address || !currentUser.deviceID) {
+      throw new Error('Internal error: failed to configure the signer.');
+    }
+    this.instanceManager.setDeviceID(currentUser.deviceID);
+    this.instanceManager.setAccountAddress(currentUser.address);
+    this.instanceManager.setChainID(currentUser.chainId.toString());
+    this.instanceManager.setAccountType(currentUser.accountType);
+    return currentUser;
   }
 
   public async sign(
@@ -78,11 +85,11 @@ export class EmbeddedSigner implements ISigner {
     }
     const playerID = this.instanceManager.getPlayerID();
 
-    const localStorageDevice = await this.iframeClient.getCurrentDevice(
+    const localStorageUser = await this.iframeClient.getCurrentUser(
       playerID!,
     );
-    if (localStorageDevice) {
-      this.instanceManager.setDeviceID(localStorageDevice);
+    if (localStorageUser?.deviceID) {
+      this.instanceManager.setDeviceID(localStorageUser.deviceID);
       return true;
     }
 

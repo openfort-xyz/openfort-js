@@ -1,7 +1,11 @@
+import { JWK } from 'types';
 import { SignerType } from './signer/signer';
 import {
   authTokenStorageKey,
   deviceIDStorageKey,
+  accountTypeStorageKey,
+  accountAddressStorageKey,
+  chainIDStorageKey,
   IStorage,
   jwksStorageKey,
   playerIDStorageKey,
@@ -12,7 +16,7 @@ import {
   thirdPartyProviderStorageKey,
   thirdPartyProviderTokenTypeStorageKey,
 } from './storage/storage';
-import { JWK, OpenfortAuth } from './openfortAuth';
+import { AuthManager } from './authManager';
 
 export type AccessToken = {
   token: string;
@@ -34,6 +38,12 @@ export class InstanceManager {
   private sessionKey: string | null = null;
 
   private deviceID: string | null = null;
+
+  private chainId: string | null = null;
+
+  private accountAddress: string | null = null;
+
+  private accountType: string | null = null;
 
   private readonly temporalStorage: IStorage;
 
@@ -210,7 +220,7 @@ export class InstanceManager {
     if (!this.jwk) {
       const publishableKey = await this.getPublishableKey();
       if (publishableKey) {
-        this.jwk = await OpenfortAuth.getJWK(publishableKey);
+        this.jwk = await AuthManager.getJWK(publishableKey);
       }
     }
 
@@ -254,5 +264,56 @@ export class InstanceManager {
   public removeDeviceID(): void {
     this.deviceID = null;
     this.persistentStorage.remove(deviceIDStorageKey);
+  }
+
+  public setChainID(chainId: string): void {
+    this.chainId = chainId;
+    this.persistentStorage.save(chainIDStorageKey, chainId);
+  }
+
+  public getChainID(): string | null {
+    if (!this.chainId) {
+      this.chainId = this.persistentStorage.get(chainIDStorageKey);
+    }
+    return this.chainId;
+  }
+
+  public removeChainID(): void {
+    this.chainId = null;
+    this.persistentStorage.remove(chainIDStorageKey);
+  }
+
+  public setAccountAddress(accountAddress: string): void {
+    this.accountAddress = accountAddress;
+    this.persistentStorage.save(accountAddressStorageKey, accountAddress);
+  }
+
+  public getAccountAddress(): string | null {
+    if (!this.accountAddress) {
+      this.accountAddress = this.persistentStorage.get(accountAddressStorageKey);
+    }
+    return this.accountAddress;
+  }
+
+  public removeAccountAddress(): void {
+    this.accountAddress = null;
+    this.persistentStorage.remove(accountAddressStorageKey);
+  }
+
+  public setAccountType(accountType: string): void {
+    this.accountType = accountType;
+    this.persistentStorage.save(accountTypeStorageKey, accountType);
+  }
+
+  public getAccountType(): string | null {
+    if (!this.accountType) {
+      this.accountType = this.persistentStorage.get(accountTypeStorageKey);
+    }
+    return this.accountType;
+  }
+
+  public removeAccountType(): void {
+    this.accountType = null;
+    this.persistentStorage.remove(accountTypeStorageKey);
   }
 }
