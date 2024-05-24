@@ -9,6 +9,8 @@ export const signerTypeStorageKey = 'openfort.signer_type';
 export const chainIDStorageKey = 'openfort.chain_id';
 export const jwksStorageKey = 'openfort.jwk';
 export const deviceIDStorageKey = 'openfort.device_id';
+export const accountTypeStorageKey = 'openfort.account_type';
+export const accountAddressStorageKey = 'openfort.account_address';
 
 export interface IStorage {
   get(key: string): string | null;

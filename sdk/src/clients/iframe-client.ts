@@ -1,10 +1,8 @@
 import {
   ConfigureRequest,
   ConfigureResponse,
-  ErrorResponse,
-  Event,
   GetCurrentDeviceRequest,
-  GetCurrentDeviceResponse,
+  Event,
   IEventResponse,
   LogoutRequest,
   LogoutResponse,
@@ -16,6 +14,8 @@ import {
   SignResponse,
   UpdateAuthenticationRequest,
   UpdateAuthenticationResponse,
+  GetCurrentDeviceResponse,
+  isErrorResponse,
 } from './types';
 
 export interface IFrameConfiguration {
@@ -29,8 +29,8 @@ export interface IFrameConfiguration {
   shieldURL: string;
   iframeURL: string;
   encryptionPart: string | null;
-  chainId: number;
-  debug?: boolean;
+  chainId: number | null;
+  debug: boolean | null;
 }
 
 export class MissingRecoveryPasswordError extends Error {
@@ -155,7 +155,7 @@ export class IframeClient {
           const responseConstructor = this.responseConstructors[response.action];
           if (responseConstructor) {
             resolve(response as T);
-          } else if (response instanceof ErrorResponse) {
+          } else if (isErrorResponse(response)) {
             if (response.error === NOT_CONFIGURED_ERROR) {
               reject(new NotConfiguredError());
             }
@@ -168,7 +168,7 @@ export class IframeClient {
     });
   }
 
-  async configure(password?: string): Promise<string> {
+  async configure(password?: string): Promise<ConfigureResponse> {
     await this.waitForIframeLoad();
     const config: ConfigureRequest = {
       uuid: this.generateShortUUID(),
@@ -180,7 +180,7 @@ export class IframeClient {
       accessToken: this.configuration.accessToken,
       thirdPartyProvider: this.configuration.thirdPartyProvider,
       thirdPartyTokenType: this.configuration.thirdPartyTokenType,
-      encryptionKey: password,
+      encryptionKey: password ?? null,
       encryptionPart: this.configuration.encryptionPart,
       openfortURL: this.configuration.openfortURL,
       shieldURL: this.configuration.shieldURL,
@@ -190,7 +190,7 @@ export class IframeClient {
     sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
 
     if (response.success) {
-      return response.deviceID;
+      return response;
     }
 
     throw new MissingRecoveryPasswordError();
@@ -234,21 +234,23 @@ export class IframeClient {
     return response.signature;
   }
 
-  async getCurrentDevice(playerId: string): Promise<string | null> {
+  async getCurrentUser(playerId: string): Promise<GetCurrentDeviceResponse | null> {
     await this.waitForIframeLoad();
     const uuid = this.generateShortUUID();
+
     const request = new GetCurrentDeviceRequest(uuid, playerId);
     this.iframe.contentWindow?.postMessage(request, '*');
 
-    let response: GetCurrentDeviceResponse;
     try {
-      response = await this.waitForResponse<GetCurrentDeviceResponse>(uuid);
+      const response = await this.waitForResponse<GetCurrentDeviceResponse>(uuid);
       sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
+      return response;
     } catch (e) {
-      throw new NoResponseError();
+      if (e instanceof NotConfiguredError) {
+        return null;
+      }
+      throw e;
     }
-
-    return response.deviceID;
   }
 
   async logout(): Promise<void> {
