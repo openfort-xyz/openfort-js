@@ -56,3 +56,10 @@ export type InitializeOAuthOptions = {
   /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
   skipBrowserRedirect?: boolean;
 };
+
+export interface OpenfortOverrides {
+  backendUrl: string;
+  iframeUrl: string;
+  shieldUrl: string;
+  debug: boolean;
+}

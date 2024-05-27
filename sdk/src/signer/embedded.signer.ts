@@ -1,24 +1,28 @@
-import { IframeClient, IFrameConfiguration } from '../clients/iframe-client';
+import IframeManager, { IframeConfiguration } from '../iframe/iframeManager';
 import { ISigner, SignerType } from './signer';
-import { InstanceManager } from '../instanceManager';
-import { ConfigureRequest, GetCurrentDeviceResponse } from '../clients/types';
+import InstanceManager from '../instanceManager';
+import { ConfigureRequest, GetCurrentDeviceResponse } from '../iframe/types';
 
 export type Configuration = ConfigureRequest;
 export class EmbeddedSigner implements ISigner {
-  private iframeClient: IframeClient;
+  private readonly iframeManager: IframeManager;
+
+  private readonly iframeConfiguration: IframeConfiguration;
 
   private readonly instanceManager: InstanceManager;
 
   constructor(
-    configuration: IFrameConfiguration,
+    iframeManager: IframeManager,
     instanceManager: InstanceManager,
+    iframeConfiguration: IframeConfiguration,
   ) {
     this.instanceManager = instanceManager;
-    this.iframeClient = new IframeClient(configuration);
+    this.iframeManager = iframeManager;
+    this.iframeConfiguration = iframeConfiguration;
   }
 
   async logout(): Promise<void> {
-    await this.iframeClient.logout();
+    await this.iframeManager.logout();
     this.instanceManager.removeDeviceID();
   }
 
@@ -32,7 +36,7 @@ export class EmbeddedSigner implements ISigner {
     if (!accessToken) {
       return;
     }
-    await this.iframeClient.updateAuthentication(accessToken.token);
+    await this.iframeManager.updateAuthentication(this.iframeConfiguration, accessToken.token);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -45,12 +49,12 @@ export class EmbeddedSigner implements ISigner {
   ): Promise<GetCurrentDeviceResponse> {
     const playerID = this.instanceManager.getPlayerID();
 
-    let currentUser = await this.iframeClient.getCurrentUser(playerID!);
+    let currentUser = await this.iframeManager.getCurrentUser(playerID!);
     if (currentUser) {
       return currentUser;
     }
 
-    currentUser = await this.iframeClient.configure(recoveryPassword);
+    currentUser = await this.iframeManager.configure(this.iframeConfiguration, recoveryPassword);
 
     if (!currentUser.accountType || !currentUser.chainId || !currentUser.address || !currentUser.deviceID) {
       throw new Error('Internal error: failed to configure the signer.');
@@ -72,7 +76,7 @@ export class EmbeddedSigner implements ISigner {
       throw new Error('Signer is not loaded');
     }
 
-    return await this.iframeClient.sign(message, requireArrayify, requireHash);
+    return await this.iframeManager.sign(this.iframeConfiguration, message, requireArrayify, requireHash);
   }
 
   public getDeviceID(): string | null {
@@ -85,7 +89,7 @@ export class EmbeddedSigner implements ISigner {
     }
     const playerID = this.instanceManager.getPlayerID();
 
-    const localStorageUser = await this.iframeClient.getCurrentUser(
+    const localStorageUser = await this.iframeManager.getCurrentUser(
       playerID!,
     );
     if (localStorageUser?.deviceID) {
@@ -97,6 +101,6 @@ export class EmbeddedSigner implements ISigner {
   }
 
   iFrameLoaded(): boolean {
-    return this.iframeClient.isLoaded();
+    return this.iframeManager.isLoaded();
   }
 }

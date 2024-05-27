@@ -1,7 +1,5 @@
-import Openfort from './openfort';
-
+export { Openfort } from './Openfort';
 export { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js';
-export * from './openfort';
 export {
   OAuthProvider,
   ThirdPartyOAuthProvider,
@@ -9,9 +7,7 @@ export {
   TransactionIntentResponse,
   SessionResponse,
   AuthPlayerResponse,
-} from './generated/api';
+} from '@openfort/openapi-clients/dist/backend';
 export { InitializeOAuthOptions, EmbeddedState } from './types';
-export { ShieldAuthentication, AuthType } from './clients/types';
+export { ShieldAuthentication, AuthType } from './iframe/types';
 export { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer';
-
-export default Openfort;

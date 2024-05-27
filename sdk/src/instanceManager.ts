@@ -9,14 +9,13 @@ import {
   IStorage,
   jwksStorageKey,
   playerIDStorageKey,
-  publishableKeyStorageKey,
   refreshTokenStorageKey,
   sessionKeyStorageKey,
   signerTypeStorageKey,
   thirdPartyProviderStorageKey,
   thirdPartyProviderTokenTypeStorageKey,
 } from './storage/storage';
-import { AuthManager } from './authManager';
+import AuthManager from './authManager';
 
 export type AccessToken = {
   token: string;
@@ -24,8 +23,8 @@ export type AccessToken = {
   thirdPartyTokenType: string | null;
 };
 
-export class InstanceManager {
-  private publishableKey: string | null = null;
+export default class InstanceManager {
+  private readonly authManager: AuthManager;
 
   private authToken: AccessToken | null = null;
 
@@ -57,27 +56,12 @@ export class InstanceManager {
     temporalStorage: IStorage,
     persistentStorage: IStorage,
     secureStorage: IStorage,
+    authManager: AuthManager,
   ) {
     this.temporalStorage = temporalStorage;
     this.persistentStorage = persistentStorage;
     this.secureStorage = secureStorage;
-  }
-
-  public setPublishableKey(publishableKey: string): void {
-    this.publishableKey = publishableKey;
-    this.temporalStorage.save(publishableKeyStorageKey, publishableKey);
-  }
-
-  public getPublishableKey(): string | null {
-    if (!this.publishableKey) {
-      this.publishableKey = this.temporalStorage.get(publishableKeyStorageKey);
-    }
-    return this.publishableKey;
-  }
-
-  public removePublishableKey(): void {
-    this.publishableKey = null;
-    this.temporalStorage.remove(publishableKeyStorageKey);
+    this.authManager = authManager;
   }
 
   public getAccessToken(): AccessToken | null {
@@ -218,10 +202,7 @@ export class InstanceManager {
     }
 
     if (!this.jwk) {
-      const publishableKey = await this.getPublishableKey();
-      if (publishableKey) {
-        this.jwk = await AuthManager.getJWK(publishableKey);
-      }
+      this.jwk = await this.authManager.getJWK();
     }
 
     return this.jwk;

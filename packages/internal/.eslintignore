@@ -1,0 +1,7 @@
+dist/
+
+# sample apps
+**sample-app**/
+
+# auto-generated code
+openapi-clients/

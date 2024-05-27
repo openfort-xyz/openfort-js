@@ -4,27 +4,37 @@ import {
 import {
   Auth, InitAuthResponse, InitializeOAuthOptions, JWK, SIWEInitResponse,
 } from 'types';
+import { OpenfortConfiguration } from 'config';
+import { BackendApiClients } from '@openfort/openapi-clients';
 import {
-  Configuration,
-  OAuthProvider,
-  AuthenticationApi,
-  TokenType,
-  AuthResponse,
-  ThirdPartyOAuthProvider,
-  AuthPlayerResponse,
-} from './generated';
+  AuthPlayerResponse, AuthResponse, OAuthProvider, ThirdPartyOAuthProvider, TokenType,
+} from '@openfort/openapi-clients/dist/backend';
 import { isBrowser } from './lib/helpers';
 
-export class AuthManager {
-  public static async initOAuth(
-    publishableKey: string,
+export default class AuthManager {
+  private readonly config: OpenfortConfiguration;
+
+  private readonly backendApiClients: BackendApiClients;
+
+  constructor(config: OpenfortConfiguration, backendApiClients: BackendApiClients) {
+    this.config = config;
+    this.backendApiClients = backendApiClients;
+  }
+
+  public async initOAuth(
     provider: OAuthProvider,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
+    const request = {
+      oAuthInitRequest: {
+        provider,
+        options,
+      },
+    };
+    const result = await this.backendApiClients.authenticationApi.initOAuth(
+      request,
     );
-    const result = await oauthApi.initOAuth({ provider, options });
+
     if (isBrowser() && !options?.skipBrowserRedirect) {
       window.location.assign(result.data.url);
     }
@@ -34,48 +44,48 @@ export class AuthManager {
     };
   }
 
-  public static async authenticateOAuth(
-    publishableKey: string,
+  public async authenticateOAuth(
     provider: OAuthProvider,
     token: string,
     tokenType: TokenType,
   ): Promise<AuthResponse> {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
-    );
-    const response = await oauthApi.authenticateOAuth({
-      provider,
-      token,
-      tokenType,
-    });
+    const request = {
+      authenticateOAuthRequest: {
+        provider,
+        token,
+        tokenType,
+      },
+    };
+    const response = await this.backendApiClients.authenticationApi.authenticateOAuth(request);
     return response.data;
   }
 
-  public static async authenticateThirdParty(
-    publishableKey: string,
+  public async authenticateThirdParty(
     provider: ThirdPartyOAuthProvider,
     token: string,
     tokenType: TokenType,
   ): Promise<AuthPlayerResponse> {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
-    );
-    const response = await oauthApi.thirdParty({
-      provider,
-      token,
-      tokenType,
-    });
+    const request = {
+      thirdPartyOAuthRequest: {
+        provider,
+        token,
+        tokenType,
+      },
+    };
+    const response = await this.backendApiClients.authenticationApi.thirdParty(request);
     return response.data;
   }
 
-  public static async initSIWE(
-    publishableKey: string,
+  public async initSIWE(
     address: string,
   ): Promise<SIWEInitResponse> {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
-    );
-    const result = await oauthApi.initSIWE({ address });
+    const request = {
+      sIWERequest: {
+        address,
+      },
+    };
+    const result = await this.backendApiClients.authenticationApi.initSIWE(request);
+
     return {
       address: result.data.address,
       nonce: result.data.nonce,
@@ -83,64 +93,68 @@ export class AuthManager {
     };
   }
 
-  public static async authenticateSIWE(
-    publishableKey: string,
+  public async authenticateSIWE(
     signature: string,
     message: string,
     walletClientType: string,
     connectorType: string,
   ): Promise<AuthResponse> {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
-    );
-    const response = await oauthApi.authenticateSIWE({
-      signature,
-      message,
-      walletClientType,
-      connectorType,
-    });
+    const request = {
+      sIWEAuthenticateRequest: {
+        signature,
+        message,
+        walletClientType,
+        connectorType,
+      },
+    };
+    const response = await this.backendApiClients.authenticationApi.authenticateSIWE(request);
+
     return response.data;
   }
 
-  public static async loginEmailPassword(
-    publishableKey: string,
+  public async loginEmailPassword(
     email: string,
     password: string,
   ): Promise<AuthResponse> {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
-    );
-    const response = await oauthApi.loginEmailPassword({ email, password });
+    const request = {
+      loginRequest: {
+        email,
+        password,
+      },
+    };
+    const response = await this.backendApiClients.authenticationApi.loginEmailPassword(request);
+
     return response.data;
   }
 
-  public static async signupEmailPassword(
-    publishableKey: string,
+  public async signupEmailPassword(
     email: string,
     password: string,
     name?: string,
   ): Promise<AuthResponse> {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
-    );
-    const response = await oauthApi.signupEmailPassword({
-      name,
-      email,
-      password,
-    });
+    const request = {
+      signupRequest: {
+        email,
+        password,
+        name,
+      },
+    };
+    const response = await this.backendApiClients.authenticationApi.signupEmailPassword(request);
+
     return response.data;
   }
 
-  public static async getJWK(publishableKey: string): Promise<JWK> {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
-    );
-    const jwtks = await oauthApi.getJwks(publishableKey);
-    if (jwtks.data.keys.length === 0) {
+  public async getJWK(): Promise<JWK> {
+    const request = {
+      publishableKey: this.config.baseConfig.publishableKey,
+    };
+    const response = await this.backendApiClients.authenticationApi.getJwks(request);
+
+    if (response.data.keys.length === 0) {
       throw new Error('No keys found');
     }
 
-    const jwtKey = jwtks.data.keys[0];
+    const jwtKey = response.data.keys[0];
     return {
       kty: jwtKey.kty,
       crv: jwtKey.crv,
@@ -150,11 +164,10 @@ export class AuthManager {
     };
   }
 
-  public static async validateCredentials(
+  public async validateCredentials(
     accessToken: string,
     refreshToken: string,
     jwk: JWK,
-    publishableKey: string,
   ): Promise<Auth> {
     try {
       const key = (await importJWK(
@@ -174,12 +187,12 @@ export class AuthManager {
       };
     } catch (error) {
       if (error instanceof errors.JWTExpired) {
-        const configuration = new Configuration({
-          accessToken: publishableKey,
-          baseOptions: { withCredentials: true },
-        });
-        const oauthApi = new AuthenticationApi(configuration);
-        const newToken = await oauthApi.refresh({ refreshToken });
+        const request = {
+          refreshTokenRequest: {
+            refreshToken,
+          },
+        };
+        const newToken = await this.backendApiClients.authenticationApi.refresh(request);
         return {
           player: newToken.data.player.id,
           accessToken: newToken.data.token,
@@ -190,23 +203,21 @@ export class AuthManager {
     }
   }
 
-  public static async logout(
-    publishableKey: string,
+  public async logout(
     accessToken: string,
     refreshToken: string,
   ) {
-    const oauthApi = new AuthenticationApi(
-      new Configuration({ accessToken: publishableKey }),
-    );
-    await oauthApi.logout(
-      { refreshToken },
-      {
-        headers: {
-          authorization: `Bearer ${publishableKey}`,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          'player-token': accessToken,
-        },
+    const request = {
+      logoutRequest: {
+        refreshToken,
       },
-    );
+    };
+    await this.backendApiClients.authenticationApi.logout(request, {
+      headers: {
+        authorization: `Bearer ${this.config.baseConfig.publishableKey}`,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'player-token': accessToken,
+      },
+    });
   }
 }

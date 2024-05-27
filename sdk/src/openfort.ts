@@ -3,32 +3,29 @@ import { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer'
 import {
   AccountType, EmbeddedState, SessionKey, Auth, InitAuthResponse, InitializeOAuthOptions, SIWEInitResponse,
 } from 'types';
+import { OpenfortConfiguration } from 'config';
+import { BackendApiClients } from '@openfort/openapi-clients';
 import {
   AuthPlayerResponse,
   AuthResponse,
-  Configuration,
   OAuthProvider,
   SessionResponse,
-  SessionsApi,
   ThirdPartyOAuthProvider,
   TokenType,
   TransactionIntentResponse,
-  TransactionIntentsApi,
-} from './generated';
+} from '@openfort/openapi-clients/dist/backend';
 import { ISigner, SignerType } from './signer/signer';
-import {
-  AuthManager,
-} from './authManager';
+import AuthManager from './authManager';
+import InstanceManager from './instanceManager';
 import { LocalStorage } from './storage/localStorage';
 import { SessionSigner } from './signer/session.signer';
 import { EmbeddedSigner } from './signer/embedded.signer';
-import { InstanceManager } from './instanceManager';
 import { SessionStorage } from './storage/sessionStorage';
-import {
-  IFrameConfiguration,
+import IframeManager, {
+  IframeConfiguration,
   MissingRecoveryPasswordError,
-} from './clients/iframe-client';
-import { ShieldAuthentication } from './clients/types';
+} from './iframe/iframeManager';
+import { ShieldAuthentication } from './iframe/types';
 
 export class NotLoggedIn extends Error {
   constructor(message: string) {
@@ -78,43 +75,32 @@ export class MissingPublishableKey extends Error {
   }
 }
 
-export default class Openfort {
+export class Openfort {
   private signer?: ISigner;
 
-  private publishableKey: string;
+  private readonly authManager: AuthManager;
 
-  private readonly shieldAPIKey: string;
-
-  private readonly iframeURL: string;
-
-  private readonly openfortURL: string;
-
-  private readonly shieldURL: string;
-
-  private readonly encryptionPart: string | null;
+  private readonly config: OpenfortConfiguration;
 
   private readonly instanceManager: InstanceManager;
 
+  private readonly backendApiClients: BackendApiClients;
+
+  private readonly iframeManager: IframeManager;
+
   constructor(
-    publishableKey: string,
-    shieldAPIKey: string | null = null,
-    encryptionShare: string | null = null,
-    iframeURL: string = 'https://iframe.openfort.xyz',
-    openfortURL: string = 'https://api.openfort.xyz',
-    shieldURL: string = 'https://shield.openfort.xyz',
-    private readonly debug: boolean = false,
+    openfortConfiguration: OpenfortConfiguration,
   ) {
+    this.config = openfortConfiguration;
+    this.backendApiClients = new BackendApiClients(this.config.openfortAPIConfig);
+    this.authManager = new AuthManager(openfortConfiguration, this.backendApiClients);
     this.instanceManager = new InstanceManager(
       new SessionStorage(),
       new LocalStorage(),
       new LocalStorage(),
+      this.authManager,
     );
-    this.iframeURL = iframeURL;
-    this.openfortURL = openfortURL;
-    this.shieldURL = shieldURL;
-    this.publishableKey = publishableKey;
-    this.shieldAPIKey = shieldAPIKey || publishableKey;
-    this.encryptionPart = encryptionShare;
+    this.iframeManager = new IframeManager(openfortConfiguration);
   }
 
   public async logout(): Promise<void> {
@@ -123,8 +109,8 @@ export default class Openfort {
       const accessToken = this.instanceManager.getAccessToken();
       if (
         accessToken
-        && accessToken.thirdPartyProvider === undefined
-        && accessToken.thirdPartyTokenType === undefined
+        && !accessToken.thirdPartyProvider
+        && !accessToken.thirdPartyTokenType
       ) {
         const refreshToken = this.instanceManager.getRefreshToken();
         if (refreshToken === null) {
@@ -132,8 +118,7 @@ export default class Openfort {
           return;
         }
         try {
-          await AuthManager.logout(
-            this.publishableKey,
+          await this.authManager.logout(
             accessToken.token,
             refreshToken,
           );
@@ -145,9 +130,11 @@ export default class Openfort {
       this.instanceManager.removeAccessToken();
       this.instanceManager.removeRefreshToken();
       this.instanceManager.removePlayerID();
+      this.instanceManager.removeAccountAddress();
+      this.instanceManager.removeChainID();
+      this.instanceManager.removeDeviceID();
       this.instanceManager.removeJWK();
     }
-    this.instanceManager.removePublishableKey();
   }
 
   private async flushSigner(): Promise<void> {
@@ -160,11 +147,20 @@ export default class Openfort {
     const signerType = this.instanceManager.getSignerType();
     switch (signerType) {
       case SignerType.EMBEDDED: {
-        this.recoverPublishableKey();
-        const iframeConfiguration = this.createIFrameConfiguration();
+        const iframeConfiguration: IframeConfiguration = {
+          accessToken: this.instanceManager.getAccessToken()?.token ?? null,
+          thirdPartyProvider:
+            this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
+          thirdPartyTokenType:
+            this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
+          chainId: null,
+          recovery: null,
+        };
+
         const embeddedSigner = new EmbeddedSigner(
-          iframeConfiguration,
+          this.iframeManager,
           this.instanceManager,
+          iframeConfiguration,
         );
         await embeddedSigner.logout();
         break;
@@ -177,36 +173,6 @@ export default class Openfort {
     }
 
     this.instanceManager.removeSignerType();
-  }
-
-  private createIFrameConfiguration(): IFrameConfiguration {
-    return {
-      accessToken: this.instanceManager.getAccessToken()?.token ?? null,
-      thirdPartyProvider:
-        this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
-      thirdPartyTokenType:
-        this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
-      chainId: 0, // Default value, consider making this configurable or ensuring it's properly set
-      iframeURL: this.iframeURL,
-      openfortURL: this.openfortURL,
-      publishableKey: this.publishableKey,
-      recovery: null, // No recovery process implemented here, consider adding
-      shieldAPIKey: this.shieldAPIKey,
-      shieldURL: this.shieldURL,
-      encryptionPart: this.encryptionPart,
-      debug: this.debug,
-    };
-  }
-
-  private recoverPublishableKey() {
-    if (!this.publishableKey) {
-      const key = this.instanceManager.getPublishableKey();
-      if (!key) {
-        throw new MissingPublishableKey('Publishable key must be provided');
-      }
-      this.publishableKey = key;
-    }
-    this.instanceManager.setPublishableKey(this.publishableKey);
   }
 
   public configureSessionKey(): SessionKey {
@@ -226,11 +192,12 @@ export default class Openfort {
   public async configureEmbeddedSigner(
     chainId?: number,
     shieldAuthentication?: ShieldAuthentication,
+    recoveryPassword?: string,
   ): Promise<void> {
     const signer = this.newEmbeddedSigner(chainId, shieldAuthentication);
-
     try {
-      await signer.ensureEmbeddedAccount();
+      await this.validateAndRefreshToken();
+      await signer.ensureEmbeddedAccount(recoveryPassword);
     } catch (e) {
       if (e instanceof MissingRecoveryPasswordError) {
         throw new MissingRecoveryMethod(
@@ -252,48 +219,26 @@ export default class Openfort {
       throw new NotLoggedIn('Must be logged in to configure embedded signer');
     }
 
-    this.recoverPublishableKey();
-    const iframeConfiguration: IFrameConfiguration = {
+    const iframeConfiguration: IframeConfiguration = {
       accessToken: this.instanceManager.getAccessToken()?.token ?? null,
       thirdPartyProvider:
         this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
       thirdPartyTokenType:
         this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
       chainId: chainId ?? null,
-      iframeURL: this.iframeURL,
-      openfortURL: this.openfortURL,
-      publishableKey: this.publishableKey,
       recovery: shieldAuthentication ?? null,
-      shieldAPIKey: this.shieldAPIKey,
-      shieldURL: this.shieldURL,
-      encryptionPart: this.encryptionPart,
-      debug: this.debug ?? null,
     };
-    return new EmbeddedSigner(iframeConfiguration, this.instanceManager);
-  }
-
-  public async configureEmbeddedSignerRecovery(
-    chainId: number,
-    shieldAuthentication: ShieldAuthentication,
-    recoveryPassword: string,
-  ): Promise<void> {
-    const signer = this.newEmbeddedSigner(chainId, shieldAuthentication);
-    await this.validateAndRefreshToken();
-    await signer.ensureEmbeddedAccount(recoveryPassword);
-    this.signer = signer;
-    this.instanceManager.setSignerType(SignerType.EMBEDDED);
+    return new EmbeddedSigner(this.iframeManager, this.instanceManager, iframeConfiguration);
   }
 
   public async loginWithEmailPassword(
     email: string,
     password: string,
   ): Promise<AuthResponse> {
-    this.recoverPublishableKey();
     this.instanceManager.removeAccessToken();
     this.instanceManager.removeRefreshToken();
     this.instanceManager.removePlayerID();
-    const result = await AuthManager.loginEmailPassword(
-      this.publishableKey,
+    const result = await this.authManager.loginEmailPassword(
       email,
       password,
     );
@@ -310,12 +255,10 @@ export default class Openfort {
     password: string,
     name?: string,
   ): Promise<AuthResponse> {
-    this.recoverPublishableKey();
     this.instanceManager.removeAccessToken();
     this.instanceManager.removeRefreshToken();
     this.instanceManager.removePlayerID();
-    const result = await AuthManager.signupEmailPassword(
-      this.publishableKey,
+    const result = await this.authManager.signupEmailPassword(
       email,
       password,
       name,
@@ -332,8 +275,7 @@ export default class Openfort {
     provider: OAuthProvider,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
-    this.recoverPublishableKey();
-    return await AuthManager.initOAuth(this.publishableKey, provider, options);
+    return await this.authManager.initOAuth(provider, options);
   }
 
   public async authenticateWithOAuth(
@@ -341,12 +283,10 @@ export default class Openfort {
     token: string,
     tokenType: TokenType,
   ): Promise<AuthResponse> {
-    this.recoverPublishableKey();
     this.instanceManager.removeAccessToken();
     this.instanceManager.removeRefreshToken();
     this.instanceManager.removePlayerID();
-    const result = await AuthManager.authenticateOAuth(
-      this.publishableKey,
+    const result = await this.authManager.authenticateOAuth(
       provider,
       token,
       tokenType,
@@ -360,7 +300,7 @@ export default class Openfort {
   }
 
   public async initSIWE(address: string): Promise<SIWEInitResponse> {
-    return await AuthManager.initSIWE(this.publishableKey, address);
+    return await this.authManager.initSIWE(address);
   }
 
   public async authenticateWithThirdPartyProvider(
@@ -368,8 +308,7 @@ export default class Openfort {
     token: string,
     tokenType: TokenType,
   ): Promise<AuthPlayerResponse> {
-    const result = await AuthManager.authenticateThirdParty(
-      this.publishableKey,
+    const result = await this.authManager.authenticateThirdParty(
       provider,
       token,
       tokenType,
@@ -392,12 +331,10 @@ export default class Openfort {
     walletClientType: string,
     connectorType: string,
   ): Promise<AuthResponse> {
-    this.recoverPublishableKey();
     this.instanceManager.removeAccessToken();
     this.instanceManager.removeRefreshToken();
     this.instanceManager.removePlayerID();
-    const result = await AuthManager.authenticateSIWE(
-      this.publishableKey,
+    const result = await this.authManager.authenticateSIWE(
       signature,
       message,
       walletClientType,
@@ -446,13 +383,14 @@ export default class Openfort {
       newSignature = await this.signer.sign(userOperationHash);
     }
 
-    this.recoverPublishableKey();
-    const transactionsApi = new TransactionIntentsApi(
-      new Configuration({ accessToken: this.publishableKey }),
-    );
-    const result = await transactionsApi.signature(transactionIntentId, {
-      signature: newSignature,
-    });
+    const request = {
+      id: transactionIntentId,
+      signatureRequest: {
+        signature: newSignature,
+      },
+    };
+    const result = await this.backendApiClients.transactionIntentsApi.signature(request);
+
     return result.data;
   }
 
@@ -486,7 +424,6 @@ export default class Openfort {
     const accountType = this.instanceManager.getAccountType();
     const accountAddress = this.instanceManager.getAccountAddress();
     const chainId = this.instanceManager.getChainID();
-
     if (accountType === AccountType.UPGRADEABLE_V5) {
       const updatedDomain: TypedDataDomain = {
         name: 'Openfort',
@@ -530,14 +467,17 @@ export default class Openfort {
       );
     }
 
-    this.recoverPublishableKey();
-    const sessionsApi = new SessionsApi(
-      new Configuration({ accessToken: this.publishableKey }),
+    const request = {
+      id: sessionId,
+      signatureRequest: {
+        signature,
+        optimistic,
+      },
+    };
+
+    const result = await this.backendApiClients.sessionsApi.signatureSession(
+      request,
     );
-    const result = await sessionsApi.signatureSession(sessionId, {
-      signature,
-      optimistic,
-    });
     return result.data;
   }
 
@@ -664,12 +604,10 @@ export default class Openfort {
       return;
     }
 
-    this.recoverPublishableKey();
-    const auth = await AuthManager.validateCredentials(
+    const auth = await this.authManager.validateCredentials(
       accessToken.token,
       refreshToken,
       jwk,
-      this.publishableKey,
     );
     if (auth.accessToken !== accessToken.token) {
       this.storeCredentials(auth);

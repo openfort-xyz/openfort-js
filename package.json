@@ -42,6 +42,7 @@
     "workspaces": {
         "packages": [
             "sdk",
+            "packages/internal/openapi-clients",
             "packages/platform-bridge"
         ],
         "nohoist": [
