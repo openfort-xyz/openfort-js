@@ -1,6 +1,5 @@
 import { Openfort } from './Openfort';
 
-export * from './Openfort';
 export { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js';
 export {
   InitializeOAuthOptions,

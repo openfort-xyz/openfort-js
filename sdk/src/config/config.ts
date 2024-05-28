@@ -35,7 +35,7 @@ export class ShieldConfiguration {
 
   readonly shieldEncryptionKey?: string;
 
-  readonly debug: boolean;
+  readonly debug?: boolean = false;
 
   constructor(options: {
     shieldPublishableKey: string
