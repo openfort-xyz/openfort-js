@@ -18,4 +18,5 @@ generate-backend-api-client:
     -i ./app/src/backend-openapi.json \
     -g typescript-axios \
     -o /app/src/backend \
+    -p platform=browser \
     -c /app/config/backend.config.json

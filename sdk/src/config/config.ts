@@ -1,4 +1,4 @@
-import { OpenfortOverrides } from 'types';
+import { SDKOverrides } from 'types';
 import { createConfig, OpenfortAPIConfiguration } from '@openfort/openapi-clients';
 import { OpenfortError, OpenfortErrorType } from '../errors/openfortError';
 
@@ -22,7 +22,7 @@ const validateConfiguration = <T>(
   }
 };
 
-export class BaseConfiguration {
+export class OpenfortConfiguration {
   readonly publishableKey: string;
 
   constructor(options: { publishableKey: string }) {
@@ -48,10 +48,10 @@ export class ShieldConfiguration {
   }
 }
 
-export class OpenfortConfiguration {
-  readonly baseConfig: BaseConfiguration;
+export class SDKConfiguration {
+  readonly baseConfiguration: OpenfortConfiguration;
 
-  readonly shieldConfiguration: ShieldConfiguration;
+  readonly shieldConfiguration?: ShieldConfiguration;
 
   readonly shieldUrl: string;
 
@@ -62,12 +62,15 @@ export class OpenfortConfiguration {
   readonly openfortAPIConfig: OpenfortAPIConfiguration;
 
   constructor({
-    baseConfig,
-    overrides,
+    baseConfiguration,
     shieldConfiguration,
-  }: { baseConfig: BaseConfiguration, overrides:OpenfortOverrides, shieldConfiguration: ShieldConfiguration }) {
+    overrides,
+  }: { baseConfiguration: OpenfortConfiguration,
+    shieldConfiguration?: ShieldConfiguration,
+    overrides?: SDKOverrides
+  }) {
     this.shieldConfiguration = shieldConfiguration;
-    this.baseConfig = baseConfig;
+    this.baseConfiguration = baseConfiguration;
     if (overrides) {
       validateConfiguration(
         overrides,
@@ -84,15 +87,17 @@ export class OpenfortConfiguration {
       this.openfortAPIConfig = {
         backend: createConfig({
           basePath: overrides.backendUrl,
+          accessToken: baseConfiguration.publishableKey,
         }),
       };
     } else {
       this.backendUrl = 'https://api.openfort.xyz';
       this.iframeUrl = 'https://iframe.openfort.xyz';
-      this.shieldUrl = 'https://shield.openfort.xyz/';
+      this.shieldUrl = 'https://shield.openfort.xyz';
       this.openfortAPIConfig = {
         backend: createConfig({
           basePath: 'https://api.openfort.xyz',
+          accessToken: baseConfiguration.publishableKey,
         }),
       };
     }

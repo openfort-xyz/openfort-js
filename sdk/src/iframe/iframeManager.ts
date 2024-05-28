@@ -1,4 +1,4 @@
-import { OpenfortConfiguration } from 'config';
+import { SDKConfiguration } from 'config';
 import {
   ConfigureRequest,
   ConfigureResponse,
@@ -17,6 +17,8 @@ import {
   GetCurrentDeviceResponse,
   isErrorResponse,
   RequestConfiguration,
+  MISSING_USER_ENTROPY_ERROR,
+  INCORRECT_USER_ENTROPY_ERROR,
 } from './types';
 
 export interface IframeConfiguration {
@@ -29,7 +31,13 @@ export interface IframeConfiguration {
 
 export class MissingRecoveryPasswordError extends Error {
   constructor() {
-    super('Recovery password is required for this operation');
+    super('This embedded signer requires a password to be recovered');
+  }
+}
+
+export class WrongRecoveryPasswordError extends Error {
+  constructor() {
+    super('Wrong recovery password for this embedded signer');
   }
 }
 
@@ -61,23 +69,19 @@ export class NotConfiguredError extends Error {
 }
 
 export default class IframeManager {
-  private readonly iframe: HTMLIFrameElement;
+  private iframe?: HTMLIFrameElement;
 
   private readonly responses: Map<string, IEventResponse> = new Map();
 
-  private readonly openfortConfiguration: OpenfortConfiguration;
+  private readonly sdkConfiguration: SDKConfiguration;
 
-  private readonly iframeConfiguration: IframeConfiguration | null = null;
+  constructor(configuration: SDKConfiguration) {
+    this.sdkConfiguration = configuration;
+  }
 
-  constructor(configuration: OpenfortConfiguration) {
-    if (!document) {
-      throw new Error('must be run in a browser');
-    }
-
-    this.openfortConfiguration = configuration;
-
+  private async iframeSetup(): Promise<void> {
     window.addEventListener('message', (event) => {
-      if (event.origin === this.openfortConfiguration.iframeUrl) {
+      if (event.origin === this.sdkConfiguration.iframeUrl) {
         const { data } = event;
         if (data.action) {
           if (data.action === Event.PONG) {
@@ -98,10 +102,10 @@ export default class IframeManager {
     this.iframe.id = 'openfort-iframe';
     document.body.appendChild(this.iframe);
 
-    if (configuration.shieldConfiguration.debug) {
-      this.iframe.src = `${configuration.iframeUrl}?debug=true`;
+    if (this.sdkConfiguration.shieldConfiguration?.debug) {
+      this.iframe.src = `${this.sdkConfiguration.iframeUrl}?debug=true`;
     } else {
-      this.iframe.src = configuration.iframeUrl;
+      this.iframe.src = this.sdkConfiguration.iframeUrl;
     }
   }
 
@@ -110,9 +114,12 @@ export default class IframeManager {
   }
 
   private async waitForIframeLoad(): Promise<void> {
+    if (!this.iframe) {
+      await this.iframeSetup();
+    }
     const checkAndPing = async (): Promise<void> => {
       if (!this.isLoaded()) {
-        this.iframe.contentWindow?.postMessage(
+        this.iframe?.contentWindow?.postMessage(
           new PingRequest(this.generateShortUUID()),
           '*',
         );
@@ -129,6 +136,7 @@ export default class IframeManager {
   private responseConstructors = {
     [Event.CONFIGURED]: ConfigureResponse,
     [Event.AUTHENTICATION_UPDATED]: UpdateAuthenticationResponse,
+    [Event.CURRENT_DEVICE]: GetCurrentDeviceResponse,
     [Event.SIGNED]: SignResponse,
     [Event.LOGGED_OUT]: LogoutResponse,
   };
@@ -148,13 +156,17 @@ export default class IframeManager {
           this.responses.delete(uuid);
           // @ts-ignore
           const responseConstructor = this.responseConstructors[response.action];
-          if (responseConstructor) {
-            resolve(response as T);
-          } else if (isErrorResponse(response)) {
+          if (isErrorResponse(response)) {
             if (response.error === NOT_CONFIGURED_ERROR) {
               reject(new NotConfiguredError());
+            } else if (response.error === MISSING_USER_ENTROPY_ERROR) {
+              reject(new MissingRecoveryPasswordError());
+            } else if (response.error === INCORRECT_USER_ENTROPY_ERROR) {
+              reject(new WrongRecoveryPasswordError());
             }
             reject(new UnknownResponseError(response.error));
+          } else if (responseConstructor) {
+            resolve(response as T);
           } else {
             reject(new InvalidResponseError());
           }
@@ -164,31 +176,29 @@ export default class IframeManager {
   }
 
   async configure(iframeConfiguration: IframeConfiguration, password?: string): Promise<ConfigureResponse> {
+    if (!this.sdkConfiguration.shieldConfiguration) {
+      throw new Error('shieldConfiguration is required');
+    }
     await this.waitForIframeLoad();
     const config: ConfigureRequest = {
       uuid: this.generateShortUUID(),
       action: Event.CONFIGURE,
       chainId: iframeConfiguration.chainId,
       recovery: iframeConfiguration.recovery,
-      publishableKey: this.openfortConfiguration.baseConfig.publishableKey,
-      shieldAPIKey: this.openfortConfiguration.shieldConfiguration.shieldPublishableKey,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      shieldAPIKey: this.sdkConfiguration.shieldConfiguration.shieldPublishableKey,
       accessToken: iframeConfiguration.accessToken,
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
       encryptionKey: password ?? null,
-      encryptionPart: this.openfortConfiguration.shieldConfiguration.shieldEncryptionKey ?? null,
-      openfortURL: this.openfortConfiguration.backendUrl,
-      shieldURL: this.openfortConfiguration.shieldUrl,
+      encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
+      openfortURL: this.sdkConfiguration.backendUrl,
+      shieldURL: this.sdkConfiguration.shieldUrl,
     };
-    this.iframe.contentWindow?.postMessage(config, '*');
+    this.iframe?.contentWindow?.postMessage(config, '*');
     const response = await this.waitForResponse<ConfigureResponse>(config.uuid);
     sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-
-    if (response.success) {
-      return response;
-    }
-
-    throw new MissingRecoveryPasswordError();
+    return response;
   }
 
   async sign(
@@ -203,8 +213,8 @@ export default class IframeManager {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
       token: iframeConfiguration.accessToken ?? undefined,
-      publishableKey: this.openfortConfiguration.baseConfig.publishableKey,
-      openfortURL: this.openfortConfiguration.backendUrl,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      openfortURL: this.sdkConfiguration.backendUrl,
     };
     const request = new SignRequest(
       uuid,
@@ -213,8 +223,7 @@ export default class IframeManager {
       requireHash,
       requestConfiguration,
     );
-    this.iframe.contentWindow?.postMessage(request, '*');
-
+    this.iframe?.contentWindow?.postMessage(request, '*');
     let response: SignResponse;
     try {
       response = await this.waitForResponse<SignResponse>(uuid);
@@ -235,7 +244,7 @@ export default class IframeManager {
     const uuid = this.generateShortUUID();
 
     const request = new GetCurrentDeviceRequest(uuid, playerId);
-    this.iframe.contentWindow?.postMessage(request, '*');
+    this.iframe?.contentWindow?.postMessage(request, '*');
 
     try {
       const response = await this.waitForResponse<GetCurrentDeviceResponse>(uuid);
@@ -253,7 +262,7 @@ export default class IframeManager {
     await this.waitForIframeLoad();
     const uuid = this.generateShortUUID();
     const request = new LogoutRequest(uuid);
-    this.iframe.contentWindow?.postMessage(request, '*');
+    this.iframe?.contentWindow?.postMessage(request, '*');
     await this.waitForResponse<LogoutResponse>(uuid);
   }
 
@@ -263,7 +272,7 @@ export default class IframeManager {
     await this.waitForIframeLoad();
     const uuid = this.generateShortUUID();
     const request = new UpdateAuthenticationRequest(uuid, token);
-    this.iframe.contentWindow?.postMessage(request, '*');
+    this.iframe?.contentWindow?.postMessage(request, '*');
 
     try {
       await this.waitForResponse<UpdateAuthenticationResponse>(uuid);

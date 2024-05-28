@@ -3,20 +3,18 @@ import {
 } from 'jose';
 import {
   Auth, InitAuthResponse, InitializeOAuthOptions, JWK, SIWEInitResponse,
-} from 'types';
-import { OpenfortConfiguration } from 'config';
-import { BackendApiClients } from '@openfort/openapi-clients';
-import {
   AuthPlayerResponse, AuthResponse, OAuthProvider, ThirdPartyOAuthProvider, TokenType,
-} from '@openfort/openapi-clients/dist/backend';
+} from 'types';
+import { SDKConfiguration } from 'config';
+import { BackendApiClients } from '@openfort/openapi-clients';
 import { isBrowser } from './lib/helpers';
 
 export default class AuthManager {
-  private readonly config: OpenfortConfiguration;
+  private readonly config: SDKConfiguration;
 
   private readonly backendApiClients: BackendApiClients;
 
-  constructor(config: OpenfortConfiguration, backendApiClients: BackendApiClients) {
+  constructor(config: SDKConfiguration, backendApiClients: BackendApiClients) {
     this.config = config;
     this.backendApiClients = backendApiClients;
   }
@@ -146,7 +144,7 @@ export default class AuthManager {
 
   public async getJWK(): Promise<JWK> {
     const request = {
-      publishableKey: this.config.baseConfig.publishableKey,
+      publishableKey: this.config.baseConfiguration.publishableKey,
     };
     const response = await this.backendApiClients.authenticationApi.getJwks(request);
 
@@ -214,7 +212,7 @@ export default class AuthManager {
     };
     await this.backendApiClients.authenticationApi.logout(request, {
       headers: {
-        authorization: `Bearer ${this.config.baseConfig.publishableKey}`,
+        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'player-token': accessToken,
       },

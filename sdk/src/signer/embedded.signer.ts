@@ -50,7 +50,8 @@ export class EmbeddedSigner implements ISigner {
     const playerID = this.instanceManager.getPlayerID();
 
     let currentUser = await this.iframeManager.getCurrentUser(playerID!);
-    if (currentUser) {
+
+    if (currentUser?.deviceID) {
       return currentUser;
     }
 
@@ -88,9 +89,12 @@ export class EmbeddedSigner implements ISigner {
       return true;
     }
     const playerID = this.instanceManager.getPlayerID();
+    if (!playerID) {
+      return false;
+    }
 
     const localStorageUser = await this.iframeManager.getCurrentUser(
-      playerID!,
+      playerID,
     );
     if (localStorageUser?.deviceID) {
       this.instanceManager.setDeviceID(localStorageUser.deviceID);

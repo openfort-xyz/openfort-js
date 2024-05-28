@@ -10,4 +10,8 @@ jest.*.js
 # Readmes
 **/*.md
 
+# sample apps
+examples/apps/html-openfort-sample/
+
+
 # put module specific ignore paths here

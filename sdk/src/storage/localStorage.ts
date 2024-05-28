@@ -1,9 +1,8 @@
-import { supportsLocalStorage } from '../lib/helpers';
 import { IStorage } from './storage';
 
 export class LocalStorage implements IStorage {
   private static validateLocalStorage(): void {
-    if (!supportsLocalStorage()) {
+    if (!(typeof window !== 'undefined' && !!window.localStorage)) {
       throw new Error('Local storage is not available');
     }
   }

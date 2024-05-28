@@ -1,19 +1,23 @@
 import { _TypedDataEncoder } from '@ethersproject/hash';
 import { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer';
 import {
-  AccountType, EmbeddedState, SessionKey, Auth, InitAuthResponse, InitializeOAuthOptions, SIWEInitResponse,
-} from 'types';
-import { OpenfortConfiguration } from 'config';
-import { BackendApiClients } from '@openfort/openapi-clients';
-import {
-  AuthPlayerResponse,
-  AuthResponse,
-  OAuthProvider,
-  SessionResponse,
-  ThirdPartyOAuthProvider,
+  AccountType,
+  EmbeddedState,
+  SessionKey,
+  Auth,
+  InitAuthResponse,
+  InitializeOAuthOptions,
+  SIWEInitResponse,
   TokenType,
+  ThirdPartyOAuthProvider,
   TransactionIntentResponse,
-} from '@openfort/openapi-clients/dist/backend';
+  SessionResponse,
+  OAuthProvider,
+  AuthResponse,
+  AuthPlayerResponse,
+} from 'types';
+import { SDKConfiguration } from 'config';
+import { BackendApiClients } from '@openfort/openapi-clients';
 import { ISigner, SignerType } from './signer/signer';
 import AuthManager from './authManager';
 import InstanceManager from './instanceManager';
@@ -23,7 +27,6 @@ import { EmbeddedSigner } from './signer/embedded.signer';
 import { SessionStorage } from './storage/sessionStorage';
 import IframeManager, {
   IframeConfiguration,
-  MissingRecoveryPasswordError,
 } from './iframe/iframeManager';
 import { ShieldAuthentication } from './iframe/types';
 
@@ -67,20 +70,12 @@ export class NothingToSign extends Error {
   }
 }
 
-export class MissingPublishableKey extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'MissingPublishableKey';
-    Object.setPrototypeOf(this, MissingPublishableKey.prototype);
-  }
-}
-
 export class Openfort {
   private signer?: ISigner;
 
   private readonly authManager: AuthManager;
 
-  private readonly config: OpenfortConfiguration;
+  private readonly config: SDKConfiguration;
 
   private readonly instanceManager: InstanceManager;
 
@@ -89,18 +84,18 @@ export class Openfort {
   private readonly iframeManager: IframeManager;
 
   constructor(
-    openfortConfiguration: OpenfortConfiguration,
+    sdkConfiguration: SDKConfiguration,
   ) {
-    this.config = openfortConfiguration;
+    this.config = new SDKConfiguration(sdkConfiguration);
     this.backendApiClients = new BackendApiClients(this.config.openfortAPIConfig);
-    this.authManager = new AuthManager(openfortConfiguration, this.backendApiClients);
+    this.authManager = new AuthManager(this.config, this.backendApiClients);
     this.instanceManager = new InstanceManager(
       new SessionStorage(),
       new LocalStorage(),
       new LocalStorage(),
       this.authManager,
     );
-    this.iframeManager = new IframeManager(openfortConfiguration);
+    this.iframeManager = new IframeManager(this.config);
   }
 
   public async logout(): Promise<void> {
@@ -131,6 +126,7 @@ export class Openfort {
       this.instanceManager.removeRefreshToken();
       this.instanceManager.removePlayerID();
       this.instanceManager.removeAccountAddress();
+      this.instanceManager.removeAccountType();
       this.instanceManager.removeChainID();
       this.instanceManager.removeDeviceID();
       this.instanceManager.removeJWK();
@@ -195,18 +191,8 @@ export class Openfort {
     recoveryPassword?: string,
   ): Promise<void> {
     const signer = this.newEmbeddedSigner(chainId, shieldAuthentication);
-    try {
-      await this.validateAndRefreshToken();
-      await signer.ensureEmbeddedAccount(recoveryPassword);
-    } catch (e) {
-      if (e instanceof MissingRecoveryPasswordError) {
-        throw new MissingRecoveryMethod(
-          'This embedded signer requires a recovery password.',
-        );
-      }
-      throw e;
-    }
-
+    await this.validateAndRefreshToken();
+    await signer.ensureEmbeddedAccount(recoveryPassword);
     this.signer = signer;
     this.instanceManager.setSignerType(SignerType.EMBEDDED);
   }
