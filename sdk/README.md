@@ -38,7 +38,7 @@ yarn add @openfort/openfort-js
 
 With the Openfort Unity SDK, you can sign transaction intents using one of four methods or signers:
 ```typescript
-const sdk = new Openfort("pk_test_XXXXXXX");
+const sdk = new Openfort({ baseConfiguration: { publishableKey: "pk_test_XXXXXXX"} });
 ```
 
 ### 1. Session Signer
@@ -57,23 +57,25 @@ This method allows you to externally sign transaction intents without logging in
 
 - **Call SendSignatureTransactionIntentRequest**: Simply pass the transaction intent ID and the signature.
 ```typescript
-const response = await sdk.sendSignatureTransactionIntentRequest("transactionIntentId", null, "signature");
+const response = await sdk.sendSignatureTransactionIntentRequest("tin_xxxx", '0xUserOperationHash');
 ```
 
 ### 3. Embedded Signer
+
 The Embedded Signer uses SSS to manage the private key on the client side. To learn more, visit our [security documentation](https://www.openfort.xyz/docs/security).
 - **Login and Configure the Embedded Signer**: First, ensure the user is logged in, using `LoginWithEmailPassword`, `AuthenticateWithOAuth` or if not registred `SignUpWithEmailPassword`. Then call `ConfigureEmbeddedSigner`. If a `MissingRecoveryMethod` exception is thrown, it indicates there's no share on the device and you have to call `ConfigureEmbeddedRecovery` to provide a recovery method.
 ```typescript
-try {
-    await sdk.loginWithEmailPassword("email", "password");
-    sdk.configureEmbeddedSigner(chainId);
-} catch (e) {
-    if (e instanceof MissingRecoveryMethod) {
-        await sdk.configureEmbeddedSignerRecovery(new PasswordRecovery("password"));
-    }
-}
+  const shieldAuth: ShieldAuthentication = {
+    auth: AuthType.OPENFORT,
+    token: identityToken,
+    authProvider: "firebase",
+    tokenType: "idToken",
+  };
+  await sdk.loginWithEmailPassword("email", "password");
+  // using automatic recovery
+  await sdk.configureEmbeddedSigner(chainId, shieldAuth);
 ```
-For now the only recovery method available is the `PasswordRecovery` method.
+For now the only two recovery method available are the `PasswordRecovery` and `AutomaticRecovery`. Learn more about the [recovery methods](https://www.openfort.xyz/docs/guides/auth/embedded-signer/recovery).
 - **Send Signature Transaction Intent Request**: Similar to the session signer, pass the transaction intent ID and the user operation hash. The embedded signer reconstructs the key and signs the transaction.
 ```typescript
 const response = await sdk.sendSignatureTransactionIntentRequest("transactionIntentId", "userOp");

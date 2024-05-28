@@ -1,6 +1,6 @@
 import { KeyPair } from '../crypto/key-pair';
 import { ISigner, SignerType } from './signer';
-import { InstanceManager } from '../instanceManager';
+import InstanceManager from '../instanceManager';
 
 export class SessionSigner implements ISigner {
   private sessionKey: KeyPair | null;

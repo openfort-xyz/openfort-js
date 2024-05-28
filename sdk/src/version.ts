@@ -1,2 +1,2 @@
-export const VERSION = '0.6.25';
+export const VERSION = '0.7.0';
 export const PACKAGE = '@openfort/openfort-js';
