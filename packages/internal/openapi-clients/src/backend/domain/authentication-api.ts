@@ -559,6 +559,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(thirdPartyOAuthRequest, localVarRequestOptions, configuration)
+
             return {
                 url: toPathString(localVarUrlObj),
                 options: localVarRequestOptions,

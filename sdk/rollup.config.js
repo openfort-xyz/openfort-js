@@ -11,6 +11,7 @@ const packages = [
   {location: '.', name: 'js-openfort-sdk'},
   {location: 'packages/platform-bridge', name: '@openfort/platform-bridge'},
   {location: 'sdk', name: '@openfort/openfort-js'},
+  {location:"packages/internal/openapi-clients",name:"@openfort/openapi-clients"},
 ];
 
 // const packages = JSON.parse(
