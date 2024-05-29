@@ -1,4 +1,4 @@
-import { Openfort } from './Openfort';
+import { Openfort } from './openfort';
 
 export { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js';
 export {
