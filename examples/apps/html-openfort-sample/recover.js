@@ -27,11 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         authProvider: 'firebase',
         tokenType: 'idToken',
       };
-      await openfort.configureEmbeddedSignerRecovery(
-        chainId,
-        shieldAuth,
-        password
-      );
+      await openfort.configureEmbeddedSigner(chainId, shieldAuth, password);
     } else if (method === 'automatic') {
       const shieldAuth = {
         auth: 'openfort',
