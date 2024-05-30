@@ -15,16 +15,17 @@
 
 
 /**
- * 
+ * Enum of the supporting Basic Auth providers.
  * @export
  * @enum {string}
  */
 
-export const OAuthProviderPLAYFAB = {
-    Playfab: 'playfab'
+export const BasicAuthProvider = {
+    Email: 'email',
+    Wallet: 'wallet'
 } as const;
 
-export type OAuthProviderPLAYFAB = typeof OAuthProviderPLAYFAB[keyof typeof OAuthProviderPLAYFAB];
+export type BasicAuthProvider = typeof BasicAuthProvider[keyof typeof BasicAuthProvider];
 
 
 

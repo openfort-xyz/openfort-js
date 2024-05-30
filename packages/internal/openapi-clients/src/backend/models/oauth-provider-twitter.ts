@@ -20,11 +20,11 @@
  * @enum {string}
  */
 
-export const OAuthProviderFIREBASE = {
-    Firebase: 'firebase'
+export const OAuthProviderTWITTER = {
+    Twitter: 'twitter'
 } as const;
 
-export type OAuthProviderFIREBASE = typeof OAuthProviderFIREBASE[keyof typeof OAuthProviderFIREBASE];
+export type OAuthProviderTWITTER = typeof OAuthProviderTWITTER[keyof typeof OAuthProviderTWITTER];
 
 
 

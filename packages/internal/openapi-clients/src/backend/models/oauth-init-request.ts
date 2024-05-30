@@ -33,6 +33,12 @@ export interface OAuthInitRequest {
      */
     'options'?: OAuthInitRequestOptions;
     /**
+     * Use Pooling for the OAuth flow  This option is for the flow that requires the user can\'t be redirected from the authorization page to the application. The client should poll the server to check if the user has authorized the application.
+     * @type {boolean}
+     * @memberof OAuthInitRequest
+     */
+    'usePooling'?: boolean;
+    /**
      * 
      * @type {OAuthProvider}
      * @memberof OAuthInitRequest

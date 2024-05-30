@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProviderSUPABASE } from './oauth-provider-supabase';
+import { ThirdPartyOAuthProviderSUPABASE } from './third-party-oauth-provider-supabase';
 
 /**
  * Supabase oauth configuration
@@ -31,10 +31,10 @@ export interface SupabaseAuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderSUPABASE}
+     * @type {ThirdPartyOAuthProviderSUPABASE}
      * @memberof SupabaseAuthConfig
      */
-    'provider': OAuthProviderSUPABASE;
+    'provider': ThirdPartyOAuthProviderSUPABASE;
     /**
      * The unique Supabase URL which is supplied when you create a new project in your project dashboard.
      * @type {string}

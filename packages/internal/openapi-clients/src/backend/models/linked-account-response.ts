@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthProvider } from './auth-provider';
+import { AuthProviderResponse } from './auth-provider-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import { PrismaInputJsonValue } from './prisma-input-json-value';
@@ -28,10 +28,10 @@ import { PrismaInputJsonValue } from './prisma-input-json-value';
 export interface LinkedAccountResponse {
     /**
      * 
-     * @type {AuthProvider}
+     * @type {AuthProviderResponse}
      * @memberof LinkedAccountResponse
      */
-    'provider': AuthProvider;
+    'provider': AuthProviderResponse;
     /**
      * 
      * @type {string}

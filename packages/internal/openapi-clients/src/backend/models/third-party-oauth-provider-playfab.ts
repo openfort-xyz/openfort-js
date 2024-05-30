@@ -20,11 +20,11 @@
  * @enum {string}
  */
 
-export const OAuthProviderACCELBYTE = {
-    Accelbyte: 'accelbyte'
+export const ThirdPartyOAuthProviderPLAYFAB = {
+    Playfab: 'playfab'
 } as const;
 
-export type OAuthProviderACCELBYTE = typeof OAuthProviderACCELBYTE[keyof typeof OAuthProviderACCELBYTE];
+export type ThirdPartyOAuthProviderPLAYFAB = typeof ThirdPartyOAuthProviderPLAYFAB[keyof typeof ThirdPartyOAuthProviderPLAYFAB];
 
 
 
