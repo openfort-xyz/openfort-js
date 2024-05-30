@@ -6,6 +6,14 @@ export enum EmbeddedState {
   READY,
 }
 
+export enum OpenfortEvents {
+  LOGGED_OUT = 'loggedOut',
+}
+
+export interface OpenfortEventMap extends Record<string, any> {
+  [OpenfortEvents.LOGGED_OUT]: [];
+}
+
 export type SessionKey = {
   address: string;
   isRegistered: boolean;

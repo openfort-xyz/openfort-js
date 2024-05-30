@@ -13,7 +13,8 @@ export {
   SDKOverrides,
 } from './types';
 export { ShieldAuthentication, AuthType } from './iframe/types';
-export { OpenfortConfiguration, ShieldConfiguration } from './config';
+export { Provider } from './evm/types';
+export { OpenfortConfiguration, ShieldConfiguration, SDKConfiguration } from './config';
 export { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer';
 
 export default Openfort;

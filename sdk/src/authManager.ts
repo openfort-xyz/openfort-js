@@ -7,7 +7,7 @@ import {
 } from 'types';
 import { SDKConfiguration } from 'config';
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { isBrowser } from './lib/helpers';
+import { isBrowser } from './utils/helpers';
 
 export default class AuthManager {
   private readonly config: SDKConfiguration;
@@ -214,7 +214,7 @@ export default class AuthManager {
       headers: {
         authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        'player-token': accessToken,
+        'x-player-token': accessToken,
       },
     });
   }
