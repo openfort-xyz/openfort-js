@@ -259,9 +259,30 @@ export class Openfort {
 
   public async initOAuth(
     provider: OAuthProvider,
+    usePooling?: boolean,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
-    return await this.authManager.initOAuth(provider, options);
+    return await this.authManager.initOAuth(provider, usePooling, options);
+  }
+
+  public async initLinkOAuth(
+    provider: OAuthProvider,
+    playerToken: string,
+    usePooling?: boolean,
+    options?: InitializeOAuthOptions,
+  ): Promise<InitAuthResponse> {
+    return await this.authManager.initLinkOAuth(
+      provider,
+      playerToken,
+      usePooling,
+      options,
+    );
+  }
+
+  public async poolOAuth(
+    key: string,
+  ): Promise<AuthResponse> {
+    return await this.authManager.poolOAuth(key);
   }
 
   public async authenticateWithOAuth(
