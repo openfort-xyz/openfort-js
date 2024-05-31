@@ -1,4 +1,4 @@
-import { StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { TransactionRequest } from '@ethersproject/providers';
 import { BackendApiClients } from '@openfort/openapi-clients';
 import { Interaction, ResponseResponse, TransactionIntentResponse } from 'types';
 import { EmbeddedSigner } from 'signer/embedded.signer';
@@ -7,17 +7,17 @@ import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 
 export type EthSendTransactionParams = {
   signer: EmbeddedSigner;
-  rpcProvider: StaticJsonRpcProvider;
   backendClient: BackendApiClients;
   instanceManager: InstanceManager;
   params: Array<any>;
+  policyId?: string;
 };
 
 const buildOpenfortTransactions = async (
   transactionRequest: TransactionRequest[],
-  rpcProvider: StaticJsonRpcProvider,
   backendApiClients: BackendApiClients,
   instanceManager: InstanceManager,
+  policyId?: string,
 ): Promise<TransactionIntentResponse> => {
   const interactions:Interaction[] = transactionRequest.map((tx) => {
     if (!tx.to) {
@@ -30,16 +30,16 @@ const buildOpenfortTransactions = async (
     };
   });
   const accessToken = instanceManager.getAccessToken();
-  if (!accessToken) {
+  const chainId = instanceManager.getChainID();
+  if (!accessToken || !chainId) {
     throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, 'No access token found');
   }
 
   const transactionResponse = await backendApiClients.transactionIntentsApi.createTransactionIntent(
     {
       createTransactionIntentRequest: {
-        // TODO: This should come from the config
-        policy: 'pol_1fc278fe-82cc-43c2-aec8-f6a4bdc71169',
-        chainId: (await rpcProvider.detectNetwork()).chainId,
+        policy: policyId,
+        chainId: Number(chainId),
         interactions,
       },
     },
@@ -62,15 +62,15 @@ const buildOpenfortTransactions = async (
 export const sendTransaction = async ({
   params,
   signer,
-  rpcProvider,
   backendClient,
   instanceManager,
+  policyId,
 }: EthSendTransactionParams): Promise<string> => {
   const openfortTransaction = await buildOpenfortTransactions(
     params,
-    rpcProvider,
     backendClient,
     instanceManager,
+    policyId,
   );
   let response: ResponseResponse;
   if (openfortTransaction?.nextAction?.payload?.userOperationHash) {
@@ -94,6 +94,6 @@ export const sendTransaction = async ({
   if (response.status === 0 && !response.transactionHash) {
     throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.error.reason);
   }
-  console.log('Transaction hash:', response);
+
   return response.transactionHash!;
 };

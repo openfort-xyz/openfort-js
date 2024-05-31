@@ -143,6 +143,7 @@ export class Openfort {
 
   public getEthereumProvider(options: {
     announceProvider: boolean
+    policy?:string
   } = {
     announceProvider: true,
   }): Provider {
@@ -156,6 +157,7 @@ export class Openfort {
       address: address as string,
       instanceManager: this.instanceManager,
       backendApiClients: this.backendApiClients,
+      policyId: options.policy,
     });
 
     if (options?.announceProvider) {

@@ -27,10 +27,13 @@ export type EvmProviderInput = {
   backendApiClients: BackendApiClients;
   instanceManager: InstanceManager;
   openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
+  policyId?: string;
 };
 
 export class EvmProvider implements Provider {
   readonly #signer: EmbeddedSigner;
+
+  readonly #policyId?: string;
 
   readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>;
 
@@ -50,8 +53,11 @@ export class EvmProvider implements Provider {
     backendApiClients,
     instanceManager,
     openfortEventEmitter,
+    policyId,
   }: EvmProviderInput) {
     this.#signer = signer;
+
+    this.#policyId = policyId;
 
     this.#address = address;
 
@@ -104,9 +110,9 @@ export class EvmProvider implements Provider {
         return await sendTransaction({
           params: request.params || [],
           signer: this.#signer,
-          rpcProvider: this.#rpcProvider,
           backendClient: this.#backendApiClients,
           instanceManager: this.#instanceManager,
+          policyId: this.#policyId,
         });
       }
       case 'eth_accounts': {
