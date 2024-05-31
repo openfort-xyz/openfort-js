@@ -82,9 +82,9 @@ export class Openfort {
 
   private readonly config: SDKConfiguration;
 
-  private readonly instanceManager: InstanceManager;
-
   private readonly backendApiClients: BackendApiClients;
+
+  private readonly instanceManager: InstanceManager;
 
   private readonly iframeManager: IframeManager;
 
@@ -95,13 +95,15 @@ export class Openfort {
   ) {
     this.config = new SDKConfiguration(sdkConfiguration);
     this.backendApiClients = new BackendApiClients(this.config.openfortAPIConfig);
-    this.authManager = new AuthManager(this.config, this.backendApiClients);
     this.instanceManager = new InstanceManager(
       new SessionStorage(),
       new LocalStorage(),
       new LocalStorage(),
-      this.authManager,
+      this.config,
+      this.backendApiClients,
     );
+    this.authManager = new AuthManager(this.config, this.backendApiClients, this.instanceManager);
+
     this.openfortEventEmitter = new TypedEventEmitter<OpenfortEventMap>();
     this.iframeManager = new IframeManager(this.config);
   }
@@ -294,12 +296,55 @@ export class Openfort {
     return result;
   }
 
+  public async requestEmailVerification(
+    email: string,
+    redirectUrl: string,
+  ): Promise<void> {
+    await this.authManager.requestEmailVerification(
+      email,
+      redirectUrl,
+    );
+  }
+
+  public async resetPassword(
+    email: string,
+    password: string,
+    state: string,
+  ): Promise<void> {
+    await this.authManager.resetPassword(
+      email,
+      password,
+      state,
+    );
+  }
+
+  public async requestResetPassword(
+    email: string,
+    redirectUrl: string,
+  ): Promise<void> {
+    await this.authManager.requestResetPassword(
+      email,
+      redirectUrl,
+    );
+  }
+
+  public async verifyEmail(
+    email: string,
+    state: string,
+  ): Promise<void> {
+    await this.authManager.verifyEmail(
+      email,
+      state,
+    );
+  }
+
   public async initOAuth(
     provider: OAuthProvider,
     usePooling?: boolean,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
-    return await this.authManager.initOAuth(provider, usePooling, options);
+    const authResponse = await this.authManager.initOAuth(provider, usePooling, options);
+    return authResponse;
   }
 
   public async initLinkOAuth(
@@ -322,6 +367,7 @@ export class Openfort {
     return await this.authManager.poolOAuth(key);
   }
 
+  // @deprecated
   public async authenticateWithOAuth(
     provider: OAuthProvider,
     token: string,
@@ -392,7 +438,7 @@ export class Openfort {
     return result;
   }
 
-  private storeCredentials(auth: Auth): void {
+  public storeCredentials(auth: Auth): void {
     this.instanceManager.setAccessToken({
       token: auth.accessToken,
       thirdPartyProvider: null,
@@ -636,7 +682,7 @@ export class Openfort {
     return true;
   }
 
-  private async validateAndRefreshToken() {
+  public async validateAndRefreshToken() {
     if (!this.credentialsProvided()) {
       return;
     }

@@ -4,19 +4,40 @@ import {
 import {
   Auth, InitAuthResponse, InitializeOAuthOptions, JWK, SIWEInitResponse,
   AuthPlayerResponse, AuthResponse, OAuthProvider, ThirdPartyOAuthProvider, TokenType,
+  CodeChallengeMethodEnum,
 } from 'types';
 import { SDKConfiguration } from 'config';
 import { BackendApiClients } from '@openfort/openapi-clients';
+import * as crypto from 'crypto';
+import InstanceManager from './instanceManager';
 import { isBrowser } from './utils/helpers';
+import DeviceCredentialsManager from './utils/deviceCredentialsManager';
+
+function base64URLEncode(str: Buffer) {
+  return str.toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+function sha256(buffer: string) {
+  return crypto.createHash('sha256').update(buffer).digest();
+}
 
 export default class AuthManager {
   private readonly config: SDKConfiguration;
 
+  private deviceCredentialsManager: DeviceCredentialsManager;
+
+  private readonly instanceManager: InstanceManager;
+
   private readonly backendApiClients: BackendApiClients;
 
-  constructor(config: SDKConfiguration, backendApiClients: BackendApiClients) {
+  constructor(config: SDKConfiguration, backendApiClients: BackendApiClients, instanceManager: InstanceManager) {
     this.config = config;
+    this.deviceCredentialsManager = new DeviceCredentialsManager();
     this.backendApiClients = backendApiClients;
+    this.instanceManager = instanceManager;
   }
 
   public async initOAuth(
@@ -35,7 +56,7 @@ export default class AuthManager {
       request,
     );
 
-    if (isBrowser() && !options?.skipBrowserRedirect) {
+    if (isBrowser() && options?.skipBrowserRedirect) {
       window.location.assign(result.data.url);
     }
     return {
@@ -85,6 +106,14 @@ export default class AuthManager {
         // eslint-disable-next-line no-await-in-loop
         const response = await this.backendApiClients.authenticationApi.poolOAuth(request);
         if (response.status === 200) {
+          this.instanceManager.setAccessToken({
+            token: response.data.token,
+            thirdPartyProvider: null,
+            thirdPartyTokenType: null,
+          });
+          this.instanceManager.setRefreshToken(response.data.refreshToken);
+          this.instanceManager.setPlayerID(response.data.player.id);
+
           return response.data;
         }
       } catch (error) {
@@ -102,7 +131,7 @@ export default class AuthManager {
     throw new Error('Failed to pool OAuth, try again later');
   }
 
-  // Deprecated
+  // @deprecated
   public async authenticateOAuth(
     provider: OAuthProvider,
     token: string,
@@ -186,6 +215,110 @@ export default class AuthManager {
     return response.data;
   }
 
+  public async requestResetPassword(
+    email: string,
+    redirectUrl: string,
+  ): Promise<void> {
+    const verifier = base64URLEncode(crypto.randomBytes(32));
+    const challenge = base64URLEncode(sha256(verifier));
+
+    // https://auth0.com/docs/secure/attack-protection/state-parameters
+    const state = base64URLEncode(crypto.randomBytes(32));
+
+    this.deviceCredentialsManager.savePKCEData({ state, verifier });
+
+    const request = {
+      requestResetPasswordRequest: {
+        email,
+        redirectUrl,
+        challenge: {
+          codeChallenge: challenge,
+          method: CodeChallengeMethodEnum.S256,
+        },
+      },
+    };
+    await this.backendApiClients.authenticationApi.requestResetPassword(request);
+  }
+
+  public async resetPassword(
+    email: string,
+    password: string,
+    state: string,
+  ): Promise<void> {
+    const pkceData = this.deviceCredentialsManager.getPKCEData();
+    if (!pkceData) {
+      throw new Error('No code verifier or state for PKCE');
+    }
+
+    if (state !== pkceData.state) {
+      throw new Error('Provided state does not match stored state');
+    }
+
+    const request = {
+      resetPasswordRequest: {
+        email,
+        password,
+        state,
+        challenge: {
+          codeVerifier: pkceData.verifier,
+          method: CodeChallengeMethodEnum.S256,
+        },
+      },
+    };
+    await this.backendApiClients.authenticationApi.resetPassword(request);
+  }
+
+  public async requestEmailVerification(
+    email: string,
+    redirectUrl: string,
+  ): Promise<void> {
+    const verifier = base64URLEncode(crypto.randomBytes(32));
+    const challenge = base64URLEncode(sha256(verifier));
+
+    // https://auth0.com/docs/secure/attack-protection/state-parameters
+    const state = base64URLEncode(crypto.randomBytes(32));
+
+    this.deviceCredentialsManager.savePKCEData({ state, verifier });
+
+    const request = {
+      requestVerifyEmailRequest: {
+        email,
+        redirectUrl,
+        challenge: {
+          codeChallenge: challenge,
+          method: CodeChallengeMethodEnum.S256,
+        },
+      },
+    };
+    await this.backendApiClients.authenticationApi.requestEmailVerification(request);
+  }
+
+  public async verifyEmail(
+    email: string,
+    state: string,
+  ): Promise<void> {
+    const pkceData = this.deviceCredentialsManager.getPKCEData();
+    if (!pkceData) {
+      throw new Error('No code verifier or state for PKCE');
+    }
+
+    if (state !== pkceData.state) {
+      throw new Error('Provided state does not match stored state');
+    }
+
+    const request = {
+      verifyEmailRequest: {
+        email,
+        token: state,
+        challenge: {
+          codeVerifier: pkceData.verifier,
+          method: CodeChallengeMethodEnum.S256,
+        },
+      },
+    };
+    await this.backendApiClients.authenticationApi.verifyEmail(request);
+  }
+
   public async signupEmailPassword(
     email: string,
     password: string,
@@ -201,26 +334,6 @@ export default class AuthManager {
     const response = await this.backendApiClients.authenticationApi.signupEmailPassword(request);
 
     return response.data;
-  }
-
-  public async getJWK(): Promise<JWK> {
-    const request = {
-      publishableKey: this.config.baseConfiguration.publishableKey,
-    };
-    const response = await this.backendApiClients.authenticationApi.getJwks(request);
-
-    if (response.data.keys.length === 0) {
-      throw new Error('No keys found');
-    }
-
-    const jwtKey = response.data.keys[0];
-    return {
-      kty: jwtKey.kty,
-      crv: jwtKey.crv,
-      x: jwtKey.x,
-      y: jwtKey.y,
-      alg: jwtKey.alg,
-    };
   }
 
   public async validateCredentials(

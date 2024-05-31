@@ -60,10 +60,9 @@ export interface CreateTransactionIntentRequest {
      */
     'optimistic'?: boolean;
     /**
-     * Specify the number of confirmation blocks after which the confirmation webhook will be sent when the transaction arrives on-chain. Default is 5.
+     * 
      * @type {number}
      * @memberof CreateTransactionIntentRequest
-     * @deprecated
      */
     'confirmationBlocks'?: number;
     /**

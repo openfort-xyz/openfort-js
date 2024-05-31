@@ -5,6 +5,9 @@
     },
     {
       "path": "examples/apps/html-openfort-sample"
+    },
+    {
+      "path": "examples/apps/auth-sample"
     }
   ]
 }

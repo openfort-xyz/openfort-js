@@ -36,11 +36,11 @@ export interface ResetPasswordRequest {
      */
     'password': string;
     /**
-     * The reset token.
+     * Unique value to identify the request. It\'s used to mitigate CSRF attacks.
      * @type {string}
      * @memberof ResetPasswordRequest
      */
-    'token': string;
+    'state'?: string;
     /**
      * 
      * @type {CodeChallengeVerify}

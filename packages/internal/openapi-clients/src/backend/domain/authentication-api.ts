@@ -50,6 +50,8 @@ import { RefreshTokenRequest } from '../models';
 // @ts-ignore
 import { RequestResetPasswordRequest } from '../models';
 // @ts-ignore
+import { RequestVerifyEmailRequest } from '../models';
+// @ts-ignore
 import { ResetPasswordRequest } from '../models';
 // @ts-ignore
 import { SIWEAuthenticateRequest } from '../models';
@@ -63,6 +65,8 @@ import { SignupRequest } from '../models';
 import { ThirdPartyOAuthRequest } from '../models';
 // @ts-ignore
 import { UnlinkRequest } from '../models';
+// @ts-ignore
+import { VerifyEmailRequest } from '../models';
 /**
  * AuthenticationApi - axios parameter creator
  * @export
@@ -569,13 +573,13 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         /**
          * Start the Email Verification process for a player.
          * @summary Request an Email Verification.
-         * @param {RequestResetPasswordRequest} requestResetPasswordRequest 
+         * @param {RequestVerifyEmailRequest} requestVerifyEmailRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        requestEmailVerification: async (requestResetPasswordRequest: RequestResetPasswordRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'requestResetPasswordRequest' is not null or undefined
-            assertParamExists('requestEmailVerification', 'requestResetPasswordRequest', requestResetPasswordRequest)
+        requestEmailVerification: async (requestVerifyEmailRequest: RequestVerifyEmailRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestVerifyEmailRequest' is not null or undefined
+            assertParamExists('requestEmailVerification', 'requestVerifyEmailRequest', requestVerifyEmailRequest)
             const localVarPath = `/iam/v1/password/email/request_verification`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -599,7 +603,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(requestResetPasswordRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(requestVerifyEmailRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -841,13 +845,13 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         /**
          * Verify a player\'s email address.
          * @summary Verify an email.
-         * @param {ResetPasswordRequest} resetPasswordRequest 
+         * @param {VerifyEmailRequest} verifyEmailRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        verifyEmail: async (resetPasswordRequest: ResetPasswordRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'resetPasswordRequest' is not null or undefined
-            assertParamExists('verifyEmail', 'resetPasswordRequest', resetPasswordRequest)
+        verifyEmail: async (verifyEmailRequest: VerifyEmailRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'verifyEmailRequest' is not null or undefined
+            assertParamExists('verifyEmail', 'verifyEmailRequest', verifyEmailRequest)
             const localVarPath = `/iam/v1/password/email/verify`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -871,7 +875,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(resetPasswordRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(verifyEmailRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1119,12 +1123,12 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
         /**
          * Start the Email Verification process for a player.
          * @summary Request an Email Verification.
-         * @param {RequestResetPasswordRequest} requestResetPasswordRequest 
+         * @param {RequestVerifyEmailRequest} requestVerifyEmailRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async requestEmailVerification(requestResetPasswordRequest: RequestResetPasswordRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.requestEmailVerification(requestResetPasswordRequest, options);
+        async requestEmailVerification(requestVerifyEmailRequest: RequestVerifyEmailRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.requestEmailVerification(requestVerifyEmailRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1196,12 +1200,12 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
         /**
          * Verify a player\'s email address.
          * @summary Verify an email.
-         * @param {ResetPasswordRequest} resetPasswordRequest 
+         * @param {VerifyEmailRequest} verifyEmailRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async verifyEmail(resetPasswordRequest: ResetPasswordRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyEmail(resetPasswordRequest, options);
+        async verifyEmail(verifyEmailRequest: VerifyEmailRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyEmail(verifyEmailRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1375,7 +1379,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         requestEmailVerification(requestParameters: AuthenticationApiRequestEmailVerificationRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.requestEmailVerification(requestParameters.requestResetPasswordRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.requestEmailVerification(requestParameters.requestVerifyEmailRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Start the Reset process for a player\'s password.
@@ -1445,7 +1449,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         verifyEmail(requestParameters: AuthenticationApiVerifyEmailRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.verifyEmail(requestParameters.resetPasswordRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.verifyEmail(requestParameters.verifyEmailRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.  Returns the latest 10 transaction intents for the player.
@@ -1654,10 +1658,10 @@ export interface AuthenticationApiRefreshRequest {
 export interface AuthenticationApiRequestEmailVerificationRequest {
     /**
      * 
-     * @type {RequestResetPasswordRequest}
+     * @type {RequestVerifyEmailRequest}
      * @memberof AuthenticationApiRequestEmailVerification
      */
-    readonly requestResetPasswordRequest: RequestResetPasswordRequest
+    readonly requestVerifyEmailRequest: RequestVerifyEmailRequest
 }
 
 /**
@@ -1752,10 +1756,10 @@ export interface AuthenticationApiUnlinkSIWERequest {
 export interface AuthenticationApiVerifyEmailRequest {
     /**
      * 
-     * @type {ResetPasswordRequest}
+     * @type {VerifyEmailRequest}
      * @memberof AuthenticationApiVerifyEmail
      */
-    readonly resetPasswordRequest: ResetPasswordRequest
+    readonly verifyEmailRequest: VerifyEmailRequest
 }
 
 /**
@@ -1964,7 +1968,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public requestEmailVerification(requestParameters: AuthenticationApiRequestEmailVerificationRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).requestEmailVerification(requestParameters.requestResetPasswordRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).requestEmailVerification(requestParameters.requestVerifyEmailRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2048,7 +2052,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public verifyEmail(requestParameters: AuthenticationApiVerifyEmailRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).verifyEmail(requestParameters.resetPasswordRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).verifyEmail(requestParameters.verifyEmailRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

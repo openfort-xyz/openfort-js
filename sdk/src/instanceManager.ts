@@ -1,4 +1,6 @@
 import { JWK } from 'types';
+import { BackendApiClients } from '@openfort/openapi-clients';
+import { SDKConfiguration } from 'config';
 import { SignerType } from './signer/signer';
 import {
   authTokenStorageKey,
@@ -15,7 +17,6 @@ import {
   thirdPartyProviderStorageKey,
   thirdPartyProviderTokenTypeStorageKey,
 } from './storage/storage';
-import AuthManager from './authManager';
 
 export type AccessToken = {
   token: string;
@@ -24,8 +25,6 @@ export type AccessToken = {
 };
 
 export default class InstanceManager {
-  private readonly authManager: AuthManager;
-
   private authToken: AccessToken | null = null;
 
   private refreshToken: string | null = null;
@@ -50,18 +49,24 @@ export default class InstanceManager {
 
   private readonly secureStorage: IStorage;
 
+  private readonly config: SDKConfiguration;
+
+  private readonly backendApiClients: BackendApiClients;
+
   private playerId: string | null = null;
 
   constructor(
     temporalStorage: IStorage,
     persistentStorage: IStorage,
     secureStorage: IStorage,
-    authManager: AuthManager,
+    config: SDKConfiguration,
+    backendApiClients: BackendApiClients,
   ) {
     this.temporalStorage = temporalStorage;
     this.persistentStorage = persistentStorage;
     this.secureStorage = secureStorage;
-    this.authManager = authManager;
+    this.config = config;
+    this.backendApiClients = backendApiClients;
   }
 
   public getAccessToken(): AccessToken | null {
@@ -202,7 +207,23 @@ export default class InstanceManager {
     }
 
     if (!this.jwk) {
-      this.jwk = await this.authManager.getJWK();
+      const request = {
+        publishableKey: this.config.baseConfiguration.publishableKey,
+      };
+      const response = await this.backendApiClients.authenticationApi.getJwks(request);
+
+      if (response.data.keys.length === 0) {
+        throw new Error('No keys found');
+      }
+
+      const jwtKey = response.data.keys[0];
+      this.jwk = {
+        kty: jwtKey.kty,
+        crv: jwtKey.crv,
+        x: jwtKey.x,
+        y: jwtKey.y,
+        alg: jwtKey.alg,
+      };
     }
 
     return this.jwk;

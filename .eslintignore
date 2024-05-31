@@ -12,6 +12,7 @@ jest.*.js
 
 # sample apps
 examples/apps/html-openfort-sample/
+examples/apps/auth-sample/
 
 
 # put module specific ignore paths here

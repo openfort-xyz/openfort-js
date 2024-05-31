@@ -325,3 +325,13 @@ export interface AuthResponse {
   'token': string;
   'refreshToken': string;
 }
+
+export type PKCEData = {
+  state: string,
+  verifier: string
+};
+
+export enum CodeChallengeMethodEnum {
+  PLAIN = 'plain',
+  S256 = 'S256',
+}

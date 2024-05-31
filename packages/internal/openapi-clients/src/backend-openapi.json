@@ -1526,7 +1526,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "RequestResetPasswordRequest": {
+      "RequestVerifyEmailRequest": {
         "properties": {
           "email": {
             "type": "string",
@@ -1564,6 +1564,59 @@
         "type": "object",
         "additionalProperties": false
       },
+      "VerifyEmailRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user.",
+            "example": "user@email.com"
+          },
+          "token": {
+            "type": "string",
+            "description": "Unique value to identify the request. Obtained from the email.",
+            "example": "515151"
+          },
+          "challenge": {
+            "$ref": "#/components/schemas/CodeChallengeVerify",
+            "description": "The Code Challenge to verify the PKCE if you used it in the request."
+          }
+        },
+        "required": [
+          "email",
+          "token"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RequestResetPasswordRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user.",
+            "example": "user@email.com"
+          },
+          "redirectUrl": {
+            "type": "string",
+            "description": "The URL sent to the user by email to reset the password. At the end of the URL, we will add the token in the format `?token=token`.",
+            "example": "https://openfort.xyz/reset-password"
+          },
+          "state": {
+            "type": "string",
+            "description": "Unique value to identify the request. It's used to mitigate CSRF attacks.",
+            "example": "515151"
+          },
+          "challenge": {
+            "$ref": "#/components/schemas/CodeChallenge",
+            "description": "The Code Challenge if you want to use PKCE."
+          }
+        },
+        "required": [
+          "email",
+          "redirectUrl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "ResetPasswordRequest": {
         "properties": {
           "email": {
@@ -1576,10 +1629,10 @@
             "description": "The new password of the user.",
             "example": "password"
           },
-          "token": {
+          "state": {
             "type": "string",
-            "description": "The reset token.",
-            "example": "token"
+            "description": "Unique value to identify the request. It's used to mitigate CSRF attacks.",
+            "example": "515151"
           },
           "challenge": {
             "$ref": "#/components/schemas/CodeChallengeVerify",
@@ -1588,8 +1641,7 @@
         },
         "required": [
           "email",
-          "password",
-          "token"
+          "password"
         ],
         "type": "object",
         "additionalProperties": false
@@ -7033,12 +7085,8 @@
             "example": true
           },
           "confirmationBlocks": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specify the number of confirmation blocks after which the confirmation webhook will be sent when the transaction arrives on-chain. Default is 5.",
-            "example": 5,
-            "minimum": 1,
-            "deprecated": true
+            "type": "number",
+            "format": "double"
           },
           "interactions": {
             "items": {
@@ -8783,7 +8831,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RequestResetPasswordRequest"
+                "$ref": "#/components/schemas/RequestVerifyEmailRequest"
               }
             }
           }
@@ -8817,7 +8865,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ResetPasswordRequest"
+                "$ref": "#/components/schemas/VerifyEmailRequest"
               }
             }
           }
@@ -16462,6 +16510,12 @@
         "security": [
           {
             "sk": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "pk_access_token": []
           }
         ],
         "parameters": [],

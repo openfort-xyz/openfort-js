@@ -250,6 +250,7 @@ models/project-stats-response.ts
 models/quote-exchange-result.ts
 models/refresh-token-request.ts
 models/request-reset-password-request.ts
+models/request-verify-email-request.ts
 models/reset-password-request.ts
 models/response-response.ts
 models/response-type-list.ts
@@ -325,6 +326,7 @@ models/user-project-role-admin.ts
 models/user-project-role-member.ts
 models/user-project-role.ts
 models/user-project-update-request.ts
+models/verify-email-request.ts
 models/web3-action-list-response.ts
 models/web3-action-response.ts
 models/web3-action-status-enum.ts
