@@ -21,6 +21,9 @@ import { AccelbyteOAuthConfig } from './accelbyte-oauth-config';
 import { CustomAuthConfig } from './custom-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { FacebookOAuthConfig } from './facebook-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { FirebaseOAuthConfig } from './firebase-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -99,13 +102,13 @@ export interface OAuthConfig {
      */
     'baseUrl': string;
     /**
-     * Twitter API consumer key.
+     * Facebook API client ID.
      * @type {string}
      * @memberof OAuthConfig
      */
     'clientId': string;
     /**
-     * Twitter API consumer secret.
+     * Facebook API client secret.
      * @type {string}
      * @memberof OAuthConfig
      */
