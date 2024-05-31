@@ -34,6 +34,7 @@
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/hash": "^5.7.0",
+    "@ethersproject/providers": "^5.7.0",
     "@ethersproject/signing-key": "^5.7.0",
     "@ethersproject/transactions": "^5.7.0",
     "@noble/curves": "^1.1.0",
@@ -42,7 +43,8 @@
     "crypto-js": "^4.2.0",
     "es6-promise": "^4.2.8",
     "jose": "^5.2.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "uuid": "^8.3.2"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -67,6 +69,7 @@
     "@swc/jest": "^0.2.24",
     "@types/crypto-js": "^4.2.2",
     "@types/jest": "^29.4.3",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "buffer": "^5.5.0||^6.0.0",
