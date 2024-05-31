@@ -15,9 +15,14 @@ import {
   OAuthProvider,
   AuthResponse,
   AuthPlayerResponse,
+  OpenfortEventMap,
 } from 'types';
 import { SDKConfiguration } from 'config';
 import { BackendApiClients } from '@openfort/openapi-clients';
+import { EvmProvider } from 'evm';
+import { Provider } from 'evm/types';
+import { announceProvider, openfortProviderInfo } from 'evm/provider/eip6963';
+import TypedEventEmitter from 'utils/typedEventEmitter';
 import { ISigner, SignerType } from './signer/signer';
 import AuthManager from './authManager';
 import InstanceManager from './instanceManager';
@@ -83,6 +88,8 @@ export class Openfort {
 
   private readonly iframeManager: IframeManager;
 
+  private readonly openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
+
   constructor(
     sdkConfiguration: SDKConfiguration,
   ) {
@@ -95,6 +102,7 @@ export class Openfort {
       new LocalStorage(),
       this.authManager,
     );
+    this.openfortEventEmitter = new TypedEventEmitter<OpenfortEventMap>();
     this.iframeManager = new IframeManager(this.config);
   }
 
@@ -131,6 +139,35 @@ export class Openfort {
       this.instanceManager.removeDeviceID();
       this.instanceManager.removeJWK();
     }
+  }
+
+  public getEthereumProvider(options: {
+    announceProvider: boolean
+    policy?:string
+  } = {
+    announceProvider: true,
+  }): Provider {
+    if (!(this.signer instanceof EmbeddedSigner)) {
+      throw new EmbeddedNotConfigured('Embedded signer must be configured to get Ethereum provider');
+    }
+    const address = this.instanceManager.getAccountAddress();
+    const provider = new EvmProvider({
+      openfortEventEmitter: this.openfortEventEmitter,
+      signer: this.signer,
+      address: address as string,
+      instanceManager: this.instanceManager,
+      backendApiClients: this.backendApiClients,
+      policyId: options.policy,
+    });
+
+    if (options?.announceProvider) {
+      announceProvider({
+        info: openfortProviderInfo,
+        provider,
+      });
+    }
+
+    return provider;
   }
 
   private async flushSigner(): Promise<void> {
