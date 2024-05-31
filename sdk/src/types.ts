@@ -83,7 +83,21 @@ export enum BasicAuthProvider {
   WALLET = 'wallet',
 }
 
-export type AuthProvider = OAuthProvider | ThirdPartyOAuthProvider | BasicAuthProvider;
+export const AUTH_PROVIDER = {
+  email: 'email',
+  wallet: 'wallet',
+  google: 'google',
+  twitter: 'twitter',
+  accelbyte: 'accelbyte',
+  firebase: 'firebase',
+  lootlocker: 'lootlocker',
+  playfab: 'playfab',
+  supabase: 'supabase',
+  custom: 'custom',
+  oidc: 'oidc',
+} as const;
+
+export type AuthProvider = typeof AUTH_PROVIDER[keyof typeof AUTH_PROVIDER];
 
 export enum OAuthProvider {
   GOOGLE = 'google',
