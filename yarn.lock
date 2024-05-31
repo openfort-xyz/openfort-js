@@ -1202,7 +1202,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@0.7.2, @openfort/openfort-js@workspace:sdk":
+"@openfort/openfort-js@0.7.3, @openfort/openfort-js@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:
@@ -1252,7 +1252,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
   dependencies:
-    "@openfort/openfort-js": 0.7.2
+    "@openfort/openfort-js": 0.7.3
     eslint: ^8.40.0
     parcel: ^2.8.3
   languageName: unknown
