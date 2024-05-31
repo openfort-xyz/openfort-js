@@ -15,19 +15,27 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { BasicAuthProvider } from './basic-auth-provider';
-// May contain unused imports in some cases
-// @ts-ignore
-import { OAuthProvider } from './oauth-provider';
-// May contain unused imports in some cases
-// @ts-ignore
-import { ThirdPartyOAuthProvider } from './third-party-oauth-provider';
+import { EntityTypeSMTPCONFIG } from './entity-type-smtpconfig';
 
 /**
- * Enum of the supporting Auth providers.
+ * 
  * @export
- * @interface AuthProvider
+ * @interface DeleteSMTPConfigResponse
  */
-export interface AuthProvider {
+export interface DeleteSMTPConfigResponse {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof DeleteSMTPConfigResponse
+     */
+    'deleted': boolean;
+    /**
+     * 
+     * @type {EntityTypeSMTPCONFIG}
+     * @memberof DeleteSMTPConfigResponse
+     */
+    'object': EntityTypeSMTPCONFIG;
 }
+
+
 

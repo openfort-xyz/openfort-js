@@ -30,9 +30,6 @@ import { GoogleOAuthConfig } from './google-oauth-config';
 import { LootLockerOAuthConfig } from './loot-locker-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProviderLOOTLOCKER } from './oauth-provider-lootlocker';
-// May contain unused imports in some cases
-// @ts-ignore
 import { OIDCAuthConfig } from './oidcauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -40,6 +37,12 @@ import { PlayFabOAuthConfig } from './play-fab-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { SupabaseAuthConfig } from './supabase-auth-config';
+// May contain unused imports in some cases
+// @ts-ignore
+import { ThirdPartyOAuthProviderLOOTLOCKER } from './third-party-oauth-provider-lootlocker';
+// May contain unused imports in some cases
+// @ts-ignore
+import { TwitterOAuthConfig } from './twitter-oauth-config';
 
 /**
  * 
@@ -55,10 +58,10 @@ export interface OAuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderLOOTLOCKER}
+     * @type {ThirdPartyOAuthProviderLOOTLOCKER}
      * @memberof OAuthConfig
      */
-    'provider': OAuthProviderLOOTLOCKER;
+    'provider': ThirdPartyOAuthProviderLOOTLOCKER;
     /**
      * The unique Supabase URL which is supplied when you create a new project in your project dashboard.
      * @type {string}
@@ -96,13 +99,13 @@ export interface OAuthConfig {
      */
     'baseUrl': string;
     /**
-     * Google API client ID.
+     * Twitter API consumer key.
      * @type {string}
      * @memberof OAuthConfig
      */
     'clientId': string;
     /**
-     * Google API client secret.
+     * Twitter API consumer secret.
      * @type {string}
      * @memberof OAuthConfig
      */

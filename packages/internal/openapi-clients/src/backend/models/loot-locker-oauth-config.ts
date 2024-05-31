@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProviderLOOTLOCKER } from './oauth-provider-lootlocker';
+import { ThirdPartyOAuthProviderLOOTLOCKER } from './third-party-oauth-provider-lootlocker';
 
 /**
  * LootLocker oauth configuration
@@ -31,10 +31,10 @@ export interface LootLockerOAuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderLOOTLOCKER}
+     * @type {ThirdPartyOAuthProviderLOOTLOCKER}
      * @memberof LootLockerOAuthConfig
      */
-    'provider': OAuthProviderLOOTLOCKER;
+    'provider': ThirdPartyOAuthProviderLOOTLOCKER;
 }
 
 

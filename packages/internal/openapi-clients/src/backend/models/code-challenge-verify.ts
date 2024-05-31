@@ -15,17 +15,16 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
- * @enum {string}
+ * @interface CodeChallengeVerify
  */
-
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter'
-} as const;
-
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
-
-
+export interface CodeChallengeVerify {
+    /**
+     * The code verifier.
+     * @type {string}
+     * @memberof CodeChallengeVerify
+     */
+    'codeVerifier': string;
+}
 

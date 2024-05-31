@@ -20,11 +20,11 @@
  * @enum {string}
  */
 
-export const OAuthProviderCUSTOM = {
+export const ThirdPartyOAuthProviderCUSTOM = {
     Custom: 'custom'
 } as const;
 
-export type OAuthProviderCUSTOM = typeof OAuthProviderCUSTOM[keyof typeof OAuthProviderCUSTOM];
+export type ThirdPartyOAuthProviderCUSTOM = typeof ThirdPartyOAuthProviderCUSTOM[keyof typeof ThirdPartyOAuthProviderCUSTOM];
 
 
 

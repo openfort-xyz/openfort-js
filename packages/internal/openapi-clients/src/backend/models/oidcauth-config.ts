@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProviderOIDC } from './oauth-provider-oidc';
+import { ThirdPartyOAuthProviderOIDC } from './third-party-oauth-provider-oidc';
 
 /**
  * 
@@ -31,10 +31,10 @@ export interface OIDCAuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderOIDC}
+     * @type {ThirdPartyOAuthProviderOIDC}
      * @memberof OIDCAuthConfig
      */
-    'provider': OAuthProviderOIDC;
+    'provider': ThirdPartyOAuthProviderOIDC;
     /**
      * PEM encoded public key to verify the JWT token
      * @type {string}

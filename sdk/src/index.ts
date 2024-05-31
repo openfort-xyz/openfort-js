@@ -5,6 +5,7 @@ export {
   InitializeOAuthOptions,
   EmbeddedState,
   ThirdPartyOAuthProvider,
+  BasicAuthProvider,
   TokenType,
   OAuthProvider,
   AuthPlayerResponse,
@@ -13,7 +14,7 @@ export {
   SDKOverrides,
 } from './types';
 export { ShieldAuthentication, AuthType } from './iframe/types';
-export { OpenfortConfiguration, ShieldConfiguration } from './config';
+export { SDKConfiguration, OpenfortConfiguration, ShieldConfiguration } from './config';
 export { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer';
 
 export default Openfort;

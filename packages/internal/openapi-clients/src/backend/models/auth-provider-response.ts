@@ -15,17 +15,26 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
  * @enum {string}
  */
 
-export const OAuthProvider = {
+export const AuthProviderResponse = {
+    Email: 'email',
+    Wallet: 'wallet',
     Google: 'google',
-    Twitter: 'twitter'
+    Twitter: 'twitter',
+    Accelbyte: 'accelbyte',
+    Firebase: 'firebase',
+    Lootlocker: 'lootlocker',
+    Playfab: 'playfab',
+    Supabase: 'supabase',
+    Custom: 'custom',
+    Oidc: 'oidc'
 } as const;
 
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
+export type AuthProviderResponse = typeof AuthProviderResponse[keyof typeof AuthProviderResponse];
 
 
 

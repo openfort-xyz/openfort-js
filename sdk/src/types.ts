@@ -78,26 +78,30 @@ export enum ThirdPartyOAuthProvider {
   OIDC = 'oidc',
 }
 
-export declare const AUTH_PROVIDER: {
+export enum BasicAuthProvider {
+  EMAIL = 'email',
+  WALLET = 'wallet',
+}
+
+export const AUTH_PROVIDER = {
   email: 'email',
+  wallet: 'wallet',
+  google: 'google',
+  twitter: 'twitter',
   accelbyte: 'accelbyte',
   firebase: 'firebase',
-  google: 'google',
   lootlocker: 'lootlocker',
   playfab: 'playfab',
-  wallet: 'wallet',
-};
+  supabase: 'supabase',
+  custom: 'custom',
+  oidc: 'oidc',
+} as const;
+
 export type AuthProvider = typeof AUTH_PROVIDER[keyof typeof AUTH_PROVIDER];
 
 export enum OAuthProvider {
-  ACCELBYTE = 'accelbyte',
-  FIREBASE = 'firebase',
   GOOGLE = 'google',
-  LOOTLOCKER = 'lootlocker',
-  PLAYFAB = 'playfab',
-  CUSTOM = 'custom',
-  OIDC = 'oidc',
-  SUPABASE = 'supabase',
+  TWITTER = 'twitter',
 }
 
 export interface NextActionPayload {
@@ -285,6 +289,8 @@ export interface AuthPlayerResponsePlayer {
 
 export interface PrismaInputJsonValue {
 }
+
+export interface AuthProviderResponse {}
 
 export interface LinkedAccountResponse {
   'provider': AuthProvider;

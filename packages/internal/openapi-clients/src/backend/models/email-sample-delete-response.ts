@@ -15,32 +15,32 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ThirdPartyOAuthProviderPLAYFAB } from './third-party-oauth-provider-playfab';
+import { EntityTypeEMAILSAMPLE } from './entity-type-emailsample';
 
 /**
- * PlayFab oauth configuration
+ * 
  * @export
- * @interface PlayFabOAuthConfig
+ * @interface EmailSampleDeleteResponse
  */
-export interface PlayFabOAuthConfig {
-    /**
-     * Enable OAuth provider.
-     * @type {boolean}
-     * @memberof PlayFabOAuthConfig
-     */
-    'enabled': boolean;
+export interface EmailSampleDeleteResponse {
     /**
      * 
-     * @type {ThirdPartyOAuthProviderPLAYFAB}
-     * @memberof PlayFabOAuthConfig
+     * @type {boolean}
+     * @memberof EmailSampleDeleteResponse
      */
-    'provider': ThirdPartyOAuthProviderPLAYFAB;
+    'deleted': boolean;
     /**
-     * Title ID of your Play Fab gaming service environment.
+     * 
      * @type {string}
-     * @memberof PlayFabOAuthConfig
+     * @memberof EmailSampleDeleteResponse
      */
-    'titleId': string;
+    'id': string;
+    /**
+     * 
+     * @type {EntityTypeEMAILSAMPLE}
+     * @memberof EmailSampleDeleteResponse
+     */
+    'object': EntityTypeEMAILSAMPLE;
 }
 
 
