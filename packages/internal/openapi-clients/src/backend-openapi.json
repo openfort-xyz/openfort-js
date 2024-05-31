@@ -1306,7 +1306,7 @@
       "AuthenticateOAuthRequest": {
         "properties": {
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider",
+            "$ref": "#/components/schemas/AuthProvider",
             "description": "OAuth provider",
             "example": "firebase"
           },
@@ -8498,7 +8498,7 @@
             "name": "provider",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/OAuthProvider"
+              "$ref": "#/components/schemas/AuthProvider"
             }
           }
         ],
@@ -8576,7 +8576,7 @@
             "name": "provider",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/OAuthProvider"
+              "$ref": "#/components/schemas/AuthProvider"
             }
           }
         ],
