@@ -25,6 +25,7 @@ export const AuthProviderResponse = {
     Wallet: 'wallet',
     Google: 'google',
     Twitter: 'twitter',
+    Facebook: 'facebook',
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',
     Lootlocker: 'lootlocker',

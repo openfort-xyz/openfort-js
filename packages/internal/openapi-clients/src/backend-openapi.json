@@ -101,6 +101,7 @@
           "wallet",
           "google",
           "twitter",
+          "facebook",
           "accelbyte",
           "firebase",
           "lootlocker",
@@ -830,7 +831,8 @@
         "description": "Enum of the supporting OAuth providers.",
         "enum": [
           "google",
-          "twitter"
+          "twitter",
+          "facebook"
         ],
         "type": "string"
       },
@@ -1032,6 +1034,40 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OAuthProvider.FACEBOOK": {
+        "enum": [
+          "facebook"
+        ],
+        "type": "string"
+      },
+      "FacebookOAuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/OAuthProvider.FACEBOOK",
+            "description": "OAuth provider type"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Facebook API client ID."
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "Facebook API client secret."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "clientId",
+          "clientSecret"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "ThirdPartyOAuthProvider.PLAYFAB": {
         "enum": [
           "playfab"
@@ -1166,6 +1202,9 @@
           },
           {
             "$ref": "#/components/schemas/TwitterOAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/FacebookOAuthConfig"
           },
           {
             "$ref": "#/components/schemas/PlayFabOAuthConfig"

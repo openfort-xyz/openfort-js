@@ -152,6 +152,7 @@ models/event-delete-response.ts
 models/event-list-queries.ts
 models/event-list-response.ts
 models/event-response.ts
+models/facebook-oauth-config.ts
 models/fee.ts
 models/field-errors-value.ts
 models/firebase-oauth-config.ts
@@ -186,6 +187,7 @@ models/oauth-config-list-response.ts
 models/oauth-config.ts
 models/oauth-init-request-options.ts
 models/oauth-init-request.ts
+models/oauth-provider-facebook.ts
 models/oauth-provider-google.ts
 models/oauth-provider-twitter.ts
 models/oauth-provider.ts
