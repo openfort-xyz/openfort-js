@@ -15,17 +15,17 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
  * @enum {string}
  */
 
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter'
+export const EmailTypeResponse = {
+    EmailVerification: 'emailVerification',
+    PasswordReset: 'passwordReset'
 } as const;
 
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
+export type EmailTypeResponse = typeof EmailTypeResponse[keyof typeof EmailTypeResponse];
 
 
 

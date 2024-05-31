@@ -95,16 +95,19 @@
         "type": "object",
         "additionalProperties": false
       },
-      "AuthProvider": {
-        "description": "Enum of the supporting OAuth providers.",
+      "AuthProviderResponse": {
         "enum": [
           "email",
+          "wallet",
+          "google",
+          "twitter",
           "accelbyte",
           "firebase",
-          "google",
           "lootlocker",
           "playfab",
-          "wallet"
+          "supabase",
+          "custom",
+          "oidc"
         ],
         "type": "string"
       },
@@ -147,7 +150,7 @@
       "LinkedAccountResponse": {
         "properties": {
           "provider": {
-            "$ref": "#/components/schemas/AuthProvider"
+            "$ref": "#/components/schemas/AuthProviderResponse"
           },
           "email": {
             "type": "string"
@@ -817,7 +820,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthProvider.SUPABASE": {
+      "ThirdPartyOAuthProvider.SUPABASE": {
         "enum": [
           "supabase"
         ],
@@ -826,16 +829,32 @@
       "OAuthProvider": {
         "description": "Enum of the supporting OAuth providers.",
         "enum": [
-          "accelbyte",
-          "firebase",
           "google",
-          "lootlocker",
-          "playfab",
-          "custom",
-          "oidc",
-          "supabase"
+          "twitter"
         ],
         "type": "string"
+      },
+      "BasicAuthProvider": {
+        "description": "Enum of the supporting Basic Auth providers.",
+        "enum": [
+          "email",
+          "wallet"
+        ],
+        "type": "string"
+      },
+      "AuthProvider": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/OAuthProvider"
+          },
+          {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider"
+          },
+          {
+            "$ref": "#/components/schemas/BasicAuthProvider"
+          }
+        ],
+        "description": "Enum of the supporting Auth providers."
       },
       "SupabaseAuthConfig": {
         "description": "Supabase oauth configuration",
@@ -845,7 +864,7 @@
             "description": "Enable OAuth provider."
           },
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider.SUPABASE",
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.SUPABASE",
             "description": "OAuth provider type"
           },
           "url": {
@@ -866,7 +885,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthProvider.OIDC": {
+      "ThirdPartyOAuthProvider.OIDC": {
         "enum": [
           "oidc"
         ],
@@ -879,7 +898,7 @@
             "description": "Enable OAuth provider."
           },
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider.OIDC",
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.OIDC",
             "description": "OAuth provider type"
           },
           "publicVerificationKey": {
@@ -903,7 +922,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthProvider.ACCELBYTE": {
+      "ThirdPartyOAuthProvider.ACCELBYTE": {
         "enum": [
           "accelbyte"
         ],
@@ -917,7 +936,7 @@
             "description": "Enable OAuth provider."
           },
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider.ACCELBYTE",
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.ACCELBYTE",
             "description": "OAuth provider type"
           },
           "baseUrl": {
@@ -978,7 +997,42 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthProvider.PLAYFAB": {
+      "OAuthProvider.TWITTER": {
+        "enum": [
+          "twitter"
+        ],
+        "type": "string"
+      },
+      "TwitterOAuthConfig": {
+        "description": "Twitter oauth configuration",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/OAuthProvider.TWITTER",
+            "description": "OAuth provider type"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Twitter API consumer key."
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "Twitter API consumer secret."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "clientId",
+          "clientSecret"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ThirdPartyOAuthProvider.PLAYFAB": {
         "enum": [
           "playfab"
         ],
@@ -992,7 +1046,7 @@
             "description": "Enable OAuth provider."
           },
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider.PLAYFAB",
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.PLAYFAB",
             "description": "OAuth provider type"
           },
           "titleId": {
@@ -1008,7 +1062,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthProvider.FIREBASE": {
+      "ThirdPartyOAuthProvider.FIREBASE": {
         "enum": [
           "firebase"
         ],
@@ -1022,7 +1076,7 @@
             "description": "Enable OAuth provider."
           },
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider.FIREBASE",
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.FIREBASE",
             "description": "OAuth provider type"
           },
           "projectId": {
@@ -1038,7 +1092,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthProvider.CUSTOM": {
+      "ThirdPartyOAuthProvider.CUSTOM": {
         "enum": [
           "custom"
         ],
@@ -1051,7 +1105,7 @@
             "description": "Enable OAuth provider."
           },
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider.CUSTOM",
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.CUSTOM",
             "description": "OAuth provider type"
           },
           "headers": {
@@ -1071,7 +1125,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthProvider.LOOTLOCKER": {
+      "ThirdPartyOAuthProvider.LOOTLOCKER": {
         "enum": [
           "lootlocker"
         ],
@@ -1085,7 +1139,7 @@
             "description": "Enable OAuth provider."
           },
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider.LOOTLOCKER",
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.LOOTLOCKER",
             "description": "OAuth provider type"
           }
         },
@@ -1109,6 +1163,9 @@
           },
           {
             "$ref": "#/components/schemas/GoogleOAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/TwitterOAuthConfig"
           },
           {
             "$ref": "#/components/schemas/PlayFabOAuthConfig"
@@ -1192,6 +1249,10 @@
             },
             "type": "object"
           },
+          "usePooling": {
+            "type": "boolean",
+            "description": "Use Pooling for the OAuth flow\n\nThis option is for the flow that requires the user can't be redirected from the authorization page to the application.\nThe client should poll the server to check if the user has authorized the application."
+          },
           "provider": {
             "$ref": "#/components/schemas/OAuthProvider",
             "description": "One of the providers supported by Openfort"
@@ -1245,7 +1306,7 @@
       "AuthenticateOAuthRequest": {
         "properties": {
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider",
+            "$ref": "#/components/schemas/AuthProvider",
             "description": "OAuth provider",
             "example": "firebase"
           },
@@ -1398,6 +1459,98 @@
         "required": [
           "email",
           "password"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CodeChallenge": {
+        "properties": {
+          "codeChallenge": {
+            "type": "string",
+            "description": "The code challenge.",
+            "example": "code"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "plain",
+              "S256"
+            ],
+            "description": "The code verifier.",
+            "example": "S256"
+          }
+        },
+        "required": [
+          "codeChallenge",
+          "method"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RequestResetPasswordRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user.",
+            "example": "user@email.com"
+          },
+          "redirectUrl": {
+            "type": "string",
+            "description": "The URL sent to the user by email to reset the password. At the end of the URL, we will add the token in the format `?token=token`.",
+            "example": "https://openfort.xyz/reset-password"
+          },
+          "challenge": {
+            "$ref": "#/components/schemas/CodeChallenge",
+            "description": "The Code Challenge if you want to use PKCE."
+          }
+        },
+        "required": [
+          "email",
+          "redirectUrl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CodeChallengeVerify": {
+        "properties": {
+          "codeVerifier": {
+            "type": "string",
+            "description": "The code verifier.",
+            "example": "verifier"
+          }
+        },
+        "required": [
+          "codeVerifier"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ResetPasswordRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user.",
+            "example": "user@email.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "The new password of the user.",
+            "example": "password"
+          },
+          "token": {
+            "type": "string",
+            "description": "The reset token.",
+            "example": "token"
+          },
+          "challenge": {
+            "$ref": "#/components/schemas/CodeChallengeVerify",
+            "description": "The Code Challenge to verify the PKCE if you used it in the request."
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "token"
         ],
         "type": "object",
         "additionalProperties": false
@@ -3333,6 +3486,345 @@
           "object",
           "deleted"
         ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EntityType.SMTP_CONFIG": {
+        "enum": [
+          "smtpConfig"
+        ],
+        "type": "string"
+      },
+      "SMTPConfigResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "user": {
+            "type": "string"
+          },
+          "pass": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "number",
+            "format": "double"
+          },
+          "from": {
+            "type": "string"
+          },
+          "useSSL": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt",
+          "user",
+          "pass",
+          "host",
+          "port",
+          "from",
+          "useSSL"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateSMTPConfigResponse": {
+        "$ref": "#/components/schemas/SMTPConfigResponse"
+      },
+      "CreateSMTPConfigRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "Specifies the user name",
+            "example": "user"
+          },
+          "pass": {
+            "type": "string",
+            "description": "Specifies the password",
+            "example": "pass"
+          },
+          "host": {
+            "type": "string",
+            "description": "Specifies the host",
+            "example": "host"
+          },
+          "from": {
+            "type": "string",
+            "description": "Specifies the from",
+            "example": "from"
+          },
+          "port": {
+            "type": "number",
+            "format": "double",
+            "description": "Specifies the port",
+            "example": 0
+          },
+          "useSSL": {
+            "type": "boolean",
+            "description": "Specifies the use SSL",
+            "example": true
+          }
+        },
+        "required": [
+          "user",
+          "pass",
+          "host",
+          "from",
+          "port",
+          "useSSL"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "GetSMTPConfigResponse": {
+        "$ref": "#/components/schemas/SMTPConfigResponse"
+      },
+      "DeleteSMTPConfigResponse": {
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
+          }
+        },
+        "required": [
+          "deleted",
+          "object"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateSMTPConfigResponse": {
+        "$ref": "#/components/schemas/SMTPConfigResponse"
+      },
+      "UpdateSMTPConfigRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "Specifies the user name",
+            "example": "user"
+          },
+          "pass": {
+            "type": "string",
+            "description": "Specifies the password",
+            "example": "pass"
+          },
+          "host": {
+            "type": "string",
+            "description": "Specifies the host",
+            "example": "host"
+          },
+          "port": {
+            "type": "number",
+            "format": "double",
+            "description": "Specifies the port",
+            "example": 0
+          },
+          "useSSL": {
+            "type": "boolean",
+            "description": "Specifies the use SSL",
+            "example": true
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EmailTypeResponse": {
+        "enum": [
+          "emailVerification",
+          "passwordReset"
+        ],
+        "type": "string"
+      },
+      "EntityType.EMAIL_SAMPLE": {
+        "enum": [
+          "emailSample"
+        ],
+        "type": "string"
+      },
+      "EmailSampleResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.EMAIL_SAMPLE"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EmailTypeResponse"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt",
+          "name",
+          "subject",
+          "body",
+          "type"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateEmailSampleResponse": {
+        "$ref": "#/components/schemas/EmailSampleResponse"
+      },
+      "EmailTypeRequest": {
+        "enum": [
+          "emailVerification",
+          "passwordReset"
+        ],
+        "type": "string"
+      },
+      "CreateEmailSampleRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Specifies the name",
+            "example": "name"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Specifies the subject",
+            "example": "subject"
+          },
+          "body": {
+            "type": "string",
+            "description": "Specifies the body",
+            "example": "body"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EmailTypeRequest",
+            "description": "Specifies the type",
+            "example": "emailVerification"
+          }
+        },
+        "required": [
+          "name",
+          "subject",
+          "body",
+          "type"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "GetEmailSampleResponse": {
+        "$ref": "#/components/schemas/EmailSampleResponse"
+      },
+      "BaseEntityListResponse_EmailSampleResponse_": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/EmailSampleResponse"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EmailSampleListResponse": {
+        "$ref": "#/components/schemas/BaseEntityListResponse_EmailSampleResponse_"
+      },
+      "EmailSampleDeleteResponse": {
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.EMAIL_SAMPLE"
+          }
+        },
+        "required": [
+          "deleted",
+          "id",
+          "object"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateEmailSampleResponse": {
+        "$ref": "#/components/schemas/EmailSampleResponse"
+      },
+      "UpdateEmailSampleRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Specifies the name",
+            "example": "name"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Specifies the subject",
+            "example": "subject"
+          },
+          "body": {
+            "type": "string",
+            "description": "Specifies the body",
+            "example": "body"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EmailTypeRequest",
+            "description": "Specifies the type",
+            "example": "emailVerification"
+          }
+        },
         "type": "object",
         "additionalProperties": false
       },
@@ -7635,6 +8127,85 @@
         }
       }
     },
+    "/iam/v1/oauth/init_link": {
+      "post": {
+        "operationId": "InitLinkOAuth",
+        "responses": {
+          "201": {
+            "description": "Success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Api key is not valid"
+          }
+        },
+        "summary": "Initialize Link OAuth.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthInitRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/oauth/pool": {
+      "post": {
+        "operationId": "PoolOAuth",
+        "responses": {
+          "200": {
+            "description": "Success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Api key is not valid"
+          }
+        },
+        "summary": "Initialize OAuth.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
     "/iam/v1/oauth/authenticate": {
       "post": {
         "operationId": "AuthenticateOAuth",
@@ -7673,6 +8244,7 @@
             "description": ""
           }
         },
+        "description": "Deprecated",
         "summary": "Authenticate player with oauth token.",
         "tags": [
           "Authentication"
@@ -7926,7 +8498,7 @@
             "name": "provider",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/OAuthProvider"
+              "$ref": "#/components/schemas/AuthProvider"
             }
           }
         ],
@@ -8004,7 +8576,7 @@
             "name": "provider",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/OAuthProvider"
+              "$ref": "#/components/schemas/AuthProvider"
             }
           }
         ],
@@ -8139,6 +8711,142 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/password/email/request_verification": {
+      "post": {
+        "operationId": "RequestEmailVerification",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "Start the Email Verification process for a player.",
+        "summary": "Request an Email Verification.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestResetPasswordRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/password/email/verify": {
+      "post": {
+        "operationId": "VerifyEmail",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "Verify a player's email address.",
+        "summary": "Verify an email.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/password/password/request_reset": {
+      "post": {
+        "operationId": "RequestResetPassword",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "Start the Reset process for a player's password.",
+        "summary": "Request a Reset password.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestResetPasswordRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/password/password/reset": {
+      "post": {
+        "operationId": "ResetPassword",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "Reset a player's password.",
+        "summary": "Reset a password.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
               }
             }
           }
@@ -9885,6 +10593,540 @@
             "example": [
               "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
             ]
+          }
+        ]
+      }
+    },
+    "/v1/emails/smtp": {
+      "post": {
+        "operationId": "CreateSMTPConfig",
+        "responses": {
+          "201": {
+            "description": "SMTP configuration created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSMTPConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "",
+                      "object": "smtpConfig",
+                      "user": "user",
+                      "pass": "***",
+                      "host": "host",
+                      "from": "from",
+                      "port": 0,
+                      "useSSL": true,
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "SMTP configuration already exists."
+          }
+        },
+        "description": "Create a new SMTP configuration.",
+        "summary": "Create a new SMTP configuration.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSMTPConfigRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "GetSMTPConfig",
+        "responses": {
+          "200": {
+            "description": "SMTP configuration found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSMTPConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "",
+                      "object": "smtpConfig",
+                      "user": "user",
+                      "pass": "***",
+                      "host": "host",
+                      "from": "from",
+                      "port": 0,
+                      "useSSL": true,
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "SMTP configuration not found."
+          }
+        },
+        "description": "Get the SMTP configuration.",
+        "summary": "Get the SMTP configuration.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": []
+      },
+      "delete": {
+        "operationId": "RemoveSMTPConfig",
+        "responses": {
+          "204": {
+            "description": "SMTP configuration removed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteSMTPConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "deleted": true,
+                      "object": "smtpConfig"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "SMTP configuration not found."
+          }
+        },
+        "description": "Remove the SMTP configuration.",
+        "summary": "Remove the SMTP configuration.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": []
+      },
+      "put": {
+        "operationId": "UpdateSMTPConfig",
+        "responses": {
+          "200": {
+            "description": "SMTP configuration updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSMTPConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "",
+                      "object": "smtpConfig",
+                      "user": "user",
+                      "pass": "***",
+                      "host": "host",
+                      "from": "from",
+                      "port": 0,
+                      "useSSL": true,
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "SMTP configuration not found."
+          }
+        },
+        "description": "Update the SMTP configuration.",
+        "summary": "Update the SMTP configuration.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSMTPConfigRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails/samples": {
+      "post": {
+        "operationId": "CreateEmailSample",
+        "responses": {
+          "201": {
+            "description": "Email sample created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateEmailSampleResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "emailSample",
+                      "name": "email",
+                      "subject": "subject",
+                      "body": "body",
+                      "type": "emailVerification",
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email sample already exists."
+          }
+        },
+        "description": "Create a new email sample.",
+        "summary": "Create a new email sample.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmailSampleRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "ListEmailSamples",
+        "responses": {
+          "200": {
+            "description": "Email samples found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSampleListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "v1/emails/samples",
+                      "start": 0,
+                      "end": 1,
+                      "total": 1,
+                      "data": [
+                        {
+                          "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                          "object": "emailSample",
+                          "name": "email",
+                          "subject": "subject",
+                          "body": "body",
+                          "type": "emailVerification",
+                          "createdAt": 1617226800
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "List email samples.",
+        "summary": "List email samples.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/v1/emails/samples/{uuid}": {
+      "get": {
+        "operationId": "GetEmailSample",
+        "responses": {
+          "200": {
+            "description": "Email sample found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetEmailSampleResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "emailSample",
+                      "name": "email",
+                      "subject": "subject",
+                      "body": "body",
+                      "type": "emailVerification",
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email sample not found."
+          }
+        },
+        "description": "Get an email sample.",
+        "summary": "Get an email sample.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "RemoveEmailSample",
+        "responses": {
+          "204": {
+            "description": "Email sample removed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailSampleDeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "ems_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "deleted": true,
+                      "object": "emailSample"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email sample not found."
+          }
+        },
+        "description": "Remove an email sample.",
+        "summary": "Remove an email sample.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "UpdateEmailSample",
+        "responses": {
+          "200": {
+            "description": "Email sample updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateEmailSampleResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "emailSample",
+                      "name": "email",
+                      "subject": "subject",
+                      "body": "body",
+                      "type": "emailVerification",
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email sample not found."
+          }
+        },
+        "description": "Update an email sample.",
+        "summary": "Update an email sample.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmailSampleRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails/samples/type/{type}": {
+      "get": {
+        "operationId": "GetEmailSamplesByType",
+        "responses": {
+          "200": {
+            "description": "Email samples found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetEmailSampleResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "emailSample",
+                      "name": "email",
+                      "subject": "subject",
+                      "body": "body",
+                      "type": "emailVerification",
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Get Email Samples by Type.",
+        "summary": "Get Email Samples by Type.",
+        "tags": [
+          "Emails"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EmailTypeRequest"
+            }
           }
         ]
       }

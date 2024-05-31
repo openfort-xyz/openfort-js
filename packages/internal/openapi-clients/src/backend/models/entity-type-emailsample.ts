@@ -20,11 +20,11 @@
  * @enum {string}
  */
 
-export const OAuthProviderOIDC = {
-    Oidc: 'oidc'
+export const EntityTypeEMAILSAMPLE = {
+    EmailSample: 'emailSample'
 } as const;
 
-export type OAuthProviderOIDC = typeof OAuthProviderOIDC[keyof typeof OAuthProviderOIDC];
+export type EntityTypeEMAILSAMPLE = typeof EntityTypeEMAILSAMPLE[keyof typeof EntityTypeEMAILSAMPLE];
 
 
 

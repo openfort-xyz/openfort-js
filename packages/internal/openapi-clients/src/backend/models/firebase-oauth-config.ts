@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProviderFIREBASE } from './oauth-provider-firebase';
+import { ThirdPartyOAuthProviderFIREBASE } from './third-party-oauth-provider-firebase';
 
 /**
  * Firebase configuration
@@ -31,10 +31,10 @@ export interface FirebaseOAuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderFIREBASE}
+     * @type {ThirdPartyOAuthProviderFIREBASE}
      * @memberof FirebaseOAuthConfig
      */
-    'provider': OAuthProviderFIREBASE;
+    'provider': ThirdPartyOAuthProviderFIREBASE;
     /**
      * Project ID of your Firebase service environment.
      * @type {string}

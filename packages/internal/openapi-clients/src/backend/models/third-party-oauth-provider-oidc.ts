@@ -15,17 +15,16 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
  * @enum {string}
  */
 
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter'
+export const ThirdPartyOAuthProviderOIDC = {
+    Oidc: 'oidc'
 } as const;
 
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
+export type ThirdPartyOAuthProviderOIDC = typeof ThirdPartyOAuthProviderOIDC[keyof typeof ThirdPartyOAuthProviderOIDC];
 
 
 

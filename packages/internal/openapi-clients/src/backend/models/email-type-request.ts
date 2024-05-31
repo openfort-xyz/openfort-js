@@ -20,11 +20,12 @@
  * @enum {string}
  */
 
-export const OAuthProviderSUPABASE = {
-    Supabase: 'supabase'
+export const EmailTypeRequest = {
+    EmailVerification: 'emailVerification',
+    PasswordReset: 'passwordReset'
 } as const;
 
-export type OAuthProviderSUPABASE = typeof OAuthProviderSUPABASE[keyof typeof OAuthProviderSUPABASE];
+export type EmailTypeRequest = typeof EmailTypeRequest[keyof typeof EmailTypeRequest];
 
 
 

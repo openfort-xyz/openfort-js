@@ -21,12 +21,14 @@ export default class AuthManager {
 
   public async initOAuth(
     provider: OAuthProvider,
+    usePooling?: boolean,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
     const request = {
       oAuthInitRequest: {
         provider,
         options,
+        usePooling: usePooling || false,
       },
     };
     const result = await this.backendApiClients.authenticationApi.initOAuth(
@@ -42,6 +44,65 @@ export default class AuthManager {
     };
   }
 
+  public async initLinkOAuth(
+    provider: OAuthProvider,
+    playerToken: string,
+    usePooling?: boolean,
+    options?: InitializeOAuthOptions,
+  ): Promise<InitAuthResponse> {
+    const request = {
+      oAuthInitRequest: {
+        provider,
+        options,
+        usePooling: usePooling || false,
+      },
+    };
+    const result = await this.backendApiClients.authenticationApi.initLinkOAuth(
+      request,
+      {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        headers: { 'x-player-token': playerToken },
+      },
+    );
+
+    if (isBrowser() && !options?.skipBrowserRedirect) {
+      window.location.assign(result.data.url);
+    }
+    return {
+      url: result.data.url,
+      key: result.data.key,
+    };
+  }
+
+  public async poolOAuth(
+    key: string,
+  ): Promise<AuthResponse> {
+    const request = {
+      key,
+    };
+    for (let i = 0; i < 600; i++) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const response = await this.backendApiClients.authenticationApi.poolOAuth(request);
+        if (response.status === 200) {
+          return response.data;
+        }
+      } catch (error) {
+        // @ts-ignore
+        if (error.response && error.response.status === 404) {
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise((resolve) => { setTimeout(resolve, 500); });
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    throw new Error('Failed to pool OAuth, try again later');
+  }
+
+  // Deprecated
   public async authenticateOAuth(
     provider: OAuthProvider,
     token: string,

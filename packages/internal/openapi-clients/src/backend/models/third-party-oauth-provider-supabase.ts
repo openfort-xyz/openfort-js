@@ -20,11 +20,11 @@
  * @enum {string}
  */
 
-export const OAuthProviderLOOTLOCKER = {
-    Lootlocker: 'lootlocker'
+export const ThirdPartyOAuthProviderSUPABASE = {
+    Supabase: 'supabase'
 } as const;
 
-export type OAuthProviderLOOTLOCKER = typeof OAuthProviderLOOTLOCKER[keyof typeof OAuthProviderLOOTLOCKER];
+export type ThirdPartyOAuthProviderSUPABASE = typeof ThirdPartyOAuthProviderSUPABASE[keyof typeof ThirdPartyOAuthProviderSUPABASE];
 
 
 

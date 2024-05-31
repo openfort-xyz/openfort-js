@@ -15,32 +15,38 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ThirdPartyOAuthProviderPLAYFAB } from './third-party-oauth-provider-playfab';
+import { OAuthProviderTWITTER } from './oauth-provider-twitter';
 
 /**
- * PlayFab oauth configuration
+ * Twitter oauth configuration
  * @export
- * @interface PlayFabOAuthConfig
+ * @interface TwitterOAuthConfig
  */
-export interface PlayFabOAuthConfig {
+export interface TwitterOAuthConfig {
     /**
      * Enable OAuth provider.
      * @type {boolean}
-     * @memberof PlayFabOAuthConfig
+     * @memberof TwitterOAuthConfig
      */
     'enabled': boolean;
     /**
      * 
-     * @type {ThirdPartyOAuthProviderPLAYFAB}
-     * @memberof PlayFabOAuthConfig
+     * @type {OAuthProviderTWITTER}
+     * @memberof TwitterOAuthConfig
      */
-    'provider': ThirdPartyOAuthProviderPLAYFAB;
+    'provider': OAuthProviderTWITTER;
     /**
-     * Title ID of your Play Fab gaming service environment.
+     * Twitter API consumer key.
      * @type {string}
-     * @memberof PlayFabOAuthConfig
+     * @memberof TwitterOAuthConfig
      */
-    'titleId': string;
+    'clientId': string;
+    /**
+     * Twitter API consumer secret.
+     * @type {string}
+     * @memberof TwitterOAuthConfig
+     */
+    'clientSecret': string;
 }
 
 

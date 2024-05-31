@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProviderACCELBYTE } from './oauth-provider-accelbyte';
+import { ThirdPartyOAuthProviderACCELBYTE } from './third-party-oauth-provider-accelbyte';
 
 /**
  * Accelbyte oauth configuration
@@ -31,10 +31,10 @@ export interface AccelbyteOAuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderACCELBYTE}
+     * @type {ThirdPartyOAuthProviderACCELBYTE}
      * @memberof AccelbyteOAuthConfig
      */
-    'provider': OAuthProviderACCELBYTE;
+    'provider': ThirdPartyOAuthProviderACCELBYTE;
     /**
      * Base URI of your accelbyte gaming service environment. E.g. https://mygame.dev.gamingservices.accelbyte.io/
      * @type {string}

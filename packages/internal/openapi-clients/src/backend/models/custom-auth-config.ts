@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProviderCUSTOM } from './oauth-provider-custom';
+import { ThirdPartyOAuthProviderCUSTOM } from './third-party-oauth-provider-custom';
 
 /**
  * 
@@ -31,10 +31,10 @@ export interface CustomAuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderCUSTOM}
+     * @type {ThirdPartyOAuthProviderCUSTOM}
      * @memberof CustomAuthConfig
      */
-    'provider': OAuthProviderCUSTOM;
+    'provider': ThirdPartyOAuthProviderCUSTOM;
     /**
      * Headers to send with the request
      * @type {string}
