@@ -3,6 +3,7 @@ import { BackendApiClients } from '@openfort/openapi-clients';
 import { hexlify } from '@ethersproject/bytes';
 import { EmbeddedSigner } from 'signer/embedded.signer';
 import InstanceManager from 'instanceManager';
+import { chainMap } from 'chains';
 import {
   JsonRpcRequestCallback,
   JsonRpcRequestPayload,
@@ -65,9 +66,9 @@ export class EvmProvider implements Provider {
 
     this.#backendApiClients = backendApiClients;
 
-    console.log('ChainID', this.#instanceManager.getChainID());
-    // TODO: should be based on the chainId
-    this.#rpcProvider = new StaticJsonRpcProvider('https://rpc-amoy.polygon.technology');
+    const chainId = Number(this.#instanceManager.getChainID());
+
+    this.#rpcProvider = new StaticJsonRpcProvider(chainMap[chainId].rpc[0]);
 
     this.#backendApiClients = backendApiClients;
 
