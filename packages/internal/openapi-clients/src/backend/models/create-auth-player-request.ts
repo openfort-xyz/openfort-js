@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { PlayerMetadataValue } from './player-metadata-value';
+// May contain unused imports in some cases
+// @ts-ignore
 import { ThirdPartyOAuthProvider } from './third-party-oauth-provider';
 
 /**
@@ -41,6 +44,18 @@ export interface CreateAuthPlayerRequest {
      * @memberof CreateAuthPlayerRequest
      */
     'preGenerateEmbeddedAccount': boolean;
+    /**
+     * The chain ID. Must be a [supported chain](/chains).
+     * @type {number}
+     * @memberof CreateAuthPlayerRequest
+     */
+    'chainId'?: number;
+    /**
+     * 
+     * @type {{ [key: string]: PlayerMetadataValue; }}
+     * @memberof CreateAuthPlayerRequest
+     */
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
 }
 
 

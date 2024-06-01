@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {NextPage} from 'next';
 import LoginSignupForm from '../components/Authentication/LoginSignupForm';
 import MintNFTButton from '../components/NFT/MintNFTButton';
@@ -20,16 +20,21 @@ const HomePage: NextPage = () => {
   const {user} = useAuth();
   const {embeddedState} = useOpenfort();
 
-  useEffect(() => {
-    if (embeddedState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
-      console.log('signer config!');
-    }
-  });
+  const linkedAccount = useMemo(() => {
+    // Find in linkedAccounts with provider email
+    const linkedAccount = user?.linkedAccounts?.find(
+      (account: any) => account.provider === 'email'
+    );
+    return linkedAccount;
+  }, [user]);
 
   if (
-    [EmbeddedState.UNAUTHENTICATED, EmbeddedState.NONE].includes(embeddedState)
+    [EmbeddedState.UNAUTHENTICATED, EmbeddedState.NONE].includes(
+      embeddedState
+    ) ||
+    linkedAccount?.verified === false
   )
-    return <LoginSignupForm />;
+    return <LoginSignupForm verifyEmail={linkedAccount?.verified === false} />;
 
   if (embeddedState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
     return (

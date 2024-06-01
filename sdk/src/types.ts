@@ -306,6 +306,7 @@ export interface LinkedAccountResponse {
   'provider': AuthProvider;
   'email'?: string;
   'externalUserId'?: string;
+  'verified'?: boolean;
   'disabled': boolean;
   'updatedAt'?: number;
   'address'?: string;

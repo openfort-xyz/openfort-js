@@ -1261,7 +1261,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@0.7.5, @openfort/openfort-js@workspace:sdk":
+"@openfort/openfort-js@npm:0.7.5":
+  version: 0.7.5
+  resolution: "@openfort/openfort-js@npm:0.7.5"
+  dependencies:
+    "@ethersproject/abstract-signer": ^5.7.0
+    "@ethersproject/bytes": ^5.7.0
+    "@ethersproject/hash": ^5.7.0
+    "@ethersproject/providers": ^5.7.0
+    "@ethersproject/signing-key": ^5.7.0
+    "@ethersproject/transactions": ^5.7.0
+    "@noble/curves": ^1.1.0
+    "@openfort/shield-js": ^0.0.3
+    axios: 1.6.7
+    crypto-js: ^4.2.0
+    es6-promise: ^4.2.8
+    jose: ^5.2.2
+    path: ^0.12.7
+    uuid: ^8.3.2
+  checksum: 4df42f180e0e8e184a373aaec282f1f350d87bf896ea7826f4b0c0abeb05d3e4b952d2c55f49d57c899a1c925d27ed4173b93dae792aa3f4a70034fd238acff7
+  languageName: node
+  linkType: hard
+
+"@openfort/openfort-js@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:

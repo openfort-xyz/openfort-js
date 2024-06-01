@@ -15,20 +15,20 @@ class OpenfortService {
     }
     getEvmProvider(): Provider {
       try {
-        return openfort.getEthereumProvider();
+        return openfort.getEthereumProvider({announceProvider:true,policy: "pol_e7491b89-528e-40bb-b3c2-9d40afa4fefc"});
 
       } catch (error) {
         console.error('Error on getEthereumProvider:', error);
         throw error;
       }
     }
-    async mintNFT(identityToken: string): Promise<string | null> {
+    async mintNFT(): Promise<string | null> {
       try {
         const collectResponse = await fetch(`/api/protected-collect`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${identityToken}`,
+            Authorization: `Bearer ${openfort.getAccessToken()}`,
           },
         });
   
@@ -159,7 +159,7 @@ class OpenfortService {
       }
     }
 
-    async requestPasswordVerification(email: string, redirectUrl: string): Promise<void> {
+    async requestEmailVerification(email: string, redirectUrl: string): Promise<void> {
       try {
         await openfort.requestEmailVerification(email, redirectUrl);
       } catch (error) {
@@ -168,12 +168,20 @@ class OpenfortService {
       }
     }
 
-    async signInWithGoogle(): Promise<void> {
+    async signInWithGoogle(): Promise<{url:string, key:string}> {
       const authResponse = await openfort.initOAuth(OAuthProvider.GOOGLE, true, {skipBrowserRedirect:true});
-      // open a new tab to the OAuth provider
-      window.open(authResponse.url, '_blank');
-      const authUser = await openfort.poolOAuth(authResponse.key);
+      return authResponse
     }
+
+    async poolOAuth(key: string): Promise<AuthPlayerResponse> {
+      try {
+        return (await openfort.poolOAuth(key)).player;
+      } catch (error) {
+        console.error('Error pooling OAuth:', error);
+        throw error;
+      }
+    }
+
     async validateCredentials(): Promise<void> {
       try {
         await openfort.validateAndRefreshToken();

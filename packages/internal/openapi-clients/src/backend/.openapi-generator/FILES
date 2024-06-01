@@ -9,7 +9,6 @@ domain/accounts-api.ts
 domain/admin-authentication-api.ts
 domain/authentication-api.ts
 domain/contracts-api.ts
-domain/emails-api.ts
 domain/events-api.ts
 domain/exchange-api.ts
 domain/inventories-api.ts

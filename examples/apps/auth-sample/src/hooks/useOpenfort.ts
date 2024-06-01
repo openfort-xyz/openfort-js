@@ -41,9 +41,9 @@ export const useOpenfort = () => {
     }
   }, []);
 
-  const mintNFT = useCallback(async (identityToken: string): Promise<string | null> => {
+  const mintNFT = useCallback(async (): Promise<string | null> => {
     try {
-      return await openfortService.mintNFT(identityToken);
+      return await openfortService.mintNFT();
     } catch (error) {
       console.error('Error minting NFT with Openfort:', error);
       setError(error instanceof Error ? error : new Error('An error occurred minting the NFT'));

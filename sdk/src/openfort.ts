@@ -484,7 +484,10 @@ export class Openfort {
     return result.data;
   }
 
-  public async signMessage(message: string | Uint8Array): Promise<string> {
+  public async signMessage(
+    message: string | Uint8Array,
+    options?: { hashMessage?: boolean, arrayifyMessage?: boolean },
+  ): Promise<string> {
     await this.recoverSigner();
     if (!this.signer) {
       throw new NoSignerConfigured('No signer configured');
@@ -492,7 +495,8 @@ export class Openfort {
     if (this.signer.useCredentials()) {
       await this.validateAndRefreshToken();
     }
-    return await this.signer.sign(message, false, true);
+    const { hashMessage = true, arrayifyMessage = false } = options || {};
+    return await this.signer.sign(message, arrayifyMessage, hashMessage);
   }
 
   public async signTypedData(

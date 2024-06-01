@@ -9,11 +9,6 @@ const openfort = new Openfort({
     shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
     shieldEncryptionKey: process.env.NEXT_PUBLIC_SHIELD_ENCRYPTION_SHARE,
   },
-  overrides: {
-    backendUrl:'http://localhost:3000',
-    iframeUrl: 'https://iframe.openfort.xyz',
-    shieldUrl: 'http://localhost:8080',
-  },
 });
 
 export default openfort;

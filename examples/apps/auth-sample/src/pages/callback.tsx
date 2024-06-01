@@ -16,6 +16,8 @@ export default function Callback() {
             refreshToken as string
           );
           router.push('/');
+        } else if (state) {
+          // TODO: email verification
         }
       } catch (error) {
         console.error('Error handling callback:', error);

@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import openfort from '../../utils/openfortAdminConfig';
 
-const policy_id = 'pol_1fc278fe-82cc-43c2-aec8-f6a4bdc71169';
-const contract_id = 'con_873c8285-42b8-4d75-94e1-a7d597493a97';
+const policy_id = 'pol_e7491b89-528e-40bb-b3c2-9d40afa4fefc';
+const contract_id = 'con_8d6b19e8-3a5a-4643-8dee-778997a7dffc';
 const chainId = 80002;
 const optimistic = true;
 
@@ -18,19 +18,17 @@ export default async function handler(
   }
 
   try {
-    const response = await openfort.iam.verifyOAuthToken({
-      provider: 'firebase',
-      token: accessToken,
-      tokenType: 'idToken',
-    });
+    const response = await openfort.iam.verifyAuthToken(
+      accessToken,
+    );
 
-    if (!response?.id) {
+    if (!response?.playerId) {
       return res.status(401).send({
         error: 'Invalid token or unable to verify user.',
       });
     }
 
-    const playerId = response.id;
+    const playerId = response.playerId;
     const interaction_mint = {
       contract: contract_id,
       functionName: 'mint',

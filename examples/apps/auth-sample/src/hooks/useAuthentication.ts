@@ -9,7 +9,7 @@ export const useAuthentication = () => {
   const signIn = async (email: string, password: string) => {
     try {
       const authResponse = await authService.signInWithEmail(email, password);
-      setUser(authResponse)
+      setUser(authResponse.player)
     } catch (error) {
       console.error(error);
       throw error;
@@ -18,7 +18,11 @@ export const useAuthentication = () => {
 
   const signInWithGoogle = async () => {
     try {
-      await authService.signInWithGoogle();
+      const authResponse = await authService.signInWithGoogle();
+      // open a new tab to the OAuth provider
+      window.open(authResponse.url, '_blank');
+      const authUser = await authService.poolOAuth(authResponse.key);
+      setUser(authUser);
     } catch (error) {
       console.error(error);
       throw error;
@@ -34,9 +38,28 @@ export const useAuthentication = () => {
     }
   }
 
+  const resetPassword = async (email: string, password: string, state:string) => {
+    try {
+      await authService.resetPassword(email, password, state);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  const requestEmailVerification = async (email: string, redirectUrl: string) => {
+    try {
+      await authService.requestEmailVerification(email, redirectUrl);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   const signUp = async (email: string, password: string) => {
     try {
-      await authService.signUpWithEmail(email, password);
+      const authResponse = await authService.signUpWithEmail(email, password);
+      setUser(authResponse.player)
     } catch (error) {
       console.error(error);
       throw error;
@@ -48,5 +71,5 @@ export const useAuthentication = () => {
     await signOut();
   };
 
-  return { signIn, signUp, signInWithGoogle, logout, requestPasswordReset };
+  return { signIn, signUp, signInWithGoogle, resetPassword, logout, requestEmailVerification, requestPasswordReset };
 };

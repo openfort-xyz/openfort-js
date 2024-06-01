@@ -162,6 +162,9 @@
           "disabled": {
             "type": "boolean"
           },
+          "verified": {
+            "type": "boolean"
+          },
           "updatedAt": {
             "type": "number",
             "format": "double"
@@ -728,6 +731,16 @@
             "type": "boolean",
             "description": "Pre generate embedded account.",
             "example": true
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Must be a [supported chain](/chains).",
+            "example": 80002
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PlayerMetadata",
+            "description": "Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to metadata."
           }
         },
         "required": [
@@ -2742,6 +2755,345 @@
         "type": "object",
         "additionalProperties": false
       },
+      "EntityType.SMTP_CONFIG": {
+        "enum": [
+          "smtpConfig"
+        ],
+        "type": "string"
+      },
+      "SMTPConfigResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "user": {
+            "type": "string"
+          },
+          "pass": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "number",
+            "format": "double"
+          },
+          "from": {
+            "type": "string"
+          },
+          "useSSL": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt",
+          "user",
+          "pass",
+          "host",
+          "port",
+          "from",
+          "useSSL"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateSMTPConfigResponse": {
+        "$ref": "#/components/schemas/SMTPConfigResponse"
+      },
+      "CreateSMTPConfigRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "Specifies the user name",
+            "example": "user"
+          },
+          "pass": {
+            "type": "string",
+            "description": "Specifies the password",
+            "example": "pass"
+          },
+          "host": {
+            "type": "string",
+            "description": "Specifies the host",
+            "example": "host"
+          },
+          "from": {
+            "type": "string",
+            "description": "Specifies the from",
+            "example": "from"
+          },
+          "port": {
+            "type": "number",
+            "format": "double",
+            "description": "Specifies the port",
+            "example": 0
+          },
+          "useSSL": {
+            "type": "boolean",
+            "description": "Specifies the use SSL",
+            "example": true
+          }
+        },
+        "required": [
+          "user",
+          "pass",
+          "host",
+          "from",
+          "port",
+          "useSSL"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "GetSMTPConfigResponse": {
+        "$ref": "#/components/schemas/SMTPConfigResponse"
+      },
+      "DeleteSMTPConfigResponse": {
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
+          }
+        },
+        "required": [
+          "deleted",
+          "object"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateSMTPConfigResponse": {
+        "$ref": "#/components/schemas/SMTPConfigResponse"
+      },
+      "UpdateSMTPConfigRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "Specifies the user name",
+            "example": "user"
+          },
+          "pass": {
+            "type": "string",
+            "description": "Specifies the password",
+            "example": "pass"
+          },
+          "host": {
+            "type": "string",
+            "description": "Specifies the host",
+            "example": "host"
+          },
+          "port": {
+            "type": "number",
+            "format": "double",
+            "description": "Specifies the port",
+            "example": 0
+          },
+          "useSSL": {
+            "type": "boolean",
+            "description": "Specifies the use SSL",
+            "example": true
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EmailTypeResponse": {
+        "enum": [
+          "emailVerification",
+          "passwordReset"
+        ],
+        "type": "string"
+      },
+      "EntityType.EMAIL_SAMPLE": {
+        "enum": [
+          "emailSample"
+        ],
+        "type": "string"
+      },
+      "EmailSampleResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.EMAIL_SAMPLE"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EmailTypeResponse"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt",
+          "name",
+          "subject",
+          "body",
+          "type"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateEmailSampleResponse": {
+        "$ref": "#/components/schemas/EmailSampleResponse"
+      },
+      "EmailTypeRequest": {
+        "enum": [
+          "emailVerification",
+          "passwordReset"
+        ],
+        "type": "string"
+      },
+      "CreateEmailSampleRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Specifies the name",
+            "example": "name"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Specifies the subject",
+            "example": "subject"
+          },
+          "body": {
+            "type": "string",
+            "description": "Specifies the body",
+            "example": "body"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EmailTypeRequest",
+            "description": "Specifies the type",
+            "example": "emailVerification"
+          }
+        },
+        "required": [
+          "name",
+          "subject",
+          "body",
+          "type"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "GetEmailSampleResponse": {
+        "$ref": "#/components/schemas/EmailSampleResponse"
+      },
+      "BaseEntityListResponse_EmailSampleResponse_": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/EmailSampleResponse"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EmailSampleListResponse": {
+        "$ref": "#/components/schemas/BaseEntityListResponse_EmailSampleResponse_"
+      },
+      "EmailSampleDeleteResponse": {
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.EMAIL_SAMPLE"
+          }
+        },
+        "required": [
+          "deleted",
+          "id",
+          "object"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateEmailSampleResponse": {
+        "$ref": "#/components/schemas/EmailSampleResponse"
+      },
+      "UpdateEmailSampleRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Specifies the name",
+            "example": "name"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Specifies the subject",
+            "example": "subject"
+          },
+          "body": {
+            "type": "string",
+            "description": "Specifies the body",
+            "example": "body"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EmailTypeRequest",
+            "description": "Specifies the type",
+            "example": "emailVerification"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
       "ProjectListResponse": {
         "properties": {
           "object": {
@@ -3577,345 +3929,6 @@
           "object",
           "deleted"
         ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "EntityType.SMTP_CONFIG": {
-        "enum": [
-          "smtpConfig"
-        ],
-        "type": "string"
-      },
-      "SMTPConfigResponse": {
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
-          },
-          "createdAt": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "user": {
-            "type": "string"
-          },
-          "pass": {
-            "type": "string"
-          },
-          "host": {
-            "type": "string"
-          },
-          "port": {
-            "type": "number",
-            "format": "double"
-          },
-          "from": {
-            "type": "string"
-          },
-          "useSSL": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "object",
-          "createdAt",
-          "user",
-          "pass",
-          "host",
-          "port",
-          "from",
-          "useSSL"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "CreateSMTPConfigResponse": {
-        "$ref": "#/components/schemas/SMTPConfigResponse"
-      },
-      "CreateSMTPConfigRequest": {
-        "properties": {
-          "user": {
-            "type": "string",
-            "description": "Specifies the user name",
-            "example": "user"
-          },
-          "pass": {
-            "type": "string",
-            "description": "Specifies the password",
-            "example": "pass"
-          },
-          "host": {
-            "type": "string",
-            "description": "Specifies the host",
-            "example": "host"
-          },
-          "from": {
-            "type": "string",
-            "description": "Specifies the from",
-            "example": "from"
-          },
-          "port": {
-            "type": "number",
-            "format": "double",
-            "description": "Specifies the port",
-            "example": 0
-          },
-          "useSSL": {
-            "type": "boolean",
-            "description": "Specifies the use SSL",
-            "example": true
-          }
-        },
-        "required": [
-          "user",
-          "pass",
-          "host",
-          "from",
-          "port",
-          "useSSL"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "GetSMTPConfigResponse": {
-        "$ref": "#/components/schemas/SMTPConfigResponse"
-      },
-      "DeleteSMTPConfigResponse": {
-        "properties": {
-          "deleted": {
-            "type": "boolean"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
-          }
-        },
-        "required": [
-          "deleted",
-          "object"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "UpdateSMTPConfigResponse": {
-        "$ref": "#/components/schemas/SMTPConfigResponse"
-      },
-      "UpdateSMTPConfigRequest": {
-        "properties": {
-          "user": {
-            "type": "string",
-            "description": "Specifies the user name",
-            "example": "user"
-          },
-          "pass": {
-            "type": "string",
-            "description": "Specifies the password",
-            "example": "pass"
-          },
-          "host": {
-            "type": "string",
-            "description": "Specifies the host",
-            "example": "host"
-          },
-          "port": {
-            "type": "number",
-            "format": "double",
-            "description": "Specifies the port",
-            "example": 0
-          },
-          "useSSL": {
-            "type": "boolean",
-            "description": "Specifies the use SSL",
-            "example": true
-          }
-        },
-        "type": "object",
-        "additionalProperties": false
-      },
-      "EmailTypeResponse": {
-        "enum": [
-          "emailVerification",
-          "passwordReset"
-        ],
-        "type": "string"
-      },
-      "EntityType.EMAIL_SAMPLE": {
-        "enum": [
-          "emailSample"
-        ],
-        "type": "string"
-      },
-      "EmailSampleResponse": {
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.EMAIL_SAMPLE"
-          },
-          "createdAt": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string"
-          },
-          "subject": {
-            "type": "string"
-          },
-          "body": {
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/EmailTypeResponse"
-          }
-        },
-        "required": [
-          "id",
-          "object",
-          "createdAt",
-          "name",
-          "subject",
-          "body",
-          "type"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "CreateEmailSampleResponse": {
-        "$ref": "#/components/schemas/EmailSampleResponse"
-      },
-      "EmailTypeRequest": {
-        "enum": [
-          "emailVerification",
-          "passwordReset"
-        ],
-        "type": "string"
-      },
-      "CreateEmailSampleRequest": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Specifies the name",
-            "example": "name"
-          },
-          "subject": {
-            "type": "string",
-            "description": "Specifies the subject",
-            "example": "subject"
-          },
-          "body": {
-            "type": "string",
-            "description": "Specifies the body",
-            "example": "body"
-          },
-          "type": {
-            "$ref": "#/components/schemas/EmailTypeRequest",
-            "description": "Specifies the type",
-            "example": "emailVerification"
-          }
-        },
-        "required": [
-          "name",
-          "subject",
-          "body",
-          "type"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "GetEmailSampleResponse": {
-        "$ref": "#/components/schemas/EmailSampleResponse"
-      },
-      "BaseEntityListResponse_EmailSampleResponse_": {
-        "properties": {
-          "object": {
-            "$ref": "#/components/schemas/ResponseType.LIST"
-          },
-          "url": {
-            "type": "string"
-          },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/EmailSampleResponse"
-            },
-            "type": "array"
-          },
-          "start": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "end": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "required": [
-          "object",
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "EmailSampleListResponse": {
-        "$ref": "#/components/schemas/BaseEntityListResponse_EmailSampleResponse_"
-      },
-      "EmailSampleDeleteResponse": {
-        "properties": {
-          "deleted": {
-            "type": "boolean"
-          },
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.EMAIL_SAMPLE"
-          }
-        },
-        "required": [
-          "deleted",
-          "id",
-          "object"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "UpdateEmailSampleResponse": {
-        "$ref": "#/components/schemas/EmailSampleResponse"
-      },
-      "UpdateEmailSampleRequest": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Specifies the name",
-            "example": "name"
-          },
-          "subject": {
-            "type": "string",
-            "description": "Specifies the subject",
-            "example": "subject"
-          },
-          "body": {
-            "type": "string",
-            "description": "Specifies the body",
-            "example": "body"
-          },
-          "type": {
-            "$ref": "#/components/schemas/EmailTypeRequest",
-            "description": "Specifies the type",
-            "example": "emailVerification"
-          }
-        },
         "type": "object",
         "additionalProperties": false
       },
@@ -10680,540 +10693,6 @@
             "example": [
               "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
             ]
-          }
-        ]
-      }
-    },
-    "/v1/emails/smtp": {
-      "post": {
-        "operationId": "CreateSMTPConfig",
-        "responses": {
-          "201": {
-            "description": "SMTP configuration created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateSMTPConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "",
-                      "object": "smtpConfig",
-                      "user": "user",
-                      "pass": "***",
-                      "host": "host",
-                      "from": "from",
-                      "port": 0,
-                      "useSSL": true,
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "SMTP configuration already exists."
-          }
-        },
-        "description": "Create a new SMTP configuration.",
-        "summary": "Create a new SMTP configuration.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateSMTPConfigRequest"
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "GetSMTPConfig",
-        "responses": {
-          "200": {
-            "description": "SMTP configuration found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetSMTPConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "",
-                      "object": "smtpConfig",
-                      "user": "user",
-                      "pass": "***",
-                      "host": "host",
-                      "from": "from",
-                      "port": 0,
-                      "useSSL": true,
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "SMTP configuration not found."
-          }
-        },
-        "description": "Get the SMTP configuration.",
-        "summary": "Get the SMTP configuration.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": []
-      },
-      "delete": {
-        "operationId": "RemoveSMTPConfig",
-        "responses": {
-          "204": {
-            "description": "SMTP configuration removed.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteSMTPConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "deleted": true,
-                      "object": "smtpConfig"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "SMTP configuration not found."
-          }
-        },
-        "description": "Remove the SMTP configuration.",
-        "summary": "Remove the SMTP configuration.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": []
-      },
-      "put": {
-        "operationId": "UpdateSMTPConfig",
-        "responses": {
-          "200": {
-            "description": "SMTP configuration updated.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdateSMTPConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "",
-                      "object": "smtpConfig",
-                      "user": "user",
-                      "pass": "***",
-                      "host": "host",
-                      "from": "from",
-                      "port": 0,
-                      "useSSL": true,
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "SMTP configuration not found."
-          }
-        },
-        "description": "Update the SMTP configuration.",
-        "summary": "Update the SMTP configuration.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSMTPConfigRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/emails/samples": {
-      "post": {
-        "operationId": "CreateEmailSample",
-        "responses": {
-          "201": {
-            "description": "Email sample created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateEmailSampleResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "emailSample",
-                      "name": "email",
-                      "subject": "subject",
-                      "body": "body",
-                      "type": "emailVerification",
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Email sample already exists."
-          }
-        },
-        "description": "Create a new email sample.",
-        "summary": "Create a new email sample.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmailSampleRequest"
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "ListEmailSamples",
-        "responses": {
-          "200": {
-            "description": "Email samples found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmailSampleListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "v1/emails/samples",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                          "object": "emailSample",
-                          "name": "email",
-                          "subject": "subject",
-                          "body": "body",
-                          "type": "emailVerification",
-                          "createdAt": 1617226800
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "description": "List email samples.",
-        "summary": "List email samples.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": []
-      }
-    },
-    "/v1/emails/samples/{uuid}": {
-      "get": {
-        "operationId": "GetEmailSample",
-        "responses": {
-          "200": {
-            "description": "Email sample found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetEmailSampleResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "emailSample",
-                      "name": "email",
-                      "subject": "subject",
-                      "body": "body",
-                      "type": "emailVerification",
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Email sample not found."
-          }
-        },
-        "description": "Get an email sample.",
-        "summary": "Get an email sample.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "uuid",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "RemoveEmailSample",
-        "responses": {
-          "204": {
-            "description": "Email sample removed.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmailSampleDeleteResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "ems_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "deleted": true,
-                      "object": "emailSample"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Email sample not found."
-          }
-        },
-        "description": "Remove an email sample.",
-        "summary": "Remove an email sample.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "uuid",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      },
-      "put": {
-        "operationId": "UpdateEmailSample",
-        "responses": {
-          "200": {
-            "description": "Email sample updated.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdateEmailSampleResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "emailSample",
-                      "name": "email",
-                      "subject": "subject",
-                      "body": "body",
-                      "type": "emailVerification",
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Email sample not found."
-          }
-        },
-        "description": "Update an email sample.",
-        "summary": "Update an email sample.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "uuid",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmailSampleRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/emails/samples/type/{type}": {
-      "get": {
-        "operationId": "GetEmailSamplesByType",
-        "responses": {
-          "200": {
-            "description": "Email samples found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetEmailSampleResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "email_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "emailSample",
-                      "name": "email",
-                      "subject": "subject",
-                      "body": "body",
-                      "type": "emailVerification",
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "description": "Get Email Samples by Type.",
-        "summary": "Get Email Samples by Type.",
-        "tags": [
-          "Emails"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "type",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/EmailTypeRequest"
-            }
           }
         ]
       }

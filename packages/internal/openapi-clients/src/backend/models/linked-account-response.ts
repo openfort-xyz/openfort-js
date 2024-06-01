@@ -52,6 +52,12 @@ export interface LinkedAccountResponse {
     'disabled': boolean;
     /**
      * 
+     * @type {boolean}
+     * @memberof LinkedAccountResponse
+     */
+    'verified'?: boolean;
+    /**
+     * 
      * @type {number}
      * @memberof LinkedAccountResponse
      */
