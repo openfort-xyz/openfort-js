@@ -13,23 +13,18 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { OAuthProvider } from './oauth-provider';
 
 /**
- * The request to verify access token
+ * 
  * @export
- * @interface UnlinkRequest
+ * @interface UnlinkEmailRequest
  */
-export interface UnlinkRequest {
+export interface UnlinkEmailRequest {
     /**
-     * 
-     * @type {OAuthProvider}
-     * @memberof UnlinkRequest
+     * The email address of the user.
+     * @type {string}
+     * @memberof UnlinkEmailRequest
      */
-    'provider': OAuthProvider;
+    'email': string;
 }
-
-
 

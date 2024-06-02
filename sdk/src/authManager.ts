@@ -65,36 +65,6 @@ export default class AuthManager {
     };
   }
 
-  public async initLinkOAuth(
-    provider: OAuthProvider,
-    playerToken: string,
-    usePooling?: boolean,
-    options?: InitializeOAuthOptions,
-  ): Promise<InitAuthResponse> {
-    const request = {
-      oAuthInitRequest: {
-        provider,
-        options,
-        usePooling: usePooling || false,
-      },
-    };
-    const result = await this.backendApiClients.authenticationApi.initLinkOAuth(
-      request,
-      {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        headers: { 'x-player-token': playerToken },
-      },
-    );
-
-    if (isBrowser() && !options?.skipBrowserRedirect) {
-      window.location.assign(result.data.url);
-    }
-    return {
-      url: result.data.url,
-      key: result.data.key,
-    };
-  }
-
   public async poolOAuth(
     key: string,
   ): Promise<AuthResponse> {
@@ -129,23 +99,6 @@ export default class AuthManager {
     }
 
     throw new Error('Failed to pool OAuth, try again later');
-  }
-
-  // @deprecated
-  public async authenticateOAuth(
-    provider: OAuthProvider,
-    token: string,
-    tokenType: TokenType,
-  ): Promise<AuthResponse> {
-    const request = {
-      authenticateOAuthRequest: {
-        provider,
-        token,
-        tokenType,
-      },
-    };
-    const response = await this.backendApiClients.authenticationApi.authenticateOAuth(request);
-    return response.data;
   }
 
   public async authenticateThirdParty(
@@ -391,5 +344,157 @@ export default class AuthManager {
         'x-player-token': accessToken,
       },
     });
+  }
+
+  public async getUserInfo(
+    accessToken: string,
+  ): Promise<AuthPlayerResponse> {
+    // TODO: Add storage of user info
+
+    const response = await this.backendApiClients.authenticationApi.me({
+      headers: {
+        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-player-token': accessToken,
+      },
+    });
+    return response.data;
+  }
+
+  public async linkOAuth(
+    provider: OAuthProvider,
+    playerToken: string,
+    usePooling?: boolean,
+    options?: InitializeOAuthOptions,
+  ): Promise<InitAuthResponse> {
+    const request = {
+      oAuthInitRequest: {
+        provider,
+        options,
+        usePooling: usePooling || false,
+      },
+    };
+    const result = await this.backendApiClients.authenticationApi.linkOAuth(
+      request,
+      {
+        headers: {
+          authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-player-token': playerToken,
+        },
+      },
+    );
+
+    if (isBrowser() && !options?.skipBrowserRedirect) {
+      window.location.assign(result.data.url);
+    }
+    return {
+      url: result.data.url,
+      key: result.data.key,
+    };
+  }
+
+  public async unlinkOAuth(
+    provider: OAuthProvider,
+    accessToken: string,
+  ): Promise<AuthPlayerResponse> {
+    const request = {
+      unlinkOAuthRequest: {
+        provider,
+      },
+    };
+    const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkOAuth(request, {
+      headers: {
+        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-player-token': accessToken,
+      },
+    });
+    return authPlayerResponse.data;
+  }
+
+  public async unlinkWallet(
+    address: string,
+    accessToken: string,
+  ): Promise<AuthPlayerResponse> {
+    const request = {
+      sIWERequest: {
+        address,
+      },
+    };
+    const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkSIWE(request, {
+      headers: {
+        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-player-token': accessToken,
+      },
+    });
+    return authPlayerResponse.data;
+  }
+
+  public async linkWallet(
+    signature: string,
+    message: string,
+    walletClientType: string,
+    connectorType: string,
+    accessToken: string,
+  ): Promise<AuthPlayerResponse> {
+    const request = {
+      sIWEAuthenticateRequest: {
+        signature,
+        message,
+        walletClientType,
+        connectorType,
+      },
+    };
+    const authPlayerResponse = await this.backendApiClients.authenticationApi.linkSIWE(request, {
+      headers: {
+        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-player-token': accessToken,
+      },
+    });
+
+    return authPlayerResponse.data;
+  }
+
+  public async unlinkEmail(
+    email:string,
+    accessToken: string,
+  ): Promise<AuthPlayerResponse> {
+    const request = {
+      unlinkEmailRequest: {
+        email,
+      },
+    };
+    const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkEmail(request, {
+      headers: {
+        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-player-token': accessToken,
+      },
+    });
+    return authPlayerResponse.data;
+  }
+
+  public async linkEmail(
+    email:string,
+    password: string,
+    accessToken: string,
+  ): Promise<AuthPlayerResponse> {
+    const request = {
+      loginRequest: {
+        email,
+        password,
+      },
+    };
+    const authPlayerResponse = await this.backendApiClients.authenticationApi.linkEmail(request, {
+      headers: {
+        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-player-token': accessToken,
+      },
+    });
+    return authPlayerResponse.data;
   }
 }

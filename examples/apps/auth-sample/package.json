@@ -8,7 +8,7 @@
     "prettier": "prettier -w \"**/*.ts\" \"**/*.tsx\""
   },
   "dependencies": {
-    "@openfort/openfort-js": "0.7.5",
+    "@openfort/openfort-js": "0.7.6",
     "@openfort/openfort-node": "^0.6.47",
     "axios": "^1.6.8",
     "ethers": "5.7.2",

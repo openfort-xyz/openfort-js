@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {NextPage} from 'next';
 import LoginSignupForm from '../components/Authentication/LoginSignupForm';
 import MintNFTButton from '../components/NFT/MintNFTButton';

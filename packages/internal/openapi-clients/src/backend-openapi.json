@@ -1417,7 +1417,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "UnlinkRequest": {
+      "UnlinkOAuthRequest": {
         "description": "The request to verify access token",
         "properties": {
           "provider": {
@@ -1655,6 +1655,20 @@
         "required": [
           "email",
           "password"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UnlinkEmailRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user.",
+            "example": "user@email.com"
+          }
+        },
+        "required": [
+          "email"
         ],
         "type": "object",
         "additionalProperties": false
@@ -8229,7 +8243,7 @@
     },
     "/iam/v1/oauth/init_link": {
       "post": {
-        "operationId": "InitLinkOAuth",
+        "operationId": "LinkOAuth",
         "responses": {
           "201": {
             "description": "Success response",
@@ -8552,7 +8566,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UnlinkRequest"
+                "$ref": "#/components/schemas/UnlinkOAuthRequest"
               }
             }
           }
@@ -8817,7 +8831,7 @@
         }
       }
     },
-    "/iam/v1/password/email/request_verification": {
+    "/iam/v1/password/request_email_verification": {
       "post": {
         "operationId": "RequestEmailVerification",
         "responses": {
@@ -8851,7 +8865,7 @@
         }
       }
     },
-    "/iam/v1/password/email/verify": {
+    "/iam/v1/password/verify_email": {
       "post": {
         "operationId": "VerifyEmail",
         "responses": {
@@ -8885,7 +8899,7 @@
         }
       }
     },
-    "/iam/v1/password/password/request_reset": {
+    "/iam/v1/password/request_reset": {
       "post": {
         "operationId": "RequestResetPassword",
         "responses": {
@@ -8919,7 +8933,7 @@
         }
       }
     },
-    "/iam/v1/password/password/reset": {
+    "/iam/v1/password/reset": {
       "post": {
         "operationId": "ResetPassword",
         "responses": {
@@ -8947,6 +8961,90 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/password/link": {
+      "post": {
+        "operationId": "LinkEmail",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthPlayerResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/password/unlink": {
+      "post": {
+        "operationId": "UnlinkEmail",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthPlayerResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlinkEmailRequest"
               }
             }
           }

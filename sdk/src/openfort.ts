@@ -225,11 +225,10 @@ export class Openfort {
   }
 
   public async configureEmbeddedSigner(
-    chainId?: number,
     shieldAuthentication?: ShieldAuthentication,
     recoveryPassword?: string,
   ): Promise<void> {
-    const signer = this.newEmbeddedSigner(chainId, shieldAuthentication);
+    const signer = this.newEmbeddedSigner(shieldAuthentication);
     await this.validateAndRefreshToken();
     await signer.ensureEmbeddedAccount(recoveryPassword);
     this.signer = signer;
@@ -237,7 +236,6 @@ export class Openfort {
   }
 
   private newEmbeddedSigner(
-    chainId?: number,
     shieldAuthentication?: ShieldAuthentication,
   ): EmbeddedSigner {
     if (!this.credentialsProvided()) {
@@ -247,10 +245,10 @@ export class Openfort {
     const iframeConfiguration: IframeConfiguration = {
       accessToken: this.instanceManager.getAccessToken()?.token ?? null,
       thirdPartyProvider:
-        this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
+      this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
       thirdPartyTokenType:
-        this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
-      chainId: chainId ?? null,
+      this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
+      chainId: Number(this.instanceManager.getChainID()) ?? null,
       recovery: shieldAuthentication ?? null,
     };
     return new EmbeddedSigner(this.iframeManager, this.instanceManager, iframeConfiguration);
@@ -353,7 +351,7 @@ export class Openfort {
     usePooling?: boolean,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
-    return await this.authManager.initLinkOAuth(
+    return await this.authManager.linkOAuth(
       provider,
       playerToken,
       usePooling,
@@ -365,28 +363,6 @@ export class Openfort {
     key: string,
   ): Promise<AuthResponse> {
     return await this.authManager.poolOAuth(key);
-  }
-
-  // @deprecated
-  public async authenticateWithOAuth(
-    provider: OAuthProvider,
-    token: string,
-    tokenType: TokenType,
-  ): Promise<AuthResponse> {
-    this.instanceManager.removeAccessToken();
-    this.instanceManager.removeRefreshToken();
-    this.instanceManager.removePlayerID();
-    const result = await this.authManager.authenticateOAuth(
-      provider,
-      token,
-      tokenType,
-    );
-    this.storeCredentials({
-      player: result.player.id,
-      accessToken: result.token,
-      refreshToken: result.refreshToken,
-    });
-    return result;
   }
 
   public async initSIWE(address: string): Promise<SIWEInitResponse> {

@@ -9,11 +9,10 @@
     "parcel": "^2.8.3"
   },
   "scripts": {
-    "build": "yarn build:sdk && parcel build --no-cache --no-scope-hoist && yarn updateSdkVersion",
+    "build": "yarn build:sdk && parcel build --no-cache --no-scope-hoist",
     "build:sdk": "cd ../.. && yarn build",
     "lint": "eslint ./src --ext .ts,.jsx,.tsx --max-warnings=0",
-    "start": "parcel",
-    "updateSdkVersion": "./scripts/updateSdkVersion.sh"
+    "start": "parcel"
   },
   "source": "src/index.html",
   "targets": {

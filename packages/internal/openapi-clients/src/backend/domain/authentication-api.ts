@@ -64,7 +64,9 @@ import { SignupRequest } from '../models';
 // @ts-ignore
 import { ThirdPartyOAuthRequest } from '../models';
 // @ts-ignore
-import { UnlinkRequest } from '../models';
+import { UnlinkEmailRequest } from '../models';
+// @ts-ignore
+import { UnlinkOAuthRequest } from '../models';
 // @ts-ignore
 import { VerifyEmailRequest } from '../models';
 /**
@@ -238,42 +240,6 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         },
         /**
          * 
-         * @summary Initialize Link OAuth.
-         * @param {OAuthInitRequest} oAuthInitRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        initLinkOAuth: async (oAuthInitRequest: OAuthInitRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'oAuthInitRequest' is not null or undefined
-            assertParamExists('initLinkOAuth', 'oAuthInitRequest', oAuthInitRequest)
-            const localVarPath = `/iam/v1/oauth/init_link`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(oAuthInitRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary Initialize OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
          * @param {*} [options] Override http request option.
@@ -346,6 +312,77 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(sIWERequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {LoginRequest} loginRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkEmail: async (loginRequest: LoginRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'loginRequest' is not null or undefined
+            assertParamExists('linkEmail', 'loginRequest', loginRequest)
+            const localVarPath = `/iam/v1/password/link`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(loginRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Initialize Link OAuth.
+         * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkOAuth: async (oAuthInitRequest: OAuthInitRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'oAuthInitRequest' is not null or undefined
+            assertParamExists('linkOAuth', 'oAuthInitRequest', oAuthInitRequest)
+            const localVarPath = `/iam/v1/oauth/init_link`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(oAuthInitRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -580,7 +617,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         requestEmailVerification: async (requestVerifyEmailRequest: RequestVerifyEmailRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'requestVerifyEmailRequest' is not null or undefined
             assertParamExists('requestEmailVerification', 'requestVerifyEmailRequest', requestVerifyEmailRequest)
-            const localVarPath = `/iam/v1/password/email/request_verification`;
+            const localVarPath = `/iam/v1/password/request_email_verification`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -620,7 +657,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         requestResetPassword: async (requestResetPasswordRequest: RequestResetPasswordRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'requestResetPasswordRequest' is not null or undefined
             assertParamExists('requestResetPassword', 'requestResetPasswordRequest', requestResetPasswordRequest)
-            const localVarPath = `/iam/v1/password/password/request_reset`;
+            const localVarPath = `/iam/v1/password/request_reset`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -660,7 +697,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         resetPassword: async (resetPasswordRequest: ResetPasswordRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'resetPasswordRequest' is not null or undefined
             assertParamExists('resetPassword', 'resetPasswordRequest', resetPasswordRequest)
-            const localVarPath = `/iam/v1/password/password/reset`;
+            const localVarPath = `/iam/v1/password/reset`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -772,14 +809,49 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         },
         /**
          * 
-         * @summary Unlink OAuth account
-         * @param {UnlinkRequest} unlinkRequest 
+         * @param {UnlinkEmailRequest} unlinkEmailRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        unlinkOAuth: async (unlinkRequest: UnlinkRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'unlinkRequest' is not null or undefined
-            assertParamExists('unlinkOAuth', 'unlinkRequest', unlinkRequest)
+        unlinkEmail: async (unlinkEmailRequest: UnlinkEmailRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'unlinkEmailRequest' is not null or undefined
+            assertParamExists('unlinkEmail', 'unlinkEmailRequest', unlinkEmailRequest)
+            const localVarPath = `/iam/v1/password/unlink`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(unlinkEmailRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Unlink OAuth account
+         * @param {UnlinkOAuthRequest} unlinkOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unlinkOAuth: async (unlinkOAuthRequest: UnlinkOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'unlinkOAuthRequest' is not null or undefined
+            assertParamExists('unlinkOAuth', 'unlinkOAuthRequest', unlinkOAuthRequest)
             const localVarPath = `/iam/v1/oauth/unlink`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -799,7 +871,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(unlinkRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(unlinkOAuthRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -852,7 +924,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         verifyEmail: async (verifyEmailRequest: VerifyEmailRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'verifyEmailRequest' is not null or undefined
             assertParamExists('verifyEmail', 'verifyEmailRequest', verifyEmailRequest)
-            const localVarPath = `/iam/v1/password/email/verify`;
+            const localVarPath = `/iam/v1/password/verify_email`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1025,17 +1097,6 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Initialize Link OAuth.
-         * @param {OAuthInitRequest} oAuthInitRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async initLinkOAuth(oAuthInitRequest: OAuthInitRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.initLinkOAuth(oAuthInitRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @summary Initialize OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
          * @param {*} [options] Override http request option.
@@ -1054,6 +1115,27 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          */
         async initSIWE(sIWERequest: SIWERequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SIWEInitResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.initSIWE(sIWERequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {LoginRequest} loginRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkEmail(loginRequest: LoginRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkEmail(loginRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Initialize Link OAuth.
+         * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkOAuth(oAuthInitRequest: OAuthInitRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkOAuth(oAuthInitRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1177,13 +1259,23 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Unlink OAuth account
-         * @param {UnlinkRequest} unlinkRequest 
+         * @param {UnlinkEmailRequest} unlinkEmailRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async unlinkOAuth(unlinkRequest: UnlinkRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkOAuth(unlinkRequest, options);
+        async unlinkEmail(unlinkEmailRequest: UnlinkEmailRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkEmail(unlinkEmailRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Unlink OAuth account
+         * @param {UnlinkOAuthRequest} unlinkOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async unlinkOAuth(unlinkOAuthRequest: UnlinkOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkOAuth(unlinkOAuthRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1285,16 +1377,6 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
         },
         /**
          * 
-         * @summary Initialize Link OAuth.
-         * @param {AuthenticationApiInitLinkOAuthRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        initLinkOAuth(requestParameters: AuthenticationApiInitLinkOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<OAuthResponse> {
-            return localVarFp.initLinkOAuth(requestParameters.oAuthInitRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary Initialize OAuth.
          * @param {AuthenticationApiInitOAuthRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -1312,6 +1394,25 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          */
         initSIWE(requestParameters: AuthenticationApiInitSIWERequest, options?: AxiosRequestConfig): AxiosPromise<SIWEInitResponse> {
             return localVarFp.initSIWE(requestParameters.sIWERequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AuthenticationApiLinkEmailRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkEmail(requestParameters: AuthenticationApiLinkEmailRequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.linkEmail(requestParameters.loginRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Initialize Link OAuth.
+         * @param {AuthenticationApiLinkOAuthRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkOAuth(requestParameters: AuthenticationApiLinkOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<OAuthResponse> {
+            return localVarFp.linkOAuth(requestParameters.oAuthInitRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1423,13 +1524,22 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
         },
         /**
          * 
+         * @param {AuthenticationApiUnlinkEmailRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unlinkEmail(requestParameters: AuthenticationApiUnlinkEmailRequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.unlinkEmail(requestParameters.unlinkEmailRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Unlink OAuth account
          * @param {AuthenticationApiUnlinkOAuthRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         unlinkOAuth(requestParameters: AuthenticationApiUnlinkOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
-            return localVarFp.unlinkOAuth(requestParameters.unlinkRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.unlinkOAuth(requestParameters.unlinkOAuthRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1539,20 +1649,6 @@ export interface AuthenticationApiGetJwksRequest {
 }
 
 /**
- * Request parameters for initLinkOAuth operation in AuthenticationApi.
- * @export
- * @interface AuthenticationApiInitLinkOAuthRequest
- */
-export interface AuthenticationApiInitLinkOAuthRequest {
-    /**
-     * 
-     * @type {OAuthInitRequest}
-     * @memberof AuthenticationApiInitLinkOAuth
-     */
-    readonly oAuthInitRequest: OAuthInitRequest
-}
-
-/**
  * Request parameters for initOAuth operation in AuthenticationApi.
  * @export
  * @interface AuthenticationApiInitOAuthRequest
@@ -1578,6 +1674,34 @@ export interface AuthenticationApiInitSIWERequest {
      * @memberof AuthenticationApiInitSIWE
      */
     readonly sIWERequest: SIWERequest
+}
+
+/**
+ * Request parameters for linkEmail operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiLinkEmailRequest
+ */
+export interface AuthenticationApiLinkEmailRequest {
+    /**
+     * 
+     * @type {LoginRequest}
+     * @memberof AuthenticationApiLinkEmail
+     */
+    readonly loginRequest: LoginRequest
+}
+
+/**
+ * Request parameters for linkOAuth operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiLinkOAuthRequest
+ */
+export interface AuthenticationApiLinkOAuthRequest {
+    /**
+     * 
+     * @type {OAuthInitRequest}
+     * @memberof AuthenticationApiLinkOAuth
+     */
+    readonly oAuthInitRequest: OAuthInitRequest
 }
 
 /**
@@ -1721,6 +1845,20 @@ export interface AuthenticationApiThirdPartyRequest {
 }
 
 /**
+ * Request parameters for unlinkEmail operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiUnlinkEmailRequest
+ */
+export interface AuthenticationApiUnlinkEmailRequest {
+    /**
+     * 
+     * @type {UnlinkEmailRequest}
+     * @memberof AuthenticationApiUnlinkEmail
+     */
+    readonly unlinkEmailRequest: UnlinkEmailRequest
+}
+
+/**
  * Request parameters for unlinkOAuth operation in AuthenticationApi.
  * @export
  * @interface AuthenticationApiUnlinkOAuthRequest
@@ -1728,10 +1866,10 @@ export interface AuthenticationApiThirdPartyRequest {
 export interface AuthenticationApiUnlinkOAuthRequest {
     /**
      * 
-     * @type {UnlinkRequest}
+     * @type {UnlinkOAuthRequest}
      * @memberof AuthenticationApiUnlinkOAuth
      */
-    readonly unlinkRequest: UnlinkRequest
+    readonly unlinkOAuthRequest: UnlinkOAuthRequest
 }
 
 /**
@@ -1855,18 +1993,6 @@ export class AuthenticationApi extends BaseAPI {
 
     /**
      * 
-     * @summary Initialize Link OAuth.
-     * @param {AuthenticationApiInitLinkOAuthRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AuthenticationApi
-     */
-    public initLinkOAuth(requestParameters: AuthenticationApiInitLinkOAuthRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).initLinkOAuth(requestParameters.oAuthInitRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @summary Initialize OAuth.
      * @param {AuthenticationApiInitOAuthRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -1887,6 +2013,29 @@ export class AuthenticationApi extends BaseAPI {
      */
     public initSIWE(requestParameters: AuthenticationApiInitSIWERequest, options?: AxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).initSIWE(requestParameters.sIWERequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AuthenticationApiLinkEmailRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public linkEmail(requestParameters: AuthenticationApiLinkEmailRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).linkEmail(requestParameters.loginRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Initialize Link OAuth.
+     * @param {AuthenticationApiLinkOAuthRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public linkOAuth(requestParameters: AuthenticationApiLinkOAuthRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).linkOAuth(requestParameters.oAuthInitRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2021,6 +2170,17 @@ export class AuthenticationApi extends BaseAPI {
 
     /**
      * 
+     * @param {AuthenticationApiUnlinkEmailRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public unlinkEmail(requestParameters: AuthenticationApiUnlinkEmailRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).unlinkEmail(requestParameters.unlinkEmailRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Unlink OAuth account
      * @param {AuthenticationApiUnlinkOAuthRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -2028,7 +2188,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public unlinkOAuth(requestParameters: AuthenticationApiUnlinkOAuthRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).unlinkOAuth(requestParameters.unlinkRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).unlinkOAuth(requestParameters.unlinkOAuthRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

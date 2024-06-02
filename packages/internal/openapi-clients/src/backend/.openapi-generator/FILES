@@ -308,7 +308,8 @@ models/trigger-delete-response.ts
 models/trigger-response.ts
 models/twitter-oauth-config.ts
 models/typed-data-field.ts
-models/unlink-request.ts
+models/unlink-email-request.ts
+models/unlink-oauth-request.ts
 models/update-contract-request.ts
 models/update-email-sample-request.ts
 models/update-policy-request.ts
