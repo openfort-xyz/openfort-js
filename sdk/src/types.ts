@@ -55,6 +55,7 @@ export type JWK = {
 };
 
 export type InitializeOAuthOptions = {
+  usePooling?: boolean,
   /** A URL to send the user to after they are confirmed. */
   redirectTo?: string;
   /** A space-separated list of scopes granted to the OAuth application. */

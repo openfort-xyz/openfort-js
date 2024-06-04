@@ -72,7 +72,7 @@ export default class InstanceManager {
   public getAccessToken(): AccessToken | null {
     if (!this.authToken) {
       const token = this.secureStorage.get(authTokenStorageKey);
-      if (token === null) return null; // Early exit if no token is found
+      if (token === null) return null;
       this.authToken = {
         token,
         thirdPartyProvider: this.secureStorage.get(

@@ -61,12 +61,6 @@ export interface CreateTransactionIntentRequest {
     'optimistic'?: boolean;
     /**
      * 
-     * @type {number}
-     * @memberof CreateTransactionIntentRequest
-     */
-    'confirmationBlocks'?: number;
-    /**
-     * 
      * @type {Array<Interaction>}
      * @memberof CreateTransactionIntentRequest
      */
