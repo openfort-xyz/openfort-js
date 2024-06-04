@@ -1,5 +1,6 @@
 import { Openfort } from './openfort';
 
+export { OpenfortError } from './errors/openfortError';
 export { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js';
 export {
   InitializeOAuthOptions,
