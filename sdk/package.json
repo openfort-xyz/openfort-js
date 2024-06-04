@@ -46,6 +46,7 @@
     "es6-promise": "^4.2.8",
     "jose": "^5.2.2",
     "path": "^0.12.7",
+    "stream-browserify": "^3.0.0",
     "uuid": "^8.3.2"
   },
   "exports": {
