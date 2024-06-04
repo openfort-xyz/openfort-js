@@ -7111,10 +7111,6 @@
             "description": "Set to `true` to indicate that the transactionIntent request should be resolved as soon as possible, after the transactionIntent is created and simulated and before it arrives on chain.",
             "example": true
           },
-          "confirmationBlocks": {
-            "type": "number",
-            "format": "double"
-          },
           "interactions": {
             "items": {
               "$ref": "#/components/schemas/Interaction"
