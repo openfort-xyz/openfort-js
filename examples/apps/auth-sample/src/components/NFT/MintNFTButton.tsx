@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useOpenfort} from '../../hooks/useOpenfort';
 import {EmbeddedState} from '@openfort/openfort-js';
-import Spinner from '../Shared/Spinner';
+import Loading from '../Loading';
 
 const MintNFTButton: React.FC = () => {
   const {mintNFT, embeddedState, error} = useOpenfort();
@@ -30,7 +30,7 @@ const MintNFTButton: React.FC = () => {
         disabled={embeddedState !== EmbeddedState.READY}
         className={`mt-4 w-32 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
       >
-        {loading ? <Spinner /> : 'Mint NFT'}
+        {loading ? <Loading /> : 'Mint NFT'}
       </button>
       {transactionHash && (
         <a

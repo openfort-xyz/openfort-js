@@ -9,6 +9,7 @@ import {
 import { SDKConfiguration } from 'config';
 import { BackendApiClients } from '@openfort/openapi-clients';
 import * as crypto from 'crypto';
+import { OpenfortErrorType, withOpenfortError } from 'errors/openfortError';
 import InstanceManager from './instanceManager';
 import { isBrowser } from './utils/helpers';
 import DeviceCredentialsManager from './utils/deviceCredentialsManager';
@@ -42,14 +43,13 @@ export default class AuthManager {
 
   public async initOAuth(
     provider: OAuthProvider,
-    usePooling?: boolean,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
     const request = {
       oAuthInitRequest: {
         provider,
         options,
-        usePooling: usePooling || false,
+        usePooling: options?.usePooling || false,
       },
     };
     const result = await this.backendApiClients.authenticationApi.initOAuth(
@@ -113,8 +113,10 @@ export default class AuthManager {
         tokenType,
       },
     };
-    const response = await this.backendApiClients.authenticationApi.thirdParty(request);
-    return response.data;
+    return withOpenfortError<AuthPlayerResponse>(async () => {
+      const response = await this.backendApiClients.authenticationApi.thirdParty(request);
+      return response.data;
+    }, OpenfortErrorType.AUTHENTICATION_ERROR);
   }
 
   public async initSIWE(
@@ -148,9 +150,10 @@ export default class AuthManager {
         connectorType,
       },
     };
-    const response = await this.backendApiClients.authenticationApi.authenticateSIWE(request);
-
-    return response.data;
+    return withOpenfortError<AuthResponse>(async () => {
+      const response = await this.backendApiClients.authenticationApi.authenticateSIWE(request);
+      return response.data;
+    }, OpenfortErrorType.AUTHENTICATION_ERROR);
   }
 
   public async loginEmailPassword(
@@ -163,9 +166,11 @@ export default class AuthManager {
         password,
       },
     };
-    const response = await this.backendApiClients.authenticationApi.loginEmailPassword(request);
 
-    return response.data;
+    return withOpenfortError<AuthResponse>(async () => {
+      const response = await this.backendApiClients.authenticationApi.loginEmailPassword(request);
+      return response.data;
+    }, OpenfortErrorType.AUTHENTICATION_ERROR);
   }
 
   public async requestResetPassword(
@@ -198,27 +203,24 @@ export default class AuthManager {
     password: string,
     state: string,
   ): Promise<void> {
-    const pkceData = this.deviceCredentialsManager.getPKCEData();
-    if (!pkceData) {
-      throw new Error('No code verifier or state for PKCE');
-    }
+    return withOpenfortError<void>(async () => {
+      const pkceData = this.deviceCredentialsManager.getPKCEData();
+      if (!pkceData) {
+        throw new Error('No code verifier or state for PKCE');
+      }
 
-    if (state !== pkceData.state) {
-      throw new Error('Provided state does not match stored state');
-    }
-
-    const request = {
-      resetPasswordRequest: {
-        email,
-        password,
-        state,
-        challenge: {
-          codeVerifier: pkceData.verifier,
-          method: CodeChallengeMethodEnum.S256,
+      const request = {
+        resetPasswordRequest: {
+          email,
+          password,
+          state,
+          challenge: {
+            codeVerifier: pkceData.verifier,
+          },
         },
-      },
-    };
-    await this.backendApiClients.authenticationApi.resetPassword(request);
+      };
+      await this.backendApiClients.authenticationApi.resetPassword(request);
+    }, OpenfortErrorType.AUTHENTICATION_ERROR);
   }
 
   public async requestEmailVerification(
@@ -250,26 +252,23 @@ export default class AuthManager {
     email: string,
     state: string,
   ): Promise<void> {
-    const pkceData = this.deviceCredentialsManager.getPKCEData();
-    if (!pkceData) {
-      throw new Error('No code verifier or state for PKCE');
-    }
+    return withOpenfortError<void>(async () => {
+      const pkceData = this.deviceCredentialsManager.getPKCEData();
+      if (!pkceData) {
+        throw new Error('No code verifier or state for PKCE');
+      }
 
-    if (state !== pkceData.state) {
-      throw new Error('Provided state does not match stored state');
-    }
-
-    const request = {
-      verifyEmailRequest: {
-        email,
-        token: state,
-        challenge: {
-          codeVerifier: pkceData.verifier,
-          method: CodeChallengeMethodEnum.S256,
+      const request = {
+        verifyEmailRequest: {
+          email,
+          token: state,
+          challenge: {
+            codeVerifier: pkceData.verifier,
+          },
         },
-      },
-    };
-    await this.backendApiClients.authenticationApi.verifyEmail(request);
+      };
+      await this.backendApiClients.authenticationApi.verifyEmail(request);
+    }, OpenfortErrorType.AUTHENTICATION_ERROR);
   }
 
   public async signupEmailPassword(
@@ -284,9 +283,11 @@ export default class AuthManager {
         name,
       },
     };
-    const response = await this.backendApiClients.authenticationApi.signupEmailPassword(request);
 
-    return response.data;
+    return withOpenfortError<AuthResponse>(async () => {
+      const response = await this.backendApiClients.authenticationApi.signupEmailPassword(request);
+      return response.data;
+    }, OpenfortErrorType.USER_REGISTRATION_ERROR);
   }
 
   public async validateCredentials(
@@ -317,12 +318,14 @@ export default class AuthManager {
             refreshToken,
           },
         };
-        const newToken = await this.backendApiClients.authenticationApi.refresh(request);
-        return {
-          player: newToken.data.player.id,
-          accessToken: newToken.data.token,
-          refreshToken: newToken.data.refreshToken,
-        };
+        return withOpenfortError<Auth>(async () => {
+          const newToken = await this.backendApiClients.authenticationApi.refresh(request);
+          return {
+            player: newToken.data.player.id,
+            accessToken: newToken.data.token,
+            refreshToken: newToken.data.refreshToken,
+          };
+        }, OpenfortErrorType.REFRESH_TOKEN_ERROR);
       }
       throw error;
     }
@@ -331,26 +334,27 @@ export default class AuthManager {
   public async logout(
     accessToken: string,
     refreshToken: string,
-  ) {
+  ): Promise<void> {
     const request = {
       logoutRequest: {
         refreshToken,
       },
     };
-    await this.backendApiClients.authenticationApi.logout(request, {
-      headers: {
-        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-player-token': accessToken,
-      },
-    });
+    withOpenfortError<void>(async () => {
+      await this.backendApiClients.authenticationApi.logout(request, {
+        headers: {
+          authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-player-token': accessToken,
+        },
+      });
+    }, OpenfortErrorType.LOGOUT_ERROR);
   }
 
-  public async getUserInfo(
+  public async getUser(
     accessToken: string,
   ): Promise<AuthPlayerResponse> {
     // TODO: Add storage of user info
-
     const response = await this.backendApiClients.authenticationApi.me({
       headers: {
         authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
@@ -364,14 +368,13 @@ export default class AuthManager {
   public async linkOAuth(
     provider: OAuthProvider,
     playerToken: string,
-    usePooling?: boolean,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
     const request = {
       oAuthInitRequest: {
         provider,
         options,
-        usePooling: usePooling || false,
+        usePooling: options?.usePooling || false,
       },
     };
     const result = await this.backendApiClients.authenticationApi.linkOAuth(

@@ -1,15 +1,14 @@
-import "tailwindcss/tailwind.css";
-import type { AppProps } from "next/app";
-import Layout from "../components/Layout";
-import { AuthProvider } from "../contexts/AuthContext";
+import '../styles/tailwind.css';
 
-function MyApp({ Component, pageProps }: AppProps) {
+import type {AppProps} from 'next/app';
+import * as ToastPrimitive from '@radix-ui/react-toast';
+
+function MyApp({Component, pageProps}: AppProps) {
   return (
-    <AuthProvider>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </AuthProvider>
+    <ToastPrimitive.Provider swipeDirection={'right'}>
+      <Component {...pageProps} />
+      <ToastPrimitive.Viewport />
+    </ToastPrimitive.Provider>
   );
 }
 

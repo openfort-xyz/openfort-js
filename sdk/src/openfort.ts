@@ -23,6 +23,7 @@ import { EvmProvider } from 'evm';
 import { Provider } from 'evm/types';
 import { announceProvider, openfortProviderInfo } from 'evm/provider/eip6963';
 import TypedEventEmitter from 'utils/typedEventEmitter';
+import { OpenfortError, OpenfortErrorType } from 'errors/openfortError';
 import { ISigner, SignerType } from './signer/signer';
 import AuthManager from './authManager';
 import InstanceManager from './instanceManager';
@@ -34,46 +35,6 @@ import IframeManager, {
   IframeConfiguration,
 } from './iframe/iframeManager';
 import { ShieldAuthentication } from './iframe/types';
-
-export class NotLoggedIn extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'NotLoggedIn';
-    Object.setPrototypeOf(this, NotLoggedIn.prototype);
-  }
-}
-
-export class MissingRecoveryMethod extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'MissingRecoveryMethod';
-    Object.setPrototypeOf(this, MissingRecoveryMethod.prototype);
-  }
-}
-
-export class EmbeddedNotConfigured extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'EmbeddedNotConfigured';
-    Object.setPrototypeOf(this, EmbeddedNotConfigured.prototype);
-  }
-}
-
-export class NoSignerConfigured extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'NoSignerConfigured';
-    Object.setPrototypeOf(this, NoSignerConfigured.prototype);
-  }
-}
-
-export class NothingToSign extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'NothingToSign';
-    Object.setPrototypeOf(this, NothingToSign.prototype);
-  }
-}
 
 export class Openfort {
   private signer?: ISigner;
@@ -150,7 +111,10 @@ export class Openfort {
     announceProvider: true,
   }): Provider {
     if (!(this.signer instanceof EmbeddedSigner)) {
-      throw new EmbeddedNotConfigured('Embedded signer must be configured to get Ethereum provider');
+      throw new OpenfortError(
+        'Embedded signer must be configured to get Ethereum provider',
+        OpenfortErrorType.NOT_LOGGED_IN_ERROR,
+      );
     }
     const address = this.instanceManager.getAccountAddress();
     const provider = new EvmProvider({
@@ -225,10 +189,11 @@ export class Openfort {
   }
 
   public async configureEmbeddedSigner(
+    chainId?: number,
     shieldAuthentication?: ShieldAuthentication,
     recoveryPassword?: string,
   ): Promise<void> {
-    const signer = this.newEmbeddedSigner(shieldAuthentication);
+    const signer = this.newEmbeddedSigner(chainId, shieldAuthentication);
     await this.validateAndRefreshToken();
     await signer.ensureEmbeddedAccount(recoveryPassword);
     this.signer = signer;
@@ -236,10 +201,11 @@ export class Openfort {
   }
 
   private newEmbeddedSigner(
+    chainId?: number,
     shieldAuthentication?: ShieldAuthentication,
   ): EmbeddedSigner {
     if (!this.credentialsProvided()) {
-      throw new NotLoggedIn('Must be logged in to configure embedded signer');
+      throw new OpenfortError('Must be logged in to configure embedded signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
     const iframeConfiguration: IframeConfiguration = {
@@ -248,16 +214,16 @@ export class Openfort {
       this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
       thirdPartyTokenType:
       this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
-      chainId: Number(this.instanceManager.getChainID()) ?? null,
+      chainId: !chainId ? Number(this.instanceManager.getChainID()) ?? null : chainId,
       recovery: shieldAuthentication ?? null,
     };
     return new EmbeddedSigner(this.iframeManager, this.instanceManager, iframeConfiguration);
   }
 
-  public async loginWithEmailPassword(
-    email: string,
-    password: string,
-  ): Promise<AuthResponse> {
+  public async loginWithEmailPassword({
+    email,
+    password,
+  }:{ email:string, password:string }): Promise<AuthResponse> {
     this.instanceManager.removeAccessToken();
     this.instanceManager.removeRefreshToken();
     this.instanceManager.removePlayerID();
@@ -273,18 +239,20 @@ export class Openfort {
     return result;
   }
 
-  public async signUpWithEmailPassword(
-    email: string,
+  public async signUpWithEmailPassword({
+    email,
+    password,
+    options,
+  }:{ email: string,
     password: string,
-    name?: string,
-  ): Promise<AuthResponse> {
+    options?: { data: { name: string } } }): Promise<AuthResponse> {
     this.instanceManager.removeAccessToken();
     this.instanceManager.removeRefreshToken();
     this.instanceManager.removePlayerID();
     const result = await this.authManager.signupEmailPassword(
       email,
       password,
-      name,
+      options?.data.name,
     );
     this.storeCredentials({
       player: result.player.id,
@@ -294,21 +262,21 @@ export class Openfort {
     return result;
   }
 
-  public async requestEmailVerification(
+  public async requestEmailVerification({ email, redirectUrl }:{
     email: string,
     redirectUrl: string,
-  ): Promise<void> {
+  }): Promise<void> {
     await this.authManager.requestEmailVerification(
       email,
       redirectUrl,
     );
   }
 
-  public async resetPassword(
+  public async resetPassword({ email, password, state }:{
     email: string,
     password: string,
     state: string,
-  ): Promise<void> {
+  }): Promise<void> {
     await this.authManager.resetPassword(
       email,
       password,
@@ -316,45 +284,42 @@ export class Openfort {
     );
   }
 
-  public async requestResetPassword(
+  public async requestResetPassword({ email, redirectUrl }:{
     email: string,
     redirectUrl: string,
-  ): Promise<void> {
+  }): Promise<void> {
     await this.authManager.requestResetPassword(
       email,
       redirectUrl,
     );
   }
 
-  public async verifyEmail(
+  public async verifyEmail({ email, state }:{
     email: string,
     state: string,
-  ): Promise<void> {
+  }): Promise<void> {
     await this.authManager.verifyEmail(
       email,
       state,
     );
   }
 
-  public async initOAuth(
+  public async initOAuth({ provider, options }:{
     provider: OAuthProvider,
-    usePooling?: boolean,
     options?: InitializeOAuthOptions,
-  ): Promise<InitAuthResponse> {
-    const authResponse = await this.authManager.initOAuth(provider, usePooling, options);
+  }): Promise<InitAuthResponse> {
+    const authResponse = await this.authManager.initOAuth(provider, options);
     return authResponse;
   }
 
-  public async initLinkOAuth(
+  public async initLinkOAuth({ provider, playerToken, options }:{
     provider: OAuthProvider,
     playerToken: string,
-    usePooling?: boolean,
     options?: InitializeOAuthOptions,
-  ): Promise<InitAuthResponse> {
+  }): Promise<InitAuthResponse> {
     return await this.authManager.linkOAuth(
       provider,
       playerToken,
-      usePooling,
       options,
     );
   }
@@ -365,15 +330,15 @@ export class Openfort {
     return await this.authManager.poolOAuth(key);
   }
 
-  public async initSIWE(address: string): Promise<SIWEInitResponse> {
+  public async initSIWE({ address }:{ address: string }): Promise<SIWEInitResponse> {
     return await this.authManager.initSIWE(address);
   }
 
-  public async authenticateWithThirdPartyProvider(
+  public async authenticateWithThirdPartyProvider({ provider, token, tokenType }:{
     provider: ThirdPartyOAuthProvider,
     token: string,
     tokenType: TokenType,
-  ): Promise<AuthPlayerResponse> {
+  }): Promise<AuthPlayerResponse> {
     const result = await this.authManager.authenticateThirdParty(
       provider,
       token,
@@ -391,12 +356,14 @@ export class Openfort {
     return result;
   }
 
-  public async authenticateWithSIWE(
+  public async authenticateWithSIWE({
+    signature, message, walletClientType, connectorType,
+  }:{
     signature: string,
     message: string,
     walletClientType: string,
     connectorType: string,
-  ): Promise<AuthResponse> {
+  }): Promise<AuthResponse> {
     this.instanceManager.removeAccessToken();
     this.instanceManager.removeRefreshToken();
     this.instanceManager.removePlayerID();
@@ -432,13 +399,17 @@ export class Openfort {
     let newSignature = signature;
     if (!newSignature) {
       if (!userOperationHash) {
-        throw new NothingToSign('No userOperationHash or signature provided');
+        throw new OpenfortError(
+          'No userOperationHash or signature provided',
+          OpenfortErrorType.OPERATION_NOT_SUPPORTED_ERROR,
+        );
       }
 
       await this.recoverSigner();
       if (!this.signer) {
-        throw new NoSignerConfigured(
+        throw new OpenfortError(
           'In order to sign a transaction intent, a signer must be configured',
+          OpenfortErrorType.MISSING_SIGNER_ERROR,
         );
       }
 
@@ -466,7 +437,10 @@ export class Openfort {
   ): Promise<string> {
     await this.recoverSigner();
     if (!this.signer) {
-      throw new NoSignerConfigured('No signer configured');
+      throw new OpenfortError(
+        'In order to sign a message, an embedded signer must be configured',
+        OpenfortErrorType.MISSING_EMBEDDED_SIGNER_ERROR,
+      );
     }
     if (this.signer.useCredentials()) {
       await this.validateAndRefreshToken();
@@ -482,7 +456,10 @@ export class Openfort {
   ): Promise<string> {
     await this.recoverSigner();
     if (!this.signer) {
-      throw new NoSignerConfigured('No signer configured');
+      throw new OpenfortError(
+        'In order to sign a message, an embedded signer must be configured',
+        OpenfortErrorType.MISSING_EMBEDDED_SIGNER_ERROR,
+      );
     }
     if (this.signer.useCredentials()) {
       await this.validateAndRefreshToken();
@@ -526,14 +503,16 @@ export class Openfort {
   ): Promise<SessionResponse> {
     await this.recoverSigner();
     if (!this.signer) {
-      throw new NoSignerConfigured(
+      throw new OpenfortError(
         'No signer configured nor signature provided',
+        OpenfortErrorType.MISSING_SIGNER_ERROR,
       );
     }
 
     if (this.signer.getSingerType() !== SignerType.SESSION) {
-      throw new NoSignerConfigured(
+      throw new OpenfortError(
         'Session signer must be configured to sign a session',
+        OpenfortErrorType.MISSING_SESSION_SIGNER_ERROR,
       );
     }
 
@@ -625,27 +604,6 @@ export class Openfort {
     );
   }
 
-  public async isAuthenticated(): Promise<boolean> {
-    if (!this.credentialsProvided()) {
-      return false;
-    }
-
-    if (!this.signer) {
-      const signerType = this.instanceManager.getSignerType();
-      if (signerType !== SignerType.EMBEDDED) {
-        return false;
-      }
-      const signer = this.newEmbeddedSigner();
-      return await signer.isLoaded();
-    }
-
-    if (this.signer.getSingerType() !== SignerType.EMBEDDED) {
-      return false;
-    }
-
-    return await (this.signer as EmbeddedSigner).isLoaded();
-  }
-
   public getAccessToken(): string | null {
     return this.instanceManager.getAccessToken()?.token ?? null;
   }
@@ -660,6 +618,16 @@ export class Openfort {
     }
 
     return true;
+  }
+
+  public async getUser(): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken();
+    const accessToken = this.instanceManager.getAccessToken();
+    if (!accessToken) {
+      throw new OpenfortError('No accessToken found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    }
+
+    return await this.authManager.getUser(accessToken.token);
   }
 
   public async validateAndRefreshToken() {

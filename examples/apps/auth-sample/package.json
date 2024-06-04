@@ -8,18 +8,19 @@
     "prettier": "prettier -w \"**/*.ts\" \"**/*.tsx\""
   },
   "dependencies": {
-    "@openfort/openfort-js": "0.7.6",
+    "@heroicons/react": "^2.0.13",
+    "@openfort/openfort-js": "0.7.7",
     "@openfort/openfort-node": "^0.6.47",
+    "@radix-ui/react-toast": "^1.1.2",
+    "@tailwindcss/forms": "^0.5.3",
     "axios": "^1.6.8",
+    "clsx": "^1.2.1",
     "ethers": "5.7.2",
-    "js-cookie": "^3.0.5",
     "next": "^12.3.1",
-    "nookies": "^2.5.2",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@types/js-cookie": "^3.0.6",
     "@types/react": "18.2.65",
     "autoprefixer": "^10.3.4",
     "eslint": "7.32.0",
@@ -35,7 +36,7 @@
     "lint-staged": "^13.0.3",
     "postcss": "^8.3.6",
     "prettier": "^2.7.1",
-    "tailwindcss": "^2.2.15",
+    "tailwindcss": "^3.2.1",
     "typescript": "5.0.4"
   }
 }
