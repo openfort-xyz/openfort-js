@@ -53,6 +53,7 @@ function RegisterPage() {
         if (
           linkedAccount &&
           linkedAccount.verified === false &&
+          linkedAccount.email &&
           router.query.state
         ) {
           await openfort.verifyEmail({
