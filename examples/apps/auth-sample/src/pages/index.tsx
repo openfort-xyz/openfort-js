@@ -28,6 +28,7 @@ const HomePage: NextPage = () => {
     const newMessage = `> ${message} \n\n`;
     setMessage((prev) => prev + newMessage);
   };
+
   useEffect(() => {
     const fetchUser = async () => {
       const sessionData = await openfort.getUser().catch((error: Error) => {
@@ -108,7 +109,7 @@ const HomePage: NextPage = () => {
             />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-8">
             <h2 className="flex justify-left font-medium text-xl pb-4">
               Account actions
