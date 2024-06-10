@@ -60,7 +60,7 @@ function RegisterPage() {
             email: linkedAccount.email,
             state: router.query.state as string,
           });
-          router.push('/app');
+          router.push('/');
         }
       } catch (error) {
         setStatus({

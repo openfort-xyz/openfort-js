@@ -123,6 +123,16 @@ export const useOpenfort = () => {
       setError(error instanceof Error ? error : new Error('An error occurred during logout'));
     }
   }, []);
+
+  const getUser = useCallback(async () => {
+    try {
+      return await openfort.getUser();
+    } catch (error) {
+      console.error('Error getting user:', error);
+      setError(error instanceof Error ? error : new Error('An error occurred getting the user'));
+      return null;
+    }
+  } ,[]);
   
 
 
@@ -134,6 +144,7 @@ export const useOpenfort = () => {
     signTypedData,
     handleRecovery,
     error,
-    logout  
+    logout,
+    getUser
   }
 };

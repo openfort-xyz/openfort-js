@@ -3,10 +3,11 @@ import {useOpenfort} from '../../hooks/useOpenfort';
 import {EmbeddedState} from '@openfort/openfort-js';
 import Loading from '../Loading';
 
-const SignTypedDataButton: React.FC = () => {
+const SignTypedDataButton: React.FC<{
+  handleSetMessage: (message: string) => void;
+}> = ({handleSetMessage}) => {
   const {signTypedData, embeddedState, error} = useOpenfort();
   const [loading, setLoading] = useState(false);
-  const [signature, setSignature] = useState<string | null>(null);
   const handleSignTypedData = async () => {
     try {
       setLoading(true);
@@ -43,7 +44,7 @@ const SignTypedDataButton: React.FC = () => {
       if (!signature) {
         throw new Error('Failed to sign message');
       }
-      setSignature(signature);
+      handleSetMessage(signature);
     } catch (err) {
       // Handle errors from minting process
       console.error('Failed to sign message:', err);
@@ -52,7 +53,7 @@ const SignTypedDataButton: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div>
       <button
         onClick={handleSignTypedData}
         disabled={embeddedState !== EmbeddedState.READY}
@@ -60,9 +61,7 @@ const SignTypedDataButton: React.FC = () => {
       >
         {loading ? <Loading /> : 'Sign Typed Message'}
       </button>
-      {signature && (
-        <p className="flex max-w-sm mt-2 overflow-auto">{signature}</p>
-      )}
+
       {error && (
         <p className="mt-2 text-red-500">{`Error: ${error.message}`}</p>
       )}

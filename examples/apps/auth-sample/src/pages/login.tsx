@@ -35,7 +35,7 @@ function LoginPage() {
         accessToken: router.query.access_token as string,
         refreshToken: router.query.refresh_token as string,
       });
-      router.push('/app');
+      router.push('/');
     }
   }, [router.query]);
   useEffect(() => {
@@ -46,7 +46,7 @@ function LoginPage() {
           title: 'Signing in...',
         });
 
-        location.href = '/app';
+        location.href = '/';
       };
 
       if (user) loadData();
@@ -83,7 +83,7 @@ function LoginPage() {
         title: 'Successfully signed in',
       });
 
-      router.push('/app');
+      router.push('/');
     }
   };
 
