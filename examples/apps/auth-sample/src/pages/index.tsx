@@ -100,7 +100,7 @@ const HomePage: NextPage = () => {
         </div>
         <div className="mb-8">
           <span className="font-medium text-black">Console: </span>
-          <div className="hidden py-4 md:block md:h-full">
+          <div className="py-4 block h-full">
             <textarea
               ref={textareaRef}
               className="no-scrollbar h-full w-full resize-none rounded-lg border-0 bg-gray-100 p-4 font-mono text-xs text-black"
