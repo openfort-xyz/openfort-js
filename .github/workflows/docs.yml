@@ -1,7 +1,11 @@
 name: Docs
+
 on:
-  release:
-    types: [created]
+  # release:
+  #   types: [created]
+  push:
+    branches: main
+
 jobs:
   gen-docs:
     name: 'Publish docs / OS ${{ matrix.os }} / Node ${{ matrix.node }}'
