@@ -1,5 +1,5 @@
-import { SDKOverrides } from 'types';
 import { createConfig, OpenfortAPIConfiguration } from '@openfort/openapi-clients';
+import { SDKOverrides } from '../types';
 import { OpenfortError, OpenfortErrorType } from '../errors/openfortError';
 
 const validateConfiguration = <T>(

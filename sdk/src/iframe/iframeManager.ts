@@ -1,4 +1,4 @@
-import { SDKConfiguration } from 'config';
+import { SDKConfiguration } from '../config';
 import {
   ConfigureRequest,
   ConfigureResponse,

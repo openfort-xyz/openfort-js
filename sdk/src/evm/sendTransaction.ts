@@ -1,8 +1,8 @@
 import { TransactionRequest } from '@ethersproject/providers';
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { Interaction, ResponseResponse, TransactionIntentResponse } from 'types';
-import { EmbeddedSigner } from 'signer/embedded.signer';
-import InstanceManager from 'instanceManager';
+import { Interaction, ResponseResponse, TransactionIntentResponse } from '../types';
+import { EmbeddedSigner } from '../signer/embedded.signer';
+import InstanceManager from '../instanceManager';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 
 export type EthSendTransactionParams = {

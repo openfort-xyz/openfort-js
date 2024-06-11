@@ -1,5 +1,6 @@
 import { _TypedDataEncoder } from '@ethersproject/hash';
 import { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer';
+import { BackendApiClients } from '@openfort/openapi-clients';
 import {
   AccountType,
   EmbeddedState,
@@ -16,14 +17,13 @@ import {
   AuthResponse,
   AuthPlayerResponse,
   OpenfortEventMap,
-} from 'types';
-import { SDKConfiguration } from 'config';
-import { BackendApiClients } from '@openfort/openapi-clients';
-import { EvmProvider } from 'evm';
-import { Provider } from 'evm/types';
-import { announceProvider, openfortProviderInfo } from 'evm/provider/eip6963';
-import TypedEventEmitter from 'utils/typedEventEmitter';
-import { OpenfortError, OpenfortErrorType } from 'errors/openfortError';
+} from './types';
+import { SDKConfiguration } from './config';
+import { EvmProvider } from './evm';
+import { Provider } from './evm/types';
+import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';
+import TypedEventEmitter from './utils/typedEventEmitter';
+import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { ISigner, SignerType } from './signer/signer';
 import AuthManager from './authManager';
 import InstanceManager from './instanceManager';

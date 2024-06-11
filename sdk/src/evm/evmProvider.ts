@@ -1,9 +1,9 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { BackendApiClients } from '@openfort/openapi-clients';
 import { hexlify } from '@ethersproject/bytes';
-import { EmbeddedSigner } from 'signer/embedded.signer';
-import InstanceManager from 'instanceManager';
-import { chainMap } from 'chains';
+import { EmbeddedSigner } from '../signer/embedded.signer';
+import InstanceManager from '../instanceManager';
+import { chainMap } from '../chains';
 import {
   JsonRpcRequestCallback,
   JsonRpcRequestPayload,

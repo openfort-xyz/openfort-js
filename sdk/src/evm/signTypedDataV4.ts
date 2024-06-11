@@ -1,5 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { EmbeddedSigner } from 'signer/embedded.signer';
+import { EmbeddedSigner } from '../signer/embedded.signer';
 import { getSignedTypedData } from './walletHelpers';
 import { TypedDataPayload } from './types';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';

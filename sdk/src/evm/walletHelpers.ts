@@ -1,7 +1,7 @@
 import { _TypedDataEncoder } from '@ethersproject/hash';
-import { EmbeddedSigner } from 'signer/embedded.signer';
-import { AccountType } from 'types';
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
+import { EmbeddedSigner } from '../signer/embedded.signer';
+import { AccountType } from '../types';
 import { TypedDataPayload } from './types';
 
 export const getSignedTypedData = async (

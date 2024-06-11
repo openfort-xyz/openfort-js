@@ -1,6 +1,6 @@
-import { JWK } from 'types';
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { SDKConfiguration } from 'config';
+import { JWK } from './types';
+import { SDKConfiguration } from './config';
 import { SignerType } from './signer/signer';
 import {
   authTokenStorageKey,

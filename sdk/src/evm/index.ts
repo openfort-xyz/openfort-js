@@ -1,2 +1,2 @@
 export * from './evmProvider';
-export * from 'types';
+export * from './types';

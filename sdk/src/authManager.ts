@@ -1,15 +1,15 @@
 import {
   errors, importJWK, jwtVerify, KeyLike,
 } from 'jose';
+import { BackendApiClients } from '@openfort/openapi-clients';
+import * as crypto from 'crypto';
 import {
   Auth, InitAuthResponse, InitializeOAuthOptions, JWK, SIWEInitResponse,
   AuthPlayerResponse, AuthResponse, OAuthProvider, ThirdPartyOAuthProvider, TokenType,
   CodeChallengeMethodEnum,
-} from 'types';
-import { SDKConfiguration } from 'config';
-import { BackendApiClients } from '@openfort/openapi-clients';
-import * as crypto from 'crypto';
-import { OpenfortErrorType, withOpenfortError } from 'errors/openfortError';
+} from './types';
+import { SDKConfiguration } from './config';
+import { OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import InstanceManager from './instanceManager';
 import { isBrowser } from './utils/helpers';
 import DeviceCredentialsManager from './utils/deviceCredentialsManager';

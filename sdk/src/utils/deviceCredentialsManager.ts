@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { PKCEData } from 'types';
+import { PKCEData } from '../types';
 
 const KEY_PKCE_STATE = 'pkce_state';
 const KEY_PKCE_VERIFIER = 'pkce_verifier';

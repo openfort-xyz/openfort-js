@@ -1,0 +1,21 @@
+{
+  "entryPoints": [
+    "sdk/",
+  ],
+  "name": "js-openfort-sdk",
+  "entryPointStrategy": "packages",
+  "excludeReferences": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "includeVersion": true,
+  "cleanOutputDir": true,
+  "out": "./docs",
+  "readme": "./sdk/README.md",
+  // Potentially useful for debugging
+  "logLevel": "Verbose",
+  "titleLink": "https://www.openfort.xyz/docs/",
+  "navigationLinks": {
+    "Openfort Docs": "https://www.openfort.xyz/docs",
+    "Openfort Dashboard": "https://dashboard.openfort.xyz"
+  }
+}
