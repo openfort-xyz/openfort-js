@@ -24,10 +24,19 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '${{ matrix.node }}'
-      - run: |
-          yarn install --frozen-lockfile
-          yarn run docs:build
-          yarn run docs:json
+
+      - name: Install Dependencies
+        run: yarn install --immutable
+
+      - name: Build
+        run: yarn build
+
+      - name: Build Docs
+        run: yarn run docs:build
+
+      - name: Build JSON Docs
+        run: yarn run docs:json
+
       - name: Publish
         uses: peaceiris/actions-gh-pages@v3
         with:
