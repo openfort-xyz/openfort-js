@@ -1,5 +1,9 @@
 # Auth Sample
 
+Live demo: https://openfort-auth-non-custodial.vercel.app
+
+## OAuth methods
+
 ```typescript
 export async function oAuthWithoutPooling() {
   const initOAuth = await openfort.initOAuth(OAuthProvider.GOOGLE, false, {
@@ -41,5 +45,3 @@ export async function linkOAuthWithPooling() {
   console.log(auth);
 }
 ```
-
-Live demo: https://openfort-auth-non-custodial.vercel.app
