@@ -156,13 +156,14 @@ function LoginPage() {
           <div className="mt-6 grid grid-cols-1 gap-3">
             <div>
               <button
-                onClick={() => {
-                  openfort.initOAuth({
+                onClick={async () => {
+                  const {url} = await openfort.initOAuth({
                     provider: 'google',
                     options: {
-                      redirectTo: getURL() + '/api/auth/callback/',
+                      redirectTo: getURL() + '/login',
                     },
                   });
+                  window.location.href = url;
                 }}
                 className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
               >
@@ -171,13 +172,14 @@ function LoginPage() {
             </div>
             <div>
               <button
-                onClick={() => {
-                  openfort.initOAuth({
+                onClick={async () => {
+                  const {url} = await openfort.initOAuth({
                     provider: 'twitter',
                     options: {
-                      redirectTo: getURL() + '/api/auth/callback/',
+                      redirectTo: getURL() + '/login',
                     },
                   });
+                  window.location.href = url;
                 }}
                 className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
               >
@@ -186,13 +188,14 @@ function LoginPage() {
             </div>
             <div>
               <button
-                onClick={() => {
-                  openfort.initOAuth({
+                onClick={async () => {
+                  const {url} = await openfort.initOAuth({
                     provider: 'facebook',
                     options: {
-                      redirectTo: getURL() + '/api/auth/callback/',
+                      redirectTo: getURL() + '/login',
                     },
                   });
+                  window.location.href = url;
                 }}
                 className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
               >

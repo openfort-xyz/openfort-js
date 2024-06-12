@@ -23,6 +23,14 @@
         "browsers": "Chrome 90"
       }
     },
+    "unreal": {
+      "outputFormat": "global",
+      "context": "browser",
+      "source": "src/bridge.ts",
+      "engines": {
+        "browsers": "Chrome 90"
+      }
+    },
     "bundle": {
       "outputFormat": "global",
       "context": "browser",
