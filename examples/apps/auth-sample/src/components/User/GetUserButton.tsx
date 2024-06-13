@@ -1,16 +1,18 @@
 import React, {useState} from 'react';
-import {useOpenfort} from '../../hooks/useOpenfort';
 import Loading from '../Loading';
+import openfort from '../../utils/openfortConfig';
 
 const GetUserButton: React.FC<{
   handleSetMessage: (message: string) => void;
 }> = ({handleSetMessage}) => {
-  const {getUser} = useOpenfort();
   const [loading, setLoading] = useState(false);
+
   const handleUserMessage = async () => {
     try {
       setLoading(true);
-      const user = await getUser();
+      const user = await openfort.getUser().catch((error: Error) => {
+        console.log('error', error);
+      });
       setLoading(false);
       if (!user) {
         throw new Error('Failed to get user');

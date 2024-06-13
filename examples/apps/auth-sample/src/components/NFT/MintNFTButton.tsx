@@ -6,7 +6,7 @@ import Loading from '../Loading';
 const MintNFTButton: React.FC<{
   handleSetMessage: (message: string) => void;
 }> = ({handleSetMessage}) => {
-  const {mintNFT, embeddedState, error} = useOpenfort();
+  const {mintNFT, state} = useOpenfort();
   const [loading, setLoading] = useState(false);
 
   const handleMintNFT = async () => {
@@ -29,15 +29,11 @@ const MintNFTButton: React.FC<{
     <div>
       <button
         onClick={handleMintNFT}
-        disabled={embeddedState !== EmbeddedState.READY}
+        disabled={state !== EmbeddedState.READY}
         className={`mt-4 w-32 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
       >
         {loading ? <Loading /> : 'Mint NFT'}
       </button>
-
-      {error && (
-        <p className="mt-2 text-red-500">{`Error: ${error.message}`}</p>
-      )}
     </div>
   );
 };

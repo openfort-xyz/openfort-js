@@ -18,7 +18,7 @@ import {Logo} from '../components/Logo';
 import GetUserButton from '../components/User/GetUserButton';
 
 const HomePage: NextPage = () => {
-  const {embeddedState} = useOpenfort();
+  const {state} = useOpenfort();
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
   const router = useRouter();
   const [message, setMessage] = useState<string>('');
@@ -37,9 +37,9 @@ const HomePage: NextPage = () => {
       if (sessionData) setUser(sessionData);
       else router.push('/login');
     };
-    if (embeddedState === EmbeddedState.UNAUTHENTICATED) router.push('/login');
+    if (state === EmbeddedState.UNAUTHENTICATED) router.push('/login');
     fetchUser();
-  }, [openfort, embeddedState]);
+  }, [openfort, state]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -61,7 +61,7 @@ const HomePage: NextPage = () => {
     }
   }, [linkedAccount, router]);
 
-  if (embeddedState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
+  if (state === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
     return (
       <AuthLayout title="Set up your embedded signer" subtitle={<div></div>}>
         <div>
@@ -78,7 +78,7 @@ const HomePage: NextPage = () => {
     );
   }
 
-  if (embeddedState !== EmbeddedState.READY) {
+  if (state !== EmbeddedState.READY) {
     return (
       <div className="absolute top-1/2 left-1/2 flex items-center">
         <Loading />

@@ -29,31 +29,31 @@ function LoginPage() {
 
   useEffect(() => {
     if (router.query.access_token && router.query.refresh_token) {
-      console.log('router.query', router.query);
+      setStatus({
+        type: 'loading',
+        title: 'Signing in...',
+      });
       openfort.storeCredentials({
         player: undefined,
-        accessToken: router.query.access_token as string,
-        refreshToken: router.query.refresh_token as string,
+        accessToken: router.query.access_token,
+        refreshToken: router.query.refresh_token,
       });
-      router.push('/');
+      location.href = '/';
     }
   }, [router.query]);
+
   useEffect(() => {
-    try {
-      const loadData = async () => {
-        setStatus({
-          type: 'loading',
-          title: 'Signing in...',
-        });
+    const loadData = async () => {
+      setStatus({
+        type: 'loading',
+        title: 'Signing in...',
+      });
 
-        location.href = '/';
-      };
+      router.push('/');
+    };
 
-      if (user) loadData();
-    } catch (error) {
-      // console.log('error', error)
-    }
-  }, [user, openfort]);
+    if (user) loadData();
+  }, [user]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setStatus({

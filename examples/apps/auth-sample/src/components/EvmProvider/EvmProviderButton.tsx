@@ -7,7 +7,7 @@ import Loading from '../Loading';
 const Provider1193ActionButton: React.FC<{
   handleSetMessage: (message: string) => void;
 }> = ({handleSetMessage}) => {
-  const {getEvmProvider, embeddedState, error} = useOpenfort();
+  const {getEvmProvider, state} = useOpenfort();
   const [loading, setLoading] = useState(false);
 
   const handleSendTransaction = async () => {
@@ -49,14 +49,11 @@ const Provider1193ActionButton: React.FC<{
     <div>
       <button
         onClick={handleSendTransaction}
-        disabled={embeddedState !== EmbeddedState.READY}
+        disabled={state !== EmbeddedState.READY}
         className={`mt-2 w-60 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
       >
         {loading ? <Loading /> : 'EIP-1193 Provider Action'}
       </button>
-      {error && (
-        <p className="mt-2 text-red-500">{`Error: ${error.message}`}</p>
-      )}
     </div>
   );
 };
