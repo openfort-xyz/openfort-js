@@ -45,11 +45,14 @@ export default class AuthManager {
     provider: OAuthProvider,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
+    const usePooling = options?.usePooling ?? false;
+    // eslint-disable-next-line no-param-reassign
+    delete options?.usePooling;
     const request = {
       oAuthInitRequest: {
         provider,
         options,
-        usePooling: options?.usePooling || false,
+        usePooling,
       },
     };
     const result = await this.backendApiClients.authenticationApi.initOAuth(

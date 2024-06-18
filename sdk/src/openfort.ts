@@ -182,12 +182,10 @@ export class Openfort {
    * @param password - User's password.
    * @returns An AuthResponse object containing authentication details.
    */
-  public async loginWithEmailPassword(
+  public async logInWithEmailPassword(
     { email, password }: { email: string; password: string },
   ): Promise<AuthResponse> {
-    this.instanceManager.removeAccessToken();
-    this.instanceManager.removeRefreshToken();
-    this.instanceManager.removePlayerID();
+    this.logout();
     const result = await this.authManager.loginEmailPassword(email, password);
     this.storeCredentials({
       player: result.player.id,
@@ -208,9 +206,7 @@ export class Openfort {
   public async signUpWithEmailPassword(
     { email, password, options }: { email: string; password: string; options?: { data: { name: string } } },
   ): Promise<AuthResponse> {
-    this.instanceManager.removeAccessToken();
-    this.instanceManager.removeRefreshToken();
-    this.instanceManager.removePlayerID();
+    this.logout();
     const result = await this.authManager.signupEmailPassword(email, password, options?.data.name);
     this.storeCredentials({
       player: result.player.id,
