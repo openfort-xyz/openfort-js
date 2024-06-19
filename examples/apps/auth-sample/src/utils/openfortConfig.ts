@@ -7,8 +7,8 @@ const openfort = new Openfort({
   },
   shieldConfiguration: {
     shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
-    shieldEncryptionKey: process.env.NEXT_PUBLIC_SHIELD_ENCRYPTION_SHARE,
-  },
+    shieldEncryptionKey: process.env.NEXT_PUBLIC_SHIELD_ENCRYPTION_SHARE!,
+  }
 });
 
 export default openfort;

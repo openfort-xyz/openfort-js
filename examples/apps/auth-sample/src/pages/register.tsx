@@ -8,7 +8,7 @@ import {TextField} from '../components/Fields';
 import openfort from '../utils/openfortConfig';
 import {CheckCircleIcon} from '@heroicons/react/24/outline';
 import {StatusType, Toast} from '../components/Toasts';
-import {AuthPlayerResponse} from '@openfort/openfort-js';
+import {AuthPlayerResponse, OAuthProvider} from '@openfort/openfort-js';
 import {useRouter} from 'next/router';
 import {getURL} from '../utils/getUrl';
 
@@ -43,6 +43,9 @@ function RegisterPage() {
     const linkedAccount = user?.linkedAccounts?.find(
       (account: any) => account.provider === 'email'
     );
+    if (linkedAccount?.verified === false) {
+      setEmailConfirmation(true);
+    }
     return linkedAccount;
   }, [user]);
 
@@ -136,7 +139,7 @@ function RegisterPage() {
         subtitle={
           <>
             {'Have an account? '}
-            <Link href="/login" className="text-orange-600">
+            <Link href="/login" className="text-blue-600">
               Sign in
             </Link>
           </>
@@ -228,7 +231,7 @@ function RegisterPage() {
               <button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
-                    provider: 'google',
+                    provider: OAuthProvider.GOOGLE,
                     options: {
                       redirectTo: getURL() + '/login',
                     },
@@ -244,7 +247,7 @@ function RegisterPage() {
               <button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
-                    provider: 'twitter',
+                    provider: OAuthProvider.TWITTER,
                     options: {
                       redirectTo: getURL() + '/login',
                     },
@@ -260,7 +263,7 @@ function RegisterPage() {
               <button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
-                    provider: 'facebook',
+                    provider: OAuthProvider.FACEBOOK,
                     options: {
                       redirectTo: getURL() + '/login',
                     },

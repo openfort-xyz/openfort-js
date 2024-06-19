@@ -1,10 +1,10 @@
-import {sepolia} from 'wagmi/chains';
+import {polygonAmoy} from 'wagmi/chains';
 import React, {FunctionComponent, useState} from 'react';
 import {withWagmi} from './wagmiProvider';
-import {Connector, createConfig, http, useConnect} from 'wagmi';
+import {Connector, createConfig, http, useAccount, useConnect} from 'wagmi';
 import {Chain, WalletConnector} from '../utils/constants';
 import type {Chain as WagmiChain} from 'wagmi/chains';
-import {metaMask, walletConnect, coinbaseWallet} from 'wagmi/connectors';
+import {metaMask, walletConnect} from 'wagmi/connectors';
 import {Transport} from '@wagmi/core';
 import {OnSuccess, SignMessageFunction} from '../utils/types';
 import {createSIWEMessage} from '../utils/create-siwe-message';
@@ -18,6 +18,7 @@ type GetWalletButtonsParams = {
 
 type WalletConnectButtonsOwnProps = {
   onSuccess: OnSuccess;
+  link: boolean;
 };
 
 type WalletConnectButtonsProps = WalletConnectButtonsOwnProps & {
@@ -61,10 +62,13 @@ const WalletConnectButton = ({
 
 const WalletConnectButtons = ({
   onSuccess,
+  link,
   signMessage,
 }: WalletConnectButtonsProps) => {
   const {connectors, connect} = useConnect();
+
   const [loading, setLoading] = useState<string>(null!);
+
   const initConnect = async (connector: Connector) => {
     setLoading(connector.id);
     connect(
@@ -78,17 +82,26 @@ const WalletConnectButtons = ({
         },
         onSuccess: async ({accounts}) => {
           const address = accounts[0];
+          if (connector.name === 'Openfort') onSuccess();
           if (address) {
             try {
               const {nonce} = await openfort.initSIWE({address});
               const SIWEMessage = createSIWEMessage(address, nonce);
               const signature = await signMessage(SIWEMessage);
-              await openfort.authenticateWithSIWE({
-                signature,
-                message: SIWEMessage,
-                connectorType: 'metamask',
-                walletClientType: 'injected',
-              });
+              link
+                ? await openfort.linkWallet({
+                    authToken: openfort.getAccessToken() as string,
+                    signature,
+                    message: SIWEMessage,
+                    connectorType: connector?.type,
+                    walletClientType: connector?.name,
+                  })
+                : await openfort.authenticateWithSIWE({
+                    signature,
+                    message: SIWEMessage,
+                    connectorType: connector?.type,
+                    walletClientType: connector?.name,
+                  });
               onSuccess();
             } finally {
               setLoading(null!);
@@ -109,9 +122,7 @@ const WalletConnectButtons = ({
           icon={`${connector.type.toLowerCase()}.${
             connector.type === 'injected' ? 'webp' : 'svg'
           }`}
-          title={
-            connector.type === 'injected' ? 'Browser wallet' : connector.name
-          }
+          title={connector.name}
         />
       ))}
     </>
@@ -119,12 +130,11 @@ const WalletConnectButtons = ({
 };
 
 const chainToWagmiChain = {
-  [Chain.SEPOLIA]: sepolia,
+  [Chain.AMOY]: polygonAmoy,
 };
 const connectorToWagmiConnector = {
   [WalletConnector.METAMASK]: metaMask,
   [WalletConnector.WALLET_CONNECT]: walletConnect,
-  [WalletConnector.COINBASE]: coinbaseWallet,
 };
 
 export const getWalletButtons = (params: GetWalletButtonsParams) => {
@@ -141,9 +151,7 @@ export const getWalletButtons = (params: GetWalletButtonsParams) => {
       ? connectorToWagmiConnector[connector]({
           projectId: params.walletConnectProjectId as string,
         })
-      : connector === 'metaMask'
-      ? connectorToWagmiConnector[connector]({dappMetadata: {name: 'Openfort'}})
-      : connectorToWagmiConnector[connector]()
+      : connectorToWagmiConnector[connector]({dappMetadata: {name: 'Openfort'}})
   );
   const config = createConfig({
     chains: chains as any,

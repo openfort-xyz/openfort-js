@@ -31,9 +31,9 @@ type ContextType = {
   ) => Promise<void>;
   auth: (accessToken: string) => Promise<AuthPlayerResponse>;
   signMessage: (
-    hashedMessage: string
+    hashedMessage: string,
+    options?: {hashMessage: boolean; arrayifyMessage: boolean}
   ) => Promise<{data?: string; error?: Error}>;
-  mintNFT: () => Promise<string>;
   signTypedData: (
     domain: TypedDataDomain,
     types: Record<string, Array<TypedDataField>>,
@@ -106,36 +106,13 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
     []
   );
 
-  const mintNFT = useCallback(async (): Promise<string> => {
-    const collectResponse = await fetch(`/api/protected-collect`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${openfort.getAccessToken()}`,
-      },
-    });
-
-    if (!collectResponse.ok) {
-      alert('Failed to mint NFT status: ' + collectResponse.status);
-      throw new Error('Failed to perform API call');
-    }
-    const collectResponseJSON = await collectResponse.json();
-
-    if (collectResponseJSON.data?.nextAction) {
-      const response = await openfort.sendSignatureTransactionIntentRequest(
-        collectResponseJSON.data.id,
-        collectResponseJSON.data.nextAction.payload.userOperationHash
-      );
-      return response.response?.transactionHash;
-    } else {
-      return collectResponseJSON.response?.transactionHash;
-    }
-  }, []);
-
   const signMessage = useCallback(
-    async (message: string): Promise<{data?: string; error?: Error}> => {
+    async (
+      message: string,
+      options?: {hashMessage: boolean; arrayifyMessage: boolean}
+    ): Promise<{data?: string; error?: Error}> => {
       try {
-        const data = await openfort.signMessage(message);
+        const data = await openfort.signMessage(message, options);
         return {data: data};
       } catch (err) {
         console.log('Error signing message:', err);
@@ -217,7 +194,6 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
         signMessage,
         signTypedData,
         logout,
-        mintNFT,
       }}
     >
       {children}

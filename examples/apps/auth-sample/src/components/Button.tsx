@@ -31,7 +31,7 @@ const variantStyles = {
   filled: 'rounded-md bg-zinc-900 py-1 px-3 text-white hover:bg-zinc-700',
   outline:
     'rounded-md py-1 px-3 text-zinc-700 ring-1 ring-inset ring-zinc-900/10 hover:bg-zinc-900/2.5 hover:text-zinc-900',
-  text: 'text-orange-600 hover:text-zinc-900',
+  text: 'text-blue-600 hover:text-zinc-900',
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

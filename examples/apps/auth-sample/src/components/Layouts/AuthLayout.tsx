@@ -12,7 +12,7 @@ export function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-full overflow-hidden pt-16 sm:py-28">
+    <main className="flex min-h-full overflow-hidden pt-8 sm:py-12">
       <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
         <div className="flex pl-4 md:mb-4 md:pl-8">
           <Link href="/" aria-label="Home">

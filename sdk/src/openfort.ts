@@ -143,6 +143,12 @@ export class Openfort {
    * @returns A SessionKey object containing the address and registration status.
    */
   public configureSessionKey(): SessionKey {
+    if (this.instanceManager.getSignerType() === SignerType.EMBEDDED) {
+      throw new OpenfortError(
+        'Session signer must be configured to sign a session',
+        OpenfortErrorType.MISSING_SESSION_SIGNER_ERROR,
+      );
+    }
     const signer = new SessionSigner(this.instanceManager);
     this.signer = signer;
 
@@ -456,6 +462,7 @@ export class Openfort {
    * @param transactionIntentId - Transaction intent ID.
    * @param userOperationHash - User operation hash.
    * @param signature - Transaction signature.
+   * @param optimistic - Whether the request is optimistic.
    * @returns A TransactionIntentResponse object.
    * @throws {OpenfortError} If no userOperationHash or signature is provided.
    */
@@ -463,6 +470,7 @@ export class Openfort {
     transactionIntentId: string,
     userOperationHash: string | null = null,
     signature: string | null = null,
+    optimistic: boolean = false,
   ): Promise<TransactionIntentResponse> {
     let newSignature = signature;
     if (!newSignature) {
@@ -492,6 +500,7 @@ export class Openfort {
       id: transactionIntentId,
       signatureRequest: {
         signature: newSignature,
+        optimistic,
       },
     };
     const result = await this.backendApiClients.transactionIntentsApi.signature(request);
@@ -584,29 +593,12 @@ export class Openfort {
    * @param signature - Session signature.
    * @param optimistic - Whether the request is optimistic.
    * @returns A SessionResponse object.
-   * @throws {OpenfortError} If no signer is configured.
-   * @throws {OpenfortError} If the signer is not a SessionSigner.
    */
   public async sendRegisterSessionRequest(
     sessionId: string,
     signature: string,
     optimistic?: boolean,
   ): Promise<SessionResponse> {
-    await this.recoverSigner();
-    if (!this.signer) {
-      throw new OpenfortError(
-        'No signer configured nor signature provided',
-        OpenfortErrorType.MISSING_SIGNER_ERROR,
-      );
-    }
-
-    if (this.signer.getSingerType() !== SignerType.SESSION) {
-      throw new OpenfortError(
-        'Session signer must be configured to sign a session',
-        OpenfortErrorType.MISSING_SESSION_SIGNER_ERROR,
-      );
-    }
-
     const request = {
       id: sessionId,
       signatureRequest: {
