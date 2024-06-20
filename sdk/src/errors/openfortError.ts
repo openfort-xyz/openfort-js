@@ -14,7 +14,7 @@ export enum OpenfortErrorType {
 }
 
 function isAPIError(error: any): error is Error {
-  return 'code' in error && 'message' in error;
+  return 'type' in error && 'message' in error;
 }
 
 export class OpenfortError extends Error {

@@ -324,13 +324,11 @@
           },
           "dataSuffix": {
             "type": "string",
-            "description": "Data to append to the end of the calldata. Useful for [adding a \"domain\" tag](https://opensea.notion.site/opensea/Seaport-Order-Attributions-ec2d69bf455041a5baa490941aad307f)",
-            "example": "0x12345678"
+            "description": "Data to append to the end of the calldata. Useful for [adding a \"domain\" tag](https://opensea.notion.site/opensea/Seaport-Order-Attributions-ec2d69bf455041a5baa490941aad307f)"
           },
           "data": {
             "type": "string",
-            "description": "The encoded calldata of the contract.",
-            "example": "0x12345678"
+            "description": "The encoded calldata of the contract."
           }
         },
         "type": "object",
@@ -845,7 +843,9 @@
         "enum": [
           "google",
           "twitter",
-          "facebook"
+          "facebook",
+          "discord",
+          "epic_games"
         ],
         "type": "string"
       },
@@ -1081,6 +1081,74 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OAuthProvider.DISCORD": {
+        "enum": [
+          "discord"
+        ],
+        "type": "string"
+      },
+      "DiscordOAuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/OAuthProvider.DISCORD",
+            "description": "OAuth provider type"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Discord API client ID."
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "Discord API client secret."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "clientId",
+          "clientSecret"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OAuthProvider.EPIC_GAMES": {
+        "enum": [
+          "epic_games"
+        ],
+        "type": "string"
+      },
+      "EpicGamesOAuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/OAuthProvider.EPIC_GAMES",
+            "description": "OAuth provider type"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Epic Games API client ID."
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "Epic Games API client secret."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "clientId",
+          "clientSecret"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "ThirdPartyOAuthProvider.PLAYFAB": {
         "enum": [
           "playfab"
@@ -1220,6 +1288,12 @@
             "$ref": "#/components/schemas/FacebookOAuthConfig"
           },
           {
+            "$ref": "#/components/schemas/DiscordOAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/EpicGamesOAuthConfig"
+          },
+          {
             "$ref": "#/components/schemas/PlayFabOAuthConfig"
           },
           {
@@ -1339,6 +1413,21 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OAuthProvders": {
+        "enum": [
+          "google",
+          "twitter",
+          "facebook",
+          "accelbyte",
+          "firebase",
+          "lootlocker",
+          "playfab",
+          "supabase",
+          "custom",
+          "oidc"
+        ],
+        "type": "string"
+      },
       "TokenType": {
         "description": "Enum of the supporting OAuth providers.",
         "enum": [
@@ -1358,7 +1447,7 @@
       "AuthenticateOAuthRequest": {
         "properties": {
           "provider": {
-            "$ref": "#/components/schemas/AuthProvider",
+            "$ref": "#/components/schemas/OAuthProvders",
             "description": "OAuth provider",
             "example": "firebase"
           },
@@ -1677,8 +1766,13 @@
         "properties": {
           "refreshToken": {
             "type": "string",
-            "description": "Specifies the session.",
+            "description": "Specifies the session refresh token.",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+          },
+          "forceRefresh": {
+            "type": "boolean",
+            "description": "Specifies whether to force refresh the session.",
+            "example": false
           }
         },
         "required": [
@@ -9092,7 +9186,7 @@
         ],
         "security": [
           {
-            "pk_access_token": []
+            "pk": []
           }
         ],
         "parameters": [],

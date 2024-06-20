@@ -392,7 +392,8 @@ window.callFunction = async (jsonData: string) => {
         break;
       }
       case OPENFORT_FUNCTIONS.validateAndRefreshToken: {
-        await openfortClient?.validateAndRefreshToken();
+        const request = JSON.parse(data);
+        await openfortClient?.validateAndRefreshToken(request.forceRefresh);
         callbackToGame({
           responseFor: fxName,
           requestId,
