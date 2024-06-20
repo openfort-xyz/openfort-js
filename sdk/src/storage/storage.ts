@@ -10,6 +10,8 @@ export const chainIDStorageKey = 'openfort.chain_id';
 export const jwksStorageKey = 'openfort.jwk';
 export const deviceIDStorageKey = 'openfort.device_id';
 export const accountTypeStorageKey = 'openfort.account_type';
+export const shieldAuthTypeStorageKey = 'openfort.shield_auth_type';
+export const shieldAuthTokenStorageKey = 'openfort.shield_auth_token';
 export const accountAddressStorageKey = 'openfort.account_address';
 
 export interface IStorage {

@@ -8,7 +8,7 @@ import {TextField} from '../components/Fields';
 import {StatusType, Toast} from '../components/Toasts';
 import openfort from '../utils/openfortConfig';
 import {getURL} from '../utils/getUrl';
-import {AuthPlayerResponse} from '@openfort/openfort-js';
+import {AuthPlayerResponse, OAuthProvider} from '@openfort/openfort-js';
 
 function LoginPage() {
   const router = useRouter();
@@ -34,9 +34,9 @@ function LoginPage() {
         title: 'Signing in...',
       });
       openfort.storeCredentials({
-        player: undefined,
-        accessToken: router.query.access_token,
-        refreshToken: router.query.refresh_token,
+        player: 'undefined',
+        accessToken: router.query.access_token as string,
+        refreshToken: router.query.refresh_token as string,
       });
       location.href = '/';
     }
@@ -67,7 +67,7 @@ function LoginPage() {
     event.preventDefault();
 
     const data = await openfort
-      .loginWithEmailPassword({
+      .logInWithEmailPassword({
         email: email,
         password: password,
       })
@@ -101,7 +101,7 @@ function LoginPage() {
         subtitle={
           <>
             Don’t have an account?{' '}
-            <Link href="/register" className="text-orange-600">
+            <Link href="/register" className="text-blue-600">
               Sign up
             </Link>
           </>
@@ -131,7 +131,7 @@ function LoginPage() {
               <LinkButton
                 variant="text"
                 href="/forgot-password"
-                className="text-sm font-medium text-orange-600"
+                className="text-sm font-medium text-blue-600"
               >
                 Forgot password?
               </LinkButton>
@@ -158,7 +158,7 @@ function LoginPage() {
               <button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
-                    provider: 'google',
+                    provider: OAuthProvider.GOOGLE,
                     options: {
                       redirectTo: getURL() + '/login',
                     },
@@ -174,7 +174,7 @@ function LoginPage() {
               <button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
-                    provider: 'twitter',
+                    provider: OAuthProvider.TWITTER,
                     options: {
                       redirectTo: getURL() + '/login',
                     },
@@ -190,7 +190,7 @@ function LoginPage() {
               <button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
-                    provider: 'facebook',
+                    provider: OAuthProvider.FACEBOOK,
                     options: {
                       redirectTo: getURL() + '/login',
                     },

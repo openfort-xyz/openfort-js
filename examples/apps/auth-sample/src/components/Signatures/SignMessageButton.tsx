@@ -18,7 +18,6 @@ const SignMessageButton: React.FC<{
       }
       handleSetMessage(signature.data!);
     } catch (err) {
-      // Handle errors from minting process
       console.error('Failed to sign message:', err);
       alert('Failed to sign message. Please try again.');
     }

@@ -29,8 +29,13 @@ export enum AccountType {
   UPGRADEABLE_V5 = 'Upgradeable_v05',
 }
 
+export enum AuthType {
+  OPENFORT = 'openfort',
+  THIRD_PARTY = 'thirdParty',
+}
+
 export type Auth = {
-  player: string;
+  player?: string;
   accessToken: string;
   refreshToken: string;
 };

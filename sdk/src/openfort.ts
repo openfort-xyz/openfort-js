@@ -17,6 +17,7 @@ import {
   AuthResponse,
   AuthPlayerResponse,
   OpenfortEventMap,
+  AuthType,
 } from './types';
 import { SDKConfiguration } from './config';
 import { EvmProvider } from './evm';
@@ -34,7 +35,7 @@ import { SessionStorage } from './storage/sessionStorage';
 import IframeManager, {
   IframeConfiguration,
 } from './iframe/iframeManager';
-import { ShieldAuthentication } from './iframe/types';
+import { ShieldAuthType, ShieldAuthentication } from './iframe/types';
 
 export class Openfort {
   private signer?: ISigner;
@@ -98,6 +99,8 @@ export class Openfort {
       this.instanceManager.removeChainID();
       this.instanceManager.removeDeviceID();
       this.instanceManager.removeJWK();
+      this.instanceManager.removeShieldAuthType();
+      this.instanceManager.removeShieldAuthToken();
     }
   }
 
@@ -143,6 +146,12 @@ export class Openfort {
    * @returns A SessionKey object containing the address and registration status.
    */
   public configureSessionKey(): SessionKey {
+    if (this.instanceManager.getSignerType() === SignerType.EMBEDDED) {
+      throw new OpenfortError(
+        'Session signer must be configured to sign a session',
+        OpenfortErrorType.MISSING_SESSION_SIGNER_ERROR,
+      );
+    }
     const signer = new SessionSigner(this.instanceManager);
     this.signer = signer;
 
@@ -168,8 +177,14 @@ export class Openfort {
     shieldAuthentication?: ShieldAuthentication,
     recoveryPassword?: string,
   ): Promise<void> {
-    const signer = this.newEmbeddedSigner(chainId, shieldAuthentication);
     await this.validateAndRefreshToken();
+    if (shieldAuthentication) {
+      this.instanceManager.setShieldAuthType(shieldAuthentication?.auth);
+      if ((shieldAuthentication?.auth as ShieldAuthType) === ShieldAuthType.CUSTOM) {
+        this.instanceManager.setShieldAuthToken(shieldAuthentication?.token);
+      }
+    }
+    const signer = this.newEmbeddedSigner(chainId);
     await signer.ensureEmbeddedAccount(recoveryPassword);
     this.signer = signer;
     this.instanceManager.setSignerType(SignerType.EMBEDDED);
@@ -182,12 +197,10 @@ export class Openfort {
    * @param password - User's password.
    * @returns An AuthResponse object containing authentication details.
    */
-  public async loginWithEmailPassword(
+  public async logInWithEmailPassword(
     { email, password }: { email: string; password: string },
   ): Promise<AuthResponse> {
-    this.instanceManager.removeAccessToken();
-    this.instanceManager.removeRefreshToken();
-    this.instanceManager.removePlayerID();
+    this.logout();
     const result = await this.authManager.loginEmailPassword(email, password);
     this.storeCredentials({
       player: result.player.id,
@@ -208,9 +221,7 @@ export class Openfort {
   public async signUpWithEmailPassword(
     { email, password, options }: { email: string; password: string; options?: { data: { name: string } } },
   ): Promise<AuthResponse> {
-    this.instanceManager.removeAccessToken();
-    this.instanceManager.removeRefreshToken();
-    this.instanceManager.removePlayerID();
+    this.logout();
     const result = await this.authManager.signupEmailPassword(email, password, options?.data.name);
     this.storeCredentials({
       player: result.player.id,
@@ -306,6 +317,7 @@ export class Openfort {
   public async initOAuth(
     { provider, options }: { provider: OAuthProvider; options?: InitializeOAuthOptions },
   ): Promise<InitAuthResponse> {
+    this.logout();
     const authResponse = await this.authManager.initOAuth(provider, options);
     return authResponse;
   }
@@ -451,7 +463,7 @@ export class Openfort {
       thirdPartyTokenType: null,
     });
     this.instanceManager.setRefreshToken(auth.refreshToken);
-    this.instanceManager.setPlayerID(auth.player);
+    if (auth.player) this.instanceManager.setPlayerID(auth.player);
   }
 
   /**
@@ -460,6 +472,7 @@ export class Openfort {
    * @param transactionIntentId - Transaction intent ID.
    * @param userOperationHash - User operation hash.
    * @param signature - Transaction signature.
+   * @param optimistic - Whether the request is optimistic.
    * @returns A TransactionIntentResponse object.
    * @throws {OpenfortError} If no userOperationHash or signature is provided.
    */
@@ -467,6 +480,7 @@ export class Openfort {
     transactionIntentId: string,
     userOperationHash: string | null = null,
     signature: string | null = null,
+    optimistic: boolean = false,
   ): Promise<TransactionIntentResponse> {
     let newSignature = signature;
     if (!newSignature) {
@@ -496,6 +510,7 @@ export class Openfort {
       id: transactionIntentId,
       signatureRequest: {
         signature: newSignature,
+        optimistic,
       },
     };
     const result = await this.backendApiClients.transactionIntentsApi.signature(request);
@@ -588,29 +603,12 @@ export class Openfort {
    * @param signature - Session signature.
    * @param optimistic - Whether the request is optimistic.
    * @returns A SessionResponse object.
-   * @throws {OpenfortError} If no signer is configured.
-   * @throws {OpenfortError} If the signer is not a SessionSigner.
    */
   public async sendRegisterSessionRequest(
     sessionId: string,
     signature: string,
     optimistic?: boolean,
   ): Promise<SessionResponse> {
-    await this.recoverSigner();
-    if (!this.signer) {
-      throw new OpenfortError(
-        'No signer configured nor signature provided',
-        OpenfortErrorType.MISSING_SIGNER_ERROR,
-      );
-    }
-
-    if (this.signer.getSingerType() !== SignerType.SESSION) {
-      throw new OpenfortError(
-        'Session signer must be configured to sign a session',
-        OpenfortErrorType.MISSING_SESSION_SIGNER_ERROR,
-      );
-    }
-
     const request = {
       id: sessionId,
       signatureRequest: {
@@ -676,33 +674,34 @@ export class Openfort {
   /**
    * Validates and refreshes the access token if needed.
    */
-  public async validateAndRefreshToken() {
-    if (!this.credentialsProvided()) {
-      return;
+  public async validateAndRefreshToken():Promise<void> {
+    const authType = this.credentialsProvided();
+    if (!authType) {
+      throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-    const accessToken = this.instanceManager.getAccessToken();
-    const refreshToken = this.instanceManager.getRefreshToken();
-    const jwk = await this.instanceManager.getJWK();
-
-    if (!accessToken || !refreshToken || !jwk) {
-      return;
-    }
-
-    const auth = await this.authManager.validateCredentials(accessToken.token, refreshToken, jwk);
-    if (auth.accessToken !== accessToken.token) {
+    if (authType === AuthType.OPENFORT) {
+      const auth = await this.authManager.validateCredentials();
       this.storeCredentials(auth);
-    }
-    if (this.signer && this.signer.useCredentials()) {
-      await this.signer.updateAuthentication();
+      if (this.signer && this.signer.useCredentials()) {
+        await this.signer.updateAuthentication();
+      }
     }
   }
 
-  private credentialsProvided() {
+  private credentialsProvided(): AuthType | null {
     const token = this.instanceManager.getAccessToken();
     const refreshToken = this.instanceManager.getRefreshToken();
 
-    return token && ((token.token && token.thirdPartyProvider && token.thirdPartyTokenType)
-    || (token.token && refreshToken));
+    if (!token) {
+      return null;
+    }
+
+    if (token.token && token.thirdPartyProvider && token.thirdPartyTokenType) {
+      return AuthType.THIRD_PARTY;
+    } if (token.token && refreshToken) {
+      return AuthType.OPENFORT;
+    }
+    return null;
   }
 
   private async recoverSigner(): Promise<void> {
@@ -750,18 +749,35 @@ export class Openfort {
 
   private newEmbeddedSigner(
     chainId?: number,
-    shieldAuthentication?: ShieldAuthentication,
   ): EmbeddedSigner {
     if (!this.credentialsProvided()) {
       throw new OpenfortError('Must be logged in to configure embedded signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
+
+    let shieldAuthType = this.instanceManager.getShieldAuthType();
+    if (!shieldAuthType) {
+      // TODO: remove, this is for backward compatibility
+      this.instanceManager.setShieldAuthType(ShieldAuthType.OPENFORT);
+      shieldAuthType = ShieldAuthType.OPENFORT;
+      // throw new OpenfortError('Shield auth type is not set', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+    const token = (shieldAuthType as ShieldAuthType) === ShieldAuthType.OPENFORT
+      ? this.instanceManager.getAccessToken()?.token
+      : this.instanceManager.getShieldAuthToken();
+    if (!token) {
+      throw new OpenfortError('Shield auth token is not set', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+    const shieldAuth: ShieldAuthentication = {
+      auth: shieldAuthType as ShieldAuthType,
+      token,
+    };
 
     const iframeConfiguration: IframeConfiguration = {
       accessToken: this.instanceManager.getAccessToken()?.token ?? null,
       thirdPartyProvider: this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
       thirdPartyTokenType: this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
       chainId: !chainId ? Number(this.instanceManager.getChainID()) ?? null : chainId,
-      recovery: shieldAuthentication ?? null,
+      recovery: shieldAuth,
     };
     return new EmbeddedSigner(this.iframeManager, this.instanceManager, iframeConfiguration);
   }

@@ -338,13 +338,17 @@ export class UpdateAuthenticationRequest implements IEventRequest {
 }
 
 export interface ShieldAuthentication {
-  auth: AuthType;
+  // Whether its using Openfort (either third-party or not) or a custom provider to verify the access token
+  auth: ShieldAuthType;
+  // The auth token, either idToken or accessToken
   token: string;
+  // When using a third party auth provider, the provider name
   authProvider?: string;
+  // When using a third party auth provider, the token type
   tokenType?: string;
 }
 
-export enum AuthType {
+export enum ShieldAuthType {
   OPENFORT = 'openfort',
   CUSTOM = 'custom',
 }

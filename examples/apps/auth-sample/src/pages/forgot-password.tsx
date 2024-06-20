@@ -82,7 +82,7 @@ function ForgotPasswordPage() {
         subtitle={
           <>
             Already have an account?{' '}
-            <Link href="/login" className="text-orange-600">
+            <Link href="/login" className="text-blue-600">
               Sign in
             </Link>
           </>

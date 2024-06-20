@@ -9,8 +9,9 @@ import {AuthPlayerResponse} from '@openfort/openfort-js';
 import {useRouter} from 'next/router';
 import {getWalletButtons} from '../components/WalletConnectButton';
 import {Chain, WalletConnector} from '../utils/constants';
+import {useAccount} from 'wagmi';
 
-function ConnectWalletPage() {
+function LinkWalletPage() {
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
   const router = useRouter();
 
@@ -27,7 +28,8 @@ function ConnectWalletPage() {
   const [status, setStatus] = useState<StatusType>(null);
   const WalletButtons = getWalletButtons({
     chains: [Chain.AMOY],
-    connectors: [WalletConnector.METAMASK],
+    connectors: [WalletConnector.WALLET_CONNECT],
+    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
   });
 
   const redirect = () => {
@@ -44,18 +46,18 @@ function ConnectWalletPage() {
         />{' '}
       </Head>
       <AuthLayout
-        title="Continue with your wallet"
+        title="Link with your wallet"
         subtitle={
           <>
-            {'Have an account? '}
-            <Link href="/login" className="text-blue-600">
-              Sign in
+            {'Go back to '}
+            <Link href="/" className="text-blue-600">
+              dashboard
             </Link>
           </>
         }
       >
         <div>
-          <WalletButtons onSuccess={redirect} link={false} />
+          <WalletButtons onSuccess={redirect} link={true} />
         </div>
         <Toast status={status} setStatus={setStatus} />
       </AuthLayout>
@@ -63,4 +65,4 @@ function ConnectWalletPage() {
   );
 }
 
-export default ConnectWalletPage;
+export default LinkWalletPage;

@@ -4,12 +4,12 @@ import {
 import { BackendApiClients } from '@openfort/openapi-clients';
 import * as crypto from 'crypto';
 import {
-  Auth, InitAuthResponse, InitializeOAuthOptions, JWK, SIWEInitResponse,
+  Auth, InitAuthResponse, InitializeOAuthOptions, SIWEInitResponse,
   AuthPlayerResponse, AuthResponse, OAuthProvider, ThirdPartyOAuthProvider, TokenType,
   CodeChallengeMethodEnum,
 } from './types';
 import { SDKConfiguration } from './config';
-import { OpenfortErrorType, withOpenfortError } from './errors/openfortError';
+import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import InstanceManager from './instanceManager';
 import { isBrowser } from './utils/helpers';
 import DeviceCredentialsManager from './utils/deviceCredentialsManager';
@@ -45,11 +45,14 @@ export default class AuthManager {
     provider: OAuthProvider,
     options?: InitializeOAuthOptions,
   ): Promise<InitAuthResponse> {
+    const usePooling = options?.usePooling ?? false;
+    // eslint-disable-next-line no-param-reassign
+    delete options?.usePooling;
     const request = {
       oAuthInitRequest: {
         provider,
         options,
-        usePooling: options?.usePooling || false,
+        usePooling,
       },
     };
     const result = await this.backendApiClients.authenticationApi.initOAuth(
@@ -290,11 +293,15 @@ export default class AuthManager {
     }, OpenfortErrorType.USER_REGISTRATION_ERROR);
   }
 
-  public async validateCredentials(
-    accessToken: string,
-    refreshToken: string,
-    jwk: JWK,
-  ): Promise<Auth> {
+  public async validateCredentials(): Promise<Auth> {
+    const jwk = await this.instanceManager.getJWK();
+    const accessToken = this.instanceManager.getAccessToken()?.token;
+    const refreshToken = this.instanceManager.getRefreshToken();
+
+    if (!accessToken || !refreshToken || !jwk) {
+      throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    }
+
     try {
       const key = (await importJWK(
         {

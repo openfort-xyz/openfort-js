@@ -16,6 +16,8 @@ import {
   signerTypeStorageKey,
   thirdPartyProviderStorageKey,
   thirdPartyProviderTokenTypeStorageKey,
+  shieldAuthTypeStorageKey,
+  shieldAuthTokenStorageKey,
 } from './storage/storage';
 
 export type AccessToken = {
@@ -36,6 +38,8 @@ export default class InstanceManager {
   private sessionKey: string | null = null;
 
   private deviceID: string | null = null;
+
+  private shieldAuthType: string | null = null;
 
   private chainId: string | null = null;
 
@@ -213,10 +217,11 @@ export default class InstanceManager {
       const response = await this.backendApiClients.authenticationApi.getJwks(request);
 
       if (response.data.keys.length === 0) {
-        throw new Error('No keys found');
+        throw new Error('Internal error: No JWKS keys found');
       }
 
       const jwtKey = response.data.keys[0];
+      this.setJWK(jwtKey);
       this.jwk = {
         kty: jwtKey.kty,
         crv: jwtKey.crv,
@@ -317,5 +322,39 @@ export default class InstanceManager {
   public removeAccountType(): void {
     this.accountType = null;
     this.persistentStorage.remove(accountTypeStorageKey);
+  }
+
+  public setShieldAuthType(accountType: string): void {
+    this.accountType = accountType;
+    this.persistentStorage.save(shieldAuthTypeStorageKey, accountType);
+  }
+
+  public getShieldAuthType(): string | null {
+    if (!this.accountType) {
+      this.accountType = this.persistentStorage.get(shieldAuthTypeStorageKey);
+    }
+    return this.accountType;
+  }
+
+  public removeShieldAuthType(): void {
+    this.accountType = null;
+    this.persistentStorage.remove(shieldAuthTypeStorageKey);
+  }
+
+  public setShieldAuthToken(accountType: string): void {
+    this.accountType = accountType;
+    this.persistentStorage.save(shieldAuthTokenStorageKey, accountType);
+  }
+
+  public getShieldAuthToken(): string | null {
+    if (!this.accountType) {
+      this.accountType = this.persistentStorage.get(shieldAuthTokenStorageKey);
+    }
+    return this.accountType;
+  }
+
+  public removeShieldAuthToken(): void {
+    this.accountType = null;
+    this.persistentStorage.remove(shieldAuthTokenStorageKey);
   }
 }

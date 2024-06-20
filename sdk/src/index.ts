@@ -13,8 +13,9 @@ export {
   SessionResponse,
   TransactionIntentResponse,
   SDKOverrides,
+  AuthType,
 } from './types';
-export { ShieldAuthentication, AuthType } from './iframe/types';
+export { ShieldAuthentication, ShieldAuthType } from './iframe/types';
 export { Provider } from './evm/types';
 export { SDKConfiguration, OpenfortConfiguration, ShieldConfiguration } from './config';
 export { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer';
