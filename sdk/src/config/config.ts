@@ -1,6 +1,6 @@
 import { createConfig, OpenfortAPIConfiguration } from '@openfort/openapi-clients';
-import { SDKOverrides } from '../types';
 import { OpenfortError, OpenfortErrorType } from '../errors/openfortError';
+import { SDKOverrides } from '../types';
 
 const validateConfiguration = <T>(
   configuration: T,
@@ -48,6 +48,12 @@ export class ShieldConfiguration {
   }
 }
 
+export type OpenfortSDKConfiguration = {
+  baseConfiguration: OpenfortConfiguration,
+  shieldConfiguration?: ShieldConfiguration,
+  overrides?: SDKOverrides
+};
+
 export class SDKConfiguration {
   readonly baseConfiguration: OpenfortConfiguration;
 
@@ -65,10 +71,7 @@ export class SDKConfiguration {
     baseConfiguration,
     shieldConfiguration,
     overrides,
-  }: { baseConfiguration: OpenfortConfiguration,
-    shieldConfiguration?: ShieldConfiguration,
-    overrides?: SDKOverrides
-  }) {
+  }: OpenfortSDKConfiguration) {
     this.shieldConfiguration = shieldConfiguration;
     this.baseConfiguration = baseConfiguration;
     if (overrides) {

@@ -1,4 +1,4 @@
-import Openfort, { SDKConfiguration } from '@openfort/openfort-js';
+import Openfort from '@openfort/openfort-js';
 
 
 const openfort = new Openfort({
@@ -10,6 +10,6 @@ const openfort = new Openfort({
     shieldEncryptionKey: process.env.NEXT_PUBLIC_SHIELD_ENCRYPTION_SHARE!,
     debug: true,
   }
-} as SDKConfiguration);
+});
 
 export default openfort;

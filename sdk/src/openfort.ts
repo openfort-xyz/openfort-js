@@ -19,7 +19,7 @@ import {
   OpenfortEventMap,
   AuthType,
 } from './types';
-import { SDKConfiguration } from './config';
+import { OpenfortSDKConfiguration, SDKConfiguration } from './config';
 import { EvmProvider } from './evm';
 import { Provider } from './evm/types';
 import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';
@@ -52,7 +52,7 @@ export class Openfort {
 
   private readonly openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
 
-  constructor(sdkConfiguration: SDKConfiguration) {
+  constructor(sdkConfiguration: OpenfortSDKConfiguration) {
     this.config = new SDKConfiguration(sdkConfiguration);
     this.backendApiClients = new BackendApiClients(this.config.openfortAPIConfig);
     this.instanceManager = new InstanceManager(
