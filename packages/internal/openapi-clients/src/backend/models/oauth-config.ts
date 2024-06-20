@@ -21,6 +21,12 @@ import { AccelbyteOAuthConfig } from './accelbyte-oauth-config';
 import { CustomAuthConfig } from './custom-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { DiscordOAuthConfig } from './discord-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
+import { EpicGamesOAuthConfig } from './epic-games-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { FacebookOAuthConfig } from './facebook-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -102,13 +108,13 @@ export interface OAuthConfig {
      */
     'baseUrl': string;
     /**
-     * Facebook API client ID.
+     * Epic Games API client ID.
      * @type {string}
      * @memberof OAuthConfig
      */
     'clientId': string;
     /**
-     * Facebook API client secret.
+     * Epic Games API client secret.
      * @type {string}
      * @memberof OAuthConfig
      */

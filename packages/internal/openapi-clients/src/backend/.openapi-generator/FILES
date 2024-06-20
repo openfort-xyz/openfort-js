@@ -116,6 +116,7 @@ models/developer-account-response.ts
 models/developer-account.ts
 models/device-list-queries.ts
 models/device-response.ts
+models/discord-oauth-config.ts
 models/domain-data.ts
 models/email-sample-delete-response.ts
 models/email-sample-response.ts
@@ -145,6 +146,7 @@ models/entity-type-trigger.ts
 models/entity-type-user.ts
 models/entity-type-web3-action.ts
 models/entity-type-web3-connection.ts
+models/epic-games-oauth-config.ts
 models/error-type-invalidrequesterror.ts
 models/estimate-transaction-intent-gas-result.ts
 models/event-delete-response.ts
@@ -186,6 +188,9 @@ models/oauth-config-list-response.ts
 models/oauth-config.ts
 models/oauth-init-request-options.ts
 models/oauth-init-request.ts
+models/oauth-provders.ts
+models/oauth-provider-discord.ts
+models/oauth-provider-epicgames.ts
 models/oauth-provider-facebook.ts
 models/oauth-provider-google.ts
 models/oauth-provider-twitter.ts

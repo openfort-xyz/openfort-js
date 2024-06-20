@@ -17,20 +17,14 @@
 /**
  * 
  * @export
- * @interface RefreshTokenRequest
+ * @enum {string}
  */
-export interface RefreshTokenRequest {
-    /**
-     * Specifies the session refresh token.
-     * @type {string}
-     * @memberof RefreshTokenRequest
-     */
-    'refreshToken': string;
-    /**
-     * Specifies whether to force refresh the session.
-     * @type {boolean}
-     * @memberof RefreshTokenRequest
-     */
-    'forceRefresh'?: boolean;
-}
+
+export const OAuthProviderEPICGAMES = {
+    EpicGames: 'epic_games'
+} as const;
+
+export type OAuthProviderEPICGAMES = typeof OAuthProviderEPICGAMES[keyof typeof OAuthProviderEPICGAMES];
+
+
 

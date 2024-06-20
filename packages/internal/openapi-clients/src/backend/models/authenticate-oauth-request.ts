@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthProvider } from './auth-provider';
+import { OAuthProvders } from './oauth-provders';
 // May contain unused imports in some cases
 // @ts-ignore
 import { PlayerResponseExpandable } from './player-response-expandable';
@@ -31,10 +31,10 @@ import { TokenType } from './token-type';
 export interface AuthenticateOAuthRequest {
     /**
      * 
-     * @type {AuthProvider}
+     * @type {OAuthProvders}
      * @memberof AuthenticateOAuthRequest
      */
-    'provider': AuthProvider;
+    'provider': OAuthProvders;
     /**
      * Token to be verified
      * @type {string}

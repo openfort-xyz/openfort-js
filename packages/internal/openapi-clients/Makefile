@@ -1,7 +1,6 @@
 .PHONY: generate-backend-openapi
 generate-backend-openapi: get-backend-openapi generate-backend-api-client
 
-# TODO: update URL once we release to testnet
 .PHONY: get-backend-openapi
 get-backend-openapi:
 	rm -f src/backend-openapi.json && touch src/backend-openapi.json && \
