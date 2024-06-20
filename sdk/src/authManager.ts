@@ -293,7 +293,7 @@ export default class AuthManager {
     }, OpenfortErrorType.USER_REGISTRATION_ERROR);
   }
 
-  public async validateCredentials(): Promise<Auth> {
+  public async validateCredentials(forceRefresh?:boolean): Promise<Auth> {
     const jwk = await this.instanceManager.getJWK();
     const accessToken = this.instanceManager.getAccessToken()?.token;
     const refreshToken = this.instanceManager.getRefreshToken();
@@ -323,6 +323,7 @@ export default class AuthManager {
         const request = {
           refreshTokenRequest: {
             refreshToken,
+            forceRefresh,
           },
         };
         return withOpenfortError<Auth>(async () => {

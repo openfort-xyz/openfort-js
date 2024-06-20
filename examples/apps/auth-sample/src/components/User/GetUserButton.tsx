@@ -9,15 +9,18 @@ const GetUserButton: React.FC<{
 
   const handleUserMessage = async () => {
     try {
+      console.log('---- before validateAndRefreshToken');
+      await openfort.validateAndRefreshToken();
+      console.log('---- after validateAndRefreshToken');
       setLoading(true);
-      const user = await openfort.getUser().catch((error: Error) => {
-        console.log('error', error);
-      });
+      // const user = await openfort.getUser().catch((error: Error) => {
+      //   console.log('error', error);
+      // });
       setLoading(false);
-      if (!user) {
-        throw new Error('Failed to get user');
-      }
-      handleSetMessage(JSON.stringify(user, null, 2));
+      // if (!user) {
+      //   throw new Error('Failed to get user');
+      // }
+      // handleSetMessage(JSON.stringify(user, null, 2));
     } catch (err) {
       // Handle errors from minting process
       console.error('Failed to get user:', err);

@@ -674,13 +674,13 @@ export class Openfort {
   /**
    * Validates and refreshes the access token if needed.
    */
-  public async validateAndRefreshToken():Promise<void> {
+  public async validateAndRefreshToken(forceRefresh?:boolean):Promise<void> {
     const authType = this.credentialsProvided();
     if (!authType) {
       throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
     if (authType === AuthType.OPENFORT) {
-      const auth = await this.authManager.validateCredentials();
+      const auth = await this.authManager.validateCredentials(forceRefresh);
       this.storeCredentials(auth);
       if (this.signer && this.signer.useCredentials()) {
         await this.signer.updateAuthentication();
