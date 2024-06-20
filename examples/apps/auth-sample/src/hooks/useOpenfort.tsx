@@ -1,6 +1,6 @@
 import {
-  AuthType,
   EmbeddedState,
+  ShieldAuthType,
   ThirdPartyOAuthProvider,
   TokenType,
 } from '@openfort/openfort-js';
@@ -153,7 +153,7 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
       try {
         const chainId = 80002;
         const shieldAuth: ShieldAuthentication = {
-          auth: AuthType.OPENFORT,
+          auth: ShieldAuthType.OPENFORT,
           token: openfort.getAccessToken()!,
         };
         if (method === 'automatic') {
