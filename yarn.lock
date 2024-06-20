@@ -1403,32 +1403,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@npm:0.7.10":
-  version: 0.7.10
-  resolution: "@openfort/openfort-js@npm:0.7.10"
-  dependencies:
-    "@ethersproject/abstract-signer": ^5.7.0
-    "@ethersproject/bytes": ^5.7.0
-    "@ethersproject/hash": ^5.7.0
-    "@ethersproject/providers": ^5.7.0
-    "@ethersproject/signing-key": ^5.7.0
-    "@ethersproject/transactions": ^5.7.0
-    "@noble/curves": ^1.1.0
-    "@openfort/shield-js": ^0.0.3
-    axios: 1.6.7
-    buffer: ^6.0.3
-    crypto-browserify: ^3.12.0
-    crypto-js: ^4.2.0
-    es6-promise: ^4.2.8
-    jose: ^5.2.2
-    path: ^0.12.7
-    stream-browserify: ^3.0.0
-    uuid: ^8.3.2
-  checksum: aa2f6c438dcea369f5290c08286e3c94e134e6e37c7fe8672e487dbbf5d8dc3c6574ea75f061b751454e19a013f550fd054875690e3251f1b726bfc6796e47b7
-  languageName: node
-  linkType: hard
-
-"@openfort/openfort-js@workspace:sdk":
+"@openfort/openfort-js@0.7.11, @openfort/openfort-js@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:
@@ -1483,7 +1458,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
   dependencies:
-    "@openfort/openfort-js": 0.7.10
+    "@openfort/openfort-js": 0.7.11
     eslint: ^8.40.0
     ethers: ^5.7.0
     parcel: ^2.8.3
@@ -3739,7 +3714,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:^5.5.0||^6.0.0, buffer@npm:^6.0.3":
+"buffer@npm:^5.5.0||^6.0.0":
   version: 6.0.3
   resolution: "buffer@npm:6.0.3"
   dependencies:
@@ -9908,12 +9883,12 @@ __metadata:
   linkType: hard
 
 "typescript@npm:^5.0.4, typescript@npm:^5.4.3":
-  version: 5.4.5
-  resolution: "typescript@npm:5.4.5"
+  version: 5.5.2
+  resolution: "typescript@npm:5.5.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 53c879c6fa1e3bcb194b274d4501ba1985894b2c2692fa079db03c5a5a7140587a1e04e1ba03184605d35f439b40192d9e138eb3279ca8eee313c081c8bcd9b0
+  checksum: 9c5a7982dadcb2d38d129c575dd38645ae11588ae0d4a12852fb04482bbc5a1660b2371e48fd5b33b6b605cc57cefe777670054546856945a05e77bd22c8c2cd
   languageName: node
   linkType: hard
 
@@ -9928,12 +9903,12 @@ __metadata:
   linkType: hard
 
 "typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>, typescript@patch:typescript@^5.4.3#~builtin<compat/typescript>":
-  version: 5.4.5
-  resolution: "typescript@patch:typescript@npm%3A5.4.5#~builtin<compat/typescript>::version=5.4.5&hash=14eedb"
+  version: 5.5.2
+  resolution: "typescript@patch:typescript@npm%3A5.5.2#~builtin<compat/typescript>::version=5.5.2&hash=14eedb"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2373c693f3b328f3b2387c3efafe6d257b057a142f9a79291854b14ff4d5367d3d730810aee981726b677ae0fd8329b23309da3b6aaab8263dbdccf1da07a3ba
+  checksum: 9d89bac0de650e15d6846485f238d1e65f1013f2c260d9e53e86a1da6ecf8109d9fad9402575c5c36a6592dc5d4370db090e12971c8630ae84453654baabb6b4
   languageName: node
   linkType: hard
 

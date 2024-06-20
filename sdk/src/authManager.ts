@@ -302,6 +302,10 @@ export default class AuthManager {
       throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
+    if (forceRefresh) {
+      return this.refreshTokens(refreshToken, forceRefresh);
+    }
+
     try {
       const key = (await importJWK(
         {
@@ -320,23 +324,27 @@ export default class AuthManager {
       };
     } catch (error) {
       if (error instanceof errors.JWTExpired) {
-        const request = {
-          refreshTokenRequest: {
-            refreshToken,
-            forceRefresh,
-          },
-        };
-        return withOpenfortError<Auth>(async () => {
-          const newToken = await this.backendApiClients.authenticationApi.refresh(request);
-          return {
-            player: newToken.data.player.id,
-            accessToken: newToken.data.token,
-            refreshToken: newToken.data.refreshToken,
-          };
-        }, OpenfortErrorType.REFRESH_TOKEN_ERROR);
+        return this.refreshTokens(refreshToken);
       }
       throw error;
     }
+  }
+
+  private async refreshTokens(refreshToken: string, forceRefresh?: boolean): Promise<Auth> {
+    const request = {
+      refreshTokenRequest: {
+        refreshToken,
+        forceRefresh,
+      },
+    };
+    return withOpenfortError<Auth>(async () => {
+      const response = await this.backendApiClients.authenticationApi.refresh(request);
+      return {
+        player: response.data.player.id,
+        accessToken: response.data.token,
+        refreshToken: response.data.refreshToken,
+      };
+    }, OpenfortErrorType.REFRESH_TOKEN_ERROR);
   }
 
   public async logout(
