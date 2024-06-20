@@ -319,6 +319,7 @@ window.callFunction = async (jsonData: string) => {
           request.transactionIntentId,
           request.userOperationHash,
           request.signature,
+          request.optimistic,
         );
 
         callbackToGame({
