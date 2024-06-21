@@ -5,14 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.12] - 2024-06-21
+### Added
+- Support for Discord and Epic Games OAuth
+
 ## [0.7.11] - 2024-06-20
 ### Fix
 - Fix refresh token when using openfort auth
-- 
+
 ## [0.7.10] - 2024-06-20
 ### Fix
 - Fix SDK configuration
-- 
+
 ## [0.7.9] - 2024-06-20
 ### Fix
 - Fix Shield authentication
