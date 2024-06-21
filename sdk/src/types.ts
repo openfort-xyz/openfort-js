@@ -103,6 +103,7 @@ export const AUTH_PROVIDER = {
   google: 'google',
   twitter: 'twitter',
   discord: 'discord',
+  facebook: 'facebook',
   epicGames: 'epic_games',
   accelbyte: 'accelbyte',
   firebase: 'firebase',
@@ -111,7 +112,6 @@ export const AUTH_PROVIDER = {
   supabase: 'supabase',
   custom: 'custom',
   oidc: 'oidc',
-  facebook: 'facebook',
 } as const;
 
 export type AuthProvider = typeof AUTH_PROVIDER[keyof typeof AUTH_PROVIDER];

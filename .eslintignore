@@ -11,7 +11,7 @@ jest.*.js
 **/*.md
 
 # sample apps
-examples/apps/html-openfort-sample/
+examples/apps/html-sample/
 examples/apps/auth-sample/
 
 
