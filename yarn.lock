@@ -1403,32 +1403,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@npm:0.7.11":
-  version: 0.7.11
-  resolution: "@openfort/openfort-js@npm:0.7.11"
-  dependencies:
-    "@ethersproject/abstract-signer": ^5.7.0
-    "@ethersproject/bytes": ^5.7.0
-    "@ethersproject/hash": ^5.7.0
-    "@ethersproject/providers": ^5.7.0
-    "@ethersproject/signing-key": ^5.7.0
-    "@ethersproject/transactions": ^5.7.0
-    "@noble/curves": ^1.1.0
-    "@openfort/shield-js": ^0.0.3
-    axios: 1.6.7
-    buffer: ^6.0.3
-    crypto-browserify: ^3.12.0
-    crypto-js: ^4.2.0
-    es6-promise: ^4.2.8
-    jose: ^5.2.2
-    path: ^0.12.7
-    stream-browserify: ^3.0.0
-    uuid: ^8.3.2
-  checksum: 99177f23c735f0e5b13fd1b2a4500f0fb6bd222e6861ff2f4d995ba9debf5dadf73484bee4742e3320fc1744adc6489b4ef3052f4ce7c197754f2e63d86a4fdd
-  languageName: node
-  linkType: hard
-
-"@openfort/openfort-js@workspace:sdk":
+"@openfort/openfort-js@0.7.12, @openfort/openfort-js@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:
@@ -1483,7 +1458,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
   dependencies:
-    "@openfort/openfort-js": 0.7.11
+    "@openfort/openfort-js": 0.7.12
     eslint: ^8.40.0
     ethers: ^5.7.0
     parcel: ^2.8.3
@@ -2858,11 +2833,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 20.14.6
-  resolution: "@types/node@npm:20.14.6"
+  version: 20.14.7
+  resolution: "@types/node@npm:20.14.7"
   dependencies:
     undici-types: ~5.26.4
-  checksum: f0ba22b181cfa799e090e5198621d8bf2b35f2c18ce880b8cdf88a69f9db5a4cc56627fe2dfeca44b6a55895c0abf03df04810cabd9509b9c9b752189d37aa1f
+  checksum: 967d100f3853fefa347847ece95226a73cba970ff896efa12cce68ecdd48a9b39b10c8eefd9f11016799a29bdfe19d144ea094f8db3d5987cebe8f06226fccc9
   languageName: node
   linkType: hard
 
@@ -3739,7 +3714,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:^5.5.0||^6.0.0, buffer@npm:^6.0.3":
+"buffer@npm:^5.5.0||^6.0.0":
   version: 6.0.3
   resolution: "buffer@npm:6.0.3"
   dependencies:
@@ -6166,11 +6141,11 @@ __metadata:
   linkType: hard
 
 "is-core-module@npm:^2.13.0, is-core-module@npm:^2.13.1":
-  version: 2.13.1
-  resolution: "is-core-module@npm:2.13.1"
+  version: 2.14.0
+  resolution: "is-core-module@npm:2.14.0"
   dependencies:
-    hasown: ^2.0.0
-  checksum: 256559ee8a9488af90e4bad16f5583c6d59e92f0742e9e8bb4331e758521ee86b810b93bae44f390766ffbc518a0488b18d9dab7da9a5ff997d499efc9403f7c
+    hasown: ^2.0.2
+  checksum: 6bba6c8dc99d88d6f3b2746709d82caddcd9565cafd5870e28ab320720e27e6d9d2bb953ba0839ed4d2ee264bfdd14a9fa1bbc242a916f7dacc8aa95f0322256
   languageName: node
   linkType: hard
 
