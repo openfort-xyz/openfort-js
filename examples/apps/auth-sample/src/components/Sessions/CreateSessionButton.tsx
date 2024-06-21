@@ -55,7 +55,7 @@ const CreateSessionButton: React.FC<{
       if (signature?.error) {
         throw new Error(`Failed to sign message. ${signature?.error}`);
       }
-      const response = await openfort.sendRegisterSessionRequest(
+      const response = await openfort.sendSignatureSessionRequest(
         sessionResponseJSON.data.id,
         signature.data as string
       );
@@ -103,7 +103,7 @@ const CreateSessionButton: React.FC<{
       if (signature?.error) {
         throw new Error(`Failed to sign message. ${signature?.error}`);
       }
-      const response = await openfort.sendRegisterSessionRequest(
+      const response = await openfort.sendSignatureSessionRequest(
         revokeResponseJSON.data.id,
         signature.data as string
       );
