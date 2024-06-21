@@ -597,14 +597,14 @@ export class Openfort {
   }
 
   /**
-   * Sends a session registration request.
+   * Sends a transaction signed with a session request.
    *
    * @param sessionId - Session ID.
    * @param signature - Session signature.
    * @param optimistic - Whether the request is optimistic.
    * @returns A SessionResponse object.
    */
-  public async sendRegisterSessionRequest(
+  public async sendSignatureSessionRequest(
     sessionId: string,
     signature: string,
     optimistic?: boolean,

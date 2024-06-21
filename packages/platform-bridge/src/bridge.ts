@@ -33,7 +33,7 @@ const OPENFORT_FUNCTIONS = {
   sendSignatureTransactionIntentRequest: 'sendSignatureTransactionIntentRequest',
   signMessage: 'signMessage',
   signTypedData: 'signTypedData',
-  sendRegisterSessionRequest: 'sendRegisterSessionRequest',
+  sendSignatureSessionRequest: 'sendSignatureSessionRequest',
   getEmbeddedState: 'getEmbeddedState',
   getAccessToken: 'getAccessToken',
   getUser: 'getUser',
@@ -363,9 +363,9 @@ window.callFunction = async (jsonData: string) => {
         });
         break;
       }
-      case OPENFORT_FUNCTIONS.sendRegisterSessionRequest: {
+      case OPENFORT_FUNCTIONS.sendSignatureSessionRequest: {
         const request = JSON.parse(data);
-        const sessionResponse = await openfortClient?.sendRegisterSessionRequest(
+        const sessionResponse = await openfortClient?.sendSignatureSessionRequest(
           request.sessionId,
           request.signature,
           request.optimistic,

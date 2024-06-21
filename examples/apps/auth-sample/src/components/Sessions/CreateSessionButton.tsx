@@ -69,6 +69,50 @@ const CreateSessionButton: React.FC<{
     }
   }, []);
 
+  const revokeSession = useCallback(async (): Promise<string | null> => {
+    if (!sessionKey) {
+      return null;
+    }
+    const sessionSigner = new ethers.Wallet(sessionKey);
+
+    const revokeResponse = await fetch(`/api/protected-revoke-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${openfort.getAccessToken()}`,
+      },
+      body: JSON.stringify({
+        sessionAddress: sessionSigner.address,
+      }),
+    });
+
+    if (!revokeResponse.ok) {
+      alert('Failed to revoke session: ' + revokeResponse.status);
+      return null;
+    }
+    const revokeResponseJSON = await revokeResponse.json();
+
+    if (revokeResponseJSON.data?.nextAction) {
+      const signature = await signMessage(
+        revokeResponseJSON.data?.nextAction.payload.userOperationHash,
+        {
+          hashMessage: true,
+          arrayifyMessage: true,
+        }
+      );
+      if (signature?.error) {
+        throw new Error(`Failed to sign message. ${signature?.error}`);
+      }
+      const response = await openfort.sendRegisterSessionRequest(
+        revokeResponseJSON.data.id,
+        signature.data as string
+      );
+      return response?.id ?? null;
+    } else {
+      return revokeResponseJSON.response?.transactionHash;
+    }
+  }, [sessionKey]);
+
   const handleCreateSession = async () => {
     setLoading(true);
     const session = await createSession();
@@ -77,6 +121,16 @@ const CreateSessionButton: React.FC<{
       handleSetMessage(
         `Session key registered successfully:\n   Address: ${session.address}\n   Private Key: ${session.privateKey}`
       );
+    }
+  };
+
+  const handleRevokeSession = async () => {
+    setLoading(true);
+    const session = await revokeSession();
+    setLoading(false);
+    if (session) {
+      setSessionKey(null);
+      handleSetMessage(`Session key revoked successfully`);
     }
   };
 
@@ -94,6 +148,7 @@ const CreateSessionButton: React.FC<{
             {sessionMethods.map((sessionMethod) => (
               <div key={sessionMethod.id} className="flex items-center">
                 <input
+                  disabled={sessionKey !== null}
                   id={sessionMethod.id}
                   name="session-method"
                   type="radio"
@@ -111,11 +166,19 @@ const CreateSessionButton: React.FC<{
           </div>
         </fieldset>
         <button
-          onClick={handleCreateSession}
+          onClick={
+            sessionKey !== null ? handleRevokeSession : handleCreateSession
+          }
           disabled={state !== EmbeddedState.READY}
           className={`mt-4 w-44 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
         >
-          {loading ? <Loading /> : 'Create session'}
+          {loading ? (
+            <Loading />
+          ) : sessionKey !== null ? (
+            'Revoke session'
+          ) : (
+            'Create session'
+          )}
         </button>
       </div>
       <MintNFTSessionButton
