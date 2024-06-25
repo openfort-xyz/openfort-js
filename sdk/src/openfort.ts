@@ -770,6 +770,8 @@ export class Openfort {
     const shieldAuth: ShieldAuthentication = {
       auth: shieldAuthType as ShieldAuthType,
       token,
+      authProvider: this.instanceManager.getAccessToken()?.thirdPartyProvider ?? undefined,
+      tokenType: this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? undefined,
     };
 
     const iframeConfiguration: IframeConfiguration = {
