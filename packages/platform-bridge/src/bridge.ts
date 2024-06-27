@@ -52,6 +52,7 @@ declare global {
     ue: any;
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Unity: any;
+    unityWebView: any;
   }
 }
 
@@ -74,7 +75,9 @@ const callbackToGame = (data: object) => {
     blu_event('sendtogame', message);
   } else if (typeof UnityPostMessage !== 'undefined') {
     UnityPostMessage(message);
-  } else if (window.Unity !== 'undefined') {
+  } else if (typeof window.parent.unityWebView !== 'undefined') {
+    window.parent.unityWebView.sendMessage('WebViewObject', message);
+  } else if (typeof window.Unity !== 'undefined') {
     window.Unity.call(message);
   } else {
     console.error(
