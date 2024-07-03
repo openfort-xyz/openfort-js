@@ -51,7 +51,6 @@ const HomePage: NextPage = () => {
   }, [message]);
 
   const linkedAccount = useMemo(() => {
-    // Find in linkedAccounts with provider email
     const linkedAccount = user?.linkedAccounts?.find(
       (account: any) => account.provider === 'email'
     );
