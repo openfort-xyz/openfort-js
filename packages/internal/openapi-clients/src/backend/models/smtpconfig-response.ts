@@ -28,24 +28,6 @@ export interface SMTPConfigResponse {
      * @type {string}
      * @memberof SMTPConfigResponse
      */
-    'id': string;
-    /**
-     * 
-     * @type {EntityTypeSMTPCONFIG}
-     * @memberof SMTPConfigResponse
-     */
-    'object': EntityTypeSMTPCONFIG;
-    /**
-     * 
-     * @type {number}
-     * @memberof SMTPConfigResponse
-     */
-    'createdAt': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof SMTPConfigResponse
-     */
     'user': string;
     /**
      * 
@@ -77,6 +59,12 @@ export interface SMTPConfigResponse {
      * @memberof SMTPConfigResponse
      */
     'useSSL': boolean;
+    /**
+     * 
+     * @type {EntityTypeSMTPCONFIG}
+     * @memberof SMTPConfigResponse
+     */
+    'object': EntityTypeSMTPCONFIG;
 }
 
 

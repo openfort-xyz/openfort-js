@@ -17,20 +17,14 @@
 /**
  * 
  * @export
- * @interface CreateDeviceRequest
+ * @interface AuthorizePlayerRequest
  */
-export interface CreateDeviceRequest {
+export interface AuthorizePlayerRequest {
     /**
-     * Specifies the unique account ID (starts with acc_)
+     * The authorization code received from the api to authorize the project to use the Ecosystem player.
      * @type {string}
-     * @memberof CreateDeviceRequest
+     * @memberof AuthorizePlayerRequest
      */
-    'account': string;
-    /**
-     * Specifies the share repositories
-     * @type {string}
-     * @memberof CreateDeviceRequest
-     */
-    'share': string;
+    'authorizationCode': string;
 }
 

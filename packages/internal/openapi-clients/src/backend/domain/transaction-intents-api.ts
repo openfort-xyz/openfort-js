@@ -47,10 +47,11 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
          * Creates a TransactionIntent.  A pending TransactionIntent has the `response` attribute as undefined.  After the TransactionIntent is created and broadcasted to the blockchain, `response` will be populated with the transaction hash and a status (1 success, 0 fail).  When using a non-custodial account, a `nextAction` attribute is returned with the `userOperationHash` that must be signed by the owner of the account.
          * @summary Create a transaction intent object.
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
+         * @param {string} [xBehalfOfProject] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createTransactionIntent: async (createTransactionIntentRequest: CreateTransactionIntentRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createTransactionIntent: async (createTransactionIntentRequest: CreateTransactionIntentRequest, xBehalfOfProject?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createTransactionIntentRequest' is not null or undefined
             assertParamExists('createTransactionIntent', 'createTransactionIntentRequest', createTransactionIntentRequest)
             const localVarPath = `/v1/transaction_intents`;
@@ -68,6 +69,10 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             // authentication sk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xBehalfOfProject != null) {
+                localVarHeaderParameter['X-Behalf-Of-Project'] = String(xBehalfOfProject);
+            }
 
 
     
@@ -307,11 +312,12 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
          * Creates a TransactionIntent.  A pending TransactionIntent has the `response` attribute as undefined.  After the TransactionIntent is created and broadcasted to the blockchain, `response` will be populated with the transaction hash and a status (1 success, 0 fail).  When using a non-custodial account, a `nextAction` attribute is returned with the `userOperationHash` that must be signed by the owner of the account.
          * @summary Create a transaction intent object.
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
+         * @param {string} [xBehalfOfProject] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createTransactionIntent(createTransactionIntentRequest: CreateTransactionIntentRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createTransactionIntent(createTransactionIntentRequest, options);
+        async createTransactionIntent(createTransactionIntentRequest: CreateTransactionIntentRequest, xBehalfOfProject?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createTransactionIntent(createTransactionIntentRequest, xBehalfOfProject, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -386,7 +392,7 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
          * @throws {RequiredError}
          */
         createTransactionIntent(requestParameters: TransactionIntentsApiCreateTransactionIntentRequest, options?: AxiosRequestConfig): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.createTransactionIntent(requestParameters.createTransactionIntentRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.createTransactionIntent(requestParameters.createTransactionIntentRequest, requestParameters.xBehalfOfProject, options).then((request) => request(axios, basePath));
         },
         /**
          * Estimate the gas cost of broadcasting a TransactionIntent.  This is a simulation, it does not send the transaction on-chain.  If a Policy ID is used that includes payment of gas in ERC-20 tokens, an extra field `estimatedTXGasFeeToken` is returned with the estimated amount of tokens that will be used.
@@ -443,6 +449,13 @@ export interface TransactionIntentsApiCreateTransactionIntentRequest {
      * @memberof TransactionIntentsApiCreateTransactionIntent
      */
     readonly createTransactionIntentRequest: CreateTransactionIntentRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof TransactionIntentsApiCreateTransactionIntent
+     */
+    readonly xBehalfOfProject?: string
 }
 
 /**
@@ -587,7 +600,7 @@ export class TransactionIntentsApi extends BaseAPI {
      * @memberof TransactionIntentsApi
      */
     public createTransactionIntent(requestParameters: TransactionIntentsApiCreateTransactionIntentRequest, options?: AxiosRequestConfig) {
-        return TransactionIntentsApiFp(this.configuration).createTransactionIntent(requestParameters.createTransactionIntentRequest, options).then((request) => request(this.axios, this.basePath));
+        return TransactionIntentsApiFp(this.configuration).createTransactionIntent(requestParameters.createTransactionIntentRequest, requestParameters.xBehalfOfProject, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

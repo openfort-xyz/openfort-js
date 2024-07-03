@@ -20,39 +20,27 @@ import { EntityTypePROJECT } from './entity-type-project';
 /**
  * 
  * @export
- * @interface ApiAuthorizedNetworkResponse
+ * @interface ApiAuthorizedNetworkDeleteResponse
  */
-export interface ApiAuthorizedNetworkResponse {
+export interface ApiAuthorizedNetworkDeleteResponse {
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof ApiAuthorizedNetworkDeleteResponse
      */
     'id': string;
     /**
      * 
      * @type {EntityTypePROJECT}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof ApiAuthorizedNetworkDeleteResponse
      */
     'object': EntityTypePROJECT;
     /**
      * 
-     * @type {number}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @type {boolean}
+     * @memberof ApiAuthorizedNetworkDeleteResponse
      */
-    'createdAt': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
-     */
-    'network': string;
+    'deleted': boolean;
 }
 
 

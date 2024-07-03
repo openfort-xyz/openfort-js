@@ -374,7 +374,7 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * **Custodial Accounts only** - Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
+         * **Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
          * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {SignPayloadRequest} signPayloadRequest 
@@ -596,7 +596,7 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * **Custodial Accounts only** - Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
+         * **Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
          * @param {string} id Specifies the unique account ID (starts with acc_).
          * @param {SignPayloadRequest} signPayloadRequest 
@@ -711,7 +711,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.requestTransferOwnership(requestParameters.id, requestParameters.transferOwnershipRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * **Custodial Accounts only** - Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
+         * **Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
          * @summary Sign a given payload
          * @param {AccountsApiSignPayloadRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -1052,7 +1052,7 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * **Custodial Accounts only** - Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
+     * **Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
      * @summary Sign a given payload
      * @param {AccountsApiSignPayloadRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.

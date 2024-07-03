@@ -227,8 +227,8 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
             };
         },
         /**
-         * Using this endpoint, you can get the data returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
-         * @summary Read on chain contract data.
+         * Using this endpoint, you can get the repositories returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
+         * @summary Read on chain contract repositories.
          * @param {string} id Specifies the unique contract ID (starts with con_).
          * @param {string} functionName The function name of the contract.
          * @param {Array<any>} [functionArgs] The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.
@@ -381,8 +381,8 @@ export const ContractsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Using this endpoint, you can get the data returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
-         * @summary Read on chain contract data.
+         * Using this endpoint, you can get the repositories returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
+         * @summary Read on chain contract repositories.
          * @param {string} id Specifies the unique contract ID (starts with con_).
          * @param {string} functionName The function name of the contract.
          * @param {Array<any>} [functionArgs] The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.
@@ -456,8 +456,8 @@ export const ContractsApiFactory = function (configuration?: Configuration, base
             return localVarFp.getContracts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.deleted, requestParameters.chainId, requestParameters.address, options).then((request) => request(axios, basePath));
         },
         /**
-         * Using this endpoint, you can get the data returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
-         * @summary Read on chain contract data.
+         * Using this endpoint, you can get the repositories returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
+         * @summary Read on chain contract repositories.
          * @param {ContractsApiReadContractRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -681,8 +681,8 @@ export class ContractsApi extends BaseAPI {
     }
 
     /**
-     * Using this endpoint, you can get the data returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
-     * @summary Read on chain contract data.
+     * Using this endpoint, you can get the repositories returned by any readable function listed in a contracts ABI. This could be things like querying the totalSupply of a currency contract, the number of owners of an items contract, and more.
+     * @summary Read on chain contract repositories.
      * @param {ContractsApiReadContractRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

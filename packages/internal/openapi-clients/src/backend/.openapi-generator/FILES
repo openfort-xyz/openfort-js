@@ -35,6 +35,7 @@ models/account-response-expandable.ts
 models/account-response.ts
 models/account.ts
 models/amount.ts
+models/api-authorized-network-delete-response.ts
 models/api-authorized-network-list-response.ts
 models/api-authorized-network-response.ts
 models/api-key-response.ts
@@ -57,6 +58,8 @@ models/auth-provider.ts
 models/auth-response.ts
 models/auth-session-response.ts
 models/authenticate-oauth-request.ts
+models/authorize-player-request.ts
+models/authorize200-response.ts
 models/balance-event-response.ts
 models/balance-response.ts
 models/base-entity-list-response-device-response.ts
@@ -87,6 +90,7 @@ models/create-api-authorized-network-request.ts
 models/create-auth-player-request.ts
 models/create-contract-request.ts
 models/create-device-request.ts
+models/create-ecosystem-configuration-request.ts
 models/create-email-sample-request.ts
 models/create-event-request.ts
 models/create-exchange-request.ts
@@ -96,7 +100,6 @@ models/create-policy-rule-request.ts
 models/create-project-api-key-request.ts
 models/create-project-request.ts
 models/create-session-request.ts
-models/create-smtpconfig-request.ts
 models/create-subscription-request.ts
 models/create-transaction-intent-request.ts
 models/create-trigger-request.ts
@@ -118,6 +121,7 @@ models/device-list-queries.ts
 models/device-response.ts
 models/discord-oauth-config.ts
 models/domain-data.ts
+models/ecosystem-configuration-response.ts
 models/email-sample-delete-response.ts
 models/email-sample-response.ts
 models/email-type-request.ts
@@ -321,7 +325,7 @@ models/update-policy-request.ts
 models/update-policy-rule-request.ts
 models/update-project-api-key-request.ts
 models/update-project-request.ts
-models/update-smtpconfig-request.ts
+models/upsert-smtpconfig-request.ts
 models/user-project-create-request-role.ts
 models/user-project-create-request.ts
 models/user-project-delete-response.ts

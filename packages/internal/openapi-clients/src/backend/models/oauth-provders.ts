@@ -24,6 +24,8 @@ export const OAuthProvders = {
     Google: 'google',
     Twitter: 'twitter',
     Facebook: 'facebook',
+    Discord: 'discord',
+    EpicGames: 'epic_games',
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',
     Lootlocker: 'lootlocker',

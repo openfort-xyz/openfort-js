@@ -21,23 +21,11 @@
  */
 export interface OAuthInitRequestOptions {
     /**
-     * If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider.
-     * @type {boolean}
-     * @memberof OAuthInitRequestOptions
-     */
-    'skipBrowserRedirect'?: boolean;
-    /**
      * An object of query params
      * @type {{ [key: string]: string; }}
      * @memberof OAuthInitRequestOptions
      */
     'queryParams'?: { [key: string]: string; };
-    /**
-     * A space-separated list of scopes granted to the OAuth application.
-     * @type {string}
-     * @memberof OAuthInitRequestOptions
-     */
-    'scopes'?: string;
     /**
      * A URL to send the user to after they are confirmed.
      * @type {string}

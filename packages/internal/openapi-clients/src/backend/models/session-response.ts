@@ -58,7 +58,7 @@ export interface SessionResponse {
      * @type {boolean}
      * @memberof SessionResponse
      */
-    'isActive'?: boolean;
+    'isActive': boolean;
     /**
      * 
      * @type {string}
@@ -70,25 +70,25 @@ export interface SessionResponse {
      * @type {string}
      * @memberof SessionResponse
      */
-    'validAfter'?: string;
+    'validAfter': string;
     /**
      * 
      * @type {string}
      * @memberof SessionResponse
      */
-    'validUntil'?: string;
+    'validUntil': string;
     /**
      * 
      * @type {Array<string>}
      * @memberof SessionResponse
      */
-    'whitelist'?: Array<string>;
+    'whitelist': Array<string>;
     /**
      * 
      * @type {number}
      * @memberof SessionResponse
      */
-    'limit'?: number;
+    'limit': number;
     /**
      * 
      * @type {NextActionResponse}

@@ -33,7 +33,7 @@ export interface SubmitWeb3ActionRequest {
      */
     'policy'?: string;
     /**
-     * signed data by the owner
+     * signed repositories by the owner
      * @type {string}
      * @memberof SubmitWeb3ActionRequest
      */

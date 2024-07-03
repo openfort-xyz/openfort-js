@@ -17,44 +17,44 @@
 /**
  * 
  * @export
- * @interface CreateSMTPConfigRequest
+ * @interface UpsertSMTPConfigRequest
  */
-export interface CreateSMTPConfigRequest {
+export interface UpsertSMTPConfigRequest {
     /**
      * Specifies the user name
      * @type {string}
-     * @memberof CreateSMTPConfigRequest
+     * @memberof UpsertSMTPConfigRequest
      */
-    'user': string;
+    'user'?: string;
     /**
      * Specifies the password
      * @type {string}
-     * @memberof CreateSMTPConfigRequest
+     * @memberof UpsertSMTPConfigRequest
      */
-    'pass': string;
+    'pass'?: string;
     /**
      * Specifies the host
      * @type {string}
-     * @memberof CreateSMTPConfigRequest
+     * @memberof UpsertSMTPConfigRequest
      */
-    'host': string;
+    'host'?: string;
     /**
      * Specifies the from
      * @type {string}
-     * @memberof CreateSMTPConfigRequest
+     * @memberof UpsertSMTPConfigRequest
      */
-    'from': string;
+    'from'?: string;
     /**
      * Specifies the port
      * @type {number}
-     * @memberof CreateSMTPConfigRequest
+     * @memberof UpsertSMTPConfigRequest
      */
-    'port': number;
+    'port'?: number;
     /**
      * Specifies the use SSL
      * @type {boolean}
-     * @memberof CreateSMTPConfigRequest
+     * @memberof UpsertSMTPConfigRequest
      */
-    'useSSL': boolean;
+    'useSSL'?: boolean;
 }
 

@@ -101,6 +101,8 @@
           "wallet",
           "google",
           "twitter",
+          "discord",
+          "epic_games",
           "facebook",
           "accelbyte",
           "firebase",
@@ -655,6 +657,43 @@
           "object",
           "createdAt",
           "linkedAccounts"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthResponse": {
+        "properties": {
+          "player": {
+            "$ref": "#/components/schemas/AuthPlayerResponse",
+            "description": "Player's identifier."
+          },
+          "token": {
+            "type": "string",
+            "description": "JWT access token."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token."
+          }
+        },
+        "required": [
+          "player",
+          "token",
+          "refreshToken"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthorizePlayerRequest": {
+        "properties": {
+          "authorizationCode": {
+            "type": "string",
+            "description": "The authorization code received from the api to authorize the project to use the Ecosystem player.",
+            "example": "d9e215f74e715853"
+          }
+        },
+        "required": [
+          "authorizationCode"
         ],
         "type": "object",
         "additionalProperties": false
@@ -1352,10 +1391,6 @@
         "properties": {
           "options": {
             "properties": {
-              "skipBrowserRedirect": {
-                "type": "boolean",
-                "description": "If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider."
-              },
               "queryParams": {
                 "properties": {},
                 "additionalProperties": {
@@ -1363,10 +1398,6 @@
                 },
                 "type": "object",
                 "description": "An object of query params"
-              },
-              "scopes": {
-                "type": "string",
-                "description": "A space-separated list of scopes granted to the OAuth application."
               },
               "redirectTo": {
                 "type": "string",
@@ -1390,34 +1421,13 @@
         "type": "object",
         "additionalProperties": false
       },
-      "AuthResponse": {
-        "properties": {
-          "player": {
-            "$ref": "#/components/schemas/AuthPlayerResponse",
-            "description": "Player's identifier."
-          },
-          "token": {
-            "type": "string",
-            "description": "JWT access token."
-          },
-          "refreshToken": {
-            "type": "string",
-            "description": "Refresh token."
-          }
-        },
-        "required": [
-          "player",
-          "token",
-          "refreshToken"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
       "OAuthProvders": {
         "enum": [
           "google",
           "twitter",
           "facebook",
+          "discord",
+          "epic_games",
           "accelbyte",
           "firebase",
           "lootlocker",
@@ -2629,11 +2639,19 @@
         "type": "object",
         "additionalProperties": false
       },
+      "EntityType.PROJECT": {
+        "enum": [
+          "project"
+        ],
+        "type": "string"
+      },
       "ApiAuthorizedNetworkResponse": {
         "properties": {
           "id": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.PROJECT"
           },
           "createdAt": {
             "type": "integer",
@@ -2652,6 +2670,7 @@
         },
         "required": [
           "id",
+          "object",
           "createdAt",
           "name",
           "network"
@@ -2720,6 +2739,26 @@
         "type": "object",
         "additionalProperties": false
       },
+      "ApiAuthorizedNetworkDeleteResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.PROJECT"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "deleted"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "ApiKeyResponse": {
         "properties": {
           "id": {
@@ -2767,12 +2806,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "EntityType.PROJECT": {
-        "enum": [
-          "project"
-        ],
-        "type": "string"
-      },
       "ProjectResponse": {
         "properties": {
           "id": {
@@ -2803,6 +2836,12 @@
               "$ref": "#/components/schemas/WebhookResponse"
             },
             "type": "array"
+          },
+          "parentProject": {
+            "type": "string"
+          },
+          "childProjects": {
+            "$ref": "#/components/schemas/ProjectListResponse"
           }
         },
         "required": [
@@ -2811,6 +2850,44 @@
           "createdAt",
           "updatedAt",
           "name"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ProjectListResponse": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectResponse"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
         ],
         "type": "object",
         "additionalProperties": false
@@ -2871,16 +2948,6 @@
       },
       "SMTPConfigResponse": {
         "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
-          },
-          "createdAt": {
-            "type": "integer",
-            "format": "int32"
-          },
           "user": {
             "type": "string"
           },
@@ -2899,18 +2966,19 @@
           },
           "useSSL": {
             "type": "boolean"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
           }
         },
         "required": [
-          "id",
-          "object",
-          "createdAt",
           "user",
           "pass",
           "host",
           "port",
           "from",
-          "useSSL"
+          "useSSL",
+          "object"
         ],
         "type": "object",
         "additionalProperties": false
@@ -2918,7 +2986,7 @@
       "CreateSMTPConfigResponse": {
         "$ref": "#/components/schemas/SMTPConfigResponse"
       },
-      "CreateSMTPConfigRequest": {
+      "UpsertSMTPConfigRequest": {
         "properties": {
           "user": {
             "type": "string",
@@ -2952,14 +3020,6 @@
             "example": true
           }
         },
-        "required": [
-          "user",
-          "pass",
-          "host",
-          "from",
-          "port",
-          "useSSL"
-        ],
         "type": "object",
         "additionalProperties": false
       },
@@ -2979,41 +3039,6 @@
           "deleted",
           "object"
         ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "UpdateSMTPConfigResponse": {
-        "$ref": "#/components/schemas/SMTPConfigResponse"
-      },
-      "UpdateSMTPConfigRequest": {
-        "properties": {
-          "user": {
-            "type": "string",
-            "description": "Specifies the user name",
-            "example": "user"
-          },
-          "pass": {
-            "type": "string",
-            "description": "Specifies the password",
-            "example": "pass"
-          },
-          "host": {
-            "type": "string",
-            "description": "Specifies the host",
-            "example": "host"
-          },
-          "port": {
-            "type": "number",
-            "format": "double",
-            "description": "Specifies the port",
-            "example": 0
-          },
-          "useSSL": {
-            "type": "boolean",
-            "description": "Specifies the use SSL",
-            "example": true
-          }
-        },
         "type": "object",
         "additionalProperties": false
       },
@@ -3202,40 +3227,68 @@
         "type": "object",
         "additionalProperties": false
       },
-      "ProjectListResponse": {
+      "EcosystemConfigurationResponse": {
         "properties": {
-          "object": {
-            "$ref": "#/components/schemas/ResponseType.LIST"
+          "customDomain": {
+            "type": "string",
+            "description": "Subdomain of the ecosystem."
           },
-          "url": {
-            "type": "string"
+          "primaryColor": {
+            "type": "string",
+            "description": "Primary color of the ecosystem."
           },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/ProjectResponse"
-            },
-            "type": "array"
+          "primaryColorForeground": {
+            "type": "string",
+            "description": "Primary color foreground of the ecosystem."
           },
-          "start": {
-            "type": "integer",
-            "format": "int32"
+          "radius": {
+            "type": "string",
+            "description": "Radius of the ecosystem."
           },
-          "end": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
+          "logoUrl": {
+            "type": "string",
+            "description": "Logo URL of the ecosystem."
           }
         },
         "required": [
-          "object",
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
+          "customDomain",
+          "primaryColor",
+          "primaryColorForeground",
+          "radius",
+          "logoUrl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateEcosystemConfigurationRequest": {
+        "properties": {
+          "customDomain": {
+            "type": "string",
+            "description": "Custom domain of the ecosystem."
+          },
+          "primaryColor": {
+            "type": "string",
+            "description": "Primary color of the ecosystem."
+          },
+          "primaryColorForeground": {
+            "type": "string",
+            "description": "Primary color foreground of the ecosystem."
+          },
+          "radius": {
+            "type": "string",
+            "description": "Radius of the ecosystem."
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "Logo URL of the ecosystem."
+          }
+        },
+        "required": [
+          "customDomain",
+          "primaryColor",
+          "primaryColorForeground",
+          "radius",
+          "logoUrl"
         ],
         "type": "object",
         "additionalProperties": false
@@ -4165,7 +4218,7 @@
           },
           "share": {
             "type": "string",
-            "description": "Specifies the share data",
+            "description": "Specifies the share repositories",
             "example": "7d526b7e99fbf52850a183..."
           }
         },
@@ -5049,10 +5102,14 @@
           "context": {
             "additionalProperties": false,
             "type": "object",
-            "description": "Specifies the context, that is, the arbitrary data that the specific paymaster may require",
+            "description": "Specifies the context, that is, the arbitrary repositories that the specific paymaster may require",
             "example": {
               "key": "value"
             }
+          },
+          "name": {
+            "type": "string",
+            "description": "Specifies the name of the paymaster"
           }
         },
         "required": [
@@ -6272,7 +6329,12 @@
           "object",
           "createdAt",
           "updatedAt",
-          "address"
+          "isActive",
+          "address",
+          "validAfter",
+          "validUntil",
+          "whitelist",
+          "limit"
         ],
         "type": "object",
         "additionalProperties": false
@@ -7559,7 +7621,7 @@
           },
           "signature": {
             "type": "string",
-            "description": "signed data by the owner",
+            "description": "signed repositories by the owner",
             "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
           }
         },
@@ -7856,6 +7918,68 @@
           }
         ],
         "parameters": []
+      }
+    },
+    "/iam/v1/authorize": {
+      "post": {
+        "operationId": "Authorize",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AuthPlayerResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AuthResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_...",
+                      "object": "player",
+                      "createdAt": 1234567890,
+                      "linkedAccounts": [
+                        {
+                          "provider": "email",
+                          "email": "jaume@openfort.xyz",
+                          "disabled": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorizePlayerRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/iam/v1/players": {
@@ -8318,7 +8442,16 @@
             "pk": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -8358,7 +8491,16 @@
             "pk_access_token": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -8453,6 +8595,7 @@
         "tags": [
           "Authentication"
         ],
+        "deprecated": true,
         "security": [
           {
             "pk": []
@@ -8524,7 +8667,16 @@
             "pk_third_party": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -8847,7 +8999,16 @@
             "pk": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -8908,7 +9069,16 @@
             "pk": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -9086,7 +9256,16 @@
             "pk_third_party": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -9273,7 +9452,16 @@
             "pk": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -9977,7 +10165,7 @@
             "description": "Error response."
           }
         },
-        "description": "**Custodial Accounts only** - Signs the typed data value with types data structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.",
+        "description": "**Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.",
         "summary": "Sign a given payload",
         "tags": [
           "Accounts"
@@ -10835,8 +11023,8 @@
             "description": "Error response."
           }
         },
-        "description": "Using this endpoint, you can get the data returned by any readable\nfunction listed in a contracts ABI. This could be things like querying\nthe totalSupply of a currency contract, the number of owners of an items\ncontract, and more.",
-        "summary": "Read on chain contract data.",
+        "description": "Using this endpoint, you can get the repositories returned by any readable\nfunction listed in a contracts ABI. This could be things like querying\nthe totalSupply of a currency contract, the number of owners of an items\ncontract, and more.",
+        "summary": "Read on chain contract repositories.",
         "tags": [
           "Contracts"
         ],
@@ -16185,7 +16373,16 @@
             "pk_access_token": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Behalf-Of-Project",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -16838,7 +17035,7 @@
                           "from": "0x...",
                           "data": "0x...",
                           "hashedData": "0x...",
-                          "decodedData": "This is a decoded data..."
+                          "decodedData": "This is a decoded repositories..."
                         }
                       ],
                       "start": 0,
@@ -16908,7 +17105,7 @@
                       "from": "0x...",
                       "data": "0x...",
                       "hashedData": "0x...",
-                      "decodedData": "This is a decoded data..."
+                      "decodedData": "This is a decoded repositories..."
                     }
                   }
                 }

@@ -25,6 +25,8 @@ export const AuthProviderResponse = {
     Wallet: 'wallet',
     Google: 'google',
     Twitter: 'twitter',
+    Discord: 'discord',
+    EpicGames: 'epic_games',
     Facebook: 'facebook',
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',

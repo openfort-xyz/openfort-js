@@ -30,6 +30,10 @@ import { AuthResponse } from '../models';
 // @ts-ignore
 import { AuthenticateOAuthRequest } from '../models';
 // @ts-ignore
+import { Authorize200Response } from '../models';
+// @ts-ignore
+import { AuthorizePlayerRequest } from '../models';
+// @ts-ignore
 import { DeprecatedAuthenticatedPlayerResponse } from '../models';
 // @ts-ignore
 import { JwtKeyResponse } from '../models';
@@ -80,6 +84,7 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
          * @summary Authenticate player with oauth token.
          * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         authenticateOAuth: async (authenticateOAuthRequest: AuthenticateOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -149,6 +154,45 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(sIWEAuthenticateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {AuthorizePlayerRequest} authorizePlayerRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authorize: async (authorizePlayerRequest: AuthorizePlayerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'authorizePlayerRequest' is not null or undefined
+            assertParamExists('authorize', 'authorizePlayerRequest', authorizePlayerRequest)
+            const localVarPath = `/iam/v1/authorize`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(authorizePlayerRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -242,10 +286,11 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
          * 
          * @summary Initialize OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        initOAuth: async (oAuthInitRequest: OAuthInitRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        initOAuth: async (oAuthInitRequest: OAuthInitRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'oAuthInitRequest' is not null or undefined
             assertParamExists('initOAuth', 'oAuthInitRequest', oAuthInitRequest)
             const localVarPath = `/iam/v1/oauth/init`;
@@ -263,6 +308,10 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
 
 
     
@@ -282,10 +331,11 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
          * Create a challenge to link external wallet to the player.
          * @summary Initialize SIWE.
          * @param {SIWERequest} sIWERequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        initSIWE: async (sIWERequest: SIWERequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        initSIWE: async (sIWERequest: SIWERequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'sIWERequest' is not null or undefined
             assertParamExists('initSIWE', 'sIWERequest', sIWERequest)
             const localVarPath = `/iam/v1/siwe/init`;
@@ -304,6 +354,10 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -321,10 +375,11 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
         /**
          * 
          * @param {LoginRequest} loginRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        linkEmail: async (loginRequest: LoginRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        linkEmail: async (loginRequest: LoginRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginRequest' is not null or undefined
             assertParamExists('linkEmail', 'loginRequest', loginRequest)
             const localVarPath = `/iam/v1/password/link`;
@@ -338,6 +393,10 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
 
 
     
@@ -357,10 +416,11 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
          * 
          * @summary Initialize Link OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        linkOAuth: async (oAuthInitRequest: OAuthInitRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        linkOAuth: async (oAuthInitRequest: OAuthInitRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'oAuthInitRequest' is not null or undefined
             assertParamExists('linkOAuth', 'oAuthInitRequest', oAuthInitRequest)
             const localVarPath = `/iam/v1/oauth/init_link`;
@@ -374,6 +434,10 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
 
 
     
@@ -429,10 +493,11 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
          * Authenticate a player based on email and password.
          * @summary Email and password login.
          * @param {LoginRequest} loginRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        loginEmailPassword: async (loginRequest: LoginRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        loginEmailPassword: async (loginRequest: LoginRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginRequest' is not null or undefined
             assertParamExists('loginEmailPassword', 'loginRequest', loginRequest)
             const localVarPath = `/iam/v1/password/login`;
@@ -450,6 +515,10 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
 
 
     
@@ -735,10 +804,11 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
          * Create and authenticate a player based on email and password.
          * @summary Email and password signup.
          * @param {SignupRequest} signupRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signupEmailPassword: async (signupRequest: SignupRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        signupEmailPassword: async (signupRequest: SignupRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'signupRequest' is not null or undefined
             assertParamExists('signupEmailPassword', 'signupRequest', signupRequest)
             const localVarPath = `/iam/v1/password/signup`;
@@ -756,6 +826,10 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
 
 
     
@@ -775,10 +849,11 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
          * 
          * @summary Verify oauth token of a third party auth provider.
          * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        thirdParty: async (thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        thirdParty: async (thirdPartyOAuthRequest: ThirdPartyOAuthRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'thirdPartyOAuthRequest' is not null or undefined
             assertParamExists('thirdParty', 'thirdPartyOAuthRequest', thirdPartyOAuthRequest)
             const localVarPath = `/iam/v1/oauth/third_party`;
@@ -796,6 +871,10 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
 
 
     
@@ -1058,6 +1137,7 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          * @summary Authenticate player with oauth token.
          * @param {AuthenticateOAuthRequest} authenticateOAuthRequest 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         async authenticateOAuth(authenticateOAuthRequest: AuthenticateOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
@@ -1073,6 +1153,16 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          */
         async authenticateSIWE(sIWEAuthenticateRequest: SIWEAuthenticateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.authenticateSIWE(sIWEAuthenticateRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {AuthorizePlayerRequest} authorizePlayerRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authorize(authorizePlayerRequest: AuthorizePlayerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Authorize200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authorize(authorizePlayerRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1103,43 +1193,47 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          * 
          * @summary Initialize OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async initOAuth(oAuthInitRequest: OAuthInitRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.initOAuth(oAuthInitRequest, options);
+        async initOAuth(oAuthInitRequest: OAuthInitRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.initOAuth(oAuthInitRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Create a challenge to link external wallet to the player.
          * @summary Initialize SIWE.
          * @param {SIWERequest} sIWERequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async initSIWE(sIWERequest: SIWERequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SIWEInitResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.initSIWE(sIWERequest, options);
+        async initSIWE(sIWERequest: SIWERequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SIWEInitResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.initSIWE(sIWERequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
          * @param {LoginRequest} loginRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async linkEmail(loginRequest: LoginRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.linkEmail(loginRequest, options);
+        async linkEmail(loginRequest: LoginRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkEmail(loginRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
          * @summary Initialize Link OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async linkOAuth(oAuthInitRequest: OAuthInitRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.linkOAuth(oAuthInitRequest, options);
+        async linkOAuth(oAuthInitRequest: OAuthInitRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkOAuth(oAuthInitRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1157,11 +1251,12 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          * Authenticate a player based on email and password.
          * @summary Email and password login.
          * @param {LoginRequest} loginRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async loginEmailPassword(loginRequest: LoginRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.loginEmailPassword(loginRequest, options);
+        async loginEmailPassword(loginRequest: LoginRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.loginEmailPassword(loginRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1243,22 +1338,24 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          * Create and authenticate a player based on email and password.
          * @summary Email and password signup.
          * @param {SignupRequest} signupRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signupEmailPassword(signupRequest: SignupRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.signupEmailPassword(signupRequest, options);
+        async signupEmailPassword(signupRequest: SignupRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signupEmailPassword(signupRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
          * @summary Verify oauth token of a third party auth provider.
          * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {string} [xGame] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async thirdParty(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.thirdParty(thirdPartyOAuthRequest, options);
+        async thirdParty(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.thirdParty(thirdPartyOAuthRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1343,6 +1440,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @summary Authenticate player with oauth token.
          * @param {AuthenticationApiAuthenticateOAuthRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         authenticateOAuth(requestParameters: AuthenticationApiAuthenticateOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
@@ -1357,6 +1455,15 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          */
         authenticateSIWE(requestParameters: AuthenticationApiAuthenticateSIWERequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
             return localVarFp.authenticateSIWE(requestParameters.sIWEAuthenticateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AuthenticationApiAuthorizeRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authorize(requestParameters: AuthenticationApiAuthorizeRequest, options?: AxiosRequestConfig): AxiosPromise<Authorize200Response> {
+            return localVarFp.authorize(requestParameters.authorizePlayerRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * The endpoint verifies the token generated by OAuth provider, creates or retrieves a player based on his email, and returns the jwt token for the player together with the player id.
@@ -1387,7 +1494,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         initOAuth(requestParameters: AuthenticationApiInitOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<OAuthResponse> {
-            return localVarFp.initOAuth(requestParameters.oAuthInitRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.initOAuth(requestParameters.oAuthInitRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * Create a challenge to link external wallet to the player.
@@ -1397,7 +1504,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         initSIWE(requestParameters: AuthenticationApiInitSIWERequest, options?: AxiosRequestConfig): AxiosPromise<SIWEInitResponse> {
-            return localVarFp.initSIWE(requestParameters.sIWERequest, options).then((request) => request(axios, basePath));
+            return localVarFp.initSIWE(requestParameters.sIWERequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1406,7 +1513,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         linkEmail(requestParameters: AuthenticationApiLinkEmailRequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
-            return localVarFp.linkEmail(requestParameters.loginRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.linkEmail(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1416,7 +1523,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         linkOAuth(requestParameters: AuthenticationApiLinkOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<OAuthResponse> {
-            return localVarFp.linkOAuth(requestParameters.oAuthInitRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.linkOAuth(requestParameters.oAuthInitRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1436,7 +1543,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         loginEmailPassword(requestParameters: AuthenticationApiLoginEmailPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
-            return localVarFp.loginEmailPassword(requestParameters.loginRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.loginEmailPassword(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * When using Openfort Auth, the endpoint logs out the player.
@@ -1514,7 +1621,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         signupEmailPassword(requestParameters: AuthenticationApiSignupEmailPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
-            return localVarFp.signupEmailPassword(requestParameters.signupRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.signupEmailPassword(requestParameters.signupRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1524,7 +1631,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @throws {RequiredError}
          */
         thirdParty(requestParameters: AuthenticationApiThirdPartyRequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
-            return localVarFp.thirdParty(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.thirdParty(requestParameters.thirdPartyOAuthRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1618,6 +1725,20 @@ export interface AuthenticationApiAuthenticateSIWERequest {
 }
 
 /**
+ * Request parameters for authorize operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiAuthorizeRequest
+ */
+export interface AuthenticationApiAuthorizeRequest {
+    /**
+     * 
+     * @type {AuthorizePlayerRequest}
+     * @memberof AuthenticationApiAuthorize
+     */
+    readonly authorizePlayerRequest: AuthorizePlayerRequest
+}
+
+/**
  * Request parameters for authorizeWithOAuthToken operation in AuthenticationApi.
  * @export
  * @interface AuthenticationApiAuthorizeWithOAuthTokenRequest
@@ -1664,6 +1785,13 @@ export interface AuthenticationApiInitOAuthRequest {
      * @memberof AuthenticationApiInitOAuth
      */
     readonly oAuthInitRequest: OAuthInitRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiInitOAuth
+     */
+    readonly xGame?: string
 }
 
 /**
@@ -1678,6 +1806,13 @@ export interface AuthenticationApiInitSIWERequest {
      * @memberof AuthenticationApiInitSIWE
      */
     readonly sIWERequest: SIWERequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiInitSIWE
+     */
+    readonly xGame?: string
 }
 
 /**
@@ -1692,6 +1827,13 @@ export interface AuthenticationApiLinkEmailRequest {
      * @memberof AuthenticationApiLinkEmail
      */
     readonly loginRequest: LoginRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiLinkEmail
+     */
+    readonly xGame?: string
 }
 
 /**
@@ -1706,6 +1848,13 @@ export interface AuthenticationApiLinkOAuthRequest {
      * @memberof AuthenticationApiLinkOAuth
      */
     readonly oAuthInitRequest: OAuthInitRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiLinkOAuth
+     */
+    readonly xGame?: string
 }
 
 /**
@@ -1734,6 +1883,13 @@ export interface AuthenticationApiLoginEmailPasswordRequest {
      * @memberof AuthenticationApiLoginEmailPassword
      */
     readonly loginRequest: LoginRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiLoginEmailPassword
+     */
+    readonly xGame?: string
 }
 
 /**
@@ -1832,6 +1988,13 @@ export interface AuthenticationApiSignupEmailPasswordRequest {
      * @memberof AuthenticationApiSignupEmailPassword
      */
     readonly signupRequest: SignupRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiSignupEmailPassword
+     */
+    readonly xGame?: string
 }
 
 /**
@@ -1846,6 +2009,13 @@ export interface AuthenticationApiThirdPartyRequest {
      * @memberof AuthenticationApiThirdParty
      */
     readonly thirdPartyOAuthRequest: ThirdPartyOAuthRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiThirdParty
+     */
+    readonly xGame?: string
 }
 
 /**
@@ -1951,6 +2121,7 @@ export class AuthenticationApi extends BaseAPI {
      * @summary Authenticate player with oauth token.
      * @param {AuthenticationApiAuthenticateOAuthRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof AuthenticationApi
      */
@@ -1968,6 +2139,17 @@ export class AuthenticationApi extends BaseAPI {
      */
     public authenticateSIWE(requestParameters: AuthenticationApiAuthenticateSIWERequest, options?: AxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).authenticateSIWE(requestParameters.sIWEAuthenticateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AuthenticationApiAuthorizeRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public authorize(requestParameters: AuthenticationApiAuthorizeRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).authorize(requestParameters.authorizePlayerRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2004,7 +2186,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public initOAuth(requestParameters: AuthenticationApiInitOAuthRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).initOAuth(requestParameters.oAuthInitRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).initOAuth(requestParameters.oAuthInitRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2016,7 +2198,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public initSIWE(requestParameters: AuthenticationApiInitSIWERequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).initSIWE(requestParameters.sIWERequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).initSIWE(requestParameters.sIWERequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2027,7 +2209,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public linkEmail(requestParameters: AuthenticationApiLinkEmailRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).linkEmail(requestParameters.loginRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).linkEmail(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2039,7 +2221,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public linkOAuth(requestParameters: AuthenticationApiLinkOAuthRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).linkOAuth(requestParameters.oAuthInitRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).linkOAuth(requestParameters.oAuthInitRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2063,7 +2245,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public loginEmailPassword(requestParameters: AuthenticationApiLoginEmailPasswordRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).loginEmailPassword(requestParameters.loginRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).loginEmailPassword(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2157,7 +2339,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public signupEmailPassword(requestParameters: AuthenticationApiSignupEmailPasswordRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).signupEmailPassword(requestParameters.signupRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).signupEmailPassword(requestParameters.signupRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2169,7 +2351,7 @@ export class AuthenticationApi extends BaseAPI {
      * @memberof AuthenticationApi
      */
     public thirdParty(requestParameters: AuthenticationApiThirdPartyRequest, options?: AxiosRequestConfig) {
-        return AuthenticationApiFp(this.configuration).thirdParty(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(this.axios, this.basePath));
+        return AuthenticationApiFp(this.configuration).thirdParty(requestParameters.thirdPartyOAuthRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
