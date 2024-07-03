@@ -15,7 +15,7 @@ const AccountRecovery: React.FC = () => {
           <input
             type="number"
             name="passwordRecovery"
-            placeholder="Password to secure your recovery"
+            placeholder="Password to secure your recovery (NUMBERS ONLY)"
             className="w-full p-2 border border-gray-200 rounded-lg"
           />
         </div>
