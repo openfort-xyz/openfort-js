@@ -47,6 +47,8 @@ export * from './charge-custom-token-policy-strategy';
 export * from './checkout-request';
 export * from './checkout-response';
 export * from './checkout-subscription-request';
+export * from './child-project-list-response';
+export * from './child-project-response';
 export * from './code-challenge';
 export * from './code-challenge-verify';
 export * from './complete-recovery-request';

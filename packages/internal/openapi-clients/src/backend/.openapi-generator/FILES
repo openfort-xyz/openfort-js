@@ -72,6 +72,8 @@ models/charge-custom-token-policy-strategy.ts
 models/checkout-request.ts
 models/checkout-response.ts
 models/checkout-subscription-request.ts
+models/child-project-list-response.ts
+models/child-project-response.ts
 models/code-challenge-verify.ts
 models/code-challenge.ts
 models/complete-recovery-request.ts
