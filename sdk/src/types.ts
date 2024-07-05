@@ -72,9 +72,9 @@ export type InitializeOAuthOptions = {
 };
 
 export interface SDKOverrides {
-  backendUrl: string;
-  iframeUrl: string;
-  shieldUrl: string;
+  backendUrl?: string;
+  iframeUrl?: string;
+  shieldUrl?: string;
 }
 
 export enum TokenType {

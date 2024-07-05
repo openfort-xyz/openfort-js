@@ -3,10 +3,18 @@ import {
 } from 'jose';
 import { BackendApiClients } from '@openfort/openapi-clients';
 import * as crypto from 'crypto';
+import { AxiosRequestConfig } from 'axios';
 import {
-  Auth, InitAuthResponse, InitializeOAuthOptions, SIWEInitResponse,
-  AuthPlayerResponse, AuthResponse, OAuthProvider, ThirdPartyOAuthProvider, TokenType,
+  Auth,
+  AuthPlayerResponse,
+  AuthResponse,
   CodeChallengeMethodEnum,
+  InitAuthResponse,
+  InitializeOAuthOptions,
+  OAuthProvider,
+  SIWEInitResponse,
+  ThirdPartyOAuthProvider,
+  TokenType,
 } from './types';
 import { SDKConfiguration } from './config';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
@@ -44,6 +52,7 @@ export default class AuthManager {
   public async initOAuth(
     provider: OAuthProvider,
     options?: InitializeOAuthOptions,
+    ecosystemGame?: string,
   ): Promise<InitAuthResponse> {
     const usePooling = options?.usePooling ?? false;
     // eslint-disable-next-line no-param-reassign
@@ -57,6 +66,7 @@ export default class AuthManager {
     };
     const result = await this.backendApiClients.authenticationApi.initOAuth(
       request,
+      AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
     );
 
     if (isBrowser() && options?.skipBrowserRedirect) {
@@ -108,6 +118,7 @@ export default class AuthManager {
     provider: ThirdPartyOAuthProvider,
     token: string,
     tokenType: TokenType,
+    ecosystemGame?: string,
   ): Promise<AuthPlayerResponse> {
     const request = {
       thirdPartyOAuthRequest: {
@@ -117,20 +128,27 @@ export default class AuthManager {
       },
     };
     return withOpenfortError<AuthPlayerResponse>(async () => {
-      const response = await this.backendApiClients.authenticationApi.thirdParty(request);
+      const response = await this.backendApiClients.authenticationApi.thirdParty(
+        request,
+        AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
+      );
       return response.data;
-    }, OpenfortErrorType.AUTHENTICATION_ERROR);
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
   public async initSIWE(
     address: string,
+    ecosystemGame?: string,
   ): Promise<SIWEInitResponse> {
     const request = {
       sIWERequest: {
         address,
       },
     };
-    const result = await this.backendApiClients.authenticationApi.initSIWE(request);
+    const result = await this.backendApiClients.authenticationApi.initSIWE(
+      request,
+      AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
+    );
 
     return {
       address: result.data.address,
@@ -156,12 +174,25 @@ export default class AuthManager {
     return withOpenfortError<AuthResponse>(async () => {
       const response = await this.backendApiClients.authenticationApi.authenticateSIWE(request);
       return response.data;
-    }, OpenfortErrorType.AUTHENTICATION_ERROR);
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
+  }
+
+  private static getEcosystemGameOptsOrUndefined(ecosystemGame?: string): AxiosRequestConfig | undefined {
+    if (ecosystemGame) {
+      return {
+        headers: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-game': ecosystemGame,
+        },
+      };
+    }
+    return undefined;
   }
 
   public async loginEmailPassword(
     email: string,
     password: string,
+    ecosystemGame?: string,
   ): Promise<AuthResponse> {
     const request = {
       loginRequest: {
@@ -171,9 +202,13 @@ export default class AuthManager {
     };
 
     return withOpenfortError<AuthResponse>(async () => {
-      const response = await this.backendApiClients.authenticationApi.loginEmailPassword(request);
+      const response = await this.backendApiClients.authenticationApi.loginEmailPassword(
+        request,
+        AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
+      );
       return response.data;
-    }, OpenfortErrorType.AUTHENTICATION_ERROR);
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
   }
 
   public async requestResetPassword(
@@ -223,7 +258,7 @@ export default class AuthManager {
         },
       };
       await this.backendApiClients.authenticationApi.resetPassword(request);
-    }, OpenfortErrorType.AUTHENTICATION_ERROR);
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
   public async requestEmailVerification(
@@ -271,13 +306,14 @@ export default class AuthManager {
         },
       };
       await this.backendApiClients.authenticationApi.verifyEmail(request);
-    }, OpenfortErrorType.AUTHENTICATION_ERROR);
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
   public async signupEmailPassword(
     email: string,
     password: string,
     name?: string,
+    ecosystemGame?: string,
   ): Promise<AuthResponse> {
     const request = {
       signupRequest: {
@@ -288,9 +324,12 @@ export default class AuthManager {
     };
 
     return withOpenfortError<AuthResponse>(async () => {
-      const response = await this.backendApiClients.authenticationApi.signupEmailPassword(request);
+      const response = await this.backendApiClients.authenticationApi.signupEmailPassword(
+        request,
+        AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
+      );
       return response.data;
-    }, OpenfortErrorType.USER_REGISTRATION_ERROR);
+    }, { default: OpenfortErrorType.USER_REGISTRATION_ERROR });
   }
 
   public async validateCredentials(forceRefresh?:boolean): Promise<Auth> {
@@ -344,7 +383,7 @@ export default class AuthManager {
         accessToken: response.data.token,
         refreshToken: response.data.refreshToken,
       };
-    }, OpenfortErrorType.REFRESH_TOKEN_ERROR);
+    }, { default: OpenfortErrorType.REFRESH_TOKEN_ERROR });
   }
 
   public async logout(
@@ -364,7 +403,7 @@ export default class AuthManager {
           'x-player-token': accessToken,
         },
       });
-    }, OpenfortErrorType.LOGOUT_ERROR);
+    }, { default: OpenfortErrorType.LOGOUT_ERROR });
   }
 
   public async getUser(
@@ -385,6 +424,7 @@ export default class AuthManager {
     provider: OAuthProvider,
     playerToken: string,
     options?: InitializeOAuthOptions,
+    ecosystemGame?: string,
   ): Promise<InitAuthResponse> {
     const request = {
       oAuthInitRequest: {
@@ -400,6 +440,8 @@ export default class AuthManager {
           authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           'x-player-token': playerToken,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-game': ecosystemGame || undefined,
         },
       },
     );
@@ -500,6 +542,7 @@ export default class AuthManager {
     email:string,
     password: string,
     accessToken: string,
+    ecosystemGame?: string,
   ): Promise<AuthPlayerResponse> {
     const request = {
       loginRequest: {
@@ -512,6 +555,8 @@ export default class AuthManager {
         authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'x-player-token': accessToken,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-game': ecosystemGame || undefined,
       },
     });
     return authPlayerResponse.data;

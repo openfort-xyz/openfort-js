@@ -1,26 +1,5 @@
 import { createConfig, OpenfortAPIConfiguration } from '@openfort/openapi-clients';
-import { OpenfortError, OpenfortErrorType } from '../errors/openfortError';
 import { SDKOverrides } from '../types';
-
-const validateConfiguration = <T>(
-  configuration: T,
-  requiredKeys: Array<keyof T>,
-  prefix?: string,
-) => {
-  const missingKeys = requiredKeys
-    .map((key) => !configuration[key] && key)
-    .filter((n) => n)
-    .join(', ');
-  if (missingKeys !== '') {
-    const errorMessage = prefix
-      ? `${prefix} - ${missingKeys} cannot be null`
-      : `${missingKeys} cannot be null`;
-    throw new OpenfortError(
-      errorMessage,
-      OpenfortErrorType.INVALID_CONFIGURATION,
-    );
-  }
-};
 
 export class OpenfortConfiguration {
   readonly publishableKey: string;
@@ -75,21 +54,12 @@ export class SDKConfiguration {
     this.shieldConfiguration = shieldConfiguration;
     this.baseConfiguration = baseConfiguration;
     if (overrides) {
-      validateConfiguration(
-        overrides,
-        [
-          'backendUrl',
-          'iframeUrl',
-          'shieldUrl',
-        ],
-        'overrides',
-      );
-      this.backendUrl = overrides.backendUrl;
-      this.iframeUrl = overrides.iframeUrl;
-      this.shieldUrl = overrides.shieldUrl;
+      this.backendUrl = overrides.backendUrl || 'https://api.openfort.xyz';
+      this.iframeUrl = overrides.iframeUrl || 'https://iframe.openfort.xyz';
+      this.shieldUrl = overrides.shieldUrl || 'https://shield.openfort.xyz';
       this.openfortAPIConfig = {
         backend: createConfig({
-          basePath: overrides.backendUrl,
+          basePath: overrides.backendUrl || 'https://api.openfort.xyz',
           accessToken: baseConfiguration.publishableKey,
         }),
       };

@@ -18,10 +18,10 @@
 import { ApiKeyResponse } from './api-key-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import { EntityTypePROJECT } from './entity-type-project';
+import { ChildProjectListResponse } from './child-project-list-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ProjectListResponse } from './project-list-response';
+import { EntityTypePROJECT } from './entity-type-project';
 // May contain unused imports in some cases
 // @ts-ignore
 import { WebhookResponse } from './webhook-response';
@@ -82,10 +82,10 @@ export interface ProjectResponse {
     'parentProject'?: string;
     /**
      * 
-     * @type {ProjectListResponse}
+     * @type {ChildProjectListResponse}
      * @memberof ProjectResponse
      */
-    'childProjects'?: ProjectListResponse;
+    'childProjects'?: ChildProjectListResponse;
 }
 
 

@@ -3,21 +3,21 @@ import { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer'
 import { BackendApiClients } from '@openfort/openapi-clients';
 import {
   AccountType,
-  EmbeddedState,
-  SessionKey,
   Auth,
+  AuthPlayerResponse,
+  AuthResponse,
+  AuthType,
+  EmbeddedState,
   InitAuthResponse,
   InitializeOAuthOptions,
-  SIWEInitResponse,
-  TokenType,
-  ThirdPartyOAuthProvider,
-  TransactionIntentResponse,
-  SessionResponse,
   OAuthProvider,
-  AuthResponse,
-  AuthPlayerResponse,
   OpenfortEventMap,
-  AuthType,
+  SessionKey,
+  SessionResponse,
+  SIWEInitResponse,
+  ThirdPartyOAuthProvider,
+  TokenType,
+  TransactionIntentResponse,
 } from './types';
 import { OpenfortSDKConfiguration, SDKConfiguration } from './config';
 import { EvmProvider } from './evm';
@@ -32,10 +32,8 @@ import { LocalStorage } from './storage/localStorage';
 import { SessionSigner } from './signer/session.signer';
 import { EmbeddedSigner } from './signer/embedded.signer';
 import { SessionStorage } from './storage/sessionStorage';
-import IframeManager, {
-  IframeConfiguration,
-} from './iframe/iframeManager';
-import { ShieldAuthType, ShieldAuthentication } from './iframe/types';
+import IframeManager, { IframeConfiguration } from './iframe/iframeManager';
+import { ShieldAuthentication, ShieldAuthType } from './iframe/types';
 
 export class Openfort {
   private signer?: ISigner;
@@ -195,13 +193,14 @@ export class Openfort {
    *
    * @param email - User's email.
    * @param password - User's password.
+   * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
    * @returns An AuthResponse object containing authentication details.
    */
   public async logInWithEmailPassword(
-    { email, password }: { email: string; password: string },
+    { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse> {
     this.logout();
-    const result = await this.authManager.loginEmailPassword(email, password);
+    const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
     this.storeCredentials({
       player: result.player.id,
       accessToken: result.token,
@@ -216,13 +215,18 @@ export class Openfort {
    * @param email - User's email.
    * @param password - User's password.
    * @param options - Additional options for the sign-up process.
+   * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
    * @returns An AuthResponse object containing authentication details.
    */
   public async signUpWithEmailPassword(
-    { email, password, options }: { email: string; password: string; options?: { data: { name: string } } },
+    {
+      email, password, options, ecosystemGame,
+    }: {
+      email: string; password: string; options?: { data: { name: string } }, ecosystemGame?: string,
+    },
   ): Promise<AuthResponse> {
     this.logout();
-    const result = await this.authManager.signupEmailPassword(email, password, options?.data.name);
+    const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame);
     this.storeCredentials({
       player: result.player.id,
       accessToken: result.token,
@@ -237,13 +241,15 @@ export class Openfort {
    * @param email - User's email.
    * @param password - User's password.
    * @param authToken - Authentication token.
+   * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
    * @returns An AuthPlayerResponse object.
    */
   public async linkEmailPassword(
-    { email, password, authToken }: { email: string; password: string; authToken: string },
+    {
+      email, password, authToken, ecosystemGame,
+    }: { email: string; password: string; authToken: string, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse> {
-    const result = await this.authManager.linkEmail(email, password, authToken);
-    return result;
+    return await this.authManager.linkEmail(email, password, authToken, ecosystemGame);
   }
 
   /**
@@ -256,8 +262,7 @@ export class Openfort {
   public async unlinkEmailPassword(
     { email, authToken }: { email: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
-    const result = await this.authManager.unlinkEmail(email, authToken);
-    return result;
+    return await this.authManager.unlinkEmail(email, authToken);
   }
 
   /**
@@ -312,14 +317,16 @@ export class Openfort {
    *
    * @param provider - OAuth provider.
    * @param options - Additional options for initialization.
+   * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
    * @returns An InitAuthResponse object.
    */
   public async initOAuth(
-    { provider, options }: { provider: OAuthProvider; options?: InitializeOAuthOptions },
+    { provider, options, ecosystemGame }: {
+      provider: OAuthProvider; options?: InitializeOAuthOptions; ecosystemGame?: string
+    },
   ): Promise<InitAuthResponse> {
     this.logout();
-    const authResponse = await this.authManager.initOAuth(provider, options);
-    return authResponse;
+    return await this.authManager.initOAuth(provider, options, ecosystemGame);
   }
 
   /**
@@ -328,12 +335,17 @@ export class Openfort {
    * @param provider - OAuth provider.
    * @param authToken - Authentication token.
    * @param options - Additional options for initialization.
+   * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
    * @returns An InitAuthResponse object.
    */
   public async initLinkOAuth(
-    { provider, authToken, options }: { provider: OAuthProvider; authToken: string; options?: InitializeOAuthOptions },
+    {
+      provider, authToken, options, ecosystemGame,
+    }: {
+      provider: OAuthProvider; authToken: string; options?: InitializeOAuthOptions, ecosystemGame?: string
+    },
   ): Promise<InitAuthResponse> {
-    return await this.authManager.linkOAuth(provider, authToken, options);
+    return await this.authManager.linkOAuth(provider, authToken, options, ecosystemGame);
   }
 
   /**
@@ -346,8 +358,7 @@ export class Openfort {
   public async unlinkOAuth(
     { provider, authToken }: { provider: OAuthProvider; authToken: string },
   ): Promise<AuthPlayerResponse> {
-    const result = await this.authManager.unlinkOAuth(provider, authToken);
-    return result;
+    return await this.authManager.unlinkOAuth(provider, authToken);
   }
 
   /**
@@ -366,12 +377,15 @@ export class Openfort {
    * @param provider - Third-party OAuth provider.
    * @param token - OAuth token.
    * @param tokenType - Type of the OAuth token.
+   * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
    * @returns An AuthPlayerResponse object.
    */
   public async authenticateWithThirdPartyProvider(
-    { provider, token, tokenType }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType },
+    {
+      provider, token, tokenType, ecosystemGame,
+    }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse> {
-    const result = await this.authManager.authenticateThirdParty(provider, token, tokenType);
+    const result = await this.authManager.authenticateThirdParty(provider, token, tokenType, ecosystemGame);
     this.instanceManager.setAccessToken({
       token,
       thirdPartyProvider: provider,
@@ -388,10 +402,13 @@ export class Openfort {
    * Initializes Sign-In with Ethereum (SIWE).
    *
    * @param address - Ethereum address.
+   * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
    * @returns A SIWEInitResponse object.
    */
-  public async initSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
-    return await this.authManager.initSIWE(address);
+  public async initSIWE(
+    { address, ecosystemGame }: { address: string, ecosystemGame?: string },
+  ): Promise<SIWEInitResponse> {
+    return await this.authManager.initSIWE(address, ecosystemGame);
   }
 
   /**
@@ -433,8 +450,7 @@ export class Openfort {
       signature, message, walletClientType, connectorType, authToken,
     }: { signature: string; message: string; walletClientType: string; connectorType: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
-    const result = await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken);
-    return result;
+    return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken);
   }
 
   /**
@@ -447,8 +463,7 @@ export class Openfort {
   public async unlinkWallet(
     { address, authToken }: { address: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
-    const result = await this.authManager.unlinkWallet(address, authToken);
-    return result;
+    return await this.authManager.unlinkWallet(address, authToken);
   }
 
   /**
