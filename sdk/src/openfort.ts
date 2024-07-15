@@ -62,7 +62,7 @@ export class Openfort {
     );
     this.authManager = new AuthManager(this.config, this.backendApiClients, this.instanceManager);
     this.openfortEventEmitter = new TypedEventEmitter<OpenfortEventMap>();
-    this.iframeManager = new IframeManager(this.config, this.instanceManager);
+    this.iframeManager = new IframeManager(this.config);
   }
 
   /**
@@ -769,7 +769,13 @@ export class Openfort {
       throw new OpenfortError('Must be logged in to configure embedded signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
     const shieldAuthType = this.instanceManager.getShieldAuthType();
-    const token = this.iframeManager.getShieldToken();
+
+    const token = (shieldAuthType as ShieldAuthType) === ShieldAuthType.OPENFORT
+      ? this.instanceManager.getAccessToken()?.token
+      : this.instanceManager.getShieldAuthToken();
+    if (!token) {
+      throw new OpenfortError('Shield auth token is not set', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
     const shieldAuth: ShieldAuthentication = {
       auth: shieldAuthType as ShieldAuthType,
       token,

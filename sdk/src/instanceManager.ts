@@ -330,7 +330,7 @@ export default class InstanceManager {
     this.persistentStorage.save(shieldAuthTypeStorageKey, accountType);
   }
 
-  public getShieldAuthType(): ShieldAuthType | null {
+  public getShieldAuthType(): ShieldAuthType {
     if (!this.accountType) {
       this.accountType = this.persistentStorage.get(shieldAuthTypeStorageKey);
       if (this.accountType === null) {
@@ -339,7 +339,7 @@ export default class InstanceManager {
         this.accountType = ShieldAuthType.OPENFORT;
       }
     }
-    return this.accountType as (ShieldAuthType | null);
+    return this.accountType as ShieldAuthType;
   }
 
   public removeShieldAuthType(): void {
