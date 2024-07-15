@@ -1,4 +1,5 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
+import { ShieldAuthType } from 'iframe/types';
 import { JWK } from './types';
 import { SDKConfiguration } from './config';
 import { SignerType } from './signer/signer';
@@ -329,11 +330,16 @@ export default class InstanceManager {
     this.persistentStorage.save(shieldAuthTypeStorageKey, accountType);
   }
 
-  public getShieldAuthType(): string | null {
+  public getShieldAuthType(): ShieldAuthType {
     if (!this.accountType) {
       this.accountType = this.persistentStorage.get(shieldAuthTypeStorageKey);
+      if (this.accountType === null) {
+        // TODO: remove, this is for backward compatibility
+        this.setShieldAuthType(ShieldAuthType.OPENFORT);
+        this.accountType = ShieldAuthType.OPENFORT;
+      }
     }
-    return this.accountType;
+    return this.accountType as ShieldAuthType;
   }
 
   public removeShieldAuthType(): void {
