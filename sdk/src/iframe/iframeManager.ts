@@ -1,3 +1,5 @@
+import InstanceManager from 'instanceManager';
+import { OpenfortError, OpenfortErrorType } from 'errors/openfortError';
 import { SDKConfiguration } from '../config';
 import {
   ConfigureRequest,
@@ -19,6 +21,7 @@ import {
   RequestConfiguration,
   MISSING_USER_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
+  ShieldAuthType,
 } from './types';
 
 export interface IframeConfiguration {
@@ -75,8 +78,11 @@ export default class IframeManager {
 
   private readonly sdkConfiguration: SDKConfiguration;
 
-  constructor(configuration: SDKConfiguration) {
+  private readonly instanceManager: InstanceManager;
+
+  constructor(configuration: SDKConfiguration, instanceManager: InstanceManager) {
     this.sdkConfiguration = configuration;
+    this.instanceManager = instanceManager;
   }
 
   private async iframeSetup(): Promise<void> {
@@ -269,6 +275,11 @@ export default class IframeManager {
   async updateAuthentication(iframeConfiguration: IframeConfiguration, token: string): Promise<void> {
     // eslint-disable-next-line no-param-reassign
     iframeConfiguration.accessToken = token;
+    const shieldAuthType = this.instanceManager.getShieldAuthType();
+    if ((shieldAuthType as ShieldAuthType) === ShieldAuthType.OPENFORT && iframeConfiguration.recovery) {
+      // eslint-disable-next-line no-param-reassign
+      iframeConfiguration.recovery.token = token;
+    }
     await this.waitForIframeLoad();
     const uuid = this.generateShortUUID();
     const request = new UpdateAuthenticationRequest(uuid, token);
@@ -284,6 +295,17 @@ export default class IframeManager {
       }
       throw e;
     }
+  }
+
+  public getShieldToken(): string {
+    const shieldAuthType = this.instanceManager.getShieldAuthType();
+    const token = (shieldAuthType as ShieldAuthType) === ShieldAuthType.OPENFORT
+      ? this.instanceManager.getAccessToken()?.token
+      : this.instanceManager.getShieldAuthToken();
+    if (!token) {
+      throw new OpenfortError('Shield auth token is not set', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+    return token;
   }
 
   // eslint-disable-next-line class-methods-use-this
