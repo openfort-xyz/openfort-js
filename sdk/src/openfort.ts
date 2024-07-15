@@ -768,14 +768,8 @@ export class Openfort {
     if (!this.credentialsProvided()) {
       throw new OpenfortError('Must be logged in to configure embedded signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
+    const shieldAuthType = this.instanceManager.getShieldAuthType();
 
-    let shieldAuthType = this.instanceManager.getShieldAuthType();
-    if (!shieldAuthType) {
-      // TODO: remove, this is for backward compatibility
-      this.instanceManager.setShieldAuthType(ShieldAuthType.OPENFORT);
-      shieldAuthType = ShieldAuthType.OPENFORT;
-      // throw new OpenfortError('Shield auth type is not set', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
     const token = (shieldAuthType as ShieldAuthType) === ShieldAuthType.OPENFORT
       ? this.instanceManager.getAccessToken()?.token
       : this.instanceManager.getShieldAuthToken();

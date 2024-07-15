@@ -36,7 +36,8 @@ export class EmbeddedSigner implements ISigner {
     if (!accessToken) {
       return;
     }
-    await this.iframeManager.updateAuthentication(this.iframeConfiguration, accessToken.token);
+    const shieldAuthType = this.instanceManager.getShieldAuthType();
+    await this.iframeManager.updateAuthentication(this.iframeConfiguration, accessToken.token, shieldAuthType);
   }
 
   // eslint-disable-next-line class-methods-use-this

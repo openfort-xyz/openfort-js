@@ -19,6 +19,7 @@ import {
   RequestConfiguration,
   MISSING_USER_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
+  ShieldAuthType,
 } from './types';
 
 export interface IframeConfiguration {
@@ -267,9 +268,18 @@ export default class IframeManager {
     await this.waitForResponse<LogoutResponse>(uuid);
   }
 
-  async updateAuthentication(iframeConfiguration: IframeConfiguration, token: string): Promise<void> {
+  async updateAuthentication(
+    iframeConfiguration: IframeConfiguration,
+    token: string,
+    shieldAuthType: ShieldAuthType,
+  ): Promise<void> {
     // eslint-disable-next-line no-param-reassign
     iframeConfiguration.accessToken = token;
+
+    if (shieldAuthType === ShieldAuthType.OPENFORT && iframeConfiguration.recovery) {
+      // eslint-disable-next-line no-param-reassign
+      iframeConfiguration.recovery.token = token;
+    }
     await this.waitForIframeLoad();
     const uuid = this.generateShortUUID();
     const request = new UpdateAuthenticationRequest(uuid, token);
@@ -280,7 +290,7 @@ export default class IframeManager {
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure(iframeConfiguration);
-        await this.updateAuthentication(iframeConfiguration, token);
+        await this.updateAuthentication(iframeConfiguration, token, shieldAuthType);
         return;
       }
       throw e;
