@@ -560,6 +560,26 @@ export class Openfort {
   }
 
   /**
+   * Exports the private key.
+   *
+   * @returns The private key.
+   * @throws {OpenfortError} If no signer is configured.
+   */
+  public async exportPrivateKey(): Promise<string> {
+    await this.recoverSigner();
+    if (!this.signer) {
+      throw new OpenfortError(
+        'In order to sign a message, an embedded signer must be configured',
+        OpenfortErrorType.MISSING_EMBEDDED_SIGNER_ERROR,
+      );
+    }
+    if (this.signer.useCredentials()) {
+      await this.validateAndRefreshToken();
+    }
+    return await this.signer.export();
+  }
+
+  /**
    * Signs typed data.
    *
    * @param domain - EIP-712 domain.
