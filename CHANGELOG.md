@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added encryption session support
 - Export private key
+- Flush signer when missing recovery password
 
 ## [0.7.16] - 2024-07-15
 ### Fix

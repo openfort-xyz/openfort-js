@@ -32,7 +32,7 @@ import { LocalStorage } from './storage/localStorage';
 import { SessionSigner } from './signer/session.signer';
 import { EmbeddedSigner } from './signer/embedded.signer';
 import { SessionStorage } from './storage/sessionStorage';
-import IframeManager, { IframeConfiguration } from './iframe/iframeManager';
+import IframeManager, { IframeConfiguration, MissingRecoveryPasswordError } from './iframe/iframeManager';
 import { ShieldAuthentication, ShieldAuthType } from './iframe/types';
 
 export class Openfort {
@@ -182,10 +182,18 @@ export class Openfort {
         this.instanceManager.setShieldAuthToken(shieldAuthentication?.token);
       }
     }
-    const signer = this.newEmbeddedSigner(chainId);
-    await signer.ensureEmbeddedAccount(recoveryPassword);
-    this.signer = signer;
-    this.instanceManager.setSignerType(SignerType.EMBEDDED);
+
+    try {
+      const signer = this.newEmbeddedSigner(chainId);
+      await signer.ensureEmbeddedAccount(recoveryPassword);
+      this.signer = signer;
+      this.instanceManager.setSignerType(SignerType.EMBEDDED);
+    } catch (e) {
+      if (e instanceof MissingRecoveryPasswordError) {
+        await this.flushSigner();
+        throw e;
+      }
+    }
   }
 
   /**
