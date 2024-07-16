@@ -46,6 +46,7 @@ export class EmbeddedSigner implements ISigner {
   }
 
   public async ensureEmbeddedAccount(
+    encryptionSession?: string,
     recoveryPassword?: string,
   ): Promise<GetCurrentDeviceResponse> {
     const playerID = this.instanceManager.getPlayerID();
@@ -54,6 +55,10 @@ export class EmbeddedSigner implements ISigner {
 
     if (currentUser?.deviceID) {
       return currentUser;
+    }
+
+    if (encryptionSession && this.iframeConfiguration.recovery) {
+      this.iframeConfiguration.recovery.encryptionSession = encryptionSession;
     }
 
     currentUser = await this.iframeManager.configure(this.iframeConfiguration, recoveryPassword);

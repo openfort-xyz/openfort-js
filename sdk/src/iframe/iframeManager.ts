@@ -193,7 +193,7 @@ export default class IframeManager {
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
       encryptionKey: password ?? null,
       encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
-      encryptionSession: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionSession ?? null,
+      encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
     };
