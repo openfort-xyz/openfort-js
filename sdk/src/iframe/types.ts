@@ -390,6 +390,8 @@ export interface ShieldAuthentication {
   authProvider?: string;
   // When using a third party auth provider, the token type
   tokenType?: string;
+  // When using encryption sessions, the session ID
+  encryptionSession?: string
 }
 
 export enum ShieldAuthType {

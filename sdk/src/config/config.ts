@@ -14,8 +14,6 @@ export class ShieldConfiguration {
 
   readonly shieldEncryptionKey?: string;
 
-  readonly shieldEncryptionSession?: string;
-
   readonly debug?: boolean = false;
 
   constructor(options: {
@@ -26,7 +24,6 @@ export class ShieldConfiguration {
   }) {
     this.shieldPublishableKey = options.shieldPublishableKey;
     this.shieldEncryptionKey = options.shieldEncryptionKey;
-    this.shieldEncryptionSession = options.shieldEncryptionSession;
     this.debug = options.shieldDebug || false;
   }
 }

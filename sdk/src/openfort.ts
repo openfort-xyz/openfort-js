@@ -185,7 +185,7 @@ export class Openfort {
 
     try {
       const signer = this.newEmbeddedSigner(chainId);
-      await signer.ensureEmbeddedAccount(recoveryPassword);
+      await signer.ensureEmbeddedAccount(shieldAuthentication?.encryptionSession, recoveryPassword);
       this.signer = signer;
       this.instanceManager.setSignerType(SignerType.EMBEDDED);
     } catch (e) {
