@@ -61,4 +61,11 @@ export class SessionSigner implements ISigner {
   public updateAuthentication(): Promise<void> {
     return Promise.resolve();
   }
+
+  public export(): Promise<string> {
+    if (this.sessionKey === null) {
+      throw new Error('Session key is not loaded.');
+    }
+    return Promise.resolve(this.sessionKey.getPrivateKey());
+  }
 }

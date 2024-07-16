@@ -7,6 +7,7 @@ export enum Event {
   UPDATE_AUTHENTICATION = 'update-authentication',
   AUTHENTICATION_UPDATED = 'authentication-updated',
   SIGN = 'sign',
+  EXPORT = 'export',
   SIGNED = 'signed',
   LOGOUT = 'logout',
   LOGGED_OUT = 'logged-out',
@@ -118,6 +119,8 @@ export class ConfigureRequest implements IEventRequest {
 
   encryptionPart: string | null;
 
+  encryptionSession: string | null;
+
   openfortURL: string;
 
   shieldURL: string;
@@ -139,6 +142,7 @@ export class ConfigureRequest implements IEventRequest {
     thirdPartyProvider = null,
     thirdPartyTokenType = null,
     encryptionPart = null,
+    encryptionSession = null,
   ) {
     this.uuid = uuid;
     this.chainId = chainId;
@@ -152,6 +156,7 @@ export class ConfigureRequest implements IEventRequest {
     this.openfortURL = openfortURL;
     this.shieldURL = shieldURL;
     this.encryptionPart = encryptionPart;
+    this.encryptionSession = encryptionSession;
   }
 }
 
@@ -192,6 +197,45 @@ export class SignRequest implements IEventRequest {
     this.requestConfiguration = requestConfiguration;
   }
 }
+
+export class ExportPrivateKeyRequest implements IEventRequest {
+  uuid: string;
+
+  action: Event = Event.EXPORT;
+
+  requestConfiguration?: RequestConfiguration;
+
+  constructor(
+    uuid: string,
+    requestConfiguration?: RequestConfiguration,
+  ) {
+    this.uuid = uuid;
+    this.requestConfiguration = requestConfiguration;
+  }
+}
+
+export interface IExportPrivateKeyResponse extends IEventResponse {
+  key: string;
+}
+
+export class ExportPrivateKeyResponse implements IExportPrivateKeyResponse {
+  uuid: string;
+
+  success: boolean;
+
+  action: Event = Event.EXPORT;
+
+  key: string;
+
+  version = VERSION;
+
+  constructor(uuid: string, key: string) {
+    this.success = true;
+    this.key = key;
+    this.uuid = uuid;
+  }
+}
+
 export interface IEventResponse extends IEvent {
   success: boolean;
   action: Event;

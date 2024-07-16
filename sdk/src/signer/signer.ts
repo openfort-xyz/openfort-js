@@ -13,4 +13,5 @@ export interface ISigner {
   useCredentials(): boolean;
   updateAuthentication(): Promise<void>;
   getSingerType(): SignerType;
+  export(): Promise<string>
 }

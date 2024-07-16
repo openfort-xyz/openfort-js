@@ -19,7 +19,7 @@ import {
   RequestConfiguration,
   MISSING_USER_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
-  ShieldAuthType,
+  ShieldAuthType, ExportPrivateKeyRequest, ExportPrivateKeyResponse,
 } from './types';
 
 export interface IframeConfiguration {
@@ -193,6 +193,7 @@ export default class IframeManager {
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
       encryptionKey: password ?? null,
       encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
+      encryptionSession: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionSession ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
     };
@@ -238,6 +239,38 @@ export default class IframeManager {
     }
     sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
     return response.signature;
+  }
+
+  async export(
+    iframeConfiguration: IframeConfiguration,
+  ): Promise<string> {
+    await this.waitForIframeLoad();
+    const uuid = this.generateShortUUID();
+    const requestConfiguration: RequestConfiguration = {
+      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
+      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
+      token: iframeConfiguration.accessToken ?? undefined,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      openfortURL: this.sdkConfiguration.backendUrl,
+    };
+    const request = new ExportPrivateKeyRequest(
+      uuid,
+      requestConfiguration,
+    );
+    this.iframe?.contentWindow?.postMessage(request, '*');
+    let response: ExportPrivateKeyResponse;
+    try {
+      response = await this.waitForResponse<ExportPrivateKeyResponse>(uuid);
+    } catch (e) {
+      if (e instanceof NotConfiguredError) {
+        await this.configure(iframeConfiguration);
+        return this.export(iframeConfiguration);
+      }
+
+      throw e;
+    }
+    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
+    return response.key;
   }
 
   async getCurrentUser(playerId: string): Promise<GetCurrentDeviceResponse | null> {

@@ -14,15 +14,19 @@ export class ShieldConfiguration {
 
   readonly shieldEncryptionKey?: string;
 
+  readonly shieldEncryptionSession?: string;
+
   readonly debug?: boolean = false;
 
   constructor(options: {
     shieldPublishableKey: string
     shieldEncryptionKey?: string
+    shieldEncryptionSession?: string
     shieldDebug?: boolean
   }) {
     this.shieldPublishableKey = options.shieldPublishableKey;
     this.shieldEncryptionKey = options.shieldEncryptionKey;
+    this.shieldEncryptionSession = options.shieldEncryptionSession;
     this.debug = options.shieldDebug || false;
   }
 }

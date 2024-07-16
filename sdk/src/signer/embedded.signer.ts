@@ -81,6 +81,15 @@ export class EmbeddedSigner implements ISigner {
     return await this.iframeManager.sign(this.iframeConfiguration, message, requireArrayify, requireHash);
   }
 
+  public async export(): Promise<string> {
+    const loaded = await this.isLoaded();
+    if (!loaded) {
+      throw new Error('Signer is not loaded');
+    }
+
+    return await this.iframeManager.export(this.iframeConfiguration);
+  }
+
   public getDeviceID(): string | null {
     return this.instanceManager.getDeviceID();
   }
