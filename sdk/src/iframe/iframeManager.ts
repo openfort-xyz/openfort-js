@@ -140,6 +140,7 @@ export default class IframeManager {
     [Event.CURRENT_DEVICE]: GetCurrentDeviceResponse,
     [Event.SIGNED]: SignResponse,
     [Event.LOGGED_OUT]: LogoutResponse,
+    [Event.EXPORT]: ExportPrivateKeyResponse,
   };
 
   private waitForResponse<T extends IEventResponse>(uuid: string): Promise<T> {

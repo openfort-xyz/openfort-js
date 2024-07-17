@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.18] - 2024-07-16
 ### Fixed
+- Handle export private key response
+
+## [0.7.18] - 2024-07-16
+### Fixed
 - Encrypt session support
 
 ## [0.7.17] - 2024-07-15
