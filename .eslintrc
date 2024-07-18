@@ -4,7 +4,8 @@
   "ignorePatterns": [
     "rollup.config.*",
     "node_modules/",
-    "dist/"
+    "dist/",
+    "examples/"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
