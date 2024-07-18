@@ -19,6 +19,7 @@ export enum Event {
 
 export const NOT_CONFIGURED_ERROR = 'not-configured-error';
 export const MISSING_USER_ENTROPY_ERROR = 'missing-user-entropy-error';
+export const MISSING_PROJECT_ENTROPY_ERROR = 'missing-project-entropy-error';
 export const INCORRECT_USER_ENTROPY_ERROR = 'incorrect-user-entropy-error';
 
 export interface IEvent {
