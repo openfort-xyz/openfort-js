@@ -24,7 +24,6 @@ import { signTypedDataV4 } from './signTypedDataV4';
 
 export type EvmProviderInput = {
   signer: EmbeddedSigner;
-  address: string;
   backendApiClients: BackendApiClients;
   instanceManager: InstanceManager;
   openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
@@ -50,7 +49,6 @@ export class EvmProvider implements Provider {
 
   constructor({
     signer,
-    address,
     backendApiClients,
     instanceManager,
     openfortEventEmitter,
@@ -59,8 +57,6 @@ export class EvmProvider implements Provider {
     this.#signer = signer;
 
     this.#policyId = policyId;
-
-    this.#address = address;
 
     this.#instanceManager = instanceManager;
 

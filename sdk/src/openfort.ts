@@ -118,11 +118,9 @@ export class Openfort {
         OpenfortErrorType.NOT_LOGGED_IN_ERROR,
       );
     }
-    const address = this.instanceManager.getAccountAddress();
     const provider = new EvmProvider({
       openfortEventEmitter: this.openfortEventEmitter,
       signer: this.signer,
-      address: address as string,
       instanceManager: this.instanceManager,
       backendApiClients: this.backendApiClients,
       policyId: options.policy,
@@ -618,6 +616,7 @@ export class Openfort {
     const accountType = this.instanceManager.getAccountType();
     const accountAddress = this.instanceManager.getAccountAddress();
     const chainId = this.instanceManager.getChainID();
+
     if (accountType === AccountType.UPGRADEABLE_V5) {
       const updatedDomain: TypedDataDomain = {
         name: 'Openfort',
