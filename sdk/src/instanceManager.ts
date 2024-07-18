@@ -42,6 +42,8 @@ export default class InstanceManager {
 
   private shieldAuthType: string | null = null;
 
+  private authShieldToken: string | null = null;
+
   private chainId: string | null = null;
 
   private accountAddress: string | null = null;
@@ -325,42 +327,42 @@ export default class InstanceManager {
     this.persistentStorage.remove(accountTypeStorageKey);
   }
 
-  public setShieldAuthType(accountType: string): void {
-    this.accountType = accountType;
-    this.persistentStorage.save(shieldAuthTypeStorageKey, accountType);
+  public setShieldAuthType(shieldAuthType: string): void {
+    this.shieldAuthType = shieldAuthType;
+    this.persistentStorage.save(shieldAuthTypeStorageKey, shieldAuthType);
   }
 
   public getShieldAuthType(): ShieldAuthType {
-    if (!this.accountType) {
-      this.accountType = this.persistentStorage.get(shieldAuthTypeStorageKey);
-      if (this.accountType === null) {
+    if (!this.shieldAuthType) {
+      this.shieldAuthType = this.persistentStorage.get(shieldAuthTypeStorageKey);
+      if (this.shieldAuthType === null) {
         // TODO: remove, this is for backward compatibility
         this.setShieldAuthType(ShieldAuthType.OPENFORT);
-        this.accountType = ShieldAuthType.OPENFORT;
+        this.shieldAuthType = ShieldAuthType.OPENFORT;
       }
     }
-    return this.accountType as ShieldAuthType;
+    return this.shieldAuthType as ShieldAuthType;
   }
 
   public removeShieldAuthType(): void {
-    this.accountType = null;
+    this.shieldAuthType = null;
     this.persistentStorage.remove(shieldAuthTypeStorageKey);
   }
 
-  public setShieldAuthToken(accountType: string): void {
-    this.accountType = accountType;
-    this.persistentStorage.save(shieldAuthTokenStorageKey, accountType);
+  public setShieldAuthToken(authShieldToken: string): void {
+    this.authShieldToken = authShieldToken;
+    this.persistentStorage.save(shieldAuthTokenStorageKey, authShieldToken);
   }
 
   public getShieldAuthToken(): string | null {
-    if (!this.accountType) {
-      this.accountType = this.persistentStorage.get(shieldAuthTokenStorageKey);
+    if (!this.authShieldToken) {
+      this.authShieldToken = this.persistentStorage.get(shieldAuthTokenStorageKey);
     }
-    return this.accountType;
+    return this.authShieldToken;
   }
 
   public removeShieldAuthToken(): void {
-    this.accountType = null;
+    this.authShieldToken = null;
     this.persistentStorage.remove(shieldAuthTokenStorageKey);
   }
 }
