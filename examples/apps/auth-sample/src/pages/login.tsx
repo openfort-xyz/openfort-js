@@ -28,13 +28,17 @@ function LoginPage() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (router.query.access_token && router.query.refresh_token) {
+    if (
+      router.query.access_token &&
+      router.query.refresh_token &&
+      router.query.player
+    ) {
       setStatus({
         type: 'loading',
         title: 'Signing in...',
       });
       openfort.storeCredentials({
-        player: 'undefined',
+        player: router.query.player as string,
         accessToken: router.query.access_token as string,
         refreshToken: router.query.refresh_token as string,
       });

@@ -31,7 +31,7 @@ export type EvmProviderInput = {
 };
 
 export class EvmProvider implements Provider {
-  readonly #signer?: EmbeddedSigner;
+  #signer?: EmbeddedSigner;
 
   readonly #policyId?: string;
 
@@ -62,7 +62,8 @@ export class EvmProvider implements Provider {
 
     this.#backendApiClients = backendApiClients;
 
-    const chainId = Number(this.#instanceManager.getChainID());
+    // default base mainnet as default chainId
+    const chainId = Number(this.#instanceManager.getChainID() ?? 8453);
 
     this.#rpcProvider = new StaticJsonRpcProvider(chainMap[chainId].rpc[0]);
 
@@ -77,7 +78,7 @@ export class EvmProvider implements Provider {
     const shouldEmitAccountsChanged = !!this.#address;
 
     this.#address = undefined;
-    if (this.#signer) this.#signer.logout();
+    this.#signer = undefined;
 
     if (shouldEmitAccountsChanged) {
       this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
@@ -93,7 +94,7 @@ export class EvmProvider implements Provider {
         if (!this.#signer) {
           throw new JsonRpcError(
             ProviderErrorCode.UNAUTHORIZED,
-            'Unauthorized - signer not configured, call configureEmbeddedSigner first',
+            'Unauthorized - must be authenticated and configured with a signer',
           );
         }
         const user = await this.#signer.ensureEmbeddedAccount();
