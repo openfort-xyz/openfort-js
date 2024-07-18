@@ -2,21 +2,20 @@
 
 **Step 1**
 
-Ensure you are using the latest `@imtbl/sdk` by using the latest version from [`@imtbl/sdk`](https://www.npmjs.com/package/@imtbl/sdk) in the `package.json` file.
+Ensure you are using the latest `@openfort/openfort-js` by using the latest version from [`@openfort/openfort-js`](https://www.npmjs.com/package/@openfort/openfort-js) in the `package.json` file.
 
 **Step 2**
 
-Create a Passport application on Immutable Hub by following [these simple steps](https://docs.immutable.com/docs/zkEVM/products/passport/setup)
+Create a Openfort account on Openfort Dashboard.
 
 **Step 3**
 
-Update `PUBLISHABLE_KEY` and `CLIENT_ID` in `src/main.tsx`
+Update `OPENFORT_PUBLISHABLE_KEY` and `SHIELD_PUBLISHABLE_KEY` in `src/main.tsx`
 
 ```ts
-// Immutable Publishable Key (you will find it in the Immutable Hub in the `API Keys` section)
-const PUBLISHABLE_KEY = 'PUBLISHABLE_KEY';
-// Hub Publishable Key (you will find it in the `Passport` section)
-const CLIENT_ID = 'CLIENT_ID'; 
+// Openfort and Shield Publishable Key (you will find it in the Dashboard in the `API Keys` section)
+const OPENFORT_PUBLISHABLE_KEY = 'PUBLISHABLE_KEY';
+const SHIELD_PUBLISHABLE_KEY = 'CLIENT_ID'; 
 ```
 
 **Step 4**
