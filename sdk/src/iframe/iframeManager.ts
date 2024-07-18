@@ -19,7 +19,7 @@ import {
   RequestConfiguration,
   MISSING_USER_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
-  ShieldAuthType, ExportPrivateKeyRequest, ExportPrivateKeyResponse,
+  ShieldAuthType, ExportPrivateKeyRequest, ExportPrivateKeyResponse, MISSING_PROJECT_ENTROPY_ERROR,
 } from './types';
 
 export interface IframeConfiguration {
@@ -33,6 +33,12 @@ export interface IframeConfiguration {
 export class MissingRecoveryPasswordError extends Error {
   constructor() {
     super('This embedded signer requires a password to be recovered');
+  }
+}
+
+export class MissingProjectEntropyError extends Error {
+  constructor() {
+    super('MissingProjectEntropyError');
   }
 }
 
@@ -163,6 +169,8 @@ export default class IframeManager {
               reject(new NotConfiguredError());
             } else if (response.error === MISSING_USER_ENTROPY_ERROR) {
               reject(new MissingRecoveryPasswordError());
+            } else if (response.error === MISSING_PROJECT_ENTROPY_ERROR) {
+              reject(new MissingProjectEntropyError());
             } else if (response.error === INCORRECT_USER_ENTROPY_ERROR) {
               reject(new WrongRecoveryPasswordError());
             }
