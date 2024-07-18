@@ -2,7 +2,7 @@
   "name": "@openfort/platform-bridge",
   "version": "0.0.0",
   "dependencies": {
-    "@openfort/openfort-js": "0.7.20",
+    "@openfort/openfort-js": "0.7.21",
     "ethers": "^5.7.0"
   },
   "devDependencies": {

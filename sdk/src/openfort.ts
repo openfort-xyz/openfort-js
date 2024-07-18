@@ -32,7 +32,11 @@ import { LocalStorage } from './storage/localStorage';
 import { SessionSigner } from './signer/session.signer';
 import { EmbeddedSigner } from './signer/embedded.signer';
 import { SessionStorage } from './storage/sessionStorage';
-import IframeManager, { IframeConfiguration, MissingRecoveryPasswordError } from './iframe/iframeManager';
+import IframeManager, {
+  IframeConfiguration,
+  MissingProjectEntropyError,
+  MissingRecoveryPasswordError,
+} from './iframe/iframeManager';
 import { ShieldAuthentication, ShieldAuthType } from './iframe/types';
 
 export class Openfort {
@@ -187,7 +191,7 @@ export class Openfort {
       this.signer = signer;
       this.instanceManager.setSignerType(SignerType.EMBEDDED);
     } catch (e) {
-      if (e instanceof MissingRecoveryPasswordError) {
+      if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
         await this.flushSigner();
         throw e;
       }
@@ -399,7 +403,14 @@ export class Openfort {
     });
     this.instanceManager.setPlayerID(result.id);
     if (this.signer && this.signer.useCredentials()) {
-      await this.signer.updateAuthentication();
+      try {
+        await this.signer.updateAuthentication();
+      } catch (e) {
+        if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
+          await this.flushSigner();
+        }
+        throw e;
+      }
     }
     return result;
   }
@@ -725,7 +736,14 @@ export class Openfort {
       const auth = await this.authManager.validateCredentials(forceRefresh);
       this.storeCredentials(auth);
       if (this.signer && this.signer.useCredentials()) {
-        await this.signer.updateAuthentication();
+        try {
+          await this.signer.updateAuthentication();
+        } catch (e) {
+          if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
+            await this.flushSigner();
+          }
+          throw e;
+        }
       }
     }
   }
