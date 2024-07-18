@@ -23,7 +23,7 @@ import { sendTransaction } from './sendTransaction';
 import { signTypedDataV4 } from './signTypedDataV4';
 
 export type EvmProviderInput = {
-  signer: EmbeddedSigner;
+  signer?: EmbeddedSigner;
   backendApiClients: BackendApiClients;
   instanceManager: InstanceManager;
   openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
@@ -31,7 +31,7 @@ export type EvmProviderInput = {
 };
 
 export class EvmProvider implements Provider {
-  readonly #signer: EmbeddedSigner;
+  readonly #signer?: EmbeddedSigner;
 
   readonly #policyId?: string;
 
@@ -77,7 +77,7 @@ export class EvmProvider implements Provider {
     const shouldEmitAccountsChanged = !!this.#address;
 
     this.#address = undefined;
-    this.#signer.logout();
+    if (this.#signer) this.#signer.logout();
 
     if (shouldEmitAccountsChanged) {
       this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
@@ -90,7 +90,12 @@ export class EvmProvider implements Provider {
         if (this.#address) {
           return [this.#address];
         }
-
+        if (!this.#signer) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            'Unauthorized - signer not configured, call configureEmbeddedSigner first',
+          );
+        }
         const user = await this.#signer.ensureEmbeddedAccount();
 
         this.#address = user.address as string;
@@ -100,7 +105,7 @@ export class EvmProvider implements Provider {
         return [this.#address];
       }
       case 'eth_sendTransaction': {
-        if (!this.#address) {
+        if (!this.#address || !this.#signer) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
 
@@ -117,7 +122,7 @@ export class EvmProvider implements Provider {
       }
       case 'eth_signTypedData':
       case 'eth_signTypedData_v4': {
-        if (!this.#address) {
+        if (!this.#address || !this.#signer) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         const accountType = this.#instanceManager.getAccountType();

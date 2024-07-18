@@ -116,7 +116,7 @@ export class Openfort {
   public getEthereumProvider(
     options: { announceProvider: boolean; policy?: string } = { announceProvider: true },
   ): Provider {
-    if (!(this.signer instanceof EmbeddedSigner)) {
+    if ((this.signer instanceof SessionSigner)) {
       throw new OpenfortError(
         'Embedded signer must be configured to get Ethereum provider',
         OpenfortErrorType.NOT_LOGGED_IN_ERROR,
@@ -124,7 +124,7 @@ export class Openfort {
     }
     const provider = new EvmProvider({
       openfortEventEmitter: this.openfortEventEmitter,
-      signer: this.signer,
+      signer: this.signer as EmbeddedSigner,
       instanceManager: this.instanceManager,
       backendApiClients: this.backendApiClients,
       policyId: options.policy,
