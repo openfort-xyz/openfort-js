@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
-    "@openfort/openfort-js": "0.7.19",
-    "@openfort/openfort-node": "^0.6.47",
+    "@openfort/openfort-js": "0.7.20",
+    "@openfort/openfort-node": "^0.6.62",
     "@radix-ui/react-toast": "^1.1.2",
     "@rainbow-me/rainbowkit": "^2.1.1",
     "@tailwindcss/forms": "^0.5.3",

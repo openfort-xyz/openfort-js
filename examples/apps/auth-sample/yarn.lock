@@ -1146,9 +1146,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/openfort-js@npm:0.7.19":
-  version: 0.7.19
-  resolution: "@openfort/openfort-js@npm:0.7.19"
+"@openfort/openfort-js@npm:0.7.20":
+  version: 0.7.20
+  resolution: "@openfort/openfort-js@npm:0.7.20"
   dependencies:
     "@ethersproject/abstract-signer": ^5.7.0
     "@ethersproject/bytes": ^5.7.0
@@ -1167,13 +1167,13 @@ __metadata:
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: c58b0862a96e49c3e64c72d03296878106ee619c75e8582e0bdc30cb9dedeccf4347fa6f960dbec2c43e4259a833046e0e54641f56ac12db7c81f194bbfbbd02
+  checksum: 5a635559b95ca5f6b4f7499394344a2280a952d3710070faad52244b4107a2ba7a9ab6dff0a37bd1f1ac7e03c7bfe63cac8ed91e5b0611c716585390e7db57ca
   languageName: node
   linkType: hard
 
-"@openfort/openfort-node@npm:^0.6.47":
-  version: 0.6.61
-  resolution: "@openfort/openfort-node@npm:0.6.61"
+"@openfort/openfort-node@npm:^0.6.62":
+  version: 0.6.62
+  resolution: "@openfort/openfort-node@npm:0.6.62"
   dependencies:
     "@openfort/shield-js": ^0.1.7
     "@types/node": "*"
@@ -1183,7 +1183,7 @@ __metadata:
     node-fetch: ^2.6.0
     typedoc: ^0.22.16
     url-parse: ^1.4.3
-  checksum: 470bcb1659fa9261f1398de34dd2c80acf11f539744da372b153b593018dbd67f9b15855aa9fd630b6fffcc6c5276015a5f8eca57be7e8511f45e9947a420853
+  checksum: 242afb02356fcfd8020931bab93768b18a5213042f387232999d50d59cab4bc80ece4ad5425b74de5bb91c861d24c9ab76b74c3fc651c5af423d2059871cd0c2
   languageName: node
   linkType: hard
 
@@ -2894,8 +2894,8 @@ __metadata:
   resolution: "auth-sample@workspace:."
   dependencies:
     "@heroicons/react": ^2.0.13
-    "@openfort/openfort-js": 0.7.19
-    "@openfort/openfort-node": ^0.6.47
+    "@openfort/openfort-js": 0.7.20
+    "@openfort/openfort-node": ^0.6.62
     "@radix-ui/react-toast": ^1.1.2
     "@rainbow-me/rainbowkit": ^2.1.1
     "@tailwindcss/forms": ^0.5.3

@@ -21,6 +21,7 @@ import React, {
 } from 'react';
 import openfort from '../utils/openfortConfig';
 import {TypedDataDomain, TypedDataField} from 'ethers';
+import axios from 'axios';
 
 type ContextType = {
   state: EmbeddedState;
@@ -57,6 +58,24 @@ const useOpenfort = () => {
 const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
   const [state, setState] = useState<EmbeddedState>(EmbeddedState.NONE);
   const poller = useRef<NodeJS.Timeout | null>(null);
+
+  async function getEncryptionSession(): Promise<string> {
+    try {
+      const response = await axios.post<{session: string}>(
+        '/api/protected-create-encryption-session',
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      return response.data.session;
+    } catch (error) {
+      throw new Error('Failed to create encryption session');
+    }
+  }
 
   useEffect(() => {
     const pollEmbeddedState = async () => {
@@ -155,6 +174,7 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
         const shieldAuth: ShieldAuthentication = {
           auth: ShieldAuthType.OPENFORT,
           token: openfort.getAccessToken()!,
+          encryptionSession: await getEncryptionSession(),
         };
         if (method === 'automatic') {
           await openfort.configureEmbeddedSigner(chainId, shieldAuth);
