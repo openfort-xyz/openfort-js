@@ -5,7 +5,6 @@ import { SDKConfiguration } from './config';
 import { SignerType } from './signer/signer';
 import {
   authTokenStorageKey,
-  deviceIDStorageKey,
   accountTypeStorageKey,
   accountAddressStorageKey,
   chainIDStorageKey,
@@ -261,19 +260,14 @@ export default class InstanceManager {
 
   public setDeviceID(deviceID: string): void {
     this.deviceID = deviceID;
-    this.persistentStorage.save(deviceIDStorageKey, deviceID);
   }
 
   public getDeviceID(): string | null {
-    if (!this.deviceID) {
-      this.deviceID = this.persistentStorage.get(deviceIDStorageKey);
-    }
     return this.deviceID;
   }
 
   public removeDeviceID(): void {
     this.deviceID = null;
-    this.persistentStorage.remove(deviceIDStorageKey);
   }
 
   public setChainID(chainId: string): void {
