@@ -14,8 +14,11 @@ export const shieldAuthTypeStorageKey = 'openfort.shield_auth_type';
 export const shieldAuthTokenStorageKey = 'openfort.shield_auth_token';
 export const accountAddressStorageKey = 'openfort.account_address';
 
+export const authenticationStorageKey = 'openfort.authentication';
+
 export interface IStorage {
   get(key: string): string | null;
   save(key: string, value: string): void;
   remove(key: string): void;
+  flush(): void;
 }

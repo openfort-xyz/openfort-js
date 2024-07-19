@@ -24,4 +24,10 @@ export class SessionStorage implements IStorage {
     SessionStorage.validateSessionStorage();
     sessionStorage.removeItem(key);
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  public flush(): void {
+    SessionStorage.validateSessionStorage();
+    sessionStorage.clear();
+  }
 }
