@@ -830,6 +830,7 @@ export class Openfort {
 
     const iframeConfiguration: IframeConfiguration = {
       accessToken: this.instanceManager.getAccessToken()?.token ?? null,
+      playerID: this.instanceManager.getPlayerID() ?? null,
       thirdPartyProvider: this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
       thirdPartyTokenType: this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
       chainId: !chainId ? Number(this.instanceManager.getChainID()) ?? null : chainId,
@@ -850,6 +851,7 @@ export class Openfort {
       case SignerType.EMBEDDED: {
         const iframeConfiguration: IframeConfiguration = {
           accessToken: this.instanceManager.getAccessToken()?.token ?? null,
+          playerID: this.instanceManager.getPlayerID() ?? null,
           thirdPartyProvider: this.instanceManager.getAccessToken()?.thirdPartyProvider ?? null,
           thirdPartyTokenType: this.instanceManager.getAccessToken()?.thirdPartyTokenType ?? null,
           chainId: null,

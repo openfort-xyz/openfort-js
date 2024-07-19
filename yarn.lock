@@ -1403,9 +1403,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@npm:0.7.23":
-  version: 0.7.23
-  resolution: "@openfort/openfort-js@npm:0.7.23"
+"@openfort/openfort-js@npm:0.7.24":
+  version: 0.7.24
+  resolution: "@openfort/openfort-js@npm:0.7.24"
   dependencies:
     "@ethersproject/abstract-signer": ^5.7.0
     "@ethersproject/bytes": ^5.7.0
@@ -1424,7 +1424,7 @@ __metadata:
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: b02195890710a64159f2844e0f24860b0662d29d8fa7d7008cb64749b2f5fb6032ed65f0f749679fe7a4951bd27709fadff97f856943bbe7579faf10540c4a96
+  checksum: 5be452c5b62090742d83058daa4fab8c6e34e69ecbf38017018c5164caf0be77708358d7be9bd7e6a1ae723945e52adbc33678214107d1c5a0f7149142fd2d93
   languageName: node
   linkType: hard
 
@@ -1483,7 +1483,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
   dependencies:
-    "@openfort/openfort-js": 0.7.23
+    "@openfort/openfort-js": 0.7.24
     eslint: ^8.40.0
     ethers: ^5.7.0
     parcel: ^2.8.3
