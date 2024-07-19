@@ -130,6 +130,8 @@ export class ConfigureRequest implements IEventRequest {
 
   thirdPartyTokenType: string | null;
 
+  playerID: string | null;
+
   constructor(
     uuid: string,
     chainId: number,
@@ -137,6 +139,7 @@ export class ConfigureRequest implements IEventRequest {
     publishableKey: string,
     shieldAPIKey: string,
     accessToken: string,
+    playerID: string,
     openfortURL: string,
     shieldURL: string,
     encryptionKey = null,
@@ -151,6 +154,7 @@ export class ConfigureRequest implements IEventRequest {
     this.publishableKey = publishableKey;
     this.shieldAPIKey = shieldAPIKey;
     this.accessToken = accessToken;
+    this.playerID = playerID;
     this.thirdPartyProvider = thirdPartyProvider;
     this.thirdPartyTokenType = thirdPartyTokenType;
     this.encryptionKey = encryptionKey;
