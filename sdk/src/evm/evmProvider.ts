@@ -23,8 +23,7 @@ import { sendTransaction } from './sendTransaction';
 import { signTypedDataV4 } from './signTypedDataV4';
 
 export type EvmProviderInput = {
-  signer: EmbeddedSigner;
-  address: string;
+  signer?: EmbeddedSigner;
   backendApiClients: BackendApiClients;
   instanceManager: InstanceManager;
   openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
@@ -32,7 +31,7 @@ export type EvmProviderInput = {
 };
 
 export class EvmProvider implements Provider {
-  readonly #signer: EmbeddedSigner;
+  #signer?: EmbeddedSigner;
 
   readonly #policyId?: string;
 
@@ -50,7 +49,6 @@ export class EvmProvider implements Provider {
 
   constructor({
     signer,
-    address,
     backendApiClients,
     instanceManager,
     openfortEventEmitter,
@@ -60,13 +58,12 @@ export class EvmProvider implements Provider {
 
     this.#policyId = policyId;
 
-    this.#address = address;
-
     this.#instanceManager = instanceManager;
 
     this.#backendApiClients = backendApiClients;
 
-    const chainId = Number(this.#instanceManager.getChainID());
+    // default base mainnet as default chainId
+    const chainId = Number(this.#instanceManager.getChainID() ?? 8453);
 
     this.#rpcProvider = new StaticJsonRpcProvider(chainMap[chainId].rpc[0]);
 
@@ -81,7 +78,7 @@ export class EvmProvider implements Provider {
     const shouldEmitAccountsChanged = !!this.#address;
 
     this.#address = undefined;
-    this.#signer.logout();
+    this.#signer = undefined;
 
     if (shouldEmitAccountsChanged) {
       this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
@@ -95,6 +92,12 @@ export class EvmProvider implements Provider {
           return [this.#address];
         }
 
+        if (!this.#signer) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            'Unauthorized - must be authenticated and configured with a signer',
+          );
+        }
         const user = await this.#signer.ensureEmbeddedAccount();
 
         this.#address = user.address as string;
@@ -104,7 +107,7 @@ export class EvmProvider implements Provider {
         return [this.#address];
       }
       case 'eth_sendTransaction': {
-        if (!this.#address) {
+        if (!this.#address || !this.#signer) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
 
@@ -121,7 +124,7 @@ export class EvmProvider implements Provider {
       }
       case 'eth_signTypedData':
       case 'eth_signTypedData_v4': {
-        if (!this.#address) {
+        if (!this.#address || !this.#signer) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         const accountType = this.#instanceManager.getAccountType();

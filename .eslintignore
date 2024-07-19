@@ -11,8 +11,7 @@ jest.*.js
 **/*.md
 
 # sample apps
-examples/apps/html-sample/
-examples/apps/auth-sample/
+examples/**/*
 
 
 # put module specific ignore paths here

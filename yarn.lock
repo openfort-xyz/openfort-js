@@ -1403,7 +1403,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@0.7.24, @openfort/openfort-js@workspace:sdk":
+"@openfort/openfort-js@0.7.25, @openfort/openfort-js@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:
@@ -1458,7 +1458,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
   dependencies:
-    "@openfort/openfort-js": 0.7.24
+    "@openfort/openfort-js": 0.7.25
     eslint: ^8.40.0
     ethers: ^5.7.0
     parcel: ^2.8.3
@@ -4547,9 +4547,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.820":
-  version: 1.4.829
-  resolution: "electron-to-chromium@npm:1.4.829"
-  checksum: e35b34f5ea631dcd92609d1b7277db3f640eb3912e95edc3e238a9cc9c79ff930d353d95c4760b7d64739c607c6a136b05988b6d05a1367e9387b4d002988a3a
+  version: 1.4.830
+  resolution: "electron-to-chromium@npm:1.4.830"
+  checksum: fa9e98baa932a3dc3b24104c346d34459455f8caec9ac8a14630de4399cc05a998e190ddb2eb8b1abcefc08a106246b0fa4b059eae78322441a4c257e3d5455b
   languageName: node
   linkType: hard
 
