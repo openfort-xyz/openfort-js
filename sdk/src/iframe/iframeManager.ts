@@ -26,6 +26,7 @@ export interface IframeConfiguration {
   thirdPartyTokenType: string | null;
   thirdPartyProvider: string | null;
   accessToken: string | null;
+  playerID: string | null;
   recovery: ShieldAuthentication | null;
   chainId: number | null;
 }
@@ -198,6 +199,7 @@ export default class IframeManager {
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       shieldAPIKey: this.sdkConfiguration.shieldConfiguration.shieldPublishableKey,
       accessToken: iframeConfiguration.accessToken,
+      playerID: iframeConfiguration.playerID,
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
       encryptionKey: password ?? null,
