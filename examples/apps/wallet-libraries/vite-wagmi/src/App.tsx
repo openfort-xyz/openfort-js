@@ -11,6 +11,7 @@ const queryClient = new QueryClient();
 export default function App() {
   useEffect(() => {
     if (!openfortInstance) return;
+    openfortInstance.getEmbeddedState();
     openfortInstance.getEthereumProvider(); // EIP-6963
   }, [openfortInstance]);
 

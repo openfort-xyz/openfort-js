@@ -1403,9 +1403,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@npm:0.7.22":
-  version: 0.7.22
-  resolution: "@openfort/openfort-js@npm:0.7.22"
+"@openfort/openfort-js@npm:0.7.23":
+  version: 0.7.23
+  resolution: "@openfort/openfort-js@npm:0.7.23"
   dependencies:
     "@ethersproject/abstract-signer": ^5.7.0
     "@ethersproject/bytes": ^5.7.0
@@ -1424,7 +1424,7 @@ __metadata:
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: 4c429a79a920d9e3c5bbe4265168fc0f2ffba20a714560a599a393e241841e3943dbfcacd997a0b5a8805b90f5e85bbad58519c2f69e5111dc395b26d6fe1acd
+  checksum: b02195890710a64159f2844e0f24860b0662d29d8fa7d7008cb64749b2f5fb6032ed65f0f749679fe7a4951bd27709fadff97f856943bbe7579faf10540c4a96
   languageName: node
   linkType: hard
 
@@ -1483,7 +1483,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
   dependencies:
-    "@openfort/openfort-js": 0.7.22
+    "@openfort/openfort-js": 0.7.23
     eslint: ^8.40.0
     ethers: ^5.7.0
     parcel: ^2.8.3
@@ -4572,9 +4572,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.820":
-  version: 1.4.829
-  resolution: "electron-to-chromium@npm:1.4.829"
-  checksum: e35b34f5ea631dcd92609d1b7277db3f640eb3912e95edc3e238a9cc9c79ff930d353d95c4760b7d64739c607c6a136b05988b6d05a1367e9387b4d002988a3a
+  version: 1.4.830
+  resolution: "electron-to-chromium@npm:1.4.830"
+  checksum: fa9e98baa932a3dc3b24104c346d34459455f8caec9ac8a14630de4399cc05a998e190ddb2eb8b1abcefc08a106246b0fa4b059eae78322441a4c257e3d5455b
   languageName: node
   linkType: hard
 

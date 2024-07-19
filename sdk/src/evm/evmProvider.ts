@@ -91,6 +91,7 @@ export class EvmProvider implements Provider {
         if (this.#address) {
           return [this.#address];
         }
+
         if (!this.#signer) {
           throw new JsonRpcError(
             ProviderErrorCode.UNAUTHORIZED,
