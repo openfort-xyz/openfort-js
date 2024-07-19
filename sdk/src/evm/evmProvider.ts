@@ -120,7 +120,23 @@ export class EvmProvider implements Provider {
         });
       }
       case 'eth_accounts': {
-        return this.#address ? [this.#address] : [];
+        if (this.#address) {
+          return [this.#address];
+        }
+
+        if (!this.#signer) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            'Unauthorized - must be authenticated and configured with a signer',
+          );
+        }
+        const user = await this.#signer.ensureEmbeddedAccount();
+
+        this.#address = user.address as string;
+
+        this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [this.#address]);
+
+        return [this.#address];
       }
       case 'eth_signTypedData':
       case 'eth_signTypedData_v4': {
