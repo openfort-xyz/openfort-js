@@ -66,7 +66,7 @@ The Embedded Signer uses SSS to manage the private key on the client side. To le
 - **Login and Configure the Embedded Signer**: First, ensure the user is logged in, using `LoginWithEmailPassword`, `AuthenticateWithOAuth` or if not registred `SignUpWithEmailPassword`. Then call `ConfigureEmbeddedSigner`.
 ```typescript
   const shieldAuth: ShieldAuthentication = {
-    auth: AuthType.OPENFORT,
+    auth: ShieldAuthType.OPENFORT,
     token: identityToken,
     authProvider: "firebase",
     tokenType: "idToken",

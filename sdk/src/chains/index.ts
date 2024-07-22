@@ -35,6 +35,9 @@ import degenChain from './666666666';
 
 import immutableTestnet from './13473';
 
+import optimismSepolia from './11155420';
+import optimism from './10';
+
 export const chainMap: { [key: number]: Chain } = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   56: bnb,
@@ -82,6 +85,10 @@ export const chainMap: { [key: number]: Chain } = {
   13473: immutableTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   13371: immutableZkEVMMainnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  11155420: optimismSepolia,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  10: optimism,
 };
 
 export default [
@@ -107,6 +114,8 @@ export default [
   ancient8Testnet,
   ancient8Mainnet,
   degenChain,
+  optimism,
+  optimismSepolia,
 ];
 
 export type Chain = {

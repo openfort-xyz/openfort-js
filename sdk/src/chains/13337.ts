@@ -21,7 +21,7 @@ const chain = {
     decimals: 18,
   },
   rpc: [
-    'https://eu.build.onbeam.com/rpc/testnet/14bfbcc5-49c1-40e8-82c2-025c9a1834e1',
+    'https://build.onbeam.com/rpc/testnet',
   ],
   faucets: ['https://faucet.avax.network/?subnet=beam', 'https://faucet.onbeam.com'],
   explorers: [
