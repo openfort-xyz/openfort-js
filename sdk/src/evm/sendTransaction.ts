@@ -1,14 +1,16 @@
 import { TransactionRequest } from '@ethersproject/providers';
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { Interaction, ResponseResponse, TransactionIntentResponse } from '../types';
-import { EmbeddedSigner } from '../signer/embedded.signer';
-import InstanceManager from '../instanceManager';
+import { Account } from 'configuration/account';
+import { Authentication } from 'configuration/authentication';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
+import { Signer } from '../signer/isigner';
+import { Interaction, ResponseResponse, TransactionIntentResponse } from '../types';
 
 export type EthSendTransactionParams = {
-  signer: EmbeddedSigner;
+  signer: Signer
   backendClient: BackendApiClients;
-  instanceManager: InstanceManager;
+  account: Account;
+  authentication: Authentication;
   params: Array<any>;
   policyId?: string;
 };
@@ -16,7 +18,8 @@ export type EthSendTransactionParams = {
 const buildOpenfortTransactions = async (
   transactionRequest: TransactionRequest[],
   backendApiClients: BackendApiClients,
-  instanceManager: InstanceManager,
+  account: Account,
+  authentication: Authentication,
   policyId?: string,
 ): Promise<TransactionIntentResponse> => {
   const interactions:Interaction[] = transactionRequest.map((tx) => {
@@ -29,17 +32,12 @@ const buildOpenfortTransactions = async (
       value: tx.value ? String(tx.value) : undefined,
     };
   });
-  const accessToken = instanceManager.getAccessToken();
-  const chainId = instanceManager.getChainID();
-  if (!accessToken || !chainId) {
-    throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, 'No access token found');
-  }
 
   const transactionResponse = await backendApiClients.transactionIntentsApi.createTransactionIntent(
     {
       createTransactionIntentRequest: {
         policy: policyId,
-        chainId: Number(chainId),
+        chainId: account.chainId,
         interactions,
       },
     },
@@ -47,11 +45,11 @@ const buildOpenfortTransactions = async (
       headers: {
         authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-player-token': accessToken.token,
+        'x-player-token': authentication.token,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-auth-provider': accessToken.thirdPartyProvider,
+        'x-auth-provider': authentication.thirdPartyProvider,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-token-type': accessToken.thirdPartyTokenType,
+        'x-token-type': authentication.thirdPartyTokenType,
       },
     },
   );
@@ -62,14 +60,16 @@ const buildOpenfortTransactions = async (
 export const sendTransaction = async ({
   params,
   signer,
+  account,
+  authentication,
   backendClient,
-  instanceManager,
   policyId,
 }: EthSendTransactionParams): Promise<string> => {
   const openfortTransaction = await buildOpenfortTransactions(
     params,
     backendClient,
-    instanceManager,
+    account,
+    authentication,
     policyId,
   );
   let response: ResponseResponse;

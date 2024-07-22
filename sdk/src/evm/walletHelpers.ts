@@ -1,14 +1,14 @@
 import { _TypedDataEncoder } from '@ethersproject/hash';
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
-import { EmbeddedSigner } from '../signer/embedded.signer';
-import { AccountType } from '../types';
 import { TypedDataPayload } from './types';
+import { Signer } from '../signer/isigner';
+import { AccountType } from '../types';
 
 export const getSignedTypedData = async (
   typedData: TypedDataPayload,
   accountType: string,
   chainId: number,
-  signer: EmbeddedSigner,
+  signer: Signer,
   evmAddress: string,
 ): Promise<string> => {
   // Ethers auto-generates the EIP712Domain type in the TypedDataEncoder, and so it needs to be removed

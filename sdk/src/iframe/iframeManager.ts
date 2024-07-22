@@ -29,6 +29,7 @@ export interface IframeConfiguration {
   playerID: string | null;
   recovery: ShieldAuthentication | null;
   chainId: number | null;
+  password: string | null;
 }
 
 export class MissingRecoveryPasswordError extends Error {
@@ -186,7 +187,7 @@ export default class IframeManager {
     });
   }
 
-  async configure(iframeConfiguration: IframeConfiguration, password?: string): Promise<ConfigureResponse> {
+  async configure(iframeConfiguration: IframeConfiguration): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new Error('shieldConfiguration is required');
     }
@@ -202,7 +203,7 @@ export default class IframeManager {
       playerID: iframeConfiguration.playerID,
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
-      encryptionKey: password ?? null,
+      encryptionKey: iframeConfiguration.password,
       encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
       encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,

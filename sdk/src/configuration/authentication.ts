@@ -1,9 +1,13 @@
-import { StorageKeys, IStorage } from './storage/istorage';
+import { StorageKeys, IStorage } from '../storage/istorage';
 
 export class Authentication {
   type: 'jwt' | 'third_party';
 
   token: string;
+
+  player: string;
+
+  refreshToken: string | null;
 
   thirdPartyProvider: string | null;
 
@@ -12,11 +16,15 @@ export class Authentication {
   constructor(
     type: 'jwt' | 'third_party',
     token: string,
+    player: string,
+    refreshToken: string | null = null,
     thirdPartyProvider: string | null = null,
     thirdPartyTokenType: string | null = null,
   ) {
     this.type = type;
     this.token = token;
+    this.player = player;
+    this.refreshToken = refreshToken;
     this.thirdPartyProvider = thirdPartyProvider;
     this.thirdPartyTokenType = thirdPartyTokenType;
   }
@@ -31,6 +39,8 @@ export class Authentication {
     return new Authentication(
       authObj.type,
       authObj.token,
+      authObj.player,
+      authObj.refreshToken ?? null,
       authObj.thirdPartyProvider ?? null,
       authObj.thirdPartyTokenType ?? null,
     );
