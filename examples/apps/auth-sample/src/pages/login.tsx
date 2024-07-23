@@ -16,6 +16,26 @@ function LoginPage() {
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
 
   useEffect(() => {
+    if (
+      router.query.access_token &&
+      router.query.refresh_token &&
+      router.query.player_id
+    ) {
+      console.log('router.query', router.query);
+      setStatus({
+        type: 'loading',
+        title: 'Signing in...',
+      });
+      openfort.storeCredentials({
+        player: router.query.player_id as string,
+        accessToken: router.query.access_token as string,
+        refreshToken: router.query.refresh_token as string,
+      });
+      location.href = '/';
+    }
+  }, [router.query]);
+
+  useEffect(() => {
     const fetchUser = async () => {
       const sessionData = await openfort.getUser().catch((error: Error) => {
         console.log('error', error);
@@ -26,25 +46,6 @@ function LoginPage() {
   }, [openfort]);
 
   const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    if (
-      router.query.access_token &&
-      router.query.refresh_token &&
-      router.query.player
-    ) {
-      setStatus({
-        type: 'loading',
-        title: 'Signing in...',
-      });
-      openfort.storeCredentials({
-        player: router.query.player as string,
-        accessToken: router.query.access_token as string,
-        refreshToken: router.query.refresh_token as string,
-      });
-      location.href = '/';
-    }
-  }, [router.query]);
 
   useEffect(() => {
     const loadData = async () => {

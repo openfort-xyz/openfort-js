@@ -1,4 +1,4 @@
-import { IStorage } from './storage';
+import { IStorage, StorageKeys } from './istorage';
 
 export class LocalStorage implements IStorage {
   private static validateLocalStorage(): void {
@@ -23,5 +23,14 @@ export class LocalStorage implements IStorage {
   public remove(key: string): void {
     LocalStorage.validateLocalStorage();
     localStorage.removeItem(key);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public flush(): void {
+    LocalStorage.validateLocalStorage();
+    // eslint-disable-next-line no-restricted-syntax,guard-for-in
+    for (const key in StorageKeys) {
+      localStorage.removeItem(key);
+    }
   }
 }

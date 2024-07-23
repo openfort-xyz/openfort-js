@@ -1,26 +1,23 @@
 import {
   errors, importJWK, jwtVerify, KeyLike,
 } from 'jose';
-import { BackendApiClients } from '@openfort/openapi-clients';
+import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
 import * as crypto from 'crypto';
 import { AxiosRequestConfig } from 'axios';
+import DeviceCredentialsManager from './utils/deviceCredentialsManager';
 import {
   Auth,
   AuthPlayerResponse,
-  AuthResponse,
-  CodeChallengeMethodEnum,
+  AuthResponse, CodeChallengeMethodEnum,
   InitAuthResponse,
-  InitializeOAuthOptions,
-  OAuthProvider,
-  SIWEInitResponse,
+  InitializeOAuthOptions, JWK,
+  OAuthProvider, SIWEInitResponse,
   ThirdPartyOAuthProvider,
   TokenType,
 } from './types';
-import { SDKConfiguration } from './config';
-import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
-import InstanceManager from './instanceManager';
 import { isBrowser } from './utils/helpers';
-import DeviceCredentialsManager from './utils/deviceCredentialsManager';
+import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
+import { Authentication } from './configuration/authentication';
 
 function base64URLEncode(str: Buffer) {
   return str.toString('base64')
@@ -34,19 +31,21 @@ function sha256(buffer: string) {
 }
 
 export default class AuthManager {
-  private readonly config: SDKConfiguration;
+  private readonly publishableKey: string;
 
   private deviceCredentialsManager: DeviceCredentialsManager;
 
-  private readonly instanceManager: InstanceManager;
-
   private readonly backendApiClients: BackendApiClients;
 
-  constructor(config: SDKConfiguration, backendApiClients: BackendApiClients, instanceManager: InstanceManager) {
-    this.config = config;
+  constructor(publishableKey: string, openfortURL: string) {
+    this.publishableKey = publishableKey;
     this.deviceCredentialsManager = new DeviceCredentialsManager();
-    this.backendApiClients = backendApiClients;
-    this.instanceManager = instanceManager;
+    this.backendApiClients = new BackendApiClients({
+      backend: createConfig({
+        basePath: openfortURL,
+        accessToken: publishableKey,
+      }),
+    });
   }
 
   public async initOAuth(
@@ -89,14 +88,6 @@ export default class AuthManager {
         // eslint-disable-next-line no-await-in-loop
         const response = await this.backendApiClients.authenticationApi.poolOAuth(request);
         if (response.status === 200) {
-          this.instanceManager.setAccessToken({
-            token: response.data.token,
-            thirdPartyProvider: null,
-            thirdPartyTokenType: null,
-          });
-          this.instanceManager.setRefreshToken(response.data.refreshToken);
-          this.instanceManager.setPlayerID(response.data.player.id);
-
           return response.data;
         }
       } catch (error) {
@@ -332,17 +323,13 @@ export default class AuthManager {
     }, { default: OpenfortErrorType.USER_REGISTRATION_ERROR });
   }
 
-  public async validateCredentials(forceRefresh?:boolean): Promise<Auth> {
-    const jwk = await this.instanceManager.getJWK();
-    const accessToken = this.instanceManager.getAccessToken()?.token;
-    const refreshToken = this.instanceManager.getRefreshToken();
-
-    if (!accessToken || !refreshToken || !jwk) {
-      throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+  public async validateCredentials(authentication: Authentication, forceRefresh?:boolean): Promise<Auth> {
+    const jwk = await this.getJWK();
+    if (!authentication.refreshToken) {
+      throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
-
     if (forceRefresh) {
-      return this.refreshTokens(refreshToken, forceRefresh);
+      return this.refreshTokens(authentication.refreshToken, forceRefresh);
     }
 
     try {
@@ -355,18 +342,57 @@ export default class AuthManager {
         },
         jwk.alg,
       )) as KeyLike;
-      const verification = await jwtVerify(accessToken, key);
+      const verification = await jwtVerify(authentication.token, key);
       return {
         player: verification.payload.sub!,
-        accessToken,
-        refreshToken,
+        accessToken: authentication.token,
+        refreshToken: authentication.refreshToken,
       };
     } catch (error) {
       if (error instanceof errors.JWTExpired) {
-        return this.refreshTokens(refreshToken);
+        return this.refreshTokens(authentication.refreshToken);
       }
       throw error;
     }
+  }
+
+  private readonly jwksStorageKey = 'openfort.jwk';
+
+  // eslint-disable-next-line class-methods-use-this
+  private stringToJWK(jwkString: string): JWK {
+    const json = JSON.parse(jwkString);
+    return {
+      kty: json.kty,
+      crv: json.crv,
+      x: json.x,
+      y: json.y,
+      alg: json.alg,
+    };
+  }
+
+  private async getJWK(): Promise<JWK> {
+    const jwkStr = sessionStorage.getItem(this.jwksStorageKey);
+    if (jwkStr) {
+      return this.stringToJWK(jwkStr);
+    }
+
+    const request = {
+      publishableKey: this.publishableKey,
+    };
+    const response = await this.backendApiClients.authenticationApi.getJwks(request);
+    if (response.data.keys.length === 0) {
+      throw new OpenfortError('No JWKS keys found', OpenfortErrorType.INTERNAL_ERROR);
+    }
+
+    const jwtKey = response.data.keys[0];
+    sessionStorage.setItem(this.jwksStorageKey, JSON.stringify(jwtKey));
+    return {
+      kty: jwtKey.kty,
+      crv: jwtKey.crv,
+      x: jwtKey.x,
+      y: jwtKey.y,
+      alg: jwtKey.alg,
+    };
   }
 
   private async refreshTokens(refreshToken: string, forceRefresh?: boolean): Promise<Auth> {
@@ -398,7 +424,7 @@ export default class AuthManager {
     withOpenfortError<void>(async () => {
       await this.backendApiClients.authenticationApi.logout(request, {
         headers: {
-          authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+          authorization: `Bearer ${this.publishableKey}`,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           'x-player-token': accessToken,
         },
@@ -407,14 +433,18 @@ export default class AuthManager {
   }
 
   public async getUser(
-    accessToken: string,
+    auth: Authentication,
   ): Promise<AuthPlayerResponse> {
     // TODO: Add storage of user info
     const response = await this.backendApiClients.authenticationApi.me({
       headers: {
-        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        authorization: `Bearer ${this.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-player-token': accessToken,
+        'x-player-token': auth.token,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-auth-provider': auth.thirdPartyProvider,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-token-type': auth.thirdPartyTokenType,
       },
     });
     return response.data;
@@ -437,7 +467,7 @@ export default class AuthManager {
       request,
       {
         headers: {
-          authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+          authorization: `Bearer ${this.publishableKey}`,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           'x-player-token': playerToken,
           // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -466,7 +496,7 @@ export default class AuthManager {
     };
     const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkOAuth(request, {
       headers: {
-        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        authorization: `Bearer ${this.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'x-player-token': accessToken,
       },
@@ -485,7 +515,7 @@ export default class AuthManager {
     };
     const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkSIWE(request, {
       headers: {
-        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        authorization: `Bearer ${this.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'x-player-token': accessToken,
       },
@@ -510,7 +540,7 @@ export default class AuthManager {
     };
     const authPlayerResponse = await this.backendApiClients.authenticationApi.linkSIWE(request, {
       headers: {
-        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        authorization: `Bearer ${this.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'x-player-token': accessToken,
       },
@@ -530,7 +560,7 @@ export default class AuthManager {
     };
     const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkEmail(request, {
       headers: {
-        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        authorization: `Bearer ${this.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'x-player-token': accessToken,
       },
@@ -552,7 +582,7 @@ export default class AuthManager {
     };
     const authPlayerResponse = await this.backendApiClients.authenticationApi.linkEmail(request, {
       headers: {
-        authorization: `Bearer ${this.config.baseConfiguration.publishableKey}`,
+        authorization: `Bearer ${this.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'x-player-token': accessToken,
         // eslint-disable-next-line @typescript-eslint/naming-convention

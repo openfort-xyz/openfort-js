@@ -1,11 +1,11 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { EmbeddedSigner } from '../signer/embedded.signer';
 import { getSignedTypedData } from './walletHelpers';
 import { TypedDataPayload } from './types';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
+import { Signer } from '../signer/isigner';
 
 export type SignTypedDataV4Params = {
-  signer: EmbeddedSigner;
+  signer: Signer;
   accountType: string;
   rpcProvider: StaticJsonRpcProvider;
   method: string;
