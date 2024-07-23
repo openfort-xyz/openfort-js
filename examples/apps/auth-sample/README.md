@@ -10,8 +10,8 @@ export async function oAuthWithoutPooling() {
     redirectTo: 'https://example.com',
   });
   console.log(initOAuth);
-  // now you can redirect the user to the initOAuth.url and when the process is done, you will be redirected to the redirectTo url with tokens
-  // https://example.com?access_token=...&refresh_token=...
+  // now you can redirect the user to the initOAuth.url and when the process is done, you will be redirected to the redirectTo url with tokens and player_id
+  // https://example.com?access_token=...&refresh_token=...&player_id=...
 }
 
 export async function oAuthWithPooling() {
@@ -30,8 +30,8 @@ export async function linkOAuthWithoutPooling() {
     redirectTo: 'https://example.com',
   });
   console.log(initLinkOAuth);
-  // now you can redirect the user to the initLinkOAuth.url and when the process is done, you will be redirected to the redirectTo url with tokens
-  // https://example.com?access_token=...&refresh_token=...
+  // now you can redirect the user to the initLinkOAuth.url and when the process is done, you will be redirected to the redirectTo url with tokens and player_id
+  // https://example.com?access_token=...&refresh_token=...&player_id=...
 }
 
 export async function linkOAuthWithPooling() {
