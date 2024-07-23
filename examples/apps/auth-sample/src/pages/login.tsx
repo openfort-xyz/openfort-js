@@ -87,7 +87,6 @@ function LoginPage() {
         type: 'success',
         title: 'Successfully signed in',
       });
-
       router.push('/');
     }
   };
