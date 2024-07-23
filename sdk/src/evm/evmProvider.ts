@@ -19,22 +19,21 @@ import TypedEventEmitter from '../utils/typedEventEmitter';
 import { chainMap } from '../chains';
 import { Signer } from '../signer/isigner';
 import { Account } from '../configuration/account';
+import { SignerManager } from '../manager/signer';
+import { IStorage, StorageKeys } from '../storage/istorage';
 
 export type EvmProviderInput = {
-  signer: Signer;
-  account: Account;
-  authentication: Authentication;
+  storage: IStorage;
+  signer?: Signer;
+  account?: Account;
+  authentication?: Authentication;
   backendApiClients: BackendApiClients;
   openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
   policyId?: string;
 };
 
 export class EvmProvider implements Provider {
-  readonly #signer: Signer;
-
-  readonly #account: Account;
-
-  readonly #authentication: Authentication;
+  readonly #storage: IStorage;
 
   readonly #policyId?: string;
 
@@ -47,24 +46,20 @@ export class EvmProvider implements Provider {
   public readonly isOpenfort: boolean = true;
 
   constructor({
-    signer,
-    account,
-    authentication,
+    storage,
     backendApiClients,
     openfortEventEmitter,
     policyId,
   }: EvmProviderInput) {
-    this.#signer = signer;
+    this.#storage = storage;
 
     this.#policyId = policyId;
 
-    this.#account = account;
-
-    this.#authentication = authentication;
-
     this.#backendApiClients = backendApiClients;
 
-    this.#rpcProvider = new StaticJsonRpcProvider(chainMap[account.chainId].rpc[0]);
+    const account = Account.fromStorage(this.#storage);
+    const chainId = account?.chainId || 8453;
+    this.#rpcProvider = new StaticJsonRpcProvider(chainMap[chainId].rpc[0]);
 
     this.#backendApiClients = backendApiClients;
 
@@ -74,9 +69,14 @@ export class EvmProvider implements Provider {
   }
 
   #handleLogout = () => {
-    const shouldEmitAccountsChanged = !!this.#account.address;
+    const account = Account.fromStorage(this.#storage);
+    const shouldEmitAccountsChanged = !!account;
 
-    this.#signer.logout();
+    const signer = SignerManager.fromStorage();
+    signer?.logout();
+    this.#storage.remove(StorageKeys.ACCOUNT);
+    this.#storage.remove(StorageKeys.AUTHENTICATION);
+    this.#storage.remove(StorageKeys.SIGNER);
 
     if (shouldEmitAccountsChanged) {
       this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
@@ -85,43 +85,61 @@ export class EvmProvider implements Provider {
 
   async #performRequest(request: RequestArguments): Promise<any> {
     switch (request.method) {
+      case 'eth_accounts':
       case 'eth_requestAccounts': {
-        if (this.#account.address) {
-          return [this.#account.address];
+        let account = Account.fromStorage(this.#storage);
+        if (account) {
+          return [account.address];
         }
 
-        this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [this.#account.address]);
+        const signer = SignerManager.fromStorage();
+        if (!signer) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            'Unauthorized - must be authenticated and configured with a signer',
+          );
+        }
 
-        return [this.#account.address];
+        await SignerManager.embedded();
+        account = Account.fromStorage(this.#storage);
+        if (!account) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - no account available');
+        }
+
+        this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [account.address]);
+
+        return [account.address];
       }
       case 'eth_sendTransaction': {
-        if (!this.#account.address) {
+        const account = Account.fromStorage(this.#storage);
+        const signer = SignerManager.fromStorage();
+        const authentication = Authentication.fromStorage(this.#storage);
+        if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
 
         return await sendTransaction({
           params: request.params || [],
-          signer: this.#signer,
-          account: this.#account,
-          authentication: this.#authentication,
+          signer,
+          account,
+          authentication,
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
         });
       }
-      case 'eth_accounts': {
-        return this.#account.address ? [this.#account.address] : [];
-      }
       case 'eth_signTypedData':
       case 'eth_signTypedData_v4': {
-        if (!this.#account.address) {
+        const account = Account.fromStorage(this.#storage);
+        const signer = SignerManager.fromStorage();
+        if (!account || !signer) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
 
         return await signTypedDataV4({
           method: request.method,
           params: request.params || [],
-          signer: this.#signer,
-          accountType: this.#account.type,
+          signer,
+          accountType: account.type,
           rpcProvider: this.#rpcProvider,
 
         });

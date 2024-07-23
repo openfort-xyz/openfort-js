@@ -67,27 +67,15 @@ export class Openfort {
     options: { announceProvider: boolean; policy?: string } = { announceProvider: true },
   ): Provider {
     const authentication = Authentication.fromStorage(this.storage);
-    if (!authentication) {
-      throw new OpenfortError('Authentication not found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
-
     const signer = SignerManager.fromStorage();
-    if (!signer || signer.type() !== 'embedded') {
-      throw new OpenfortError(
-        'Embedded signer must be configured to get Ethereum provider',
-        OpenfortErrorType.NOT_LOGGED_IN_ERROR,
-      );
-    }
-
     const account = Account.fromStorage(this.storage);
-    if (!account) {
-      throw new OpenfortError('Account not found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
+
     const provider = new EvmProvider({
+      storage: this.storage,
       openfortEventEmitter: new TypedEventEmitter<OpenfortEventMap>(),
-      signer,
-      account,
-      authentication,
+      signer: signer || undefined,
+      account: account || undefined,
+      authentication: authentication || undefined,
       backendApiClients: this.backendApiClients,
       policyId: options.policy,
     });
@@ -659,7 +647,7 @@ export class Openfort {
     if (!authentication) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-    return await this.authManager.getUser(authentication.token);
+    return await this.authManager.getUser(authentication);
   }
 
   /**

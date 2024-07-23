@@ -433,14 +433,18 @@ export default class AuthManager {
   }
 
   public async getUser(
-    accessToken: string,
+    auth: Authentication,
   ): Promise<AuthPlayerResponse> {
     // TODO: Add storage of user info
     const response = await this.backendApiClients.authenticationApi.me({
       headers: {
         authorization: `Bearer ${this.publishableKey}`,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-player-token': accessToken,
+        'x-player-token': auth.token,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-auth-provider': auth.thirdPartyProvider,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'x-token-type': auth.thirdPartyTokenType,
       },
     });
     return response.data;
