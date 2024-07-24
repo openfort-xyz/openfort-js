@@ -233,8 +233,12 @@ export class Openfort {
   public async logInWithEmailPassword(
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse> {
+    const previousAuth = Authentication.fromStorage(this.storage);
     this.storage.remove(StorageKeys.AUTHENTICATION);
     const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
+    if (previousAuth && previousAuth.player !== result.player.id) {
+      this.logout();
+    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }
@@ -251,8 +255,12 @@ export class Openfort {
   public async signUpWithEmailPassword(
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse> {
+    const previousAuth = Authentication.fromStorage(this.storage);
     this.storage.remove(StorageKeys.AUTHENTICATION);
     const result = await this.authManager.signupEmailPassword(email, password, ecosystemGame);
+    if (previousAuth && previousAuth.player !== result.player.id) {
+      this.logout();
+    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }
@@ -390,7 +398,11 @@ export class Openfort {
    * @returns An AuthResponse object.
    */
   public async poolOAuth(key: string): Promise<AuthResponse> {
+    const previousAuth = Authentication.fromStorage(this.storage);
     const response = await this.authManager.poolOAuth(key);
+    if (previousAuth && previousAuth.player !== response.player.id) {
+      this.logout();
+    }
     new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage);
     return response;
   }
@@ -409,8 +421,12 @@ export class Openfort {
       provider, token, tokenType, ecosystemGame,
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse> {
+    const previousAuth = Authentication.fromStorage(this.storage);
     this.storage.remove(StorageKeys.AUTHENTICATION);
     const result = await this.authManager.authenticateThirdParty(provider, token, tokenType, ecosystemGame);
+    if (previousAuth && previousAuth.player !== result.id) {
+      this.logout();
+    }
     new Authentication('third_party', token, result.id, null, provider, tokenType).save(this.storage);
     const signer = SignerManager.fromStorage();
     try {
@@ -450,8 +466,12 @@ export class Openfort {
   public async authenticateWithSIWE({
     signature, message, walletClientType, connectorType,
   }: { signature: string; message: string; walletClientType: string; connectorType: string }): Promise<AuthResponse> {
+    const previousAuth = Authentication.fromStorage(this.storage);
     this.storage.remove(StorageKeys.AUTHENTICATION);
     const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType);
+    if (previousAuth && previousAuth.player !== result.player.id) {
+      this.logout();
+    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }
