@@ -234,7 +234,6 @@ export class Openfort {
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
-    this.storage.remove(StorageKeys.AUTHENTICATION);
     const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
     if (previousAuth && previousAuth.player !== result.player.id) {
       this.logout();
@@ -256,7 +255,6 @@ export class Openfort {
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
-    this.storage.remove(StorageKeys.AUTHENTICATION);
     const result = await this.authManager.signupEmailPassword(email, password, ecosystemGame);
     if (previousAuth && previousAuth.player !== result.player.id) {
       this.logout();
@@ -422,7 +420,6 @@ export class Openfort {
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
-    this.storage.remove(StorageKeys.AUTHENTICATION);
     const result = await this.authManager.authenticateThirdParty(provider, token, tokenType, ecosystemGame);
     if (previousAuth && previousAuth.player !== result.id) {
       this.logout();
@@ -467,7 +464,6 @@ export class Openfort {
     signature, message, walletClientType, connectorType,
   }: { signature: string; message: string; walletClientType: string; connectorType: string }): Promise<AuthResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
-    this.storage.remove(StorageKeys.AUTHENTICATION);
     const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType);
     if (previousAuth && previousAuth.player !== result.player.id) {
       this.logout();
