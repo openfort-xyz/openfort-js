@@ -7,7 +7,7 @@ import { ShieldAuthentication } from './iframe/types';
 import { SignerManager } from './manager/signer';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import {
-  AccountType, Auth,
+  AccountType, CurrentAccount, Auth,
   AuthPlayerResponse,
   AuthResponse, EmbeddedState,
   InitAuthResponse,
@@ -252,10 +252,12 @@ export class Openfort {
    * @returns An AuthResponse object containing authentication details.
    */
   public async signUpWithEmailPassword(
-    { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
+    {
+      email, password, options, ecosystemGame,
+    }: { email: string; password: string, options?: { data: { name: string } }, ecosystemGame?: string },
   ): Promise<AuthResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
-    const result = await this.authManager.signupEmailPassword(email, password, ecosystemGame);
+    const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame);
     if (previousAuth && previousAuth.player !== result.player.id) {
       this.logout();
     }
@@ -567,6 +569,18 @@ export class Openfort {
     const result = await this.backendApiClients.transactionIntentsApi.signature(request);
 
     return result.data;
+  }
+
+  public async getAccount(): Promise<CurrentAccount> {
+    const account = Account.fromStorage(this.storage);
+    if (!account) {
+      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
+    }
+    return {
+      chainId: account.chainId,
+      address: account.address,
+      accountType: account.type as AccountType,
+    };
   }
 
   // eslint-disable-next-line class-methods-use-this

@@ -19,6 +19,12 @@ export type SessionKey = {
   isRegistered: boolean;
 };
 
+export type CurrentAccount = {
+  address: string;
+  accountType: AccountType;
+  chainId: number
+};
+
 export enum AccountType {
   UPGRADEABLE_V4 = 'Upgradeable_v04',
   MANAGED_V4 = 'Managed_v04',
