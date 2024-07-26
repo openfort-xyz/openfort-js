@@ -21,7 +21,6 @@ function LoginPage() {
       router.query.refresh_token &&
       router.query.player_id
     ) {
-      console.log('router.query', router.query);
       setStatus({
         type: 'loading',
         title: 'Signing in...',
