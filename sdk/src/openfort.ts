@@ -50,10 +50,13 @@ export class Openfort {
    * Logs the user out by flushing the signer and removing credentials.
    */
   public async logout(): Promise<void> {
-    await SignerManager.fromStorage()?.logout();
+    const signer = SignerManager.fromStorage();
     this.storage.remove(StorageKeys.AUTHENTICATION);
     this.storage.remove(StorageKeys.SIGNER);
     this.storage.remove(StorageKeys.ACCOUNT);
+    if (signer) {
+      await signer.logout();
+    }
   }
 
   /**
@@ -423,10 +426,14 @@ export class Openfort {
   ): Promise<AuthPlayerResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
     const result = await this.authManager.authenticateThirdParty(provider, token, tokenType, ecosystemGame);
+    let loggedOut = false;
     if (previousAuth && previousAuth.player !== result.id) {
       this.logout();
+      loggedOut = true;
     }
     new Authentication('third_party', token, result.id, null, provider, tokenType).save(this.storage);
+    if (loggedOut) return result;
+
     const signer = SignerManager.fromStorage();
     try {
       await signer?.updateAuthentication();
