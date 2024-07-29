@@ -19,6 +19,8 @@ export interface SignerConfiguration {
   chainId: number | null;
 }
 
+let iframeManagerSingleton: IframeManager | null = null;
+
 export class SignerManager {
   private static storage = new LocalStorage();
 
@@ -70,11 +72,14 @@ export class SignerManager {
   }
 
   private static get iframeManager(): IframeManager {
+    if (iframeManagerSingleton) {
+      return iframeManagerSingleton;
+    }
     const configuration = Configuration.fromStorage();
     if (!configuration) {
       throw new OpenfortError('Must be configured to create a signer', OpenfortErrorType.INVALID_CONFIGURATION);
     }
-    return new IframeManager(
+    const iframeManager = new IframeManager(
       {
         backendUrl: configuration.openfortURL,
         baseConfiguration: {
@@ -95,6 +100,8 @@ export class SignerManager {
         shieldUrl: configuration.shieldURL,
       },
     );
+    iframeManagerSingleton = iframeManager;
+    return iframeManager;
   }
 
   static session(): Signer {
