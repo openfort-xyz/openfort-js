@@ -124,7 +124,8 @@ export default class AuthManager {
         AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
       );
       return response.data;
-    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
   }
 
   public async initSIWE(
@@ -165,7 +166,8 @@ export default class AuthManager {
     return withOpenfortError<AuthResponse>(async () => {
       const response = await this.backendApiClients.authenticationApi.authenticateSIWE(request);
       return response.data;
-    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
   }
 
   private static getEcosystemGameOptsOrUndefined(ecosystemGame?: string): AxiosRequestConfig | undefined {
@@ -320,7 +322,8 @@ export default class AuthManager {
         AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
       );
       return response.data;
-    }, { default: OpenfortErrorType.USER_REGISTRATION_ERROR });
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+    }, { default: OpenfortErrorType.USER_REGISTRATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
   }
 
   public async validateCredentials(authentication: Authentication, forceRefresh?:boolean): Promise<Auth> {
