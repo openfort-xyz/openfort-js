@@ -1198,9 +1198,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/openfort-js@npm:^0.8.3":
-  version: 0.8.3
-  resolution: "@openfort/openfort-js@npm:0.8.3"
+"@openfort/openfort-js@npm:^0.8.6":
+  version: 0.8.6
+  resolution: "@openfort/openfort-js@npm:0.8.6"
   dependencies:
     "@ethersproject/abstract-signer": ^5.7.0
     "@ethersproject/bytes": ^5.7.0
@@ -1219,7 +1219,7 @@ __metadata:
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: dd55e9503454a0b38cd181031d6cb9cfc4316774aa1cab039b3b93eb15db0d2ef13223e6924951e21be3837f37bc3df56ca820cc261aa05279c5f58199244eec
+  checksum: 71bb43f1cd9d1d398c6f7e85cfc5f434c419d39980ad591ffb8a5aec8e1f85dda1daea1286395720dd3792c5ae82169321f152e122d7d1774ccd579f3b4426fc
   languageName: node
   linkType: hard
 
@@ -6492,7 +6492,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "wagmi-poc@workspace:."
   dependencies:
-    "@openfort/openfort-js": ^0.8.3
+    "@openfort/openfort-js": ^0.8.6
     "@tanstack/react-query": ^5.32.1
     "@types/react": ^18.2.18
     "@types/react-dom": ^18.2.7
