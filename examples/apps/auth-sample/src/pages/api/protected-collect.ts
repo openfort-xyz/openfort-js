@@ -44,7 +44,8 @@ export default async function handler(
     });
 
     res.send({
-      data: transactionIntent,
+      transactionIntentId: transactionIntent.id,
+      userOperationHash: transactionIntent.userOperationHash,
     });
   } catch (e) {
     console.error(e);

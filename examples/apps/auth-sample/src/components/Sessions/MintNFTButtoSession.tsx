@@ -39,13 +39,13 @@ const MintNFTSessionButton: React.FC<{
       }
 
       const response = await openfort.sendSignatureTransactionIntentRequest(
-        collectResponseJSON.data.id,
+        collectResponseJSON.transactionIntentId,
         null,
         signature
       );
       return response?.response?.transactionHash ?? null;
     } else {
-      return collectResponseJSON.response?.transactionHash;
+      return collectResponseJSON.userOperationHash;
     }
   }, [sessionKey]);
 

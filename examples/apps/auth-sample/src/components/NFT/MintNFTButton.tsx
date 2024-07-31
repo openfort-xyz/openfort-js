@@ -25,15 +25,11 @@ const MintNFTButton: React.FC<{
     }
     const collectResponseJSON = await collectResponse.json();
 
-    if (collectResponseJSON.data?.nextAction) {
-      const response = await openfort.sendSignatureTransactionIntentRequest(
-        collectResponseJSON.data.id,
-        collectResponseJSON.data.nextAction.payload.userOperationHash
-      );
-      return response?.response?.transactionHash ?? null;
-    } else {
-      return collectResponseJSON.response?.transactionHash;
-    }
+    const response = await openfort.sendSignatureTransactionIntentRequest(
+      collectResponseJSON.transactionIntentId,
+      collectResponseJSON.userOperationHash
+    );
+    return response?.response?.transactionHash ?? null;
   }, []);
 
   const handleMintNFT = async () => {
