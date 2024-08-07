@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import openfort from '../../utils/openfortAdminConfig';
+import cors, { runMiddleware } from '../../utils/cors';
 
 const policy_id = 'pol_e7491b89-528e-40bb-b3c2-9d40afa4fefc';
 const contract_id = 'con_8d6b19e8-3a5a-4643-8dee-778997a7dffc';
@@ -10,6 +11,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  await runMiddleware(req, res, cors);
+
   const accessToken = req.headers.authorization?.split(' ')[1];
   if (!accessToken) {
     return res.status(401).send({
