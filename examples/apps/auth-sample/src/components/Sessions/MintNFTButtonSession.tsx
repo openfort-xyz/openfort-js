@@ -28,25 +28,21 @@ const MintNFTSessionButton: React.FC<{
     }
     const collectResponseJSON = await collectResponse.json();
 
-    if (collectResponseJSON.data?.nextAction) {
-      const message = arrayify(
-        collectResponseJSON.data.nextAction.payload.userOperationHash
-      );
-      const sessionSigner = new ethers.Wallet(sessionKey);
-      const signature = await sessionSigner?.signMessage(message);
-      if (!signature) {
-        throw new Error('Failed to sign message with session key');
-      }
-
-      const response = await openfort.sendSignatureTransactionIntentRequest(
-        collectResponseJSON.transactionIntentId,
-        null,
-        signature
-      );
-      return response?.response?.transactionHash ?? null;
-    } else {
-      return collectResponseJSON.userOperationHash;
+    const message = arrayify(
+      collectResponseJSON.nextAction.payload.userOperationHash
+    );
+    const sessionSigner = new ethers.Wallet(sessionKey);
+    const signature = await sessionSigner?.signMessage(message);
+    if (!signature) {
+      throw new Error('Failed to sign message with session key');
     }
+
+    const response = await openfort.sendSignatureTransactionIntentRequest(
+      collectResponseJSON.transactionIntentId,
+      null,
+      signature
+    );
+    return response?.response?.transactionHash ?? null;
   }, [sessionKey]);
 
   const handleMintNFT = async () => {

@@ -4,7 +4,7 @@ import {EmbeddedState} from '@openfort/openfort-js';
 import Loading from '../Loading';
 import openfort from '../../utils/openfortConfig';
 import {ethers} from 'ethers';
-import MintNFTSessionButton from './MintNFTButtoSession';
+import MintNFTSessionButton from './MintNFTButtonSession';
 
 const sessionMethods = [
   {id: '1hour', title: '1 Hour'},
