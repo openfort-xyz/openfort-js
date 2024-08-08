@@ -27,10 +27,7 @@ const MintNFTSessionButton: React.FC<{
       return null;
     }
     const collectResponseJSON = await collectResponse.json();
-
-    const message = arrayify(
-      collectResponseJSON.nextAction.payload.userOperationHash
-    );
+    const message = arrayify(collectResponseJSON.userOperationHash);
     const sessionSigner = new ethers.Wallet(sessionKey);
     const signature = await sessionSigner?.signMessage(message);
     if (!signature) {
