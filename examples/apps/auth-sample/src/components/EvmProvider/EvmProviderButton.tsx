@@ -36,7 +36,7 @@ const Provider1193ActionButton: React.FC<{
     try {
       tx = await contract.mint('0x64452Dff1180b21dc50033e1680bB64CDd492582');
       console.log('Transaction hash:', tx);
-      handleSetMessage(`https://www.oklink.com/amoy/tx/${tx.hash}`);
+      handleSetMessage(`https://amoy.polygonscan.com/tx/${tx.hash}`);
       const receipt = await tx.wait();
       console.log('Transaction receipt:', receipt);
     } catch (error: any) {
