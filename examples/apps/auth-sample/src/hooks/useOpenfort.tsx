@@ -210,7 +210,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   const handleRecovery = useCallback(
     async (method: 'password' | 'automatic', pin?: string) => {
       try {
-        const chainId = 80002;
+        const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
         const shieldAuth: ShieldAuthentication = {
           auth: ShieldAuthType.OPENFORT,
           token: openfort.getAccessToken()!,
