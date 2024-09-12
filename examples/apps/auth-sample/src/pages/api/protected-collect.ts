@@ -4,7 +4,7 @@ import cors, { runMiddleware } from '../../utils/cors';
 
 const contract_id = process.env.NEXT_PUBLIC_CONTRACT_ID;
 const optimistic = true;
-const policy_id = process.env.NEXT_PUBLIC_SHIELD_API_KEY;
+const policy_id = process.env.NEXT_PUBLIC_POLICY_ID;
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 export default async function handler(

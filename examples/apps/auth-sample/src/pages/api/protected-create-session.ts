@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import openfort from '../../utils/openfortAdminConfig';
 
-const policy_id = process.env.NEXT_PUBLIC_SHIELD_API_KEY;
+const policy_id = process.env.NEXT_PUBLIC_POLICY_ID;
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 export default async function handler(
