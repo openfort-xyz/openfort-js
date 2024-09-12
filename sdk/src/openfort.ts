@@ -14,6 +14,7 @@ import {
   InitializeOAuthOptions,
   OAuthProvider, OpenfortEventMap,
   SessionKey, SessionResponse, SIWEInitResponse, ThirdPartyOAuthProvider, TokenType, TransactionIntentResponse,
+  RecoveryMethod,
 } from './types';
 import { OpenfortSDKConfiguration } from './config';
 import { Configuration } from './configuration/configuration';
@@ -223,6 +224,25 @@ export class Openfort {
     }
 
     return await signer.export();
+  }
+
+  public async setEmbeddedRecovery(
+    { recoveryMethod, recoveryPassword, encryptionSession }:
+    { recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string },
+  ): Promise<void> {
+    await this.validateAndRefreshToken();
+    const signer = SignerManager.fromStorage();
+    if (!signer) {
+      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
+    }
+    if (signer.type() !== 'embedded') {
+      throw new OpenfortError('Signer must be embedded', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+    if (recoveryMethod === 'password' && !recoveryPassword) {
+      throw new OpenfortError('Recovery password is required', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
+    await signer.setEmbeddedRecovery({ recoveryMethod, recoveryPassword, encryptionSession });
   }
 
   /**

@@ -23,7 +23,7 @@ const MintNFTSessionButton: React.FC<{
     });
 
     if (!collectResponse.ok) {
-      alert('Failed to mint NFT status: ' + collectResponse.status);
+      alert(`Failed to mint NFT status: ${collectResponse.status}`);
       return null;
     }
     const collectResponseJSON = await collectResponse.json();

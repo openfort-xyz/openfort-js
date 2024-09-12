@@ -1,3 +1,4 @@
+import type { RecoveryMethod } from 'types';
 import { VERSION } from '../version';
 
 export enum Event {
@@ -7,6 +8,7 @@ export enum Event {
   UPDATE_AUTHENTICATION = 'update-authentication',
   AUTHENTICATION_UPDATED = 'authentication-updated',
   SIGN = 'sign',
+  SET_RECOVERY_METHOD = 'set-recovery-method',
   EXPORT = 'export',
   SIGNED = 'signed',
   LOGOUT = 'logout',
@@ -219,9 +221,39 @@ export class ExportPrivateKeyRequest implements IEventRequest {
   }
 }
 
+export class SetRecoveryMethodRequest implements IEventRequest {
+  uuid: string;
+
+  action: Event = Event.SET_RECOVERY_METHOD;
+
+  recoveryMethod: RecoveryMethod;
+
+  recoveryPassword?: string;
+
+  encryptionSession?: string;
+
+  requestConfiguration?: RequestConfiguration;
+
+  constructor(
+    uuid: string,
+    recoveryMethod: RecoveryMethod,
+    recoveryPassword?: string,
+    encryptionSession?: string,
+    requestConfiguration?: RequestConfiguration,
+  ) {
+    this.uuid = uuid;
+    this.recoveryMethod = recoveryMethod;
+    this.recoveryPassword = recoveryPassword;
+    this.encryptionSession = encryptionSession;
+    this.requestConfiguration = requestConfiguration;
+  }
+}
+
 export interface IExportPrivateKeyResponse extends IEventResponse {
   key: string;
 }
+
+export type ISetRecoveryMethodResponse = IEventResponse;
 
 export class ExportPrivateKeyResponse implements IExportPrivateKeyResponse {
   uuid: string;
@@ -237,6 +269,21 @@ export class ExportPrivateKeyResponse implements IExportPrivateKeyResponse {
   constructor(uuid: string, key: string) {
     this.success = true;
     this.key = key;
+    this.uuid = uuid;
+  }
+}
+
+export class SetRecoveryMethodResponse implements ISetRecoveryMethodResponse {
+  uuid: string;
+
+  success: boolean;
+
+  action: Event = Event.SET_RECOVERY_METHOD;
+
+  version = VERSION;
+
+  constructor(uuid: string) {
+    this.success = true;
     this.uuid = uuid;
   }
 }

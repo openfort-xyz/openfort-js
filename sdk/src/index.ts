@@ -14,6 +14,7 @@ export {
   TransactionIntentResponse,
   SDKOverrides,
   AuthType,
+  RecoveryMethod,
 } from './types';
 export { ShieldAuthentication, ShieldAuthType } from './iframe/types';
 export { Provider } from './evm/types';

@@ -1,10 +1,12 @@
-import IframeManager, { IframeConfiguration } from '../iframe/iframeManager';
-import { IStorage, StorageKeys } from '../storage/istorage';
+import type { RecoveryMethod } from 'types';
 import { Authentication } from '../configuration/authentication';
 import { OpenfortError, OpenfortErrorType } from '../errors/openfortError';
 import { Recovery } from '../configuration/recovery';
 import { ShieldAuthType } from '../iframe/types';
-import { Signer } from './isigner';
+import type { Signer } from './isigner';
+import type IframeManager from '../iframe/iframeManager';
+import type { IframeConfiguration } from '../iframe/iframeManager';
+import { type IStorage, StorageKeys } from '../storage/istorage';
 
 export interface Entropy {
   encryptionSession: string | null;
@@ -35,6 +37,14 @@ export class EmbeddedSigner implements Signer {
 
   async export(): Promise<string> {
     return await this.iframeManager.export(this.iframeConfiguration);
+  }
+
+  async setEmbeddedRecovery(
+    { recoveryMethod, recoveryPassword, encryptionSession }:
+    { recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string },
+  ): Promise<void> {
+    await this.iframeManager
+      .setEmbeddedRecovery(this.iframeConfiguration, recoveryMethod, recoveryPassword, encryptionSession);
   }
 
   async logout(): Promise<void> {

@@ -1,3 +1,5 @@
+import type { RecoveryMethod } from 'types';
+
 export interface Signer {
   sign(
     message: Uint8Array | string,
@@ -6,6 +8,9 @@ export interface Signer {
   ): Promise<string>;
   logout(): Promise<void>;
   updateAuthentication(): Promise<void>;
+  setEmbeddedRecovery(
+    { recoveryMethod, recoveryPassword, encryptionSession }:
+    { recoveryMethod: RecoveryMethod; recoveryPassword?: string, encryptionSession?: string }): Promise<void>;
   export(): Promise<string>;
   type(): string;
 }

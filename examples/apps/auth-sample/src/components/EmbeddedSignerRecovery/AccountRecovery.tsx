@@ -13,9 +13,8 @@ const AccountRecovery: React.FC = () => {
       <div className="mb-5 mt-16">
         <div className="my-5">
           <input
-            type="number"
             name="passwordRecovery"
-            placeholder="Password to secure your recovery (NUMBERS ONLY)"
+            placeholder="Password to secure your recovery"
             className="w-full p-2 border border-gray-200 rounded-lg"
           />
         </div>
@@ -23,6 +22,7 @@ const AccountRecovery: React.FC = () => {
           <div className="w-full">
             <div className="flex justify-center items-center">
               <button
+                type="button"
                 disabled={loadingPwd}
                 className="bg-black text-white p-2.5 rounded-lg w-full"
                 onClick={async () => {
@@ -49,6 +49,7 @@ const AccountRecovery: React.FC = () => {
             </div>
             <div className="flex justify-center items-center mt-2">
               <button
+                type="button"
                 disabled={loadingAut}
                 className="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
                 onClick={async () => {
