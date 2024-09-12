@@ -205,9 +205,9 @@ const HomePage: NextPage = () => {
               <ExportPrivateKey handleSetMessage={handleSetMessage} />
             </div>
             <div>
-              <span className="font-medium text-black">
-                Update wallet recovery:
-              </span>
+              <p className="font-medium text-black mb-4">
+                Change wallet recovery:
+              </p>
               <SetWalletRecovery handleSetMessage={handleSetMessage} />
             </div>
           </div>

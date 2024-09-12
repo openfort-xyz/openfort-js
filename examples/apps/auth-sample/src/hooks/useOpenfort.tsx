@@ -226,9 +226,8 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
         }
       } catch (err) {
         console.error('Error handling recovery with Openfort:', err);
-        throw err instanceof Error
-          ? err
-          : new Error('An error occurred during recovery handling');
+        alert(`Error: ${(err as unknown as Error).message}`);
+        location.reload();
       }
     },
     []

@@ -15,7 +15,7 @@ const SetWalletRecovery: React.FC<{
       setLoading(recoveryMethod);
       const password = (
         document.querySelector(
-          'input[name="passwordRecovery"]'
+          `input[name="${recoveryMethod}-passwordRecovery"]`
         ) as HTMLInputElement
       ).value;
       const privateKey = await setWalletRecovery(recoveryMethod, password);
@@ -35,6 +35,11 @@ const SetWalletRecovery: React.FC<{
 
   return (
     <div>
+      <input
+        name={`${RecoveryMethod.AUTOMATIC}-passwordRecovery`}
+        placeholder="Old password recovery"
+        className="w-full p-2 border border-gray-200 rounded-lg"
+      />
       <button
         type="button"
         onClick={async () =>
@@ -56,7 +61,7 @@ const SetWalletRecovery: React.FC<{
       </div>
 
       <input
-        name="passwordRecovery"
+        name={`${RecoveryMethod.PASSWORD}-passwordRecovery`}
         placeholder="New password recovery"
         className="w-full p-2 border border-gray-200 rounded-lg"
       />
