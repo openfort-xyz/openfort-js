@@ -1,25 +1,28 @@
-import { SDKConfiguration } from '../config';
+import type { RecoveryMethod } from 'types';
+import type { SDKConfiguration } from '../config';
 import {
-  ConfigureRequest,
+  type ConfigureRequest,
   ConfigureResponse,
   GetCurrentDeviceRequest,
   Event,
-  IEventResponse,
+  type IEventResponse,
   LogoutRequest,
   LogoutResponse,
   NOT_CONFIGURED_ERROR,
   PingRequest,
-  ShieldAuthentication,
+  SetRecoveryMethodResponse,
+  type ShieldAuthentication,
   SignRequest,
   SignResponse,
   UpdateAuthenticationRequest,
   UpdateAuthenticationResponse,
   GetCurrentDeviceResponse,
   isErrorResponse,
-  RequestConfiguration,
+  type RequestConfiguration,
   MISSING_USER_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
   ShieldAuthType, ExportPrivateKeyRequest, ExportPrivateKeyResponse, MISSING_PROJECT_ENTROPY_ERROR,
+  SetRecoveryMethodRequest,
 } from './types';
 
 export interface IframeConfiguration {
@@ -148,6 +151,7 @@ export default class IframeManager {
     [Event.CURRENT_DEVICE]: GetCurrentDeviceResponse,
     [Event.SIGNED]: SignResponse,
     [Event.LOGGED_OUT]: LogoutResponse,
+    [Event.SET_RECOVERY_METHOD]: SetRecoveryMethodResponse,
     [Event.EXPORT]: ExportPrivateKeyResponse,
   };
 
@@ -283,6 +287,44 @@ export default class IframeManager {
     }
     sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
     return response.key;
+  }
+
+  async setEmbeddedRecovery(
+    iframeConfiguration: IframeConfiguration,
+    recoveryMethod: RecoveryMethod,
+    recoveryPassword?: string,
+    encryptionSession?: string,
+  ): Promise<void> {
+    await this.waitForIframeLoad();
+    const uuid = this.generateShortUUID();
+    const requestConfiguration: RequestConfiguration = {
+      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
+      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
+      token: iframeConfiguration.accessToken ?? undefined,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      openfortURL: this.sdkConfiguration.backendUrl,
+    };
+    const request = new SetRecoveryMethodRequest(
+      uuid,
+      recoveryMethod,
+      recoveryPassword,
+      encryptionSession,
+      requestConfiguration,
+    );
+    this.iframe?.contentWindow?.postMessage(request, '*');
+    let response: SetRecoveryMethodResponse;
+    try {
+      response = await this.waitForResponse<SetRecoveryMethodResponse>(uuid);
+    } catch (e) {
+      if (e instanceof NotConfiguredError) {
+        await this.configure(iframeConfiguration);
+        return this.setEmbeddedRecovery(iframeConfiguration, recoveryMethod, recoveryPassword, encryptionSession);
+      }
+
+      throw e;
+    }
+    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
+    return Promise.resolve();
   }
 
   async getCurrentUser(playerId: string): Promise<GetCurrentDeviceResponse | null> {

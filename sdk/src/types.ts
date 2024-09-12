@@ -25,6 +25,11 @@ export type CurrentAccount = {
   chainId: number
 };
 
+export enum RecoveryMethod {
+  PASSWORD = 'password',
+  AUTOMATIC = 'automatic',
+}
+
 export enum AccountType {
   UPGRADEABLE_V4 = 'Upgradeable_v04',
   MANAGED_V4 = 'Managed_v04',

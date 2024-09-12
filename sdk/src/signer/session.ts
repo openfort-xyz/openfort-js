@@ -1,6 +1,6 @@
-import { KeyPair } from 'crypto/key-pair';
-import { Signer } from './isigner';
-import { IStorage, StorageKeys } from '../storage/istorage';
+import type { KeyPair } from 'crypto/key-pair';
+import type { Signer } from './isigner';
+import { type IStorage, StorageKeys } from '../storage/istorage';
 
 export class SessionSigner implements Signer {
   private sessionKey: KeyPair;
@@ -10,6 +10,11 @@ export class SessionSigner implements Signer {
   constructor(key: KeyPair, storage: IStorage) {
     this.sessionKey = key;
     this.storage = storage;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  setEmbeddedRecovery(): Promise<void> {
+    return Promise.resolve();
   }
 
   async sign(message: Uint8Array | string): Promise<string> {

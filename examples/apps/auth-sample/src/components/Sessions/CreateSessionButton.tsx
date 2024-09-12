@@ -64,9 +64,8 @@ const CreateSessionButton: React.FC<{
       }
       setSessionKey(sessionKey.privateKey);
       return {address: sessionKey.address, privateKey: sessionKey.privateKey};
-    } else {
-      return null;
     }
+    return null;
   }, []);
 
   const revokeSession = useCallback(async (): Promise<string | null> => {

@@ -1403,9 +1403,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@npm:0.8.3":
-  version: 0.8.3
-  resolution: "@openfort/openfort-js@npm:0.8.3"
+"@openfort/openfort-js@npm:0.8.6":
+  version: 0.8.6
+  resolution: "@openfort/openfort-js@npm:0.8.6"
   dependencies:
     "@ethersproject/abstract-signer": ^5.7.0
     "@ethersproject/bytes": ^5.7.0
@@ -1424,7 +1424,7 @@ __metadata:
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: dd55e9503454a0b38cd181031d6cb9cfc4316774aa1cab039b3b93eb15db0d2ef13223e6924951e21be3837f37bc3df56ca820cc261aa05279c5f58199244eec
+  checksum: 71bb43f1cd9d1d398c6f7e85cfc5f434c419d39980ad591ffb8a5aec8e1f85dda1daea1286395720dd3792c5ae82169321f152e122d7d1774ccd579f3b4426fc
   languageName: node
   linkType: hard
 
@@ -1441,7 +1441,7 @@ __metadata:
     "@ethersproject/transactions": ^5.7.0
     "@noble/curves": ^1.1.0
     "@openfort/openapi-clients": 0.0.0
-    "@openfort/shield-js": ^0.0.3
+    "@openfort/shield-js": ^0.1.11
     "@parcel/packager-ts": 2.12.0
     "@parcel/transformer-typescript-types": 2.12.0
     "@rollup/plugin-babel": ^6.0.4
@@ -1483,7 +1483,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
   dependencies:
-    "@openfort/openfort-js": 0.8.3
+    "@openfort/openfort-js": 0.8.6
     eslint: ^8.40.0
     ethers: ^5.7.0
     parcel: ^2.8.3
@@ -1497,6 +1497,13 @@ __metadata:
     axios: ^1.6.8
     typescript: ^5.4.3
   checksum: fee7c7d81a72068db75e60e7bc19a79f71223740508dcdcb0056b30d092de8b0cb59c0d0f34736ac9039f7039de2b0961212ebc5623ccd153e53bd8029f46de7
+  languageName: node
+  linkType: hard
+
+"@openfort/shield-js@npm:^0.1.11":
+  version: 0.1.11
+  resolution: "@openfort/shield-js@npm:0.1.11"
+  checksum: fd2100de6312dc2d1b1793d50c488d2624a8da368896cd27cc2a3b408b1aebcfe22d9efc6d32215e9bc3eae15dd06536443625c9c83a4567d65ce6bc7903de72
   languageName: node
   linkType: hard
 

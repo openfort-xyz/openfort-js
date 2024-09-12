@@ -3,15 +3,13 @@ import {
   ShieldAuthType,
   ThirdPartyOAuthProvider,
   TokenType,
+  type AuthPlayerResponse,
+  type Provider,
+  type RecoveryMethod,
+  type ShieldAuthentication,
 } from '@openfort/openfort-js';
-
-import type {
-  AuthPlayerResponse,
-  Provider,
-  ShieldAuthentication,
-} from '@openfort/openfort-js';
-import React, {
-  type PropsWithChildren,
+import type React from 'react';
+import {
   createContext,
   useCallback,
   useEffect,
@@ -19,11 +17,11 @@ import React, {
   useState,
   useContext,
 } from 'react';
-import openfort from '../utils/openfortConfig';
-import {TypedDataDomain, TypedDataField} from 'ethers';
+import type {TypedDataDomain, TypedDataField} from 'ethers';
 import axios from 'axios';
+import openfort from '../utils/openfortConfig';
 
-type ContextType = {
+interface ContextType {
   state: EmbeddedState;
   getEvmProvider: () => Provider;
   handleRecovery: (
@@ -31,8 +29,13 @@ type ContextType = {
     pin?: string
   ) => Promise<void>;
   auth: (accessToken: string) => Promise<AuthPlayerResponse>;
+  setWalletRecovery: (
+    recoveryMethod: RecoveryMethod,
+    recoveryPassword?: string
+  ) => Promise<{error?: Error}>;
+  exportPrivateKey: () => Promise<{data?: string; error?: Error}>;
   signMessage: (
-    hashedMessage: string,
+    message: string,
     options?: {hashMessage: boolean; arrayifyMessage: boolean}
   ) => Promise<{data?: string; error?: Error}>;
   signTypedData: (
@@ -41,41 +44,36 @@ type ContextType = {
     value: Record<string, any>
   ) => Promise<{data?: string; error?: Error}>;
   logout: () => Promise<void>;
-};
+}
 
 const OpenfortContext = createContext<ContextType | null>(null);
 
-const useOpenfort = () => {
+export const useOpenfort = () => {
   const context = useContext(OpenfortContext);
-
   if (!context) {
     throw new Error('useOpenfort must be used inside the OpenfortProvider');
   }
-
   return context;
 };
 
-const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
+export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
+  children,
+}) => {
   const [state, setState] = useState<EmbeddedState>(EmbeddedState.NONE);
   const poller = useRef<NodeJS.Timeout | null>(null);
 
-  async function getEncryptionSession(): Promise<string> {
+  const getEncryptionSession = async (): Promise<string> => {
     try {
       const response = await axios.post<{session: string}>(
         '/api/protected-create-encryption-session',
         {},
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+        {headers: {'Content-Type': 'application/json'}}
       );
-
       return response.data.session;
     } catch (error) {
       throw new Error('Failed to create encryption session');
     }
-  }
+  };
 
   useEffect(() => {
     const pollEmbeddedState = async () => {
@@ -88,20 +86,17 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
       }
     };
 
-    if (!poller.current) {
-      poller.current = setInterval(pollEmbeddedState, 300);
-    }
+    poller.current = setInterval(pollEmbeddedState, 300);
 
     return () => {
       if (poller.current) clearInterval(poller.current);
-      poller.current = null;
     };
   }, []);
 
   const getEvmProvider = useCallback((): Provider => {
     const externalProvider = openfort.getEthereumProvider({
       announceProvider: true,
-      policy: 'pol_e7491b89-528e-40bb-b3c2-9d40afa4fefc',
+      policy: process.env.NEXT_PUBLIC_POLICY_ID,
     });
     if (!externalProvider) {
       throw new Error('EVM provider is undefined');
@@ -132,14 +127,58 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
     ): Promise<{data?: string; error?: Error}> => {
       try {
         const data = await openfort.signMessage(message, options);
-        return {data: data};
+        return {data};
       } catch (err) {
-        console.log('Error signing message:', err);
+        console.error('Error signing message:', err);
         return {
           error:
             err instanceof Error
               ? err
               : new Error('An error occurred signing the message'),
+        };
+      }
+    },
+    []
+  );
+
+  const exportPrivateKey = useCallback(async (): Promise<{
+    data?: string;
+    error?: Error;
+  }> => {
+    try {
+      const data = await openfort.exportPrivateKey();
+      return {data};
+    } catch (err) {
+      console.error('Error exporting private key:', err);
+      return {
+        error:
+          err instanceof Error
+            ? err
+            : new Error('An error occurred exporting the private key'),
+      };
+    }
+  }, []);
+
+  const setWalletRecovery = useCallback(
+    async (
+      recoveryMethod: RecoveryMethod,
+      recoveryPassword?: string
+    ): Promise<{error?: Error}> => {
+      try {
+        const encryptionSession = await getEncryptionSession();
+        await openfort.setEmbeddedRecovery({
+          recoveryMethod,
+          recoveryPassword,
+          encryptionSession,
+        });
+        return {};
+      } catch (err) {
+        console.error('Error setting wallet recovery:', err);
+        return {
+          error:
+            err instanceof Error
+              ? err
+              : new Error('An error occurred setting wallet recovery'),
         };
       }
     },
@@ -153,7 +192,8 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
       value: Record<string, any>
     ): Promise<{data?: string; error?: Error}> => {
       try {
-        return {data: await openfort.signTypedData(domain, types, value)};
+        const data = await openfort.signTypedData(domain, types, value);
+        return {data};
       } catch (err) {
         console.error('Error signing typed data:', err);
         return {
@@ -180,14 +220,13 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
           await openfort.configureEmbeddedSigner(chainId, shieldAuth);
         } else if (method === 'password') {
           if (!pin || pin.length < 4) {
-            alert('Password recovery must be at least 4 characters');
-            return;
+            throw new Error('Password recovery must be at least 4 characters');
           }
           await openfort.configureEmbeddedSigner(chainId, shieldAuth, pin);
         }
       } catch (err) {
         console.error('Error handling recovery with Openfort:', err);
-        err instanceof Error
+        throw err instanceof Error
           ? err
           : new Error('An error occurred during recovery handling');
       }
@@ -200,25 +239,27 @@ const OpenfortProvider = ({children}: PropsWithChildren<unknown>) => {
       await openfort.logout();
     } catch (err) {
       console.error('Error logging out with Openfort:', err);
-      err instanceof Error ? err : new Error('An error occurred during logout');
+      throw err instanceof Error
+        ? err
+        : new Error('An error occurred during logout');
     }
   }, []);
 
+  const contextValue: ContextType = {
+    state,
+    auth,
+    getEvmProvider,
+    handleRecovery,
+    signMessage,
+    setWalletRecovery,
+    exportPrivateKey,
+    signTypedData,
+    logout,
+  };
+
   return (
-    <OpenfortContext.Provider
-      value={{
-        state,
-        auth,
-        getEvmProvider,
-        handleRecovery,
-        signMessage,
-        signTypedData,
-        logout,
-      }}
-    >
+    <OpenfortContext.Provider value={contextValue}>
       {children}
     </OpenfortContext.Provider>
   );
 };
-
-export {OpenfortProvider, useOpenfort};

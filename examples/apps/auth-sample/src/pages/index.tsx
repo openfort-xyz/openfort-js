@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {NextPage} from 'next';
+import type {NextPage} from 'next';
 import MintNFTButton from '../components/NFT/MintNFTButton';
 import {useOpenfort} from '../hooks/useOpenfort';
 import {EmbeddedState, OAuthProvider} from '@openfort/openfort-js';
@@ -9,7 +9,7 @@ import SignTypedDataButton from '../components/Signatures/SignTypedDataButton';
 import EvmProviderButton from '../components/EvmProvider/EvmProviderButton';
 import openfort from '../utils/openfortConfig';
 import Loading from '../components/Loading';
-import {AuthPlayerResponse} from '@openfort/openfort-js';
+import type {AuthPlayerResponse} from '@openfort/openfort-js';
 import {useRouter} from 'next/router';
 import {AuthLayout} from '../components/Layouts/AuthLayout';
 import LogoutButton from '../components/Logout';
@@ -18,6 +18,8 @@ import {Logo} from '../components/Logo';
 import GetUserButton from '../components/User/GetUserButton';
 import CreateSessionButton from '../components/Sessions/CreateSessionButton';
 import LinkOAuthButton from '../components/OAuth/LinkOAuthButton';
+import ExportPrivateKey from '../components/Export/ExportPrivateKeyButton';
+import SetWalletRecovery from '../components/SetWalletRecovery/SetWalletRecoveryButton';
 
 const HomePage: NextPage = () => {
   const {state} = useOpenfort();
@@ -128,10 +130,13 @@ const HomePage: NextPage = () => {
             </div>
             <div>
               <button
+                type="button"
                 onClick={() => {
                   router.push('/link-wallet');
                 }}
-                className={`mt-4 w-40 px-4 py-2 border-black text-black font-semibold rounded-lg shadow-md hover:bg-gray-100 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
+                className={
+                  'mt-4 w-40 px-4 py-2 border-black text-black font-semibold rounded-lg shadow-md hover:bg-gray-100 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
+                }
               >
                 {'Link a Wallet'}
               </button>
@@ -175,7 +180,7 @@ const HomePage: NextPage = () => {
                 OAuthProvider.TWITTER,
                 OAuthProvider.FACEBOOK,
               ].map((provider) => (
-                <div>
+                <div key={provider}>
                   <LinkOAuthButton provider={provider} user={user} />
                 </div>
               ))}
@@ -187,6 +192,23 @@ const HomePage: NextPage = () => {
             </h2>
             <div>
               <CreateSessionButton handleSetMessage={handleSetMessage} />
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
+            <h2 className="flex justify-left font-medium text-xl pb-4">
+              Embedded wallet
+            </h2>
+            <div>
+              <span className="font-medium text-black">
+                Export wallet private key:
+              </span>
+              <ExportPrivateKey handleSetMessage={handleSetMessage} />
+            </div>
+            <div>
+              <span className="font-medium text-black">
+                Update wallet recovery:
+              </span>
+              <SetWalletRecovery handleSetMessage={handleSetMessage} />
             </div>
           </div>
         </div>
