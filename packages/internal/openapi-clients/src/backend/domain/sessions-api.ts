@@ -45,10 +45,11 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
          * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
+         * @param {string} [xBehalfOfProject] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSession: async (createSessionRequest: CreateSessionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createSession: async (createSessionRequest: CreateSessionRequest, xBehalfOfProject?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createSessionRequest' is not null or undefined
             assertParamExists('createSession', 'createSessionRequest', createSessionRequest)
             const localVarPath = `/v1/sessions`;
@@ -66,6 +67,10 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
             // authentication sk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xBehalfOfProject != null) {
+                localVarHeaderParameter['X-Behalf-Of-Project'] = String(xBehalfOfProject);
+            }
 
 
     
@@ -189,10 +194,11 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
          * 
          * @summary Revoke the session session key.
          * @param {RevokeSessionRequest} revokeSessionRequest 
+         * @param {string} [xBehalfOfProject] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        revokeSession: async (revokeSessionRequest: RevokeSessionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        revokeSession: async (revokeSessionRequest: RevokeSessionRequest, xBehalfOfProject?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'revokeSessionRequest' is not null or undefined
             assertParamExists('revokeSession', 'revokeSessionRequest', revokeSessionRequest)
             const localVarPath = `/v1/sessions/revoke`;
@@ -210,6 +216,10 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
             // authentication sk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xBehalfOfProject != null) {
+                localVarHeaderParameter['X-Behalf-Of-Project'] = String(xBehalfOfProject);
+            }
 
 
     
@@ -287,11 +297,12 @@ export const SessionsApiFp = function(configuration?: Configuration) {
          * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
+         * @param {string} [xBehalfOfProject] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createSession(createSessionRequest: CreateSessionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createSession(createSessionRequest, options);
+        async createSession(createSessionRequest: CreateSessionRequest, xBehalfOfProject?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createSession(createSessionRequest, xBehalfOfProject, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -325,11 +336,12 @@ export const SessionsApiFp = function(configuration?: Configuration) {
          * 
          * @summary Revoke the session session key.
          * @param {RevokeSessionRequest} revokeSessionRequest 
+         * @param {string} [xBehalfOfProject] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async revokeSession(revokeSessionRequest: RevokeSessionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.revokeSession(revokeSessionRequest, options);
+        async revokeSession(revokeSessionRequest: RevokeSessionRequest, xBehalfOfProject?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.revokeSession(revokeSessionRequest, xBehalfOfProject, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -362,7 +374,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         createSession(requestParameters: SessionsApiCreateSessionRequest, options?: AxiosRequestConfig): AxiosPromise<SessionResponse> {
-            return localVarFp.createSession(requestParameters.createSessionRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.createSession(requestParameters.createSessionRequest, requestParameters.xBehalfOfProject, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of Sessions.  Returns the latest 10 transaction intents for each session.
@@ -392,7 +404,7 @@ export const SessionsApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         revokeSession(requestParameters: SessionsApiRevokeSessionRequest, options?: AxiosRequestConfig): AxiosPromise<SessionResponse> {
-            return localVarFp.revokeSession(requestParameters.revokeSessionRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.revokeSession(requestParameters.revokeSessionRequest, requestParameters.xBehalfOfProject, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -419,6 +431,13 @@ export interface SessionsApiCreateSessionRequest {
      * @memberof SessionsApiCreateSession
      */
     readonly createSessionRequest: CreateSessionRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof SessionsApiCreateSession
+     */
+    readonly xBehalfOfProject?: string
 }
 
 /**
@@ -496,6 +515,13 @@ export interface SessionsApiRevokeSessionRequest {
      * @memberof SessionsApiRevokeSession
      */
     readonly revokeSessionRequest: RevokeSessionRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof SessionsApiRevokeSession
+     */
+    readonly xBehalfOfProject?: string
 }
 
 /**
@@ -535,7 +561,7 @@ export class SessionsApi extends BaseAPI {
      * @memberof SessionsApi
      */
     public createSession(requestParameters: SessionsApiCreateSessionRequest, options?: AxiosRequestConfig) {
-        return SessionsApiFp(this.configuration).createSession(requestParameters.createSessionRequest, options).then((request) => request(this.axios, this.basePath));
+        return SessionsApiFp(this.configuration).createSession(requestParameters.createSessionRequest, requestParameters.xBehalfOfProject, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -571,7 +597,7 @@ export class SessionsApi extends BaseAPI {
      * @memberof SessionsApi
      */
     public revokeSession(requestParameters: SessionsApiRevokeSessionRequest, options?: AxiosRequestConfig) {
-        return SessionsApiFp(this.configuration).revokeSession(requestParameters.revokeSessionRequest, options).then((request) => request(this.axios, this.basePath));
+        return SessionsApiFp(this.configuration).revokeSession(requestParameters.revokeSessionRequest, requestParameters.xBehalfOfProject, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

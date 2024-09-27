@@ -38,6 +38,8 @@ export enum AccountType {
   RECOVERABLE_V4 = 'Recoverable_v04',
   MANAGED_V5 = 'Managed_v05',
   UPGRADEABLE_V5 = 'Upgradeable_v05',
+  UPGRADEABLE_V6 = 'Upgradeable_v06',
+  ZKSYNC_UPGRADEABLE_V1 = 'zksync_upgradeable_v1',
 }
 
 export enum AuthType {
@@ -136,10 +138,9 @@ export enum OAuthProvider {
 }
 
 export interface NextActionPayload {
-  'userOp'?: any;
-  'userOpHash'?: string;
   'userOperation'?: any;
   'userOperationHash'?: string;
+  'signableHash'?: string;
 }
 
 export interface NextActionResponse {
@@ -188,22 +189,6 @@ export interface ResponseResponse {
   'error'?: any;
 }
 
-export interface PlayerResponseTransactionIntentsInner {
-  'id': string;
-  'object': 'transactionIntent';
-  'createdAt': number;
-  'updatedAt': number;
-  'chainId': number;
-  'userOperationHash'?: string;
-  'userOperation'?: any;
-  'response'?: ResponseResponse;
-  'interactions'?: Array<Interaction>;
-  'nextAction'?: NextActionResponse;
-  'policy'?: EntityIdResponse;
-  'player'?: EntityIdResponse;
-  'account': EntityIdResponse;
-}
-
 export interface SessionResponse {
   'id': string;
   'object': 'session';
@@ -216,7 +201,7 @@ export interface SessionResponse {
   'whitelist'?: Array<string>;
   'limit'?: number;
   'nextAction'?: NextActionResponse;
-  'transactionIntents'?: Array<PlayerResponseTransactionIntentsInner>;
+  'transactionIntents'?: Array<TransactionIntentResponse>;
 }
 
 export interface PolicyStrategy {
@@ -270,20 +255,28 @@ export interface TransactionIntentResponsePlayer {
   'accounts'?: Array<EntityIdResponse>;
 }
 
+export const TRANSACTION_ABSTRACTION_TYPE = {
+  accountAbstractionV6: 'accountAbstractionV6',
+  zksync: 'zkSync',
+  standard: 'standard',
+} as const;
+
+export type TransactionAbstractionType = typeof TRANSACTION_ABSTRACTION_TYPE[keyof typeof TRANSACTION_ABSTRACTION_TYPE];
+
 export interface TransactionIntentResponse {
   'id': string;
   'object': 'transactionIntent';
   'createdAt': number;
   'updatedAt': number;
+  'abstractionType': TransactionAbstractionType;
+  'details'?: AccountAbstractionV6Details | ZKSyncDetails | StandardDetails;
   'chainId': number;
-  'userOperationHash'?: string;
-  'userOperation'?: any;
   'response'?: ResponseResponse;
   'interactions'?: Array<Interaction>;
   'nextAction'?: NextActionResponse;
-  'policy'?: TransactionIntentResponsePolicy;
-  'player'?: TransactionIntentResponsePlayer;
-  'account': TransactionIntentResponseAccount;
+  'policy'?: TransactionIntentResponsePolicy | EntityIdResponse;
+  'player'?: TransactionIntentResponsePlayer | EntityIdResponse;
+  'account': TransactionIntentResponseAccount | EntityIdResponse;
 }
 
 export interface PlayerMetadataValue {
@@ -314,7 +307,7 @@ export interface AuthPlayerResponsePlayer {
   'metadata'?: {
     [key: string]: PlayerMetadataValue;
   };
-  'transactionIntents'?: Array<PlayerResponseTransactionIntentsInner>;
+  'transactionIntents'?: Array<TransactionIntentResponse>;
   'accounts'?: Array<PlayerResponseAccountsInner>;
 }
 
@@ -346,6 +339,49 @@ export interface AuthResponse {
   'player': AuthPlayerResponse;
   'token': string;
   'refreshToken': string;
+}
+
+export interface AccountAbstractionV6Details {
+  'userOperation': UserOperationV6;
+  'userOperationHash': string;
+}
+
+export interface UserOperationV6 {
+  'callData': string;
+  'callGasLimit': string;
+  'initCode'?: string;
+  'maxFeePerGas': string;
+  'maxPriorityFeePerGas': string;
+  'nonce': string;
+  'paymasterAndData'?: string;
+  'preVerificationGas': string;
+  'sender': string
+  'signature': string
+  'verificationGasLimit': string
+}
+
+export interface ZKSyncDetails {
+  'from': string;
+  'to': string;
+  'data'?: string;
+  'nonce': string;
+  'gas': string;
+  'maxFeePerGas': string;
+  'maxPriorityFeePerGas': string;
+  'paymaster'?: string;
+  'paymasterInput'?: string;
+  'value'?: string;
+}
+
+export interface StandardDetails {
+  'from': string;
+  'to': string;
+  'data'?: string;
+  'nonce': string;
+  'gas': string;
+  'maxFeePerGas': string;
+  'maxPriorityFeePerGas': string;
+  'value'?: string;
 }
 
 export type PKCEData = {

@@ -17,32 +17,14 @@
 /**
  * 
  * @export
- * @interface DomainData
+ * @interface InitEmbeddedRequest
  */
-export interface DomainData {
+export interface InitEmbeddedRequest {
     /**
-     * The chain ID.
+     * 
      * @type {number}
-     * @memberof DomainData
+     * @memberof InitEmbeddedRequest
      */
     'chainId': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof DomainData
-     */
-    'name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DomainData
-     */
-    'version'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof DomainData
-     */
-    'verifyingContract'?: string;
 }
 

@@ -20,12 +20,12 @@ domain/sessions-api.ts
 domain/settings-api.ts
 domain/subscriptions-api.ts
 domain/transaction-intents-api.ts
-domain/web3-connections-api.ts
 git_push.sh
 index.ts
 models/abi-type.ts
 models/abi.ts
 models/accelbyte-oauth-config.ts
+models/account-abstraction-v6-details.ts
 models/account-event-response.ts
 models/account-inventory-list-queries.ts
 models/account-list-queries.ts
@@ -105,7 +105,6 @@ models/create-session-request.ts
 models/create-subscription-request.ts
 models/create-transaction-intent-request.ts
 models/create-trigger-request.ts
-models/create-web3-connection-request.ts
 models/currency.ts
 models/custom-auth-config.ts
 models/delete-smtpconfig-response.ts
@@ -122,12 +121,12 @@ models/developer-account.ts
 models/device-list-queries.ts
 models/device-response.ts
 models/discord-oauth-config.ts
-models/domain-data.ts
 models/ecosystem-configuration-response.ts
 models/email-sample-delete-response.ts
 models/email-sample-response.ts
 models/email-type-request.ts
 models/email-type-response.ts
+models/embedded-response.ts
 models/entity-id-response.ts
 models/entity-type-account.ts
 models/entity-type-contract.ts
@@ -150,8 +149,6 @@ models/entity-type-subscription.ts
 models/entity-type-transactionintent.ts
 models/entity-type-trigger.ts
 models/entity-type-user.ts
-models/entity-type-web3-action.ts
-models/entity-type-web3-connection.ts
 models/epic-games-oauth-config.ts
 models/error-type-invalidrequesterror.ts
 models/estimate-transaction-intent-gas-result.ts
@@ -159,6 +156,7 @@ models/event-delete-response.ts
 models/event-list-queries.ts
 models/event-list-response.ts
 models/event-response.ts
+models/exported-embedded-request.ts
 models/facebook-oauth-config.ts
 models/fee.ts
 models/field-errors-value.ts
@@ -171,6 +169,7 @@ models/gas-report-transaction-intents-inner.ts
 models/gas-report.ts
 models/google-oauth-config.ts
 models/index.ts
+models/init-embedded-request.ts
 models/interaction.ts
 models/invalid-request-error-response.ts
 models/invalid-request-error.ts
@@ -259,6 +258,7 @@ models/project-stats-request.ts
 models/project-stats-response.ts
 models/quote-exchange-result.ts
 models/refresh-token-request.ts
+models/register-embedded-request.ts
 models/request-reset-password-request.ts
 models/request-verify-email-request.ts
 models/reset-password-request.ts
@@ -282,10 +282,10 @@ models/sponsor-schema-chargecustomtokens.ts
 models/sponsor-schema-fixedrate.ts
 models/sponsor-schema-payforuser.ts
 models/sponsor-schema.ts
+models/standard-details.ts
 models/start-recovery-request.ts
 models/stat.ts
 models/status.ts
-models/submit-web3-action-request.ts
 models/subscription-delete-response.ts
 models/subscription-list-response.ts
 models/subscription-response-plan.ts
@@ -304,7 +304,9 @@ models/time-interval-type.ts
 models/token-type.ts
 models/token.ts
 models/trade-type.ts
+models/transaction-abstraction-type.ts
 models/transaction-confirmed-event-response.ts
+models/transaction-intent-details.ts
 models/transaction-intent-list-queries.ts
 models/transaction-intent-list-response.ts
 models/transaction-intent-response-account.ts
@@ -319,6 +321,7 @@ models/trigger-delete-response.ts
 models/trigger-response.ts
 models/twitter-oauth-config.ts
 models/typed-data-field.ts
+models/typed-domain-data.ts
 models/unlink-email-request.ts
 models/unlink-oauth-request.ts
 models/update-contract-request.ts
@@ -328,6 +331,7 @@ models/update-policy-rule-request.ts
 models/update-project-api-key-request.ts
 models/update-project-request.ts
 models/upsert-smtpconfig-request.ts
+models/user-operation-v6.ts
 models/user-project-create-request-role.ts
 models/user-project-create-request.ts
 models/user-project-delete-response.ts
@@ -338,13 +342,6 @@ models/user-project-role-member.ts
 models/user-project-role.ts
 models/user-project-update-request.ts
 models/verify-email-request.ts
-models/web3-action-list-response.ts
-models/web3-action-response.ts
-models/web3-action-status-enum.ts
-models/web3-connection-list-queries.ts
-models/web3-connection-list-response.ts
-models/web3-connection-response-expandable.ts
-models/web3-connection-response-player.ts
-models/web3-connection-response.ts
 models/webhook-response.ts
 models/withdrawal-policy-request.ts
+models/zksync-details.ts

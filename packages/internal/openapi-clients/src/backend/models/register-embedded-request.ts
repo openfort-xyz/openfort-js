@@ -17,14 +17,26 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface RegisterEmbeddedRequest
  */
-
-export const Web3ConnectionResponseExpandable = {
-    Player: 'player'
-} as const;
-
-export type Web3ConnectionResponseExpandable = typeof Web3ConnectionResponseExpandable[keyof typeof Web3ConnectionResponseExpandable];
-
-
+export interface RegisterEmbeddedRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof RegisterEmbeddedRequest
+     */
+    'chainId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegisterEmbeddedRequest
+     */
+    'address': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegisterEmbeddedRequest
+     */
+    'share': string;
+}
 

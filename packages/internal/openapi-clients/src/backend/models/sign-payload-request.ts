@@ -15,10 +15,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { DomainData } from './domain-data';
+import { TypedDataField } from './typed-data-field';
 // May contain unused imports in some cases
 // @ts-ignore
-import { TypedDataField } from './typed-data-field';
+import { TypedDomainData } from './typed-domain-data';
 
 /**
  * 
@@ -28,10 +28,10 @@ import { TypedDataField } from './typed-data-field';
 export interface SignPayloadRequest {
     /**
      * 
-     * @type {DomainData}
+     * @type {TypedDomainData}
      * @memberof SignPayloadRequest
      */
-    'domain': DomainData;
+    'domain': TypedDomainData;
     /**
      * 
      * @type {{ [key: string]: Array<TypedDataField>; }}
@@ -55,6 +55,6 @@ export interface SignPayloadRequest {
      * @type {string}
      * @memberof SignPayloadRequest
      */
-    'hash': string;
+    'hash'?: string;
 }
 

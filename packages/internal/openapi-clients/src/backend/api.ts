@@ -29,5 +29,4 @@ export * from './domain/sessions-api';
 export * from './domain/settings-api';
 export * from './domain/subscriptions-api';
 export * from './domain/transaction-intents-api';
-export * from './domain/web3-connections-api';
 

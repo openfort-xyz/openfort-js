@@ -117,10 +117,10 @@
       "InputJsonObject": {
         "properties": {},
         "type": "object",
-        "description": "Matches a JSON object.\nUnlike `JsonObject`, this type allows undefined and read-only properties."
+        "description": "Matches a JSON object.\r\nUnlike \\`JsonObject\\`, this type allows undefined and read-only properties."
       },
       "InputJsonArray": {
-        "description": "Matches a JSON array.\nUnlike `JsonArray`, readonly arrays are assignable to this type.",
+        "description": "Matches a JSON array.\r\nUnlike \\`JsonArray\\`, readonly arrays are assignable to this type.",
         "properties": {},
         "type": "object",
         "additionalProperties": false
@@ -148,7 +148,7 @@
             "type": "object"
           }
         ],
-        "description": "Matches any valid value that can be used as an input for operations like\ncreate and update as the value of a JSON field. Unlike `JsonValue`, this\ntype allows read-only arrays and read-only object properties and disallows\n`null` at the top level.\n\n`null` cannot be used as the value of a JSON field because its meaning\nwould be ambiguous. Use `Prisma.JsonNull` to store the JSON null value or\n`Prisma.DbNull` to clear the JSON value and set the field to the database\nNULL value instead."
+        "description": "Matches any valid value that can be used as an input for operations like\r\ncreate and update as the value of a JSON field. Unlike \\`JsonValue\\`, this\r\ntype allows read-only arrays and read-only object properties and disallows\r\n\\`null\\` at the top level.\r\n\r\n\\`null\\` cannot be used as the value of a JSON field because its meaning\r\nwould be ambiguous. Use \\`Prisma.JsonNull\\` to store the JSON null value or\r\n\\`Prisma.DbNull\\` to clear the JSON value and set the field to the database\r\nNULL value instead."
       },
       "LinkedAccountResponse": {
         "properties": {
@@ -181,6 +181,208 @@
         "required": [
           "provider",
           "disabled"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionAbstractionType": {
+        "enum": [
+          "accountAbstractionV6",
+          "zkSync",
+          "standard"
+        ],
+        "type": "string"
+      },
+      "ZKSyncDetails": {
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "The transaction sender.",
+            "example": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387"
+          },
+          "to": {
+            "type": "string",
+            "description": "The transaction recipient or contract address."
+          },
+          "data": {
+            "type": "string",
+            "description": "A contract hashed method call with encoded args.",
+            "example": "0x8c5a..."
+          },
+          "nonce": {
+            "type": "string",
+            "description": "Unique number identifying this transaction.",
+            "example": "0"
+          },
+          "gas": {
+            "type": "string",
+            "description": "The gas limit for the transaction.",
+            "example": "21000"
+          },
+          "maxFeePerGas": {
+            "type": "string",
+            "description": "Total fee per gas (in wei), inclusive of `maxPriorityFeePerGas`. Only applies to EIP-1559 Transactions.",
+            "example": "1000000000"
+          },
+          "maxPriorityFeePerGas": {
+            "type": "string",
+            "description": "Max priority fee per gas (in wei). Only applies to EIP-1559 Transactions.",
+            "example": "1000000000"
+          },
+          "paymaster": {
+            "type": "string",
+            "description": "Address of the paymaster account that will pay the fees.",
+            "example": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387"
+          },
+          "paymasterInput": {
+            "type": "string",
+            "description": "Input data to the paymaster",
+            "example": "0x8c5a..."
+          },
+          "value": {
+            "type": "string",
+            "description": "Value in wei sent with this transaction.",
+            "example": "1000000000000000000"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "nonce",
+          "gas",
+          "maxFeePerGas",
+          "maxPriorityFeePerGas"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UserOperationV6": {
+        "properties": {
+          "callData": {
+            "type": "string",
+            "description": "The data to pass to the `sender` during the main execution call."
+          },
+          "callGasLimit": {
+            "type": "string",
+            "description": "The amount of gas to allocate the main execution call"
+          },
+          "initCode": {
+            "type": "string",
+            "description": "Account init code. Only for new accounts."
+          },
+          "maxFeePerGas": {
+            "type": "string",
+            "description": "Maximum fee per gas."
+          },
+          "maxPriorityFeePerGas": {
+            "type": "string",
+            "description": "Maximum priority fee per gas."
+          },
+          "nonce": {
+            "type": "string",
+            "description": "Anti-replay parameter."
+          },
+          "paymasterAndData": {
+            "type": "string",
+            "description": "Paymaster address with calldata."
+          },
+          "preVerificationGas": {
+            "type": "string",
+            "description": "Extra gas to pay the bundler."
+          },
+          "sender": {
+            "type": "string",
+            "description": "The account making the operation."
+          },
+          "signature": {
+            "type": "string",
+            "description": "Data passed into the account to verify authorization."
+          },
+          "verificationGasLimit": {
+            "type": "string",
+            "description": "The amount of gas to allocate for the verification step."
+          }
+        },
+        "required": [
+          "callData",
+          "callGasLimit",
+          "maxFeePerGas",
+          "maxPriorityFeePerGas",
+          "nonce",
+          "preVerificationGas",
+          "sender",
+          "signature",
+          "verificationGasLimit"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountAbstractionV6Details": {
+        "properties": {
+          "userOperation": {
+            "$ref": "#/components/schemas/UserOperationV6"
+          },
+          "userOperationHash": {
+            "type": "string",
+            "description": "A User Operation hash."
+          }
+        },
+        "required": [
+          "userOperation",
+          "userOperationHash"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "StandardDetails": {
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "The transaction sender.",
+            "example": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387"
+          },
+          "to": {
+            "type": "string",
+            "description": "The transaction recipient or contract address."
+          },
+          "data": {
+            "type": "string",
+            "description": "A contract hashed method call with encoded args.",
+            "example": "0x8c5a..."
+          },
+          "nonce": {
+            "type": "string",
+            "description": "Unique number identifying this transaction.",
+            "example": "0"
+          },
+          "gas": {
+            "type": "string",
+            "description": "The gas limit for the transaction.",
+            "example": "21000"
+          },
+          "maxFeePerGas": {
+            "type": "string",
+            "description": "Total fee per gas (in wei), inclusive of `maxPriorityFeePerGas`. Only applies to EIP-1559 Transactions.",
+            "example": "1000000000"
+          },
+          "maxPriorityFeePerGas": {
+            "type": "string",
+            "description": "Max priority fee per gas (in wei). Only applies to EIP-1559 Transactions.",
+            "example": "1000000000"
+          },
+          "value": {
+            "type": "string",
+            "description": "Value in wei sent with this transaction.",
+            "example": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "nonce",
+          "gas",
+          "maxFeePerGas",
+          "maxPriorityFeePerGas"
         ],
         "type": "object",
         "additionalProperties": false
@@ -357,6 +559,10 @@
           "userOperationHash": {
             "type": "string",
             "description": "The hashed userOperation."
+          },
+          "signableHash": {
+            "type": "string",
+            "description": "chain-agnostic hash to sign."
           }
         },
         "type": "object",
@@ -419,11 +625,32 @@
             "description": "The chain ID.",
             "example": 5
           },
+          "abstractionType": {
+            "$ref": "#/components/schemas/TransactionAbstractionType",
+            "description": "The transaction abstraction type",
+            "example": "accountAbstractionV6"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ZKSyncDetails"
+              },
+              {
+                "$ref": "#/components/schemas/AccountAbstractionV6Details"
+              },
+              {
+                "$ref": "#/components/schemas/StandardDetails"
+              }
+            ],
+            "description": "Specific transaction details based on its type"
+          },
           "userOperationHash": {
             "type": "string",
-            "description": "The hashed userOperation."
+            "deprecated": true
           },
-          "userOperation": {},
+          "userOperation": {
+            "deprecated": true
+          },
           "response": {
             "$ref": "#/components/schemas/ResponseResponse"
           },
@@ -458,6 +685,7 @@
           "createdAt",
           "updatedAt",
           "chainId",
+          "abstractionType",
           "account"
         ],
         "type": "object",
@@ -2046,7 +2274,7 @@
           },
           "accountType": {
             "type": "string",
-            "description": "The type of smart account that will be created (e.g. ERC6551V1, ManagedV5, UpgradeableV5). Defaults to UpgradeableV5.",
+            "description": "The type of smart account that will be created (e.g. ERC6551V1, ManagedV5, UpgradeableV5, ZKSyncUpgradeableV1). Defaults to UpgradeableV5.",
             "example": "UpgradeableV5"
           },
           "defaultGuardian": {
@@ -2357,11 +2585,32 @@
             "description": "The chain ID.",
             "example": 5
           },
+          "abstractionType": {
+            "$ref": "#/components/schemas/TransactionAbstractionType",
+            "description": "The transaction abstraction type",
+            "example": "accountAbstractionV6"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ZKSyncDetails"
+              },
+              {
+                "$ref": "#/components/schemas/AccountAbstractionV6Details"
+              },
+              {
+                "$ref": "#/components/schemas/StandardDetails"
+              }
+            ],
+            "description": "Specific transaction details based on its type"
+          },
           "userOperationHash": {
             "type": "string",
-            "description": "The hashed userOperation."
+            "deprecated": true
           },
-          "userOperation": {},
+          "userOperation": {
+            "deprecated": true
+          },
           "response": {
             "$ref": "#/components/schemas/ResponseResponse"
           },
@@ -2420,6 +2669,7 @@
           "createdAt",
           "updatedAt",
           "chainId",
+          "abstractionType",
           "account"
         ],
         "type": "object",
@@ -2493,7 +2743,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "DomainData": {
+      "TypedDomainData": {
         "properties": {
           "chainId": {
             "type": "integer",
@@ -2502,13 +2752,24 @@
             "example": 80002
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "The user readable name of signing domain, i.e. the name of the DApp or the protocol..",
+            "example": "Openfort"
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "The current major version of the signing domain. Signatures from different versions are not compatible.",
+            "example": "1"
           },
           "verifyingContract": {
-            "type": "string"
+            "type": "string",
+            "description": "The address of the contract that will verify the signature. The user-agent may do contract specific phishing prevention.",
+            "example": "0x64452Dff1180b21dc50033e1680bB64CDd492582"
+          },
+          "salt": {
+            "type": "string",
+            "description": "An disambiguating salt for the protocol. This can be used as a domain separator of last resort.",
+            "example": "0xf2d857f4a3edcb9b78b4d503bfe733db1e3f6cdc2b7971ee739626c97e86a558"
           }
         },
         "required": [
@@ -2536,7 +2797,7 @@
       "SignPayloadRequest": {
         "properties": {
           "domain": {
-            "$ref": "#/components/schemas/DomainData",
+            "$ref": "#/components/schemas/TypedDomainData",
             "description": "Domain. Specific to the dApp."
           },
           "types": {
@@ -2568,8 +2829,7 @@
           "domain",
           "types",
           "primaryType",
-          "value",
-          "hash"
+          "value"
         ],
         "type": "object",
         "additionalProperties": false
@@ -4156,6 +4416,80 @@
         "type": "object",
         "additionalProperties": false
       },
+      "InitEmbeddedRequest": {
+        "properties": {
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "chainId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EmbeddedResponse": {
+        "properties": {
+          "share": {
+            "type": "string"
+          },
+          "accountType": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "deviceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "share",
+          "accountType",
+          "address",
+          "chainId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RegisterEmbeddedRequest": {
+        "properties": {
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "address": {
+            "type": "string"
+          },
+          "share": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chainId",
+          "address",
+          "share"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ExportedEmbeddedRequest": {
+        "properties": {
+          "address": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "address"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "EntityType.DEVICE": {
         "enum": [
           "device"
@@ -5141,8 +5475,7 @@
           "id",
           "object",
           "createdAt",
-          "address",
-          "url"
+          "address"
         ],
         "type": "object",
         "additionalProperties": false
@@ -5176,8 +5509,7 @@
           }
         },
         "required": [
-          "address",
-          "url"
+          "address"
         ],
         "type": "object",
         "additionalProperties": false
@@ -7349,27 +7681,27 @@
         "properties": {
           "preVerificationGas": {
             "type": "string",
-            "description": "the preVerification gas used by this UserOperation."
+            "deprecated": true
           },
           "verificationGas": {
             "type": "string",
-            "description": "gas used for validation of this UserOperation, including account creation"
+            "deprecated": true
           },
           "validUntil": {
             "type": "string",
-            "description": "the deadline after which this UserOperation is invalid (not a gas estimation parameter, but returned by validation"
+            "deprecated": true
           },
           "validAfter": {
             "type": "string",
-            "description": "the deadline after which this UserOperation is valid (not a gas estimation parameter, but returned by validation"
+            "deprecated": true
           },
           "callGasLimit": {
             "type": "string",
-            "description": "estimated cost of calling the account with the given callData"
+            "deprecated": true
           },
           "verificationGasLimit": {
             "type": "string",
-            "description": "returned by some bundlers (e.g. Biconomy's)"
+            "deprecated": true
           },
           "estimatedTXGas": {
             "type": "string",
@@ -7393,303 +7725,10 @@
           }
         },
         "required": [
-          "preVerificationGas",
-          "verificationGas",
-          "callGasLimit",
           "estimatedTXGas",
           "estimatedTXGasFee",
           "estimatedTXGasFeeUSD",
           "gasPrice"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "EntityType.WEB3_CONNECTION": {
-        "enum": [
-          "web3Connection"
-        ],
-        "type": "string"
-      },
-      "Web3ConnectionResponse": {
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.WEB3_CONNECTION"
-          },
-          "createdAt": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "disconnected": {
-            "type": "boolean"
-          },
-          "player": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/Player"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "description": "The player ID (starts with pla_).",
-            "example": "pla_..."
-          }
-        },
-        "required": [
-          "id",
-          "object",
-          "createdAt",
-          "disconnected",
-          "player"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Web3ConnectionListResponse": {
-        "properties": {
-          "object": {
-            "$ref": "#/components/schemas/ResponseType.LIST"
-          },
-          "url": {
-            "type": "string"
-          },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/Web3ConnectionResponse"
-            },
-            "type": "array"
-          },
-          "start": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "end": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "required": [
-          "object",
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Web3ConnectionListQueries": {
-        "properties": {
-          "limit": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specifies the maximum number of records to return.",
-            "minimum": 1
-          },
-          "skip": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specifies the offset for the first records to return.",
-            "minimum": 0
-          },
-          "order": {
-            "$ref": "#/components/schemas/SortOrder",
-            "description": "Specifies the order in which to sort the results."
-          },
-          "player": {
-            "type": "string",
-            "description": "Specifies the unique player ID (starts with pla_)",
-            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
-          },
-          "disconnected": {
-            "type": "boolean",
-            "description": "Specifies connection status",
-            "example": false
-          }
-        },
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Web3ConnectionResponseExpandable": {
-        "type": "string",
-        "enum": [
-          "player"
-        ],
-        "nullable": false
-      },
-      "CreateWeb3ConnectionRequest": {
-        "properties": {
-          "player": {
-            "type": "string",
-            "description": "ID of the Player this Web3Connection belongs to (starts with `pla_`).",
-            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
-          },
-          "chainId": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The chain ID. Must be a [supported chain](/chains).",
-            "example": 80002
-          },
-          "uri": {
-            "type": "string",
-            "description": "Specifies the URI of WalletConnect.",
-            "example": "wc:f6b98f7d78c5233413aacc7cbe9ff6035eec3611d36eb311051429a83af419a1@2?relay-protocol=irn&symKey=e8b33b4b969dc952ba6d28bd58f0ddb7ec1106a3c9610961218061a7813f11a6"
-          }
-        },
-        "required": [
-          "player",
-          "chainId",
-          "uri"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Web3ActionStatusEnum": {
-        "enum": [
-          "Pending",
-          "Approved",
-          "Rejected",
-          "Expired",
-          "Failed"
-        ],
-        "type": "string"
-      },
-      "EntityType.WEB3_ACTION": {
-        "enum": [
-          "web3Action"
-        ],
-        "type": "string"
-      },
-      "Web3ActionResponse": {
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.WEB3_ACTION"
-          },
-          "createdAt": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "web3Connection": {
-            "type": "string",
-            "description": "The web3_connection ID (starts with web3_).",
-            "example": "web3_..."
-          },
-          "status": {
-            "$ref": "#/components/schemas/Web3ActionStatusEnum"
-          },
-          "chaindId": {
-            "type": "string"
-          },
-          "method": {
-            "type": "string"
-          },
-          "from": {
-            "type": "string"
-          },
-          "to": {
-            "type": "string"
-          },
-          "data": {
-            "type": "string"
-          },
-          "decodedData": {
-            "type": "string"
-          },
-          "hashedData": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          },
-          "gas": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "object",
-          "createdAt",
-          "web3Connection",
-          "status",
-          "chaindId",
-          "method",
-          "from",
-          "data",
-          "decodedData",
-          "hashedData"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Web3ActionListResponse": {
-        "properties": {
-          "object": {
-            "$ref": "#/components/schemas/ResponseType.LIST"
-          },
-          "url": {
-            "type": "string"
-          },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/Web3ActionResponse"
-            },
-            "type": "array"
-          },
-          "start": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "end": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "required": [
-          "object",
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "SubmitWeb3ActionRequest": {
-        "properties": {
-          "approve": {
-            "type": "boolean",
-            "description": "True to approve the action, false to reject it.",
-            "example": true
-          },
-          "policy": {
-            "type": "string",
-            "description": "ID of the Policy that defines the gas sponsorship strategy (starts with `pol_`). If no Policy is provided, the own Account native token funds will be used to pay for gas.",
-            "example": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd"
-          },
-          "signature": {
-            "type": "string",
-            "description": "signed repositories by the owner",
-            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-          }
-        },
-        "required": [
-          "approve"
         ],
         "type": "object",
         "additionalProperties": false
@@ -8021,11 +8060,14 @@
             }
           },
           "401": {
-            "description": "Error response."
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Player not found."
           }
         },
         "tags": [
-          "Authentication"
+          "AdminAuthentication"
         ],
         "security": [
           {
@@ -9997,6 +10039,16 @@
                       "object": "transactionIntent",
                       "userOperation": null,
                       "chainId": 80002,
+                      "abstractionType": "standard",
+                      "details": {
+                        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+                        "to": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+                        "gas": "0x5208",
+                        "maxFeePerGas": "0x3b9aca00",
+                        "maxPriorityFeePerGas": "0x3b9aca00",
+                        "nonce": "0x0",
+                        "data": "0x3c44..."
+                      },
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -10033,8 +10085,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -10106,6 +10157,16 @@
                       "object": "transactionIntent",
                       "userOperation": null,
                       "chainId": 80002,
+                      "abstractionType": "standard",
+                      "details": {
+                        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+                        "to": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+                        "gas": "0x5208",
+                        "maxFeePerGas": "0x3b9aca00",
+                        "maxPriorityFeePerGas": "0x3b9aca00",
+                        "nonce": "0x0",
+                        "data": "0x3c44..."
+                      },
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -10142,8 +10203,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -10438,6 +10498,16 @@
                       "object": "transactionIntent",
                       "userOperation": null,
                       "chainId": 80002,
+                      "abstractionType": "standard",
+                      "details": {
+                        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+                        "to": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+                        "gas": "0x5208",
+                        "maxFeePerGas": "0x3b9aca00",
+                        "maxPriorityFeePerGas": "0x3b9aca00",
+                        "nonce": "0x0",
+                        "data": "0x3c44..."
+                      },
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -10474,8 +10544,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -10546,6 +10615,16 @@
                       "object": "transactionIntent",
                       "userOperation": null,
                       "chainId": 80002,
+                      "abstractionType": "standard",
+                      "details": {
+                        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+                        "to": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+                        "gas": "0x5208",
+                        "maxFeePerGas": "0x3b9aca00",
+                        "maxPriorityFeePerGas": "0x3b9aca00",
+                        "nonce": "0x0",
+                        "data": "0x3c44..."
+                      },
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -10582,8 +10661,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -11426,21 +11504,24 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                        "nonce": "0x2",
-                        "initCode": "0x",
-                        "callData": "0xb61d...0000",
-                        "callGasLimit": "0x27863",
-                        "verificationGasLimit": "0x16001",
-                        "preVerificationGas": "0xb818",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...b51c",
-                        "signature": "0x6202...3d1b"
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
                       },
                       "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -11477,8 +11558,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -12924,21 +13004,24 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                        "nonce": "0x2",
-                        "initCode": "0x",
-                        "callData": "0xb61d...0000",
-                        "callGasLimit": "0x27863",
-                        "verificationGasLimit": "0x16001",
-                        "preVerificationGas": "0xb818",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...b51c",
-                        "signature": "0x6202...3d1b"
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
                       },
                       "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -12975,8 +13058,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -13046,21 +13128,24 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                        "nonce": "0x2",
-                        "initCode": "0x",
-                        "callData": "0xb61d...0000",
-                        "callGasLimit": "0x27863",
-                        "verificationGasLimit": "0x16001",
-                        "preVerificationGas": "0xb818",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...b51c",
-                        "signature": "0x6202...3d1b"
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
                       },
                       "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -13097,8 +13182,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -13941,21 +14025,24 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                        "nonce": "0x2",
-                        "initCode": "0x",
-                        "callData": "0xb61d...0000",
-                        "callGasLimit": "0x27863",
-                        "verificationGasLimit": "0x16001",
-                        "preVerificationGas": "0xb818",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...b51c",
-                        "signature": "0x6202...3d1b"
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
                       },
                       "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -13992,8 +14079,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -14595,7 +14681,16 @@
             "sk": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Behalf-Of-Project",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -14678,7 +14773,16 @@
             "sk": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Behalf-Of-Project",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -16003,21 +16107,24 @@
                           "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                           "createdAt": 1689869074,
                           "object": "transactionIntent",
-                          "userOperationHash": "0x25d3...005c",
-                          "userOperation": {
-                            "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                            "nonce": "0x2",
-                            "initCode": "0x",
-                            "callData": "0xb61d...0000",
-                            "callGasLimit": "0x27863",
-                            "verificationGasLimit": "0x16001",
-                            "preVerificationGas": "0xb818",
-                            "maxFeePerGas": "0x62590091",
-                            "maxPriorityFeePerGas": "0x62590091",
-                            "paymasterAndData": "0x3210...b51c",
-                            "signature": "0x6202...3d1b"
+                          "details": {
+                            "userOperationHash": "0x25d3...005c",
+                            "userOperation": {
+                              "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                              "nonce": "0x2",
+                              "initCode": "0x",
+                              "callData": "0xb61d...0000",
+                              "callGasLimit": "0x27863",
+                              "verificationGasLimit": "0x16001",
+                              "preVerificationGas": "0xb818",
+                              "maxFeePerGas": "0x62590091",
+                              "maxPriorityFeePerGas": "0x62590091",
+                              "paymasterAndData": "0x3210...b51c",
+                              "signature": "0x6202...3d1b"
+                            }
                           },
                           "chainId": 80002,
+                          "abstractionType": "accountAbstractionV6",
                           "updatedAt": 1689869074,
                           "policy": {
                             "id": "pol_..."
@@ -16054,8 +16161,7 @@
                           "interactions": [
                             {
                               "functionName": "mint",
-                              "value": "100000000000000",
-                              "contract": "0x0576...1B57",
+                              "contract": "con_...",
                               "functionArgs": [
                                 "0x63B7...484f"
                               ]
@@ -16222,21 +16328,24 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                        "nonce": "0x2",
-                        "initCode": "0x",
-                        "callData": "0xb61d...0000",
-                        "callGasLimit": "0x27863",
-                        "verificationGasLimit": "0x16001",
-                        "preVerificationGas": "0xb818",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...b51c",
-                        "signature": "0x6202...3d1b"
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
                       },
                       "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -16273,8 +16382,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -16287,21 +16395,24 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x814A...FB72",
-                        "nonce": "0x0",
-                        "initCode": "0x",
-                        "callData": "0xb61d27f6000000000000000",
-                        "callGasLimit": "0x2e84d",
-                        "verificationGasLimit": "0x1bcef",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...391b",
-                        "signature": "",
-                        "preVerificationGas": "0xb80c"
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x814A...FB72",
+                          "nonce": "0x0",
+                          "initCode": "0x",
+                          "callData": "0xb61d27f6000000000000000",
+                          "callGasLimit": "0x2e84d",
+                          "verificationGasLimit": "0x1bcef",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...391b",
+                          "signature": "",
+                          "preVerificationGas": "0xb80c"
+                        }
                       },
                       "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -16315,20 +16426,7 @@
                       "nextAction": {
                         "type": "sign_with_wallet",
                         "payload": {
-                          "userOperation": {
-                            "sender": "0x814A...FB72",
-                            "nonce": "0x0",
-                            "initCode": "0x",
-                            "callData": "0xb61d27f6000000000000000",
-                            "callGasLimit": "0x2e84d",
-                            "verificationGasLimit": "0x1bcef",
-                            "maxFeePerGas": "0x62590091",
-                            "maxPriorityFeePerGas": "0x62590091",
-                            "paymasterAndData": "0x3210...391b",
-                            "signature": "",
-                            "preVerificationGas": "0xb80c"
-                          },
-                          "userOperationHash": "0x25d3...005c"
+                          "signableHash": "0x25d3...005c"
                         }
                       },
                       "interactions": [
@@ -16349,20 +16447,19 @@
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
                       "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                        "nonce": "0x2",
-                        "initCode": "0x",
-                        "callData": "0xb61d...0000",
-                        "callGasLimit": "0x27863",
-                        "verificationGasLimit": "0x16001",
-                        "preVerificationGas": "0xb818",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...b51c",
-                        "signature": "0x6202...3d1b"
+                      "details": {
+                        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+                        "to": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+                        "gas": "0x5208",
+                        "maxFeePerGas": "0x3b9aca00",
+                        "maxPriorityFeePerGas": "0x3b9aca00",
+                        "nonce": "0x0",
+                        "data": "0x3c44...",
+                        "paymaster": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+                        "paymasterInput": "0x3c44..."
                       },
-                      "chainId": 80002,
+                      "chainId": 300,
+                      "abstractionType": "zkSync",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -16376,8 +16473,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -16475,21 +16571,24 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                        "nonce": "0x2",
-                        "initCode": "0x",
-                        "callData": "0xb61d...0000",
-                        "callGasLimit": "0x27863",
-                        "verificationGasLimit": "0x16001",
-                        "preVerificationGas": "0xb818",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...b51c",
-                        "signature": "0x6202...3d1b"
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
                       },
                       "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -16526,8 +16625,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -16705,21 +16803,24 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "userOperation": {
-                        "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                        "nonce": "0x2",
-                        "initCode": "0x",
-                        "callData": "0xb61d...0000",
-                        "callGasLimit": "0x27863",
-                        "verificationGasLimit": "0x16001",
-                        "preVerificationGas": "0xb818",
-                        "maxFeePerGas": "0x62590091",
-                        "maxPriorityFeePerGas": "0x62590091",
-                        "paymasterAndData": "0x3210...b51c",
-                        "signature": "0x6202...3d1b"
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
                       },
                       "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
                       "updatedAt": 1689869074,
                       "policy": {
                         "id": "pol_..."
@@ -16756,8 +16857,7 @@
                       "interactions": [
                         {
                           "functionName": "mint",
-                          "value": "100000000000000",
-                          "contract": "0x0576...1B57",
+                          "contract": "con_...",
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
@@ -16821,408 +16921,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/SignatureRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/web3_connections": {
-      "get": {
-        "operationId": "GetWeb3Connections",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Web3ConnectionListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/web3_connections",
-                      "data": [
-                        {
-                          "id": "web3_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                          "object": "web3Connection",
-                          "createdAt": 1689869074,
-                          "player": "pla_...",
-                          "disconnected": false
-                        }
-                      ],
-                      "start": 0,
-                      "end": 1,
-                      "total": 1
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Returns a list of web3 connections for the given player.\nThe connections are returned sorted by creation date, with the most recently created connections appearing first.\nBy default, a maximum of ten connections are shown per page.",
-        "summary": "List Web3 connections.",
-        "tags": [
-          "Web3Connections"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/SortOrder"
-            }
-          },
-          {
-            "description": "Specifies the unique player ID (starts with pla_)",
-            "in": "query",
-            "name": "player",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
-          },
-          {
-            "description": "Specifies connection status",
-            "in": "query",
-            "name": "disconnected",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            },
-            "example": false
-          }
-        ]
-      },
-      "post": {
-        "operationId": "CreateWeb3Connection",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Web3ConnectionResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "web3_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                      "object": "web3Connection",
-                      "createdAt": 1689869074,
-                      "player": "pla_...",
-                      "disconnected": false
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "This endpoint allows you to create a new web3 connection to your Openfort player.\nTogether with the player ID (pla_), you need to provide a chain ID.\nThe chain to use is required because Openfort needs to make sure the account is deployed, as counterfactual addresses cannot use web3 connections.\nThe `uri` body parameter must contain a [WalletConnect pairing URI](https://specs.walletconnect.com/2.0/specs/clients/core/pairing/pairing-uri).",
-        "summary": "Create a Web3 Connection object.",
-        "tags": [
-          "Web3Connections"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateWeb3ConnectionRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/web3_connections/{id}": {
-      "get": {
-        "operationId": "GetWeb3Connection",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Web3ConnectionResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "web3_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                      "object": "web3Connection",
-                      "createdAt": 1689869074,
-                      "player": "pla_...",
-                      "disconnected": false
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Retrieves the details of an existing web3 connection.\nSupply the unique web3 connection ID from either a web3 connection creation request or the web3 connection list.\nOpenfort will return the corresponding web3 connection information.",
-        "summary": "Get a web3Connection object.",
-        "tags": [
-          "Web3Connections"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique web3Connection ID (starts with web3_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "web3_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          {
-            "description": "Specifies the fields to expand.",
-            "in": "query",
-            "name": "expand",
-            "required": false,
-            "schema": {
-              "default": [],
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/Web3ConnectionResponseExpandable"
-              }
-            },
-            "example": [
-              "players"
-            ]
-          }
-        ]
-      }
-    },
-    "/v1/web3_connections/{id}/actions": {
-      "get": {
-        "operationId": "GetWeb3Actions",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Web3ActionListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/web3_actions",
-                      "data": [
-                        {
-                          "id": "act_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                          "object": "web3Action",
-                          "createdAt": 1689869074,
-                          "web3Connection": "web3_...",
-                          "status": "Pending",
-                          "method": "personal_sign",
-                          "chaindId": "11155111",
-                          "from": "0x...",
-                          "data": "0x...",
-                          "hashedData": "0x...",
-                          "decodedData": "This is a decoded repositories..."
-                        }
-                      ],
-                      "start": 0,
-                      "end": 1,
-                      "total": 1
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Returns a list of web3 actions for the given web3 connection.\nThe actions are returned sorted by creation date, with the most recently received action appearing first.\nBy default, a maximum of ten actions are shown per page.",
-        "summary": "List Web3 actions from a web3 connection.",
-        "tags": [
-          "Web3Connections"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the web3Connection ID (starts with web3_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "web3_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          }
-        ]
-      }
-    },
-    "/v1/web3_connections/{id}/actions/{web3_action}": {
-      "post": {
-        "operationId": "SubmitWeb3Action",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Web3ActionResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "act_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                      "object": "web3Action",
-                      "createdAt": 1689869074,
-                      "web3Connection": "web3_...",
-                      "status": "Approved",
-                      "method": "personal_sign",
-                      "chaindId": "11155111",
-                      "from": "0x...",
-                      "data": "0x...",
-                      "hashedData": "0x...",
-                      "decodedData": "This is a decoded repositories..."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Approve or Reject a web3 action for the given web3 connection.",
-        "summary": "Approve or Reject a web3 action",
-        "tags": [
-          "Web3Connections"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the web3Connection ID (starts with web3_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "web3_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          {
-            "description": "Specifies web3_action (starts with act_).",
-            "in": "path",
-            "name": "web3_action",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "act_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubmitWeb3ActionRequest"
               }
             }
           }

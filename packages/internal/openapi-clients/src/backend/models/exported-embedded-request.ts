@@ -17,14 +17,14 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface ExportedEmbeddedRequest
  */
-
-export const EntityTypeWEB3ACTION = {
-    Web3Action: 'web3Action'
-} as const;
-
-export type EntityTypeWEB3ACTION = typeof EntityTypeWEB3ACTION[keyof typeof EntityTypeWEB3ACTION];
-
-
+export interface ExportedEmbeddedRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof ExportedEmbeddedRequest
+     */
+    'address': string;
+}
 

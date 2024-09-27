@@ -46,5 +46,11 @@ export interface NextActionPayload {
      * @memberof NextActionPayload
      */
     'userOperationHash'?: string;
+    /**
+     * chain-agnostic hash to sign.
+     * @type {string}
+     * @memberof NextActionPayload
+     */
+    'signableHash'?: string;
 }
 

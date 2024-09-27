@@ -8,7 +8,11 @@ import {TextField} from '../components/Fields';
 import {StatusType, Toast} from '../components/Toasts';
 import openfort from '../utils/openfortConfig';
 import {getURL} from '../utils/getUrl';
-import {AuthPlayerResponse, OAuthProvider} from '@openfort/openfort-js';
+import {
+  AuthPlayerResponse,
+  OAuthProvider,
+  ThirdPartyOAuthProvider,
+} from '@openfort/openfort-js';
 
 function LoginPage() {
   const router = useRouter();

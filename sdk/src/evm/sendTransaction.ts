@@ -73,8 +73,8 @@ export const sendTransaction = async ({
     policyId,
   );
   let response: ResponseResponse;
-  if (openfortTransaction?.nextAction?.payload?.userOperationHash) {
-    const signature = await signer.sign(openfortTransaction.nextAction.payload.userOperationHash);
+  if (openfortTransaction?.nextAction?.payload?.signableHash) {
+    const signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
     const openfortSignatureResponse = (
       await backendClient.transactionIntentsApi.signature({
         id: openfortTransaction.id,

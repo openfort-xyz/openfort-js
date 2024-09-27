@@ -17,26 +17,38 @@
 /**
  * 
  * @export
- * @interface CreateWeb3ConnectionRequest
+ * @interface EmbeddedResponse
  */
-export interface CreateWeb3ConnectionRequest {
+export interface EmbeddedResponse {
     /**
-     * ID of the Player this Web3Connection belongs to (starts with `pla_`).
+     * 
      * @type {string}
-     * @memberof CreateWeb3ConnectionRequest
+     * @memberof EmbeddedResponse
      */
-    'player': string;
+    'share': string;
     /**
-     * The chain ID. Must be a [supported chain](/chains).
+     * 
+     * @type {string}
+     * @memberof EmbeddedResponse
+     */
+    'accountType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EmbeddedResponse
+     */
+    'address': string;
+    /**
+     * 
      * @type {number}
-     * @memberof CreateWeb3ConnectionRequest
+     * @memberof EmbeddedResponse
      */
     'chainId': number;
     /**
-     * Specifies the URI of WalletConnect.
+     * 
      * @type {string}
-     * @memberof CreateWeb3ConnectionRequest
+     * @memberof EmbeddedResponse
      */
-    'uri': string;
+    'deviceId'?: string;
 }
 

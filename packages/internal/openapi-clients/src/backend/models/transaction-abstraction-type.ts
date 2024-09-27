@@ -20,15 +20,13 @@
  * @enum {string}
  */
 
-export const Web3ActionStatusEnum = {
-    Pending: 'Pending',
-    Approved: 'Approved',
-    Rejected: 'Rejected',
-    Expired: 'Expired',
-    Failed: 'Failed'
+export const TransactionAbstractionType = {
+    AccountAbstractionV6: 'accountAbstractionV6',
+    ZkSync: 'zkSync',
+    Standard: 'standard'
 } as const;
 
-export type Web3ActionStatusEnum = typeof Web3ActionStatusEnum[keyof typeof Web3ActionStatusEnum];
+export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
 
 
 

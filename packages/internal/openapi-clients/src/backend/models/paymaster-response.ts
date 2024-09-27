@@ -52,7 +52,7 @@ export interface PaymasterResponse {
      * @type {string}
      * @memberof PaymasterResponse
      */
-    'url': string;
+    'url'?: string;
     /**
      * 
      * @type {object}

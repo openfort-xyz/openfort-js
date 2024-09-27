@@ -549,15 +549,15 @@ export class Openfort {
    * Sends a signature transaction intent request.
    *
    * @param transactionIntentId - Transaction intent ID.
-   * @param userOperationHash - User operation hash.
+   * @param signableHash - User operation hash.
    * @param signature - Transaction signature.
    * @param optimistic - Whether the request is optimistic.
    * @returns A TransactionIntentResponse object.
-   * @throws {OpenfortError} If no userOperationHash or signature is provided.
+   * @throws {OpenfortError} If no signableHash or signature is provided.
    */
   public async sendSignatureTransactionIntentRequest(
     transactionIntentId: string,
-    userOperationHash: string | null = null,
+    signableHash: string | null = null,
     signature: string | null = null,
     optimistic: boolean = false,
   ): Promise<TransactionIntentResponse> {
@@ -568,9 +568,9 @@ export class Openfort {
     await this.validateAndRefreshToken();
     let newSignature = signature;
     if (!newSignature) {
-      if (!userOperationHash) {
+      if (!signableHash) {
         throw new OpenfortError(
-          'No userOperationHash or signature provided',
+          'No signableHash or signature provided',
           OpenfortErrorType.OPERATION_NOT_SUPPORTED_ERROR,
         );
       }
@@ -583,7 +583,7 @@ export class Openfort {
         );
       }
 
-      newSignature = await signer.sign(userOperationHash);
+      newSignature = await signer.sign(signableHash);
     }
 
     const request = {

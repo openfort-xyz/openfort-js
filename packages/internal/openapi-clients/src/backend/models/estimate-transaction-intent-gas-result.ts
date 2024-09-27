@@ -21,39 +21,45 @@
  */
 export interface EstimateTransactionIntentGasResult {
     /**
-     * the preVerification gas used by this UserOperation.
+     * 
      * @type {string}
      * @memberof EstimateTransactionIntentGasResult
+     * @deprecated
      */
-    'preVerificationGas': string;
+    'preVerificationGas'?: string;
     /**
-     * gas used for validation of this UserOperation, including account creation
+     * 
      * @type {string}
      * @memberof EstimateTransactionIntentGasResult
+     * @deprecated
      */
-    'verificationGas': string;
+    'verificationGas'?: string;
     /**
-     * the deadline after which this UserOperation is invalid (not a gas estimation parameter, but returned by validation
+     * 
      * @type {string}
      * @memberof EstimateTransactionIntentGasResult
+     * @deprecated
      */
     'validUntil'?: string;
     /**
-     * the deadline after which this UserOperation is valid (not a gas estimation parameter, but returned by validation
+     * 
      * @type {string}
      * @memberof EstimateTransactionIntentGasResult
+     * @deprecated
      */
     'validAfter'?: string;
     /**
-     * estimated cost of calling the account with the given callData
+     * 
      * @type {string}
      * @memberof EstimateTransactionIntentGasResult
+     * @deprecated
      */
-    'callGasLimit': string;
+    'callGasLimit'?: string;
     /**
-     * returned by some bundlers (e.g. Biconomy\'s)
+     * 
      * @type {string}
      * @memberof EstimateTransactionIntentGasResult
+     * @deprecated
      */
     'verificationGasLimit'?: string;
     /**

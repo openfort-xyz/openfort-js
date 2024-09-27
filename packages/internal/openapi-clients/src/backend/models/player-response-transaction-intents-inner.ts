@@ -30,7 +30,13 @@ import { NextActionResponse } from './next-action-response';
 import { ResponseResponse } from './response-response';
 // May contain unused imports in some cases
 // @ts-ignore
+import { TransactionAbstractionType } from './transaction-abstraction-type';
+// May contain unused imports in some cases
+// @ts-ignore
 import { TransactionIntent } from './transaction-intent';
+// May contain unused imports in some cases
+// @ts-ignore
+import { TransactionIntentDetails } from './transaction-intent-details';
 
 /**
  * 
@@ -69,15 +75,29 @@ export interface PlayerResponseTransactionIntentsInner {
      */
     'chainId': number;
     /**
-     * The hashed userOperation.
+     * 
+     * @type {TransactionAbstractionType}
+     * @memberof PlayerResponseTransactionIntentsInner
+     */
+    'abstractionType': TransactionAbstractionType;
+    /**
+     * 
+     * @type {TransactionIntentDetails}
+     * @memberof PlayerResponseTransactionIntentsInner
+     */
+    'details'?: TransactionIntentDetails;
+    /**
+     * 
      * @type {string}
      * @memberof PlayerResponseTransactionIntentsInner
+     * @deprecated
      */
     'userOperationHash'?: string;
     /**
      * 
      * @type {any}
      * @memberof PlayerResponseTransactionIntentsInner
+     * @deprecated
      */
     'userOperation'?: any;
     /**

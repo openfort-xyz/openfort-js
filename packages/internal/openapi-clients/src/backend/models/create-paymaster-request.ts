@@ -31,7 +31,7 @@ export interface CreatePaymasterRequest {
      * @type {string}
      * @memberof CreatePaymasterRequest
      */
-    'url': string;
+    'url'?: string;
     /**
      * Specifies the context, that is, the arbitrary repositories that the specific paymaster may require
      * @type {object}
