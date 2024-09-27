@@ -48,7 +48,7 @@ export default async function handler(
 
     res.send({
       transactionIntentId: transactionIntent.id,
-      userOperationHash: transactionIntent.userOperationHash,
+      userOperationHash: transactionIntent.nextAction?.payload.userOperationHash,
     });
   } catch (e) {
     console.error(e);
