@@ -20,6 +20,7 @@ import {
 import type {TypedDataDomain, TypedDataField} from 'ethers';
 import axios from 'axios';
 import openfort from '../utils/openfortConfig';
+import { privateKeyToAddress } from 'viem/accounts';
 
 interface ContextType {
   state: EmbeddedState;
@@ -44,6 +45,7 @@ interface ContextType {
     value: Record<string, any>
   ) => Promise<{data?: string; error?: Error}>;
   logout: () => Promise<void>;
+  getEOAAddress: () => Promise<string>;
 }
 
 const OpenfortContext = createContext<ContextType | null>(null);
@@ -244,6 +246,18 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     }
   }, []);
 
+  const getEOAAddress = useCallback(async () => {
+    try { 
+      const res = await exportPrivateKey();
+      return privateKeyToAddress(res.data as `0x${string}`);
+    } catch (err){
+      console.error('Error obtaining EOA Address with Openfort:', err);
+      throw err instanceof Error
+        ? err
+        : new Error('An error occurred obtaining the EOA Address');
+    }
+  }, []);
+
   const contextValue: ContextType = {
     state,
     auth,
@@ -254,6 +268,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     exportPrivateKey,
     signTypedData,
     logout,
+    getEOAAddress,
   };
 
   return (
