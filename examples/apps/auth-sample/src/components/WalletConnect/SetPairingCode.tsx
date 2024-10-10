@@ -76,7 +76,6 @@ const SetPairingCode: React.FC<{
           console.error('Failed to set pairing code:', err);
           setLoading(false);
       }
-  
       setLoading(false);
     }
     const onSessionProposal = async (proposal: WalletKitTypes.SessionProposal) => {
