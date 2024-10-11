@@ -251,8 +251,8 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
             };
         },
         /**
-         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.
-         * @summary Send a signed transaction userOperationHash.
+         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `signableHash`. Openfort will then put it on-chain.
+         * @summary Send a signed transaction signableHash.
          * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
          * @param {SignatureRequest} signatureRequest 
          * @param {*} [options] Override http request option.
@@ -363,8 +363,8 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.
-         * @summary Send a signed transaction userOperationHash.
+         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `signableHash`. Openfort will then put it on-chain.
+         * @summary Send a signed transaction signableHash.
          * @param {string} id Specifies the unique transaction intent ID (starts with tin_).
          * @param {SignatureRequest} signatureRequest 
          * @param {*} [options] Override http request option.
@@ -425,8 +425,8 @@ export const TransactionIntentsApiFactory = function (configuration?: Configurat
             return localVarFp.getTransactionIntents(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.expand, requestParameters.chainId, requestParameters.account, requestParameters.player, requestParameters.status, requestParameters.policy, options).then((request) => request(axios, basePath));
         },
         /**
-         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.
-         * @summary Send a signed transaction userOperationHash.
+         * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `signableHash`. Openfort will then put it on-chain.
+         * @summary Send a signed transaction signableHash.
          * @param {TransactionIntentsApiSignatureRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -640,8 +640,8 @@ export class TransactionIntentsApi extends BaseAPI {
     }
 
     /**
-     * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.
-     * @summary Send a signed transaction userOperationHash.
+     * Broadcasts a signed TransactionIntent to the blockchain.  Use this endpoint to send the signed `signableHash`. Openfort will then put it on-chain.
+     * @summary Send a signed transaction signableHash.
      * @param {TransactionIntentsApiSignatureRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

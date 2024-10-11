@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { PlayerMetadataValue } from './player-metadata-value';
 
 /**
  * 
@@ -50,5 +53,41 @@ export interface EcosystemConfigurationResponse {
      * @memberof EcosystemConfigurationResponse
      */
     'logoUrl': string;
+    /**
+     * Whitelisted frontend domains of the ecosystem.
+     * @type {Array<string>}
+     * @memberof EcosystemConfigurationResponse
+     */
+    'ecosystemWalletDomains': Array<string>;
+    /**
+     * Terms of service URL
+     * @type {string}
+     * @memberof EcosystemConfigurationResponse
+     */
+    'termsOfServiceUrl'?: string;
+    /**
+     * Privacy policy URL
+     * @type {string}
+     * @memberof EcosystemConfigurationResponse
+     */
+    'privacyPolicyUrl'?: string;
+    /**
+     * Favicon URL
+     * @type {string}
+     * @memberof EcosystemConfigurationResponse
+     */
+    'faviconUrl'?: string;
+    /**
+     * Examples of the ecosystem.
+     * @type {Array<{ [key: string]: PlayerMetadataValue; }>}
+     * @memberof EcosystemConfigurationResponse
+     */
+    'dashboardExamples'?: Array<{ [key: string]: PlayerMetadataValue; }>;
+    /**
+     * SDKs of the ecosystem.
+     * @type {Array<{ [key: string]: PlayerMetadataValue; }>}
+     * @memberof EcosystemConfigurationResponse
+     */
+    'dashboardSDKs'?: Array<{ [key: string]: PlayerMetadataValue; }>;
 }
 

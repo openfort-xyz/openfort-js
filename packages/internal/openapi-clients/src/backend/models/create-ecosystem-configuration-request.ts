@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { PlayerMetadataValue } from './player-metadata-value';
 
 /**
  * 
@@ -50,5 +53,41 @@ export interface CreateEcosystemConfigurationRequest {
      * @memberof CreateEcosystemConfigurationRequest
      */
     'logoUrl': string;
+    /**
+     * URLs where the ecosystem wallet is hosted.
+     * @type {Array<string>}
+     * @memberof CreateEcosystemConfigurationRequest
+     */
+    'ecosystemWalletDomains'?: Array<string>;
+    /**
+     * Terms of service URL
+     * @type {string}
+     * @memberof CreateEcosystemConfigurationRequest
+     */
+    'termsOfServiceUrl'?: string;
+    /**
+     * Privacy policy URL
+     * @type {string}
+     * @memberof CreateEcosystemConfigurationRequest
+     */
+    'privacyPolicyUrl'?: string;
+    /**
+     * Favicon URL
+     * @type {string}
+     * @memberof CreateEcosystemConfigurationRequest
+     */
+    'faviconUrl'?: string;
+    /**
+     * Examples of the ecosystem.
+     * @type {Array<{ [key: string]: PlayerMetadataValue; }>}
+     * @memberof CreateEcosystemConfigurationRequest
+     */
+    'dashboardExamples'?: Array<{ [key: string]: PlayerMetadataValue; }>;
+    /**
+     * SDKs of the ecosystem.
+     * @type {Array<{ [key: string]: PlayerMetadataValue; }>}
+     * @memberof CreateEcosystemConfigurationRequest
+     */
+    'dashboardSDKs'?: Array<{ [key: string]: PlayerMetadataValue; }>;
 }
 

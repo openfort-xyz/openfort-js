@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { GasReportTransactionIntentsInner } from './gas-report-transaction-intents-inner';
+import { GasReportTransactionIntents } from './gas-report-transaction-intents';
 // May contain unused imports in some cases
 // @ts-ignore
 import { MonthRange } from './month-range';
@@ -58,9 +58,10 @@ export interface GasReport {
     'totalTransactionFeeInUSD': string;
     /**
      * 
-     * @type {Array<GasReportTransactionIntentsInner>}
+     * @type {Array<GasReportTransactionIntents>}
      * @memberof GasReport
+     * @deprecated
      */
-    'transactionIntents': Array<GasReportTransactionIntentsInner>;
+    'transactionIntents': Array<GasReportTransactionIntents>;
 }
 

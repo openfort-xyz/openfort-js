@@ -115,6 +115,7 @@ export const AUTH_PROVIDER = {
   wallet: 'wallet',
   google: 'google',
   twitter: 'twitter',
+  telegram: 'telegram',
   discord: 'discord',
   facebook: 'facebook',
   epicGames: 'epic_games',
@@ -135,6 +136,7 @@ export enum OAuthProvider {
   FACEBOOK = 'facebook',
   DISCORD = 'discord',
   EPIC_GAMES = 'epic_games',
+  TELEGRAM = 'telegram',
 }
 
 export interface NextActionPayload {

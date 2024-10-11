@@ -44,6 +44,91 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OAuthProvider": {
+        "description": "Enum of the supporting OAuth providers.",
+        "enum": [
+          "google",
+          "twitter",
+          "facebook",
+          "discord",
+          "epic_games",
+          "telegram"
+        ],
+        "type": "string"
+      },
+      "ThirdPartyOAuthProvider": {
+        "description": "Enum of the supporting third party auth providers.",
+        "enum": [
+          "accelbyte",
+          "firebase",
+          "lootlocker",
+          "playfab",
+          "supabase",
+          "custom",
+          "oidc"
+        ],
+        "type": "string"
+      },
+      "BasicAuthProvider": {
+        "description": "Enum of the supporting Basic Auth providers.",
+        "enum": [
+          "email",
+          "wallet"
+        ],
+        "type": "string"
+      },
+      "AuthProvider": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/OAuthProvider"
+          },
+          {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider"
+          },
+          {
+            "$ref": "#/components/schemas/BasicAuthProvider"
+          }
+        ],
+        "description": "Enum of the supporting Auth providers."
+      },
+      "AuthenticationType": {
+        "enum": [
+          "oauth",
+          "basic",
+          "third_party"
+        ],
+        "type": "string"
+      },
+      "AuthProviderWithTypeResponse": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/AuthenticationType"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/AuthProvider"
+          }
+        },
+        "required": [
+          "type",
+          "provider"
+        ],
+        "type": "object"
+      },
+      "AuthProviderListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AuthProviderWithTypeResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "JwtKey": {
         "properties": {
           "kty": {
@@ -967,19 +1052,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "ThirdPartyOAuthProvider": {
-        "description": "Enum of the supporting third party auth providers.",
-        "enum": [
-          "accelbyte",
-          "firebase",
-          "lootlocker",
-          "playfab",
-          "supabase",
-          "custom",
-          "oidc"
-        ],
-        "type": "string"
-      },
       "CreateAuthPlayerRequest": {
         "properties": {
           "thirdPartyUserId": {
@@ -1104,39 +1176,6 @@
           "supabase"
         ],
         "type": "string"
-      },
-      "OAuthProvider": {
-        "description": "Enum of the supporting OAuth providers.",
-        "enum": [
-          "google",
-          "twitter",
-          "facebook",
-          "discord",
-          "epic_games"
-        ],
-        "type": "string"
-      },
-      "BasicAuthProvider": {
-        "description": "Enum of the supporting Basic Auth providers.",
-        "enum": [
-          "email",
-          "wallet"
-        ],
-        "type": "string"
-      },
-      "AuthProvider": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/OAuthProvider"
-          },
-          {
-            "$ref": "#/components/schemas/ThirdPartyOAuthProvider"
-          },
-          {
-            "$ref": "#/components/schemas/BasicAuthProvider"
-          }
-        ],
-        "description": "Enum of the supporting Auth providers."
       },
       "SupabaseAuthConfig": {
         "description": "Supabase oauth configuration",
@@ -1310,6 +1349,40 @@
           "provider",
           "clientId",
           "clientSecret"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OAuthProvider.TELEGRAM": {
+        "enum": [
+          "telegram"
+        ],
+        "type": "string"
+      },
+      "TelegramOAuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/OAuthProvider.TELEGRAM",
+            "description": "OAuth provider type"
+          },
+          "botUsername": {
+            "type": "string",
+            "description": "Telegram bot username."
+          },
+          "botToken": {
+            "type": "string",
+            "description": "Telegram bot token."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "botUsername",
+          "botToken"
         ],
         "type": "object",
         "additionalProperties": false
@@ -1552,6 +1625,9 @@
             "$ref": "#/components/schemas/TwitterOAuthConfig"
           },
           {
+            "$ref": "#/components/schemas/TelegramOAuthConfig"
+          },
+          {
             "$ref": "#/components/schemas/FacebookOAuthConfig"
           },
           {
@@ -1788,6 +1864,20 @@
         },
         "required": [
           "token"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "LoginOIDCRequest": {
+        "properties": {
+          "identityToken": {
+            "type": "string",
+            "description": "The identity token of the user.",
+            "example": "token"
+          }
+        },
+        "required": [
+          "identityToken"
         ],
         "type": "object",
         "additionalProperties": false
@@ -3225,6 +3315,183 @@
         "type": "object",
         "additionalProperties": false
       },
+      "EcosystemMetadata": {
+        "properties": {},
+        "type": "object",
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number",
+              "format": "double"
+            }
+          ]
+        }
+      },
+      "EcosystemConfigurationResponse": {
+        "properties": {
+          "customDomain": {
+            "type": "string",
+            "description": "Subdomain of the ecosystem."
+          },
+          "primaryColor": {
+            "type": "string",
+            "description": "Primary color of the ecosystem."
+          },
+          "primaryColorForeground": {
+            "type": "string",
+            "description": "Primary color foreground of the ecosystem."
+          },
+          "radius": {
+            "type": "string",
+            "description": "Radius of the ecosystem."
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "Logo URL of the ecosystem."
+          },
+          "ecosystemWalletDomains": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "Whitelisted frontend domains of the ecosystem."
+          },
+          "termsOfServiceUrl": {
+            "type": "string",
+            "description": "Terms of service URL",
+            "example": "https://example.com/terms"
+          },
+          "privacyPolicyUrl": {
+            "type": "string",
+            "description": "Privacy policy URL",
+            "example": "https://example.com/privacy"
+          },
+          "faviconUrl": {
+            "type": "string",
+            "description": "Favicon URL",
+            "example": "https://example.com/favicon.ico"
+          },
+          "dashboardExamples": {
+            "items": {
+              "$ref": "#/components/schemas/EcosystemMetadata"
+            },
+            "type": "array",
+            "description": "Examples of the ecosystem.",
+            "example": []
+          },
+          "dashboardSDKs": {
+            "items": {
+              "$ref": "#/components/schemas/EcosystemMetadata"
+            },
+            "type": "array",
+            "description": "SDKs of the ecosystem.",
+            "example": []
+          }
+        },
+        "required": [
+          "customDomain",
+          "primaryColor",
+          "primaryColorForeground",
+          "radius",
+          "logoUrl",
+          "ecosystemWalletDomains"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateEcosystemConfigurationRequest": {
+        "properties": {
+          "customDomain": {
+            "type": "string",
+            "description": "Custom domain of the ecosystem."
+          },
+          "primaryColor": {
+            "type": "string",
+            "description": "Primary color of the ecosystem."
+          },
+          "primaryColorForeground": {
+            "type": "string",
+            "description": "Primary color foreground of the ecosystem."
+          },
+          "radius": {
+            "type": "string",
+            "description": "Radius of the ecosystem."
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "Logo URL of the ecosystem."
+          },
+          "ecosystemWalletDomains": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "URLs where the ecosystem wallet is hosted."
+          },
+          "termsOfServiceUrl": {
+            "type": "string",
+            "description": "Terms of service URL",
+            "example": "https://example.com/terms"
+          },
+          "privacyPolicyUrl": {
+            "type": "string",
+            "description": "Privacy policy URL",
+            "example": "https://example.com/privacy"
+          },
+          "faviconUrl": {
+            "type": "string",
+            "description": "Favicon URL",
+            "example": "https://example.com/favicon.ico"
+          },
+          "dashboardExamples": {
+            "items": {
+              "$ref": "#/components/schemas/EcosystemMetadata"
+            },
+            "type": "array",
+            "description": "Examples of the ecosystem.",
+            "example": []
+          },
+          "dashboardSDKs": {
+            "items": {
+              "$ref": "#/components/schemas/EcosystemMetadata"
+            },
+            "type": "array",
+            "description": "SDKs of the ecosystem.",
+            "example": []
+          }
+        },
+        "required": [
+          "customDomain",
+          "primaryColor",
+          "primaryColorForeground",
+          "radius",
+          "logoUrl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MyEcosystemResponse": {
+        "properties": {
+          "publishableKey": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/EcosystemConfigurationResponse"
+          }
+        },
+        "required": [
+          "publishableKey",
+          "name"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "EntityType.SMTP_CONFIG": {
         "enum": [
           "smtpConfig"
@@ -3509,72 +3776,6 @@
             "example": "emailVerification"
           }
         },
-        "type": "object",
-        "additionalProperties": false
-      },
-      "EcosystemConfigurationResponse": {
-        "properties": {
-          "customDomain": {
-            "type": "string",
-            "description": "Subdomain of the ecosystem."
-          },
-          "primaryColor": {
-            "type": "string",
-            "description": "Primary color of the ecosystem."
-          },
-          "primaryColorForeground": {
-            "type": "string",
-            "description": "Primary color foreground of the ecosystem."
-          },
-          "radius": {
-            "type": "string",
-            "description": "Radius of the ecosystem."
-          },
-          "logoUrl": {
-            "type": "string",
-            "description": "Logo URL of the ecosystem."
-          }
-        },
-        "required": [
-          "customDomain",
-          "primaryColor",
-          "primaryColorForeground",
-          "radius",
-          "logoUrl"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "CreateEcosystemConfigurationRequest": {
-        "properties": {
-          "customDomain": {
-            "type": "string",
-            "description": "Custom domain of the ecosystem."
-          },
-          "primaryColor": {
-            "type": "string",
-            "description": "Primary color of the ecosystem."
-          },
-          "primaryColorForeground": {
-            "type": "string",
-            "description": "Primary color foreground of the ecosystem."
-          },
-          "radius": {
-            "type": "string",
-            "description": "Radius of the ecosystem."
-          },
-          "logoUrl": {
-            "type": "string",
-            "description": "Logo URL of the ecosystem."
-          }
-        },
-        "required": [
-          "customDomain",
-          "primaryColor",
-          "primaryColorForeground",
-          "radius",
-          "logoUrl"
-        ],
         "type": "object",
         "additionalProperties": false
       },
@@ -6326,6 +6527,34 @@
         "type": "object",
         "additionalProperties": false
       },
+      "GasReportTransactionIntents": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "gasFee": {
+            "type": "string"
+          },
+          "gasPrice": {
+            "type": "string"
+          },
+          "gasUsed": {
+            "type": "string"
+          },
+          "gasFeeInUSD": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "gasFee",
+          "gasPrice",
+          "gasUsed",
+          "gasFeeInUSD"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "GasReport": {
         "properties": {
           "period": {
@@ -6345,33 +6574,10 @@
           },
           "transactionIntents": {
             "items": {
-              "properties": {
-                "gasFeeInUSD": {
-                  "type": "string"
-                },
-                "gasUsed": {
-                  "type": "string"
-                },
-                "gasPrice": {
-                  "type": "string"
-                },
-                "gasFee": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "gasFeeInUSD",
-                "gasUsed",
-                "gasPrice",
-                "gasFee",
-                "id"
-              ],
-              "type": "object"
+              "$ref": "#/components/schemas/GasReportTransactionIntents"
             },
-            "type": "array"
+            "type": "array",
+            "deprecated": true
           }
         },
         "required": [
@@ -6419,6 +6625,84 @@
           "start",
           "end",
           "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PolicyReportQueries": {
+        "properties": {
+          "to": {
+            "type": "number",
+            "format": "double",
+            "description": "The start date of the period in unix timestamp.",
+            "example": 1612137600
+          },
+          "from": {
+            "type": "number",
+            "format": "double",
+            "description": "The end date of the period in unix timestamp.",
+            "example": 1612137600
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "GasReportTransactionIntentsListResponse": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/GasReportTransactionIntents"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PolicyReportTransactionIntentsQueries": {
+        "properties": {
+          "to": {
+            "type": "number",
+            "format": "double",
+            "description": "The start date of the period in unix timestamp.",
+            "example": 1612137600
+          },
+          "from": {
+            "type": "number",
+            "format": "double",
+            "description": "The end date of the period in unix timestamp.",
+            "example": 1612137600
+          }
+        },
+        "required": [
+          "to",
+          "from"
         ],
         "type": "object",
         "additionalProperties": false
@@ -7913,6 +8197,46 @@
         ]
       }
     },
+    "/iam/v1/providers": {
+      "get": {
+        "operationId": "ListAvailableAuthProviders",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthProviderListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "data": [
+                        {
+                          "provider": "firebase",
+                          "type": "third_party"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "List available authentication methods for the current project environment.",
+        "summary": "List of available authentication methods.",
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": []
+      }
+    },
     "/iam/v1/{publishable_key}/jwks.json": {
       "get": {
         "operationId": "GetJwks",
@@ -8072,6 +8396,9 @@
         "security": [
           {
             "sk": []
+          },
+          {
+            "pk_guardian_gate": []
           }
         ],
         "parameters": [],
@@ -9047,6 +9374,76 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/OAuthRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/oidc/login": {
+      "post": {
+        "operationId": "LoginOIDC",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "player": {
+                        "id": "pla_...",
+                        "object": "player",
+                        "createdAt": 1234567890,
+                        "linkedAccounts": [
+                          {
+                            "provider": "email",
+                            "email": "jaume@openfort.xyz",
+                            "disabled": false
+                          }
+                        ]
+                      },
+                      "token": "abcd....",
+                      "refreshToken": "efgh...."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "Authenticate a player from an identity token.",
+        "summary": "OIDC Identity token.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginOIDCRequest"
               }
             }
           }
@@ -13919,6 +14316,124 @@
               "type": "string"
             },
             "example": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          },
+          {
+            "description": "The start date of the period in unix timestamp.",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": 1612137600
+          },
+          {
+            "description": "The end date of the period in unix timestamp.",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": 1612137600
+          }
+        ]
+      }
+    },
+    "/v1/policies/{id}/reports/transaction_intents": {
+      "get": {
+        "operationId": "GetPolicyReportTransactionIntents",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GasReportTransactionIntentsListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "tin_47eed6b7-...-ce4a602c5f17",
+                          "gasFee": "0.00421644",
+                          "gasPrice": "0.34918179665034244",
+                          "gasUsed": "0.000000000000421644",
+                          "gasFeeInUSD": "0.00148"
+                        },
+                        {
+                          "id": "tin_6d3b4a95-...-f63927018815",
+                          "gasFee": "0.00122705",
+                          "gasPrice": "0.34918179665034244",
+                          "gasUsed": "0.000000000000122705",
+                          "gasFeeInUSD": "0.00043"
+                        }
+                      ],
+                      "start": 0,
+                      "end": 1,
+                      "total": 1,
+                      "url": "/v1/policies/pol_48eeba57-2cd5-4159-a2cb-057a23a35e65/reports",
+                      "object": "list"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "List transaction intents of a policy report.",
+        "tags": [
+          "Policies"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique policy ID (starts with pol_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          },
+          {
+            "description": "The start date of the period in unix timestamp.",
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": 1612137600
+          },
+          {
+            "description": "The end date of the period in unix timestamp.",
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": 1612137600
           }
         ]
       }
@@ -14679,6 +15194,9 @@
         "security": [
           {
             "sk": []
+          },
+          {
+            "pk_identity_token": []
           }
         ],
         "parameters": [
@@ -14771,6 +15289,9 @@
         "security": [
           {
             "sk": []
+          },
+          {
+            "pk_identity_token": []
           }
         ],
         "parameters": [
@@ -14866,6 +15387,9 @@
           },
           {
             "sk": []
+          },
+          {
+            "pk_identity_token": []
           }
         ],
         "parameters": [
@@ -16530,6 +17054,9 @@
           },
           {
             "pk_access_token": []
+          },
+          {
+            "pk_identity_token": []
           }
         ],
         "parameters": [
@@ -16771,6 +17298,9 @@
         "security": [
           {
             "sk": []
+          },
+          {
+            "pk_identity_token": []
           }
         ],
         "parameters": [],
@@ -16890,8 +17420,8 @@
             }
           }
         },
-        "description": "Broadcasts a signed TransactionIntent to the blockchain.\n\nUse this endpoint to send the signed `userOperationHash`. Openfort will then put it on-chain.",
-        "summary": "Send a signed transaction userOperationHash.",
+        "description": "Broadcasts a signed TransactionIntent to the blockchain.\n\nUse this endpoint to send the signed `signableHash`. Openfort will then put it on-chain.",
+        "summary": "Send a signed transaction signableHash.",
         "tags": [
           "TransactionIntents"
         ],
@@ -16901,6 +17431,9 @@
           },
           {
             "sk": []
+          },
+          {
+            "pk_identity_token": []
           }
         ],
         "parameters": [

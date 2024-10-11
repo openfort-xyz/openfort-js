@@ -18,6 +18,7 @@ export * from './domain/accounts-api';
 export * from './domain/admin-authentication-api';
 export * from './domain/authentication-api';
 export * from './domain/contracts-api';
+export * from './domain/default-api';
 export * from './domain/events-api';
 export * from './domain/exchange-api';
 export * from './domain/inventories-api';

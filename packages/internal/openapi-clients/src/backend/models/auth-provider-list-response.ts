@@ -13,23 +13,21 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { AuthProviderWithTypeResponse } from './auth-provider-with-type-response';
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
- * @enum {string}
+ * @interface AuthProviderListResponse
  */
-
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter',
-    Facebook: 'facebook',
-    Discord: 'discord',
-    EpicGames: 'epic_games',
-    Telegram: 'telegram'
-} as const;
-
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
-
-
+export interface AuthProviderListResponse {
+    /**
+     * 
+     * @type {Array<AuthProviderWithTypeResponse>}
+     * @memberof AuthProviderListResponse
+     */
+    'data': Array<AuthProviderWithTypeResponse>;
+}
 

@@ -9,6 +9,7 @@ domain/accounts-api.ts
 domain/admin-authentication-api.ts
 domain/authentication-api.ts
 domain/contracts-api.ts
+domain/default-api.ts
 domain/events-api.ts
 domain/exchange-api.ts
 domain/inventories-api.ts
@@ -53,11 +54,14 @@ models/auth-player-list-response.ts
 models/auth-player-response-player.ts
 models/auth-player-response-with-recovery-share.ts
 models/auth-player-response.ts
+models/auth-provider-list-response.ts
 models/auth-provider-response.ts
+models/auth-provider-with-type-response.ts
 models/auth-provider.ts
 models/auth-response.ts
 models/auth-session-response.ts
 models/authenticate-oauth-request.ts
+models/authentication-type.ts
 models/authorize-player-request.ts
 models/authorize200-response.ts
 models/balance-event-response.ts
@@ -165,7 +169,8 @@ models/fixed-rate-token-policy-strategy.ts
 models/gas-per-interval-limit-policy-rule-response.ts
 models/gas-per-transaction-limit-policy-rule-response.ts
 models/gas-report-list-response.ts
-models/gas-report-transaction-intents-inner.ts
+models/gas-report-transaction-intents-list-response.ts
+models/gas-report-transaction-intents.ts
 models/gas-report.ts
 models/google-oauth-config.ts
 models/index.ts
@@ -181,11 +186,13 @@ models/linked-account-response.ts
 models/list-subscription-logs-request.ts
 models/log-response.ts
 models/log.ts
+models/login-oidcrequest.ts
 models/login-request.ts
 models/logout-request.ts
 models/loot-locker-oauth-config.ts
 models/money.ts
 models/month-range.ts
+models/my-ecosystem-response.ts
 models/next-action-payload.ts
 models/next-action-response.ts
 models/next-action-type.ts
@@ -198,6 +205,7 @@ models/oauth-provider-discord.ts
 models/oauth-provider-epicgames.ts
 models/oauth-provider-facebook.ts
 models/oauth-provider-google.ts
+models/oauth-provider-telegram.ts
 models/oauth-provider-twitter.ts
 models/oauth-provider.ts
 models/oauth-request.ts
@@ -235,6 +243,8 @@ models/policy-rate-limit-countperinterval.ts
 models/policy-rate-limit-gasperinterval.ts
 models/policy-rate-limit-gaspertransaction.ts
 models/policy-rate-limit.ts
+models/policy-report-queries.ts
+models/policy-report-transaction-intents-queries.ts
 models/policy-response-expandable.ts
 models/policy-response-policy-rules-inner.ts
 models/policy-response.ts
@@ -291,6 +301,7 @@ models/subscription-list-response.ts
 models/subscription-response-plan.ts
 models/subscription-response.ts
 models/supabase-auth-config.ts
+models/telegram-oauth-config.ts
 models/third-party-oauth-provider-accelbyte.ts
 models/third-party-oauth-provider-custom.ts
 models/third-party-oauth-provider-firebase.ts
