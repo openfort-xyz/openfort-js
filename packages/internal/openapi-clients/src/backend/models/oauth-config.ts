@@ -48,6 +48,9 @@ import { PlayFabOAuthConfig } from './play-fab-oauth-config';
 import { SupabaseAuthConfig } from './supabase-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { TelegramOAuthConfig } from './telegram-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { ThirdPartyOAuthProviderLOOTLOCKER } from './third-party-oauth-provider-lootlocker';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -119,6 +122,18 @@ export interface OAuthConfig {
      * @memberof OAuthConfig
      */
     'clientSecret': string;
+    /**
+     * Telegram bot username.
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'botUsername': string;
+    /**
+     * Telegram bot token.
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'botToken': string;
     /**
      * Title ID of your Play Fab gaming service environment.
      * @type {string}

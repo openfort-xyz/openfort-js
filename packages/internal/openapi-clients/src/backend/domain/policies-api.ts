@@ -26,6 +26,8 @@ import { CreatePolicyRequest } from '../models';
 // @ts-ignore
 import { GasReportListResponse } from '../models';
 // @ts-ignore
+import { GasReportTransactionIntentsListResponse } from '../models';
+// @ts-ignore
 import { PolicyBalanceWithdrawResponse } from '../models';
 // @ts-ignore
 import { PolicyDeleteResponse } from '../models';
@@ -404,12 +406,66 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @summary List all gas reports of a policy.
+         * @summary List transaction intents of a policy report.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
+         * @param {number} to The start date of the period in unix timestamp.
+         * @param {number} from The end date of the period in unix timestamp.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyTotalGasUsage: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyReportTransactionIntents: async (id: string, to: number, from: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getPolicyReportTransactionIntents', 'id', id)
+            // verify required parameter 'to' is not null or undefined
+            assertParamExists('getPolicyReportTransactionIntents', 'to', to)
+            // verify required parameter 'from' is not null or undefined
+            assertParamExists('getPolicyReportTransactionIntents', 'from', from)
+            const localVarPath = `/v1/policies/{id}/reports/transaction_intents`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = to;
+            }
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = from;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary List all gas reports of a policy.
+         * @param {string} id Specifies the unique policy ID (starts with pol_).
+         * @param {number} [to] The start date of the period in unix timestamp.
+         * @param {number} [from] The end date of the period in unix timestamp.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPolicyTotalGasUsage: async (id: string, to?: number, from?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPolicyTotalGasUsage', 'id', id)
             const localVarPath = `/v1/policies/{id}/reports`
@@ -428,6 +484,14 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             // authentication sk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (to !== undefined) {
+                localVarQueryParameter['to'] = to;
+            }
+
+            if (from !== undefined) {
+                localVarQueryParameter['from'] = from;
+            }
 
 
     
@@ -593,13 +657,28 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary List all gas reports of a policy.
+         * @summary List transaction intents of a policy report.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
+         * @param {number} to The start date of the period in unix timestamp.
+         * @param {number} from The end date of the period in unix timestamp.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyTotalGasUsage(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyTotalGasUsage(id, options);
+        async getPolicyReportTransactionIntents(id: string, to: number, from: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportTransactionIntentsListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyReportTransactionIntents(id, to, from, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary List all gas reports of a policy.
+         * @param {string} id Specifies the unique policy ID (starts with pol_).
+         * @param {number} [to] The start date of the period in unix timestamp.
+         * @param {number} [from] The end date of the period in unix timestamp.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPolicyTotalGasUsage(id: string, to?: number, from?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyTotalGasUsage(id, to, from, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -706,13 +785,23 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
+         * @summary List transaction intents of a policy report.
+         * @param {PoliciesApiGetPolicyReportTransactionIntentsRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPolicyReportTransactionIntents(requestParameters: PoliciesApiGetPolicyReportTransactionIntentsRequest, options?: AxiosRequestConfig): AxiosPromise<GasReportTransactionIntentsListResponse> {
+            return localVarFp.getPolicyReportTransactionIntents(requestParameters.id, requestParameters.to, requestParameters.from, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary List all gas reports of a policy.
          * @param {PoliciesApiGetPolicyTotalGasUsageRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getPolicyTotalGasUsage(requestParameters: PoliciesApiGetPolicyTotalGasUsageRequest, options?: AxiosRequestConfig): AxiosPromise<GasReportListResponse> {
-            return localVarFp.getPolicyTotalGasUsage(requestParameters.id, options).then((request) => request(axios, basePath));
+            return localVarFp.getPolicyTotalGasUsage(requestParameters.id, requestParameters.to, requestParameters.from, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -903,6 +992,34 @@ export interface PoliciesApiGetPolicyBalanceRequest {
 }
 
 /**
+ * Request parameters for getPolicyReportTransactionIntents operation in PoliciesApi.
+ * @export
+ * @interface PoliciesApiGetPolicyReportTransactionIntentsRequest
+ */
+export interface PoliciesApiGetPolicyReportTransactionIntentsRequest {
+    /**
+     * Specifies the unique policy ID (starts with pol_).
+     * @type {string}
+     * @memberof PoliciesApiGetPolicyReportTransactionIntents
+     */
+    readonly id: string
+
+    /**
+     * The start date of the period in unix timestamp.
+     * @type {number}
+     * @memberof PoliciesApiGetPolicyReportTransactionIntents
+     */
+    readonly to: number
+
+    /**
+     * The end date of the period in unix timestamp.
+     * @type {number}
+     * @memberof PoliciesApiGetPolicyReportTransactionIntents
+     */
+    readonly from: number
+}
+
+/**
  * Request parameters for getPolicyTotalGasUsage operation in PoliciesApi.
  * @export
  * @interface PoliciesApiGetPolicyTotalGasUsageRequest
@@ -914,6 +1031,20 @@ export interface PoliciesApiGetPolicyTotalGasUsageRequest {
      * @memberof PoliciesApiGetPolicyTotalGasUsage
      */
     readonly id: string
+
+    /**
+     * The start date of the period in unix timestamp.
+     * @type {number}
+     * @memberof PoliciesApiGetPolicyTotalGasUsage
+     */
+    readonly to?: number
+
+    /**
+     * The end date of the period in unix timestamp.
+     * @type {number}
+     * @memberof PoliciesApiGetPolicyTotalGasUsage
+     */
+    readonly from?: number
 }
 
 /**
@@ -1042,6 +1173,18 @@ export class PoliciesApi extends BaseAPI {
 
     /**
      * 
+     * @summary List transaction intents of a policy report.
+     * @param {PoliciesApiGetPolicyReportTransactionIntentsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PoliciesApi
+     */
+    public getPolicyReportTransactionIntents(requestParameters: PoliciesApiGetPolicyReportTransactionIntentsRequest, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).getPolicyReportTransactionIntents(requestParameters.id, requestParameters.to, requestParameters.from, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary List all gas reports of a policy.
      * @param {PoliciesApiGetPolicyTotalGasUsageRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -1049,7 +1192,7 @@ export class PoliciesApi extends BaseAPI {
      * @memberof PoliciesApi
      */
     public getPolicyTotalGasUsage(requestParameters: PoliciesApiGetPolicyTotalGasUsageRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyTotalGasUsage(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+        return PoliciesApiFp(this.configuration).getPolicyTotalGasUsage(requestParameters.id, requestParameters.to, requestParameters.from, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

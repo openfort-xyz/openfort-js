@@ -15,21 +15,16 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
- * @enum {string}
+ * @interface LoginOIDCRequest
  */
-
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter',
-    Facebook: 'facebook',
-    Discord: 'discord',
-    EpicGames: 'epic_games',
-    Telegram: 'telegram'
-} as const;
-
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
-
-
+export interface LoginOIDCRequest {
+    /**
+     * The identity token of the user.
+     * @type {string}
+     * @memberof LoginOIDCRequest
+     */
+    'identityToken': string;
+}
 

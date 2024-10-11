@@ -15,21 +15,22 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
- * @enum {string}
+ * @interface PolicyReportQueries
  */
-
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter',
-    Facebook: 'facebook',
-    Discord: 'discord',
-    EpicGames: 'epic_games',
-    Telegram: 'telegram'
-} as const;
-
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
-
-
+export interface PolicyReportQueries {
+    /**
+     * The start date of the period in unix timestamp.
+     * @type {number}
+     * @memberof PolicyReportQueries
+     */
+    'to'?: number;
+    /**
+     * The end date of the period in unix timestamp.
+     * @type {number}
+     * @memberof PolicyReportQueries
+     */
+    'from'?: number;
+}
 

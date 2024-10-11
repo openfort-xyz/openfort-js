@@ -17,38 +17,38 @@
 /**
  * 
  * @export
- * @interface GasReportTransactionIntentsInner
+ * @interface GasReportTransactionIntents
  */
-export interface GasReportTransactionIntentsInner {
+export interface GasReportTransactionIntents {
     /**
      * 
      * @type {string}
-     * @memberof GasReportTransactionIntentsInner
+     * @memberof GasReportTransactionIntents
      */
-    'gasFeeInUSD': string;
+    'id': string;
     /**
      * 
      * @type {string}
-     * @memberof GasReportTransactionIntentsInner
-     */
-    'gasUsed': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GasReportTransactionIntentsInner
-     */
-    'gasPrice': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GasReportTransactionIntentsInner
+     * @memberof GasReportTransactionIntents
      */
     'gasFee': string;
     /**
      * 
      * @type {string}
-     * @memberof GasReportTransactionIntentsInner
+     * @memberof GasReportTransactionIntents
      */
-    'id': string;
+    'gasPrice': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GasReportTransactionIntents
+     */
+    'gasUsed': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GasReportTransactionIntents
+     */
+    'gasFeeInUSD': string;
 }
 

@@ -34,6 +34,8 @@ import { DeprecatedAuthenticatedPlayerResponse } from '../models';
 // @ts-ignore
 import { JwtKeyResponse } from '../models';
 // @ts-ignore
+import { LoginOIDCRequest } from '../models';
+// @ts-ignore
 import { LoginRequest } from '../models';
 // @ts-ignore
 import { LogoutRequest } from '../models';
@@ -485,6 +487,51 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(loginRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Authenticate a player from an identity token.
+         * @summary OIDC Identity token.
+         * @param {LoginOIDCRequest} loginOIDCRequest 
+         * @param {string} [xGame] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginOIDC: async (loginOIDCRequest: LoginOIDCRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'loginOIDCRequest' is not null or undefined
+            assertParamExists('loginOIDC', 'loginOIDCRequest', loginOIDCRequest)
+            const localVarPath = `/iam/v1/oidc/login`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(loginOIDCRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1207,6 +1254,18 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Authenticate a player from an identity token.
+         * @summary OIDC Identity token.
+         * @param {LoginOIDCRequest} loginOIDCRequest 
+         * @param {string} [xGame] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async loginOIDC(loginOIDCRequest: LoginOIDCRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.loginOIDC(loginOIDCRequest, xGame, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * When using Openfort Auth, the endpoint logs out the player.
          * @summary Log out a player.
          * @param {LogoutRequest} logoutRequest 
@@ -1482,6 +1541,16 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          */
         loginEmailPassword(requestParameters: AuthenticationApiLoginEmailPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
             return localVarFp.loginEmailPassword(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Authenticate a player from an identity token.
+         * @summary OIDC Identity token.
+         * @param {AuthenticationApiLoginOIDCRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginOIDC(requestParameters: AuthenticationApiLoginOIDCRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
+            return localVarFp.loginOIDC(requestParameters.loginOIDCRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * When using Openfort Auth, the endpoint logs out the player.
@@ -1812,6 +1881,27 @@ export interface AuthenticationApiLoginEmailPasswordRequest {
      * 
      * @type {string}
      * @memberof AuthenticationApiLoginEmailPassword
+     */
+    readonly xGame?: string
+}
+
+/**
+ * Request parameters for loginOIDC operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiLoginOIDCRequest
+ */
+export interface AuthenticationApiLoginOIDCRequest {
+    /**
+     * 
+     * @type {LoginOIDCRequest}
+     * @memberof AuthenticationApiLoginOIDC
+     */
+    readonly loginOIDCRequest: LoginOIDCRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiLoginOIDC
      */
     readonly xGame?: string
 }
@@ -2159,6 +2249,18 @@ export class AuthenticationApi extends BaseAPI {
      */
     public loginEmailPassword(requestParameters: AuthenticationApiLoginEmailPasswordRequest, options?: AxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).loginEmailPassword(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Authenticate a player from an identity token.
+     * @summary OIDC Identity token.
+     * @param {AuthenticationApiLoginOIDCRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public loginOIDC(requestParameters: AuthenticationApiLoginOIDCRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).loginOIDC(requestParameters.loginOIDCRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

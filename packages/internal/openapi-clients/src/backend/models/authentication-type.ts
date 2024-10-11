@@ -15,21 +15,18 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
  * @enum {string}
  */
 
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter',
-    Facebook: 'facebook',
-    Discord: 'discord',
-    EpicGames: 'epic_games',
-    Telegram: 'telegram'
+export const AuthenticationType = {
+    Oauth: 'oauth',
+    Basic: 'basic',
+    ThirdParty: 'third_party'
 } as const;
 
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
+export type AuthenticationType = typeof AuthenticationType[keyof typeof AuthenticationType];
 
 
 
