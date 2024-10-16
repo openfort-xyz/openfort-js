@@ -58,13 +58,19 @@ export interface ContractPolicyRuleResponse {
      * @type {ContractPolicyRuleResponseContract}
      * @memberof ContractPolicyRuleResponse
      */
-    'contract': ContractPolicyRuleResponseContract;
+    'contract'?: ContractPolicyRuleResponseContract;
     /**
      * 
      * @type {string}
      * @memberof ContractPolicyRuleResponse
      */
-    'functionName': string;
+    'functionName'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ContractPolicyRuleResponse
+     */
+    'wildcard': boolean;
 }
 
 

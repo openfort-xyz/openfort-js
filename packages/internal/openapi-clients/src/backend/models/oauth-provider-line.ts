@@ -15,23 +15,16 @@
 
 
 /**
- * Enum of the supporting third party auth providers.
+ * 
  * @export
  * @enum {string}
  */
 
-export const ThirdPartyOAuthProvider = {
-    Accelbyte: 'accelbyte',
-    Firebase: 'firebase',
-    Lootlocker: 'lootlocker',
-    Playfab: 'playfab',
-    Supabase: 'supabase',
-    Custom: 'custom',
-    Oidc: 'oidc',
-    TelegramMiniApp: 'telegramMiniApp'
+export const OAuthProviderLINE = {
+    Line: 'line'
 } as const;
 
-export type ThirdPartyOAuthProvider = typeof ThirdPartyOAuthProvider[keyof typeof ThirdPartyOAuthProvider];
+export type OAuthProviderLINE = typeof OAuthProviderLINE[keyof typeof OAuthProviderLINE];
 
 
 

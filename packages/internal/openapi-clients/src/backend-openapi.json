@@ -52,7 +52,8 @@
           "facebook",
           "discord",
           "epic_games",
-          "telegram"
+          "telegram",
+          "line"
         ],
         "type": "string"
       },
@@ -65,7 +66,8 @@
           "playfab",
           "supabase",
           "custom",
-          "oidc"
+          "oidc",
+          "telegramMiniApp"
         ],
         "type": "string"
       },
@@ -1421,6 +1423,40 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OAuthProvider.LINE": {
+        "enum": [
+          "line"
+        ],
+        "type": "string"
+      },
+      "LineOAuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/OAuthProvider.LINE",
+            "description": "OAuth provider type"
+          },
+          "channelId": {
+            "type": "string",
+            "description": "Line Channel ID."
+          },
+          "channelSecret": {
+            "type": "string",
+            "description": "Line Channel secret."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "channelId",
+          "channelSecret"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "OAuthProvider.DISCORD": {
         "enum": [
           "discord"
@@ -1451,6 +1487,35 @@
           "provider",
           "clientId",
           "clientSecret"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ThirdPartyOAuthProvider.TELEGRAM_MINI_APP": {
+        "enum": [
+          "telegramMiniApp"
+        ],
+        "type": "string"
+      },
+      "TelegramThirdPartyConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.TELEGRAM_MINI_APP",
+            "description": "OAuth provider type"
+          },
+          "botToken": {
+            "type": "string",
+            "description": "Telegram bot token."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "botToken"
         ],
         "type": "object",
         "additionalProperties": false
@@ -1631,7 +1696,13 @@
             "$ref": "#/components/schemas/FacebookOAuthConfig"
           },
           {
+            "$ref": "#/components/schemas/LineOAuthConfig"
+          },
+          {
             "$ref": "#/components/schemas/DiscordOAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/TelegramThirdPartyConfig"
           },
           {
             "$ref": "#/components/schemas/EpicGamesOAuthConfig"
@@ -6005,6 +6076,9 @@
           },
           "functionName": {
             "type": "string"
+          },
+          "wildcard": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -6012,8 +6086,7 @@
           "object",
           "createdAt",
           "type",
-          "contract",
-          "functionName"
+          "wildcard"
         ],
         "type": "object",
         "additionalProperties": false
@@ -6843,6 +6916,11 @@
             "description": "The contract ID you want to interact with. Must have been added to Openfort first, starts with `con_`.",
             "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
           },
+          "wildcard": {
+            "type": "boolean",
+            "description": "When using `contract_functions` type, set this to `true` to allow all contracts.",
+            "example": true
+          },
           "gasLimit": {
             "type": "string",
             "description": "Gas limit in WEI (i.e. factor 10^18).",
@@ -6893,6 +6971,11 @@
             "type": "string",
             "description": "The contract ID you want to interact with. Must have been added to Openfort first, starts with `con_`.",
             "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
+          },
+          "wildcard": {
+            "type": "boolean",
+            "description": "When using `contract_functions` type, set this to `true` to allow all contracts.",
+            "example": true
           },
           "gasLimit": {
             "type": "string",
@@ -7168,8 +7251,7 @@
           "address",
           "chainId",
           "validAfter",
-          "validUntil",
-          "player"
+          "validUntil"
         ],
         "type": "object",
         "additionalProperties": false
@@ -14673,6 +14755,7 @@
                         {
                           "createdAt": 1689869074,
                           "id": "afu_...",
+                          "wildcard": false,
                           "object": "policyRule",
                           "type": "contract_functions",
                           "contract": {
@@ -14779,6 +14862,7 @@
                     "value": {
                       "createdAt": 1689869074,
                       "id": "afu_...",
+                      "wildcard": false,
                       "object": "policyRule",
                       "type": "contract_functions",
                       "contract": {
@@ -15196,6 +15280,12 @@
             "sk": []
           },
           {
+            "pk_third_party": []
+          },
+          {
+            "pk_access_token": []
+          },
+          {
             "pk_identity_token": []
           }
         ],
@@ -15289,6 +15379,12 @@
         "security": [
           {
             "sk": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "pk_access_token": []
           },
           {
             "pk_identity_token": []

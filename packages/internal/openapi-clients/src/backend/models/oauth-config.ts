@@ -36,6 +36,9 @@ import { FirebaseOAuthConfig } from './firebase-oauth-config';
 import { GoogleOAuthConfig } from './google-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { LineOAuthConfig } from './line-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { LootLockerOAuthConfig } from './loot-locker-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -49,6 +52,9 @@ import { SupabaseAuthConfig } from './supabase-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { TelegramOAuthConfig } from './telegram-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
+import { TelegramThirdPartyConfig } from './telegram-third-party-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { ThirdPartyOAuthProviderLOOTLOCKER } from './third-party-oauth-provider-lootlocker';
@@ -134,6 +140,18 @@ export interface OAuthConfig {
      * @memberof OAuthConfig
      */
     'botToken': string;
+    /**
+     * Line Channel ID.
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'channelId': string;
+    /**
+     * Line Channel secret.
+     * @type {string}
+     * @memberof OAuthConfig
+     */
+    'channelSecret': string;
     /**
      * Title ID of your Play Fab gaming service environment.
      * @type {string}
