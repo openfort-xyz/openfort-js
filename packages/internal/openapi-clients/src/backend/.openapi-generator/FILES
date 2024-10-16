@@ -182,6 +182,7 @@ models/inventory-list-response.ts
 models/inventory-response.ts
 models/jwt-key-response.ts
 models/jwt-key.ts
+models/line-oauth-config.ts
 models/linked-account-response.ts
 models/list-subscription-logs-request.ts
 models/log-response.ts
@@ -205,6 +206,7 @@ models/oauth-provider-discord.ts
 models/oauth-provider-epicgames.ts
 models/oauth-provider-facebook.ts
 models/oauth-provider-google.ts
+models/oauth-provider-line.ts
 models/oauth-provider-telegram.ts
 models/oauth-provider-twitter.ts
 models/oauth-provider.ts
@@ -302,6 +304,7 @@ models/subscription-response-plan.ts
 models/subscription-response.ts
 models/supabase-auth-config.ts
 models/telegram-oauth-config.ts
+models/telegram-third-party-config.ts
 models/third-party-oauth-provider-accelbyte.ts
 models/third-party-oauth-provider-custom.ts
 models/third-party-oauth-provider-firebase.ts
@@ -309,6 +312,7 @@ models/third-party-oauth-provider-lootlocker.ts
 models/third-party-oauth-provider-oidc.ts
 models/third-party-oauth-provider-playfab.ts
 models/third-party-oauth-provider-supabase.ts
+models/third-party-oauth-provider-telegramminiapp.ts
 models/third-party-oauth-provider.ts
 models/third-party-oauth-request.ts
 models/time-interval-type.ts

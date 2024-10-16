@@ -79,6 +79,6 @@ export interface CreateSessionRequest {
      * @type {string}
      * @memberof CreateSessionRequest
      */
-    'player': string;
+    'player'?: string;
 }
 

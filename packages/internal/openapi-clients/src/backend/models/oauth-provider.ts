@@ -26,7 +26,8 @@ export const OAuthProvider = {
     Facebook: 'facebook',
     Discord: 'discord',
     EpicGames: 'epic_games',
-    Telegram: 'telegram'
+    Telegram: 'telegram',
+    Line: 'line'
 } as const;
 
 export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];

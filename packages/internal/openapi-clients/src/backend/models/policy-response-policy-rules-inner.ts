@@ -70,13 +70,19 @@ export interface PolicyResponsePolicyRulesInner {
      * @type {ContractPolicyRuleResponseContract}
      * @memberof PolicyResponsePolicyRulesInner
      */
-    'contract': ContractPolicyRuleResponseContract;
+    'contract'?: ContractPolicyRuleResponseContract;
     /**
      * 
      * @type {PolicyRateLimitCOUNTPERINTERVAL}
      * @memberof PolicyResponsePolicyRulesInner
      */
     'functionName': PolicyRateLimitCOUNTPERINTERVAL;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PolicyResponsePolicyRulesInner
+     */
+    'wildcard': boolean;
     /**
      * 
      * @type {string}

@@ -79,13 +79,19 @@ export interface PolicyRuleResponse {
      * @type {ContractPolicyRuleResponseContract}
      * @memberof PolicyRuleResponse
      */
-    'contract': ContractPolicyRuleResponseContract;
+    'contract'?: ContractPolicyRuleResponseContract;
     /**
      * 
      * @type {PolicyRateLimitCOUNTPERINTERVAL}
      * @memberof PolicyRuleResponse
      */
     'functionName': PolicyRateLimitCOUNTPERINTERVAL;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof PolicyRuleResponse
+     */
+    'wildcard': boolean;
     /**
      * 
      * @type {string}

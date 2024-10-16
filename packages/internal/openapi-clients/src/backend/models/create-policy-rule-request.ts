@@ -45,6 +45,12 @@ export interface CreatePolicyRuleRequest {
      */
     'contract'?: string;
     /**
+     * When using `contract_functions` type, set this to `true` to allow all contracts.
+     * @type {boolean}
+     * @memberof CreatePolicyRuleRequest
+     */
+    'wildcard'?: boolean;
+    /**
      * Gas limit in WEI (i.e. factor 10^18).
      * @type {string}
      * @memberof CreatePolicyRuleRequest
