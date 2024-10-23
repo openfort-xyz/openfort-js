@@ -12,11 +12,7 @@ import avalancheMainnet from './43114';
 
 import sepolia from './11155111';
 
-import lineaGoerli from './59140';
-
-import gnosisChiadoTestnet from './10200';
-
-import immutableZkEVMMainnet from './13371';
+// import immutableZkEVMMainnet from './13371';
 
 import arbitrumSepolia from './421614';
 import arbitrum from './42161';
@@ -38,6 +34,16 @@ import immutableTestnet from './13473';
 import optimismSepolia from './11155420';
 import optimism from './10';
 
+import tiktrixTestnet from './62092';
+
+import dosMainnet from './7979';
+import dosTestnet from './3939';
+
+import opBNB from './204';
+import opBNBTestnet from './5611';
+
+import soneiumMinato from './1946';
+
 export const chainMap: { [key: number]: Chain } = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   56: bnb,
@@ -57,10 +63,6 @@ export const chainMap: { [key: number]: Chain } = {
   43114: avalancheMainnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   11155111: sepolia,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  59140: lineaGoerli,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  10200: gnosisChiadoTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   421614: arbitrumSepolia,
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -84,11 +86,21 @@ export const chainMap: { [key: number]: Chain } = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   13473: immutableTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  13371: immutableZkEVMMainnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   11155420: optimismSepolia,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   10: optimism,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  62092: tiktrixTestnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  7979: dosMainnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  3939: dosTestnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  204: opBNB,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  5611: opBNBTestnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  1946: soneiumMinato,
 };
 
 export default [
@@ -100,13 +112,11 @@ export default [
   avalancheFuji,
   avalancheMainnet,
   sepolia,
-  lineaGoerli,
   immutableTestnet,
   arbitrumSepolia,
   arbitrum,
   arbitrumNova,
   baseSepolia,
-  gnosisChiadoTestnet,
   polygon,
   polygonAmoy,
   zoraSepoliaTestnet,
@@ -116,6 +126,7 @@ export default [
   degenChain,
   optimism,
   optimismSepolia,
+
 ];
 
 export type Chain = {

@@ -15,19 +15,27 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthConfig } from './auth-config';
+import { BasicAuthProviderEMAIL } from './basic-auth-provider-email';
 
 /**
- * Response for the OAuth config list method.
+ * Email auth configuration
  * @export
- * @interface OAuthConfigListResponse
+ * @interface EmailAuthConfig
  */
-export interface OAuthConfigListResponse {
+export interface EmailAuthConfig {
     /**
-     * List of the OAuth providers configurations
-     * @type {Array<AuthConfig>}
-     * @memberof OAuthConfigListResponse
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof EmailAuthConfig
      */
-    'data': Array<AuthConfig>;
+    'enabled': boolean;
+    /**
+     * 
+     * @type {BasicAuthProviderEMAIL}
+     * @memberof EmailAuthConfig
+     */
+    'provider': BasicAuthProviderEMAIL;
 }
+
+
 

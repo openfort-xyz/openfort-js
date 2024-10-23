@@ -12,6 +12,7 @@ domain/contracts-api.ts
 domain/default-api.ts
 domain/events-api.ts
 domain/exchange-api.ts
+domain/forwarder-contract-api.ts
 domain/inventories-api.ts
 domain/paymaster-api.ts
 domain/players-api.ts
@@ -49,6 +50,7 @@ models/apitopic.ts
 models/apitrigger-type.ts
 models/asset-inventory.ts
 models/asset-type.ts
+models/auth-config.ts
 models/auth-player-list-queries.ts
 models/auth-player-list-response.ts
 models/auth-player-response-player.ts
@@ -70,6 +72,7 @@ models/base-entity-list-response-device-response.ts
 models/base-entity-list-response-email-sample-response.ts
 models/base-entity-list-response-log-response.ts
 models/base-entity-list-response-trigger-response.ts
+models/basic-auth-provider-email.ts
 models/basic-auth-provider.ts
 models/cancel-transfer-ownership-request.ts
 models/charge-custom-token-policy-strategy.ts
@@ -95,11 +98,13 @@ models/create-account-request.ts
 models/create-api-authorized-network-request.ts
 models/create-auth-player-request.ts
 models/create-contract-request.ts
+models/create-developer-account-create-request.ts
 models/create-device-request.ts
 models/create-ecosystem-configuration-request.ts
 models/create-email-sample-request.ts
 models/create-event-request.ts
 models/create-exchange-request.ts
+models/create-forwarder-contract-request.ts
 models/create-paymaster-request.ts
 models/create-policy-request.ts
 models/create-policy-rule-request.ts
@@ -114,7 +119,6 @@ models/custom-auth-config.ts
 models/delete-smtpconfig-response.ts
 models/deploy-request.ts
 models/deprecated-authenticated-player-response.ts
-models/developer-account-create-request.ts
 models/developer-account-delete-response.ts
 models/developer-account-get-message-response.ts
 models/developer-account-list-queries.ts
@@ -126,6 +130,7 @@ models/device-list-queries.ts
 models/device-response.ts
 models/discord-oauth-config.ts
 models/ecosystem-configuration-response.ts
+models/email-auth-config.ts
 models/email-sample-delete-response.ts
 models/email-sample-response.ts
 models/email-type-request.ts
@@ -138,6 +143,7 @@ models/entity-type-developeraccount.ts
 models/entity-type-device.ts
 models/entity-type-emailsample.ts
 models/entity-type-event.ts
+models/entity-type-forwardercontract.ts
 models/entity-type-inventory.ts
 models/entity-type-log.ts
 models/entity-type-paymaster.ts
@@ -166,6 +172,8 @@ models/fee.ts
 models/field-errors-value.ts
 models/firebase-oauth-config.ts
 models/fixed-rate-token-policy-strategy.ts
+models/forwarder-contract-delete-response.ts
+models/forwarder-contract-response.ts
 models/gas-per-interval-limit-policy-rule-response.ts
 models/gas-per-transaction-limit-policy-rule-response.ts
 models/gas-report-list-response.ts
@@ -173,6 +181,7 @@ models/gas-report-transaction-intents-list-response.ts
 models/gas-report-transaction-intents.ts
 models/gas-report.ts
 models/google-oauth-config.ts
+models/grant-oauth-response.ts
 models/index.ts
 models/init-embedded-request.ts
 models/interaction.ts
@@ -184,6 +193,7 @@ models/jwt-key-response.ts
 models/jwt-key.ts
 models/line-oauth-config.ts
 models/linked-account-response.ts
+models/list-config-request.ts
 models/list-subscription-logs-request.ts
 models/log-response.ts
 models/log.ts
@@ -198,7 +208,6 @@ models/next-action-payload.ts
 models/next-action-response.ts
 models/next-action-type.ts
 models/oauth-config-list-response.ts
-models/oauth-config.ts
 models/oauth-init-request-options.ts
 models/oauth-init-request.ts
 models/oauth-provders.ts
@@ -305,6 +314,7 @@ models/subscription-response.ts
 models/supabase-auth-config.ts
 models/telegram-oauth-config.ts
 models/telegram-third-party-config.ts
+models/test-trigger200-response.ts
 models/third-party-oauth-provider-accelbyte.ts
 models/third-party-oauth-provider-custom.ts
 models/third-party-oauth-provider-firebase.ts
@@ -340,6 +350,7 @@ models/typed-domain-data.ts
 models/unlink-email-request.ts
 models/unlink-oauth-request.ts
 models/update-contract-request.ts
+models/update-developer-account-create-request.ts
 models/update-email-sample-request.ts
 models/update-policy-request.ts
 models/update-policy-rule-request.ts

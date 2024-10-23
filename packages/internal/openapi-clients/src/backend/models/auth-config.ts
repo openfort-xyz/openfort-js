@@ -24,6 +24,9 @@ import { CustomAuthConfig } from './custom-auth-config';
 import { DiscordOAuthConfig } from './discord-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { EmailAuthConfig } from './email-auth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { EpicGamesOAuthConfig } from './epic-games-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -65,115 +68,115 @@ import { TwitterOAuthConfig } from './twitter-oauth-config';
 /**
  * 
  * @export
- * @interface OAuthConfig
+ * @interface AuthConfig
  */
-export interface OAuthConfig {
+export interface AuthConfig {
     /**
      * Enable OAuth provider.
      * @type {boolean}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'enabled': boolean;
     /**
      * 
      * @type {ThirdPartyOAuthProviderLOOTLOCKER}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'provider': ThirdPartyOAuthProviderLOOTLOCKER;
     /**
      * The unique Supabase URL which is supplied when you create a new project in your project dashboard.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'url': string;
     /**
      * The unique Supabase Key which is supplied when you create a new project in your project dashboard.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'key': string;
     /**
      * PEM encoded public key to verify the JWT token
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'publicVerificationKey'?: string;
     /**
      * Audience of the JWT token
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'aud': string;
     /**
      * JWKS URL to fetch the public key
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'jwksUrl'?: string;
     /**
      * Base URI of your accelbyte gaming service environment. E.g. https://mygame.dev.gamingservices.accelbyte.io/
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'baseUrl': string;
     /**
      * Epic Games API client ID.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'clientId': string;
     /**
      * Epic Games API client secret.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'clientSecret': string;
     /**
      * Telegram bot username.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'botUsername': string;
     /**
      * Telegram bot token.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'botToken': string;
     /**
      * Line Channel ID.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'channelId': string;
     /**
      * Line Channel secret.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'channelSecret': string;
     /**
      * Title ID of your Play Fab gaming service environment.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'titleId': string;
     /**
      * Project ID of your Firebase service environment.
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'projectId': string;
     /**
      * Headers to send with the request
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'headers'?: string;
     /**
      * URL to send the request to to verify the payload
      * @type {string}
-     * @memberof OAuthConfig
+     * @memberof AuthConfig
      */
     'authenticationUrl': string;
 }

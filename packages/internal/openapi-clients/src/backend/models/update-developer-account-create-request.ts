@@ -13,21 +13,18 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { AuthConfig } from './auth-config';
 
 /**
- * Response for the OAuth config list method.
+ * 
  * @export
- * @interface OAuthConfigListResponse
+ * @interface UpdateDeveloperAccountCreateRequest
  */
-export interface OAuthConfigListResponse {
+export interface UpdateDeveloperAccountCreateRequest {
     /**
-     * List of the OAuth providers configurations
-     * @type {Array<AuthConfig>}
-     * @memberof OAuthConfigListResponse
+     * The name of the account.
+     * @type {string}
+     * @memberof UpdateDeveloperAccountCreateRequest
      */
-    'data': Array<AuthConfig>;
+    'name'?: string;
 }
 

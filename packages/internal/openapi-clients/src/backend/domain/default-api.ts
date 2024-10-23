@@ -30,13 +30,14 @@ import { AuthProviderListResponse } from '../models';
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * List available authentication methods for the current project environment.
-         * @summary List of available authentication methods.
+         * List configured auth methods for the current project environment.
+         * @summary List of auth configurations.
+         * @param {boolean} [enabled] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAvailableAuthProviders: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v1/providers`;
+        list: async (enabled?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v1/config`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -51,6 +52,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (enabled !== undefined) {
+                localVarQueryParameter['enabled'] = enabled;
+            }
 
 
     
@@ -74,13 +79,14 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
         /**
-         * List available authentication methods for the current project environment.
-         * @summary List of available authentication methods.
+         * List configured auth methods for the current project environment.
+         * @summary List of auth configurations.
+         * @param {boolean} [enabled] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAvailableAuthProviders(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthProviderListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listAvailableAuthProviders(options);
+        async list(enabled?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthProviderListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.list(enabled, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -94,16 +100,31 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = DefaultApiFp(configuration)
     return {
         /**
-         * List available authentication methods for the current project environment.
-         * @summary List of available authentication methods.
+         * List configured auth methods for the current project environment.
+         * @summary List of auth configurations.
+         * @param {DefaultApiListRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAvailableAuthProviders(options?: AxiosRequestConfig): AxiosPromise<AuthProviderListResponse> {
-            return localVarFp.listAvailableAuthProviders(options).then((request) => request(axios, basePath));
+        list(requestParameters: DefaultApiListRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AuthProviderListResponse> {
+            return localVarFp.list(requestParameters.enabled, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+/**
+ * Request parameters for list operation in DefaultApi.
+ * @export
+ * @interface DefaultApiListRequest
+ */
+export interface DefaultApiListRequest {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof DefaultApiList
+     */
+    readonly enabled?: boolean
+}
 
 /**
  * DefaultApi - object-oriented interface
@@ -113,14 +134,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
  */
 export class DefaultApi extends BaseAPI {
     /**
-     * List available authentication methods for the current project environment.
-     * @summary List of available authentication methods.
+     * List configured auth methods for the current project environment.
+     * @summary List of auth configurations.
+     * @param {DefaultApiListRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public listAvailableAuthProviders(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).listAvailableAuthProviders(options).then((request) => request(this.axios, this.basePath));
+    public list(requestParameters: DefaultApiListRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).list(requestParameters.enabled, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

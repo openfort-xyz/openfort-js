@@ -13,21 +13,18 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { AuthConfig } from './auth-config';
 
 /**
- * Response for the OAuth config list method.
+ * 
  * @export
- * @interface OAuthConfigListResponse
+ * @interface TestTrigger200Response
  */
-export interface OAuthConfigListResponse {
+export interface TestTrigger200Response {
     /**
-     * List of the OAuth providers configurations
-     * @type {Array<AuthConfig>}
-     * @memberof OAuthConfigListResponse
+     * 
+     * @type {boolean}
+     * @memberof TestTrigger200Response
      */
-    'data': Array<AuthConfig>;
+    'sent': boolean;
 }
 

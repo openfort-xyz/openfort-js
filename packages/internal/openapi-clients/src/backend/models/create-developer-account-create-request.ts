@@ -17,25 +17,25 @@
 /**
  * 
  * @export
- * @interface DeveloperAccountCreateRequest
+ * @interface CreateDeveloperAccountCreateRequest
  */
-export interface DeveloperAccountCreateRequest {
+export interface CreateDeveloperAccountCreateRequest {
     /**
      * The address of the wallet that has deposited funds in the paymaster.
      * @type {string}
-     * @memberof DeveloperAccountCreateRequest
+     * @memberof CreateDeveloperAccountCreateRequest
      */
     'address'?: string;
     /**
      * Signature to verify the account ownership.
      * @type {string}
-     * @memberof DeveloperAccountCreateRequest
+     * @memberof CreateDeveloperAccountCreateRequest
      */
     'signature'?: string;
     /**
      * The name of the account.
      * @type {string}
-     * @memberof DeveloperAccountCreateRequest
+     * @memberof CreateDeveloperAccountCreateRequest
      */
     'name'?: string;
 }

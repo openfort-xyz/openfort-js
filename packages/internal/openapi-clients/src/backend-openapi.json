@@ -1173,6 +1173,40 @@
         "type": "object",
         "additionalProperties": false
       },
+      "ListConfigRequest": {
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BasicAuthProvider.EMAIL": {
+        "enum": [
+          "email"
+        ],
+        "type": "string"
+      },
+      "EmailAuthConfig": {
+        "description": "Email auth configuration",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/BasicAuthProvider.EMAIL",
+            "description": "OAuth provider type"
+          }
+        },
+        "required": [
+          "enabled",
+          "provider"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "ThirdPartyOAuthProvider.SUPABASE": {
         "enum": [
           "supabase"
@@ -1672,8 +1706,11 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthConfig": {
+      "AuthConfig": {
         "anyOf": [
+          {
+            "$ref": "#/components/schemas/EmailAuthConfig"
+          },
           {
             "$ref": "#/components/schemas/SupabaseAuthConfig"
           },
@@ -1721,12 +1758,20 @@
           }
         ]
       },
+      "OAuthConfigResponse": {
+        "$ref": "#/components/schemas/AuthConfig",
+        "description": "OAuth provider specific configuration."
+      },
+      "OAuthConfigRequest": {
+        "$ref": "#/components/schemas/AuthConfig",
+        "description": "Request for the configuration endpoints for the OAuth providers"
+      },
       "OAuthConfigListResponse": {
         "description": "Response for the OAuth config list method.",
         "properties": {
           "data": {
             "items": {
-              "$ref": "#/components/schemas/OAuthConfig"
+              "$ref": "#/components/schemas/AuthConfig"
             },
             "type": "array",
             "description": "List of the OAuth providers configurations"
@@ -1738,13 +1783,23 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OAuthConfigResponse": {
-        "$ref": "#/components/schemas/OAuthConfig",
-        "description": "OAuth provider specific configuration."
-      },
-      "OAuthConfigRequest": {
-        "$ref": "#/components/schemas/OAuthConfig",
-        "description": "Request for the configuration endpoints for the OAuth providers"
+      "GrantOAuthResponse": {
+        "properties": {
+          "authorizationCode": {
+            "type": "string"
+          },
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "playerId": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
       },
       "OAuthResponse": {
         "properties": {
@@ -5494,6 +5549,115 @@
         "type": "object",
         "additionalProperties": false
       },
+      "EntityType.FORWARDER_CONTRACT": {
+        "enum": [
+          "forwarderContract"
+        ],
+        "type": "string"
+      },
+      "ForwarderContractResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.FORWARDER_CONTRACT"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "address": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt",
+          "address",
+          "chainId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateForwarderContractResponse": {
+        "$ref": "#/components/schemas/ForwarderContractResponse"
+      },
+      "CreateForwarderContractRequest": {
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Specifies the address of the paymaster",
+            "example": "0x7d526b7e99fbf52850a183..."
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Must be a [supported chain](/chains).",
+            "example": 80002
+          },
+          "name": {
+            "type": "string",
+            "description": "Specifies the name of the paymaster"
+          }
+        },
+        "required": [
+          "address",
+          "chainId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PagingQueries": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the maximum number of records to return.",
+            "minimum": 1
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the offset for the first records to return.",
+            "minimum": 0
+          },
+          "order": {
+            "$ref": "#/components/schemas/SortOrder",
+            "description": "Specifies the order in which to sort the results."
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ForwarderContractDeleteResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.FORWARDER_CONTRACT"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "deleted"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "AssetType": {
         "enum": [
           "ETH",
@@ -5783,28 +5947,6 @@
         "required": [
           "address"
         ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "PagingQueries": {
-        "properties": {
-          "limit": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specifies the maximum number of records to return.",
-            "minimum": 1
-          },
-          "skip": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specifies the offset for the first records to return.",
-            "minimum": 0
-          },
-          "order": {
-            "$ref": "#/components/schemas/SortOrder",
-            "description": "Specifies the order in which to sort the results."
-          }
-        },
         "type": "object",
         "additionalProperties": false
       },
@@ -7439,7 +7581,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "DeveloperAccountCreateRequest": {
+      "CreateDeveloperAccountCreateRequest": {
         "properties": {
           "address": {
             "type": "string",
@@ -7451,6 +7593,17 @@
             "description": "Signature to verify the account ownership.",
             "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
           },
+          "name": {
+            "type": "string",
+            "description": "The name of the account.",
+            "example": "Escrow account"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateDeveloperAccountCreateRequest": {
+        "properties": {
           "name": {
             "type": "string",
             "description": "The name of the account.",
@@ -8279,46 +8432,6 @@
         ]
       }
     },
-    "/iam/v1/providers": {
-      "get": {
-        "operationId": "ListAvailableAuthProviders",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthProviderListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "data": [
-                        {
-                          "provider": "firebase",
-                          "type": "third_party"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          }
-        },
-        "description": "List available authentication methods for the current project environment.",
-        "summary": "List of available authentication methods.",
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": []
-      }
-    },
     "/iam/v1/{publishable_key}/jwks.json": {
       "get": {
         "operationId": "GetJwks",
@@ -8735,6 +8848,113 @@
         ]
       }
     },
+    "/iam/v1/config": {
+      "get": {
+        "operationId": "List",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthProviderListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "data": [
+                        {
+                          "provider": "firebase",
+                          "type": "third_party"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "List configured auth methods for the current project environment.",
+        "summary": "List of auth configurations.",
+        "security": [
+          {
+            "pk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "enabled",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "Create",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "enabled": true,
+                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
+                      "clientId": "1234567890abcdef1234567890abcdef",
+                      "clientSecret": "abcdef1234567890abcdef1234567890",
+                      "provider": "accelbyte"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "The endpoint creates oauth configuration for the current project environment.",
+        "summary": "Create oauth configuration.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "description": "Specifies the oauth provider specific configuration.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthConfigRequest",
+                "description": "Specifies the oauth provider specific configuration."
+              }
+            }
+          }
+        }
+      }
+    },
     "/iam/v1/oauth": {
       "get": {
         "operationId": "ListOAuthConfig",
@@ -8773,6 +8993,7 @@
         "tags": [
           "AdminAuthentication"
         ],
+        "deprecated": true,
         "security": [
           {
             "sk": []
@@ -8816,6 +9037,7 @@
         "tags": [
           "AdminAuthentication"
         ],
+        "deprecated": true,
         "security": [
           {
             "sk": []
@@ -8873,6 +9095,7 @@
         "tags": [
           "AdminAuthentication"
         ],
+        "deprecated": true,
         "security": [
           {
             "sk": []
@@ -8908,6 +9131,7 @@
         "tags": [
           "AdminAuthentication"
         ],
+        "deprecated": true,
         "security": [
           {
             "sk": []
@@ -12175,6 +12399,300 @@
             }
           }
         }
+      }
+    },
+    "/v1/forwarder_contracts": {
+      "post": {
+        "operationId": "CreateForwarderContract",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateForwarderContractResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "cfo_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "forwarderContract",
+                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
+                      "name": "Forwarder Contract",
+                      "chainId": 80002,
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Create a new forwarder contract.\n\nThis object represents the forwarder contract that will be used to pay the gas fees of the transactions.",
+        "summary": "Create a new forwarder contract.",
+        "tags": [
+          "ForwarderContract"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateForwarderContractRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "ListForwarderContracts",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CreateForwarderContractResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Returns a list of forwarder contract.\n\nThis object represents the forwarder contract that will be used to pay the gas fees for the transactions.\n\nBy default, a maximum of 10 forwarder contract are shown per page.",
+        "summary": "List forwarder contract.",
+        "tags": [
+          "ForwarderContract"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/SortOrder"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/forwarder_contracts/{id}": {
+      "post": {
+        "operationId": "UpdateForwarderContract",
+        "responses": {
+          "201": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateForwarderContractResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "cfo_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "forwarderContract",
+                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
+                      "name": "Forwarder Contract",
+                      "chainId": 80002,
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Update a forwarder contract.\n\nThis object represents the forwarder contract that will be used to pay the gas fees of the transactions.",
+        "summary": "Update a forwarder contract.",
+        "tags": [
+          "ForwarderContract"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateForwarderContractRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "GetForwarderContract",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateForwarderContractResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "cfo_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "forwarderContract",
+                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
+                      "name": "Forwarder Contract",
+                      "chainId": 80002,
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Error response."
+          }
+        },
+        "description": "Returns the forwarder contract with the given id.\n\nThis object represents the forwarder contract that will be used to pay the gas fees for the transactions.",
+        "summary": "Get forwarder contract by id.",
+        "tags": [
+          "ForwarderContract"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteForwarderContract",
+        "responses": {
+          "204": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForwarderContractDeleteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Error response."
+          }
+        },
+        "description": "Delete the forwarder contract with the given id.\n\nThis object represents the forwarder contract that will be used to pay the gas fees for the transactions.",
+        "summary": "Delete forwarder contract by id.",
+        "tags": [
+          "ForwarderContract"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     },
     "/v1/players/{id}/inventory/nft": {
@@ -15802,29 +16320,38 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DeveloperAccountCreateRequest"
+                "$ref": "#/components/schemas/CreateDeveloperAccountCreateRequest"
               }
             }
           }
         }
       }
     },
-    "/v1/settings/developer_accounts/message_to_sign": {
-      "get": {
-        "operationId": "GetVerificationPayload",
+    "/v1/settings/developer_accounts/{id}": {
+      "post": {
+        "operationId": "UpdateDeveloperAccount",
         "responses": {
           "200": {
             "description": "Successful response.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeveloperAccountGetMessageResponse"
+                  "$ref": "#/components/schemas/DeveloperAccountResponse"
                 },
                 "examples": {
                   "Example 1": {
                     "value": {
-                      "message": "I want to register 0x0000000000000000000000000000000000000000 to the project 33333333-3333-3333-3333-333333333333 for mainnets on 20231231",
-                      "address": "0x0000000000000000000000000000000000000000"
+                      "id": "dac_00000000-0000-0000-0000-000000000000",
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "name": "Escrow Account",
+                      "custodial": true,
+                      "createdAt": 1609459200,
+                      "object": "developerAccount",
+                      "transactionIntents": [
+                        {
+                          "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
+                        }
+                      ]
                     }
                   }
                 }
@@ -15838,8 +16365,8 @@
             "description": "Error response."
           }
         },
-        "description": "Generate message, which should be signed by the account your want to add as a developer account.",
-        "summary": "Generate message to sign",
+        "description": "Update a developer account.",
+        "summary": "Update a developer account.",
         "tags": [
           "Settings"
         ],
@@ -15853,19 +16380,25 @@
         ],
         "parameters": [
           {
-            "description": "Specifies the address",
-            "in": "query",
-            "name": "address",
+            "in": "path",
+            "name": "id",
             "required": true,
             "schema": {
               "type": "string"
-            },
-            "example": "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+            }
           }
-        ]
-      }
-    },
-    "/v1/settings/developer_accounts/{id}": {
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDeveloperAccountCreateRequest"
+              }
+            }
+          }
+        }
+      },
       "get": {
         "operationId": "GetDeveloperAccount",
         "responses": {
@@ -15993,6 +16526,62 @@
               "type": "string"
             },
             "example": "dac_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
+          }
+        ]
+      }
+    },
+    "/v1/settings/developer_accounts/message_to_sign": {
+      "get": {
+        "operationId": "GetVerificationPayload",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperAccountGetMessageResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "message": "I want to register 0x0000000000000000000000000000000000000000 to the project 33333333-3333-3333-3333-333333333333 for mainnets on 20231231",
+                      "address": "0x0000000000000000000000000000000000000000"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Generate message, which should be signed by the account your want to add as a developer account.",
+        "summary": "Generate message to sign",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the address",
+            "in": "query",
+            "name": "address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
           }
         ]
       }
@@ -16678,7 +17267,22 @@
         "operationId": "TestTrigger",
         "responses": {
           "200": {
-            "description": "Successful response."
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "sent": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "sent"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
           },
           "401": {
             "description": "Error response."

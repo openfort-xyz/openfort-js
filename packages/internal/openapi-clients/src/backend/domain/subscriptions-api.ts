@@ -42,6 +42,8 @@ import { SubscriptionListResponse } from '../models';
 // @ts-ignore
 import { SubscriptionResponse } from '../models';
 // @ts-ignore
+import { TestTrigger200Response } from '../models';
+// @ts-ignore
 import { TriggerDeleteResponse } from '../models';
 // @ts-ignore
 import { TriggerResponse } from '../models';
@@ -605,7 +607,7 @@ export const SubscriptionsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async testTrigger(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async testTrigger(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TestTrigger200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.testTrigger(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -714,7 +716,7 @@ export const SubscriptionsApiFactory = function (configuration?: Configuration, 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        testTrigger(options?: AxiosRequestConfig): AxiosPromise<void> {
+        testTrigger(options?: AxiosRequestConfig): AxiosPromise<TestTrigger200Response> {
             return localVarFp.testTrigger(options).then((request) => request(axios, basePath));
         },
     };

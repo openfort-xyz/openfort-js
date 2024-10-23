@@ -22,6 +22,8 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { AuthConfig } from '../models';
+// @ts-ignore
 import { AuthPlayerListResponse } from '../models';
 // @ts-ignore
 import { AuthPlayerResponse } from '../models';
@@ -39,8 +41,6 @@ import { Authorize200Response } from '../models';
 import { AuthorizePlayerRequest } from '../models';
 // @ts-ignore
 import { CreateAuthPlayerRequest } from '../models';
-// @ts-ignore
-import { OAuthConfig } from '../models';
 // @ts-ignore
 import { OAuthConfigListResponse } from '../models';
 // @ts-ignore
@@ -97,6 +97,46 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             };
         },
         /**
+         * The endpoint creates oauth configuration for the current project environment.
+         * @summary Create oauth configuration.
+         * @param {AuthConfig} body Specifies the oauth provider specific configuration.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        create: async (body: AuthConfig, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('create', 'body', body)
+            const localVarPath = `/iam/v1/config`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Creates an authenticated player.  The player will be authenticated with the provider and an embedded account can be pre generated.
          * @summary Create an authenticated player.
          * @param {CreateAuthPlayerRequest} createAuthPlayerRequest 
@@ -139,11 +179,12 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
         /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
-         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+         * @param {AuthConfig} body Specifies the oauth provider specific configuration.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
-        createOAuthConfig: async (body: OAuthConfig, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createOAuthConfig: async (body: AuthConfig, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'body' is not null or undefined
             assertParamExists('createOAuthConfig', 'body', body)
             const localVarPath = `/iam/v1/oauth`;
@@ -219,6 +260,7 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
          * @summary Delete oauth configuration.
          * @param {OAuthProvider} provider Specifies the oauth provider type.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         deleteOAuthConfig: async (provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -316,6 +358,7 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
          * @summary Get oauth configuration.
          * @param {OAuthProvider} provider Specifies the oauth provider type.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         getOAuthConfig: async (provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -353,6 +396,7 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
          * List configured OAuth methods for the current project environment.
          * @summary List of oauth configurations.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         listOAuthConfig: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -530,6 +574,17 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * The endpoint creates oauth configuration for the current project environment.
+         * @summary Create oauth configuration.
+         * @param {AuthConfig} body Specifies the oauth provider specific configuration.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async create(body: AuthConfig, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthConfig>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.create(body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Creates an authenticated player.  The player will be authenticated with the provider and an embedded account can be pre generated.
          * @summary Create an authenticated player.
          * @param {CreateAuthPlayerRequest} createAuthPlayerRequest 
@@ -543,11 +598,12 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
         /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
-         * @param {OAuthConfig} body Specifies the oauth provider specific configuration.
+         * @param {AuthConfig} body Specifies the oauth provider specific configuration.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
-        async createOAuthConfig(body: OAuthConfig, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfig>> {
+        async createOAuthConfig(body: AuthConfig, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthConfig>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createOAuthConfig(body, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -567,6 +623,7 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
          * @summary Delete oauth configuration.
          * @param {OAuthProvider} provider Specifies the oauth provider type.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         async deleteOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
@@ -593,9 +650,10 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
          * @summary Get oauth configuration.
          * @param {OAuthProvider} provider Specifies the oauth provider type.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
-        async getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfig>> {
+        async getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthConfig>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOAuthConfig(provider, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -603,6 +661,7 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
          * List configured OAuth methods for the current project environment.
          * @summary List of oauth configurations.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         async listOAuthConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OAuthConfigListResponse>> {
@@ -664,6 +723,16 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
             return localVarFp.authorize(requestParameters.authorizePlayerRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * The endpoint creates oauth configuration for the current project environment.
+         * @summary Create oauth configuration.
+         * @param {AdminAuthenticationApiCreateRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        create(requestParameters: AdminAuthenticationApiCreateRequest, options?: AxiosRequestConfig): AxiosPromise<AuthConfig> {
+            return localVarFp.create(requestParameters.body, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Creates an authenticated player.  The player will be authenticated with the provider and an embedded account can be pre generated.
          * @summary Create an authenticated player.
          * @param {AdminAuthenticationApiCreateAuthPlayerRequest} requestParameters Request parameters.
@@ -678,9 +747,10 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
          * @summary Create oauth configuration.
          * @param {AdminAuthenticationApiCreateOAuthConfigRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
-        createOAuthConfig(requestParameters: AdminAuthenticationApiCreateOAuthConfigRequest, options?: AxiosRequestConfig): AxiosPromise<OAuthConfig> {
+        createOAuthConfig(requestParameters: AdminAuthenticationApiCreateOAuthConfigRequest, options?: AxiosRequestConfig): AxiosPromise<AuthConfig> {
             return localVarFp.createOAuthConfig(requestParameters.body, options).then((request) => request(axios, basePath));
         },
         /**
@@ -698,6 +768,7 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
          * @summary Delete oauth configuration.
          * @param {AdminAuthenticationApiDeleteOAuthConfigRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         deleteOAuthConfig(requestParameters: AdminAuthenticationApiDeleteOAuthConfigRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
@@ -718,15 +789,17 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
          * @summary Get oauth configuration.
          * @param {AdminAuthenticationApiGetOAuthConfigRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
-        getOAuthConfig(requestParameters: AdminAuthenticationApiGetOAuthConfigRequest, options?: AxiosRequestConfig): AxiosPromise<OAuthConfig> {
+        getOAuthConfig(requestParameters: AdminAuthenticationApiGetOAuthConfigRequest, options?: AxiosRequestConfig): AxiosPromise<AuthConfig> {
             return localVarFp.getOAuthConfig(requestParameters.provider, options).then((request) => request(axios, basePath));
         },
         /**
          * List configured OAuth methods for the current project environment.
          * @summary List of oauth configurations.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         listOAuthConfig(options?: AxiosRequestConfig): AxiosPromise<OAuthConfigListResponse> {
@@ -781,6 +854,20 @@ export interface AdminAuthenticationApiAuthorizeRequest {
 }
 
 /**
+ * Request parameters for create operation in AdminAuthenticationApi.
+ * @export
+ * @interface AdminAuthenticationApiCreateRequest
+ */
+export interface AdminAuthenticationApiCreateRequest {
+    /**
+     * Specifies the oauth provider specific configuration.
+     * @type {AuthConfig}
+     * @memberof AdminAuthenticationApiCreate
+     */
+    readonly body: AuthConfig
+}
+
+/**
  * Request parameters for createAuthPlayer operation in AdminAuthenticationApi.
  * @export
  * @interface AdminAuthenticationApiCreateAuthPlayerRequest
@@ -802,10 +889,10 @@ export interface AdminAuthenticationApiCreateAuthPlayerRequest {
 export interface AdminAuthenticationApiCreateOAuthConfigRequest {
     /**
      * Specifies the oauth provider specific configuration.
-     * @type {OAuthConfig}
+     * @type {AuthConfig}
      * @memberof AdminAuthenticationApiCreateOAuthConfig
      */
-    readonly body: OAuthConfig
+    readonly body: AuthConfig
 }
 
 /**
@@ -960,6 +1047,18 @@ export class AdminAuthenticationApi extends BaseAPI {
     }
 
     /**
+     * The endpoint creates oauth configuration for the current project environment.
+     * @summary Create oauth configuration.
+     * @param {AdminAuthenticationApiCreateRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public create(requestParameters: AdminAuthenticationApiCreateRequest, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).create(requestParameters.body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Creates an authenticated player.  The player will be authenticated with the provider and an embedded account can be pre generated.
      * @summary Create an authenticated player.
      * @param {AdminAuthenticationApiCreateAuthPlayerRequest} requestParameters Request parameters.
@@ -976,6 +1075,7 @@ export class AdminAuthenticationApi extends BaseAPI {
      * @summary Create oauth configuration.
      * @param {AdminAuthenticationApiCreateOAuthConfigRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof AdminAuthenticationApi
      */
@@ -1000,6 +1100,7 @@ export class AdminAuthenticationApi extends BaseAPI {
      * @summary Delete oauth configuration.
      * @param {AdminAuthenticationApiDeleteOAuthConfigRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof AdminAuthenticationApi
      */
@@ -1024,6 +1125,7 @@ export class AdminAuthenticationApi extends BaseAPI {
      * @summary Get oauth configuration.
      * @param {AdminAuthenticationApiGetOAuthConfigRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof AdminAuthenticationApi
      */
@@ -1035,6 +1137,7 @@ export class AdminAuthenticationApi extends BaseAPI {
      * List configured OAuth methods for the current project environment.
      * @summary List of oauth configurations.
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof AdminAuthenticationApi
      */

@@ -13,21 +13,18 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { AuthConfig } from './auth-config';
 
 /**
- * Response for the OAuth config list method.
+ * 
  * @export
- * @interface OAuthConfigListResponse
+ * @enum {string}
  */
-export interface OAuthConfigListResponse {
-    /**
-     * List of the OAuth providers configurations
-     * @type {Array<AuthConfig>}
-     * @memberof OAuthConfigListResponse
-     */
-    'data': Array<AuthConfig>;
-}
+
+export const EntityTypeFORWARDERCONTRACT = {
+    ForwarderContract: 'forwarderContract'
+} as const;
+
+export type EntityTypeFORWARDERCONTRACT = typeof EntityTypeFORWARDERCONTRACT[keyof typeof EntityTypeFORWARDERCONTRACT];
+
+
 

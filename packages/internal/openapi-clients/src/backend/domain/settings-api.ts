@@ -22,7 +22,7 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { DeveloperAccountCreateRequest } from '../models';
+import { CreateDeveloperAccountCreateRequest } from '../models';
 // @ts-ignore
 import { DeveloperAccountDeleteResponse } from '../models';
 // @ts-ignore
@@ -35,6 +35,8 @@ import { DeveloperAccountResponse } from '../models';
 import { DeveloperAccountResponseExpandable } from '../models';
 // @ts-ignore
 import { SortOrder } from '../models';
+// @ts-ignore
+import { UpdateDeveloperAccountCreateRequest } from '../models';
 /**
  * SettingsApi - axios parameter creator
  * @export
@@ -44,13 +46,13 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
         /**
          * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
          * @summary Create a developer account.
-         * @param {DeveloperAccountCreateRequest} developerAccountCreateRequest 
+         * @param {CreateDeveloperAccountCreateRequest} createDeveloperAccountCreateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createDeveloperAccount: async (developerAccountCreateRequest: DeveloperAccountCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'developerAccountCreateRequest' is not null or undefined
-            assertParamExists('createDeveloperAccount', 'developerAccountCreateRequest', developerAccountCreateRequest)
+        createDeveloperAccount: async (createDeveloperAccountCreateRequest: CreateDeveloperAccountCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createDeveloperAccountCreateRequest' is not null or undefined
+            assertParamExists('createDeveloperAccount', 'createDeveloperAccountCreateRequest', createDeveloperAccountCreateRequest)
             const localVarPath = `/v1/settings/developer_accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -74,7 +76,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(developerAccountCreateRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createDeveloperAccountCreateRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -262,6 +264,50 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Update a developer account.
+         * @summary Update a developer account.
+         * @param {string} id 
+         * @param {UpdateDeveloperAccountCreateRequest} updateDeveloperAccountCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateDeveloperAccount: async (id: string, updateDeveloperAccountCreateRequest: UpdateDeveloperAccountCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateDeveloperAccount', 'id', id)
+            // verify required parameter 'updateDeveloperAccountCreateRequest' is not null or undefined
+            assertParamExists('updateDeveloperAccount', 'updateDeveloperAccountCreateRequest', updateDeveloperAccountCreateRequest)
+            const localVarPath = `/v1/settings/developer_accounts/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateDeveloperAccountCreateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -275,12 +321,12 @@ export const SettingsApiFp = function(configuration?: Configuration) {
         /**
          * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
          * @summary Create a developer account.
-         * @param {DeveloperAccountCreateRequest} developerAccountCreateRequest 
+         * @param {CreateDeveloperAccountCreateRequest} createDeveloperAccountCreateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createDeveloperAccount(developerAccountCreateRequest: DeveloperAccountCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createDeveloperAccount(developerAccountCreateRequest, options);
+        async createDeveloperAccount(createDeveloperAccountCreateRequest: CreateDeveloperAccountCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createDeveloperAccount(createDeveloperAccountCreateRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -332,6 +378,18 @@ export const SettingsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getVerificationPayload(address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * Update a developer account.
+         * @summary Update a developer account.
+         * @param {string} id 
+         * @param {UpdateDeveloperAccountCreateRequest} updateDeveloperAccountCreateRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateDeveloperAccount(id: string, updateDeveloperAccountCreateRequest: UpdateDeveloperAccountCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateDeveloperAccount(id, updateDeveloperAccountCreateRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -350,7 +408,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         createDeveloperAccount(requestParameters: SettingsApiCreateDeveloperAccountRequest, options?: AxiosRequestConfig): AxiosPromise<DeveloperAccountResponse> {
-            return localVarFp.createDeveloperAccount(requestParameters.developerAccountCreateRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.createDeveloperAccount(requestParameters.createDeveloperAccountCreateRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Delete a developer account from the current project.
@@ -392,6 +450,16 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
         getVerificationPayload(requestParameters: SettingsApiGetVerificationPayloadRequest, options?: AxiosRequestConfig): AxiosPromise<DeveloperAccountGetMessageResponse> {
             return localVarFp.getVerificationPayload(requestParameters.address, options).then((request) => request(axios, basePath));
         },
+        /**
+         * Update a developer account.
+         * @summary Update a developer account.
+         * @param {SettingsApiUpdateDeveloperAccountRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateDeveloperAccount(requestParameters: SettingsApiUpdateDeveloperAccountRequest, options?: AxiosRequestConfig): AxiosPromise<DeveloperAccountResponse> {
+            return localVarFp.updateDeveloperAccount(requestParameters.id, requestParameters.updateDeveloperAccountCreateRequest, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -403,10 +471,10 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
 export interface SettingsApiCreateDeveloperAccountRequest {
     /**
      * 
-     * @type {DeveloperAccountCreateRequest}
+     * @type {CreateDeveloperAccountCreateRequest}
      * @memberof SettingsApiCreateDeveloperAccount
      */
-    readonly developerAccountCreateRequest: DeveloperAccountCreateRequest
+    readonly createDeveloperAccountCreateRequest: CreateDeveloperAccountCreateRequest
 }
 
 /**
@@ -501,6 +569,27 @@ export interface SettingsApiGetVerificationPayloadRequest {
 }
 
 /**
+ * Request parameters for updateDeveloperAccount operation in SettingsApi.
+ * @export
+ * @interface SettingsApiUpdateDeveloperAccountRequest
+ */
+export interface SettingsApiUpdateDeveloperAccountRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof SettingsApiUpdateDeveloperAccount
+     */
+    readonly id: string
+
+    /**
+     * 
+     * @type {UpdateDeveloperAccountCreateRequest}
+     * @memberof SettingsApiUpdateDeveloperAccount
+     */
+    readonly updateDeveloperAccountCreateRequest: UpdateDeveloperAccountCreateRequest
+}
+
+/**
  * SettingsApi - object-oriented interface
  * @export
  * @class SettingsApi
@@ -516,7 +605,7 @@ export class SettingsApi extends BaseAPI {
      * @memberof SettingsApi
      */
     public createDeveloperAccount(requestParameters: SettingsApiCreateDeveloperAccountRequest, options?: AxiosRequestConfig) {
-        return SettingsApiFp(this.configuration).createDeveloperAccount(requestParameters.developerAccountCreateRequest, options).then((request) => request(this.axios, this.basePath));
+        return SettingsApiFp(this.configuration).createDeveloperAccount(requestParameters.createDeveloperAccountCreateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -565,6 +654,18 @@ export class SettingsApi extends BaseAPI {
      */
     public getVerificationPayload(requestParameters: SettingsApiGetVerificationPayloadRequest, options?: AxiosRequestConfig) {
         return SettingsApiFp(this.configuration).getVerificationPayload(requestParameters.address, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Update a developer account.
+     * @summary Update a developer account.
+     * @param {SettingsApiUpdateDeveloperAccountRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public updateDeveloperAccount(requestParameters: SettingsApiUpdateDeveloperAccountRequest, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).updateDeveloperAccount(requestParameters.id, requestParameters.updateDeveloperAccountCreateRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
