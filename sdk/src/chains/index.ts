@@ -126,7 +126,12 @@ export default [
   degenChain,
   optimism,
   optimismSepolia,
-
+  tiktrixTestnet,
+  dosMainnet,
+  dosTestnet,
+  soneiumMinato,
+  opBNB,
+  opBNBTestnet,
 ];
 
 export type Chain = {
