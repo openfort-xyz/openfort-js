@@ -17,26 +17,20 @@
 /**
  * 
  * @export
- * @interface OAuthInitRequestOptions
+ * @interface GrantCallbackRequest
  */
-export interface OAuthInitRequestOptions {
+export interface GrantCallbackRequest {
     /**
-     * A URL to custom handle the provider callback
+     * 
      * @type {string}
-     * @memberof OAuthInitRequestOptions
+     * @memberof GrantCallbackRequest
      */
-    'callbackTo'?: string;
+    'code': string;
     /**
-     * An object of query params
-     * @type {{ [key: string]: string; }}
-     * @memberof OAuthInitRequestOptions
-     */
-    'queryParams'?: { [key: string]: string; };
-    /**
-     * A URL to send the user to after they are confirmed.
+     * 
      * @type {string}
-     * @memberof OAuthInitRequestOptions
+     * @memberof GrantCallbackRequest
      */
-    'redirectTo'?: string;
+    'state': string;
 }
 

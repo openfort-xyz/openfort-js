@@ -139,6 +139,7 @@ export enum OAuthProvider {
   DISCORD = 'discord',
   EPIC_GAMES = 'epic_games',
   TELEGRAM = 'telegram',
+  LINE = 'line',
 }
 
 export interface NextActionPayload {
