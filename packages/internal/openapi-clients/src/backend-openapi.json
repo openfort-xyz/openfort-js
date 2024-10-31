@@ -191,13 +191,15 @@
           "discord",
           "epic_games",
           "facebook",
+          "telegram",
           "accelbyte",
           "firebase",
           "lootlocker",
           "playfab",
           "supabase",
           "custom",
-          "oidc"
+          "oidc",
+          "telegramMiniApp"
         ],
         "type": "string"
       },
@@ -1801,6 +1803,22 @@
         "type": "object",
         "additionalProperties": false
       },
+      "GrantCallbackRequest": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "state"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "OAuthResponse": {
         "properties": {
           "url": {
@@ -1821,6 +1839,10 @@
         "properties": {
           "options": {
             "properties": {
+              "callbackTo": {
+                "type": "string",
+                "description": "A URL to custom handle the provider callback"
+              },
               "queryParams": {
                 "properties": {},
                 "additionalProperties": {
@@ -1851,6 +1873,26 @@
         "type": "object",
         "additionalProperties": false
       },
+      "ThirdPartyLinkRequest": {
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider"
+          },
+          "token": {
+            "type": "string"
+          },
+          "tokenType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "token",
+          "tokenType"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "OAuthProvders": {
         "enum": [
           "google",
@@ -1858,13 +1900,15 @@
           "facebook",
           "discord",
           "epic_games",
+          "telegram",
           "accelbyte",
           "firebase",
           "lootlocker",
           "playfab",
           "supabase",
           "custom",
-          "oidc"
+          "oidc",
+          "telegramMiniApp"
         ],
         "type": "string"
       },
@@ -9227,6 +9271,9 @@
         "security": [
           {
             "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
           }
         ],
         "parameters": [
@@ -9245,6 +9292,58 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/OAuthInitRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/oauth/link": {
+      "post": {
+        "operationId": "LinkThirdParty",
+        "responses": {
+          "201": {
+            "description": "Success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthPlayerResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Api key is not valid"
+          }
+        },
+        "summary": "Initialize Link OAuth.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThirdPartyLinkRequest"
               }
             }
           }

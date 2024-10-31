@@ -28,13 +28,15 @@ export const AuthProviderResponse = {
     Discord: 'discord',
     EpicGames: 'epic_games',
     Facebook: 'facebook',
+    Telegram: 'telegram',
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',
     Lootlocker: 'lootlocker',
     Playfab: 'playfab',
     Supabase: 'supabase',
     Custom: 'custom',
-    Oidc: 'oidc'
+    Oidc: 'oidc',
+    TelegramMiniApp: 'telegramMiniApp'
 } as const;
 
 export type AuthProviderResponse = typeof AuthProviderResponse[keyof typeof AuthProviderResponse];

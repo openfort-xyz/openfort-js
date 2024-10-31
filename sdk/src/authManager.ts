@@ -453,9 +453,42 @@ export default class AuthManager {
     return response.data;
   }
 
-  public async linkOAuth(
-    provider: OAuthProvider,
+  public async linkThirdParty(
+    auth: Authentication,
+    provider: ThirdPartyOAuthProvider,
     playerToken: string,
+    tokenType: TokenType,
+    ecosystemGame?: string,
+  ): Promise<AuthPlayerResponse> {
+    const request = {
+      thirdPartyLinkRequest: {
+        provider,
+        token: playerToken,
+        tokenType,
+      },
+    };
+    const response = await this.backendApiClients.authenticationApi.linkThirdParty(
+      request,
+      {
+        headers: {
+          authorization: `Bearer ${this.publishableKey}`,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-player-token': auth.token,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-auth-provider': auth.thirdPartyProvider || undefined,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-token-type': auth.thirdPartyTokenType || undefined,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-game': ecosystemGame || undefined,
+        },
+      },
+    );
+    return response.data;
+  }
+
+  public async linkOAuth(
+    auth: Authentication,
+    provider: OAuthProvider,
     options?: InitializeOAuthOptions,
     ecosystemGame?: string,
   ): Promise<InitAuthResponse> {
@@ -472,7 +505,11 @@ export default class AuthManager {
         headers: {
           authorization: `Bearer ${this.publishableKey}`,
           // eslint-disable-next-line @typescript-eslint/naming-convention
-          'x-player-token': playerToken,
+          'x-player-token': auth.token,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-auth-provider': auth.thirdPartyProvider || undefined,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-token-type': auth.thirdPartyTokenType || undefined,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           'x-game': ecosystemGame || undefined,
         },

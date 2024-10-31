@@ -386,19 +386,44 @@ export class Openfort {
    * Initializes an OAuth linking process.
    *
    * @param provider - OAuth provider.
-   * @param authToken - Authentication token.
    * @param options - Additional options for initialization.
    * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
    * @returns An InitAuthResponse object.
    */
   public async initLinkOAuth(
     {
-      provider, authToken, options, ecosystemGame,
+      provider, options, ecosystemGame,
     }: {
       provider: OAuthProvider; authToken: string; options?: InitializeOAuthOptions, ecosystemGame?: string
     },
   ): Promise<InitAuthResponse> {
-    return await this.authManager.linkOAuth(provider, authToken, options, ecosystemGame);
+    const auth = Authentication.fromStorage(this.storage);
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    }
+
+    return await this.authManager.linkOAuth(auth, provider, options, ecosystemGame);
+  }
+
+  /**
+   * Links a Third-Party authentication provider to the account.
+   *
+   * @param provider - Third-party provider.
+   * @param token - Third-party token.
+   * @param tokenType - Type of the token (idToken or customToken).
+   * @returns An AuthPlayerResponse object.
+   */
+  public async linkThirdPartyProvider(
+    {
+      provider, token, tokenType,
+    }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType },
+  ): Promise<AuthPlayerResponse> {
+    const auth = Authentication.fromStorage(this.storage);
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    }
+
+    return await this.authManager.linkThirdParty(auth, provider, token, tokenType);
   }
 
   /**

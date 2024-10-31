@@ -181,6 +181,7 @@ models/gas-report-transaction-intents-list-response.ts
 models/gas-report-transaction-intents.ts
 models/gas-report.ts
 models/google-oauth-config.ts
+models/grant-callback-request.ts
 models/grant-oauth-response.ts
 models/index.ts
 models/init-embedded-request.ts
@@ -315,6 +316,7 @@ models/supabase-auth-config.ts
 models/telegram-oauth-config.ts
 models/telegram-third-party-config.ts
 models/test-trigger200-response.ts
+models/third-party-link-request.ts
 models/third-party-oauth-provider-accelbyte.ts
 models/third-party-oauth-provider-custom.ts
 models/third-party-oauth-provider-firebase.ts

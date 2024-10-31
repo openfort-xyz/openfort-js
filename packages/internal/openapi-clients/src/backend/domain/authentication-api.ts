@@ -64,6 +64,8 @@ import { SIWERequest } from '../models';
 // @ts-ignore
 import { SignupRequest } from '../models';
 // @ts-ignore
+import { ThirdPartyLinkRequest } from '../models';
+// @ts-ignore
 import { ThirdPartyOAuthRequest } from '../models';
 // @ts-ignore
 import { UnlinkEmailRequest } from '../models';
@@ -442,6 +444,47 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(sIWEAuthenticateRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Initialize Link OAuth.
+         * @param {ThirdPartyLinkRequest} thirdPartyLinkRequest 
+         * @param {string} [xGame] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkThirdParty: async (thirdPartyLinkRequest: ThirdPartyLinkRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'thirdPartyLinkRequest' is not null or undefined
+            assertParamExists('linkThirdParty', 'thirdPartyLinkRequest', thirdPartyLinkRequest)
+            const localVarPath = `/iam/v1/oauth/link`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(thirdPartyLinkRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1242,6 +1285,18 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 
+         * @summary Initialize Link OAuth.
+         * @param {ThirdPartyLinkRequest} thirdPartyLinkRequest 
+         * @param {string} [xGame] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkThirdParty(thirdPartyLinkRequest: ThirdPartyLinkRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkThirdParty(thirdPartyLinkRequest, xGame, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Authenticate a player based on email and password.
          * @summary Email and password login.
          * @param {LoginRequest} loginRequest 
@@ -1531,6 +1586,16 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          */
         linkSIWE(requestParameters: AuthenticationApiLinkSIWERequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
             return localVarFp.linkSIWE(requestParameters.sIWEAuthenticateRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Initialize Link OAuth.
+         * @param {AuthenticationApiLinkThirdPartyRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkThirdParty(requestParameters: AuthenticationApiLinkThirdPartyRequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.linkThirdParty(requestParameters.thirdPartyLinkRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * Authenticate a player based on email and password.
@@ -1862,6 +1927,27 @@ export interface AuthenticationApiLinkSIWERequest {
      * @memberof AuthenticationApiLinkSIWE
      */
     readonly sIWEAuthenticateRequest: SIWEAuthenticateRequest
+}
+
+/**
+ * Request parameters for linkThirdParty operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiLinkThirdPartyRequest
+ */
+export interface AuthenticationApiLinkThirdPartyRequest {
+    /**
+     * 
+     * @type {ThirdPartyLinkRequest}
+     * @memberof AuthenticationApiLinkThirdParty
+     */
+    readonly thirdPartyLinkRequest: ThirdPartyLinkRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiLinkThirdParty
+     */
+    readonly xGame?: string
 }
 
 /**
@@ -2237,6 +2323,18 @@ export class AuthenticationApi extends BaseAPI {
      */
     public linkSIWE(requestParameters: AuthenticationApiLinkSIWERequest, options?: AxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).linkSIWE(requestParameters.sIWEAuthenticateRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Initialize Link OAuth.
+     * @param {AuthenticationApiLinkThirdPartyRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public linkThirdParty(requestParameters: AuthenticationApiLinkThirdPartyRequest, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).linkThirdParty(requestParameters.thirdPartyLinkRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
