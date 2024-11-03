@@ -12,11 +12,12 @@ import { fromHex, Transport } from "viem";
 import { injected } from "wagmi/connectors";
 import openfortInstance from '../../utils/openfortConfig';
 import { useOpenfort } from "../../hooks/useOpenfort";
+import { EmbeddedState } from "@openfort/openfort-js";
 
 const SetPairingCode: React.FC<{
   handleSetMessage: (message: string) => void;
 }> = ({handleSetMessage}) => {
-    const { getEOAAddress, signMessage } = useOpenfort();
+    const { state, getEOAAddress, signMessage } = useOpenfort();
     const [loading, setLoading] = useState<boolean>(false);
     const [walletKit, setWalletKit] = useState<any>();
     const [activeSessions, setActiveSessions] = useState<any>(false);
@@ -80,6 +81,7 @@ const SetPairingCode: React.FC<{
     }
     const onSessionProposal = async (proposal: WalletKitTypes.SessionProposal) => {
       if (!walletKit) console.error('WalletKit not initialized');
+      if (state !== EmbeddedState.READY) return;
 
       handleSetMessage(JSON.stringify(proposal, null, 2));
 

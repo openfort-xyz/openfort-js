@@ -20,7 +20,9 @@ import {
 import type {TypedDataDomain, TypedDataField} from 'ethers';
 import axios from 'axios';
 import openfort from '../utils/openfortConfig';
-import { privateKeyToAddress } from 'viem/accounts';
+import { Address, privateKeyToAddress } from 'viem/accounts';
+import { Chain, createPublicClient, http } from 'viem';
+import { mainnet } from 'viem/chains';
 
 interface ContextType {
   state: EmbeddedState;
@@ -46,6 +48,7 @@ interface ContextType {
   ) => Promise<{data?: string; error?: Error}>;
   logout: () => Promise<void>;
   getEOAAddress: () => Promise<string>;
+  getBalance: (address: Address, chain: Chain) => Promise<bigint>;
 }
 
 const OpenfortContext = createContext<ContextType | null>(null);
@@ -258,6 +261,21 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     }
   }, []);
 
+  const getBalance = useCallback(async (address: Address, chain: Chain) => {
+    try {
+      const publicClient = createPublicClient({
+        chain,
+        transport: http(),
+      });
+      return await publicClient.getBalance({ address });
+    } catch (err){
+      console.error('Error obtaining Wallet Balance with Openfort:', err);
+      throw err instanceof Error
+        ? err
+        : new Error('An error occurred obtaining the Wallet Balance');
+    }
+  }, []);
+
   const contextValue: ContextType = {
     state,
     auth,
@@ -269,6 +287,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     signTypedData,
     logout,
     getEOAAddress,
+    getBalance,
   };
 
   return (
