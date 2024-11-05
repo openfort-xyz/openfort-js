@@ -21,6 +21,7 @@ import LinkOAuthButton from '../components/OAuth/LinkOAuthButton';
 import ExportPrivateKey from '../components/Export/ExportPrivateKeyButton';
 import SetWalletRecovery from '../components/SetWalletRecovery/SetWalletRecoveryButton';
 import { SetPairingCodeWithWagmi } from '../components/WalletConnect/SetPairingCode';
+import AddFunds from '../components/Funding/AddFunds';
 
 const HomePage: NextPage = () => {
   const {state} = useOpenfort();
@@ -225,6 +226,7 @@ const HomePage: NextPage = () => {
                   <SetWalletRecovery handleSetMessage={handleSetMessage} />
                 </div>
               </div>
+
               <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
                 <h2 className="flex justify-left font-medium text-xl pb-4">
                   Wallet Connect
@@ -236,6 +238,18 @@ const HomePage: NextPage = () => {
                   <SetPairingCodeWithWagmi
                     handleSetMessage={handleSetMessage}
                   />
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
+                <h2 className="flex justify-left font-medium text-xl pb-4">
+                  Funding
+                </h2>
+                <div>
+                  <p className="font-medium text-black mb-4">
+                    Add funds is on-ramp or transfer funds from another wallet.
+                  </p>
+                  <AddFunds handleSetMessage={handleSetMessage} />
                 </div>
               </div>
             </div>
