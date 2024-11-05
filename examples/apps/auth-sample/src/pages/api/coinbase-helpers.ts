@@ -37,6 +37,7 @@ export async function createRequest({
     algorithm: "ES256",
     header: {
       kid: key_name,
+      // @ts-ignore
       nonce: crypto.randomBytes(16).toString("hex"), // non-standard, coinbase-specific header that is necessary
     },
   };
