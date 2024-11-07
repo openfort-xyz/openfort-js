@@ -50,6 +50,8 @@ const AddFunds: React.FC<{
         if (!response.ok) return 'pending';
 
         const json = await response.json();
+        if(!json.transactions) return 'pending';
+
         switch (json.transactions[0]?.status) {
           case 'ONRAMP_TRANSACTION_STATUS_SUCCESS':
             return 'completed';
