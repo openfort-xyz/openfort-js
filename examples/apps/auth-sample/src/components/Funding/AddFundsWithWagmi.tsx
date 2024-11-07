@@ -1,22 +1,46 @@
-import { mainnet, polygonAmoy } from 'viem/chains';
-import { Connector, useConnect, useSendTransaction, useSwitchChain, useWaitForTransactionReceipt, WagmiProvider } from "wagmi";
+import { polygonAmoy } from 'viem/chains';
+import { Connector, createConfig, useConnect, useSendTransaction, useSwitchChain, useWaitForTransactionReceipt, WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { Address, parseEther } from 'viem';
+import { connectorsForWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { Address, http, parseEther } from 'viem';
 import { useEffect, useState } from 'react';
+import {
+  rainbowWallet,
+  walletConnectWallet,
+  metaMaskWallet,
+  coinbaseWallet,
+} from '@rainbow-me/rainbowkit/wallets';
 
 export const AddFundsWithWagmi: React.FC<{
   callback: () => void;
   fundAddress: Address;
   fundAmount: string;
 }> = ({callback, fundAddress, fundAmount}) => {
-  const config = getDefaultConfig({
-    appName: 'My RainbowKit App',
-    projectId: 'YOUR_PROJECT_ID',
+  const connectors = connectorsForWallets(
+    [
+      {
+        groupName: 'Wallets',
+        wallets: [
+          metaMaskWallet,
+          walletConnectWallet,
+          rainbowWallet,
+          coinbaseWallet,
+        ],
+      },
+    ],
+    {
+      projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string,
+      appName: 'YOUR_APP_NAME',
+    }
+  );
+  const config = createConfig({
     chains: [polygonAmoy],
-    ssr: true, // If your dApp uses server side rendering (SSR),
+    transports: {
+      [polygonAmoy.id]: http(),
+    },
+    connectors,
+    ssr: true,
   });
-
   const queryClient = new QueryClient();
 
   return (

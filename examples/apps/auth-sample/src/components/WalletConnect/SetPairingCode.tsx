@@ -29,7 +29,7 @@ const SetPairingCode: React.FC<{
         (async () => {
             const wKit = await WalletKit.init({
               core: new Core({
-                projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID,  
+                projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
               }),
               metadata: {
                 name: 'openfort',
