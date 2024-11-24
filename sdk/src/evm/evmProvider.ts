@@ -21,6 +21,8 @@ import { Signer } from '../signer/isigner';
 import { Account } from '../configuration/account';
 import { SignerManager } from '../manager/signer';
 import { IStorage, StorageKeys } from '../storage/istorage';
+import { addEthereumChain } from './addEthereumChain';
+import { GrantPermissionsParameters, registerSession } from './registerSession';
 
 export type EvmProviderInput = {
   storage: IStorage;
@@ -39,7 +41,7 @@ export class EvmProvider implements Provider {
 
   readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>;
 
-  readonly #rpcProvider: StaticJsonRpcProvider; // Used for read
+  #rpcProvider: StaticJsonRpcProvider; // Used for read
 
   readonly #backendApiClients: BackendApiClients;
 
@@ -85,7 +87,10 @@ export class EvmProvider implements Provider {
 
   async #performRequest(request: RequestArguments): Promise<any> {
     switch (request.method) {
-      case 'eth_accounts':
+      case 'eth_accounts': {
+        const account = Account.fromStorage(this.#storage);
+        return account ? [account.address] : [];
+      }
       case 'eth_requestAccounts': {
         let account = Account.fromStorage(this.#storage);
         if (account) {
@@ -154,6 +159,53 @@ export class EvmProvider implements Provider {
         const { chainId } = await this.#rpcProvider.detectNetwork();
         return hexlify(chainId);
       }
+      case 'wallet_addEthereumChain': {
+        const signer = SignerManager.fromStorage();
+        if (!signer) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            'Unauthorized - must be authenticated and configured with a signer',
+          );
+        }
+        return await addEthereumChain({
+          params: request.params || [],
+          rpcProvider: this.#rpcProvider,
+        });
+      }
+      case 'wallet_showCallsStatus':
+      case 'wallet_getCallsStatus':
+      case 'wallet_sendCalls':
+      case 'wallet_grantPermissions': {
+        const account = Account.fromStorage(this.#storage);
+        const signer = SignerManager.fromStorage();
+        const authentication = Authentication.fromStorage(this.#storage);
+        if (!account || !signer || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+        }
+        return await registerSession({
+          params: (request.params || [] as unknown) as GrantPermissionsParameters,
+          signer,
+          account,
+          authentication,
+          backendClient: this.#backendApiClients,
+          policyId: this.#policyId,
+        });
+      }
+      case 'wallet_revokePermissions':
+      case 'wallet_getCapabilities': {
+        const { chainId } = await this.#rpcProvider.detectNetwork();
+        const capabilities = {
+          [hexlify(chainId)]: {
+            permissions: {
+              supported: true,
+              signerTypes: ['keys', 'account'],
+              keyTypes: ['secp256k1', 'secp256r1'],
+              permissionTypes: ['erc20-token-transfer', 'erc721-token-transfer'],
+            },
+          },
+        };
+        return capabilities;
+      }
       // Pass through methods
       case 'eth_gasPrice':
       case 'eth_getBalance':
@@ -170,7 +222,7 @@ export class EvmProvider implements Provider {
         return this.#rpcProvider.send(request.method, request.params || []);
       }
       default: {
-        throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, 'Method not supported');
+        throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`);
       }
     }
   }

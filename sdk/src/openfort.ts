@@ -68,7 +68,7 @@ export class Openfort {
    * @throws {OpenfortError} If the signer is not an EmbeddedSigner.
    */
   public getEthereumProvider(
-    options: { announceProvider: boolean; policy?: string } = { announceProvider: true },
+    options: { policy?: string } = {},
   ): Provider {
     const authentication = Authentication.fromStorage(this.storage);
     const signer = SignerManager.fromStorage();
@@ -84,12 +84,10 @@ export class Openfort {
       policyId: options.policy,
     });
 
-    if (options?.announceProvider) {
-      announceProvider({
-        info: openfortProviderInfo,
-        provider,
-      });
-    }
+    announceProvider({
+      info: openfortProviderInfo,
+      provider,
+    });
 
     return provider;
   }
@@ -735,7 +733,7 @@ export class Openfort {
   /**
    * Validates and refreshes the access token if needed.
    */
-  public async validateAndRefreshToken(forceRefresh?:boolean):Promise<void> {
+  public async validateAndRefreshToken(forceRefresh?: boolean): Promise<void> {
     const auth = Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
