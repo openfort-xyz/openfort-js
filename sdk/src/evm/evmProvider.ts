@@ -24,6 +24,7 @@ import { IStorage, StorageKeys } from '../storage/istorage';
 import { addEthereumChain } from './addEthereumChain';
 import { GrantPermissionsParameters, registerSession } from './registerSession';
 import { RevokePermissionsRequestParams, revokeSession } from './revokeSession';
+import { sendCalls } from './sendCalls';
 
 export type EvmProviderInput = {
   storage: IStorage;
@@ -173,9 +174,26 @@ export class EvmProvider implements Provider {
           rpcProvider: this.#rpcProvider,
         });
       }
+      // EIP-5792: Wallet Call API
       case 'wallet_showCallsStatus':
       case 'wallet_getCallsStatus':
-      case 'wallet_sendCalls':
+      case 'wallet_sendCalls': {
+        const account = Account.fromStorage(this.#storage);
+        const signer = SignerManager.fromStorage();
+        const authentication = Authentication.fromStorage(this.#storage);
+        if (!account || !signer || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+        }
+
+        return await sendCalls({
+          params: request.params || [],
+          signer,
+          account,
+          authentication,
+          backendClient: this.#backendApiClients,
+          policyId: this.#policyId,
+        });
+      }
       case 'wallet_grantPermissions': {
         const account = Account.fromStorage(this.#storage);
         const signer = SignerManager.fromStorage();
@@ -192,6 +210,7 @@ export class EvmProvider implements Provider {
           policyId: this.#policyId,
         });
       }
+      // EIP-7715: Wallet Session Key API
       case 'wallet_revokePermissions': {
         const account = Account.fromStorage(this.#storage);
         const signer = SignerManager.fromStorage();
