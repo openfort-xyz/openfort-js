@@ -23,6 +23,7 @@ import { SignerManager } from '../manager/signer';
 import { IStorage, StorageKeys } from '../storage/istorage';
 import { addEthereumChain } from './addEthereumChain';
 import { GrantPermissionsParameters, registerSession } from './registerSession';
+import { RevokePermissionsRequestParams, revokeSession } from './revokeSession';
 
 export type EvmProviderInput = {
   storage: IStorage;
@@ -191,7 +192,21 @@ export class EvmProvider implements Provider {
           policyId: this.#policyId,
         });
       }
-      case 'wallet_revokePermissions':
+      case 'wallet_revokePermissions': {
+        const account = Account.fromStorage(this.#storage);
+        const signer = SignerManager.fromStorage();
+        const authentication = Authentication.fromStorage(this.#storage);
+        if (!account || !signer || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+        }
+        return await revokeSession({
+          params: (request.params || {} as unknown) as RevokePermissionsRequestParams,
+          signer,
+          account,
+          authentication,
+          backendClient: this.#backendApiClients,
+        });
+      }
       case 'wallet_getCapabilities': {
         const { chainId } = await this.#rpcProvider.detectNetwork();
         const capabilities = {
@@ -200,7 +215,7 @@ export class EvmProvider implements Provider {
               supported: true,
               signerTypes: ['keys', 'account'],
               keyTypes: ['secp256k1', 'secp256r1'],
-              permissionTypes: ['erc20-token-transfer', 'erc721-token-transfer'],
+              permissionTypes: ['contract-calls'],
             },
           },
         };
