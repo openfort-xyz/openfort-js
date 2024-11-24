@@ -46,7 +46,7 @@ const MintNFTButton: React.FC<{
       <button
         onClick={handleMintNFT}
         disabled={state !== EmbeddedState.READY}
-        className={`mt-4 w-32 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
+        className={`mt-2 w-60 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
       >
         {loading ? <Loading /> : 'Mint NFT'}
       </button>

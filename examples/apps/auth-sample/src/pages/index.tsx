@@ -135,22 +135,17 @@ const HomePage: NextPage = () => {
                 </div>
                 <div>
                   <span className="font-medium text-black">
-                    Ethers provider:{' '}
+                    EIP-1193 provider:{' '}
                   </span>
                   <EvmProviderButton handleSetMessage={handleSetMessage} />
                 </div>
+              </div>
+              <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
+                <h2 className="flex justify-left font-medium text-xl pb-4">
+                  Session keys
+                </h2>
                 <div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      router.push('/link-wallet');
-                    }}
-                    className={
-                      'mt-4 w-40 px-4 py-2 border-black text-black font-semibold rounded-lg shadow-md hover:bg-gray-100 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
-                    }
-                  >
-                    {'Link a Wallet'}
-                  </button>
+                  <CreateSessionButton handleSetMessage={handleSetMessage} />
                 </div>
               </div>
               <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
@@ -200,13 +195,18 @@ const HomePage: NextPage = () => {
                     </div>
                   ))}
                 </div>
-              </div>
-              <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-                <h2 className="flex justify-left font-medium text-xl pb-4">
-                  Session keys
-                </h2>
                 <div>
-                  <CreateSessionButton handleSetMessage={handleSetMessage} />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      router.push('/link-wallet');
+                    }}
+                    className={
+                      'mt-4 w-40 px-4 py-2 border-black text-black font-semibold rounded-lg shadow-md hover:bg-gray-100 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
+                    }
+                  >
+                    {'Link a Wallet'}
+                  </button>
                 </div>
               </div>
               <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
