@@ -2,7 +2,6 @@ import { BackendApiClients } from '@openfort/openapi-clients';
 import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
 import { Prettify } from 'utils/helpers';
-import { Signer } from '../signer/isigner';
 import { TransactionIntentResponse } from '../types';
 
 export type GetCallsStatusParameters = { id: string };
@@ -31,13 +30,12 @@ export type GetCallsStatusReturnType = Prettify<
 WalletGetCallsStatusReturnType<bigint, 'success' | 'reverted'>
 >;
 
-export type WalletSendCallsParams = {
-  signer: Signer
+export type GetCallsStatusParams = {
   backendClient: BackendApiClients;
   account: Account;
   authentication: Authentication;
   policyId?: string;
-  params: string;
+  params: GetCallsStatusParameters;
 };
 
 const buildOpenfortTransactions = async (
@@ -69,9 +67,9 @@ export const getCallStatus = async ({
   params,
   authentication,
   backendClient,
-}: WalletSendCallsParams): Promise<GetCallsStatusReturnType> => {
+}: GetCallsStatusParams): Promise<GetCallsStatusReturnType> => {
   const transactionIntent = await buildOpenfortTransactions(
-    params,
+    params.id,
     backendClient,
     authentication,
   );

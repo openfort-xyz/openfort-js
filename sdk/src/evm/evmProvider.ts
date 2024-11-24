@@ -25,6 +25,7 @@ import { addEthereumChain } from './addEthereumChain';
 import { GrantPermissionsParameters, registerSession } from './registerSession';
 import { RevokePermissionsRequestParams, revokeSession } from './revokeSession';
 import { sendCalls } from './sendCalls';
+import { GetCallsStatusParameters, getCallStatus } from './getCallsStatus';
 
 export type EvmProviderInput = {
   storage: IStorage;
@@ -175,8 +176,24 @@ export class EvmProvider implements Provider {
         });
       }
       // EIP-5792: Wallet Call API
-      case 'wallet_showCallsStatus':
-      case 'wallet_getCallsStatus':
+      case 'wallet_showCallsStatus': {
+        return null;
+      }
+      case 'wallet_getCallsStatus': {
+        const account = Account.fromStorage(this.#storage);
+        const signer = SignerManager.fromStorage();
+        const authentication = Authentication.fromStorage(this.#storage);
+        if (!account || !signer || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+        }
+
+        return await getCallStatus({
+          params: (request.params || {} as unknown) as GetCallsStatusParameters,
+          authentication,
+          backendClient: this.#backendApiClients,
+          account,
+        });
+      }
       case 'wallet_sendCalls': {
         const account = Account.fromStorage(this.#storage);
         const signer = SignerManager.fromStorage();
@@ -233,7 +250,7 @@ export class EvmProvider implements Provider {
             permissions: {
               supported: true,
               signerTypes: ['keys', 'account'],
-              keyTypes: ['secp256k1', 'secp256r1'],
+              keyTypes: ['secp256k1'],
               permissionTypes: ['contract-calls'],
             },
           },
