@@ -4,7 +4,7 @@ import { Authentication } from 'configuration/authentication';
 import { Prettify } from 'utils/helpers';
 import { TransactionIntentResponse } from '../types';
 
-export type GetCallsStatusParameters = { id: string };
+export type GetCallsStatusParameters = string[];
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export type WalletCallReceipt<quantity = `0x${string}`, status = `0x${string}`> = {
@@ -69,7 +69,7 @@ export const getCallStatus = async ({
   backendClient,
 }: GetCallsStatusParams): Promise<GetCallsStatusReturnType> => {
   const transactionIntent = await buildOpenfortTransactions(
-    params.id,
+    params[0],
     backendClient,
     authentication,
   );

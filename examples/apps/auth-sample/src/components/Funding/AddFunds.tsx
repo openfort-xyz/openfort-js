@@ -13,6 +13,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { AddFundsWithWagmi } from "./AddFundsWithWagmi";
 import { EmbeddedState } from "@openfort/openfort-js";
 import { polygonAmoy } from "viem/chains";
+import { Button } from "../ui/button";
 
 declare enum StepEnum {
   START = 0,
@@ -159,15 +160,14 @@ const AddFunds: React.FC<{
     <>
       <Dialog onOpenChange={handleDialogOpen}>
         <DialogTrigger>
-          <button
-            type="button"
-            disabled={step > 0}
-            className={
-              'mt-4 w-56 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
-            }
-          >
-            {step ? <Loading /> : 'Fund'}
-          </button>
+          <Button
+          type="button"
+          className='w-full' 
+          disabled={step > 0}
+          variant="outline"
+        >
+          {step ? <Loading /> : 'Fund'}
+        </Button>
         </DialogTrigger>
 
         {step == StepEnum.START && (

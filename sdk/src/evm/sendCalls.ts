@@ -65,9 +65,9 @@ export const sendCalls = async ({
   authentication,
   backendClient,
   policyId,
-}: WalletSendCallsParams): Promise<string> => {
+}: WalletSendCallsParams): Promise<`0x${string}`> => {
   const openfortTransaction = await buildOpenfortTransactions(
-    params,
+    params[0].calls,
     backendClient,
     account,
     authentication,
@@ -96,5 +96,5 @@ export const sendCalls = async ({
     throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.error.reason);
   }
 
-  return response.transactionHash!;
+  return response.transactionHash as `0x${string}`;
 };

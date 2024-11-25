@@ -8,7 +8,7 @@ import { Signer } from '../signer/isigner';
 import { GrantPermissionsReturnType, SessionResponse } from '../types';
 
 export type WalletRequestPermissionsParams = {
-  params: GrantPermissionsParameters;
+  params: GrantPermissionsParameters[];
   signer: Signer;
   backendClient: BackendApiClients;
   account: Account;
@@ -192,24 +192,33 @@ const formatSessionRequest = (
 };
 
 const buildOpenfortTransactions = async (
-  params: GrantPermissionsParameters,
+  params: GrantPermissionsParameters[],
   backendApiClients: BackendApiClients,
   account: Account,
   authentication: Authentication,
   policyId?: string,
 ): Promise<SessionResponse> => {
-  const now = Math.floor(Date.now() / 1000);
-  const formattedPermissions = params.permissions.map(formatPermissionRequest);
+  const param = params[0];
+  const now = Math.floor(new Date().getTime() / 1000);
+  const expiry = Math.floor(new Date(Date.now() + param.expiry * 1000).getTime() / 1000);
+  const formattedPermissions = param.permissions.map(formatPermissionRequest);
   const whitelist = formattedPermissions.filter(
     (p) => p.type === 'contract-call'
       || p.type === 'erc20-token-transfer',
   ).map((p) => (p.data as { address: `0x${string}` }).address);
+  const sessionAddress = typeof param.account === 'string' ? param.account : param.account?.address ?? undefined;
+  if (!sessionAddress) {
+    throw new JsonRpcError(
+      RpcErrorCode.RPC_SERVER_ERROR,
+      'Failed to request permissions - missing session address',
+    );
+  }
 
   const sessionRequest = formatSessionRequest(
-    typeof params.account === 'object' && 'address' in params.account ? params.account.address : account.address,
+    sessionAddress,
     account.chainId,
     now,
-    params.expiry,
+    expiry,
     policyId,
     false,
     whitelist,

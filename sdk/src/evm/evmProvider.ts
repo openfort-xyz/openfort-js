@@ -219,7 +219,7 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         return await registerSession({
-          params: (request.params || [] as unknown) as GrantPermissionsParameters,
+          params: (request.params || [] as unknown) as GrantPermissionsParameters[],
           signer,
           account,
           authentication,
@@ -249,7 +249,7 @@ export class EvmProvider implements Provider {
           [hexlify(chainId)]: {
             permissions: {
               supported: true,
-              signerTypes: ['keys', 'account'],
+              signerTypes: ['account'],
               keyTypes: ['secp256k1'],
               permissionTypes: ['contract-calls'],
             },

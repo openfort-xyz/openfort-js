@@ -22,7 +22,6 @@ import axios from 'axios';
 import openfort from '../utils/openfortConfig';
 import { Address, privateKeyToAddress } from 'viem/accounts';
 import { Chain, createPublicClient, http } from 'viem';
-import { mainnet } from 'viem/chains';
 
 interface ContextType {
   state: EmbeddedState;
@@ -100,7 +99,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const getEvmProvider = useCallback((): Provider => {
     const externalProvider = openfort.getEthereumProvider({
-      announceProvider: true,
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
     });
     if (!externalProvider) {

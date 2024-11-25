@@ -68,7 +68,13 @@ export class Openfort {
    * @throws {OpenfortError} If the signer is not an EmbeddedSigner.
    */
   public getEthereumProvider(
-    options: { policy?: string } = {},
+    options: {
+      policy?: string, providerInfo?: {
+        icon: `data:image/${string}`; // RFC-2397
+        name: string;
+        rdns: string;
+      }
+    } = {},
   ): Provider {
     const authentication = Authentication.fromStorage(this.storage);
     const signer = SignerManager.fromStorage();
@@ -85,7 +91,7 @@ export class Openfort {
     });
 
     announceProvider({
-      info: openfortProviderInfo,
+      info: { ...openfortProviderInfo, ...options.providerInfo },
       provider,
     });
 

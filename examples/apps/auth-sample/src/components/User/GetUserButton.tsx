@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import Loading from '../Loading';
 import openfort from '../../utils/openfortConfig';
+import { Button } from '../ui/button';
 
 const GetUserButton: React.FC<{
   handleSetMessage: (message: string) => void;
@@ -27,12 +28,14 @@ const GetUserButton: React.FC<{
 
   return (
     <div>
-      <button
+      <Button
+        className='w-full' 
+        disabled={loading} 
         onClick={handleUserMessage}
-        className={`mt-2 w-44 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
+        variant="outline"
       >
         {loading ? <Loading /> : 'Get user'}
-      </button>
+        </Button>
     </div>
   );
 };

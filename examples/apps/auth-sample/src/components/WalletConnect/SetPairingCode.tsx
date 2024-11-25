@@ -13,6 +13,7 @@ import { injected } from "wagmi/connectors";
 import openfortInstance from '../../utils/openfortConfig';
 import { useOpenfort } from "../../hooks/useOpenfort";
 import { EmbeddedState } from "@openfort/openfort-js";
+import { Button } from "../ui/button";
 
 const SetPairingCode: React.FC<{
   handleSetMessage: (message: string) => void;
@@ -185,18 +186,16 @@ const SetPairingCode: React.FC<{
         <input
           name={`walletConnectPairingCode`}
           placeholder="Pairing Code"
-          className="w-full p-2 border border-gray-200 rounded-lg"
+          className="w-full p-2 border border-gray-200 rounded-lg mb-2"
         />
-        <button
-          type="button"
-          onClick={handleSetPairingCode}
-          disabled={loading}
-          className={
-            'mt-4 w-56 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
-          }
-        >
-          {loading ? <Loading /> : 'Pair with dApp'}
-        </button>
+        <Button
+        className='w-full' 
+        onClick={handleSetPairingCode}
+        disabled={loading}
+        variant="outline"
+      >
+        {loading ? <Loading /> : 'Pair with dApp'}
+      </Button>
 
         {activeSessions && (
           <ul className="mt-5">
@@ -225,9 +224,8 @@ const SetPairingCode: React.FC<{
             })}
           </ul>
         )}
-
         {!activeSessions || Object.keys(activeSessions).length == 0 && (
-          <p className="mt-4">No dApps are connected yet.</p>
+          <p className="text-red-400 mt-4 text-xs">No dApps are connected yet.</p>
         )}
       </div>
     );
@@ -241,7 +239,6 @@ export const SetPairingCodeWithWagmi: React.FC<{
 }> = ({handleSetMessage}) => {
   useEffect(() => {
     if (!openfortInstance) return;
-    openfortInstance.getEmbeddedState();
     openfortInstance.getEthereumProvider(); // EIP-6963
   }, [openfortInstance]);
 

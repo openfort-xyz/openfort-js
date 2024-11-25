@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useOpenfort} from '../../hooks/useOpenfort';
 import {EmbeddedState} from '@openfort/openfort-js';
 import Loading from '../Loading';
+import { Button } from '../ui/button';
 
 const SignTypedDataButton: React.FC<{
   handleSetMessage: (message: string) => void;
@@ -54,13 +55,22 @@ const SignTypedDataButton: React.FC<{
 
   return (
     <div>
-      <button
+      <Button
+        className='w-full' 
         onClick={handleSignTypedData}
         disabled={state !== EmbeddedState.READY}
-        className={`mt-2 w-52 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
+        variant="outline"
       >
         {loading ? <Loading /> : 'Sign Typed Message'}
-      </button>
+      </Button>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://github.com/openfort-xyz/sample-browser-nextjs-embedded-signer/blob/main/src/components/Signatures/SignTypedDataButton.tsx#L25"
+        className="text-blue-600 hover:underline text-xs"
+      >
+        {'View typed message'}
+      </a>
     </div>
   );
 };

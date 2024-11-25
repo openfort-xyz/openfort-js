@@ -3,27 +3,23 @@ import {useOpenfort} from '../../hooks/useOpenfort';
 import {EmbeddedState} from '@openfort/openfort-js';
 import Loading from '../Loading';
 import openfort from '../../utils/openfortConfig';
-import {ethers} from 'ethers';
-import MintNFTSessionButton from './MintNFTButtonSession';
+import BackendMintButton from './BackendMintButton';
+import { Button } from '../ui/button';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
-const sessionMethods = [
-  {id: '1hour', title: '1 Hour'},
-  {id: '1day', title: '1 Day'},
-  {id: '1month', title: '1 Month'},
-];
-
-const CreateSessionButton: React.FC<{
+const BackendCreateSessionButton: React.FC<{
   handleSetMessage: (message: string) => void;
-}> = ({handleSetMessage}) => {
+  setSessionKey: (sessionKey: `0x${string}` | null) => void;
+  sessionKey: `0x${string}` | null;
+}> = ({handleSetMessage, setSessionKey, sessionKey}) => {
   const {state, signMessage} = useOpenfort();
   const [loading, setLoading] = useState(false);
-  const [sessionKey, setSessionKey] = useState<string | null>(null);
 
   const createSession = useCallback(async (): Promise<{
-    address: string;
-    privateKey: string;
+    address: `0x${string}`;
+    privateKey: `0x${string}`;
   } | null> => {
-    const sessionKey = ethers.Wallet.createRandom();
+    const sessionKey = generatePrivateKey();
     const sessionResponse = await fetch(`/api/protected-create-session`, {
       method: 'POST',
       headers: {
@@ -34,7 +30,7 @@ const CreateSessionButton: React.FC<{
         sessionDuration: document.querySelector(
           'input[name="session-method"]:checked'
         )?.id,
-        sessionAddress: sessionKey.address,
+        sessionAddress: sessionKey,
       }),
     });
 
@@ -62,8 +58,9 @@ const CreateSessionButton: React.FC<{
       if (!response?.isActive) {
         throw new Error('Session key registration failed');
       }
-      setSessionKey(sessionKey.privateKey);
-      return {address: sessionKey.address, privateKey: sessionKey.privateKey};
+      setSessionKey(sessionKey);
+      const accountAddress = privateKeyToAccount(sessionKey).address;
+      return {address: accountAddress, privateKey: sessionKey};
     }
     return null;
   }, []);
@@ -72,7 +69,7 @@ const CreateSessionButton: React.FC<{
     if (!sessionKey) {
       return null;
     }
-    const sessionSigner = new ethers.Wallet(sessionKey);
+    const sessionSigner = privateKeyToAccount(sessionKey);
 
     const revokeResponse = await fetch(`/api/protected-revoke-session`, {
       method: 'POST',
@@ -135,57 +132,28 @@ const CreateSessionButton: React.FC<{
 
   return (
     <div>
-      <div>
-        <fieldset>
-          <legend className="font-medium leading-6 text-black">
-            Session duration
-          </legend>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            How long should the session last?
-          </p>
-          <div className="mt-3 space-y-1">
-            {sessionMethods.map((sessionMethod) => (
-              <div key={sessionMethod.id} className="flex items-center">
-                <input
-                  disabled={sessionKey !== null}
-                  id={sessionMethod.id}
-                  name="session-method"
-                  type="radio"
-                  defaultChecked={sessionMethod.id === '1day'}
-                  className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-600"
-                />
-                <label
-                  htmlFor={sessionMethod.id}
-                  className="ml-3 block text-sm font-medium leading-6 text-gray-900"
-                >
-                  {sessionMethod.title}
-                </label>
-              </div>
-            ))}
-          </div>
-        </fieldset>
-        <button
-          onClick={
-            sessionKey !== null ? handleRevokeSession : handleCreateSession
-          }
-          disabled={state !== EmbeddedState.READY}
-          className={`mt-4 w-44 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
-        >
-          {loading ? (
-            <Loading />
-          ) : sessionKey !== null ? (
-            'Revoke session'
-          ) : (
-            'Create session'
-          )}
-        </button>
-      </div>
-      <MintNFTSessionButton
+      <Button
+        className='w-full' 
+        disabled={state !== EmbeddedState.READY} 
+        onClick={
+          sessionKey !== null ? handleRevokeSession : handleCreateSession
+        }
+        variant="outline"
+      >
+        {loading ? (
+          <Loading />
+        ) : sessionKey !== null ? (
+          'Revoke session'
+        ) : (
+          'Create session'
+        )}
+      </Button>
+      <BackendMintButton
         handleSetMessage={handleSetMessage}
-        sessionKey={sessionKey}
+        sessionKey={sessionKey as `0x${string}`}
       />
     </div>
   );
 };
 
-export default CreateSessionButton;
+export default BackendCreateSessionButton;
