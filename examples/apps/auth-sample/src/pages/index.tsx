@@ -22,6 +22,7 @@ import AddFunds from '../components/Funding/AddFunds';
 import { Button } from '@/components/ui/button';
 import { Wallet } from 'lucide-react';
 import AccountActions from '@/components/AccountActions/AccountActions';
+import { GitHubLogoIcon } from '@radix-ui/react-icons';
 
 const HomePage: NextPage = () => {
   const {state} = useOpenfort();
@@ -100,13 +101,23 @@ const HomePage: NextPage = () => {
               Embedded Smart Wallet
             </p>
           </div>
+          <div className='space-x-2 flex'>
           <a 
-            className='h-9 px-4 py-2 bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
-            target="_blank"
-            href='https://dashboard.openfort.xyz/auth/register'
-            >
-              {'Get started with Openfort ->'}
-          </a>
+              className='hidden md:inline-flex border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
+              target="_blank"
+              href='https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/auth-sample'
+              >
+                <GitHubLogoIcon className='h-5 w-5 mr-2'/>
+                {'View on Github'}
+            </a>
+            <a 
+              className='h-9 px-4 py-2 bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
+              target="_blank"
+              href='https://dashboard.openfort.xyz/auth/register'
+              >
+                {'Get started with Openfort ->'}
+            </a>
+          </div>
         </div>
       </header>
       <main className="h-screen flex">
