@@ -4,17 +4,50 @@ import { Authentication } from 'configuration/authentication';
 import { OneOf } from 'utils/helpers';
 import { CreateSessionRequest } from '@openfort/openapi-clients/dist/backend';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
-import { Signer } from '../signer/isigner';
+import { Signer as OpenfortSigner } from '../signer/isigner';
 import { GrantPermissionsReturnType, SessionResponse } from '../types';
 
 export type WalletRequestPermissionsParams = {
   params: GrantPermissionsParameters[];
-  signer: Signer;
+  signer: OpenfortSigner;
   backendClient: BackendApiClients;
   account: Account;
   authentication: Authentication;
   policyId?: string;
 };
+
+/** @internal */
+export type AccountSigner = {
+  type: 'account'
+  data: {
+    id: `0x${string}`
+  }
+};
+
+/** @internal */
+export type KeySigner = {
+  type: 'key'
+  data: {
+    id: string
+  }
+};
+
+/** @internal */
+export type MultiKeySigner = {
+  type: 'keys'
+  data: {
+    ids: string[]
+  }
+};
+
+/** @internal */
+export type WalletSigner = {
+  type: 'wallet'
+};
+
+export type Signer = OneOf<
+AccountSigner | KeySigner | MultiKeySigner | WalletSigner
+>;
 
 export type GrantPermissionsParameters = {
   /** Timestamp (in seconds) that specifies the time by which this session MUST expire. */
@@ -206,10 +239,16 @@ const buildOpenfortTransactions = async (
     (p) => p.type === 'contract-call'
       || p.type === 'erc20-token-transfer',
   ).map((p) => (p.data as { address: `0x${string}` }).address);
-  const sessionAddress = typeof param.account === 'string' ? param.account : param.account?.address ?? undefined;
+  if (param.signer && param.signer.type === 'keys') {
+    throw new JsonRpcError(
+      RpcErrorCode.INVALID_PARAMS,
+      'Failed to request permissions - missing session address',
+    );
+  }
+  const sessionAddress = param.signer?.data?.id;
   if (!sessionAddress) {
     throw new JsonRpcError(
-      RpcErrorCode.RPC_SERVER_ERROR,
+      RpcErrorCode.INVALID_PARAMS,
       'Failed to request permissions - missing session address',
     );
   }

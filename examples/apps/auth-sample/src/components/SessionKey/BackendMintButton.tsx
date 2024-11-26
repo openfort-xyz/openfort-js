@@ -4,6 +4,7 @@ import openfort from '../../utils/openfortConfig';
 import { Button } from '../ui/button';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
+import { polygonAmoy } from 'viem/chains';
 
 const BackendMintButton: React.FC<{
   handleSetMessage: (message: string) => void;
@@ -30,6 +31,7 @@ const BackendMintButton: React.FC<{
     const collectResponseJSON = await collectResponse.json();
     const walletClient = createWalletClient({
       account: privateKeyToAccount(sessionKey),
+      chain: polygonAmoy,
       transport: http()
     })
     const signature = await walletClient.signMessage({message: {raw: collectResponseJSON.userOperationHash}});

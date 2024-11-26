@@ -3,7 +3,6 @@ import Head from 'next/head';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {AuthLayout} from '../components/Layouts/AuthLayout';
-import {Button, LinkButton} from '../components/Button';
 import {TextField} from '../components/Fields';
 import {StatusType, Toast} from '../components/Toasts';
 import openfort from '../utils/openfortConfig';
@@ -11,8 +10,8 @@ import {getURL} from '../utils/getUrl';
 import {
   AuthPlayerResponse,
   OAuthProvider,
-  ThirdPartyOAuthProvider,
 } from '@openfort/openfort-js';
+import { Button } from '@/components/ui/button';
 
 function LoginPage() {
   const router = useRouter();
@@ -115,7 +114,7 @@ function LoginPage() {
         }
       >
         <form onSubmit={handleSubmit}>
-          <div className="space-y-6">
+          <div className="space-y-3">
             <TextField
               label="Email address"
               id="email"
@@ -135,16 +134,20 @@ function LoginPage() {
               required
             />
             <div className="flex w-full flex-row-reverse ">
-              <LinkButton
-                variant="text"
-                href="/forgot-password"
-                className="text-sm font-medium text-blue-600"
+              <Button
+                variant="link"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push('/forgot-password')
+                }}
+                className="text-blue-600"
               >
                 Forgot password?
-              </LinkButton>
+              </Button>
             </div>
           </div>
-          <Button type="submit" color="orange" className="mt-8 w-full py-2">
+          <Button type="submit" className="w-full">
             Sign in to account
           </Button>
         </form>
@@ -162,7 +165,7 @@ function LoginPage() {
 
           <div className="mt-6 grid grid-cols-1 gap-3">
             <div>
-              <button
+              <Button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
                     provider: OAuthProvider.GOOGLE,
@@ -172,13 +175,14 @@ function LoginPage() {
                   });
                   window.location.href = url;
                 }}
-                className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+                variant="outline"
+                className="w-full"
               >
                 <span>Continue with Google</span>
-              </button>
+              </Button>
             </div>
             <div>
-              <button
+              <Button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
                     provider: OAuthProvider.TWITTER,
@@ -188,13 +192,14 @@ function LoginPage() {
                   });
                   window.location.href = url;
                 }}
-                className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
-              >
+                variant="outline"
+                className="w-full"
+                >
                 <p>Continue with Twitter</p>
-              </button>
+              </Button>
             </div>
             <div>
-              <button
+              <Button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
                     provider: OAuthProvider.FACEBOOK,
@@ -204,18 +209,20 @@ function LoginPage() {
                   });
                   window.location.href = url;
                 }}
-                className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
-              >
+                variant="outline"
+                className="w-full"
+                >
                 <p>Continue with Facebook</p>
-              </button>
+              </Button>
             </div>
             <div>
-              <a
-                href="/connect-wallet"
-                className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+              <Button
+              onClick={() => router.push('/connect-wallet')}
+                variant="outline"
+                className="w-full"
               >
                 <p>Continue with wallet</p>
-              </a>
+              </Button>
             </div>
           </div>
         </div>

@@ -75,7 +75,6 @@ const HomePage: NextPage = () => {
             Welcome, {user?.player?.name ?? user?.id}!
           </p>
           <div className="absolute top-2 right-2">
-            {' '}
             <LogoutButton />
           </div>
           <div className="mt-8">

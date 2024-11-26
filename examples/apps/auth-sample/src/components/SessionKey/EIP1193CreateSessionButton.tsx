@@ -34,7 +34,12 @@ const EIP1193CreateSessionButton: React.FC<{
     }).extend(erc7715Actions()) 
     const [account] = await walletClient.getAddresses()
     await walletClient.grantPermissions({
-      account: accountSession,
+      signer:{
+        type: "account",
+        data:{
+          id: accountSession
+        }
+      },
       expiry: 60 * 60 * 24,
       permissions: [
         {

@@ -249,7 +249,7 @@ export class EvmProvider implements Provider {
           [hexlify(chainId)]: {
             permissions: {
               supported: true,
-              signerTypes: ['account'],
+              signerTypes: ['account', 'key'],
               keyTypes: ['secp256k1'],
               permissionTypes: ['contract-calls'],
             },
