@@ -19,7 +19,7 @@
     "wagmi": "^2.7.0"
   },
   "devDependencies": {
-    "@openfort/openfort-js": "^0.8.6",
+    "@openfort/openfort-js": "^0.8.13",
     "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.4",
