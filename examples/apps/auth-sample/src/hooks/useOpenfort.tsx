@@ -3,6 +3,8 @@ import {
   ShieldAuthType,
   ThirdPartyOAuthProvider,
   TokenType,
+  TypedDataDomain,
+  TypedDataField,
   type AuthPlayerResponse,
   type Provider,
   type RecoveryMethod,
@@ -17,7 +19,6 @@ import {
   useState,
   useContext,
 } from 'react';
-import type {TypedDataDomain, TypedDataField} from 'ethers';
 import axios from 'axios';
 import openfort from '../utils/openfortConfig';
 import { Address, privateKeyToAddress } from 'viem/accounts';

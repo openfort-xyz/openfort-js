@@ -3,10 +3,10 @@ import Head from 'next/head';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import {AuthLayout} from '../components/Layouts/AuthLayout';
-import {Button} from '../components/Button';
 import {TextField} from '../components/Fields';
 import {StatusType, Toast} from '../components/Toasts';
 import openfort from '../utils/openfortConfig';
+import { Button } from '@/components/ui/button';
 
 function checkPassword(str: string) {
   var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
@@ -111,7 +111,7 @@ function ResetPassswordPage() {
               }
             </p>
           </div>
-          <Button type="submit" color="orange" className="mt-8 w-full py-2">
+          <Button type="submit" className="mt-8 w-full py-2">
             Save New Password
           </Button>
         </form>
