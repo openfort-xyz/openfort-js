@@ -1,8 +1,8 @@
-import { SiweMessage } from "siwe";
+import { createSiweMessage } from "viem/siwe";
 import { sepolia } from "wagmi/chains";
 
-export const createSIWEMessage = (address: string, nonce: string) =>
-  new SiweMessage({
+export const createSIWEMessage = (address: `0x${string}`, nonce: string) =>
+  createSiweMessage({
     domain: window.location.host,
     address,
     statement:
@@ -11,4 +11,4 @@ export const createSIWEMessage = (address: string, nonce: string) =>
     version: "1",
     chainId: sepolia.id,
     nonce,
-  }).prepareMessage();
+  })
