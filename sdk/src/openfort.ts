@@ -192,7 +192,9 @@ export class Openfort {
     delete types.EIP712Domain;
 
     const account = Account.fromStorage(this.storage);
-    if (account && account.type === AccountType.UPGRADEABLE_V5) {
+    if (account && [AccountType.UPGRADEABLE_V5,
+      AccountType.UPGRADEABLE_V6,
+      AccountType.ZKSYNC_UPGRADEABLE_V1].includes(account.type as AccountType)) {
       const updatedDomain: TypedDataDomain = {
         name: 'Openfort',
         version: '0.5',

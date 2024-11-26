@@ -24,7 +24,7 @@ import { Wallet } from 'lucide-react';
 import AccountActions from '@/components/AccountActions/AccountActions';
 
 const HomePage: NextPage = () => {
-  const {state} = useOpenfort();
+  const {state, handleRecovery} = useOpenfort();
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
   const router = useRouter();
   const [message, setMessage] = useState<string>('');
@@ -48,12 +48,6 @@ const HomePage: NextPage = () => {
     if (!user) fetchUser();
   }, [openfort]);
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-    }
-  }, [message]);
-
   const linkedAccount = useMemo(() => {
     const linkedAccount = user?.linkedAccounts?.find(
       (account: any) => account.provider === 'email'
@@ -71,7 +65,7 @@ const HomePage: NextPage = () => {
     return (
       <AuthLayout title="Set up your embedded signer" subtitle={<div></div>}>
         <div>
-          <p className="text-gray-400 mb-2">
+          <p className="text-gray-400 mb-4">
             Welcome, {user?.player?.name ?? user?.id}!
           </p>
           <div className="absolute top-2 right-2">
@@ -97,10 +91,22 @@ const HomePage: NextPage = () => {
     <>
       <header className="sticky top-0 z-50 bg-white border-b">
         <div className="flex justify-between items-center p-4">
-          <Link href="/" aria-label="Home">
-            <Logo className="h-8 w-auto" />
-          </Link>
-          <LogoutButton />
+          <div className='flex items-center space-x-4'>
+            <Link href="/" aria-label="Home">
+              <Logo className="h-8 w-auto md:flex hidden" />
+            </Link>
+            <span className='text-gray-300 md:flex hidden'>-</span>
+            <p className='font-mono text-orange-600 font-medium pt-2'>
+              Embedded Smart Wallet
+            </p>
+          </div>
+          <a 
+            className='h-9 px-4 py-2 bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
+            target="_blank"
+            href='https://dashboard.openfort.xyz/auth/register'
+            >
+              {'Get started with Openfort ->'}
+          </a>
         </div>
       </header>
       <main className="h-screen flex">
@@ -109,13 +115,22 @@ const HomePage: NextPage = () => {
             <Wallet className="h-5 w-5" />
             <h2 className="font-semibold">Console</h2>
           </div>
-          <div className="block h-full w-full">
+          <div className="flex-1 w-full">
             <textarea
               ref={textareaRef}
-              className="no-scrollbar h-full w-full rounded-lg border-0 bg-gray-100 p-4 font-mono text-xs text-black"
+              className="no-scrollbar h-full w-full border-0 bg-gray-100 p-4 font-mono text-xs text-black"
               value={message}
               readOnly
             />
+          </div>
+          <div className="p-6 mb-14 border-t bg-white">
+            <p className="text-sm text-gray-600 mb-4">
+              Openfort gives you modular components so you can customize your product for your users.
+              <a href="https://www.openfort.xyz/docs/guides/getting-started/integration" className="text-blue-600 hover:underline">Learn more</a>.
+            </p>
+            <div className="flex gap-3">
+              <LogoutButton/>
+            </div>
           </div>
         </div>
         <div className="w-full my-4">

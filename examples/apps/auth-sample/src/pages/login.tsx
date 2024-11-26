@@ -12,6 +12,7 @@ import {
   OAuthProvider,
 } from '@openfort/openfort-js';
 import { Button } from '@/components/ui/button';
+import Loading from '@/components/Loading';
 
 function LoginPage() {
   const router = useRouter();
@@ -147,8 +148,8 @@ function LoginPage() {
               </Button>
             </div>
           </div>
-          <Button type="submit" className="w-full">
-            Sign in to account
+          <Button disabled={status?.type === "loading"} type="submit" className="w-full">
+            {status?.type === "loading" ? <Loading /> : "Sign in to account"}
           </Button>
         </form>
         <div className="mt-6">

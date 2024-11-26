@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {useOpenfort} from '../../hooks/useOpenfort';
 import Loading from '../Loading';
 import { Button } from '../ui/button';
+import { polygonAmoy } from 'viem/chains';
 
 const AccountRecovery: React.FC = () => {
   const {handleRecovery} = useOpenfort();
@@ -33,7 +34,7 @@ const AccountRecovery: React.FC = () => {
                     ) as HTMLInputElement
                   ).value;
                   setLoadingPwd(true);
-                  await handleRecovery('password', password);
+                  await handleRecovery({method: 'password', password, chainId: polygonAmoy.id});
                   setLoadingPwd(false);
                 }}
               >
@@ -56,7 +57,7 @@ const AccountRecovery: React.FC = () => {
                 className="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
                 onClick={async () => {
                   setLoadingAut(true);
-                  await handleRecovery('automatic');
+                  await handleRecovery({method:'automatic', chainId: polygonAmoy.id});
                   setLoadingAut(false);
                 }}
               >
