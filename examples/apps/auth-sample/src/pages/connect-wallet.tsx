@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import {useEffect, useState} from 'react';
-
 import {AuthLayout} from '../components/Layouts/AuthLayout';
 import openfort from '../utils/openfortConfig';
 import {StatusType, Toast} from '../components/Toasts';

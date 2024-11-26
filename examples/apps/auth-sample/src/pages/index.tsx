@@ -24,7 +24,7 @@ import { Wallet } from 'lucide-react';
 import AccountActions from '@/components/AccountActions/AccountActions';
 
 const HomePage: NextPage = () => {
-  const {state, handleRecovery} = useOpenfort();
+  const {state} = useOpenfort();
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
   const router = useRouter();
   const [message, setMessage] = useState<string>('');

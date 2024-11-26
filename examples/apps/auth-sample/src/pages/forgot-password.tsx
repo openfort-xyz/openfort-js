@@ -1,14 +1,10 @@
 import {useState, useEffect} from 'react';
-
 import Head from 'next/head';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
-
 import {AuthLayout} from '../components/Layouts/AuthLayout';
 import {TextField} from '../components/Fields';
-
 import {StatusType, Toast} from '../components/Toasts';
-
 import openfort from '../utils/openfortConfig';
 import {getURL} from '../utils/getUrl';
 import {AuthPlayerResponse} from '@openfort/openfort-js';

@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import {useEffect, useState} from 'react';
-
 import {AuthLayout} from '../components/Layouts/AuthLayout';
 import openfort from '../utils/openfortConfig';
 import {StatusType, Toast} from '../components/Toasts';
@@ -9,7 +8,6 @@ import {AuthPlayerResponse} from '@openfort/openfort-js';
 import {useRouter} from 'next/router';
 import {getWalletButtons} from '../components/WalletConnectButton';
 import {Chain, WalletConnector} from '../utils/constants';
-import {useAccount} from 'wagmi';
 
 function LinkWalletPage() {
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
