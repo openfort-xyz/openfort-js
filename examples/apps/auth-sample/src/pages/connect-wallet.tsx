@@ -1,13 +1,12 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import {useEffect, useState} from 'react';
-import {AuthLayout} from '../components/Layouts/AuthLayout';
-import openfort from '../utils/openfortConfig';
-import {StatusType, Toast} from '../components/Toasts';
-import {AuthPlayerResponse} from '@openfort/openfort-js';
-import {useRouter} from 'next/router';
-import {getWalletButtons} from '../components/WalletConnectButton';
-import {Chain, WalletConnector} from '../utils/constants';
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Layout } from "../components/Layouts/Layout";
+import openfort from "../utils/openfortConfig";
+import { StatusType, Toast } from "../components/Toasts";
+import { AuthPlayerResponse } from "@openfort/openfort-js";
+import { useRouter } from "next/router";
+import { getWalletButtons } from "../components/WalletConnectButton";
+import { Chain, WalletConnector } from "../utils/constants";
 
 function ConnectWalletPage() {
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
@@ -16,7 +15,7 @@ function ConnectWalletPage() {
   useEffect(() => {
     const fetchUser = async () => {
       const sessionData = await openfort.getUser().catch((error: Error) => {
-        console.log('error', error);
+        console.log("error", error);
       });
       if (sessionData) setUser(sessionData);
     };
@@ -30,35 +29,31 @@ function ConnectWalletPage() {
   });
 
   const redirect = () => {
-    router.push('/');
+    router.push("/");
   };
 
   return (
-    <>
-      <Head>
-        <title>Openfort Register | Sign up to the Openfort Dashboard</title>
-        <meta
-          name="description"
-          content="Sign up to the Openfort Dashboard to manage your game accounts and more."
-        />{' '}
-      </Head>
-      <AuthLayout
-        title="Continue with your wallet"
-        subtitle={
-          <>
-            {'Have an account? '}
-            <Link href="/login" className="text-blue-600">
-              Sign in
-            </Link>
-          </>
-        }
-      >
-        <div>
-          <WalletButtons onSuccess={redirect} link={false} />
+    <Layout sidebar={<div />}>
+      <div className="flex min-h-full overflow-hidden pt-8 sm:py-12">
+        <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
+          <div className="-mx-4 flex-auto bg-white py-10 px-8 sm:mx-0 sm:flex-none sm:rounded-md sm:p-14 sm:shadow-2xl">
+            <div className="relative mb-6">
+              <h1 className="text-left text-2xl font-semibold tracking-tight text-gray-900">
+                {"Continue with your wallet"}
+              </h1>
+            </div>
+            <WalletButtons onSuccess={redirect} link={false} />
+            <p className="my-5 text-left text-sm text-gray-600">
+              {"Have an account? "}
+              <Link href="/login" className="text-blue-600">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
-        <Toast status={status} setStatus={setStatus} />
-      </AuthLayout>
-    </>
+      </div>
+      <Toast status={status} setStatus={setStatus} />
+    </Layout>
   );
 }
 
