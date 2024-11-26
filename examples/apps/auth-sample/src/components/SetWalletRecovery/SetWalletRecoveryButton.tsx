@@ -3,6 +3,7 @@ import {useState} from 'react';
 import {useOpenfort} from '../../hooks/useOpenfort';
 import {EmbeddedState, RecoveryMethod} from '@openfort/openfort-js';
 import Loading from '../Loading';
+import { Button } from '../ui/button';
 
 const SetWalletRecovery: React.FC<{
   handleSetMessage: (message: string) => void;
@@ -38,24 +39,22 @@ const SetWalletRecovery: React.FC<{
       <input
         name={`${RecoveryMethod.AUTOMATIC}-passwordRecovery`}
         placeholder="Old password recovery"
-        className="w-full p-2 border border-gray-200 rounded-lg"
+        className="w-full p-2 border border-gray-200 rounded-lg mb-2"
       />
-      <button
-        type="button"
+      <Button
+        className='w-full' 
+        disabled={state !== EmbeddedState.READY} 
         onClick={async () =>
           await handleSetWalletRecovery(RecoveryMethod.AUTOMATIC)
         }
-        disabled={state !== EmbeddedState.READY}
-        className={
-          'mt-4 w-56 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
-        }
+        variant="outline"
       >
         {loading === RecoveryMethod.AUTOMATIC ? (
           <Loading />
         ) : (
           'Set Automatic Recovery'
         )}
-      </button>
+      </Button>
       <div className="my-4 flex w-full justify-center">
         <span className="text-gray-400">- or -</span>
       </div>
@@ -63,25 +62,22 @@ const SetWalletRecovery: React.FC<{
       <input
         name={`${RecoveryMethod.PASSWORD}-passwordRecovery`}
         placeholder="New password recovery"
-        className="w-full p-2 border border-gray-200 rounded-lg"
+        className="w-full p-2 border border-gray-200 rounded-lg mb-2"
       />
-
-      <button
-        type="button"
+      <Button 
+        className='w-full' 
         onClick={async () =>
           await handleSetWalletRecovery(RecoveryMethod.PASSWORD)
         }
         disabled={state !== EmbeddedState.READY}
-        className={
-          'mt-4 w-56 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
-        }
+        variant="outline"
       >
         {loading === RecoveryMethod.PASSWORD ? (
           <Loading />
         ) : (
           'Set Password Recovery'
         )}
-      </button>
+      </Button>
     </div>
   );
 };

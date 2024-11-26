@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.13] - 2024-11-26
+### Feat
+- Add support for ERC-7715 and EIP-5792
+- Add new zkSync smart accounts
+
 ## [0.8.12] - 2024-10-31
 ### Added
 - Link Third Party Auth Provider

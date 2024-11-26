@@ -5,6 +5,8 @@ import Openfort, {
   ShieldAuthType,
 } from '@openfort/openfort-js';
 import {useNavigate} from 'react-router-dom';
+import axios from 'axios';
+import { polygonAmoy } from 'viem/chains';
 
 interface AuthFormData {
   email: string;
@@ -54,12 +56,28 @@ function Authenticate({openfortInstance}: {openfortInstance: Openfort}) {
     };
   }, [openfortInstance, navigate]);
 
+  const getEncryptionSession = async (): Promise<string> => {
+    try {
+      // This application is using the backend of another sample in this repository.
+      // You can find the source code for the backend in the https://github.com/openfort-xyz/openfort-js/blob/main/examples/apps/auth-sample/src/pages/api/protected-create-encryption-session.ts
+      const response = await axios.post<{session: string}>(
+        'https://openfort-auth-non-custodial.vercel.app/api/protected-create-encryption-session',
+        {},
+        {headers: {'Content-Type': 'application/json'}}
+      );
+      return response.data.session;
+    } catch (error) {
+      throw new Error('Failed to create encryption session');
+    }
+  };
+
   const configureEmbeddedSigner = async () => {
     try {
-      const chainId = 80002;
+      const chainId = polygonAmoy.id;
       const shieldAuth: ShieldAuthentication = {
         auth: ShieldAuthType.OPENFORT,
         token: openfortInstance.getAccessToken()!,
+        encryptionSession: await getEncryptionSession(),
       };
       await openfortInstance.configureEmbeddedSigner(chainId, shieldAuth);
     } catch (error) {

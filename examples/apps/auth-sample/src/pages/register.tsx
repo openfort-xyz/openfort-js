@@ -1,9 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import {useEffect, useMemo, useState} from 'react';
-
 import {AuthLayout} from '../components/Layouts/AuthLayout';
-import {Button} from '../components/Button';
 import {TextField} from '../components/Fields';
 import openfort from '../utils/openfortConfig';
 import {CheckCircleIcon} from '@heroicons/react/24/outline';
@@ -11,6 +9,7 @@ import {StatusType, Toast} from '../components/Toasts';
 import {AuthPlayerResponse, OAuthProvider} from '@openfort/openfort-js';
 import {useRouter} from 'next/router';
 import {getURL} from '../utils/getUrl';
+import { Button } from '@/components/ui/button';
 
 type ErrorType = string | null;
 
@@ -160,7 +159,7 @@ function RegisterPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-3">
               <TextField
                 label="First name"
                 id="first_name"
@@ -209,7 +208,7 @@ function RegisterPage() {
                 }
               </p>
             </div>
-            <Button type="submit" color="orange" className="mt-8 w-full py-2">
+            <Button type="submit" className="mt-8 w-full">
               Get started today
             </Button>
           </form>
@@ -228,7 +227,7 @@ function RegisterPage() {
 
           <div className="mt-6 grid grid-cols-1 gap-3">
             <div>
-              <button
+              <Button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
                     provider: OAuthProvider.GOOGLE,
@@ -238,13 +237,14 @@ function RegisterPage() {
                   });
                   window.location.href = url;
                 }}
-                className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+                className='w-full'
+                variant='outline'
               >
                 <span>Continue with Google</span>
-              </button>
+              </Button>
             </div>
             <div>
-              <button
+              <Button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
                     provider: OAuthProvider.TWITTER,
@@ -254,13 +254,14 @@ function RegisterPage() {
                   });
                   window.location.href = url;
                 }}
-                className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+                className='w-full'
+                variant='outline'
               >
                 <p>Continue with Twitter</p>
-              </button>
+              </Button>
             </div>
             <div>
-              <button
+              <Button
                 onClick={async () => {
                   const {url} = await openfort.initOAuth({
                     provider: OAuthProvider.FACEBOOK,
@@ -270,18 +271,20 @@ function RegisterPage() {
                   });
                   window.location.href = url;
                 }}
-                className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+                className='w-full'
+                variant='outline'
               >
                 <p>Continue with Facebook</p>
-              </button>
+              </Button>
             </div>
             <div>
-              <a
-                href="/connect-wallet"
-                className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
+              <Button
+                onClick={() => router.push('/connect-wallet')}
+                className='w-full'
+                variant='outline'
               >
                 <p>Continue with wallet</p>
-              </a>
+              </Button>
             </div>
           </div>
           <div>

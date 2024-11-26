@@ -1,3 +1,5 @@
+import { Permission } from 'evm/registerSession';
+
 export enum EmbeddedState {
   NONE,
   UNAUTHENTICATED,
@@ -194,6 +196,26 @@ export interface ResponseResponse {
   'error'?: any;
 }
 
+export type GrantPermissionsReturnType = {
+  /** Timestamp (in seconds) that specifies the time by which this session MUST expire. */
+  expiry: number
+  /** ERC-4337 Factory to deploy smart contract account. */
+  factory?: `0x${string}` | undefined
+  /** Calldata to use when calling the ERC-4337 Factory. */
+  factoryData?: string | undefined
+  /** Set of granted permissions. */
+  grantedPermissions: readonly Permission[]
+  /** Permissions identifier. */
+  permissionsContext: string
+  /** Signer attached to the permissions. */
+  signerData?:
+  | {
+    userOpBuilder?: `0x${string}` | undefined
+    submitToAddress?: `0x${string}` | undefined
+  }
+  | undefined
+};
+
 export interface SessionResponse {
   'id': string;
   'object': 'session';
@@ -319,7 +341,7 @@ export interface AuthPlayerResponsePlayer {
 export interface PrismaInputJsonValue {
 }
 
-export interface AuthProviderResponse {}
+export interface AuthProviderResponse { }
 
 export interface LinkedAccountResponse {
   'provider': AuthProvider;

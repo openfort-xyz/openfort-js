@@ -1,12 +1,14 @@
 import React, {useCallback, useState} from 'react';
 import Loading from '../Loading';
 import openfort from '../../utils/openfortConfig';
-import {ethers} from 'ethers';
-import {arrayify} from 'ethers/lib/utils';
+import { Button } from '../ui/button';
+import { privateKeyToAccount } from 'viem/accounts';
+import { createWalletClient, http } from 'viem';
+import { polygonAmoy } from 'viem/chains';
 
-const MintNFTSessionButton: React.FC<{
+const BackendMintButton: React.FC<{
   handleSetMessage: (message: string) => void;
-  sessionKey: string | null;
+  sessionKey: `0x${string}` | null;
 }> = ({handleSetMessage, sessionKey}) => {
   const [loading, setLoading] = useState(false);
 
@@ -27,9 +29,12 @@ const MintNFTSessionButton: React.FC<{
       return null;
     }
     const collectResponseJSON = await collectResponse.json();
-    const message = arrayify(collectResponseJSON.userOperationHash);
-    const sessionSigner = new ethers.Wallet(sessionKey);
-    const signature = await sessionSigner?.signMessage(message);
+    const walletClient = createWalletClient({
+      account: privateKeyToAccount(sessionKey),
+      chain: polygonAmoy,
+      transport: http()
+    })
+    const signature = await walletClient.signMessage({message: {raw: collectResponseJSON.userOperationHash}});
     if (!signature) {
       throw new Error('Failed to sign message with session key');
     }
@@ -52,14 +57,15 @@ const MintNFTSessionButton: React.FC<{
   };
 
   return (
-    <div>
-      <button
+    <div className='mt-4'>
+      <Button
+        className='w-full' 
         onClick={handleMintNFT}
         disabled={!sessionKey}
-        className={`mt-4 w-32 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50`}
+        variant="outline"
       >
-        {loading ? <Loading /> : 'Mint NFT'}
-      </button>
+        {loading ? <Loading /> : 'Mint NFT with session key'}
+      </Button>
       {!sessionKey && (
         <p className="text-red-400 text-xs mt-2">
           Create a session before minting an NFT signed with a session key.
@@ -69,4 +75,4 @@ const MintNFTSessionButton: React.FC<{
   );
 };
 
-export default MintNFTSessionButton;
+export default BackendMintButton;

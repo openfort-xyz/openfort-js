@@ -1,12 +1,10 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import type {NextPage} from 'next';
-import MintNFTButton from '../components/NFT/MintNFTButton';
 import {useOpenfort} from '../hooks/useOpenfort';
 import {EmbeddedState, OAuthProvider} from '@openfort/openfort-js';
 import AccountRecovery from '../components/EmbeddedSignerRecovery/AccountRecovery';
 import SignMessageButton from '../components/Signatures/SignMessageButton';
 import SignTypedDataButton from '../components/Signatures/SignTypedDataButton';
-import EvmProviderButton from '../components/EvmProvider/EvmProviderButton';
 import openfort from '../utils/openfortConfig';
 import Loading from '../components/Loading';
 import type {AuthPlayerResponse} from '@openfort/openfort-js';
@@ -16,15 +14,17 @@ import LogoutButton from '../components/Logout';
 import Link from 'next/link';
 import {Logo} from '../components/Logo';
 import GetUserButton from '../components/User/GetUserButton';
-import CreateSessionButton from '../components/Sessions/CreateSessionButton';
 import LinkOAuthButton from '../components/OAuth/LinkOAuthButton';
 import ExportPrivateKey from '../components/Export/ExportPrivateKeyButton';
 import SetWalletRecovery from '../components/SetWalletRecovery/SetWalletRecoveryButton';
 import { SetPairingCodeWithWagmi } from '../components/WalletConnect/SetPairingCode';
 import AddFunds from '../components/Funding/AddFunds';
+import { Button } from '@/components/ui/button';
+import { Wallet } from 'lucide-react';
+import AccountActions from '@/components/AccountActions/AccountActions';
 
 const HomePage: NextPage = () => {
-  const {state} = useOpenfort();
+  const {state, handleRecovery} = useOpenfort();
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
   const router = useRouter();
   const [message, setMessage] = useState<string>('');
@@ -32,7 +32,7 @@ const HomePage: NextPage = () => {
 
   const handleSetMessage = (message: string) => {
     const newMessage = `> ${message} \n\n`;
-    setMessage((prev) => prev + newMessage);
+    setMessage((prev) =>  newMessage + prev);
   };
 
   useEffect(() => {
@@ -47,12 +47,6 @@ const HomePage: NextPage = () => {
     };
     if (!user) fetchUser();
   }, [openfort]);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-    }
-  }, [message]);
 
   const linkedAccount = useMemo(() => {
     const linkedAccount = user?.linkedAccounts?.find(
@@ -71,11 +65,10 @@ const HomePage: NextPage = () => {
     return (
       <AuthLayout title="Set up your embedded signer" subtitle={<div></div>}>
         <div>
-          <p className="text-gray-400 mb-2">
+          <p className="text-gray-400 mb-4">
             Welcome, {user?.player?.name ?? user?.id}!
           </p>
           <div className="absolute top-2 right-2">
-            {' '}
             <LogoutButton />
           </div>
           <div className="mt-8">
@@ -96,63 +89,55 @@ const HomePage: NextPage = () => {
 
   return (
     <>
-      <header>
-        <div className="flex mb-4 justify-between p-2">
-          <Link href="/" aria-label="Home">
-            <Logo className="block h-8 w-auto" />
-          </Link>
-
-          <div className="">
-            <LogoutButton />
+      <header className="sticky top-0 z-50 bg-white border-b">
+        <div className="flex justify-between items-center p-4">
+          <div className='flex items-center space-x-4'>
+            <Link href="/" aria-label="Home">
+              <Logo className="h-8 w-auto md:flex hidden" />
+            </Link>
+            <span className='text-gray-300 md:flex hidden'>-</span>
+            <p className='font-mono text-orange-600 font-medium pt-2'>
+              Embedded Smart Wallet
+            </p>
           </div>
+          <a 
+            className='h-9 px-4 py-2 bg-primary text-primary-foreground shadow hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
+            target="_blank"
+            href='https://dashboard.openfort.xyz/auth/register'
+            >
+              {'Get started with Openfort ->'}
+          </a>
         </div>
       </header>
-      <main className="flex min-h-full overflow-hidden px-10">
-        <div className="w-[400px]">
-          <span className="font-medium text-black">Console: </span>
-          <div className="mt-4 block h-full w-full">
+      <main className="h-screen flex">
+        <div className="w-full md:w-1/4 hidden md:flex max-w-sm bg-white border-r flex-col h-screen fixed">
+          <div className="flex items-center space-x-2 p-4">
+            <Wallet className="h-5 w-5" />
+            <h2 className="font-semibold">Console</h2>
+          </div>
+          <div className="flex-1 w-full">
             <textarea
               ref={textareaRef}
-              className="no-scrollbar h-full w-full rounded-lg border-0 bg-gray-100 p-4 font-mono text-xs text-black"
+              className="no-scrollbar h-full w-full border-0 bg-gray-100 p-4 font-mono text-xs text-black"
               value={message}
               readOnly
             />
           </div>
+          <div className="p-6 mb-14 border-t bg-white">
+            <p className="text-sm text-gray-600 mb-4">
+              Openfort gives you modular components so you can customize your product for your users.
+              <a href="https://www.openfort.xyz/docs/guides/getting-started/integration" className="text-blue-600 hover:underline">Learn more</a>.
+            </p>
+            <div className="flex gap-3">
+              <LogoutButton/>
+            </div>
+          </div>
         </div>
-        <div className="w-full">
+        <div className="w-full my-4">
           <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
             <p className="text-gray-400 mb-2">Welcome, {user?.id}!</p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-                <h2 className="flex justify-left font-medium text-xl pb-4">
-                  Account actions
-                </h2>
-                <div>
-                  <span className="font-medium text-black">
-                    Backend action:{' '}
-                  </span>
-                  <MintNFTButton handleSetMessage={handleSetMessage} />
-                </div>
-                <div>
-                  <span className="font-medium text-black">
-                    Ethers provider:{' '}
-                  </span>
-                  <EvmProviderButton handleSetMessage={handleSetMessage} />
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      router.push('/link-wallet');
-                    }}
-                    className={
-                      'mt-4 w-40 px-4 py-2 border-black text-black font-semibold rounded-lg shadow-md hover:bg-gray-100 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
-                    }
-                  >
-                    {'Link a Wallet'}
-                  </button>
-                </div>
-              </div>
+              <AccountActions handleSetMessage={handleSetMessage} />
               <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
                 <h2 className="flex justify-left font-medium text-xl pb-4">
                   Signatures
@@ -166,14 +151,6 @@ const HomePage: NextPage = () => {
                   <span className="font-medium text-black">
                     Typed message:{' '}
                   </span>
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://github.com/openfort-xyz/sample-browser-nextjs-embedded-signer/blob/main/src/components/Signatures/SignTypedDataButton.tsx#L25"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {'View typed message.'}
-                  </a>
                   <SignTypedDataButton handleSetMessage={handleSetMessage} />
                 </div>
               </div>
@@ -200,13 +177,16 @@ const HomePage: NextPage = () => {
                     </div>
                   ))}
                 </div>
-              </div>
-              <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-                <h2 className="flex justify-left font-medium text-xl pb-4">
-                  Session keys
-                </h2>
                 <div>
-                  <CreateSessionButton handleSetMessage={handleSetMessage} />
+                <Button
+                  className='w-full' 
+                  onClick={() => {
+                    router.push('/link-wallet');
+                  }}
+                  variant="outline"
+                >
+                  {'Link a Wallet'}
+                  </Button>
                 </div>
               </div>
               <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {useRouter} from 'next/router';
 
 import {AuthLayout} from '../components/Layouts/AuthLayout';
-import {Button} from '../components/Button';
 import {TextField} from '../components/Fields';
 
 import {StatusType, Toast} from '../components/Toasts';
@@ -13,6 +12,7 @@ import {StatusType, Toast} from '../components/Toasts';
 import openfort from '../utils/openfortConfig';
 import {getURL} from '../utils/getUrl';
 import {AuthPlayerResponse} from '@openfort/openfort-js';
+import { Button } from '@/components/ui/button';
 
 function ForgotPasswordPage() {
   const router = useRouter();
@@ -99,7 +99,7 @@ function ForgotPasswordPage() {
               required
             />
           </div>
-          <Button type="submit" color="orange" className="mt-8 w-full py-2">
+          <Button type="submit" className="mt-8 w-full py-2">
             Send Reset Email
           </Button>
         </form>

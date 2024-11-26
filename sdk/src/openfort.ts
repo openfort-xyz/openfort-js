@@ -68,7 +68,13 @@ export class Openfort {
    * @throws {OpenfortError} If the signer is not an EmbeddedSigner.
    */
   public getEthereumProvider(
-    options: { announceProvider: boolean; policy?: string } = { announceProvider: true },
+    options: {
+      policy?: string, providerInfo?: {
+        icon: `data:image/${string}`; // RFC-2397
+        name: string;
+        rdns: string;
+      }
+    } = {},
   ): Provider {
     const authentication = Authentication.fromStorage(this.storage);
     const signer = SignerManager.fromStorage();
@@ -84,12 +90,10 @@ export class Openfort {
       policyId: options.policy,
     });
 
-    if (options?.announceProvider) {
-      announceProvider({
-        info: openfortProviderInfo,
-        provider,
-      });
-    }
+    announceProvider({
+      info: { ...openfortProviderInfo, ...options.providerInfo },
+      provider,
+    });
 
     return provider;
   }
@@ -188,7 +192,9 @@ export class Openfort {
     delete types.EIP712Domain;
 
     const account = Account.fromStorage(this.storage);
-    if (account && account.type === AccountType.UPGRADEABLE_V5) {
+    if (account && [AccountType.UPGRADEABLE_V5,
+      AccountType.UPGRADEABLE_V6,
+      AccountType.ZKSYNC_UPGRADEABLE_V1].includes(account.type as AccountType)) {
       const updatedDomain: TypedDataDomain = {
         name: 'Openfort',
         version: '0.5',
@@ -735,7 +741,7 @@ export class Openfort {
   /**
    * Validates and refreshes the access token if needed.
    */
-  public async validateAndRefreshToken(forceRefresh?:boolean):Promise<void> {
+  public async validateAndRefreshToken(forceRefresh?: boolean): Promise<void> {
     const auth = Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
