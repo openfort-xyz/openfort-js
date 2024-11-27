@@ -19,13 +19,16 @@ jobs:
     - name: Install dependencies
       run: npm install -g yarn && yarn
 
+    - name: Install dependencies on auth sample
+      run: yarn
+
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
-      working-directory: sdk
+      working-directory: examples/apps/auth-sample
 
     - name: Run Playwright tests
       run: yarn playwright test
-      working-directory: sdk
+      working-directory: examples/apps/auth-sample
 
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
