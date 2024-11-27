@@ -24,6 +24,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "ethers": "5.7.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.454.0",
@@ -37,8 +38,10 @@
     "wagmi": "^2.9.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.0",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.7.5",
     "@types/react": "^18.3.0",
     "autoprefixer": "^10.3.4",
     "eslint": "7.32.0",
