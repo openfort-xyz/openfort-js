@@ -25,7 +25,7 @@ setup('authenticate', async ({ page }) => {
   await expect(page.locator('div.spinner')).toBeInViewport();
   await page.locator("div.spinner").waitFor({ state: 'hidden' });
 
-  const consoleExists = await page.locator('span').getByText('Console').count() > 0
+  const consoleExists = await page.locator('h2').getByText('Console').count() > 0
   if (!consoleExists) {
     // if console doesn't exists we must be at the login page, so maybe we have to log in with wallet recovery instead
     await expect(page.locator('h1')).toContainText('Set up your embedded signer')
@@ -40,7 +40,7 @@ setup('authenticate', async ({ page }) => {
     await page.locator("div.spinner").waitFor({ state: 'hidden' });
 
     // we should be logged now
-    await expect(page.locator('span').getByText('Console')).toBeVisible()
+    await expect(page.locator('h2').getByText('Console')).toBeVisible()
 
     const logger = new Logger(page)
     await logger.init()

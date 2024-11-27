@@ -5,5 +5,5 @@ test('home page loads', async ({ page }) => {
   await page.goto('/')
 
   await expect(page.locator('p').getByText('Welcome')).toBeVisible();
-  await expect(page.locator('span').getByText('Console')).toBeVisible();
+  await expect(page.locator('h2').getByText('Console')).toBeVisible();
 })

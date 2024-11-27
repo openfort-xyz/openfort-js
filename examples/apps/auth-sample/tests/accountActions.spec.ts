@@ -17,13 +17,13 @@ test('mint NFT', async ({ page }) => {
   expect(lastLog).toContain(TEST_MINT_SUCCESS_TEXT)
 })
 
-test('EIP-1193 Provider Action', async ({ page }) => {
+test('Send batch calls', async ({ page }) => {
   await page.goto('/')
 
   const logger = new Logger(page)
   await logger.init()
 
-  const button = page.getByRole('button', { name: 'EIP-1193 Provider Action' }).first()
+  const button = page.getByRole('button', { name: 'Send batch calls' }).first()
   button.click()
 
   await logger.waitForNewLogs()
@@ -31,5 +31,3 @@ test('EIP-1193 Provider Action', async ({ page }) => {
   const lastLog = logger.getLastLog()
   expect(lastLog).toContain(TEST_MINT_SUCCESS_TEXT)
 })
-
-// TODO Link a wallet
