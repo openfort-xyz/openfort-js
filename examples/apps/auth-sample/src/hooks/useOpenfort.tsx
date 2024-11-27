@@ -3,6 +3,8 @@ import {
   ShieldAuthType,
   ThirdPartyOAuthProvider,
   TokenType,
+  TypedDataDomain,
+  TypedDataField,
   type AuthPlayerResponse,
   type Provider,
   type RecoveryMethod,
@@ -17,20 +19,23 @@ import {
   useState,
   useContext,
 } from 'react';
-import type {TypedDataDomain, TypedDataField} from 'ethers';
 import axios from 'axios';
 import openfort from '../utils/openfortConfig';
 import { Address, privateKeyToAddress } from 'viem/accounts';
 import { Chain, createPublicClient, http } from 'viem';
-import { mainnet } from 'viem/chains';
 
 interface ContextType {
   state: EmbeddedState;
   getEvmProvider: () => Provider;
-  handleRecovery: (
-    method: 'password' | 'automatic',
-    pin?: string
-  ) => Promise<void>;
+  handleRecovery: ({
+    method,
+    password,
+    chainId
+}:{
+  method: 'password' | 'automatic',
+  chainId:number
+  password?: string,
+}) => Promise<void>;
   auth: (accessToken: string) => Promise<AuthPlayerResponse>;
   setWalletRecovery: (
     recoveryMethod: RecoveryMethod,
@@ -100,7 +105,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const getEvmProvider = useCallback((): Provider => {
     const externalProvider = openfort.getEthereumProvider({
-      announceProvider: true,
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
     });
     if (!externalProvider) {
@@ -213,9 +217,8 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   );
 
   const handleRecovery = useCallback(
-    async (method: 'password' | 'automatic', pin?: string) => {
+    async ({method, password, chainId}:{method: 'password' | 'automatic', password?: string, chainId: number}) => {
       try {
-        const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
         const shieldAuth: ShieldAuthentication = {
           auth: ShieldAuthType.OPENFORT,
           token: openfort.getAccessToken()!,
@@ -224,10 +227,10 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
         if (method === 'automatic') {
           await openfort.configureEmbeddedSigner(chainId, shieldAuth);
         } else if (method === 'password') {
-          if (!pin || pin.length < 4) {
+          if (!password || password.length < 4) {
             throw new Error('Password recovery must be at least 4 characters');
           }
-          await openfort.configureEmbeddedSigner(chainId, shieldAuth, pin);
+          await openfort.configureEmbeddedSigner(chainId, shieldAuth, password);
         }
       } catch (err) {
         console.error('Error handling recovery with Openfort:', err);

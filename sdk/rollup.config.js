@@ -5,7 +5,7 @@ import commonJs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import dts from 'rollup-plugin-dts';
 import replace from '@rollup/plugin-replace';
-import pkg from './package.json' assert {type: 'json'};
+const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 const packages = JSON.parse(
   readFileSync('./workspace-packages.json', {encoding: 'utf8'})

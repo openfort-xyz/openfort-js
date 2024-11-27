@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useOpenfort} from '../../hooks/useOpenfort';
 import {EmbeddedState} from '@openfort/openfort-js';
 import Loading from '../Loading';
+import { Button } from '../ui/button';
 
 const SignMessageButton: React.FC<{
   handleSetMessage: (message: string) => void;
@@ -25,16 +26,14 @@ const SignMessageButton: React.FC<{
 
   return (
     <div>
-      <button
-        type="button"
+      <Button
+        className='w-full' 
         onClick={handleSignMessage}
         disabled={state !== EmbeddedState.READY}
-        className={
-          'mt-2 w-44 px-4 py-2 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50'
-        }
+        variant="outline"
       >
         {loading ? <Loading /> : 'Sign Message'}
-      </button>
+      </Button>
     </div>
   );
 };

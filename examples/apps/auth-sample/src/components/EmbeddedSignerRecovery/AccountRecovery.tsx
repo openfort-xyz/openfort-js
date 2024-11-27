@@ -1,6 +1,9 @@
 import {useState} from 'react';
 import {useOpenfort} from '../../hooks/useOpenfort';
 import Loading from '../Loading';
+import { Button } from '../ui/button';
+
+const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
 const AccountRecovery: React.FC = () => {
   const {handleRecovery} = useOpenfort();
@@ -21,7 +24,7 @@ const AccountRecovery: React.FC = () => {
         <div className="mb-5 flex justify-center items-center">
           <div className="w-full">
             <div className="flex justify-center items-center">
-              <button
+              <Button
                 type="button"
                 disabled={loadingPwd}
                 className="bg-black text-white p-2.5 rounded-lg w-full"
@@ -32,12 +35,12 @@ const AccountRecovery: React.FC = () => {
                     ) as HTMLInputElement
                   ).value;
                   setLoadingPwd(true);
-                  await handleRecovery('password', password);
+                  await handleRecovery({method: 'password', password, chainId: chainId});
                   setLoadingPwd(false);
                 }}
               >
                 {loadingPwd ? <Loading /> : 'Continue with Password Recovery'}
-              </button>
+              </Button>
             </div>
             <div className="relative my-10">
               <div className="absolute inset-0 flex items-center">
@@ -48,18 +51,19 @@ const AccountRecovery: React.FC = () => {
               </div>
             </div>
             <div className="flex justify-center items-center mt-2">
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 disabled={loadingAut}
                 className="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
                 onClick={async () => {
                   setLoadingAut(true);
-                  await handleRecovery('automatic');
+                  await handleRecovery({method:'automatic', chainId: chainId});
                   setLoadingAut(false);
                 }}
               >
                 {loadingAut ? <Loading /> : 'Continue with Automatic Recovery'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

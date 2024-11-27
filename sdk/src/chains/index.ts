@@ -44,6 +44,8 @@ import opBNBTestnet from './5611';
 
 import soneiumMinato from './1946';
 
+import sophon from './531050104';
+
 export const chainMap: { [key: number]: Chain } = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   56: bnb,
@@ -101,12 +103,15 @@ export const chainMap: { [key: number]: Chain } = {
   5611: opBNBTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   1946: soneiumMinato,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  531050104: sophon,
 };
 
 export default [
   bnb,
   bnbTestnet,
   base,
+  baseSepolia,
   beam,
   beamTestnet,
   avalancheFuji,
@@ -116,7 +121,6 @@ export default [
   arbitrumSepolia,
   arbitrum,
   arbitrumNova,
-  baseSepolia,
   polygon,
   polygonAmoy,
   zoraSepoliaTestnet,
@@ -132,6 +136,7 @@ export default [
   soneiumMinato,
   opBNB,
   opBNBTestnet,
+  sophon,
 ];
 
 export type Chain = {
