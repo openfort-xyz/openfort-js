@@ -1,8 +1,8 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
 import { OneOf } from 'utils/helpers';
 import { CreateSessionRequest } from '@openfort/openapi-clients/dist/backend';
+import { Account } from 'configuration/account';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer as OpenfortSigner } from '../signer/isigner';
 import { GrantPermissionsReturnType, SessionResponse } from '../types';
@@ -61,7 +61,7 @@ export type GrantPermissionsParameters = {
 }
 | {
   /** Account to assign the permissions to. */
-  account?: `0x${string}` | Account | undefined;
+  account?: `0x${string}` | undefined;
 }
 >;
 
