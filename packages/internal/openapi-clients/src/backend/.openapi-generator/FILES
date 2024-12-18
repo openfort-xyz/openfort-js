@@ -63,6 +63,7 @@ models/auth-provider.ts
 models/auth-response.ts
 models/auth-session-response.ts
 models/authenticate-oauth-request.ts
+models/authenticated-player-response.ts
 models/authentication-type.ts
 models/authorize-player-request.ts
 models/authorize200-response.ts

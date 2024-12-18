@@ -79,6 +79,12 @@ export interface Policy {
     'paymaster'?: EntityIdResponse;
     /**
      * 
+     * @type {EntityIdResponse}
+     * @memberof Policy
+     */
+    'forwarderContract'?: EntityIdResponse;
+    /**
+     * 
      * @type {PolicyStrategy}
      * @memberof Policy
      */

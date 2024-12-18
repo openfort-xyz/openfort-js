@@ -978,25 +978,15 @@
         "type": "object",
         "additionalProperties": false
       },
-      "AuthResponse": {
+      "AuthenticatedPlayerResponse": {
         "properties": {
           "player": {
             "$ref": "#/components/schemas/AuthPlayerResponse",
             "description": "Player's identifier."
-          },
-          "token": {
-            "type": "string",
-            "description": "JWT access token."
-          },
-          "refreshToken": {
-            "type": "string",
-            "description": "Refresh token."
           }
         },
         "required": [
-          "player",
-          "token",
-          "refreshToken"
+          "player"
         ],
         "type": "object",
         "additionalProperties": false
@@ -1767,6 +1757,29 @@
       "OAuthConfigRequest": {
         "$ref": "#/components/schemas/AuthConfig",
         "description": "Request for the configuration endpoints for the OAuth providers"
+      },
+      "AuthResponse": {
+        "properties": {
+          "player": {
+            "$ref": "#/components/schemas/AuthPlayerResponse",
+            "description": "Player's identifier."
+          },
+          "token": {
+            "type": "string",
+            "description": "JWT access token."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token."
+          }
+        },
+        "required": [
+          "player",
+          "token",
+          "refreshToken"
+        ],
+        "type": "object",
+        "additionalProperties": false
       },
       "OAuthConfigListResponse": {
         "description": "Response for the OAuth config list method.",
@@ -2704,6 +2717,9 @@
           "paymaster": {
             "$ref": "#/components/schemas/EntityIdResponse"
           },
+          "forwarderContract": {
+            "$ref": "#/components/schemas/EntityIdResponse"
+          },
           "strategy": {
             "$ref": "#/components/schemas/PolicyStrategy"
           },
@@ -3572,6 +3588,34 @@
         "type": "object",
         "additionalProperties": false
       },
+      "PrivateKeyPolicy": {
+        "enum": [
+          "INDIVIDUAL",
+          "PROJECT"
+        ],
+        "type": "string"
+      },
+      "CreateProjectRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the project.",
+            "example": "My Project",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "pkPolicy": {
+            "$ref": "#/components/schemas/PrivateKeyPolicy",
+            "description": "The private key policyfor the project.",
+            "example": "PROJECT"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "CreateEcosystemConfigurationRequest": {
         "properties": {
           "customDomain": {
@@ -4162,34 +4206,6 @@
           "currentPeriodStart",
           "canceledAt",
           "plan"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "PrivateKeyPolicy": {
-        "enum": [
-          "INDIVIDUAL",
-          "PROJECT"
-        ],
-        "type": "string"
-      },
-      "CreateProjectRequest": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the project.",
-            "example": "My Project",
-            "minLength": 1,
-            "maxLength": 256
-          },
-          "pkPolicy": {
-            "$ref": "#/components/schemas/PrivateKeyPolicy",
-            "description": "The private key policyfor the project.",
-            "example": "PROJECT"
-          }
-        },
-        "required": [
-          "name"
         ],
         "type": "object",
         "additionalProperties": false
@@ -6517,6 +6533,9 @@
           "paymaster": {
             "$ref": "#/components/schemas/EntityIdResponse"
           },
+          "forwarderContract": {
+            "$ref": "#/components/schemas/EntityIdResponse"
+          },
           "strategy": {
             "$ref": "#/components/schemas/PolicyStrategy"
           },
@@ -6707,6 +6726,11 @@
             "type": "string",
             "description": "The ID of the paymaster.",
             "example": "pay_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+          },
+          "forwarderContract": {
+            "type": "string",
+            "description": "The ID of the forwarder contract.",
+            "example": "cfo_f0f89cf2-c185-40f4-beef-2a250d7a472b"
           }
         },
         "required": [
@@ -6738,6 +6762,11 @@
             "type": "string",
             "description": "The ID of the paymaster.",
             "example": "pay_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+          },
+          "forwarderContract": {
+            "type": "string",
+            "description": "The ID of the forwarder contract.",
+            "example": "cfo_f0f89cf2-c185-40f4-beef-2a250d7a472b"
           },
           "deleted": {
             "type": "boolean",
@@ -6890,17 +6919,21 @@
       },
       "PolicyReportQueries": {
         "properties": {
-          "to": {
-            "type": "number",
-            "format": "double",
-            "description": "The start date of the period in unix timestamp.",
-            "example": 1612137600
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the maximum number of records to return.",
+            "minimum": 1
           },
-          "from": {
-            "type": "number",
-            "format": "double",
-            "description": "The end date of the period in unix timestamp.",
-            "example": 1612137600
+          "skip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the offset for the first records to return.",
+            "minimum": 0
+          },
+          "order": {
+            "$ref": "#/components/schemas/SortOrder",
+            "description": "Specifies the order in which to sort the results."
           }
         },
         "type": "object",
@@ -8599,7 +8632,7 @@
                       "$ref": "#/components/schemas/AuthPlayerResponse"
                     },
                     {
-                      "$ref": "#/components/schemas/AuthResponse"
+                      "$ref": "#/components/schemas/AuthenticatedPlayerResponse"
                     }
                   ]
                 },
@@ -8997,6 +9030,69 @@
             }
           }
         }
+      }
+    },
+    "/iam/v1/guest": {
+      "post": {
+        "operationId": "RegisterGuest",
+        "responses": {
+          "201": {
+            "description": "Success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "player": {
+                        "id": "pla_...",
+                        "object": "player",
+                        "createdAt": 1234567890,
+                        "linkedAccounts": [
+                          {
+                            "provider": "email",
+                            "email": "jaume@openfort.xyz",
+                            "disabled": false
+                          }
+                        ]
+                      },
+                      "token": "abcd....",
+                      "refreshToken": "efgh...."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Api key is not valid"
+          },
+          "409": {
+            "description": "User already exists"
+          }
+        },
+        "description": "Create a guest player.",
+        "summary": "Create a guest player.",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-game",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     },
     "/iam/v1/oauth": {
@@ -10565,7 +10661,7 @@
                           "custodial": false,
                           "embeddedSigner": false,
                           "object": "account",
-                          "accountType": "Upgradeable_v05",
+                          "accountType": "Upgradeable_v06",
                           "ownerAddress": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
                           "player": {
                             "id": "pla_c502d628-5bb3-42f2-b8d5-62ba46717f3a"
@@ -10686,7 +10782,7 @@
                       "custodial": false,
                       "embeddedSigner": false,
                       "object": "account",
-                      "accountType": "Upgradeable_v05",
+                      "accountType": "Upgradeable_v06",
                       "ownerAddress": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
                       "player": {
                         "id": "pla_c502d628-5bb3-42f2-b8d5-62ba46717f3a"
@@ -10763,7 +10859,7 @@
                       "custodial": false,
                       "embeddedSigner": false,
                       "object": "account",
-                      "accountType": "Upgradeable_v05",
+                      "accountType": "Upgradeable_v06",
                       "ownerAddress": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
                       "player": {
                         "id": "pla_c502d628-5bb3-42f2-b8d5-62ba46717f3a"
@@ -11146,7 +11242,7 @@
                       "custodial": false,
                       "embeddedSigner": false,
                       "object": "account",
-                      "accountType": "Upgradeable_v05",
+                      "accountType": "Upgradeable_v06",
                       "ownerAddress": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
                       "player": {
                         "id": "pla_c502d628-5bb3-42f2-b8d5-62ba46717f3a"
@@ -11218,7 +11314,7 @@
                       "custodial": false,
                       "embeddedSigner": false,
                       "object": "account",
-                      "accountType": "Upgradeable_v05",
+                      "accountType": "Upgradeable_v06",
                       "ownerAddress": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
                       "player": {
                         "id": "pla_c502d628-5bb3-42f2-b8d5-62ba46717f3a"
@@ -15017,26 +15113,35 @@
             "example": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65"
           },
           {
-            "description": "The start date of the period in unix timestamp.",
+            "description": "Specifies the maximum number of records to return.",
             "in": "query",
-            "name": "to",
+            "name": "limit",
             "required": false,
             "schema": {
-              "format": "double",
-              "type": "number"
-            },
-            "example": 1612137600
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
           },
           {
-            "description": "The end date of the period in unix timestamp.",
+            "description": "Specifies the offset for the first records to return.",
             "in": "query",
-            "name": "from",
+            "name": "skip",
             "required": false,
             "schema": {
-              "format": "double",
-              "type": "number"
-            },
-            "example": 1612137600
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/SortOrder"
+            }
           }
         ]
       }
@@ -17985,6 +18090,15 @@
           },
           {
             "user_project": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_identity_token": []
           }
         ],
         "parameters": [

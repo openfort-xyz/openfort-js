@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { SortOrder } from './sort-order';
 
 /**
  * 
@@ -21,16 +24,24 @@
  */
 export interface PolicyReportQueries {
     /**
-     * The start date of the period in unix timestamp.
+     * Specifies the maximum number of records to return.
      * @type {number}
      * @memberof PolicyReportQueries
      */
-    'to'?: number;
+    'limit'?: number;
     /**
-     * The end date of the period in unix timestamp.
+     * Specifies the offset for the first records to return.
      * @type {number}
      * @memberof PolicyReportQueries
      */
-    'from'?: number;
+    'skip'?: number;
+    /**
+     * 
+     * @type {SortOrder}
+     * @memberof PolicyReportQueries
+     */
+    'order'?: SortOrder;
 }
+
+
 

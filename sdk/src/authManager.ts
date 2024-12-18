@@ -77,6 +77,12 @@ export default class AuthManager {
     };
   }
 
+  public async registerGuest(): Promise<AuthResponse> {
+    const request = {};
+    const response = await this.backendApiClients.authenticationApi.registerGuest(request);
+    return response.data;
+  }
+
   public async poolOAuth(
     key: string,
   ): Promise<AuthResponse> {
