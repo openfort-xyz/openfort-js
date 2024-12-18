@@ -7,5 +7,5 @@ export const WalletConnector = {
 } as const;
 
 export const Chain = {
-    AMOY: "amoy",
+  AMOY: "amoy",
 } as const;

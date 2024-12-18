@@ -1,7 +1,7 @@
 import {polygonAmoy} from 'wagmi/chains';
 import React, {FunctionComponent, useState} from 'react';
 import {withWagmi} from './wagmiProvider';
-import {Connector, createConfig, http, useAccount, useConnect} from 'wagmi';
+import {Connector, createConfig, http, useConnect} from 'wagmi';
 import {Chain, WalletConnector} from '../utils/constants';
 import type {Chain as WagmiChain} from 'wagmi/chains';
 import {metaMask, walletConnect} from 'wagmi/connectors';

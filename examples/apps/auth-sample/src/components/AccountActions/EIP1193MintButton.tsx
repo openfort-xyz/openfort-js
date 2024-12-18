@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useOpenfort} from '../../hooks/useOpenfort';
 import {EmbeddedState} from '@openfort/openfort-js';
 import Loading from '../Loading';
@@ -13,6 +13,21 @@ const EIP1193MintButton: React.FC<{
   const {getEvmProvider, state} = useOpenfort();
   const [loading, setLoading] = useState(false);
   const [loadingBatch, setLoadingBatch] = useState(false);
+
+  useEffect(() => {
+    const provider = getEvmProvider();
+    if (!provider) {
+      throw new Error('Failed to get EVM provider');
+    }
+    const walletClient = createWalletClient({
+      chain: polygonAmoy,
+      transport: custom(provider)
+    })
+    walletClient.getAddresses().then(([account]) => {
+      handleSetMessage(`Current account address: ${account}`);
+    }
+    )
+  },[])
 
   const handleSendTransaction = async () => {
     const provider = getEvmProvider();
