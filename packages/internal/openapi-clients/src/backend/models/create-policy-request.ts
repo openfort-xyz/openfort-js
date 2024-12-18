@@ -47,5 +47,11 @@ export interface CreatePolicyRequest {
      * @memberof CreatePolicyRequest
      */
     'paymaster'?: string;
+    /**
+     * The ID of the forwarder contract.
+     * @type {string}
+     * @memberof CreatePolicyRequest
+     */
+    'forwarderContract'?: string;
 }
 

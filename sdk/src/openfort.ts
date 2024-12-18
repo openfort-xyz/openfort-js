@@ -272,6 +272,21 @@ export class Openfort {
   }
 
   /**
+   * Registers a new guest user.
+   *
+   * @returns An AuthResponse object containing authentication details.
+   */
+  public async registerGuest(): Promise<AuthResponse> {
+    const previousAuth = Authentication.fromStorage(this.storage);
+    const result = await this.authManager.registerGuest();
+    if (previousAuth && previousAuth.player !== result.player.id) {
+      this.logout();
+    }
+    new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
+    return result;
+  }
+
+  /**
    * Signs up a new user with email and password.
    *
    * @param email - User's email.
