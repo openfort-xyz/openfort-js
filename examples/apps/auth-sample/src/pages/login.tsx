@@ -59,12 +59,12 @@ function LoginPage() {
     if (user) loadData();
   }, [user]);
 
-  const handleGuest = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleGuest = async () => {
     setStatus({
       type: "loading",
       title: "Signing in...",
     });
-    event.preventDefault();
+
     const data = await openfort
       .registerGuest()
       .catch((error) => {

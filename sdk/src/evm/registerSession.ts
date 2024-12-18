@@ -284,13 +284,13 @@ const buildOpenfortTransactions = async (
   return transactionResponse.data;
 };
 
-function formatRequest(result: SessionResponse) {
+function formatRequest(result: SessionResponse): GrantPermissionsReturnType {
   return {
     expiry: result.validUntil ? Number(result.validUntil) : 0,
-    grantedPermissions: result.whitelist?.map((address) => ({
+    grantedPermissions: result.whitelist ? result.whitelist.map((address) => ({
       type: 'contract-call',
       data: {
-        address,
+        address: address as `0x${string}`,
         calls: [],
       },
       policies: [{
@@ -299,7 +299,7 @@ function formatRequest(result: SessionResponse) {
         },
         type: { custom: 'usage-limit' },
       }],
-    })),
+    })) : [],
     permissionsContext: result.id,
   };
 }
@@ -350,5 +350,5 @@ export const registerSession = async ({
     );
   }
 
-  return formatRequest(response) as GrantPermissionsReturnType;
+  return formatRequest(response);
 };

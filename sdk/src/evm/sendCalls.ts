@@ -66,12 +66,13 @@ export const sendCalls = async ({
   backendClient,
   policyId,
 }: WalletSendCallsParams): Promise<`0x${string}`> => {
+  const policy = params[0]?.capabilities?.paymasterService?.policy ?? policyId;
   const openfortTransaction = await buildOpenfortTransactions(
     params[0].calls,
     backendClient,
     account,
     authentication,
-    policyId,
+    policy,
   );
   let response: ResponseResponse;
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
