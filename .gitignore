@@ -20,3 +20,10 @@ dist/
 yalc.lock
 
 docs/
+
+# Test and Playwright related artifacts
+/examples/apps/auth-sample/test-results/
+/examples/apps/auth-sample/playwright-report/
+/examples/apps/auth-sample/blob-report/
+/examples/apps/auth-sample/playwright/.cache/
+/examples/apps/auth-sample/playwright/.auth/
