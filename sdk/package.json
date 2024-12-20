@@ -45,6 +45,7 @@
     "crypto-js": "^4.2.0",
     "es6-promise": "^4.2.8",
     "jose": "^5.2.2",
+    "jsrsasign": "^11.1.0",
     "path": "^0.12.7",
     "stream-browserify": "^3.0.0",
     "uuid": "^8.3.2"
@@ -72,6 +73,7 @@
     "@swc/jest": "^0.2.24",
     "@types/crypto-js": "^4.2.2",
     "@types/jest": "^29.4.3",
+    "@types/jsrsasign": "^10.5.15",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",

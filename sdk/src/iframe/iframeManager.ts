@@ -80,8 +80,10 @@ export class NotConfiguredError extends Error {
   }
 }
 
+type WindowWrapper = { contentWindow: { postMessage: (message: any, targetOrigin: string) => void } };
+
 export default class IframeManager {
-  private iframe?: HTMLIFrameElement;
+  private iframe: HTMLIFrameElement | WindowWrapper | undefined;
 
   private readonly responses: Map<string, IEventResponse> = new Map();
 
@@ -91,33 +93,57 @@ export default class IframeManager {
     this.sdkConfiguration = configuration;
   }
 
-  private async iframeSetup(): Promise<void> {
-    window.addEventListener('message', (event) => {
-      if (event.origin === this.sdkConfiguration.iframeUrl) {
-        const { data } = event;
-        if (data.action) {
-          if (data.action === Event.PONG) {
-            this.responses.set('FIRST', data);
+  public async iframeSetup(): Promise<void> {
+    if (window.addEventListener) {
+      window.addEventListener('message', (event) => {
+        if (event.origin === this.sdkConfiguration.iframeUrl) {
+          const { data } = event;
+          if (data.action) {
+            if (data.action === Event.PONG) {
+              this.responses.set('FIRST', data);
+            }
+            this.responses.set(data.uuid, data);
           }
-          this.responses.set(data.uuid, data);
         }
+      });
+      const previousIframe = document.getElementById(
+        'openfort-iframe',
+      ) as HTMLIFrameElement;
+      if (previousIframe) {
+        document.body.removeChild(previousIframe);
       }
-    });
-    const previousIframe = document.getElementById(
-      'openfort-iframe',
-    ) as HTMLIFrameElement;
-    if (previousIframe) {
-      document.body.removeChild(previousIframe);
-    }
-    this.iframe = document.createElement('iframe');
-    this.iframe.style.display = 'none';
-    this.iframe.id = 'openfort-iframe';
-    document.body.appendChild(this.iframe);
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.id = 'openfort-iframe';
+      document.body.appendChild(iframe);
 
-    if (this.sdkConfiguration.shieldConfiguration?.debug) {
-      this.iframe.src = `${this.sdkConfiguration.iframeUrl}?debug=true`;
+      if (this.sdkConfiguration.shieldConfiguration?.debug) {
+        iframe.src = `${this.sdkConfiguration.iframeUrl}?debug=true`;
+      } else {
+        iframe.src = this.sdkConfiguration.iframeUrl;
+      }
+      this.iframe = iframe;
     } else {
-      this.iframe.src = this.sdkConfiguration.iframeUrl;
+      if (!global.openfortListener) return;
+
+      global.openfortListener((event: MessageEvent<any>) => {
+        if (event.origin === this.sdkConfiguration.iframeUrl) {
+          let { data } = event;
+          if (typeof data === 'string') data = JSON.parse(data);
+          if (data.action) {
+            this.responses.set(data.uuid, data);
+          }
+        }
+      });
+
+      this.iframe = {
+        contentWindow: {
+          postMessage: (message: MessageEvent<any>) => {
+            if (!global.openfortPostMessage) return;
+            global.openfortPostMessage(message);
+          },
+        },
+      };
     }
   }
 

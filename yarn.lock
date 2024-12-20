@@ -1426,6 +1426,7 @@ __metadata:
     "@swc/jest": ^0.2.24
     "@types/crypto-js": ^4.2.2
     "@types/jest": ^29.4.3
+    "@types/jsrsasign": ^10.5.15
     "@types/uuid": ^8.3.4
     "@typescript-eslint/eslint-plugin": ^5.57.1
     "@typescript-eslint/parser": ^5.57.1
@@ -1438,6 +1439,7 @@ __metadata:
     jest: ^29.4.3
     jest-environment-jsdom: ^29.4.3
     jose: ^5.2.2
+    jsrsasign: ^11.1.0
     parcel: ^2.8.3
     path: ^0.12.7
     prettier: ^2.8.8
@@ -3041,6 +3043,13 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
+  languageName: node
+  linkType: hard
+
+"@types/jsrsasign@npm:^10.5.15":
+  version: 10.5.15
+  resolution: "@types/jsrsasign@npm:10.5.15"
+  checksum: e88fd213e5ae8a4c694ddad2accb282df7b0665bfa53c9e1be2ebfddbee342c328e185e1ffdffd684cc3ed0b83a9c1933c9c15b776a2250a3dfbdf0b45f17c7d
   languageName: node
   linkType: hard
 
@@ -7292,6 +7301,13 @@ __metadata:
   version: 3.3.1
   resolution: "jsonc-parser@npm:3.3.1"
   checksum: 81ef19d98d9c6bd6e4a37a95e2753c51c21705cbeffd895e177f4b542cca9cda5fda12fb942a71a2e824a9132cf119dc2e642e9286386055e1365b5478f49a47
+  languageName: node
+  linkType: hard
+
+"jsrsasign@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "jsrsasign@npm:11.1.0"
+  checksum: 1ce5eb44490be260c8b667d14fa8c62bfd75ee2b28f8193043ebd62dc9ac9d371a424d3e648cc2f0c220edada1ea4910d5c8cdebc69fc8c49087539c2e9009c6
   languageName: node
   linkType: hard
 

@@ -1,10 +1,12 @@
+import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
+import { AxiosRequestConfig } from 'axios';
+import * as crypto from 'crypto';
 import {
   errors, importJWK, jwtVerify, KeyLike,
 } from 'jose';
-import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
-import * as crypto from 'crypto';
-import { AxiosRequestConfig } from 'axios';
-import DeviceCredentialsManager from './utils/deviceCredentialsManager';
+import { KEYUTIL, KJUR, RSAKey } from 'jsrsasign';
+import { Authentication } from './configuration/authentication';
+import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import {
   Auth,
   AuthPlayerResponse,
@@ -15,9 +17,8 @@ import {
   ThirdPartyOAuthProvider,
   TokenType,
 } from './types';
+import DeviceCredentialsManager from './utils/deviceCredentialsManager';
 import { isBrowser } from './utils/helpers';
-import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
-import { Authentication } from './configuration/authentication';
 
 function base64URLEncode(str: Buffer) {
   return str.toString('base64')
@@ -332,13 +333,48 @@ export default class AuthManager {
     }, { default: OpenfortErrorType.USER_REGISTRATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
   }
 
-  public async validateCredentials(authentication: Authentication, forceRefresh?:boolean): Promise<Auth> {
-    const jwk = await this.getJWK();
+  // Slower validation function for browsers that do not support crypto.subtle
+  async validateCredentialsWithoutCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
     if (!authentication.refreshToken) {
       throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
-    if (forceRefresh) {
-      return this.refreshTokens(authentication.refreshToken, forceRefresh);
+
+    const ecKey = KEYUTIL.getKey({
+      kty: jwk.kty,
+      crv: jwk.crv,
+      x: jwk.x,
+      y: jwk.y,
+    } as KJUR.jws.JWS.JsonWebKey);
+
+    const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
+
+    const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
+    if (!isValid) {
+      throw new OpenfortError('Invalid token signature', OpenfortErrorType.AUTHENTICATION_ERROR);
+    }
+
+    const payload = JSON.parse(parsedJWT.payloadPP);
+
+    if (!payload.exp) {
+      return this.refreshTokens(authentication.refreshToken);
+    }
+
+    const now = KJUR.jws.IntDate.getNow();
+    if (payload.exp < now) {
+      return this.refreshTokens(authentication.refreshToken);
+    }
+
+    return {
+      player: payload.sub!,
+      accessToken: authentication.token,
+      refreshToken: authentication.refreshToken,
+    };
+  }
+
+  // Faster validation function for browsers that support crypto.subtle
+  async validateCredentialsWithCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
+    if (!authentication.refreshToken) {
+      throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
 
     try {
@@ -363,6 +399,22 @@ export default class AuthManager {
       }
       throw error;
     }
+  }
+
+  public async validateCredentials(authentication: Authentication, forceRefresh?: boolean): Promise<Auth> {
+    const jwk = await this.getJWK();
+    if (!authentication.refreshToken) {
+      throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
+    }
+    if (forceRefresh) {
+      return this.refreshTokens(authentication.refreshToken, forceRefresh);
+    }
+
+    if (crypto.subtle) {
+      return this.validateCredentialsWithCrypto(jwk, authentication);
+    }
+
+    return this.validateCredentialsWithoutCrypto(jwk, authentication);
   }
 
   private readonly jwksStorageKey = 'openfort.jwk';
@@ -596,7 +648,7 @@ export default class AuthManager {
   }
 
   public async unlinkEmail(
-    email:string,
+    email: string,
     accessToken: string,
   ): Promise<AuthPlayerResponse> {
     const request = {
@@ -615,7 +667,7 @@ export default class AuthManager {
   }
 
   public async linkEmail(
-    email:string,
+    email: string,
     password: string,
     accessToken: string,
     ecosystemGame?: string,
