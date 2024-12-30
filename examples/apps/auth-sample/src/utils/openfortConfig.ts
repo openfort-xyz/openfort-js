@@ -7,6 +7,9 @@ const openfort = new Openfort({
   },
   shieldConfiguration: {
     shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+  },
+  overrides: {
+    iframeUrl: "https://embedded.openfort.xyz",
   }
 });
 
