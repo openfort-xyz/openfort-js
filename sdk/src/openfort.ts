@@ -40,7 +40,7 @@ export class Openfort {
       sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       sdkConfiguration.shieldConfiguration?.shieldEncryptionKey || '',
       sdkConfiguration.overrides?.shieldUrl || 'https://shield.openfort.xyz',
-      sdkConfiguration.overrides?.iframeUrl || 'https://iframe.openfort.xyz',
+      sdkConfiguration.overrides?.iframeUrl || 'https://embedded.openfort.xyz',
       sdkConfiguration.shieldConfiguration?.debug || false,
     );
 
