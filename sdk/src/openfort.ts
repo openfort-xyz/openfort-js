@@ -276,7 +276,7 @@ export class Openfort {
    *
    * @returns An AuthResponse object containing authentication details.
    */
-  public async registerGuest(): Promise<AuthResponse> {
+  public async signUpGuest(): Promise<AuthResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
     const result = await this.authManager.registerGuest();
     if (previousAuth && previousAuth.player !== result.player.id) {
@@ -652,6 +652,7 @@ export class Openfort {
     return {
       chainId: account.chainId,
       address: account.address,
+      ownerAddress: account.ownerAddress,
       accountType: account.type as AccountType,
     };
   }
