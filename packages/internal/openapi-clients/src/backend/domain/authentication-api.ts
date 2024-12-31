@@ -728,6 +728,45 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             };
         },
         /**
+         * Create a guest player.
+         * @summary Create a guest player.
+         * @param {string} [xGame] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerGuest: async (xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v1/guest`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xGame != null) {
+                localVarHeaderParameter['x-game'] = String(xGame);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Start the Email Verification process for a player.
          * @summary Request an Email Verification.
          * @param {RequestVerifyEmailRequest} requestVerifyEmailRequest 
@@ -1363,6 +1402,17 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Create a guest player.
+         * @summary Create a guest player.
+         * @param {string} [xGame] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async registerGuest(xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.registerGuest(xGame, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Start the Email Verification process for a player.
          * @summary Request an Email Verification.
          * @param {RequestVerifyEmailRequest} requestVerifyEmailRequest 
@@ -1654,6 +1704,16 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          */
         refresh(requestParameters: AuthenticationApiRefreshRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
             return localVarFp.refresh(requestParameters.refreshTokenRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Create a guest player.
+         * @summary Create a guest player.
+         * @param {AuthenticationApiRegisterGuestRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerGuest(requestParameters: AuthenticationApiRegisterGuestRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
+            return localVarFp.registerGuest(requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * Start the Email Verification process for a player.
@@ -2035,6 +2095,20 @@ export interface AuthenticationApiRefreshRequest {
 }
 
 /**
+ * Request parameters for registerGuest operation in AuthenticationApi.
+ * @export
+ * @interface AuthenticationApiRegisterGuestRequest
+ */
+export interface AuthenticationApiRegisterGuestRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationApiRegisterGuest
+     */
+    readonly xGame?: string
+}
+
+/**
  * Request parameters for requestEmailVerification operation in AuthenticationApi.
  * @export
  * @interface AuthenticationApiRequestEmailVerificationRequest
@@ -2405,6 +2479,18 @@ export class AuthenticationApi extends BaseAPI {
      */
     public refresh(requestParameters: AuthenticationApiRefreshRequest, options?: AxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).refresh(requestParameters.refreshTokenRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Create a guest player.
+     * @summary Create a guest player.
+     * @param {AuthenticationApiRegisterGuestRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationApi
+     */
+    public registerGuest(requestParameters: AuthenticationApiRegisterGuestRequest = {}, options?: AxiosRequestConfig) {
+        return AuthenticationApiFp(this.configuration).registerGuest(requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

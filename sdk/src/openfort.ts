@@ -40,7 +40,7 @@ export class Openfort {
       sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       sdkConfiguration.shieldConfiguration?.shieldEncryptionKey || '',
       sdkConfiguration.overrides?.shieldUrl || 'https://shield.openfort.xyz',
-      sdkConfiguration.overrides?.iframeUrl || 'https://iframe.openfort.xyz',
+      sdkConfiguration.overrides?.iframeUrl || 'https://embedded.openfort.xyz',
       sdkConfiguration.shieldConfiguration?.debug || false,
     );
 
@@ -264,6 +264,21 @@ export class Openfort {
   ): Promise<AuthResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
     const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
+    if (previousAuth && previousAuth.player !== result.player.id) {
+      this.logout();
+    }
+    new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
+    return result;
+  }
+
+  /**
+   * Registers a new guest user.
+   *
+   * @returns An AuthResponse object containing authentication details.
+   */
+  public async signUpGuest(): Promise<AuthResponse> {
+    const previousAuth = Authentication.fromStorage(this.storage);
+    const result = await this.authManager.registerGuest();
     if (previousAuth && previousAuth.player !== result.player.id) {
       this.logout();
     }
@@ -637,6 +652,7 @@ export class Openfort {
     return {
       chainId: account.chainId,
       address: account.address,
+      ownerAddress: account.ownerAddress,
       accountType: account.type as AccountType,
     };
   }

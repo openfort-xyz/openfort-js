@@ -1,11 +1,8 @@
 import {
   EmbeddedState,
   ShieldAuthType,
-  ThirdPartyOAuthProvider,
-  TokenType,
   TypedDataDomain,
   TypedDataField,
-  type AuthPlayerResponse,
   type Provider,
   type RecoveryMethod,
   type ShieldAuthentication,
@@ -36,7 +33,6 @@ interface ContextType {
   chainId:number
   password?: string,
 }) => Promise<void>;
-  auth: (accessToken: string) => Promise<AuthPlayerResponse>;
   setWalletRecovery: (
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string
@@ -112,22 +108,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     }
     return externalProvider as Provider;
   }, []);
-
-  const auth = useCallback(
-    async (accessToken: string): Promise<AuthPlayerResponse> => {
-      try {
-        return await openfort.authenticateWithThirdPartyProvider({
-          provider: ThirdPartyOAuthProvider.SUPABASE,
-          token: accessToken,
-          tokenType: TokenType.CUSTOM_TOKEN,
-        });
-      } catch (err) {
-        console.error('Error authenticating:', err);
-        throw err;
-      }
-    },
-    []
-  );
 
   const signMessage = useCallback(
     async (
@@ -281,7 +261,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const contextValue: ContextType = {
     state,
-    auth,
     getEvmProvider,
     handleRecovery,
     signMessage,

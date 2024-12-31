@@ -460,12 +460,13 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
          * 
          * @summary List all gas reports of a policy.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {number} [to] The start date of the period in unix timestamp.
-         * @param {number} [from] The end date of the period in unix timestamp.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyTotalGasUsage: async (id: string, to?: number, from?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyTotalGasUsage: async (id: string, limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPolicyTotalGasUsage', 'id', id)
             const localVarPath = `/v1/policies/{id}/reports`
@@ -485,12 +486,16 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-            if (to !== undefined) {
-                localVarQueryParameter['to'] = to;
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
             }
 
-            if (from !== undefined) {
-                localVarQueryParameter['from'] = from;
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
             }
 
 
@@ -672,13 +677,14 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
          * 
          * @summary List all gas reports of a policy.
          * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {number} [to] The start date of the period in unix timestamp.
-         * @param {number} [from] The end date of the period in unix timestamp.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyTotalGasUsage(id: string, to?: number, from?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyTotalGasUsage(id, to, from, options);
+        async getPolicyTotalGasUsage(id: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyTotalGasUsage(id, limit, skip, order, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -801,7 +807,7 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         getPolicyTotalGasUsage(requestParameters: PoliciesApiGetPolicyTotalGasUsageRequest, options?: AxiosRequestConfig): AxiosPromise<GasReportListResponse> {
-            return localVarFp.getPolicyTotalGasUsage(requestParameters.id, requestParameters.to, requestParameters.from, options).then((request) => request(axios, basePath));
+            return localVarFp.getPolicyTotalGasUsage(requestParameters.id, requestParameters.limit, requestParameters.skip, requestParameters.order, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1033,18 +1039,25 @@ export interface PoliciesApiGetPolicyTotalGasUsageRequest {
     readonly id: string
 
     /**
-     * The start date of the period in unix timestamp.
+     * Specifies the maximum number of records to return.
      * @type {number}
      * @memberof PoliciesApiGetPolicyTotalGasUsage
      */
-    readonly to?: number
+    readonly limit?: number
 
     /**
-     * The end date of the period in unix timestamp.
+     * Specifies the offset for the first records to return.
      * @type {number}
      * @memberof PoliciesApiGetPolicyTotalGasUsage
      */
-    readonly from?: number
+    readonly skip?: number
+
+    /**
+     * Specifies the order in which to sort the results.
+     * @type {SortOrder}
+     * @memberof PoliciesApiGetPolicyTotalGasUsage
+     */
+    readonly order?: SortOrder
 }
 
 /**
@@ -1192,7 +1205,7 @@ export class PoliciesApi extends BaseAPI {
      * @memberof PoliciesApi
      */
     public getPolicyTotalGasUsage(requestParameters: PoliciesApiGetPolicyTotalGasUsageRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyTotalGasUsage(requestParameters.id, requestParameters.to, requestParameters.from, options).then((request) => request(this.axios, this.basePath));
+        return PoliciesApiFp(this.configuration).getPolicyTotalGasUsage(requestParameters.id, requestParameters.limit, requestParameters.skip, requestParameters.order, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

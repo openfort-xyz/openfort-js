@@ -37,6 +37,7 @@ export * from './auth-provider-with-type-response';
 export * from './auth-response';
 export * from './auth-session-response';
 export * from './authenticate-oauth-request';
+export * from './authenticated-player-response';
 export * from './authentication-type';
 export * from './authorize200-response';
 export * from './authorize-player-request';

@@ -349,17 +349,27 @@ export class ConfigureResponse implements IConfigureResponse {
 
   accountType: string;
 
+  ownerAddress: string;
+
   action: Event = Event.CONFIGURED;
 
   version: string | null;
 
-  constructor(uuid: string, deviceID: string, accountType: string, chainId: number, address: string) {
+  constructor(
+    uuid: string,
+    deviceID: string,
+    accountType: string,
+    chainId: number,
+    address: string,
+    ownerAddress: string,
+  ) {
     this.success = true;
     this.deviceID = deviceID;
     this.uuid = uuid;
     this.accountType = accountType;
     this.chainId = chainId;
     this.address = address;
+    this.ownerAddress = ownerAddress;
     this.version = null;
   }
 }

@@ -12,17 +12,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v3
 
-    - uses: actions/setup-node@v4
+    - name: Setup Node
+      uses: actions/setup-node@v3
       with:
-        node-version: 'lts/*'
+        node-version-file: .nvmrc
+        cache: 'yarn'
 
     - name: Install dependencies
-      run: npm install -g yarn && yarn
+      run: yarn install --immutable
 
-    - name: Install dependencies on auth sample
-      run: yarn
+    - name: Lint
+      run: yarn lint
+
+    - name: Build
+      run: yarn build
 
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps

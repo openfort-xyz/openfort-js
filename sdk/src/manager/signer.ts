@@ -150,7 +150,7 @@ export class SignerManager {
     SignerManager.storage.save(StorageKeys.SIGNER, JSON.stringify(signerConfiguration));
 
     const resp = await iframeManager.configure(iframeConfiguration);
-    new Account(resp.accountType, resp.address, resp.chainId).save(this.storage);
+    new Account(resp.accountType, resp.address, resp.chainId, resp.ownerAddress).save(this.storage);
     return new EmbeddedSigner(iframeManager, iframeConfiguration, this.storage);
   }
 

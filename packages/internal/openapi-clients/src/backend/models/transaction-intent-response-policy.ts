@@ -82,6 +82,12 @@ export interface TransactionIntentResponsePolicy {
     'paymaster'?: EntityIdResponse;
     /**
      * 
+     * @type {EntityIdResponse}
+     * @memberof TransactionIntentResponsePolicy
+     */
+    'forwarderContract'?: EntityIdResponse;
+    /**
+     * 
      * @type {PolicyStrategy}
      * @memberof TransactionIntentResponsePolicy
      */

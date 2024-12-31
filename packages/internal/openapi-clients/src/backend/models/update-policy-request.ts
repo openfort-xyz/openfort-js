@@ -48,6 +48,12 @@ export interface UpdatePolicyRequest {
      */
     'paymaster'?: string;
     /**
+     * The ID of the forwarder contract.
+     * @type {string}
+     * @memberof UpdatePolicyRequest
+     */
+    'forwarderContract'?: string;
+    /**
      * Specifies whether to delete the policy.
      * @type {boolean}
      * @memberof UpdatePolicyRequest

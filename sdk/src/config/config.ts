@@ -56,7 +56,7 @@ export class SDKConfiguration {
     this.baseConfiguration = baseConfiguration;
     if (overrides) {
       this.backendUrl = overrides.backendUrl || 'https://api.openfort.xyz';
-      this.iframeUrl = overrides.iframeUrl || 'https://iframe.openfort.xyz';
+      this.iframeUrl = overrides.iframeUrl || 'https://embedded.openfort.xyz';
       this.shieldUrl = overrides.shieldUrl || 'https://shield.openfort.xyz';
       this.openfortAPIConfig = {
         backend: createConfig({
@@ -66,7 +66,7 @@ export class SDKConfiguration {
       };
     } else {
       this.backendUrl = 'https://api.openfort.xyz';
-      this.iframeUrl = 'https://iframe.openfort.xyz';
+      this.iframeUrl = 'https://embedded.openfort.xyz';
       this.shieldUrl = 'https://shield.openfort.xyz';
       this.openfortAPIConfig = {
         backend: createConfig({

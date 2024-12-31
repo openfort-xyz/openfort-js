@@ -237,10 +237,11 @@ export default SetPairingCode;
 export const SetPairingCodeWithWagmi: React.FC<{
   handleSetMessage: (message: string) => void;
 }> = ({handleSetMessage}) => {
+
+  const {getEvmProvider} = useOpenfort();
   useEffect(() => {
-    if (!openfortInstance) return;
-    openfortInstance.getEthereumProvider(); // EIP-6963
-  }, [openfortInstance]);
+    getEvmProvider()
+  }, [getEvmProvider]);
 
   const chainToWagmiChain = {
     ['mainnet']: mainnet,

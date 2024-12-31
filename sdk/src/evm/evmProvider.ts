@@ -253,6 +253,9 @@ export class EvmProvider implements Provider {
               keyTypes: ['secp256k1'],
               permissionTypes: ['contract-calls'],
             },
+            paymasterService: {
+              supported: true,
+            },
           },
         };
         return capabilities;

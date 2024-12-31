@@ -5,12 +5,15 @@ export class Account {
 
   address: string;
 
+  ownerAddress: string;
+
   chainId: number;
 
-  constructor(type: string, address: string, chainId: number) {
+  constructor(type: string, address: string, chainId: number, ownerAddress: string) {
     this.type = type;
     this.address = address;
     this.chainId = chainId;
+    this.ownerAddress = ownerAddress;
   }
 
   public static fromStorage(storage: IStorage): Account | null {
@@ -24,6 +27,7 @@ export class Account {
       accountObj.type,
       accountObj.address,
       accountObj.chainId,
+      accountObj.ownerAddress,
     );
   }
 

@@ -18,7 +18,7 @@
 import { AuthPlayerResponse } from './auth-player-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthResponse } from './auth-response';
+import { AuthenticatedPlayerResponse } from './authenticated-player-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import { EntityTypePLAYER } from './entity-type-player';
@@ -62,18 +62,6 @@ export interface Authorize200Response {
      * @memberof Authorize200Response
      */
     'linkedAccounts': Array<LinkedAccountResponse>;
-    /**
-     * JWT access token.
-     * @type {string}
-     * @memberof Authorize200Response
-     */
-    'token': string;
-    /**
-     * Refresh token.
-     * @type {string}
-     * @memberof Authorize200Response
-     */
-    'refreshToken': string;
 }
 
 
