@@ -1,11 +1,8 @@
 import {
   EmbeddedState,
   ShieldAuthType,
-  ThirdPartyOAuthProvider,
-  TokenType,
   TypedDataDomain,
   TypedDataField,
-  type AuthPlayerResponse,
   type Provider,
   type RecoveryMethod,
   type ShieldAuthentication,

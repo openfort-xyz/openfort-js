@@ -23,6 +23,7 @@ export type SessionKey = {
 
 export type CurrentAccount = {
   address: string;
+  ownerAddress: string;
   accountType: AccountType;
   chainId: number
 };

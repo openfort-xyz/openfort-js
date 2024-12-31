@@ -114,7 +114,7 @@ window.callFunction = async (jsonData: string) => {
             } : undefined,
             overrides: {
               backendUrl: request.backendUrl ?? 'https://api.openfort.xyz',
-              iframeUrl: request.iframeUrl ?? 'https://iframe.openfort.xyz',
+              iframeUrl: request.iframeUrl ?? 'https://embedded.openfort.xyz',
               shieldUrl: request.shieldUrl ?? 'https://shield.openfort.xyz',
             },
           };
