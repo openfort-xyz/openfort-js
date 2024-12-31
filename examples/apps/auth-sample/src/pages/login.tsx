@@ -66,7 +66,7 @@ function LoginPage() {
     });
 
     const data = await openfort
-      .registerGuest()
+      .signUpGuest()
       .catch((error) => {
         setStatus({
           type: "error",
