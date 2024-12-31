@@ -234,8 +234,8 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const getEOAAddress = useCallback(async () => {
     try { 
-      const res = await exportPrivateKey();
-      return privateKeyToAddress(res.data as `0x${string}`);
+      const account = await openfort.getAccount()
+      return (account.ownerAddress as `0x${string}`);
     } catch (err){
       console.error('Error obtaining EOA Address with Openfort:', err);
       throw err instanceof Error
