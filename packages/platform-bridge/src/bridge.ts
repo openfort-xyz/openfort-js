@@ -14,6 +14,7 @@ const OPENFORT_FUNCTIONS = {
   configureEmbeddedSigner: 'configureEmbeddedSigner',
   logInWithEmailPassword: 'logInWithEmailPassword',
   signUpWithEmailPassword: 'signUpWithEmailPassword',
+  signUpGuest: 'signUpGuest',
   linkEmailPassword: 'linkEmailPassword',
   unlinkEmailPassword: 'unlinkEmailPassword',
   requestEmailVerification: 'requestEmailVerification',
@@ -533,6 +534,19 @@ window.callFunction = async (jsonData: string) => {
           email: request.email,
           password: request.password,
         });
+
+        callbackToGame({
+          ...{
+            responseFor: fxName,
+            requestId,
+            success: true,
+          },
+          ...userInfo,
+        });
+        break;
+      }
+      case OPENFORT_FUNCTIONS.signUpGuest: {
+        const userInfo = await openfortClient?.signUpGuest();
 
         callbackToGame({
           ...{
