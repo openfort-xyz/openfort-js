@@ -1,47 +1,45 @@
-# Auth Sample
+# Openfort Auth `create-next-app` Starter
 
-Live demo: https://openfort-auth-non-custodial.vercel.app
+This is a template for integrating [**Openfort Auth**](https://www.openfort.xyz/) into a [NextJS](https://nextjs.org/) project. Check out the deployed app [here](https://create-next-app.openfort.xyz/)!
 
-## OAuth methods
+This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-your-application/routing).
 
-```typescript
-export async function oAuthWithoutPooling() {
-  const initOAuth = await openfort.initOAuth(OAuthProvider.GOOGLE, false, {
-    redirectTo: 'https://example.com',
-  });
-  console.log(initOAuth);
-  // now you can redirect the user to the initOAuth.url and when the process is done, you will be redirected to the redirectTo url with tokens and player_id
-  // https://example.com?access_token=...&refresh_token=...&player_id=...
-}
 
-export async function oAuthWithPooling() {
-  const initOAuth = await openfort.initOAuth(OAuthProvider.GOOGLE, true);
-  console.log(initOAuth);
-  // now you can redirect the user to the initOAuth.url and when the process is done, a message to close the window will be shown
+## Setup
 
-  // you can pool the auth with the key returned from the initOAuth, this will check if the auth is ready every 0.5 seconds for 5 minutes
-  // sessions live for 1 hour, so you can pool the auth again if you need to
-  const auth = await openfort.poolOAuth(initOAuth.key);
-  console.log(auth);
-}
-
-export async function linkOAuthWithoutPooling() {
-  const initLinkOAuth = await openfort.initLinkOAuth(OAuthProvider.GOOGLE, 'playerToken', false, {
-    redirectTo: 'https://example.com',
-  });
-  console.log(initLinkOAuth);
-  // now you can redirect the user to the initLinkOAuth.url and when the process is done, you will be redirected to the redirectTo url with tokens and player_id
-  // https://example.com?access_token=...&refresh_token=...&player_id=...
-}
-
-export async function linkOAuthWithPooling() {
-  const initLinkOAuth = await openfort.initLinkOAuth(OAuthProvider.GOOGLE, 'playerToken', true);
-  console.log(initLinkOAuth);
-  // now you can redirect the user to the initLinkOAuth.url and when the process is done, a message to close the window will be shown
-
-  // you can pool the auth with the key returned from the initLinkOAuth, this will check if the auth is ready every 0.5 seconds for 5 minutes
-  // sessions live for 1 hour, so you can pool the auth again if you need to
-  const auth = await openfort.poolOAuth(initLinkOAuth.key);
-  console.log(auth);
-}
+1. Clone this repository and open it in your terminal. 
+```sh
+git clone https://github.com/openfort-xyz/openfort-js.git
+cd openfort-js/examples/apps/auth-sample
 ```
+
+2. Install the necessary dependencies (including [Openfort Auth](https://www.npmjs.com/package/@openfort/openfort-js)) with `npm`.
+```sh
+npm i 
+```
+
+1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.xyz/docs/guides/client/api-keys).
+```sh
+# In your terminal, create .env.local from .env.example
+cp .env.example .env.local
+
+# Add your Openfort keys to .env.local
+NEXTAUTH_OPENFORT_SECRET_KEY=
+NEXT_PUBLIC_OPENFORT_PUBLIC_KEY=
+NEXT_PUBLIC_SHIELD_API_KEY=
+
+NEXTAUTH_SHIELD_ENCRYPTION_SHARE=
+NEXTAUTH_SHIELD_SECRET_KEY=
+```
+
+## Building locally
+
+In your project directory, run `npm run dev`. You can now visit http://localhost:3000 to see your app and login with Openfort!
+
+
+## Check out:
+- `components/AccountActions/AccountActions.tsx` for how to send transactions.
+- - `components/Signatures/SignMessageButton.tsx` for how to sign messages.
+
+
+**Check out [our docs](https://www.openfort.xyz/docs/guides/getting-started) for more guidance around using Openfort in your app!**
