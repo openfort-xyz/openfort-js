@@ -12,7 +12,8 @@ import avalancheMainnet from './43114';
 
 import sepolia from './11155111';
 
-// import immutableZkEVMMainnet from './13371';
+import saakuruTestnet from './247253';
+import saakuruMainnet from './7225878';
 
 import arbitrumSepolia from './421614';
 import arbitrum from './42161';
@@ -45,6 +46,9 @@ import opBNBTestnet from './5611';
 import soneiumMinato from './1946';
 
 import sophon from './531050104';
+
+import kromaTestnet from './2358';
+import kromaMainnet from './255';
 
 export const chainMap: { [key: number]: Chain } = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -105,6 +109,14 @@ export const chainMap: { [key: number]: Chain } = {
   1946: soneiumMinato,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   531050104: sophon,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  2358: kromaTestnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  255: kromaMainnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  247253: saakuruTestnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  7225878: saakuruMainnet,
 };
 
 export default [
@@ -137,6 +149,10 @@ export default [
   opBNB,
   opBNBTestnet,
   sophon,
+  kromaTestnet,
+  kromaMainnet,
+  saakuruMainnet,
+  saakuruTestnet,
 ];
 
 export type Chain = {

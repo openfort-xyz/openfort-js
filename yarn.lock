@@ -1375,7 +1375,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@0.8.16, @openfort/openfort-js@workspace:sdk":
+"@openfort/openfort-js@npm:0.8.16":
+  version: 0.8.16
+  resolution: "@openfort/openfort-js@npm:0.8.16"
+  dependencies:
+    "@ethersproject/abstract-signer": ^5.7.0
+    "@ethersproject/bytes": ^5.7.0
+    "@ethersproject/hash": ^5.7.0
+    "@ethersproject/providers": ^5.7.0
+    "@ethersproject/signing-key": ^5.7.0
+    "@ethersproject/transactions": ^5.7.0
+    "@noble/curves": ^1.1.0
+    "@openfort/shield-js": ^0.1.11
+    axios: 1.6.7
+    buffer: ^6.0.3
+    crypto-browserify: ^3.12.0
+    crypto-js: ^4.2.0
+    es6-promise: ^4.2.8
+    jose: ^5.2.2
+    jsrsasign: ^11.1.0
+    path: ^0.12.7
+    stream-browserify: ^3.0.0
+    uuid: ^8.3.2
+  checksum: e296dcebdd2d499a26de7f01fd69b1e5bfa390fc30499c38effd5c59a10c44d58529e84378461cae020d9481dc0485da0a53036946fa15632a366d44ed5bba31
+  languageName: node
+  linkType: hard
+
+"@openfort/openfort-js@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:
@@ -3863,7 +3889,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:^5.5.0||^6.0.0":
+"buffer@npm:^5.5.0||^6.0.0, buffer@npm:^6.0.3":
   version: 6.0.3
   resolution: "buffer@npm:6.0.3"
   dependencies:
