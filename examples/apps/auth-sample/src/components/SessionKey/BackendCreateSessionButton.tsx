@@ -20,6 +20,8 @@ const BackendCreateSessionButton: React.FC<{
     privateKey: `0x${string}`;
   } | null> => {
     const sessionKey = generatePrivateKey();
+    const accountSession = privateKeyToAccount(sessionKey).address;
+
     const sessionResponse = await fetch(`/api/protected-create-session`, {
       method: 'POST',
       headers: {
@@ -30,7 +32,7 @@ const BackendCreateSessionButton: React.FC<{
         sessionDuration: document.querySelector(
           'input[name="session-method"]:checked'
         )?.id,
-        sessionAddress: sessionKey,
+        sessionAddress: accountSession,
       }),
     });
 
