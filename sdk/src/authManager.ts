@@ -410,7 +410,8 @@ export default class AuthManager {
       return this.refreshTokens(authentication.refreshToken, forceRefresh);
     }
 
-    if (crypto.subtle) {
+    const webCrypto = AuthManager.getWebCrypto();
+    if (webCrypto?.subtle) {
       return this.validateCredentialsWithCrypto(jwk, authentication);
     }
 
@@ -664,6 +665,17 @@ export default class AuthManager {
       },
     });
     return authPlayerResponse.data;
+  }
+
+  private static getWebCrypto(): { subtle?: SubtleCrypto } | null {
+    if (isBrowser()) {
+      return window.crypto;
+    }
+    // Node.js environment
+    if (typeof global !== 'undefined' && (global as any).crypto) {
+      return (global as any).crypto;
+    }
+    return null;
   }
 
   public async linkEmail(

@@ -1375,9 +1375,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@npm:0.8.6":
-  version: 0.8.6
-  resolution: "@openfort/openfort-js@npm:0.8.6"
+"@openfort/openfort-js@npm:0.8.16":
+  version: 0.8.16
+  resolution: "@openfort/openfort-js@npm:0.8.16"
   dependencies:
     "@ethersproject/abstract-signer": ^5.7.0
     "@ethersproject/bytes": ^5.7.0
@@ -1386,17 +1386,18 @@ __metadata:
     "@ethersproject/signing-key": ^5.7.0
     "@ethersproject/transactions": ^5.7.0
     "@noble/curves": ^1.1.0
-    "@openfort/shield-js": ^0.0.3
+    "@openfort/shield-js": ^0.1.11
     axios: 1.6.7
     buffer: ^6.0.3
     crypto-browserify: ^3.12.0
     crypto-js: ^4.2.0
     es6-promise: ^4.2.8
     jose: ^5.2.2
+    jsrsasign: ^11.1.0
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: 71bb43f1cd9d1d398c6f7e85cfc5f434c419d39980ad591ffb8a5aec8e1f85dda1daea1286395720dd3792c5ae82169321f152e122d7d1774ccd579f3b4426fc
+  checksum: e296dcebdd2d499a26de7f01fd69b1e5bfa390fc30499c38effd5c59a10c44d58529e84378461cae020d9481dc0485da0a53036946fa15632a366d44ed5bba31
   languageName: node
   linkType: hard
 
@@ -1457,22 +1458,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
   dependencies:
-    "@openfort/openfort-js": 0.8.6
+    "@openfort/openfort-js": 0.8.16
     eslint: ^8.40.0
     ethers: ^5.7.0
     parcel: ^2.8.3
   languageName: unknown
   linkType: soft
-
-"@openfort/shield-js@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@openfort/shield-js@npm:0.0.3"
-  dependencies:
-    axios: ^1.6.8
-    typescript: ^5.4.3
-  checksum: fee7c7d81a72068db75e60e7bc19a79f71223740508dcdcb0056b30d092de8b0cb59c0d0f34736ac9039f7039de2b0961212ebc5623ccd153e53bd8029f46de7
-  languageName: node
-  linkType: hard
 
 "@openfort/shield-js@npm:^0.1.11":
   version: 0.1.13
@@ -3623,17 +3614,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.8":
-  version: 1.7.8
-  resolution: "axios@npm:1.7.8"
-  dependencies:
-    follow-redirects: ^1.15.6
-    form-data: ^4.0.0
-    proxy-from-env: ^1.1.0
-  checksum: 3d21652faf8e29fb36c47517d2872bb5e2285127a24f5c53ce23082c4eac7f5a88de84dd49d4a1a83068e5301dcfd9067b41e5fbd00b0d20ab7b0a843559273d
-  languageName: node
-  linkType: hard
-
 "axobject-query@npm:^4.1.0":
   version: 4.1.0
   resolution: "axobject-query@npm:4.1.0"
@@ -5565,7 +5545,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.4, follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.15.4":
   version: 1.15.9
   resolution: "follow-redirects@npm:1.15.9"
   peerDependenciesMeta:
@@ -9972,7 +9952,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.0.4, typescript@npm:^5.4.3":
+"typescript@npm:^5.0.4":
   version: 5.7.2
   resolution: "typescript@npm:5.7.2"
   bin:
@@ -9992,7 +9972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>, typescript@patch:typescript@^5.4.3#~builtin<compat/typescript>":
+"typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
   version: 5.7.2
   resolution: "typescript@patch:typescript@npm%3A5.7.2#~builtin<compat/typescript>::version=5.7.2&hash=14eedb"
   bin:
