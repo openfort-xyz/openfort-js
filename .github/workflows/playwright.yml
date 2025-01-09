@@ -39,6 +39,20 @@ jobs:
       working-directory: examples/apps/auth-sample
 
     - name: Run Playwright tests
+      env:
+        NEXTAUTH_OPENFORT_SECRET_KEY: ${{ secrets.NEXTAUTH_OPENFORT_SECRET_KEY }}
+        NEXTAUTH_SHIELD_ENCRYPTION_SHARE: ${{ secrets.NEXTAUTH_SHIELD_ENCRYPTION_SHARE }}
+        NEXTAUTH_SHIELD_SECRET_KEY: ${{ secrets.NEXTAUTH_SHIELD_SECRET_KEY }}
+        E2E_TESTS_PASSWORD: ${{ secrets.E2E_TESTS_PASSWORD }}
+        NEXT_PUBLIC_OPENFORT_PUBLIC_KEY: ${{ vars.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY }}
+        NEXT_PUBLIC_SHIELD_API_KEY: ${{ vars.NEXT_PUBLIC_SHIELD_API_KEY }}
+        NEXT_PUBLIC_POLICY_ID: ${{ vars.NEXT_PUBLIC_POLICY_ID }}
+        NEXT_PUBLIC_CHAIN_ID: ${{ vars.NEXT_PUBLIC_CHAIN_ID }}
+        NEXT_PUBLIC_CONTRACT_ID: ${{ vars.NEXT_PUBLIC_CONTRACT_ID }}
+        NEXT_PUBLIC_REOWN_PROJECT_ID: ${{ vars.NEXT_PUBLIC_REOWN_PROJECT_ID }}
+        NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
+        NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
+        E2E_TESTS_USER: ${{ vars.E2E_TESTS_USER }}
       run: yarn playwright test
       working-directory: examples/apps/auth-sample
 
