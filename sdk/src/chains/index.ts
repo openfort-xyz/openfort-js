@@ -1,3 +1,5 @@
+import zksyncSepolia from './300';
+
 import bnb from './56';
 import bnbTestnet from './97';
 
@@ -10,6 +12,7 @@ import beamTestnet from './13337';
 import avalancheFuji from './43113';
 import avalancheMainnet from './43114';
 
+import ethereum from './1';
 import sepolia from './11155111';
 
 import saakuruTestnet from './247253';
@@ -35,8 +38,6 @@ import immutableTestnet from './13473';
 import optimismSepolia from './11155420';
 import optimism from './10';
 
-import tiktrixTestnet from './62092';
-
 import dosMainnet from './7979';
 import dosTestnet from './3939';
 
@@ -45,12 +46,16 @@ import opBNBTestnet from './5611';
 
 import soneiumMinato from './1946';
 
-import sophon from './531050104';
+import sophonTestnet from './531050104';
 
 import kromaTestnet from './2358';
 import kromaMainnet from './255';
 
 export const chainMap: { [key: number]: Chain } = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  1: ethereum,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  300: zksyncSepolia,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   56: bnb,
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -96,8 +101,6 @@ export const chainMap: { [key: number]: Chain } = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   10: optimism,
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  62092: tiktrixTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   7979: dosMainnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   3939: dosTestnet,
@@ -108,7 +111,7 @@ export const chainMap: { [key: number]: Chain } = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   1946: soneiumMinato,
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  531050104: sophon,
+  531050104: sophonTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   2358: kromaTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -120,6 +123,8 @@ export const chainMap: { [key: number]: Chain } = {
 };
 
 export default [
+  ethereum,
+  zksyncSepolia,
   bnb,
   bnbTestnet,
   base,
@@ -142,13 +147,12 @@ export default [
   degenChain,
   optimism,
   optimismSepolia,
-  tiktrixTestnet,
   dosMainnet,
   dosTestnet,
   soneiumMinato,
   opBNB,
   opBNBTestnet,
-  sophon,
+  sophonTestnet,
   kromaTestnet,
   kromaMainnet,
   saakuruMainnet,
