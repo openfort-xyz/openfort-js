@@ -62,6 +62,7 @@ const BackendMintButton: React.FC<{
         className='w-full' 
         onClick={handleMintNFT}
         disabled={!sessionKey}
+        id="mint-nft-button"
         variant="outline"
       >
         {loading ? <Loading /> : 'Mint NFT with session key'}

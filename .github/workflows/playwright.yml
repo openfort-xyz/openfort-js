@@ -1,0 +1,64 @@
+name: Playwright Tests
+on:
+  pull_request:
+    branches:
+      - main
+  merge_group:
+    branches:
+      - main
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: .nvmrc
+        cache: 'yarn'
+
+    - name: Install root dependencies
+      run: yarn install --immutable
+
+    - name: Install auth-sample dependencies
+      run: yarn install --immutable
+      working-directory: examples/apps/auth-sample
+
+    - name: Lint
+      run: yarn lint
+
+    - name: Build
+      run: yarn build
+
+    - name: Install Playwright Browsers
+      run: yarn playwright install --with-deps
+      working-directory: examples/apps/auth-sample
+
+    - name: Run Playwright tests
+      env:
+        NEXTAUTH_OPENFORT_SECRET_KEY: ${{ secrets.NEXTAUTH_OPENFORT_SECRET_KEY }}
+        NEXTAUTH_SHIELD_ENCRYPTION_SHARE: ${{ secrets.NEXTAUTH_SHIELD_ENCRYPTION_SHARE }}
+        NEXTAUTH_SHIELD_SECRET_KEY: ${{ secrets.NEXTAUTH_SHIELD_SECRET_KEY }}
+        E2E_TESTS_PASSWORD: ${{ secrets.E2E_TESTS_PASSWORD }}
+        NEXT_PUBLIC_OPENFORT_PUBLIC_KEY: ${{ vars.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY }}
+        NEXT_PUBLIC_SHIELD_API_KEY: ${{ vars.NEXT_PUBLIC_SHIELD_API_KEY }}
+        NEXT_PUBLIC_POLICY_ID: ${{ vars.NEXT_PUBLIC_POLICY_ID }}
+        NEXT_PUBLIC_CHAIN_ID: ${{ vars.NEXT_PUBLIC_CHAIN_ID }}
+        NEXT_PUBLIC_CONTRACT_ID: ${{ vars.NEXT_PUBLIC_CONTRACT_ID }}
+        NEXT_PUBLIC_REOWN_PROJECT_ID: ${{ vars.NEXT_PUBLIC_REOWN_PROJECT_ID }}
+        NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
+        NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
+        E2E_TESTS_USER: ${{ vars.E2E_TESTS_USER }}
+      run: yarn playwright test --reporter=dot --workers=5
+      working-directory: examples/apps/auth-sample
+
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: examples/apps/auth-sample/playwright-report/
+        retention-days: 30
