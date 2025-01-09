@@ -40,7 +40,7 @@ const HomePage: NextPage = () => {
       });
       if (sessionData) {
         setUser(sessionData);
-        handleSetMessage(JSON.stringify(sessionData, null, 2));
+        setMessage((prev) => !prev.includes("User:") ? `> User: ${JSON.stringify(sessionData, null, 2)}\n\n${prev}` : prev);
       } else router.push("/login");
     };
     if (!user) fetchUser();

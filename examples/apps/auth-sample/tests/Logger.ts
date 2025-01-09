@@ -15,16 +15,7 @@ export class Logger {
 
         await this.textArea.textContent()
 
-        try {
-            // expect the console to have logged
-            // > Current account address: 0x...
-            // > { player id ... }
-            // when running in dev mode, the console will have logged twice, because it uses react StrictMode
-            // check if twice first, then check if once
-            await expect(this.textArea).toHaveValue(/.*>[\s\S]*>[\s\S]*>[\s\S]*>[\s\S]/, { timeout: 2000 })
-        } catch {
-            await expect(this.textArea).toHaveValue(/.*>[\s\S]*>[\s\S]/, { timeout: 3000 })
-        }
+        await expect(this.textArea).toHaveValue(/.*> User:/, { timeout: 10000 })
 
         this.logs.push(await this.textArea.inputValue())
     }
