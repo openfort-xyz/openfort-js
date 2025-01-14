@@ -239,6 +239,10 @@ const buildOpenfortTransactions = async (
     (p) => p.type === 'contract-call'
       || p.type === 'erc20-token-transfer',
   ).map((p) => (p.data as { address: `0x${string}` }).address);
+  const limit = (formattedPermissions[0].policies.find(
+    (p) => p.type === 'usage-limit',
+  )?.data as { limit: number } | undefined)?.limit;
+
   if (param.signer && param.signer.type === 'keys') {
     throw new JsonRpcError(
       RpcErrorCode.INVALID_PARAMS,
@@ -262,6 +266,7 @@ const buildOpenfortTransactions = async (
     false,
     whitelist,
     authentication.player,
+    limit,
   );
 
   const transactionResponse = await backendApiClients.sessionsApi.createSession(

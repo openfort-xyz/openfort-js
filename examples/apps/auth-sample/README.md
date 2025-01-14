@@ -9,8 +9,7 @@ This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-yo
 
 1. Clone this repository and open it in your terminal. 
 ```sh
-git clone https://github.com/openfort-xyz/openfort-js.git
-cd openfort-js/examples/apps/auth-sample
+mkdir -p openfort-auth-sample-nextjs && curl -L https://codeload.github.com/openfort-xyz/openfort-js/tar.gz/main | tar -xz --strip=4 -C openfort-auth-sample-nextjs openfort-js-main/examples/apps/auth-sample && cd openfort-auth-sample-nextjs
 ```
 
 2. Install the necessary dependencies (including [Openfort Auth](https://www.npmjs.com/package/@openfort/openfort-js)) with `npm`.
