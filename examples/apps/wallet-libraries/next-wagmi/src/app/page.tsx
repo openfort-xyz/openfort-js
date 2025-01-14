@@ -87,7 +87,13 @@ function Account() {
       </div>
 
       {account.status === 'connected' && (
-        <button type="button" onClick={() => disconnect()}>
+        <button type="button" onClick={async() => {
+          if (account.connector && account.connector.name.includes('Openfort')) {
+            await openfortInstance.logout();
+          }
+          disconnect()
+          }
+          }>
           Disconnect
         </button>
       )}
@@ -103,8 +109,6 @@ function Connect() {
     useState<Connector | null>(null);
   
     useEffect(() => {
-        console.log('useEffect',activeConnector?.name)
-        console.log('useEffect',error)
       if (
         error &&
         activeConnector?.name === 'Openfort' &&
@@ -212,7 +216,7 @@ function SwitchChain() {
 }
 
 function SignMessage() {
-  const { data, signMessage } = useSignMessage()
+  const { data, signMessage, error } = useSignMessage()
 
   return (
     <div>
@@ -227,6 +231,7 @@ function SignMessage() {
       >
         <input name="message" />
         <button type="submit">Sign Message</button>
+        <p>{error?.message}</p>
       </form>
 
       {data}
@@ -441,13 +446,13 @@ function Repro() {
         type="button"
         onClick={() => switchChain(config, { chainId: sepolia.id })}
       >
-        Switch to Polygon
+        Switch to Sepolia
       </button>
       <button
         type="button"
         onClick={() => switchChain(config, { chainId: baseSepolia.id })}
       >
-        Switch to Arbitrum
+        Switch to Base Sepolia
       </button>
     </main>
   )

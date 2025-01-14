@@ -328,7 +328,13 @@ export const registerSession = async ({
   let response: SessionResponse;
 
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
-    const signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
+    let signature;
+    // zkSyncSepolia and Sophon test need a different signature
+    if ([300, 531050104].includes(account.chainId)) {
+      signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false);
+    } else {
+      signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
+    }
     const openfortSignatureResponse = await backendClient.sessionsApi.signatureSession({
       id: openfortTransaction.id,
       signatureRequest: { signature },

@@ -162,6 +162,16 @@ export class EvmProvider implements Provider {
         const { chainId } = await this.#rpcProvider.detectNetwork();
         return hexlify(chainId);
       }
+      case 'wallet_switchEthereumChain': {
+        const signer = SignerManager.fromStorage();
+        if (!signer) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            'Unauthorized - must be authenticated and configured with a signer',
+          );
+        }
+        return null;
+      }
       case 'wallet_addEthereumChain': {
         const signer = SignerManager.fromStorage();
         if (!signer) {
@@ -254,6 +264,9 @@ export class EvmProvider implements Provider {
               permissionTypes: ['contract-calls'],
             },
             paymasterService: {
+              supported: true,
+            },
+            atomicBatch: {
               supported: true,
             },
           },

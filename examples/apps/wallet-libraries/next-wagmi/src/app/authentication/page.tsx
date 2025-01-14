@@ -1,15 +1,13 @@
 'use client'
 
 import React, {useState, useEffect, useRef} from 'react';
-import Openfort, {
+import  {
   EmbeddedState,
-  ShieldAuthentication,
-  ShieldAuthType,
 } from '@openfort/openfort-js';
-import axios from 'axios';
-import { polygonAmoy } from 'viem/chains';
-import { useRouter } from 'next/navigation'
+import { sepolia } from 'viem/chains';
+import { useRouter } from 'next/navigation';
 import { openfortInstance } from '../../openfort';
+import { configureEmbeddedSigner } from '../../lib/utils';
 
 interface AuthFormData {
   email: string;
@@ -24,6 +22,7 @@ function Authenticate() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const poller = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const hasConfiguredSigner = useRef<boolean>(false);
@@ -34,17 +33,19 @@ function Authenticate() {
         const currentState = await openfortInstance.getEmbeddedState();
         if (currentState === EmbeddedState.READY) {
           if (poller.current) clearInterval(poller.current);
+          setIsProcessing(false);
           router.push('/');
         } else if (
           currentState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED &&
           !hasConfiguredSigner.current
         ) {
           hasConfiguredSigner.current = true;
-          await configureEmbeddedSigner();
+          await configureEmbeddedSigner(sepolia.id);
         }
       } catch (err) {
         console.error('Error checking embedded state with Openfort:', err);
         if (poller.current) clearInterval(poller.current);
+        setIsProcessing(false);
       }
     };
 
@@ -59,37 +60,6 @@ function Authenticate() {
     };
   }, [openfortInstance, router]);
 
-  const getEncryptionSession = async (): Promise<string> => {
-    try {
-      // This application is using the backend of another sample in this repository.
-      // You can find the source code for the backend in the https://github.com/openfort-xyz/openfort-js/blob/main/examples/apps/auth-sample/src/pages/api/protected-create-encryption-session.ts
-      const response = await axios.post<{session: string}>(
-        'https://create-next-app.openfort.xyz/api/protected-create-encryption-session',
-        {},
-        {headers: {'Content-Type': 'application/json'}}
-      );
-      return response.data.session;
-    } catch (error) {
-      throw new Error('Failed to create encryption session');
-    }
-  };
-
-  const configureEmbeddedSigner = async () => {
-    try {
-      const chainId = polygonAmoy.id;
-      const shieldAuth: ShieldAuthentication = {
-        auth: ShieldAuthType.OPENFORT,
-        token: openfortInstance.getAccessToken()!,
-        encryptionSession: await getEncryptionSession(),
-      };
-      await openfortInstance.configureEmbeddedSigner(chainId, shieldAuth);
-    } catch (error) {
-      console.error('Error configuring embedded signer:', error);
-      setError('Failed to configure embedded signer. Please try again.');
-      hasConfiguredSigner.current = false;
-    }
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
     setFormData((prev) => ({...prev, [name]: value}));
@@ -99,6 +69,7 @@ function Authenticate() {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
+    setIsProcessing(true);
 
     try {
       if (isLogin) {
@@ -119,12 +90,16 @@ function Authenticate() {
       setError(
         error instanceof Error ? error.message : 'An unexpected error occurred'
       );
+      setIsProcessing(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const toggleAuthMode = () => setIsLogin(!isLogin);
+  const toggleAuthMode = () => {
+    setIsLogin(!isLogin);
+    setError(null);
+  };
 
   return (
     <div className="auth-container">
@@ -142,6 +117,7 @@ function Authenticate() {
             onChange={handleInputChange}
             required
             className="auth-input"
+            disabled={isProcessing}
           />
         </div>
         <div className="auth-input-group">
@@ -156,16 +132,30 @@ function Authenticate() {
             onChange={handleInputChange}
             required
             className="auth-input"
+            disabled={isProcessing}
           />
         </div>
         {error && <div className="auth-error">{error}</div>}
-        <button type="submit" disabled={isLoading} className="auth-button">
-          {isLoading ? 'Processing...' : isLogin ? 'Login' : 'Register'}
+        <button 
+          type="submit" 
+          disabled={isLoading || isProcessing} 
+          className="auth-button relative flex items-center justify-center"
+        >
+          {isProcessing 
+            ? 'Setting up your account...' 
+            : isLoading 
+              ? isLogin ? 'Logging in...' : 'Creating account...'
+              : isLogin ? 'Login' : 'Register'
+          }
         </button>
       </form>
       <p className="auth-toggle-text">
         {isLogin ? "Don't have an account? " : 'Already have an account? '}
-        <button onClick={toggleAuthMode} className="auth-toggle-button">
+        <button 
+          onClick={toggleAuthMode} 
+          className="auth-toggle-button"
+          disabled={isProcessing}
+        >
           {isLogin ? 'Register' : 'Login'}
         </button>
       </p>
