@@ -39,6 +39,14 @@ export class EmbeddedSigner implements Signer {
     return await this.iframeManager.export(this.iframeConfiguration);
   }
 
+  async switchChain(
+    { chainId }:
+    { chainId: number },
+  ): Promise<void> {
+    await this.iframeManager
+      .configure({ ...this.iframeConfiguration, chainId });
+  }
+
   async setEmbeddedRecovery(
     { recoveryMethod, recoveryPassword, encryptionSession }:
     { recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string },

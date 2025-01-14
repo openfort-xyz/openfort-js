@@ -6,5 +6,6 @@ export const openfortInstance = new Openfort({
     },
     shieldConfiguration: {
         shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+        debug: true,
     },
 });

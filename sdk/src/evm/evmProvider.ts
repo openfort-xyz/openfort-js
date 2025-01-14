@@ -26,6 +26,7 @@ import { GrantPermissionsParameters, registerSession } from './registerSession';
 import { RevokePermissionsRequestParams, revokeSession } from './revokeSession';
 import { sendCalls } from './sendCalls';
 import { GetCallsStatusParameters, getCallStatus } from './getCallsStatus';
+import { personalSign } from './personalSign';
 
 export type EvmProviderInput = {
   storage: IStorage;
@@ -152,6 +153,21 @@ export class EvmProvider implements Provider {
 
         });
       }
+      case 'personal_sign': {
+        const account = Account.fromStorage(this.#storage);
+        const signer = SignerManager.fromStorage();
+        if (!account || !signer) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+        }
+
+        return await personalSign(
+          {
+            params: request.params || [],
+            signer,
+            account,
+          },
+        );
+      }
       case 'eth_chainId': {
         // Call detect network to fetch the chainId so to take advantage of
         // the caching layer provided by StaticJsonRpcProvider.
@@ -168,6 +184,21 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(
             ProviderErrorCode.UNAUTHORIZED,
             'Unauthorized - must be authenticated and configured with a signer',
+          );
+        }
+        if (!request.params || !Array.isArray(request.params) || request.params.length === 0) {
+          throw new JsonRpcError(
+            RpcErrorCode.INVALID_PARAMS,
+            'Invalid parameters for wallet_switchEthereumChain',
+          );
+        }
+        try {
+          const chainIdNumber = parseInt(request.params[0].chainId, 16);
+          await signer.switchChain({ chainId: chainIdNumber });
+        } catch (error) {
+          throw new JsonRpcError(
+            RpcErrorCode.INTERNAL_ERROR,
+            'Failed to switch chain',
           );
         }
         return null;

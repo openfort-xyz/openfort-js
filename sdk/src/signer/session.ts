@@ -31,6 +31,11 @@ export class SessionSigner implements Signer {
     return Promise.resolve();
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  switchChain(): Promise<void> {
+    return Promise.resolve();
+  }
+
   async export(): Promise<string> {
     return this.sessionKey.getPrivateKey();
   }
