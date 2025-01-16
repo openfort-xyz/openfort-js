@@ -26,6 +26,7 @@ import { GrantPermissionsParameters, registerSession } from './registerSession';
 import { RevokePermissionsRequestParams, revokeSession } from './revokeSession';
 import { sendCalls } from './sendCalls';
 import { GetCallsStatusParameters, getCallStatus } from './getCallsStatus';
+import { personalSign } from './personalSign';
 
 export type EvmProviderInput = {
   storage: IStorage;
@@ -35,12 +36,23 @@ export type EvmProviderInput = {
   backendApiClients: BackendApiClients;
   openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
   policyId?: string;
+  validateAndRefreshSession: () => Promise<void>;
 };
 
 export class EvmProvider implements Provider {
   readonly #storage: IStorage;
 
-  readonly #policyId?: string;
+  #policyId?: string;
+
+  /**
+   * Updates the policy ID for the provider
+   * @param newPolicyId - The new policy ID to use
+   */
+  public updatePolicy(newPolicy: string) {
+    this.#policyId = newPolicy;
+  }
+
+  readonly #validateAndRefreshSession: () => Promise<void>;
 
   readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>;
 
@@ -55,10 +67,13 @@ export class EvmProvider implements Provider {
     backendApiClients,
     openfortEventEmitter,
     policyId,
+    validateAndRefreshSession,
   }: EvmProviderInput) {
     this.#storage = storage;
 
     this.#policyId = policyId;
+
+    this.#validateAndRefreshSession = validateAndRefreshSession;
 
     this.#backendApiClients = backendApiClients;
 
@@ -97,6 +112,7 @@ export class EvmProvider implements Provider {
       case 'eth_requestAccounts': {
         let account = Account.fromStorage(this.#storage);
         if (account) {
+          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: hexlify(account.chainId) });
           return [account.address];
         }
 
@@ -115,7 +131,6 @@ export class EvmProvider implements Provider {
         }
 
         this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [account.address]);
-
         return [account.address];
       }
       case 'eth_sendTransaction': {
@@ -125,7 +140,8 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
-
+        this.#validateAndRefreshSession();
+        console.log(`eth_sendTransaction ${this.#policyId}`);
         return await sendTransaction({
           params: request.params || [],
           signer,
@@ -142,6 +158,7 @@ export class EvmProvider implements Provider {
         if (!account || !signer) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
 
         return await signTypedDataV4({
           method: request.method,
@@ -152,6 +169,22 @@ export class EvmProvider implements Provider {
 
         });
       }
+      case 'personal_sign': {
+        const account = Account.fromStorage(this.#storage);
+        const signer = SignerManager.fromStorage();
+        if (!account || !signer) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+        }
+        this.#validateAndRefreshSession();
+
+        return await personalSign(
+          {
+            params: request.params || [],
+            signer,
+            account,
+          },
+        );
+      }
       case 'eth_chainId': {
         // Call detect network to fetch the chainId so to take advantage of
         // the caching layer provided by StaticJsonRpcProvider.
@@ -161,6 +194,34 @@ export class EvmProvider implements Provider {
         // the provider to re-fetch the chainId from remote.
         const { chainId } = await this.#rpcProvider.detectNetwork();
         return hexlify(chainId);
+      }
+      case 'wallet_switchEthereumChain': {
+        const signer = SignerManager.fromStorage();
+        if (!signer) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            'Unauthorized - must be authenticated and configured with a signer',
+          );
+        }
+        if (!request.params || !Array.isArray(request.params) || request.params.length === 0) {
+          throw new JsonRpcError(
+            RpcErrorCode.INVALID_PARAMS,
+            'Invalid parameters for wallet_switchEthereumChain',
+          );
+        }
+        this.#validateAndRefreshSession();
+
+        try {
+          const chainIdNumber = parseInt(request.params[0].chainId, 16);
+          await signer.switchChain({ chainId: chainIdNumber });
+          this.#rpcProvider = new StaticJsonRpcProvider(chainMap[chainIdNumber].rpc[0]);
+        } catch (error) {
+          throw new JsonRpcError(
+            RpcErrorCode.INTERNAL_ERROR,
+            'Failed to switch chain',
+          );
+        }
+        return null;
       }
       case 'wallet_addEthereumChain': {
         const signer = SignerManager.fromStorage();
@@ -186,6 +247,7 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
 
         return await getCallStatus({
           params: (request.params || {} as unknown) as GetCallsStatusParameters,
@@ -201,6 +263,7 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
 
         return await sendCalls({
           params: request.params || [],
@@ -218,6 +281,8 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
+
         return await registerSession({
           params: (request.params || [] as unknown) as GrantPermissionsParameters[],
           signer,
@@ -235,6 +300,8 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
+
         return await revokeSession({
           params: (request.params || {} as unknown) as RevokePermissionsRequestParams,
           signer,
@@ -254,6 +321,9 @@ export class EvmProvider implements Provider {
               permissionTypes: ['contract-calls'],
             },
             paymasterService: {
+              supported: true,
+            },
+            atomicBatch: {
               supported: true,
             },
           },

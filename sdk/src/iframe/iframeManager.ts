@@ -23,6 +23,8 @@ import {
   INCORRECT_USER_ENTROPY_ERROR,
   ShieldAuthType, ExportPrivateKeyRequest, ExportPrivateKeyResponse, MISSING_PROJECT_ENTROPY_ERROR,
   SetRecoveryMethodRequest,
+  SwitchChainRequest,
+  SwitchChainResponse,
 } from './types';
 
 export interface IframeConfiguration {
@@ -176,6 +178,7 @@ export default class IframeManager {
     [Event.AUTHENTICATION_UPDATED]: UpdateAuthenticationResponse,
     [Event.CURRENT_DEVICE]: GetCurrentDeviceResponse,
     [Event.SIGNED]: SignResponse,
+    [Event.CHAIN_SWITCHED]: SwitchChainResponse,
     [Event.LOGGED_OUT]: LogoutResponse,
     [Event.SET_RECOVERY_METHOD]: SetRecoveryMethodResponse,
     [Event.EXPORT]: ExportPrivateKeyResponse,
@@ -281,6 +284,41 @@ export default class IframeManager {
     }
     sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
     return response.signature;
+  }
+
+  async switchChain(
+    iframeConfiguration: IframeConfiguration,
+    chainId: number,
+  ): Promise<SwitchChainResponse> {
+    await this.waitForIframeLoad();
+    const uuid = this.generateShortUUID();
+    const requestConfiguration: RequestConfiguration = {
+      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
+      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
+      token: iframeConfiguration.accessToken ?? undefined,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      openfortURL: this.sdkConfiguration.backendUrl,
+    };
+    const request = new SwitchChainRequest(
+      uuid,
+      chainId,
+      requestConfiguration,
+    );
+    this.iframe?.contentWindow?.postMessage(request, '*');
+    let response: SwitchChainResponse;
+    try {
+      response = await this.waitForResponse<SwitchChainResponse>(uuid);
+    } catch (e) {
+      console.log('switchChain', e);
+      if (e instanceof NotConfiguredError) {
+        await this.configure(iframeConfiguration);
+        return this.switchChain(iframeConfiguration, chainId);
+      }
+
+      throw e;
+    }
+    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
+    return response;
   }
 
   async export(

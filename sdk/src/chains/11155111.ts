@@ -31,12 +31,9 @@ const chain = {
   networkId: 11155111,
   redFlags: [],
   rpc: [
-    'https://rpc.sepolia.org',
-    'https://rpc2.sepolia.org',
-    'https://rpc-sepolia.rockx.com',
+    'https://ethereum-sepolia-rpc.publicnode.com',
     'https://rpc.sepolia.ethpandaops.io',
     'https://sepolia.gateway.tenderly.co',
-    'https://ethereum-sepolia.publicnode.com',
   ],
   shortName: 'sep',
   slug: 'sepolia',

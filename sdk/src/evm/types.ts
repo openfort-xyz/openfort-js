@@ -85,6 +85,7 @@ export type Provider = {
 
 export enum ProviderEvent {
   ACCOUNTS_CHANGED = 'accountsChanged',
+  ACCOUNTS_CONNECT = 'connect',
 }
 
 export type AccountsChangedEvent = Array<string>;

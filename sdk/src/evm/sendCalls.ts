@@ -76,7 +76,13 @@ export const sendCalls = async ({
   );
   let response: ResponseResponse;
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
-    const signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
+    let signature;
+    // zkSyncSepolia and Sophon test need a different signature
+    if ([300, 531050104].includes(account.chainId)) {
+      signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false);
+    } else {
+      signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
+    }
     const openfortSignatureResponse = (
       await backendClient.transactionIntentsApi.signature({
         id: openfortTransaction.id,

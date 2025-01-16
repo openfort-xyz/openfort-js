@@ -7,6 +7,7 @@ export interface Signer {
     requireHash?: boolean
   ): Promise<string>;
   logout(): Promise<void>;
+  switchChain({ chainId }: { chainId: number }): Promise<void>;
   updateAuthentication(): Promise<void>;
   setEmbeddedRecovery(
     { recoveryMethod, recoveryPassword, encryptionSession }:

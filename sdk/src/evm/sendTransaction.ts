@@ -22,7 +22,7 @@ const buildOpenfortTransactions = async (
   authentication: Authentication,
   policyId?: string,
 ): Promise<TransactionIntentResponse> => {
-  const interactions:Interaction[] = transactionRequest.map((tx) => {
+  const interactions: Interaction[] = transactionRequest.map((tx) => {
     if (!tx.to) {
       throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'eth_sendTransaction requires a "to" field');
     }
@@ -74,7 +74,13 @@ export const sendTransaction = async ({
   );
   let response: ResponseResponse;
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
-    const signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
+    let signature;
+    // zkSyncSepolia and Sophon test need a different signature
+    if ([300, 531050104].includes(account.chainId)) {
+      signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false);
+    } else {
+      signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
+    }
     const openfortSignatureResponse = (
       await backendClient.transactionIntentsApi.signature({
         id: openfortTransaction.id,
