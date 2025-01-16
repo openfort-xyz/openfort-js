@@ -8,6 +8,12 @@
     },
     {
       "path": "examples/apps/auth-sample"
+    },
+    {
+      "path": "examples/apps/wallet-libraries/vite-wagmi"
+    },
+    {
+      "path": "examples/apps/wallet-libraries/next-wagmi"
     }
   ]
 }
