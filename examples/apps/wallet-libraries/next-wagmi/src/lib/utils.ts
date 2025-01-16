@@ -15,7 +15,7 @@ export const configureEmbeddedSigner = async (chain: number) => {
 const getEncryptionSession = async (): Promise<string> => {
   try {
     const response = await axios.post<{ session: string }>(
-      'https://create-next-app.openfort.xyz/api/protected-create-encryption-session',
+      'http://localhost:3002/api/protected-create-encryption-session',
       {},
       { headers: { 'Content-Type': 'application/json' } }
     );

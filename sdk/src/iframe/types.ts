@@ -9,6 +9,8 @@ export enum Event {
   AUTHENTICATION_UPDATED = 'authentication-updated',
   SIGN = 'sign',
   SET_RECOVERY_METHOD = 'set-recovery-method',
+  SWITCH_CHAIN = 'switch-chain',
+  CHAIN_SWITCHED = 'chain-switched',
   EXPORT = 'export',
   SIGNED = 'signed',
   LOGOUT = 'logout',
@@ -205,6 +207,22 @@ export class SignRequest implements IEventRequest {
   }
 }
 
+export class SwitchChainRequest implements IEventRequest {
+  uuid: string;
+
+  action: Event = Event.SWITCH_CHAIN;
+
+  chainId: number;
+
+  requestConfiguration?: RequestConfiguration;
+
+  constructor(uuid: string, chainId: number, requestConfiguration?: RequestConfiguration) {
+    this.uuid = uuid;
+    this.chainId = chainId;
+    this.requestConfiguration = requestConfiguration;
+  }
+}
+
 export class ExportPrivateKeyRequest implements IEventRequest {
   uuid: string;
 
@@ -316,6 +334,13 @@ export function isErrorResponse(response: IEventResponse): response is IErrorRes
 
 export type ILogoutResponse = IEventResponse;
 
+export interface ISwitchChainResponse extends IEventResponse {
+  deviceID: string;
+  accountType: string | null;
+  chainId: number | null;
+  address: string | null;
+}
+
 export class ErrorResponse implements IErrorResponse {
   uuid: string;
 
@@ -354,6 +379,44 @@ export class ConfigureResponse implements IConfigureResponse {
   action: Event = Event.CONFIGURED;
 
   version: string | null;
+
+  constructor(
+    uuid: string,
+    deviceID: string,
+    accountType: string,
+    chainId: number,
+    address: string,
+    ownerAddress: string,
+  ) {
+    this.success = true;
+    this.deviceID = deviceID;
+    this.uuid = uuid;
+    this.accountType = accountType;
+    this.chainId = chainId;
+    this.address = address;
+    this.ownerAddress = ownerAddress;
+    this.version = null;
+  }
+}
+
+export class SwitchChainResponse implements ISwitchChainResponse {
+  uuid: string;
+
+  success: boolean;
+
+  deviceID: string;
+
+  address: string;
+
+  chainId: number;
+
+  accountType: string;
+
+  ownerAddress: string;
+
+  version: string | null;
+
+  action: Event = Event.CHAIN_SWITCHED;
 
   constructor(
     uuid: string,

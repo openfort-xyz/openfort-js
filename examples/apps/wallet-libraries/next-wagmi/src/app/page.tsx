@@ -42,11 +42,6 @@ export default function App() {
     },
   })
 
-  useEffect(() => {
-    if (!openfortInstance) return;
-    openfortInstance.getEthereumProvider(); // EIP-6963
-  }, [openfortInstance]);
-
   return (
     <>
       <Account />

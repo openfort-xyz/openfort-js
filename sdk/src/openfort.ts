@@ -32,6 +32,8 @@ import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';
 export class Openfort {
   private readonly storage: IStorage;
 
+  private provider: EvmProvider | null = null;
+
   constructor(sdkConfiguration: OpenfortSDKConfiguration) {
     this.storage = new LocalStorage();
     const configuration = new Configuration(
@@ -79,23 +81,27 @@ export class Openfort {
     const authentication = Authentication.fromStorage(this.storage);
     const signer = SignerManager.fromStorage();
     const account = Account.fromStorage(this.storage);
+    if (!this.provider) {
+      this.provider = new EvmProvider({
+        storage: this.storage,
+        openfortEventEmitter: new TypedEventEmitter<OpenfortEventMap>(),
+        signer: signer || undefined,
+        account: account || undefined,
+        authentication: authentication || undefined,
+        backendApiClients: this.backendApiClients,
+        policyId: options.policy,
+        validateAndRefreshSession: this.validateAndRefreshToken.bind(this),
+      });
 
-    const provider = new EvmProvider({
-      storage: this.storage,
-      openfortEventEmitter: new TypedEventEmitter<OpenfortEventMap>(),
-      signer: signer || undefined,
-      account: account || undefined,
-      authentication: authentication || undefined,
-      backendApiClients: this.backendApiClients,
-      policyId: options.policy,
-    });
+      announceProvider({
+        info: { ...openfortProviderInfo, ...options.providerInfo },
+        provider: this.provider,
+      });
+    } else if (this.provider && options.policy) {
+      this.provider.updatePolicy(options.policy);
+    }
 
-    announceProvider({
-      info: { ...openfortProviderInfo, ...options.providerInfo },
-      provider,
-    });
-
-    return provider;
+    return this.provider;
   }
 
   /**

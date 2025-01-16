@@ -1,4 +1,6 @@
 import type { RecoveryMethod } from 'types';
+import { Account } from 'configuration/account';
+import { SignerManager } from 'manager/signer';
 import { Authentication } from '../configuration/authentication';
 import { OpenfortError, OpenfortErrorType } from '../errors/openfortError';
 import { Recovery } from '../configuration/recovery';
@@ -43,8 +45,15 @@ export class EmbeddedSigner implements Signer {
     { chainId }:
     { chainId: number },
   ): Promise<void> {
-    await this.iframeManager
-      .configure({ ...this.iframeConfiguration, chainId });
+    const deviceAccount = await this.iframeManager
+      .switchChain(this.iframeConfiguration, chainId);
+    new Account(
+      deviceAccount.accountType,
+      deviceAccount.address,
+      deviceAccount.chainId,
+      deviceAccount.ownerAddress,
+    ).save(this.storage);
+    SignerManager.storage.save(StorageKeys.SIGNER, JSON.stringify(deviceAccount));
   }
 
   async setEmbeddedRecovery(

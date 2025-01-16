@@ -1,13 +1,7 @@
 'use client'
 
-import React, {useState, useEffect, useRef} from 'react';
-import  {
-  EmbeddedState,
-} from '@openfort/openfort-js';
-import { sepolia } from 'viem/chains';
-import { useRouter } from 'next/navigation';
+import React, {useState} from 'react';
 import { openfortInstance } from '../../openfort';
-import { configureEmbeddedSigner } from '../../lib/utils';
 
 interface AuthFormData {
   email: string;
@@ -23,42 +17,6 @@ function Authenticate() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const poller = useRef<NodeJS.Timeout | null>(null);
-  const router = useRouter();
-  const hasConfiguredSigner = useRef<boolean>(false);
-
-  useEffect(() => {
-    const pollEmbeddedState = async () => {
-      try {
-        const currentState = await openfortInstance.getEmbeddedState();
-        if (currentState === EmbeddedState.READY) {
-          if (poller.current) clearInterval(poller.current);
-          setIsProcessing(false);
-          router.push('/');
-        } else if (
-          currentState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED &&
-          !hasConfiguredSigner.current
-        ) {
-          hasConfiguredSigner.current = true;
-          await configureEmbeddedSigner(sepolia.id);
-        }
-      } catch (err) {
-        console.error('Error checking embedded state with Openfort:', err);
-        if (poller.current) clearInterval(poller.current);
-        setIsProcessing(false);
-      }
-    };
-
-    if (!poller.current) {
-      poller.current = setInterval(pollEmbeddedState, 300);
-    }
-
-    return () => {
-      if (poller.current) clearInterval(poller.current);
-      poller.current = null;
-      hasConfiguredSigner.current = false;
-    };
-  }, [openfortInstance, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;

@@ -36,12 +36,23 @@ export type EvmProviderInput = {
   backendApiClients: BackendApiClients;
   openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
   policyId?: string;
+  validateAndRefreshSession: () => Promise<void>;
 };
 
 export class EvmProvider implements Provider {
   readonly #storage: IStorage;
 
-  readonly #policyId?: string;
+  #policyId?: string;
+
+  /**
+   * Updates the policy ID for the provider
+   * @param newPolicyId - The new policy ID to use
+   */
+  public updatePolicy(newPolicy: string) {
+    this.#policyId = newPolicy;
+  }
+
+  readonly #validateAndRefreshSession: () => Promise<void>;
 
   readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>;
 
@@ -56,10 +67,13 @@ export class EvmProvider implements Provider {
     backendApiClients,
     openfortEventEmitter,
     policyId,
+    validateAndRefreshSession,
   }: EvmProviderInput) {
     this.#storage = storage;
 
     this.#policyId = policyId;
+
+    this.#validateAndRefreshSession = validateAndRefreshSession;
 
     this.#backendApiClients = backendApiClients;
 
@@ -98,6 +112,7 @@ export class EvmProvider implements Provider {
       case 'eth_requestAccounts': {
         let account = Account.fromStorage(this.#storage);
         if (account) {
+          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: hexlify(account.chainId) });
           return [account.address];
         }
 
@@ -116,7 +131,6 @@ export class EvmProvider implements Provider {
         }
 
         this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [account.address]);
-
         return [account.address];
       }
       case 'eth_sendTransaction': {
@@ -126,7 +140,8 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
-
+        this.#validateAndRefreshSession();
+        console.log(`eth_sendTransaction ${this.#policyId}`);
         return await sendTransaction({
           params: request.params || [],
           signer,
@@ -143,6 +158,7 @@ export class EvmProvider implements Provider {
         if (!account || !signer) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
 
         return await signTypedDataV4({
           method: request.method,
@@ -159,6 +175,7 @@ export class EvmProvider implements Provider {
         if (!account || !signer) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
 
         return await personalSign(
           {
@@ -192,9 +209,12 @@ export class EvmProvider implements Provider {
             'Invalid parameters for wallet_switchEthereumChain',
           );
         }
+        this.#validateAndRefreshSession();
+
         try {
           const chainIdNumber = parseInt(request.params[0].chainId, 16);
           await signer.switchChain({ chainId: chainIdNumber });
+          this.#rpcProvider = new StaticJsonRpcProvider(chainMap[chainIdNumber].rpc[0]);
         } catch (error) {
           throw new JsonRpcError(
             RpcErrorCode.INTERNAL_ERROR,
@@ -227,6 +247,7 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
 
         return await getCallStatus({
           params: (request.params || {} as unknown) as GetCallsStatusParameters,
@@ -242,6 +263,7 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
 
         return await sendCalls({
           params: request.params || [],
@@ -259,6 +281,8 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
+
         return await registerSession({
           params: (request.params || [] as unknown) as GrantPermissionsParameters[],
           signer,
@@ -276,6 +300,8 @@ export class EvmProvider implements Provider {
         if (!account || !signer || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        this.#validateAndRefreshSession();
+
         return await revokeSession({
           params: (request.params || {} as unknown) as RevokePermissionsRequestParams,
           signer,

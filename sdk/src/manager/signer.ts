@@ -22,7 +22,7 @@ export interface SignerConfiguration {
 let iframeManagerSingleton: IframeManager | null = null;
 
 export class SignerManager {
-  private static storage = new LocalStorage();
+  static storage = new LocalStorage();
 
   static fromStorage(): Signer | null {
     const signerData = this.storage.get(StorageKeys.SIGNER);

@@ -1,5 +1,5 @@
 {
-    "name": "next-app",
+    "name": "wagmi-next-app-openfort",
     "private": true,
     "scripts": {
         "analyze": "ANALYZE=true next build",
