@@ -1,7 +1,7 @@
 # Wagmi Kit - Next.js
 **Step 1**
 
-Ensure you are using the latest `@openfort/openfort-js` by using the latest version from [`@openfort/openfort-js`](https://www.npmjs.com/package/@openfort/openfort-js) in the `package.json` file.
+Ensure you are using the latest `@openfort/openfort-js` by using the latest version from [`@openfort/openfort-js`](https://www.npmjs.com/package/@openfort/openfort-js) in the `package.json` file. Check out the deployed app [here](https://wagmi.openfort.xyz/)!
 
 Clone this repository and open it in your terminal. 
 
