@@ -1,4 +1,5 @@
 import zksyncSepolia from './300';
+import zksync from './324';
 
 import bnb from './56';
 import bnbTestnet from './97';
@@ -47,6 +48,7 @@ import opBNBTestnet from './5611';
 import soneiumMinato from './1946';
 
 import sophonTestnet from './531050104';
+import sophonMainnet from './50104';
 
 import kromaTestnet from './2358';
 import kromaMainnet from './255';
@@ -56,6 +58,8 @@ export const chainMap: { [key: number]: Chain } = {
   1: ethereum,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   300: zksyncSepolia,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  324: zksync,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   56: bnb,
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -113,6 +117,8 @@ export const chainMap: { [key: number]: Chain } = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   531050104: sophonTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
+  50104: sophonMainnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   2358: kromaTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   255: kromaMainnet,
@@ -125,6 +131,7 @@ export const chainMap: { [key: number]: Chain } = {
 export default [
   ethereum,
   zksyncSepolia,
+  zksync,
   bnb,
   bnbTestnet,
   base,
@@ -153,6 +160,7 @@ export default [
   opBNB,
   opBNBTestnet,
   sophonTestnet,
+  sophonMainnet,
   kromaTestnet,
   kromaMainnet,
   saakuruMainnet,
