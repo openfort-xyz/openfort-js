@@ -15,8 +15,8 @@
       API Docs
     </a>
     <span> | </span>
-    <a href="https://twitter.com/openfortxyz">
-      Twitter
+    <a href="https://x.com/openfortxyz">
+      X
     </a>
   </h4>
 </div>
@@ -31,10 +31,9 @@ The Openfort js library provides convenient access to handle client session keys
 
 
 ## Usage examples
-- [Next.js application with non-custodial signer](https://github.com/openfort-xyz/samples/tree/main/rainbow-ssv-nextjs)
-- [Next.js application with custodial signer and social login](https://github.com/openfort-xyz/samples/tree/main/ssv-social-nextjs)
-
-[next-action]: https://www.openfort.xyz/docs/api/transaction_intents#the-transaction-intent-object
+- [Openfort Auth + Embedded Wallet - Next.js](https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/auth-sample)
+- [Embedded Wallet Wagmi Next.js](https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/wallet-libraries/next-wagmi)
+- [Third-party auth + Embedded Wallet - Next.js Firebase](https://github.com/openfort-xyz/embedded-wallet-firebase-auth-sample-nextjs)
 
 <!--
 # vim: set tw=79:
