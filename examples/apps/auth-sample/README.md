@@ -38,7 +38,7 @@ In your project directory, run `npm run dev`. You can now visit http://localhost
 
 ## Check out:
 - `components/AccountActions/AccountActions.tsx` for how to send transactions.
-- - `components/Signatures/SignMessageButton.tsx` for how to sign messages.
+- `components/Signatures/SignMessageButton.tsx` for how to sign messages.
 
 
 **Check out [our docs](https://www.openfort.xyz/docs/guides/getting-started) for more guidance around using Openfort in your app!**
