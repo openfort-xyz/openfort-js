@@ -111,7 +111,7 @@ const HomePage: NextPage = () => {
               Openfort gives you modular components so you can customize your
               product for your users.
               <a
-                href="https://www.openfort.xyz/docs/guides/getting-started/integration"
+                href="https://www.openfort.xyz/docs/guides/getting-started"
                 className="text-blue-600 hover:underline"
               >
                 Learn more
