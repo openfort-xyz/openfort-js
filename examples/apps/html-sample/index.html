@@ -1,36 +1,44 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Signature</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="stylesheet" href="./css/base.css" />
-    <script src="../../../packages/platform-bridge/dist/bundle/index.js"></script>
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-auth.js"></script>
+  <title>Signature</title>
 
-    <script src="./utils.js" defer></script>
-    <script src="./index.js" defer></script>
-  </head>
-  <body>
-    <main>
-      <h1>Login & Signup</h1>
-      <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
-        <div class="mdl-card__supporting-text mdl-color-text--grey-600">
-          <p>Enter an email and password below and either sign in to an existing account or sign up</p>
-          <input class="mdl-textfield__input" style="display: inline; width: auto" type="text" id="email" name="email" placeholder="Email" />
-          &nbsp;&nbsp;&nbsp;
-          <input class="mdl-textfield__input" style="display: inline; width: auto" type="password" id="password" name="password" placeholder="Password" />
-          <br /><br />
-          <button class="mdl-button mdl-js-button mdl-button--raised" id="quickstart-sign-in" name="signin">Sign In</button>
-          &nbsp;&nbsp;&nbsp;
-          <button class="mdl-button mdl-js-button mdl-button--raised" id="quickstart-sign-up" name="signup">Sign Up</button>
-        </div>
+  <link rel="stylesheet" href="./css/base.css" />
+  <!-- https://static.openfort.xyz/js/v0.X.X  -->
+  <script src="../../../packages/platform-bridge/dist/bundle/index.js"></script>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-auth.js"></script>
+
+  <script src="./utils.js" defer></script>
+  <script src="./index.js" defer></script>
+</head>
+
+<body>
+  <main>
+    <h1>Login & Signup</h1>
+    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+      <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+        <p>Enter an email and password below and either sign in to an existing account or sign up</p>
+        <input class="mdl-textfield__input" style="display: inline; width: auto" type="text" id="email" name="email"
+          placeholder="Email" />
+        &nbsp;&nbsp;&nbsp;
+        <input class="mdl-textfield__input" style="display: inline; width: auto" type="password" id="password"
+          name="password" placeholder="Password" />
+        <br /><br />
+        <button class="mdl-button mdl-js-button mdl-button--raised" id="quickstart-sign-in" name="signin">Sign
+          In</button>
+        &nbsp;&nbsp;&nbsp;
+        <button class="mdl-button mdl-js-button mdl-button--raised" id="quickstart-sign-up" name="signup">Sign
+          Up</button>
       </div>
-      <div id="messages" role="alert" style="display: none;"></div>
-    </main>
-  </body>
+    </div>
+    <div id="messages" role="alert" style="display: none;"></div>
+  </main>
+</body>
+
 </html>
