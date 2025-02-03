@@ -43,6 +43,7 @@ export enum AccountType {
   UPGRADEABLE_V5 = 'Upgradeable_v05',
   UPGRADEABLE_V6 = 'Upgradeable_v06',
   ZKSYNC_UPGRADEABLE_V1 = 'zksync_upgradeable_v1',
+  ZKSYNC_UPGRADEABLE_V2 = 'zksync_upgradeable_v2',
 }
 
 export enum AuthType {

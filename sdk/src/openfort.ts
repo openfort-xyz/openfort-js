@@ -200,7 +200,8 @@ export class Openfort {
     const account = Account.fromStorage(this.storage);
     if (account && [AccountType.UPGRADEABLE_V5,
       AccountType.UPGRADEABLE_V6,
-      AccountType.ZKSYNC_UPGRADEABLE_V1].includes(account.type as AccountType)) {
+      AccountType.ZKSYNC_UPGRADEABLE_V1,
+      AccountType.ZKSYNC_UPGRADEABLE_V2].includes(account.type as AccountType)) {
       const updatedDomain: TypedDataDomain = {
         name: 'Openfort',
         version: '0.5',

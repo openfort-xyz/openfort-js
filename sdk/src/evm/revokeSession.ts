@@ -90,8 +90,8 @@ export const revokeSession = async ({
 
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature;
-    // zkSync and Sophon test need a different signature
-    if ([300, 531050104, 324, 50104].includes(account.chainId)) {
+    // zkSync based chains need a different signature
+    if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId)) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false);
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);

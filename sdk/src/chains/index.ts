@@ -1,6 +1,9 @@
 import zksyncSepolia from './300';
 import zksync from './324';
 
+import abstract from './2741';
+import abstractTestnet from './11124';
+
 import bnb from './56';
 import bnbTestnet from './97';
 
@@ -126,10 +129,16 @@ export const chainMap: { [key: number]: Chain } = {
   247253: saakuruTestnet,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   7225878: saakuruMainnet,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  2741: abstract,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  11124: abstractTestnet,
 };
 
 export default [
   ethereum,
+  abstract,
+  abstractTestnet,
   zksyncSepolia,
   zksync,
   bnb,
