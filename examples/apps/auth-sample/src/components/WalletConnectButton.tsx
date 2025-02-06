@@ -156,6 +156,7 @@ export const getWalletButtons = (params: GetWalletButtonsParams) => {
   const config = createConfig({
     chains: chains as any,
     connectors,
+    ssr: true,
     transports,
   });
   return withWagmi<WalletConnectButtonsOwnProps>(

@@ -20,6 +20,7 @@ import AddFunds from "../components/Funding/AddFunds";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
 import AccountActions from "@/components/AccountActions/AccountActions";
+import Link from "next/link";
 
 const HomePage: NextPage = () => {
   const { state } = useOpenfort();
@@ -61,7 +62,41 @@ const HomePage: NextPage = () => {
 
   if (state === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
     return (
-      <Layout sidebar={<div />}>
+      <Layout sidebar={
+        <>
+          <div className='flex-1 flex-col space-y-4 p-8'>
+            <div className='bg-white text-sm p-3 border-orange-400 border-4 rounded-sm'>
+              <p className="font-medium pb-1">
+                Explore Openfort
+              </p>
+              <p className='text-gray-500'>
+              Sign in to the demo to access the dev tools.
+              </p>
+              <Button variant={'outline'} size={'sm'} className="mt-2">
+                <Link href='https://openfort.xyz/docs' target="_blank">
+                  Explore the Docs
+                </Link>
+              </Button>
+            </div>
+          </div>
+          <div className="p-6 mb-14 border-t bg-white">
+            <p className="text-sm text-gray-600 mb-4">
+              Openfort gives you modular components so you can customize your
+              product for your users.
+              <a
+                href="https://www.openfort.xyz/docs/guides/getting-started"
+                className="text-blue-600 hover:underline"
+              >
+                Learn more
+              </a>
+              .
+            </p>
+            <div className="flex gap-3">
+              <LogoutButton />
+            </div>
+          </div>
+        </>
+      }>
         <div className="flex min-h-full overflow-hidden pt-8 sm:py-12">
           <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
             <div className="-mx-4 flex-auto bg-white py-10 px-8 sm:mx-0 sm:flex-none sm:rounded-md sm:p-14 sm:shadow-2xl">

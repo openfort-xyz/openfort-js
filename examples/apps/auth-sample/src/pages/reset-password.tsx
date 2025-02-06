@@ -6,6 +6,7 @@ import { TextField } from "../components/Fields";
 import { StatusType, Toast } from "../components/Toasts";
 import openfort from "../utils/openfortConfig";
 import { Button } from "@/components/ui/button";
+import Loading from "@/components/Loading";
 
 function checkPassword(str: string) {
   var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
@@ -100,8 +101,15 @@ function ResetPasswordPage() {
                   }
                 </p>
               </div>
-              <Button type="submit" className="mt-8 w-full py-2">
-                Save New Password
+              <Button 
+              disabled={status?.type === "loading"}
+              type="submit" 
+              className="mt-8 w-full py-2">
+                {status?.type === "loading" ? (
+                  <Loading />
+                ) : (
+                  "Save New Password"
+                )}
               </Button>
             </form>
             <p className="my-5 text-left text-sm text-gray-600">

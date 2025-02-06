@@ -141,7 +141,6 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         this.#validateAndRefreshSession();
-        console.log(`eth_sendTransaction ${this.#policyId}`);
         return await sendTransaction({
           params: request.params || [],
           signer,

@@ -2,14 +2,13 @@ import { ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
 import { openfortInstance } from "../openfort";
 import axios from 'axios';
 
-export const configureEmbeddedSigner = async (chain: number) => {
+export const configureEmbeddedSigner = async (chain: number, password?: string) => {
   const shieldAuth: ShieldAuthentication = {
     auth: ShieldAuthType.OPENFORT,
     token: openfortInstance.getAccessToken()!,
     encryptionSession: await getEncryptionSession(),
   };
-  await openfortInstance.configureEmbeddedSigner(chain, shieldAuth);
-  return;
+  await openfortInstance.configureEmbeddedSigner(chain, shieldAuth, password);
 };
 
 const getEncryptionSession = async (): Promise<string> => {

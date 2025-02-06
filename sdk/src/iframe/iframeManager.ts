@@ -1,4 +1,6 @@
 import type { RecoveryMethod } from 'types';
+import { IStorage, StorageKeys } from 'storage/istorage';
+import { LocalStorage } from 'storage/localStorage';
 import type { SDKConfiguration } from '../config';
 import {
   type ConfigureRequest,
@@ -89,10 +91,13 @@ export default class IframeManager {
 
   private readonly responses: Map<string, IEventResponse> = new Map();
 
+  private readonly storage: IStorage;
+
   private readonly sdkConfiguration: SDKConfiguration;
 
   constructor(configuration: SDKConfiguration) {
     this.sdkConfiguration = configuration;
+    this.storage = new LocalStorage();
   }
 
   public async iframeSetup(): Promise<void> {
@@ -197,8 +202,7 @@ export default class IframeManager {
         if (response) {
           clearInterval(interval);
           this.responses.delete(uuid);
-          // @ts-ignore
-          const responseConstructor = this.responseConstructors[response.action];
+          const responseConstructor = (this.responseConstructors as any)[response.action];
           if (isErrorResponse(response)) {
             if (response.error === NOT_CONFIGURED_ERROR) {
               reject(new NotConfiguredError());
@@ -243,7 +247,15 @@ export default class IframeManager {
       shieldURL: this.sdkConfiguration.shieldUrl,
     };
     this.iframe?.contentWindow?.postMessage(config, '*');
-    const response = await this.waitForResponse<ConfigureResponse>(config.uuid);
+    let response: ConfigureResponse;
+    try {
+      response = await this.waitForResponse<ConfigureResponse>(config.uuid);
+    } catch (e) {
+      if (e instanceof WrongRecoveryPasswordError || e instanceof MissingRecoveryPasswordError) {
+        this.storage.remove(StorageKeys.SIGNER);
+      }
+      throw e;
+    }
     sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
     return response;
   }
@@ -309,7 +321,6 @@ export default class IframeManager {
     try {
       response = await this.waitForResponse<SwitchChainResponse>(uuid);
     } catch (e) {
-      console.log('switchChain', e);
       if (e instanceof NotConfiguredError) {
         await this.configure(iframeConfiguration);
         return this.switchChain(iframeConfiguration, chainId);

@@ -261,6 +261,7 @@ export const SetPairingCodeWithWagmi: React.FC<{
     chains: [mainnet, base, polygonAmoy],
     connectors: [injected()],
     transports,
+    ssr: true,
   });
   const queryClient = new QueryClient();
 

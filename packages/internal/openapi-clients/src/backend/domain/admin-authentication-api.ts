@@ -218,7 +218,7 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             };
         },
         /**
-         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with.
+         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with. If the player has a linked embedded signer, it will be deleted as well.
          * @summary Deletes a player auth object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {*} [options] Override http request option.
@@ -608,7 +608,7 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with.
+         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with. If the player has a linked embedded signer, it will be deleted as well.
          * @summary Deletes a player auth object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {*} [options] Override http request option.
@@ -754,7 +754,7 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
             return localVarFp.createOAuthConfig(requestParameters.body, options).then((request) => request(axios, basePath));
         },
         /**
-         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with.
+         * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with. If the player has a linked embedded signer, it will be deleted as well.
          * @summary Deletes a player auth object.
          * @param {AdminAuthenticationApiDeleteAuthPlayerRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -1084,7 +1084,7 @@ export class AdminAuthenticationApi extends BaseAPI {
     }
 
     /**
-     * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with.
+     * Deletes a player auth object.  It will delete all linked accounts the player is authenticated with. If the player has a linked embedded signer, it will be deleted as well.
      * @summary Deletes a player auth object.
      * @param {AdminAuthenticationApiDeleteAuthPlayerRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.

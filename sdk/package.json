@@ -1,6 +1,6 @@
 {
   "name": "@openfort/openfort-js",
-  "version": "0.8.21",
+  "version": "0.8.22",
   "author": "Openfort (https://www.openfort.xyz)",
   "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
   "repository": "openfort-xyz/openfort-js.git",
@@ -31,7 +31,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/hash": "^5.7.0",
     "@ethersproject/providers": "^5.7.0",

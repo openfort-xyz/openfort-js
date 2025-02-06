@@ -1,8 +1,7 @@
 import {
   EmbeddedState,
   ShieldAuthType,
-  TypedDataDomain,
-  TypedDataField,
+  type TypedDataPayload,
   type Provider,
   type RecoveryMethod,
   type ShieldAuthentication,
@@ -18,7 +17,7 @@ import {
 } from 'react';
 import axios from 'axios';
 import openfort from '../utils/openfortConfig';
-import { Address, privateKeyToAddress } from 'viem/accounts';
+import { Address } from 'viem/accounts';
 import { Chain, createPublicClient, http } from 'viem';
 
 interface ContextType {
@@ -43,9 +42,9 @@ interface ContextType {
     options?: {hashMessage: boolean; arrayifyMessage: boolean}
   ) => Promise<{data?: string; error?: Error}>;
   signTypedData: (
-    domain: TypedDataDomain,
-    types: Record<string, Array<TypedDataField>>,
-    value: Record<string, any>
+    domain: TypedDataPayload['domain'],
+    types: TypedDataPayload['types'],
+    message: TypedDataPayload['message']
   ) => Promise<{data?: string; error?: Error}>;
   logout: () => Promise<void>;
   getEOAAddress: () => Promise<string>;
@@ -176,12 +175,12 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const signTypedData = useCallback(
     async (
-      domain: TypedDataDomain,
-      types: Record<string, Array<TypedDataField>>,
-      value: Record<string, any>
+      domain: TypedDataPayload['domain'],
+      types: TypedDataPayload['types'],
+      message: TypedDataPayload['message']
     ): Promise<{data?: string; error?: Error}> => {
       try {
-        const data = await openfort.signTypedData(domain, types, value);
+        const data = await openfort.signTypedData(domain, types, message);
         return {data};
       } catch (err) {
         console.error('Error signing typed data:', err);
@@ -198,7 +197,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const handleRecovery = useCallback(
     async ({method, password, chainId}:{method: 'password' | 'automatic', password?: string, chainId: number}) => {
-      try {
         const shieldAuth: ShieldAuthentication = {
           auth: ShieldAuthType.OPENFORT,
           token: openfort.getAccessToken()!,
@@ -212,11 +210,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
           }
           await openfort.configureEmbeddedSigner(chainId, shieldAuth, password);
         }
-      } catch (err) {
-        console.error('Error handling recovery with Openfort:', err);
-        alert(`Error: ${(err as unknown as Error).message}`);
-        location.reload();
-      }
     },
     []
   );
