@@ -69,21 +69,26 @@ export class Openfort {
    * @throws {OpenfortError} If the signer is not an EmbeddedSigner.
    */
   public getEthereumProvider(
-    options: {
-      policy?: string,
+    options?: {
+      policy?: string;
       providerInfo?: {
         icon: `data:image/${string}`; // RFC-2397
         name: string;
         rdns: string;
-      },
-      announceProvider?: boolean,
-    } = {
-      announceProvider: true,
+      };
+      announceProvider?: boolean;
     },
   ): Provider {
+    // Apply default options with proper type safety
+    const defaultOptions = {
+      announceProvider: true,
+    };
+    const finalOptions = { ...defaultOptions, ...options };
+
     const authentication = Authentication.fromStorage(this.storage);
     const signer = SignerManager.fromStorage();
     const account = Account.fromStorage(this.storage);
+
     if (!this.provider) {
       this.provider = new EvmProvider({
         storage: this.storage,
@@ -92,17 +97,18 @@ export class Openfort {
         account: account || undefined,
         authentication: authentication || undefined,
         backendApiClients: this.backendApiClients,
-        policyId: options.policy,
+        policyId: finalOptions.policy,
         validateAndRefreshSession: this.validateAndRefreshToken.bind(this),
       });
-      if (options.announceProvider) {
+
+      if (finalOptions.announceProvider) {
         announceProvider({
-          info: { ...openfortProviderInfo, ...options.providerInfo },
+          info: { ...openfortProviderInfo, ...finalOptions.providerInfo },
           provider: this.provider,
         });
       }
-    } else if (this.provider && options.policy) {
-      this.provider.updatePolicy(options.policy);
+    } else if (this.provider && finalOptions.policy) {
+      this.provider.updatePolicy(finalOptions.policy);
     }
 
     return this.provider;
@@ -766,6 +772,8 @@ export class Openfort {
     if (!credentials.player) {
       throw new OpenfortError('No player found in credentials', OpenfortErrorType.INTERNAL_ERROR);
     }
+    if (credentials.accessToken === auth.token) return;
+
     new Authentication(
       'jwt',
       credentials.accessToken,

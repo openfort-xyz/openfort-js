@@ -321,7 +321,6 @@ export default class IframeManager {
     try {
       response = await this.waitForResponse<SwitchChainResponse>(uuid);
     } catch (e) {
-      console.log('switchChain', e);
       if (e instanceof NotConfiguredError) {
         await this.configure(iframeConfiguration);
         return this.switchChain(iframeConfiguration, chainId);

@@ -84,7 +84,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     const pollEmbeddedState = async () => {
       try {
         const currentState = await openfort.getEmbeddedState();
-        console.log('Current state:', currentState);
         setState(currentState);
       } catch (err) {
         console.error('Error checking embedded state with Openfort:', err);
