@@ -8,6 +8,7 @@ import openfort from "../utils/openfortConfig";
 import { getURL } from "../utils/getUrl";
 import { AuthPlayerResponse } from "@openfort/openfort-js";
 import { Button } from "@/components/ui/button";
+import Loading from "@/components/Loading";
 
 function ForgotPasswordPage() {
   const router = useRouter();
@@ -83,8 +84,15 @@ function ForgotPasswordPage() {
                     required
                   />
                 </div>
-                <Button type="submit" className="mt-8 w-full py-2">
-                  Send Reset Email
+                <Button
+                disabled={status?.type === "loading"}
+                type="submit" 
+                className="mt-8 w-full py-2">
+                {status?.type === "loading" ? (
+                  <Loading />
+                ) : (
+                  "Send Reset Email"
+                )}
                 </Button>
               </form>
               <p className="my-5 text-left text-sm text-gray-600">

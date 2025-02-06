@@ -314,6 +314,7 @@ models/subscription-list-response.ts
 models/subscription-response-plan.ts
 models/subscription-response.ts
 models/supabase-auth-config.ts
+models/switch-chain-request.ts
 models/telegram-oauth-config.ts
 models/telegram-third-party-config.ts
 models/test-trigger200-response.ts

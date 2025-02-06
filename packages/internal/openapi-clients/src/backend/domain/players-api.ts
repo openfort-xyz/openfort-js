@@ -132,7 +132,7 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * 
+         * It will delete all linked accounts the player is authenticated with. If the player has a linked embedded signer, it will be deleted as well.
          * @summary Deletes a player object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {*} [options] Override http request option.
@@ -393,7 +393,7 @@ export const PlayersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * It will delete all linked accounts the player is authenticated with. If the player has a linked embedded signer, it will be deleted as well.
          * @summary Deletes a player object.
          * @param {string} id Specifies the unique player ID (starts with pla_).
          * @param {*} [options] Override http request option.
@@ -485,7 +485,7 @@ export const PlayersApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createPlayer(requestParameters.playerCreateRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * It will delete all linked accounts the player is authenticated with. If the player has a linked embedded signer, it will be deleted as well.
          * @summary Deletes a player object.
          * @param {PlayersApiDeletePlayerRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -723,7 +723,7 @@ export class PlayersApi extends BaseAPI {
     }
 
     /**
-     * 
+     * It will delete all linked accounts the player is authenticated with. If the player has a linked embedded signer, it will be deleted as well.
      * @summary Deletes a player object.
      * @param {PlayersApiDeletePlayerRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.

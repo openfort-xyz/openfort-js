@@ -1,6 +1,5 @@
-import { TypedDataDomain, TypedDataField } from '@ethersproject/abstract-signer';
-import { _TypedDataEncoder } from '@ethersproject/hash';
 import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
+import { getSignedTypedData } from 'evm/walletHelpers';
 import { IStorage, StorageKeys } from './storage/istorage';
 import { LocalStorage } from './storage/localStorage';
 import { ShieldAuthentication } from './iframe/types';
@@ -25,7 +24,7 @@ import { KeyPair } from './crypto/key-pair';
 import { Authentication } from './configuration/authentication';
 import { MissingProjectEntropyError, MissingRecoveryPasswordError } from './iframe/iframeManager';
 import AuthManager from './authManager';
-import { EvmProvider, Provider } from './evm';
+import { EvmProvider, Provider, TypedDataPayload } from './evm';
 import TypedEventEmitter from './utils/typedEventEmitter';
 import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';
 
@@ -71,12 +70,16 @@ export class Openfort {
    */
   public getEthereumProvider(
     options: {
-      policy?: string, providerInfo?: {
+      policy?: string,
+      providerInfo?: {
         icon: `data:image/${string}`; // RFC-2397
         name: string;
         rdns: string;
-      }
-    } = {},
+      },
+      announceProvider?: boolean,
+    } = {
+      announceProvider: true,
+    },
   ): Provider {
     const authentication = Authentication.fromStorage(this.storage);
     const signer = SignerManager.fromStorage();
@@ -92,11 +95,12 @@ export class Openfort {
         policyId: options.policy,
         validateAndRefreshSession: this.validateAndRefreshToken.bind(this),
       });
-
-      announceProvider({
-        info: { ...openfortProviderInfo, ...options.providerInfo },
-        provider: this.provider,
-      });
+      if (options.announceProvider) {
+        announceProvider({
+          info: { ...openfortProviderInfo, ...options.providerInfo },
+          provider: this.provider,
+        });
+      }
     } else if (this.provider && options.policy) {
       this.provider.updatePolicy(options.policy);
     }
@@ -183,43 +187,29 @@ export class Openfort {
    * @throws {OpenfortError} If no signer is configured.
    */
   public async signTypedData(
-    domain: TypedDataDomain,
-    types: Record<string, Array<TypedDataField>>,
-    value: Record<string, any>,
+    domain: TypedDataPayload['domain'],
+    types: TypedDataPayload['types'],
+    message: TypedDataPayload['message'],
   ): Promise<string> {
     await this.validateAndRefreshToken();
     const signer = SignerManager.fromStorage();
-    if (!signer) {
+    const account = Account.fromStorage(this.storage);
+
+    if (!signer || !account) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
 
-    let hash = _TypedDataEncoder.hash(domain, types, value);
-    // eslint-disable-next-line no-param-reassign
-    delete types.EIP712Domain;
-
-    const account = Account.fromStorage(this.storage);
-    if (account && [AccountType.UPGRADEABLE_V5,
-      AccountType.UPGRADEABLE_V6,
-      AccountType.ZKSYNC_UPGRADEABLE_V1,
-      AccountType.ZKSYNC_UPGRADEABLE_V2].includes(account.type as AccountType)) {
-      const updatedDomain: TypedDataDomain = {
-        name: 'Openfort',
-        version: '0.5',
-        chainId: Number(account.chainId),
-        verifyingContract: account.address ?? undefined,
-      };
-      const updatedTypes = {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OpenfortMessage: [{ name: 'hashedMessage', type: 'bytes32' }],
-      };
-      const updatedMessage = {
-        hashedMessage: hash,
-      };
-      hash = _TypedDataEncoder.hash(updatedDomain, updatedTypes, updatedMessage);
-      // primaryType: "OpenfortMessage"
-    }
-
-    return await signer.sign(hash, false, false);
+    return await getSignedTypedData(
+      {
+        domain,
+        types,
+        message,
+      },
+      account.type,
+      Number(account.chainId),
+      signer,
+      account.address,
+    );
   }
 
   /**

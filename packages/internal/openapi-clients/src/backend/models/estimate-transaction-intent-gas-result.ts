@@ -21,48 +21,6 @@
  */
 export interface EstimateTransactionIntentGasResult {
     /**
-     * 
-     * @type {string}
-     * @memberof EstimateTransactionIntentGasResult
-     * @deprecated
-     */
-    'preVerificationGas'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EstimateTransactionIntentGasResult
-     * @deprecated
-     */
-    'verificationGas'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EstimateTransactionIntentGasResult
-     * @deprecated
-     */
-    'validUntil'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EstimateTransactionIntentGasResult
-     * @deprecated
-     */
-    'validAfter'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EstimateTransactionIntentGasResult
-     * @deprecated
-     */
-    'callGasLimit'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EstimateTransactionIntentGasResult
-     * @deprecated
-     */
-    'verificationGasLimit'?: string;
-    /**
      * estimated TX gas cost
      * @type {string}
      * @memberof EstimateTransactionIntentGasResult

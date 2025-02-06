@@ -287,6 +287,7 @@ export * from './subscription-list-response';
 export * from './subscription-response';
 export * from './subscription-response-plan';
 export * from './supabase-auth-config';
+export * from './switch-chain-request';
 export * from './telegram-oauth-config';
 export * from './telegram-third-party-config';
 export * from './test-trigger200-response';

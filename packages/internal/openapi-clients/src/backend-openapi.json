@@ -2547,7 +2547,7 @@
           },
           "accountType": {
             "type": "string",
-            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV1). Defaults to UpgradeableV6.",
+            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.",
             "example": "UpgradeableV6"
           },
           "defaultGuardian": {
@@ -4861,6 +4861,23 @@
           "chainId",
           "address",
           "share"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SwitchChainRequest": {
+        "properties": {
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "deviceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chainId",
+          "deviceId"
         ],
         "type": "object",
         "additionalProperties": false
@@ -8275,30 +8292,6 @@
       "EstimateTransactionIntentGasResult": {
         "description": "return value from estimateTransactionIntentCost",
         "properties": {
-          "preVerificationGas": {
-            "type": "string",
-            "deprecated": true
-          },
-          "verificationGas": {
-            "type": "string",
-            "deprecated": true
-          },
-          "validUntil": {
-            "type": "string",
-            "deprecated": true
-          },
-          "validAfter": {
-            "type": "string",
-            "deprecated": true
-          },
-          "callGasLimit": {
-            "type": "string",
-            "deprecated": true
-          },
-          "verificationGasLimit": {
-            "type": "string",
-            "deprecated": true
-          },
           "estimatedTXGas": {
             "type": "string",
             "description": "estimated TX gas cost"
@@ -8898,7 +8891,7 @@
             "description": "Error response."
           }
         },
-        "description": "Deletes a player auth object.\n\nIt will delete all linked accounts the player is authenticated with.",
+        "description": "Deletes a player auth object.\n\nIt will delete all linked accounts the player is authenticated with.\nIf the player has a linked embedded signer, it will be deleted as well.",
         "summary": "Deletes a player auth object.",
         "tags": [
           "AdminAuthentication"
@@ -10913,6 +10906,49 @@
               "items": {
                 "$ref": "#/components/schemas/AccountResponseExpandable"
               }
+            }
+          }
+        ]
+      }
+    },
+    "/v1/accounts/{id}/disable": {
+      "post": {
+        "operationId": "DisableAccount",
+        "responses": {
+          "204": {
+            "description": "Successful response."
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "tags": [
+          "Accounts"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ]
@@ -14153,6 +14189,7 @@
             "description": "Error response."
           }
         },
+        "description": "It will delete all linked accounts the player is authenticated with.\nIf the player has a linked embedded signer, it will be deleted as well.",
         "summary": "Deletes a player object.",
         "tags": [
           "Players"
@@ -18145,10 +18182,6 @@
                 "examples": {
                   "Gas estimation": {
                     "value": {
-                      "preVerificationGas": "55637",
-                      "verificationGas": "375974",
-                      "callGasLimit": "79646",
-                      "verificationGasLimit": "375974",
                       "estimatedTXGas": "444793",
                       "estimatedTXGasFee": "1162163748854053",
                       "estimatedTXGasFeeUSD": "0.01",
@@ -18157,10 +18190,6 @@
                   },
                   "Gas estimation with token policy": {
                     "value": {
-                      "preVerificationGas": "55637",
-                      "verificationGas": "375974",
-                      "callGasLimit": "79646",
-                      "verificationGasLimit": "375974",
                       "estimatedTXGas": "444793",
                       "estimatedTXGasFee": "1162163748854053",
                       "estimatedTXGasFeeUSD": "0.01",

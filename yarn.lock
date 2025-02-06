@@ -1415,7 +1415,6 @@ __metadata:
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:
     "@babel/core": ^7.21.0
-    "@ethersproject/abstract-signer": ^5.7.0
     "@ethersproject/bytes": ^5.7.0
     "@ethersproject/hash": ^5.7.0
     "@ethersproject/providers": ^5.7.0

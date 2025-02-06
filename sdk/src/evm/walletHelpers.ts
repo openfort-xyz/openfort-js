@@ -1,11 +1,11 @@
 import { _TypedDataEncoder } from '@ethersproject/hash';
-import { TypedDataDomain } from '@ethersproject/abstract-signer';
+import { UnionOmit } from 'utils/helpers';
 import { TypedDataPayload } from './types';
 import { Signer } from '../signer/isigner';
 import { AccountType } from '../types';
 
 export const getSignedTypedData = async (
-  typedData: TypedDataPayload,
+  typedData: UnionOmit<TypedDataPayload, 'primaryType'>,
   accountType: string,
   chainId: number,
   signer: Signer,
@@ -19,8 +19,11 @@ export const getSignedTypedData = async (
   // Hash the EIP712 payload and generate the complete payload
   let typedDataHash = _TypedDataEncoder.hash(typedData.domain, types, typedData.message);
 
-  if (accountType === AccountType.UPGRADEABLE_V5) {
-    const updatedDomain: TypedDataDomain = {
+  if ([AccountType.UPGRADEABLE_V5,
+    AccountType.UPGRADEABLE_V6,
+    AccountType.ZKSYNC_UPGRADEABLE_V1,
+    AccountType.ZKSYNC_UPGRADEABLE_V2].includes(accountType as AccountType)) {
+    const updatedDomain: TypedDataPayload['domain'] = {
       name: 'Openfort',
       version: '0.5',
       chainId: Number(chainId),
@@ -34,7 +37,6 @@ export const getSignedTypedData = async (
       hashedMessage: typedDataHash,
     };
     typedDataHash = _TypedDataEncoder.hash(updatedDomain, updatedTypes, updatedMessage);
-    // primaryType: "OpenfortMessage"
   }
 
   const ethsigNoType = await signer.sign(typedDataHash, false, false);

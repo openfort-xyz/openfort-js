@@ -28,9 +28,10 @@ export interface FeeOption {
 // https://eips.ethereum.org/EIPS/eip-712
 export interface TypedDataPayload {
   types: {
+    [K in string]: Array<{ name: string; type: string }>;
+  } & {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    EIP712Domain: Array<{ name: string; type: string }>;
-    [key: string]: Array<{ name: string; type: string }>;
+    EIP712Domain?: Array<{ name: string; type: string }>;
   };
   domain: {
     name?: string;

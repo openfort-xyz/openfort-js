@@ -2,6 +2,8 @@ import {useState} from 'react';
 import {useOpenfort} from '../../hooks/useOpenfort';
 import Loading from '../Loading';
 import { Button } from '../ui/button';
+import { StatusType, Toast } from '../Toasts';
+import { MissingRecoveryPasswordError, WrongRecoveryPasswordError } from '@openfort/openfort-js';
 
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
@@ -9,6 +11,7 @@ const AccountRecovery: React.FC = () => {
   const {handleRecovery} = useOpenfort();
   const [loadingPwd, setLoadingPwd] = useState(false);
   const [loadingAut, setLoadingAut] = useState(false);
+  const [status, setStatus] = useState<StatusType>(null);
 
   return (
     <>
@@ -35,7 +38,22 @@ const AccountRecovery: React.FC = () => {
                     ) as HTMLInputElement
                   ).value;
                   setLoadingPwd(true);
-                  await handleRecovery({method: 'password', password, chainId: chainId});
+                  try{
+                    await handleRecovery({method: 'password', password, chainId: chainId});
+                  } catch (e) {
+                    if(e instanceof MissingRecoveryPasswordError){
+                      setStatus({
+                        type: 'error',
+                        title: 'Missing recovery password',
+                      });
+                    }
+                    if(e instanceof WrongRecoveryPasswordError){
+                      setStatus({
+                        type: 'error',
+                        title: 'Wrong recovery password',
+                      });
+                    }
+                  }
                   setLoadingPwd(false);
                 }}
               >
@@ -58,7 +76,22 @@ const AccountRecovery: React.FC = () => {
                 className="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
                 onClick={async () => {
                   setLoadingAut(true);
-                  await handleRecovery({method:'automatic', chainId: chainId});
+                  try{
+                    await handleRecovery({method:'automatic', chainId: chainId});
+                  } catch (e) {
+                    if(e instanceof MissingRecoveryPasswordError){
+                      setStatus({
+                        type: 'error',
+                        title: 'Missing recovery password',
+                      });
+                    }
+                    if(e instanceof WrongRecoveryPasswordError){
+                      setStatus({
+                        type: 'error',
+                        title: 'Wrong recovery password',
+                      });
+                    }
+                  }
                   setLoadingAut(false);
                 }}
               >
@@ -68,6 +101,7 @@ const AccountRecovery: React.FC = () => {
           </div>
         </div>
       </div>
+      <Toast status={status} setStatus={setStatus} />
     </>
   );
 };
