@@ -203,41 +203,20 @@
         ],
         "type": "string"
       },
-      "InputJsonObject": {
+      "PlayerMetadata": {
         "properties": {},
         "type": "object",
-        "description": "Matches a JSON object.\r\nUnlike \\`JsonObject\\`, this type allows undefined and read-only properties."
-      },
-      "InputJsonArray": {
-        "description": "Matches a JSON array.\r\nUnlike \\`JsonArray\\`, readonly arrays are assignable to this type.",
-        "properties": {},
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Prisma.InputJsonValue": {
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "number",
-            "format": "double"
-          },
-          {
-            "type": "boolean"
-          },
-          {
-            "$ref": "#/components/schemas/InputJsonObject"
-          },
-          {
-            "$ref": "#/components/schemas/InputJsonArray"
-          },
-          {
-            "properties": {},
-            "type": "object"
-          }
-        ],
-        "description": "Matches any valid value that can be used as an input for operations like\r\ncreate and update as the value of a JSON field. Unlike \\`JsonValue\\`, this\r\ntype allows read-only arrays and read-only object properties and disallows\r\n\\`null\\` at the top level.\r\n\r\n\\`null\\` cannot be used as the value of a JSON field because its meaning\r\nwould be ambiguous. Use \\`Prisma.JsonNull\\` to store the JSON null value or\r\n\\`Prisma.DbNull\\` to clear the JSON value and set the field to the database\r\nNULL value instead."
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number",
+              "format": "double"
+            }
+          ]
+        }
       },
       "LinkedAccountResponse": {
         "properties": {
@@ -248,6 +227,12 @@
             "type": "string"
           },
           "externalUserId": {
+            "type": "string"
+          },
+          "connectorType": {
+            "type": "string"
+          },
+          "walletClientType": {
             "type": "string"
           },
           "disabled": {
@@ -264,7 +249,7 @@
             "type": "string"
           },
           "metadata": {
-            "$ref": "#/components/schemas/Prisma.InputJsonValue"
+            "$ref": "#/components/schemas/PlayerMetadata"
           }
         },
         "required": [
@@ -849,21 +834,6 @@
         ],
         "type": "object",
         "additionalProperties": false
-      },
-      "PlayerMetadata": {
-        "properties": {},
-        "type": "object",
-        "additionalProperties": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "number",
-              "format": "double"
-            }
-          ]
-        }
       },
       "EntityType.PLAYER": {
         "enum": [

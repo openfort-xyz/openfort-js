@@ -351,9 +351,13 @@ export interface LinkedAccountResponse {
   'externalUserId'?: string;
   'verified'?: boolean;
   'disabled': boolean;
+  'walletClientType'?: string;
+  'connectorType'?: string;
   'updatedAt'?: number;
   'address'?: string;
-  'metadata'?: PrismaInputJsonValue;
+  'metadata'?: {
+    [key: string]: PlayerMetadataValue;
+  };
 }
 
 export interface AuthPlayerResponse {

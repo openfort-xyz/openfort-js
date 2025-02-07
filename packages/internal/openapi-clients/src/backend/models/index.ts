@@ -245,7 +245,6 @@ export * from './policy-rule-type-contract';
 export * from './policy-rule-type-ratelimit';
 export * from './policy-strategy';
 export * from './policy-strategy-request';
-export * from './prisma-input-json-value';
 export * from './private-key-policy';
 export * from './project-list-response';
 export * from './project-logs';

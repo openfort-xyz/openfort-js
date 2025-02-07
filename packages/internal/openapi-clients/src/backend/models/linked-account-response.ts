@@ -18,7 +18,7 @@
 import { AuthProviderResponse } from './auth-provider-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import { PrismaInputJsonValue } from './prisma-input-json-value';
+import { PlayerMetadataValue } from './player-metadata-value';
 
 /**
  * 
@@ -46,6 +46,18 @@ export interface LinkedAccountResponse {
     'externalUserId'?: string;
     /**
      * 
+     * @type {string}
+     * @memberof LinkedAccountResponse
+     */
+    'connectorType'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkedAccountResponse
+     */
+    'walletClientType'?: string;
+    /**
+     * 
      * @type {boolean}
      * @memberof LinkedAccountResponse
      */
@@ -70,10 +82,10 @@ export interface LinkedAccountResponse {
     'address'?: string;
     /**
      * 
-     * @type {PrismaInputJsonValue}
+     * @type {{ [key: string]: PlayerMetadataValue; }}
      * @memberof LinkedAccountResponse
      */
-    'metadata'?: PrismaInputJsonValue;
+    'metadata'?: { [key: string]: PlayerMetadataValue; };
 }
 
 

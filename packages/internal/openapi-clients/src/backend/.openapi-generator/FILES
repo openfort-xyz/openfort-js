@@ -272,7 +272,6 @@ models/policy-rule-type.ts
 models/policy-strategy-request.ts
 models/policy-strategy.ts
 models/policy.ts
-models/prisma-input-json-value.ts
 models/private-key-policy.ts
 models/project-list-response.ts
 models/project-logs.ts
