@@ -30,6 +30,7 @@ import { baseSepolia, sepolia } from 'wagmi/chains'
 import { useRouter } from 'next/navigation'
 
 import { wagmiContractConfig } from './contracts'
+import { openfortInstance } from '../openfort'
 
 export default function App() {
   useAccountEffect({
@@ -81,7 +82,13 @@ function Account() {
       </div>
 
       {account.status === 'connected' && (
-        <button type="button" onClick={() => disconnect()}>
+        <button type="button" onClick={async() => {
+          if (account.connector && account.connector.name.includes('Openfort')) {
+            await openfortInstance.logout();
+          }
+          disconnect()
+          }
+          }>
           Disconnect
         </button>
       )}
