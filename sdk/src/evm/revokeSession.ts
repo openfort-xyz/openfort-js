@@ -2,6 +2,8 @@ import { BackendApiClients } from '@openfort/openapi-clients';
 import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
 import { RevokeSessionRequest } from '@openfort/openapi-clients/dist/backend';
+import { LocalStorage } from 'storage/localStorage';
+import { StorageKeys } from 'storage/istorage';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer } from '../signer/isigner';
 import { SessionResponse } from '../types';
@@ -80,6 +82,11 @@ export const revokeSession = async ({
 }: WalletRequestPermissionsParams): Promise<{}> => {
   const param = params[0];
   if (!param.permissionContext) {
+    const storage = new LocalStorage();
+    storage.remove(StorageKeys.AUTHENTICATION);
+    storage.remove(StorageKeys.SIGNER);
+    storage.remove(StorageKeys.ACCOUNT);
+    await signer.logout();
     return {};
   }
   const openfortTransaction = await buildOpenfortTransactions(
