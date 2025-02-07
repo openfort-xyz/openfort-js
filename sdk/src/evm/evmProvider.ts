@@ -302,7 +302,7 @@ export class EvmProvider implements Provider {
         this.#validateAndRefreshSession();
 
         return await revokeSession({
-          params: (request.params || {} as unknown) as RevokePermissionsRequestParams,
+          params: (request.params || [] as unknown) as RevokePermissionsRequestParams[],
           signer,
           account,
           authentication,

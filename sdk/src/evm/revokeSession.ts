@@ -7,7 +7,7 @@ import { Signer } from '../signer/isigner';
 import { SessionResponse } from '../types';
 
 export type WalletRequestPermissionsParams = {
-  params: RevokePermissionsRequestParams;
+  params: RevokePermissionsRequestParams[];
   signer: Signer;
   backendClient: BackendApiClients;
   account: Account;
@@ -78,8 +78,12 @@ export const revokeSession = async ({
   backendClient,
   policyId,
 }: WalletRequestPermissionsParams): Promise<{}> => {
+  const param = params[0];
+  if (!param.permissionContext) {
+    return {};
+  }
   const openfortTransaction = await buildOpenfortTransactions(
-    params,
+    param,
     backendClient,
     account,
     authentication,
