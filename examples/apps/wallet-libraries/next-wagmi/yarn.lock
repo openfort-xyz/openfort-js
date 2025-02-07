@@ -888,9 +888,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/openfort-js@npm:^0.8.22":
-  version: 0.8.22
-  resolution: "@openfort/openfort-js@npm:0.8.22"
+"@openfort/openfort-js@npm:^0.8.23":
+  version: 0.8.23
+  resolution: "@openfort/openfort-js@npm:0.8.23"
   dependencies:
     "@ethersproject/bytes": ^5.7.0
     "@ethersproject/hash": ^5.7.0
@@ -909,7 +909,7 @@ __metadata:
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: 998c57ff380d669b46ac3ad5859e01c74fbef84c262f3722284e27b58da0da3c3f2d5a9f0ec17c276531e4171a212d9ba37268fdeaf66e833c3b93e8c08ef4c4
+  checksum: 710def334819a22b2b6c60e41446b5981ae06f01298935104199971c70a9fb16ce255441c8334a9b22097695b3e48d76fafab94f6f7d90913df4d84018aa2ec2
   languageName: node
   linkType: hard
 
@@ -6702,7 +6702,7 @@ __metadata:
   resolution: "wagmi-next-app-openfort@workspace:."
   dependencies:
     "@next/bundle-analyzer": ^14.2.3
-    "@openfort/openfort-js": ^0.8.22
+    "@openfort/openfort-js": ^0.8.23
     "@tanstack/react-query": ">=5.45.1"
     "@types/node": ^22.10.7
     "@types/react": ^19.0.7
