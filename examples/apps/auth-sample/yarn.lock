@@ -1110,9 +1110,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/openfort-js@npm:^0.8.23":
-  version: 0.8.23
-  resolution: "@openfort/openfort-js@npm:0.8.23"
+"@openfort/openfort-js@npm:^0.8.25":
+  version: 0.8.25
+  resolution: "@openfort/openfort-js@npm:0.8.25"
   dependencies:
     "@ethersproject/bytes": ^5.7.0
     "@ethersproject/hash": ^5.7.0
@@ -1131,7 +1131,7 @@ __metadata:
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: 710def334819a22b2b6c60e41446b5981ae06f01298935104199971c70a9fb16ce255441c8334a9b22097695b3e48d76fafab94f6f7d90913df4d84018aa2ec2
+  checksum: 9e948b74de338db787eb2ce1d1d8fe3a96590754a7f024bd10fc5864fd715ba55e8fe2126e8830e45c52789e9dbba171f4d9ca681b5da6e4a81d095857b40056
   languageName: node
   linkType: hard
 
@@ -2663,7 +2663,7 @@ __metadata:
   resolution: "auth-sample@workspace:."
   dependencies:
     "@heroicons/react": ^2.0.13
-    "@openfort/openfort-js": ^0.8.23
+    "@openfort/openfort-js": ^0.8.25
     "@openfort/openfort-node": ^0.6.65
     "@playwright/test": ^1.48.0
     "@radix-ui/react-dialog": ^1.1.2
