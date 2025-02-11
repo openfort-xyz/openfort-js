@@ -19,7 +19,7 @@ npm i
 
 **Step 3**
 
-Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.xyz/docs/guides/client/api-keys).
+Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.xyz/docs/api-keys).
 
 ```sh
 # In your terminal, create .env.local from .env.example
