@@ -17,7 +17,7 @@ mkdir -p openfort-auth-sample-nextjs && curl -L https://codeload.github.com/open
 npm i 
 ```
 
-1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.xyz/docs/guides/client/api-keys).
+1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.xyz/docs/api-keys).
 ```sh
 # In your terminal, create .env.local from .env.example
 cp .env.example .env.local
