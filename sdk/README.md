@@ -12,8 +12,8 @@
       API Docs
     </a>
     <span> | </span>
-    <a href="https://twitter.com/openfortxyz">
-      Twitter
+    <a href="https://x.com/openfortxyz">
+      X
     </a>
   </h4>
 </div>
@@ -48,7 +48,7 @@ The Session Signer allows you to use external signing keys, without needing to p
 ```typescript
 const sessionKey = sdk.configureSessionKey();
 ```
-- **Register Key and Send Signature Session Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session management](https://www.openfort.xyz/docs/guides/accounts/smart/session-keys).
+- **Register Key and Send Signature Session Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session keys](https://www.openfort.xyz/docs/guides/javascript/smart-wallet/advanced/session-keys).
 - **Send Signature Transaction Intent Request**: When calling sendSignatureTransactionIntentRequest, pass the transaction intent ID and the user operation hash. The session signer will handle the signing.
 
 ### 2. External Sign
@@ -75,7 +75,7 @@ The Embedded Signer uses SSS to manage the private key on the client side. To le
   // using automatic recovery
   await sdk.configureEmbeddedSigner(chainId, shieldAuth);
 ```
-For now the only two recovery method available are the `PasswordRecovery` and `AutomaticRecovery`. Learn more about the [recovery methods](https://www.openfort.xyz/docs/guides/auth/embedded-signer/recovery).
+For now the only two recovery method available are the `PasswordRecovery` and `AutomaticRecovery`. Learn more about the [recovery methods](https://www.openfort.xyz/docs/guides/javascript/embedded-signer/recovery).
 - **Send Signature Transaction Intent Request**: Similar to the session signer, pass the transaction intent ID and the user operation hash. The embedded signer reconstructs the key and signs the transaction.
 ```typescript
 const response = await sdk.sendSignatureTransactionIntentRequest("transactionIntentId", "userOp");
