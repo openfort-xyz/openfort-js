@@ -2,6 +2,7 @@ import { BackendApiClients } from '@openfort/openapi-clients';
 import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
 import { RevokeSessionRequest } from '@openfort/openapi-clients/dist/backend';
+import { OpenfortErrorType, withOpenfortError } from 'errors/openfortError';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer } from '../signer/isigner';
 import { SessionResponse } from '../types';
@@ -50,24 +51,27 @@ const buildOpenfortTransactions = async (
     policyId,
   );
 
-  const transactionResponse = await backendApiClients.sessionsApi.revokeSession(
-    {
-      revokeSessionRequest: sessionRequest,
-    },
-    {
-      headers: {
-        authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-player-token': authentication.token,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-auth-provider': authentication.thirdPartyProvider,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-token-type': authentication.thirdPartyTokenType,
+  return withOpenfortError<SessionResponse>(async () => {
+    const response = await backendApiClients.sessionsApi.revokeSession(
+      {
+        revokeSessionRequest: sessionRequest,
       },
-    },
-  );
+      {
+        headers: {
+          authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-player-token': authentication.token,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-auth-provider': authentication.thirdPartyProvider,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-token-type': authentication.thirdPartyTokenType,
+        },
+      },
+    );
 
-  return transactionResponse.data;
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+  }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
 };
 
 export const revokeSession = async ({
@@ -89,9 +93,9 @@ export const revokeSession = async ({
     account,
     authentication,
     policyId,
-  );
-
-  let response: SessionResponse;
+  ).catch((error) => {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
+  });
 
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature;
@@ -105,28 +109,11 @@ export const revokeSession = async ({
     const openfortSignatureResponse = await backendClient.sessionsApi.signatureSession({
       id: openfortTransaction.id,
       signatureRequest: { signature },
+    }).catch((error) => {
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
     });
 
-    if (!openfortSignatureResponse) {
-      throw new JsonRpcError(
-        RpcErrorCode.RPC_SERVER_ERROR,
-        'Transaction failed to submit',
-      );
-    }
-    response = openfortSignatureResponse.data;
-  } else {
-    throw new JsonRpcError(
-      RpcErrorCode.RPC_SERVER_ERROR,
-      'Transaction failed to submit',
-    );
+    return openfortSignatureResponse.data;
   }
-
-  if (response.isActive === false) {
-    throw new JsonRpcError(
-      RpcErrorCode.RPC_SERVER_ERROR,
-      'Failed to request permissions',
-    );
-  }
-
-  return {};
+  return openfortTransaction;
 };

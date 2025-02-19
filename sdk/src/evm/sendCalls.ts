@@ -1,6 +1,7 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
 import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
+import { OpenfortErrorType, withOpenfortError } from 'errors/openfortError';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer } from '../signer/isigner';
 import { Interaction, TransactionIntentResponse } from '../types';
@@ -34,28 +35,30 @@ const buildOpenfortTransactions = async (
     };
   });
 
-  const transactionResponse = await backendApiClients.transactionIntentsApi.createTransactionIntent(
-    {
-      createTransactionIntentRequest: {
-        policy: policyId,
-        chainId: account.chainId,
-        interactions,
+  return withOpenfortError<TransactionIntentResponse>(async () => {
+    const response = await backendApiClients.transactionIntentsApi.createTransactionIntent(
+      {
+        createTransactionIntentRequest: {
+          policy: policyId,
+          chainId: account.chainId,
+          interactions,
+        },
       },
-    },
-    {
-      headers: {
-        authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-player-token': authentication.token,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-auth-provider': authentication.thirdPartyProvider,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-token-type': authentication.thirdPartyTokenType,
+      {
+        headers: {
+          authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-player-token': authentication.token,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-auth-provider': authentication.thirdPartyProvider,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-token-type': authentication.thirdPartyTokenType,
+        },
       },
-    },
-  );
-
-  return transactionResponse.data;
+    );
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+  }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
 };
 
 export const sendCalls = async ({
@@ -73,7 +76,9 @@ export const sendCalls = async ({
     account,
     authentication,
     policy,
-  );
+  ).catch((error) => {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
+  });
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature;
     // zkSync based chains need a different signature

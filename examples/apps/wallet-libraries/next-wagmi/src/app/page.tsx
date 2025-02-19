@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, type FormEvent } from 'react'
-import { type Hex, formatEther, parseAbi, parseEther } from 'viem'
+import { Address, type Hex, createWalletClient, custom, formatEther, getAddress, parseAbi, parseEther } from 'viem'
 import {
   type BaseError,
   Connector,
@@ -32,6 +32,8 @@ import { useRouter } from 'next/navigation'
 import { wagmiContractConfig } from './contracts'
 import { openfortInstance } from '../openfort'
 import { useWriteContracts } from 'wagmi/experimental'
+import { erc7715Actions, GrantPermissionsReturnType } from 'viem/experimental'
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 
 export default function App() {
   useAccountEffect({
@@ -60,6 +62,7 @@ export default function App() {
       <ReadContracts />
       <WriteContract />
       <WriteContracts />
+      <GrantPermission />
     </>
   )
 }
@@ -483,6 +486,214 @@ function WriteContracts() {
   )
 }
 
+function GrantPermission() {
+  const { connector, chain } = useAccount();
+  const [error, setError] = useState<BaseError | null>(null);
+  const [pending, setPending] = useState(false);
+  const [result, setResult] = useState<GrantPermissionsReturnType | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  const [expiryMinutes, setExpiryMinutes] = useState(24 * 60);
+  const [limit, setLimit] = useState(5);
+  const [whitelistedContracts, setWhitelistedContracts] = useState<`0x${string}`[]>([]);
+  const [newContract, setNewContract] = useState<`0x${string}`>('0x');
+
+  const PRESET_EXPIRY = {
+    DAY: 24 * 60,
+    WEEK: 7 * 24 * 60,
+    MONTH: 30 * 24 * 60
+  };
+
+  useEffect(() => {
+    setMounted(true);
+    setWhitelistedContracts(['0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a']);
+  }, []);
+
+  async function grantPermissions(sessionKeyAddress: Address) {
+    const provider = await connector?.getProvider();
+    const walletClient = createWalletClient({
+      chain,
+      transport: custom(provider as any),
+    }).extend(erc7715Actions());
+
+    const response = await walletClient.grantPermissions({
+      signer: {
+        type: "key",
+        data: {
+          id: sessionKeyAddress
+        }
+      },
+      expiry: expiryMinutes * 60,
+      permissions: whitelistedContracts.map(contract => ({
+        type: 'contract-call',
+        data: {
+          address: contract,
+          calls: []
+        },
+        policies: [
+          {
+            type: {
+              custom: "usage-limit"
+            },
+            data: {
+              limit
+            }
+          }
+        ]
+      }))
+    });
+
+    return response;
+  }
+
+  async function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setPending(true);
+    setError(null);
+
+    try {
+      const privateKey = generatePrivateKey();
+      const accountSession = privateKeyToAccount(privateKey).address;
+      const response = await grantPermissions(accountSession);
+      setResult(response);
+    } catch (err) {
+      setError(err as BaseError);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  function handleAddContract() {
+    if (newContract && !whitelistedContracts.includes(newContract)) {
+      try {
+        const formattedAddress = getAddress(newContract);
+        setWhitelistedContracts([...whitelistedContracts, formattedAddress]);
+        setNewContract('0x');
+      } catch (err) {
+        setError(new Error('Invalid address format') as BaseError);
+      }
+    }
+  }
+
+  function handleRemoveContract(contract: `0x${string}`) {
+    setWhitelistedContracts(whitelistedContracts.filter(c => c !== contract));
+  }
+
+  if (!mounted) {
+    return null;
+  }
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Session keys</h2>
+      <form onSubmit={submit} className="space-y-4">
+        <div className="space-y-2">
+          <div>
+            <label className="block">
+              Expiry (minutes):
+              <input
+                type="number"
+                value={expiryMinutes}
+                onChange={(e) => setExpiryMinutes(Number(e.target.value))}
+                min="1"
+                className="mt-1 block w-full rounded border p-2"
+              />
+            </label>
+          </div>
+          <div className="flex gap-2">
+            <button 
+              type="button" 
+              onClick={() => setExpiryMinutes(PRESET_EXPIRY.DAY)}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              1 Day
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setExpiryMinutes(PRESET_EXPIRY.WEEK)}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              1 Week
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setExpiryMinutes(PRESET_EXPIRY.MONTH)}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              1 Month
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label className="block">
+            Usage Limit:
+            <input
+              type="number"
+              value={limit}
+              onChange={(e) => setLimit(Number(e.target.value))}
+              min="1"
+              className="mt-1 block w-full rounded border p-2"
+            />
+          </label>
+        </div>
+
+        <div>
+          <p className="font-medium">Whitelisted Contracts:</p>
+          <div className="space-y-2 mt-2">
+            {whitelistedContracts.map((contract) => (
+              <div key={contract} className="flex items-center gap-2">
+                <span className="flex-1 font-mono">{contract}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveContract(contract)}
+                  className="px-3 py-1 bg-red-500 text-white rounded"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex gap-2">
+            <input
+              type="text"
+              value={newContract}
+              onChange={(e) => setNewContract(e.target.value as `0x${string}`)}
+              placeholder="Add contract address (0x...)"
+              className="flex-1 rounded border p-2"
+            />
+            <button 
+              type="button"
+              onClick={handleAddContract}
+              className="px-4 py-2 bg-green-500 text-white rounded"
+            >
+              Add Contract
+            </button>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          disabled={pending}
+          className="w-full px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
+        >
+          {pending ? 'Registering...' : 'Register key'}
+        </button>
+      </form>
+
+      {result && (
+        <div className="mt-4 p-4 bg-green-100 rounded">
+          Registered! Permission context: {result.permissionsContext}
+        </div>
+      )}
+      {error && (
+        <div className="mt-4 p-4 bg-red-100 rounded">
+          Error: {error.details || error.message}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Repro() {
   const config = useConfig()

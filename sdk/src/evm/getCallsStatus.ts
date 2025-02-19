@@ -2,7 +2,9 @@ import { BackendApiClients } from '@openfort/openapi-clients';
 import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
 import { Prettify } from 'utils/helpers';
+import { OpenfortErrorType, withOpenfortError } from 'errors/openfortError';
 import { TransactionIntentResponse } from '../types';
+import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 
 export type GetCallsStatusParameters = string[];
 
@@ -42,8 +44,8 @@ const buildOpenfortTransactions = async (
   transactionIntentId: string,
   backendApiClients: BackendApiClients,
   authentication: Authentication,
-): Promise<TransactionIntentResponse> => {
-  const transactionResponse = await backendApiClients.transactionIntentsApi.getTransactionIntent(
+): Promise<TransactionIntentResponse> => withOpenfortError<TransactionIntentResponse>(async () => {
+  const response = await backendApiClients.transactionIntentsApi.getTransactionIntent(
     {
       id: transactionIntentId,
     },
@@ -59,9 +61,9 @@ const buildOpenfortTransactions = async (
       },
     },
   );
-
-  return transactionResponse.data;
-};
+  return response.data;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+}, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
 
 export const getCallStatus = async ({
   params,
@@ -72,7 +74,9 @@ export const getCallStatus = async ({
     params[0],
     backendClient,
     authentication,
-  );
+  ).catch((error) => {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
+  });
 
   return {
     status: !transactionIntent.response ? 'PENDING' : 'CONFIRMED',

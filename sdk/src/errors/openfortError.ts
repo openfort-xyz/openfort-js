@@ -52,20 +52,13 @@ export const withOpenfortError = async <T>(
     let errorType: OpenfortErrorType = customErrorType.default;
 
     if (isAxiosError(error)) {
+      console.log('withOpenfortError', error);
       const statusCode = error.response?.status;
       errorType = statusCode ? customErrorType[statusCode] || customErrorType.default : customErrorType.default;
 
       if (error.response?.data && error.response.data.error) {
-        const jsonData = JSON.parse(JSON.stringify(error.response.data.error));
-        // eslint-disable-next-line no-restricted-syntax
-        for (const key in jsonData) {
-          if (key !== 'message' && key !== 'type') {
-            data[key] = jsonData[key];
-          }
-        }
-
-        if (isAPIError(error.response.data)) {
-          errorMessage = error.response.data.message;
+        if (isAPIError(error.response.data.error)) {
+          errorMessage = error.response.data.error.message;
         } else {
           errorMessage = (error as Error).message;
         }
