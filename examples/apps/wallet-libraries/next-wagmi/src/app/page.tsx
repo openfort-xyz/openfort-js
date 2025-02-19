@@ -51,7 +51,6 @@ export default function App() {
       <Connect />
       <SwitchAccount />
       <SwitchChain />
-      <Repro />
       <SignMessage />
       <Connections />
       <BlockNumber />
@@ -693,29 +692,4 @@ function GrantPermission() {
       )}
     </div>
   );
-}
-
-function Repro() {
-  const config = useConfig()
-  const chainId = useChainId()
-
-  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
-  console.log('chainId from useChainId is', chainId)
-  return (
-    <main className="flex min-h-screen flex-col items-center p-24">
-      Current Chain Id: {chainId}
-      <button
-        type="button"
-        onClick={() => switchChain(config, { chainId: sepolia.id })}
-      >
-        Switch to Sepolia
-      </button>
-      <button
-        type="button"
-        onClick={() => switchChain(config, { chainId: baseSepolia.id })}
-      >
-        Switch to Base Sepolia
-      </button>
-    </main>
-  )
 }
