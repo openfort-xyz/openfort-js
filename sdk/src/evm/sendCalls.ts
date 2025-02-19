@@ -3,7 +3,7 @@ import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer } from '../signer/isigner';
-import { Interaction, ResponseResponse, TransactionIntentResponse } from '../types';
+import { Interaction, TransactionIntentResponse } from '../types';
 
 export type WalletSendCallsParams = {
   signer: Signer
@@ -68,13 +68,12 @@ export const sendCalls = async ({
 }: WalletSendCallsParams): Promise<`0x${string}`> => {
   const policy = params[0]?.capabilities?.paymasterService?.policy ?? policyId;
   const openfortTransaction = await buildOpenfortTransactions(
-    params[0].calls,
+    params,
     backendClient,
     account,
     authentication,
     policy,
   );
-  let response: ResponseResponse;
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature;
     // zkSync based chains need a different signature
@@ -83,25 +82,22 @@ export const sendCalls = async ({
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
     }
-    const openfortSignatureResponse = (
-      await backendClient.transactionIntentsApi.signature({
-        id: openfortTransaction.id,
-        signatureRequest: { signature },
-      })
-    ).data.response;
-    if (!openfortSignatureResponse) {
-      throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, 'Transaction failed to submit');
+    const response = await backendClient.transactionIntentsApi.signature({
+      id: openfortTransaction.id,
+      signatureRequest: { signature },
+    }).catch((error) => {
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
+    });
+
+    if (response.data.response?.error) {
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response.error.reason);
     }
-    response = openfortSignatureResponse;
-  } else if (openfortTransaction.response) {
-    response = openfortTransaction.response;
-  } else {
-    throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, 'Transaction failed to submit');
-  }
 
-  if (response.status === 0 && !response.transactionHash) {
-    throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.error.reason);
-  }
+    if (response.data.response?.status === 0) {
+      throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.data.response?.error.reason);
+    }
 
-  return response.transactionHash as `0x${string}`;
+    return response.data.response?.transactionHash as `0x${string}`;
+  }
+  return openfortTransaction.response?.transactionHash as `0x${string}`;
 };

@@ -31,6 +31,7 @@ import { useRouter } from 'next/navigation'
 
 import { wagmiContractConfig } from './contracts'
 import { openfortInstance } from '../openfort'
+import { useWriteContracts } from 'wagmi/experimental'
 
 export default function App() {
   useAccountEffect({
@@ -58,6 +59,7 @@ export default function App() {
       <ReadContract />
       <ReadContracts />
       <WriteContract />
+      <WriteContracts />
     </>
   )
 }
@@ -413,7 +415,7 @@ function WriteContract() {
     <div>
       <h2>Write Contract</h2>
       <form onSubmit={submit}>
-        <input name="tokenId" placeholder="Token ID" required />
+        <input name="tokenId" placeholder="Token ID" type='number' required />
         <button disabled={isPending} type="submit">
           {isPending ? 'Confirming...' : 'Mint'}
         </button>
@@ -422,11 +424,65 @@ function WriteContract() {
       {isConfirming && 'Waiting for confirmation...'}
       {isConfirmed && 'Transaction confirmed.'}
       {error && (
-        <div>Error: {(error as BaseError).shortMessage || error.message}</div>
+        <div>Error: {(error as BaseError).details || error.message}</div>
       )}
     </div>
   )
 }
+
+
+
+function WriteContracts() {
+  const { data: hash, error, isPending, writeContracts } = useWriteContracts()
+
+  async function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const tokenId = formData.get('tokenId') as string
+    writeContracts(
+      {
+        contracts: [
+          {
+            address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+            abi: parseAbi(['function mint(uint256 tokenId)']),
+            functionName: 'mint',
+            args: [BigInt(tokenId)],
+          },
+          {
+            address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+            abi: parseAbi(['function mint(uint256 tokenId)']),
+            functionName: 'mint',
+            args: [BigInt(tokenId)],
+          }
+        ]
+      }
+    )
+  }
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash: hash as `0x${string}`,
+    })
+
+  return (
+    <div>
+      <h2>Write Contracts (Batch)</h2>
+      <form onSubmit={submit}>
+        <input name="tokenId" placeholder="Token ID" type='number' required />
+        <button disabled={isPending} type="submit">
+          {isPending ? 'Confirming...' : 'Mint'}
+        </button>
+      </form>
+      {hash && <div>Transaction Hash: {hash}</div>}
+      {isConfirming && 'Waiting for confirmation...'}
+      {isConfirmed && 'Transaction confirmed.'}
+      {error && (
+        <div>Error: {(error as BaseError).details || error.message}</div>
+      )}
+    </div>
+  )
+}
+
 
 function Repro() {
   const config = useConfig()
