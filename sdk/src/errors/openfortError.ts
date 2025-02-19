@@ -52,7 +52,6 @@ export const withOpenfortError = async <T>(
     let errorType: OpenfortErrorType = customErrorType.default;
 
     if (isAxiosError(error)) {
-      console.log('withOpenfortError', error);
       const statusCode = error.response?.status;
       errorType = statusCode ? customErrorType[statusCode] || customErrorType.default : customErrorType.default;
 
