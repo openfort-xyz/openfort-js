@@ -58,7 +58,6 @@ function OpenfortSetup({ children }: { children: ReactNode }) {
         }
       );
       const user = await openfortInstance.getUser().catch((err) => {
-        console.log('user not authenticated')
         return null
       })
       if (user) {
