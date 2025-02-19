@@ -1,9 +1,10 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
 import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
+import { OpenfortErrorType, withOpenfortError } from 'errors/openfortError';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer } from '../signer/isigner';
-import { Interaction, ResponseResponse, TransactionIntentResponse } from '../types';
+import { Interaction, TransactionIntentResponse } from '../types';
 
 export type WalletSendCallsParams = {
   signer: Signer
@@ -34,28 +35,30 @@ const buildOpenfortTransactions = async (
     };
   });
 
-  const transactionResponse = await backendApiClients.transactionIntentsApi.createTransactionIntent(
-    {
-      createTransactionIntentRequest: {
-        policy: policyId,
-        chainId: account.chainId,
-        interactions,
+  return withOpenfortError<TransactionIntentResponse>(async () => {
+    const response = await backendApiClients.transactionIntentsApi.createTransactionIntent(
+      {
+        createTransactionIntentRequest: {
+          policy: policyId,
+          chainId: account.chainId,
+          interactions,
+        },
       },
-    },
-    {
-      headers: {
-        authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-player-token': authentication.token,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-auth-provider': authentication.thirdPartyProvider,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'x-token-type': authentication.thirdPartyTokenType,
+      {
+        headers: {
+          authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-player-token': authentication.token,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-auth-provider': authentication.thirdPartyProvider,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          'x-token-type': authentication.thirdPartyTokenType,
+        },
       },
-    },
-  );
-
-  return transactionResponse.data;
+    );
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+  }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
 };
 
 export const sendCalls = async ({
@@ -68,13 +71,14 @@ export const sendCalls = async ({
 }: WalletSendCallsParams): Promise<`0x${string}`> => {
   const policy = params[0]?.capabilities?.paymasterService?.policy ?? policyId;
   const openfortTransaction = await buildOpenfortTransactions(
-    params[0].calls,
+    params,
     backendClient,
     account,
     authentication,
     policy,
-  );
-  let response: ResponseResponse;
+  ).catch((error) => {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
+  });
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature;
     // zkSync based chains need a different signature
@@ -83,25 +87,22 @@ export const sendCalls = async ({
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
     }
-    const openfortSignatureResponse = (
-      await backendClient.transactionIntentsApi.signature({
-        id: openfortTransaction.id,
-        signatureRequest: { signature },
-      })
-    ).data.response;
-    if (!openfortSignatureResponse) {
-      throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, 'Transaction failed to submit');
+    const response = await backendClient.transactionIntentsApi.signature({
+      id: openfortTransaction.id,
+      signatureRequest: { signature },
+    }).catch((error) => {
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
+    });
+
+    if (response.data.response?.error) {
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response.error.reason);
     }
-    response = openfortSignatureResponse;
-  } else if (openfortTransaction.response) {
-    response = openfortTransaction.response;
-  } else {
-    throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, 'Transaction failed to submit');
-  }
 
-  if (response.status === 0 && !response.transactionHash) {
-    throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.error.reason);
-  }
+    if (response.data.response?.status === 0) {
+      throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.data.response?.error.reason);
+    }
 
-  return response.transactionHash as `0x${string}`;
+    return response.data.response?.transactionHash as `0x${string}`;
+  }
+  return openfortTransaction.response?.transactionHash as `0x${string}`;
 };

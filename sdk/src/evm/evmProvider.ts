@@ -12,7 +12,6 @@ import {
   RequestArguments,
 } from './types';
 import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError';
-import { sendTransaction } from './sendTransaction';
 import { signTypedDataV4 } from './signTypedDataV4';
 import { OpenfortEventMap, OpenfortEvents } from '../types';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -141,7 +140,7 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         this.#validateAndRefreshSession();
-        return await sendTransaction({
+        return await sendCalls({
           params: request.params || [],
           signer,
           account,
@@ -265,7 +264,7 @@ export class EvmProvider implements Provider {
         this.#validateAndRefreshSession();
 
         return await sendCalls({
-          params: request.params || [],
+          params: request.params ? request.params[0].calls : [],
           signer,
           account,
           authentication,

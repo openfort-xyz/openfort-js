@@ -9,6 +9,7 @@ import { EmbeddedState } from '@openfort/openfort-js'
 import { getConfig } from '../wagmi'
 import { openfortInstance } from '../openfort'
 import { sepolia } from 'viem/chains'
+import { configureEmbeddedSigner } from '../lib/utils'
 
 interface ProvidersProps {
   children: ReactNode
@@ -19,7 +20,7 @@ interface ProvidersProps {
 function OpenfortSetup({ children }: { children: ReactNode }) {
   const poller = useRef<NodeJS.Timeout | null>(null)
   const router = useRouter()
-  const { chainId, connector } = useAccount()
+  const { chainId, connector, address } = useAccount()
 
   useEffect(() => {
     const pollEmbeddedState = async () => {
@@ -49,13 +50,23 @@ function OpenfortSetup({ children }: { children: ReactNode }) {
   }, [chainId, router, connector])
 
   useEffect(() => {
-    if (!openfortInstance) return
-    openfortInstance.getEthereumProvider(
-      {
-        policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA
+    const setupProvider = async () => {
+      if (!openfortInstance) return;
+      openfortInstance.getEthereumProvider(
+        {
+          policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA
+        }
+      );
+      const user = await openfortInstance.getUser().catch((err) => {
+        return null
+      })
+      if (user) {
+        await configureEmbeddedSigner(chainId ?? sepolia.id);
       }
-    )
-  }, [chainId])
+    };
+
+    setupProvider();
+  }, [chainId]);
 
   return children
 }

@@ -1,11 +1,12 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { openfortInstance } from '../../openfort';
-import { configureEmbeddedSigner } from '../../lib/utils';
 import { useAccount } from 'wagmi';
 import { sepolia } from 'viem/chains';
 import { MissingRecoveryPasswordError } from '@openfort/openfort-js';
+
+import { openfortInstance } from '../../openfort';
+import { configureEmbeddedSigner } from '../../lib/utils';
 
 interface AuthFormData {
   email: string;
@@ -21,7 +22,7 @@ function Authenticate() {
         if(user) {
           setShowRecoveryPasswordInput(true);
         }
-      }).finally(() => {
+      }).catch((e)=>{}).finally(() => {
         setIsProcessing(false);
       });
     }
