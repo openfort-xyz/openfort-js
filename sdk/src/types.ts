@@ -308,6 +308,14 @@ export interface TransactionIntentResponse {
   'account': TransactionIntentResponseAccount | EntityIdResponse;
 }
 
+export interface EstimateTransactionIntentGasResult {
+  'estimatedTXGas': string;
+  'estimatedTXGasFee': string;
+  'estimatedTXGasFeeUSD': string;
+  'estimatedTXGasFeeToken'?: string;
+  'gasPrice': string;
+}
+
 export interface PlayerMetadataValue {
 }
 

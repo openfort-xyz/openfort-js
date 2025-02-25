@@ -26,6 +26,7 @@ import { RevokePermissionsRequestParams, revokeSession } from './revokeSession';
 import { sendCalls } from './sendCalls';
 import { GetCallsStatusParameters, getCallStatus } from './getCallsStatus';
 import { personalSign } from './personalSign';
+import { estimateGas } from './estimateGas';
 
 export type EvmProviderInput = {
   storage: IStorage;
@@ -143,6 +144,21 @@ export class EvmProvider implements Provider {
         return await sendCalls({
           params: request.params || [],
           signer,
+          account,
+          authentication,
+          backendClient: this.#backendApiClients,
+          policyId: this.#policyId,
+        });
+      }
+      case 'eth_estimateGas': {
+        const account = Account.fromStorage(this.#storage);
+        const authentication = Authentication.fromStorage(this.#storage);
+        if (!account || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+        }
+        this.#validateAndRefreshSession();
+        return await estimateGas({
+          params: request.params || [],
           account,
           authentication,
           backendClient: this.#backendApiClients,
@@ -333,7 +349,6 @@ export class EvmProvider implements Provider {
       case 'eth_getBalance':
       case 'eth_getCode':
       case 'eth_getStorageAt':
-      case 'eth_estimateGas':
       case 'eth_call':
       case 'eth_blockNumber':
       case 'eth_getBlockByHash':
