@@ -86,7 +86,7 @@ export class NotConfiguredError extends Error {
 
 type WindowWrapper = { contentWindow: { postMessage: (message: any, targetOrigin: string) => void } };
 
-export default class IframeManager {
+export class IframeManager {
   private iframe: HTMLIFrameElement | WindowWrapper | undefined;
 
   private readonly responses: Map<string, IEventResponse> = new Map();

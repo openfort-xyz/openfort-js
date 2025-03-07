@@ -1,7 +1,7 @@
 import { KeyPair } from 'crypto/key-pair';
 import { createConfig } from '@openfort/openapi-clients';
 import { StorageKeys } from '../storage/istorage';
-import IframeManager, { IframeConfiguration } from '../iframe/iframeManager';
+import { IframeManager, IframeConfiguration } from '../iframe/iframeManager';
 import { LocalStorage } from '../storage/localStorage';
 import { Authentication } from '../configuration/authentication';
 import { OpenfortError, OpenfortErrorType } from '../errors/openfortError';

@@ -23,7 +23,7 @@ import { Session } from './configuration/session';
 import { KeyPair } from './crypto/key-pair';
 import { Authentication } from './configuration/authentication';
 import { MissingProjectEntropyError, MissingRecoveryPasswordError } from './iframe/iframeManager';
-import AuthManager from './authManager';
+import { AuthManager } from './authManager';
 import { EvmProvider, Provider, TypedDataPayload } from './evm';
 import TypedEventEmitter from './utils/typedEventEmitter';
 import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';

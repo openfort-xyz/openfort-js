@@ -23,4 +23,12 @@ export {
 export { Provider, TypedDataPayload } from './evm/types';
 export { SDKConfiguration, OpenfortConfiguration, ShieldConfiguration } from './config';
 
-export default Openfort;
+// Named export (tree-shakable)
+export { Openfort } from './openfort';
+
+/**
+ * @deprecated Use named imports instead: `import { Openfort } from '...'`
+ */
+const DEPRECATED_OPENFORT = Openfort;
+
+export default DEPRECATED_OPENFORT;

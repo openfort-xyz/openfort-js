@@ -31,7 +31,7 @@ function sha256(buffer: string) {
   return crypto.createHash('sha256').update(buffer).digest();
 }
 
-export default class AuthManager {
+export class AuthManager {
   private readonly publishableKey: string;
 
   private deviceCredentialsManager: DeviceCredentialsManager;
