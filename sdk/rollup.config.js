@@ -72,7 +72,7 @@ const cjs = {
     json(),
     commonJs(),
     typescript({
-      tsconfig: 'tsconfig.cjs.json',
+      tsconfig: 'tsconfig.json',
     }),
     terser(),
     replace({

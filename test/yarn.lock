@@ -505,7 +505,7 @@ __metadata:
 
 "@openfort/openfort-js@file:../sdk::locator=test%40workspace%3A.":
   version: 0.8.28
-  resolution: "@openfort/openfort-js@file:../sdk#../sdk::hash=50ecf9&locator=test%40workspace%3A."
+  resolution: "@openfort/openfort-js@file:../sdk#../sdk::hash=ac2c2a&locator=test%40workspace%3A."
   dependencies:
     "@ethersproject/bytes": ^5.7.0
     "@ethersproject/hash": ^5.7.0
@@ -524,7 +524,7 @@ __metadata:
     path: ^0.12.7
     stream-browserify: ^3.0.0
     uuid: ^8.3.2
-  checksum: 74ae7a6257dc1ec9c4f016d58da68b50f03c46f2e6334e98fad8143f26a72ad604179bfca5afb97d6eadf457e7ad22e79980f1eabaca278da5478b0c2573b334
+  checksum: 9214ee8b940327657aea44fa1aadea8403a180c9f6f74fe75a4298c08c9bfc2ab78dcf1bb5746a305dcc8dbde660b19482823655fdf4803cf9692391a8d6206a
   languageName: node
   linkType: hard
 
