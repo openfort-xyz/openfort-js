@@ -1,96 +1,91 @@
 import typescript from '@rollup/plugin-typescript';
-import {nodeResolve} from '@rollup/plugin-node-resolve';
-import {readFileSync} from 'fs';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import { readFileSync } from 'fs';
 import commonJs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import dts from 'rollup-plugin-dts';
 import replace from '@rollup/plugin-replace';
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
+import { visualizer } from 'rollup-plugin-visualizer';
+import terser from '@rollup/plugin-terser';
 
 const packages = JSON.parse(
-  readFileSync('./workspace-packages.json', {encoding: 'utf8'})
+  readFileSync('./workspace-packages.json', { encoding: 'utf8' })
 );
 
 const getPackages = () => packages.map((pkg) => pkg.name);
 
-// Get relevant files to bundle
-const getFilesToBuild = () => {
-  // Always build the index file
-  const files = ['index'];
-
-  return [...files];
-};
-
-const getFileBuild = (inputFilename) => [
-  {
-    input: `./src/${inputFilename}.ts`,
-    output: {
-      dir: 'dist',
-      format: 'es',
-    },
-    plugins: [
-      nodeResolve({
-        resolveOnly: getPackages(),
-      }),
-      json(),
-      commonJs(),
-      typescript({
-        declaration: true,
-        declarationDir: './dist/types',
-      }),
-      replace({
-        exclude: 'node_modules/**',
-        preventAssignment: true,
-        __SDK_VERSION__: pkg.version,
-      }),
-    ],
+const modules =
+{
+  input: `./src/index.ts`,
+  output: {
+    dir: 'dist',
+    format: 'es',
+    preserveModules: true,
   },
-  {
-    input: `./dist/types/${inputFilename}.d.ts`,
-    output: {
-      file: `./dist/${inputFilename}.d.ts`,
-      format: 'es',
-    },
-    plugins: [
-      dts({
-        respectExternal: true,
-      }),
-    ],
-    external: ['pg'],
-  },
-];
+  plugins: [
+    nodeResolve({
+      resolveOnly: getPackages(),
+    }),
+    json(),
+    commonJs(),
+    typescript({
+      declaration: true,
+      tsconfig: 'tsconfig.json',
+      declarationDir: './dist/types',
+    }),
+    terser(),
+    replace({
+      exclude: 'node_modules/**',
+      preventAssignment: true,
+      __SDK_VERSION__: pkg.version,
+    }),
+  ],
+}
 
-const buildBundles = () => {
-  const modules = [];
-  const filesToBuild = getFilesToBuild();
-  for (const file of filesToBuild) {
-    modules.push(...getFileBuild(file));
-  }
-  return modules;
-};
+const types =
+{
+  input: `./dist/types/index.d.ts`,
+  output: {
+    file: `./dist/index.d.ts`,
+    format: 'es',
+  },
+  plugins: [
+    dts({
+      respectExternal: true,
+    }),
+  ],
+  external: ['pg'],
+}
+
+const cjs = {
+  input: 'src/index.ts',
+  output: {
+    dir: 'dist/cjs',
+    format: 'cjs',
+    preserveModules: true,
+  },
+  plugins: [
+    nodeResolve({
+      resolveOnly: getPackages(),
+    }),
+    json(),
+    commonJs(),
+    typescript({
+      tsconfig: 'tsconfig.cjs.json',
+    }),
+    terser(),
+    replace({
+      exclude: 'node_modules/**',
+      preventAssignment: true,
+      __SDK_VERSION__: pkg.version,
+    }),
+    visualizer(),
+  ],
+}
 
 export default [
-  // Main build entry
-  {
-    input: 'src/index.ts',
-    output: {
-      file: 'dist/index.cjs',
-      format: 'cjs',
-    },
-    plugins: [
-      nodeResolve({
-        resolveOnly: getPackages(),
-      }),
-      json(),
-      commonJs(),
-      typescript(),
-      replace({
-        exclude: 'node_modules/**',
-        preventAssignment: true,
-        __SDK_VERSION__: pkg.version,
-      }),
-    ],
-  },
-  // Export ES Modules
-  ...buildBundles(),
+  cjs,
+  modules,
+  types,
 ];

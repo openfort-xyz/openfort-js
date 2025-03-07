@@ -15,7 +15,8 @@
     "lint": "wsrun --exclude-missing -e lint --no-error-on-unmatched-pattern",
     "build": "NODE_OPTIONS=--max-old-space-size=14366 wsrun -y 4 -p @openfort/openfort-js -e -r --serial build",
     "postinstall": "husky install; ./.husky/install_gitleaks.sh",
-    "scan:secrets": "./.husky/run_gitleaks.sh"
+    "scan:secrets": "./.husky/run_gitleaks.sh",
+    "stats": "cd sdk && yarn stats"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -52,7 +53,9 @@
       "packages/platform-bridge"
     ],
     "nohoist": [
-      "examples/**"
+      "examples/**",
+      "test/**"
     ]
-  }
+  },
+  "sideEffects": false
 }

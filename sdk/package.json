@@ -14,6 +14,7 @@
   "license": "MIT",
   "files": [
     "dist",
+    "package.json",
     "README.md"
   ],
   "scripts": {
@@ -25,7 +26,8 @@
     "typecheck": "tsc --noEmit --jsx preserve",
     "lint": "eslint 'src/**/*.ts' --fix",
     "clean": "rimraf dist",
-    "build": "yarn packageList && yarn clean && NODE_ENV=production ../node_modules/rollup/dist/bin/rollup --config rollup.config.js && rm -rf dist/types"
+    "build": "yarn packageList && yarn clean && NODE_ENV=production yarn rollup --config rollup.config.js && rm -rf dist/types",
+    "stats": "open ./stats.html"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -53,8 +55,8 @@
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/sdk/src/index.js",
+      "require": "./dist/cjs/src/index.js"
     }
   },
   "devDependencies": {
@@ -86,10 +88,12 @@
     "rollup": "^3.17.2",
     "rollup-plugin-dts": "^5.3.0",
     "rollup-plugin-polyfill-node": "^0.12.0",
+    "rollup-plugin-visualizer": "^5.14.0",
     "typescript": "^5.0.4"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "type": "module",
-  "types": "./dist/index.d.ts"
+  "types": "./dist/index.d.ts",
+  "sideEffects": false
 }
