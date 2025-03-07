@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import zksyncSepolia from './300';
 import zksync from './324';
 
@@ -57,81 +59,43 @@ import kromaTestnet from './2358';
 import kromaMainnet from './255';
 
 export const chainMap: { [key: number]: Chain } = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   1: ethereum,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   300: zksyncSepolia,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   324: zksync,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   56: bnb,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   97: bnbTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   8453: base,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   84532: baseSepolia,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   4337: beam,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   13337: beamTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   43113: avalancheFuji,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   43114: avalancheMainnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   11155111: sepolia,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   421614: arbitrumSepolia,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   42161: arbitrum,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   42170: arbitrumNova,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   137: polygon,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   80002: polygonAmoy,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   28122024: ancient8Testnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   888888888: ancient8Mainnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   999999999: zoraSepoliaTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   7777777: zoraMainnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   666666666: degenChain,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   13473: immutableTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   11155420: optimismSepolia,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   10: optimism,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   7979: dosMainnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   3939: dosTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   204: opBNB,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   5611: opBNBTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   1946: soneiumMinato,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   531050104: sophonTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   50104: sophonMainnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   2358: kromaTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   255: kromaMainnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   247253: saakuruTestnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   7225878: saakuruMainnet,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   2741: abstract,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   11124: abstractTestnet,
 };
 
@@ -221,4 +185,45 @@ export type ChainExplorer = {
   url: string;
   icon?: Icon;
   standard: string;
+};
+
+export const chainRpcs: { [key: number]: string } = {
+  1: 'https://cloudflare-eth.com',
+  10: 'https://optimism-rpc.publicnode.com',
+  56: 'https://bsc.publicnode.com',
+  97: 'https://bsc-testnet.publicnode.com',
+  137: 'https://polygon-rpc.com',
+  204: 'https://opbnb-mainnet-rpc.bnbchain.org',
+  255: 'https://api.kroma.network',
+  300: 'https://sepolia.era.zksync.dev',
+  324: 'https://mainnet.era.zksync.io',
+  1946: 'https://rpc.minato.soneium.org',
+  2358: 'https://api.sepolia.kroma.network',
+  2741: 'https://api.mainnet.abs.xyz',
+  3939: 'https://test.doschain.com',
+  4337: 'https://build.onbeam.com/rpc',
+  5611: 'https://opbnb-testnet-rpc.bnbchain.org',
+  7979: 'https://main.doschain.com',
+  8453: 'https://mainnet.base.org',
+  11124: 'https://api.testnet.abs.xyz',
+  13337: 'https://build.onbeam.com/rpc/testnet',
+  13473: 'https://rpc.testnet.immutable.com',
+  42161: 'https://arb1.arbitrum.io/rpc',
+  42170: 'https://nova.arbitrum.io/rpc',
+  43113: 'https://api.avax-test.network/ext/bc/C/rpc',
+  43114: 'https://api.avax.network/ext/bc/C/rpc',
+  50104: 'https://rpc.sophon.xyz',
+  80002: 'https://rpc-amoy.polygon.technology',
+  84532: 'https://sepolia.base.org',
+  247253: 'https://rpc-testnet.saakuru.network',
+  421614: 'https://sepolia-rollup.arbitrum.io/rpc',
+  7225878: 'https://rpc.saakuru.network',
+  7777777: 'https://rpc.zora.energy/',
+  11155111: 'https://ethereum-sepolia-rpc.publicnode.com',
+  11155420: 'https://optimism-sepolia-rpc.publicnode.com',
+  28122024: 'https://rpcv2-testnet.ancient8.gg',
+  531050104: 'https://rpc.testnet.sophon.xyz',
+  666666666: 'https://rpc.degen.tips',
+  888888888: 'https://rpc.ancient8.gg',
+  999999999: 'https://sepolia.rpc.zora.energy',
 };
