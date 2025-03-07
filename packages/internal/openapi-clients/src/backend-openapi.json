@@ -3545,6 +3545,16 @@
             "type": "array",
             "description": "SDKs of the ecosystem.",
             "example": []
+          },
+          "supportEmail": {
+            "type": "string",
+            "description": "Support email of the ecosystem.",
+            "example": "support@openfort.xyz"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "description": "Documentation URL of the ecosystem.",
+            "example": "https://www.openfort.xyz/docs"
           }
         },
         "required": [
@@ -3645,6 +3655,16 @@
             "type": "array",
             "description": "SDKs of the ecosystem.",
             "example": []
+          },
+          "supportEmail": {
+            "type": "string",
+            "description": "Support email of the ecosystem.",
+            "example": "support@openfort.xyz"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "description": "Documentation URL of the ecosystem.",
+            "example": "https://www.openfort.xyz/docs"
           }
         },
         "required": [
