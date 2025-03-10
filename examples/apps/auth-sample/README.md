@@ -1,6 +1,6 @@
 # Openfort Auth `create-next-app` Starter
 
-This is a template for integrating [**Openfort Auth**](https://www.openfort.xyz/) into a [NextJS](https://nextjs.org/) project. Check out the deployed app [here](https://create-next-app.openfort.xyz/)!
+This is a template for integrating [**Openfort Auth**](https://www.openfort.io/) into a [NextJS](https://nextjs.org/) project. Check out the deployed app [here](https://create-next-app.openfort.xyz/)!
 
 This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-your-application/routing).
 
@@ -17,7 +17,7 @@ mkdir -p openfort-auth-sample-nextjs && curl -L https://codeload.github.com/open
 npm i 
 ```
 
-1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.xyz/docs/api-keys).
+1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/api-keys).
 ```sh
 # In your terminal, create .env.local from .env.example
 cp .env.example .env.local
@@ -41,4 +41,4 @@ In your project directory, run `npm run dev`. You can now visit http://localhost
 - `components/Signatures/SignMessageButton.tsx` for how to sign messages.
 
 
-**Check out [our docs](https://www.openfort.xyz/docs/guides/getting-started) for more guidance around using Openfort in your app!**
+**Check out [our docs](https://www.openfort.io/docs/guides/getting-started) for more guidance around using Openfort in your app!**

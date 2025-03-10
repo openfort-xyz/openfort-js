@@ -35,7 +35,7 @@ const SetPairingCode: React.FC<{
               metadata: {
                 name: 'openfort',
                 description: 'AppKit Example',
-                url: 'https://openfort.xyz', // origin must match your domain & subdomain
+                url: 'https://openfort.io', // origin must match your domain & subdomain
                 icons: ['https://assets.reown.com/reown-profile-pic.png'],
               },
             });
