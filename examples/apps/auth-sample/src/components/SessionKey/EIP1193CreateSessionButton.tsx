@@ -33,30 +33,36 @@ const EIP1193CreateSessionButton: React.FC<{
       transport: custom(provider),
     }).extend(erc7715Actions()) 
     const [account] = await walletClient.getAddresses()
-    await walletClient.grantPermissions({
-      signer:{
-        type: "account",
-        data:{
-          id: accountSession
-        }
-      },
-      expiry: 60 * 60 * 24,
-      permissions: [
-        {
-          type: 'contract-call',
-          data: {
-            address: '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a',
-            calls: []
-          },
-          policies: []
-        }
-      ],
-    });
-    setSessionKey(sessionKey);
-    return {
-      address: account,
-      privateKey: sessionKey,
-    };
+    try {
+      await walletClient.grantPermissions({
+        signer:{
+          type: "account",
+          data:{
+            id: accountSession
+          }
+        },
+        expiry: 60 * 60 * 24,
+        permissions: [
+          {
+            type: 'contract-call',
+            data: {
+              address: '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a',
+              calls: []
+            },
+            policies: []
+          }
+        ],
+      });
+      setSessionKey(sessionKey);
+      return {
+        address: account,
+        privateKey: sessionKey,
+      };
+    } catch (error) {
+      console.error('Failed to register session:', error);
+      handleSetMessage('Failed to register session: ' + (error as Error).message);
+      return null
+    }
   }, []);
 
   const handleCreateSession = async () => {

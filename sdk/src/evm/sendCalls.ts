@@ -87,16 +87,12 @@ export const sendCalls = async ({
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
     }
-    const response = await backendClient.transactionIntentsApi.signature({
+    const response = await withOpenfortError(async () => await backendClient.transactionIntentsApi.signature({
       id: openfortTransaction.id,
       signatureRequest: { signature },
-    }).catch((error) => {
+    }), { default: OpenfortErrorType.AUTHENTICATION_ERROR }).catch((error) => {
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
     });
-
-    if (response.data.response?.error) {
-      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response.error.reason);
-    }
 
     if (response.data.response?.status === 0) {
       throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.data.response?.error.reason);
