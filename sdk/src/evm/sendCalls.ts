@@ -80,23 +80,19 @@ export const sendCalls = async ({
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
   });
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
-    let signature;
+    let signature: string;
     // zkSync based chains need a different signature
     if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId)) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false);
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
     }
-    const response = await backendClient.transactionIntentsApi.signature({
+    const response = await withOpenfortError(async () => await backendClient.transactionIntentsApi.signature({
       id: openfortTransaction.id,
       signatureRequest: { signature },
-    }).catch((error) => {
+    }), { default: OpenfortErrorType.AUTHENTICATION_ERROR }).catch((error) => {
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
     });
-
-    if (response.data.response?.error) {
-      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response.error.reason);
-    }
 
     if (response.data.response?.status === 0) {
       throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.data.response?.error.reason);

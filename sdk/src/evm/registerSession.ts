@@ -329,21 +329,24 @@ export const registerSession = async ({
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
   });
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
-    let signature;
+    let signature: string;
     // zkSync based chains need a different signature
     if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId)) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false);
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);
     }
-    const openfortSignatureResponse = await backendClient.sessionsApi.signatureSession({
-      id: openfortTransaction.id,
-      signatureRequest: { signature },
-    }).catch((error) => {
+    const openfortSignatureResponse = await withOpenfortError<SessionResponse>(async () => {
+      const response = await backendClient.sessionsApi.signatureSession({
+        id: openfortTransaction.id,
+        signatureRequest: { signature },
+      });
+      return response.data;
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR }).catch((error) => {
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
     });
 
-    return formatRequest(openfortSignatureResponse.data);
+    return formatRequest(openfortSignatureResponse);
   }
 
   if (openfortTransaction.isActive === false) {

@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import { createPublicClient, createWalletClient, custom, encodeFunctionData, http } from 'viem'
 import { polygonAmoy } from 'viem/chains';
 import { eip5792Actions } from 'viem/experimental'
+import { BaseError } from 'wagmi';
 
 const EIP1193MintButton: React.FC<{
   handleSetMessage: (message: string) => void;
@@ -80,8 +81,8 @@ const EIP1193MintButton: React.FC<{
       handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
       const receipt = await publicClient.getTransactionReceipt({hash: tx});
       console.log('Transaction receipt:', receipt);
-    } catch (error: any) {
-      console.error('Failed to send transaction:', error);
+    } catch (error) {
+      handleSetMessage('Failed to send transaction: ' + (error as BaseError).message);
     }
     setLoading(false);
   };
@@ -133,10 +134,9 @@ const EIP1193MintButton: React.FC<{
         ],
       })
 
-      console.log('Transaction hash:', tx);
       handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
-    } catch (error: any) {
-      console.error('Failed to send transaction:', error);
+    } catch (error) {
+      handleSetMessage('Failed to send transaction: ' + (error as BaseError).details);
     }
     setLoadingBatch(false);
   };
