@@ -89,5 +89,17 @@ export interface CreateEcosystemConfigurationRequest {
      * @memberof CreateEcosystemConfigurationRequest
      */
     'dashboardSDKs'?: Array<{ [key: string]: PlayerMetadataValue; }>;
+    /**
+     * Support email of the ecosystem.
+     * @type {string}
+     * @memberof CreateEcosystemConfigurationRequest
+     */
+    'supportEmail'?: string;
+    /**
+     * Documentation URL of the ecosystem.
+     * @type {string}
+     * @memberof CreateEcosystemConfigurationRequest
+     */
+    'documentationUrl'?: string;
 }
 

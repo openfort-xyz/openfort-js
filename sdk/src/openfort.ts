@@ -23,7 +23,7 @@ import { Session } from './configuration/session';
 import { KeyPair } from './crypto/key-pair';
 import { Authentication } from './configuration/authentication';
 import { MissingProjectEntropyError, MissingRecoveryPasswordError } from './iframe/iframeManager';
-import AuthManager from './authManager';
+import { AuthManager } from './authManager';
 import { EvmProvider, Provider, TypedDataPayload } from './evm';
 import TypedEventEmitter from './utils/typedEventEmitter';
 import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';
@@ -32,6 +32,8 @@ export class Openfort {
   private readonly storage: IStorage;
 
   private provider: EvmProvider | null = null;
+
+  private iAuthManager: AuthManager | null = null;
 
   constructor(sdkConfiguration: OpenfortSDKConfiguration) {
     this.storage = new LocalStorage();
@@ -235,10 +237,11 @@ export class Openfort {
     return await signer.export();
   }
 
-  public async setEmbeddedRecovery(
-    { recoveryMethod, recoveryPassword, encryptionSession }:
-    { recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string },
-  ): Promise<void> {
+  public async setEmbeddedRecovery({
+    recoveryMethod, recoveryPassword, encryptionSession,
+  }: {
+    recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string
+  }): Promise<void> {
     await this.validateAndRefreshToken();
     const signer = SignerManager.fromStorage();
     if (!signer) {
@@ -734,12 +737,16 @@ export class Openfort {
 
   // eslint-disable-next-line class-methods-use-this
   private get authManager(): AuthManager {
-    const configuration = Configuration.fromStorage();
-    if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
+    if (!this.iAuthManager) {
+      const configuration = Configuration.fromStorage();
+      if (!configuration) {
+        throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
+      }
+
+      this.iAuthManager = new AuthManager(configuration.publishableKey, configuration.openfortURL);
     }
 
-    return new AuthManager(configuration.publishableKey, configuration.openfortURL);
+    return this.iAuthManager;
   }
 
   /**

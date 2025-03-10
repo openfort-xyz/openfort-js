@@ -28,5 +28,6 @@
     "typecheck": "tsc --noEmit --jsx preserve"
   },
   "type": "module",
-  "types": "dist/index.d.ts"
+  "types": "dist/index.d.ts",
+  "sideEffects": false
 }

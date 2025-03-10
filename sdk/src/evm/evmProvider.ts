@@ -15,7 +15,7 @@ import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError';
 import { signTypedDataV4 } from './signTypedDataV4';
 import { OpenfortEventMap, OpenfortEvents } from '../types';
 import TypedEventEmitter from '../utils/typedEventEmitter';
-import { chainMap } from '../chains';
+import { chainRpcs } from '../chains';
 import { Signer } from '../signer/isigner';
 import { Account } from '../configuration/account';
 import { SignerManager } from '../manager/signer';
@@ -79,7 +79,7 @@ export class EvmProvider implements Provider {
 
     const account = Account.fromStorage(this.#storage);
     const chainId = account?.chainId || 8453;
-    this.#rpcProvider = new StaticJsonRpcProvider(chainMap[chainId].rpc[0]);
+    this.#rpcProvider = new StaticJsonRpcProvider(chainRpcs[chainId]);
 
     this.#backendApiClients = backendApiClients;
 
@@ -228,7 +228,7 @@ export class EvmProvider implements Provider {
         try {
           const chainIdNumber = parseInt(request.params[0].chainId, 16);
           await signer.switchChain({ chainId: chainIdNumber });
-          this.#rpcProvider = new StaticJsonRpcProvider(chainMap[chainIdNumber].rpc[0]);
+          this.#rpcProvider = new StaticJsonRpcProvider(chainRpcs[chainIdNumber]);
         } catch (error) {
           throw new JsonRpcError(
             RpcErrorCode.INTERNAL_ERROR,

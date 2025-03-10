@@ -3,19 +3,19 @@
 
 <div align="center">
   <h4>
-    <a href="https://www.openfort.xyz/">
+    <a href="https://www.openfort.io/">
       Website
     </a>
     <span> | </span>
-    <a href="https://www.openfort.xyz/docs">
+    <a href="https://www.openfort.io/docs">
       Documentation
     </a>
     <span> | </span>
-    <a href="https://www.openfort.xyz/docs/reference/api/authentication">
+    <a href="https://www.openfort.io/docs/reference/api/authentication">
       API Docs
     </a>
     <span> | </span>
-    <a href="https://x.com/openfortxyz">
+    <a href="https://x.com/openfort_hq">
       X
     </a>
   </h4>

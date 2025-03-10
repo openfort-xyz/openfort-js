@@ -19,7 +19,7 @@ npm i
 
 **Step 3**
 
-Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.xyz/docs/api-keys).
+Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/api-keys).
 
 ```sh
 # In your terminal, create .env.local from .env.example
@@ -33,7 +33,7 @@ NEXTAUTH_SHIELD_ENCRYPTION_SHARE=
 NEXTAUTH_SHIELD_SECRET_KEY=
 ```
 
-If you want to sponsor transactions, you can add policies to your `.env.local` file. You can create gas sponsorship policies [from your Openfort dashboard](https://www.openfort.xyz/docs/guides/dashboard/gas-sponsorship).
+If you want to sponsor transactions, you can add policies to your `.env.local` file. You can create gas sponsorship policies [from your Openfort dashboard](https://www.openfort.io/docs/guides/dashboard/gas-sponsorship).
 
 
 ```sh

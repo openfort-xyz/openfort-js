@@ -124,7 +124,7 @@ function LoginPage() {
           Sign in to the demo to access the dev tools.
           </p>
           <Button variant={'outline'} size={'sm'} className="mt-2">
-            <Link href='https://openfort.xyz/docs' target="_blank">
+            <Link href='https://www.openfort.io/docs' target="_blank">
               Explore the Docs
             </Link>
           </Button>

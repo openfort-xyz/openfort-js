@@ -135,7 +135,7 @@ function RegisterPage() {
           Sign in to the demo to access the dev tools.
           </p>
           <Button variant={'outline'} size={'sm'} className="mt-2">
-            <Link href='https://openfort.xyz/docs' target="_blank">
+            <Link href='https://www.openfort.io/docs' target="_blank">
               Explore the Docs
             </Link>
           </Button>
@@ -301,21 +301,21 @@ function RegisterPage() {
                   By signing up, you accept
                   <Link
                     className="mx-1 text-orange-500 hover:text-zinc-700"
-                    href="https://openfort.xyz/terms"
+                    href="https://www.openfort.io/terms"
                   >
                     user terms
                   </Link>
                   ,
                   <Link
                     className="mx-1 text-orange-500 hover:text-zinc-700"
-                    href="https://openfort.xyz/privacy"
+                    href="https://www.openfort.io/privacy"
                   >
                     privacy policy
                   </Link>
                   and
                   <Link
                     className="mx-1 text-orange-500 hover:text-zinc-700"
-                    href="https://openfort.xyz/developer-terms"
+                    href="https://www.openfort.io/developer-terms"
                   >
                     developer terms of use.
                   </Link>

@@ -5,8 +5,7 @@ import { OpenfortError, OpenfortErrorType } from '../errors/openfortError';
 import { Recovery } from '../configuration/recovery';
 import { ShieldAuthType } from '../iframe/types';
 import type { Signer } from './isigner';
-import type IframeManager from '../iframe/iframeManager';
-import type { IframeConfiguration } from '../iframe/iframeManager';
+import type { IframeConfiguration, IframeManager } from '../iframe/iframeManager';
 import { type IStorage, StorageKeys } from '../storage/istorage';
 
 export interface Entropy {
@@ -41,8 +40,7 @@ export class EmbeddedSigner implements Signer {
   }
 
   async switchChain(
-    { chainId }:
-    { chainId: number },
+    { chainId }: { chainId: number },
   ): Promise<void> {
     const deviceAccount = await this.iframeManager
       .switchChain(this.iframeConfiguration, chainId);
@@ -54,10 +52,9 @@ export class EmbeddedSigner implements Signer {
     ).save(this.storage);
   }
 
-  async setEmbeddedRecovery(
-    { recoveryMethod, recoveryPassword, encryptionSession }:
-    { recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string },
-  ): Promise<void> {
+  async setEmbeddedRecovery({ recoveryMethod, recoveryPassword, encryptionSession }: {
+    recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string
+  }): Promise<void> {
     await this.iframeManager
       .setEmbeddedRecovery(this.iframeConfiguration, recoveryMethod, recoveryPassword, encryptionSession);
   }

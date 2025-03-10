@@ -1,18 +1,18 @@
 <div align="center">
   <h4>
-    <a href="https://www.openfort.xyz/">
+    <a href="https://www.openfort.io/">
       Website
     </a>
     <span> | </span>
-    <a href="https://www.openfort.xyz/docs">
+    <a href="https://www.openfort.io/docs">
       Documentation
     </a>
     <span> | </span>
-    <a href="https://www.openfort.xyz/docs/reference/api/authentication">
+    <a href="https://www.openfort.io/docs/reference/api/authentication">
       API Docs
     </a>
     <span> | </span>
-    <a href="https://x.com/openfortxyz">
+    <a href="https://x.com/openfort_hq">
       X
     </a>
   </h4>
@@ -48,7 +48,7 @@ The Session Signer allows you to use external signing keys, without needing to p
 ```typescript
 const sessionKey = sdk.configureSessionKey();
 ```
-- **Register Key and Send Signature Session Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session keys](https://www.openfort.xyz/docs/guides/javascript/smart-wallet/advanced/session-keys).
+- **Register Key and Send Signature Session Request**: If `sessionKey.isRegistered` boolean is false, register the key from the backend. Refer to the documentation for [session keys](https://www.openfort.io/docs/guides/javascript/smart-wallet/advanced/session-keys).
 - **Send Signature Transaction Intent Request**: When calling sendSignatureTransactionIntentRequest, pass the transaction intent ID and the user operation hash. The session signer will handle the signing.
 
 ### 2. External Sign
@@ -62,7 +62,7 @@ const response = await sdk.sendSignatureTransactionIntentRequest("tin_xxxx", '0x
 
 ### 3. Embedded Signer
 
-The Embedded Signer uses SSS to manage the private key on the client side. To learn more, visit our [security documentation](https://www.openfort.xyz/docs/security).
+The Embedded Signer uses SSS to manage the private key on the client side. To learn more, visit our [security documentation](https://www.openfort.io/docs/security).
 - **Login and Configure the Embedded Signer**: First, ensure the user is logged in, using `LoginWithEmailPassword`, `AuthenticateWithOAuth` or if not registred `SignUpWithEmailPassword`. Then call `ConfigureEmbeddedSigner`.
 ```typescript
   const shieldAuth: ShieldAuthentication = {
@@ -75,7 +75,7 @@ The Embedded Signer uses SSS to manage the private key on the client side. To le
   // using automatic recovery
   await sdk.configureEmbeddedSigner(chainId, shieldAuth);
 ```
-For now the only two recovery method available are the `PasswordRecovery` and `AutomaticRecovery`. Learn more about the [recovery methods](https://www.openfort.xyz/docs/guides/javascript/embedded-signer/recovery).
+For now the only two recovery method available are the `PasswordRecovery` and `AutomaticRecovery`. Learn more about the [recovery methods](https://www.openfort.io/docs/guides/javascript/embedded-signer/recovery).
 - **Send Signature Transaction Intent Request**: Similar to the session signer, pass the transaction intent ID and the user operation hash. The embedded signer reconstructs the key and signs the transaction.
 ```typescript
 const response = await sdk.sendSignatureTransactionIntentRequest("transactionIntentId", "userOp");
@@ -86,7 +86,7 @@ const response = await sdk.sendSignatureTransactionIntentRequest("transactionInt
 - [Next.js application with non-custodial signer](https://github.com/openfort-xyz/samples/tree/main/rainbow-ssv-nextjs)
 - [Next.js application with custodial signer and social login](https://github.com/openfort-xyz/samples/tree/main/ssv-social-nextjs)
 
-[next-action]: https://www.openfort.xyz/docs/api/transaction_intents#the-transaction-intent-object
+[next-action]: https://www.openfort.io/docs/api/transaction_intents#the-transaction-intent-object
 
 <!--
 # vim: set tw=79:

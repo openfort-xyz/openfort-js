@@ -89,5 +89,17 @@ export interface EcosystemConfigurationResponse {
      * @memberof EcosystemConfigurationResponse
      */
     'dashboardSDKs'?: Array<{ [key: string]: PlayerMetadataValue; }>;
+    /**
+     * Support email of the ecosystem.
+     * @type {string}
+     * @memberof EcosystemConfigurationResponse
+     */
+    'supportEmail'?: string;
+    /**
+     * Documentation URL of the ecosystem.
+     * @type {string}
+     * @memberof EcosystemConfigurationResponse
+     */
+    'documentationUrl'?: string;
 }
 
