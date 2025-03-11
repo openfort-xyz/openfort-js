@@ -1,4 +1,4 @@
-import Openfort from '@openfort/openfort-js';
+import { Openfort } from '@openfort/openfort-js';
 
 
 const openfort = new Openfort({

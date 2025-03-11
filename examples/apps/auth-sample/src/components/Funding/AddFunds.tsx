@@ -15,13 +15,13 @@ import { EmbeddedState } from "@openfort/openfort-js";
 import { polygonAmoy } from "viem/chains";
 import { Button } from "../ui/button";
 
-declare enum StepEnum {
-  START = 0,
-  SERVICE_PROGRESS = 1,
-  COMPLETED = 3,
-  WAGMI_WALLET = 10,
-  MANUAL = 20,
-}
+const StepEnum = {
+  START: 0,
+  SERVICE_PROGRESS: 1,
+  COMPLETED: 3,
+  WAGMI_WALLET: 10,
+  MANUAL: 20,
+} as const;
 
 const AddFunds: React.FC<{
   handleSetMessage: (message: string) => void;

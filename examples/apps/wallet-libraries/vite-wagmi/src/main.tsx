@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import Openfort from '@openfort/openfort-js';
+import { Openfort } from '@openfort/openfort-js';
 import {RouterProvider, createBrowserRouter} from 'react-router-dom';
 import Authenticate from './components/Authenticate.tsx';
 
