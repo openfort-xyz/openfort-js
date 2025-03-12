@@ -952,9 +952,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/openfort-js@npm:^0.8.30":
-  version: 0.8.30
-  resolution: "@openfort/openfort-js@npm:0.8.30"
+"@openfort/openfort-js@npm:^0.8.31":
+  version: 0.8.31
+  resolution: "@openfort/openfort-js@npm:0.8.31"
   dependencies:
     "@ethersproject/bytes": ^5.8.0
     "@ethersproject/hash": ^5.8.0
@@ -962,8 +962,8 @@ __metadata:
     "@ethersproject/signing-key": ^5.8.0
     "@ethersproject/transactions": ^5.8.0
     "@noble/curves": ^1.1.0
-    "@openfort/shield-js": ^0.1.11
-    axios: 1.7.7
+    "@openfort/shield-js": ^0.1.14
+    axios: 1.8.2
     buffer: ^6.0.3
     crypto-browserify: ^3.12.0
     crypto-js: ^4.2.0
@@ -972,8 +972,7 @@ __metadata:
     jsrsasign: ^11.1.0
     path: ^0.12.7
     stream-browserify: ^3.0.0
-    uuid: ^8.3.2
-  checksum: 8a9f0af7c7301a2d6abca193c6144105b3f3546d6b20a2de76febc2bd3620461a4137d5a5cc957b436cddcfd2cf27454417fc5372d528fa2cce69c9b14d70d8c
+  checksum: c01192c15c616d823451a1bea16cb957990acd1d50b38a7ea07b11987b73a0548939419874b080a6b4a0a8494443bb45f6250dc2a0c69584327b1c1fa5671525
   languageName: node
   linkType: hard
 
@@ -993,7 +992,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/shield-js@npm:^0.1.11, @openfort/shield-js@npm:^0.1.7":
+"@openfort/shield-js@npm:^0.1.14, @openfort/shield-js@npm:^0.1.7":
   version: 0.1.14
   resolution: "@openfort/shield-js@npm:0.1.14"
   checksum: 1c6d78023fa6f06268988c3d301533ad4649d6dcab744ab1d6f7fa52709ec8182011980084b9260146674019f35ad2b8c20852e4c96603b5a181cea7ba281c41
@@ -2368,7 +2367,7 @@ __metadata:
   resolution: "auth-sample@workspace:."
   dependencies:
     "@heroicons/react": ^2.0.13
-    "@openfort/openfort-js": ^0.8.30
+    "@openfort/openfort-js": ^0.8.31
     "@openfort/openfort-node": ^0.6.65
     "@playwright/test": ^1.48.0
     "@radix-ui/react-dialog": ^1.1.2
@@ -2436,14 +2435,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.7.7":
-  version: 1.7.7
-  resolution: "axios@npm:1.7.7"
+"axios@npm:1.8.2":
+  version: 1.8.2
+  resolution: "axios@npm:1.8.2"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: 882d4fe0ec694a07c7f5c1f68205eb6dc5a62aecdb632cc7a4a3d0985188ce3030e0b277e1a8260ac3f194d314ae342117660a151fabffdc5081ca0b5a8b47fe
+  checksum: c47a43b79a058aa9e53a65bec9ade35c9f6e76a3999c795a79a2d205fb5f803fd4245497a0209a9727cbbe4f558791dd852ad2c168c5fc030259c11598ed8fd7
   languageName: node
   linkType: hard
 
