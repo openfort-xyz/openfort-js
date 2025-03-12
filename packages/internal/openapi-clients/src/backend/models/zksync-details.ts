@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Openfort API
- * Complete Openfort API references and guides can be found at: https://www.openfort.io/docs
+ * Complete Openfort API references and guides can be found at: https://openfort.xyz/docs
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: founders@openfort.xyz

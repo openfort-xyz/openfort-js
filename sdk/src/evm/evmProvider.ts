@@ -3,9 +3,6 @@ import { BackendApiClients } from '@openfort/openapi-clients';
 import { hexlify } from '@ethersproject/bytes';
 import { Authentication } from 'configuration/authentication';
 import {
-  JsonRpcRequestCallback,
-  JsonRpcRequestPayload,
-  JsonRpcResponsePayload,
   Provider,
   ProviderEvent,
   ProviderEventMap,
@@ -278,7 +275,6 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         this.#validateAndRefreshSession();
-
         return await sendCalls({
           params: request.params ? request.params[0].calls : [],
           signer,
@@ -364,33 +360,6 @@ export class EvmProvider implements Provider {
     }
   }
 
-  async #performJsonRpcRequest(request: JsonRpcRequestPayload): Promise<JsonRpcResponsePayload> {
-    const { id, jsonrpc } = request;
-    try {
-      const result = await this.#performRequest(request);
-      return {
-        id,
-        jsonrpc,
-        result,
-      };
-    } catch (error: unknown) {
-      let jsonRpcError: JsonRpcError;
-      if (error instanceof JsonRpcError) {
-        jsonRpcError = error;
-      } else if (error instanceof Error) {
-        jsonRpcError = new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, error.message);
-      } else {
-        jsonRpcError = new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, 'Internal error');
-      }
-
-      return {
-        id,
-        jsonrpc,
-        error: jsonRpcError,
-      };
-    }
-  }
-
   public async request(
     request: RequestArguments,
   ): Promise<any> {
@@ -406,68 +375,6 @@ export class EvmProvider implements Provider {
 
       throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, 'Internal error');
     }
-  }
-
-  public sendAsync(
-    request: JsonRpcRequestPayload | JsonRpcRequestPayload[],
-    callback?: JsonRpcRequestCallback,
-  ) {
-    if (!callback) {
-      throw new Error('No callback provided');
-    }
-
-    if (Array.isArray(request)) {
-      Promise.all(request.map(this.#performJsonRpcRequest)).then((result) => {
-        callback(null, result);
-      }).catch((error: JsonRpcError) => {
-        callback(error, []);
-      });
-    } else {
-      this.#performJsonRpcRequest(request).then((result) => {
-        callback(null, result);
-      }).catch((error: JsonRpcError) => {
-        callback(error, null);
-      });
-    }
-  }
-
-  public async send(
-    request: string | JsonRpcRequestPayload | JsonRpcRequestPayload[],
-    callbackOrParams?: JsonRpcRequestCallback | Array<any>,
-    callback?: JsonRpcRequestCallback,
-  ) {
-    // Web3 >= 1.0.0-beta.38 calls `send` with method and parameters.
-    if (typeof request === 'string') {
-      if (typeof callbackOrParams === 'function') {
-        return this.sendAsync({
-          method: request,
-          params: [],
-        }, callbackOrParams);
-      }
-
-      if (callback) {
-        return this.sendAsync({
-          method: request,
-          params: Array.isArray(callbackOrParams) ? callbackOrParams : [],
-        }, callback);
-      }
-
-      return this.request({
-        method: request,
-        params: Array.isArray(callbackOrParams) ? callbackOrParams : [],
-      });
-    }
-
-    // Web3 <= 1.0.0-beta.37 uses `send` with a callback for async queries.
-    if (typeof callbackOrParams === 'function') {
-      return this.sendAsync(request, callbackOrParams);
-    }
-
-    if (!Array.isArray(request) && typeof request === 'object') {
-      return this.#performJsonRpcRequest(request);
-    }
-
-    throw new JsonRpcError(RpcErrorCode.INVALID_REQUEST, 'Invalid request');
   }
 
   public on(event: string, listener: (...args: any[]) => void): void {
