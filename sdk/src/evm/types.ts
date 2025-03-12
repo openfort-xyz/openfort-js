@@ -1,5 +1,3 @@
-import { JsonRpcError } from './JsonRpcError';
-
 export enum BackendTransactionStatus {
   PENDING = 'PENDING',
   SUBMITTED = 'SUBMITTED',
@@ -49,36 +47,8 @@ export interface RequestArguments {
   params?: Array<any>;
 }
 
-export type JsonRpcRequestPayload = RequestArguments & {
-  jsonrpc?: string;
-  id?: string | number;
-};
-
-export interface JsonRpcRequestCallback {
-  (
-    err: JsonRpcError | null,
-    result?: JsonRpcResponsePayload | (JsonRpcResponsePayload | null)[] | null
-  ): void;
-}
-
-export interface JsonRpcResponsePayload {
-  result?: Array<any> | null;
-  error?: JsonRpcError | null;
-  jsonrpc?: string;
-  id?: string | number;
-}
-
 export type Provider = {
   request: (request: RequestArguments) => Promise<any>;
-  sendAsync: (
-    request: JsonRpcRequestPayload | JsonRpcRequestPayload[],
-    callback: JsonRpcRequestCallback
-  ) => void;
-  send: (
-    request: string | JsonRpcRequestPayload | JsonRpcRequestPayload[],
-    callbackOrParams?: JsonRpcRequestCallback | Array<any>,
-    callback?: JsonRpcRequestCallback
-  ) => void;
   on: (event: string, listener: (...args: any[]) => void) => void;
   removeListener: (event: string, listener: (...args: any[]) => void) => void;
   isOpenfort: boolean;

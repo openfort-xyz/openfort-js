@@ -82,7 +82,7 @@ const EIP1193MintButton: React.FC<{
       const receipt = await publicClient.getTransactionReceipt({hash: tx});
       console.log('Transaction receipt:', receipt);
     } catch (error) {
-      handleSetMessage('Failed to send transaction: ' + (error as BaseError).message);
+      handleSetMessage('Failed to send transaction: ' + (error as BaseError).details);
     }
     setLoading(false);
   };

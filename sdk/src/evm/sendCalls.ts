@@ -79,6 +79,11 @@ export const sendCalls = async ({
   ).catch((error) => {
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message);
   });
+
+  if (openfortTransaction.response?.error.reason) {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, openfortTransaction.response?.error.reason);
+  }
+
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature: string;
     // zkSync based chains need a different signature
@@ -95,7 +100,7 @@ export const sendCalls = async ({
     });
 
     if (response.data.response?.status === 0) {
-      throw new JsonRpcError(RpcErrorCode.RPC_SERVER_ERROR, response.data.response?.error.reason);
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response?.error.reason);
     }
 
     return response.data.response?.transactionHash as `0x${string}`;
