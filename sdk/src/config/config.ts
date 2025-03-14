@@ -1,4 +1,4 @@
-import { createConfig, OpenfortAPIConfiguration } from '@openfort/openapi-clients';
+import { createConfig, type OpenfortAPIConfiguration } from '@openfort/openapi-clients';
 import { SDKOverrides } from '../types';
 
 export class OpenfortConfiguration {

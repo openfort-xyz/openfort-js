@@ -1,5 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { BackendApiClients } from '@openfort/openapi-clients';
+import { type BackendApiClients } from '@openfort/openapi-clients';
 import { hexlify } from '@ethersproject/bytes';
 import { Authentication } from 'configuration/authentication';
 import {

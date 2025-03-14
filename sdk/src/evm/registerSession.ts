@@ -1,4 +1,4 @@
-import { BackendApiClients } from '@openfort/openapi-clients';
+import { type BackendApiClients } from '@openfort/openapi-clients';
 import { Authentication } from 'configuration/authentication';
 import { OneOf } from 'utils/helpers';
 import { CreateSessionRequest } from '@openfort/openapi-clients/dist/backend';
