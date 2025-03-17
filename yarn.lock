@@ -1434,19 +1434,16 @@ __metadata:
     "@swc/jest": ^0.2.24
     "@types/crypto-js": ^4.2.2
     "@types/jest": ^29.4.3
-    "@types/jsrsasign": ^10.5.15
     "@typescript-eslint/eslint-plugin": ^5.57.1
     "@typescript-eslint/parser": ^5.57.1
     axios: 1.8.2
     buffer: ^5.5.0||^6.0.0
-    crypto-browserify: ^3.12.0
     crypto-js: ^4.2.0
     es6-promise: ^4.2.8
     eslint: ^8.40.0
     jest: ^29.4.3
     jest-environment-jsdom: ^29.4.3
     jose: ^5.2.2
-    jsrsasign: ^11.1.0
     parcel: ^2.8.3
     path: ^0.12.7
     prettier: ^2.8.8
@@ -1455,7 +1452,6 @@ __metadata:
     rollup-plugin-dts: ^5.3.0
     rollup-plugin-polyfill-node: ^0.12.0
     rollup-plugin-visualizer: ^5.14.0
-    stream-browserify: ^3.0.0
     typescript: ^5.0.4
   languageName: unknown
   linkType: soft
@@ -3040,13 +3036,6 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
-  languageName: node
-  linkType: hard
-
-"@types/jsrsasign@npm:^10.5.15":
-  version: 10.5.15
-  resolution: "@types/jsrsasign@npm:10.5.15"
-  checksum: e88fd213e5ae8a4c694ddad2accb282df7b0665bfa53c9e1be2ebfddbee342c328e185e1ffdffd684cc3ed0b83a9c1933c9c15b776a2250a3dfbdf0b45f17c7d
   languageName: node
   linkType: hard
 

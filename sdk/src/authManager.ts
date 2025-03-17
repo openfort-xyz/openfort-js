@@ -4,7 +4,6 @@ import * as crypto from 'crypto';
 import {
   errors, importJWK, jwtVerify, KeyLike,
 } from 'jose';
-import { KEYUTIL, KJUR, RSAKey } from 'jsrsasign';
 import { Authentication } from './configuration/authentication';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import {
@@ -334,42 +333,42 @@ export class AuthManager {
   }
 
   // Slower validation function for browsers that do not support crypto.subtle
-  async validateCredentialsWithoutCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
-    if (!authentication.refreshToken) {
-      throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
-    }
+  // async validateCredentialsWithoutCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
+  //   if (!authentication.refreshToken) {
+  //     throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
+  //   }
 
-    const ecKey = KEYUTIL.getKey({
-      kty: jwk.kty,
-      crv: jwk.crv,
-      x: jwk.x,
-      y: jwk.y,
-    } as KJUR.jws.JWS.JsonWebKey);
+  //   const ecKey = KEYUTIL.getKey({
+  //     kty: jwk.kty,
+  //     crv: jwk.crv,
+  //     x: jwk.x,
+  //     y: jwk.y,
+  //   } as KJUR.jws.JWS.JsonWebKey);
 
-    const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
+  //   const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
 
-    const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
-    if (!isValid) {
-      throw new OpenfortError('Invalid token signature', OpenfortErrorType.AUTHENTICATION_ERROR);
-    }
+  //   const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
+  //   if (!isValid) {
+  //     throw new OpenfortError('Invalid token signature', OpenfortErrorType.AUTHENTICATION_ERROR);
+  //   }
 
-    const payload = JSON.parse(parsedJWT.payloadPP);
+  //   const payload = JSON.parse(parsedJWT.payloadPP);
 
-    if (!payload.exp) {
-      return this.refreshTokens(authentication.refreshToken);
-    }
+  //   if (!payload.exp) {
+  //     return this.refreshTokens(authentication.refreshToken);
+  //   }
 
-    const now = KJUR.jws.IntDate.getNow();
-    if (payload.exp < now) {
-      return this.refreshTokens(authentication.refreshToken);
-    }
+  //   const now = KJUR.jws.IntDate.getNow();
+  //   if (payload.exp < now) {
+  //     return this.refreshTokens(authentication.refreshToken);
+  //   }
 
-    return {
-      player: payload.sub!,
-      accessToken: authentication.token,
-      refreshToken: authentication.refreshToken,
-    };
-  }
+  //   return {
+  //     player: payload.sub!,
+  //     accessToken: authentication.token,
+  //     refreshToken: authentication.refreshToken,
+  //   };
+  // }
 
   // Faster validation function for browsers that support crypto.subtle
   async validateCredentialsWithCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
@@ -414,8 +413,9 @@ export class AuthManager {
     if (webCrypto?.subtle) {
       return this.validateCredentialsWithCrypto(jwk, authentication);
     }
+    return this.validateCredentialsWithCrypto(jwk, authentication);
 
-    return this.validateCredentialsWithoutCrypto(jwk, authentication);
+    // return this.validateCredentialsWithoutCrypto(jwk, authentication);
   }
 
   private readonly jwksStorageKey = 'openfort.jwk';
