@@ -12,15 +12,13 @@ import {
   InitAuthResponse,
   InitializeOAuthOptions,
   OAuthProvider, OpenfortEventMap,
-  SessionKey, SessionResponse, SIWEInitResponse, ThirdPartyOAuthProvider, TokenType, TransactionIntentResponse,
+  SessionResponse, SIWEInitResponse, ThirdPartyOAuthProvider, TokenType, TransactionIntentResponse,
   RecoveryMethod,
 } from './types';
 import { OpenfortSDKConfiguration } from './config';
 import { Configuration } from './configuration/configuration';
 import { Account } from './configuration/account';
 import { Entropy } from './signer/embedded';
-import { Session } from './configuration/session';
-import { KeyPair } from './crypto/key-pair';
 import { Authentication } from './configuration/authentication';
 import { MissingProjectEntropyError, MissingRecoveryPasswordError } from './iframe/iframeManager';
 import { AuthManager } from './authManager';
@@ -114,22 +112,6 @@ export class Openfort {
     }
 
     return this.provider;
-  }
-
-  /**
-   * Configures a session key and returns the session key details.
-   *
-   * @returns A SessionKey object containing the address and registration status.
-   */
-  public configureSessionKey(): SessionKey {
-    const session = Session.fromStorage(this.storage);
-    if (session) {
-      return { address: session.key.getPublicKey(), isRegistered: true };
-    }
-
-    const keyPair = new KeyPair();
-    new Session(keyPair).save(this.storage);
-    return { address: keyPair.getPublicKey(), isRegistered: false };
   }
 
   /**
