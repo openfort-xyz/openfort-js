@@ -98,8 +98,11 @@ export class EvmProvider implements Provider {
 
   async getRpcProvider(): Promise<StaticJsonRpcProvider> {
     if (!this.#rpcProvider) {
+      const account = Account.fromStorage(this.#storage);
+      const chainId = account?.chainId || 8453;
+
       await import('@ethersproject/providers').then((module) => {
-        this.#rpcProvider = new module.StaticJsonRpcProvider(chainRpcs[1]);
+        this.#rpcProvider = new module.StaticJsonRpcProvider(chainRpcs[chainId]);
       });
     }
     if (!this.#rpcProvider) {
