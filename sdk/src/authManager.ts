@@ -29,7 +29,6 @@ function base64URLEncode(str: Buffer) {
 function sha256(buffer: string) {
   return crypto.createHash('sha256').update(buffer).digest();
 }
-
 export class AuthManager {
   private readonly publishableKey: string;
 
@@ -333,42 +332,62 @@ export class AuthManager {
   }
 
   // Slower validation function for browsers that do not support crypto.subtle
-  // async validateCredentialsWithoutCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
-  //   if (!authentication.refreshToken) {
-  //     throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
-  //   }
+  async validateCredentialsWithoutCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
+    if (!authentication.refreshToken) {
+      throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
+    }
 
-  //   const ecKey = KEYUTIL.getKey({
-  //     kty: jwk.kty,
-  //     crv: jwk.crv,
-  //     x: jwk.x,
-  //     y: jwk.y,
-  //   } as KJUR.jws.JWS.JsonWebKey);
+    if (!JWK_UTILS) {
+      // JWK_UTILS is a global variable that is set in the packages without node crypto support
+      // For your non node package to work you need to install jsrsasign library functions and add the following code:
+      /*
+        global.JWK_UTILS = {
+          getKey: KEYUTIL.getKey,
+          parse: KJUR.jws.JWS.parse,
+          verifyJWT: KJUR.jws.JWS.verifyJWT,
+          getNow: KJUR.jws.IntDate.getNow,
+        };
+      */
+      throw new OpenfortError('JWK_UTILS not available', OpenfortErrorType.INTERNAL_ERROR);
+    }
 
-  //   const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
+    // const ecKey = KEYUTIL.getKey({
+    const ecKey = JWK_UTILS.getKey({
+      kty: jwk.kty,
+      crv: jwk.crv,
+      x: jwk.x,
+      y: jwk.y,
+    });
+    // } as KJUR.jws.JWS.JsonWebKey);
 
-  //   const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
-  //   if (!isValid) {
-  //     throw new OpenfortError('Invalid token signature', OpenfortErrorType.AUTHENTICATION_ERROR);
-  //   }
+    const parsedJWT = JWK_UTILS.parse(authentication.token);
+    // const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
 
-  //   const payload = JSON.parse(parsedJWT.payloadPP);
+    const isValid = JWK_UTILS.verifyJWT(authentication.token, ecKey, { alg: [jwk.alg] });
+    // const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
 
-  //   if (!payload.exp) {
-  //     return this.refreshTokens(authentication.refreshToken);
-  //   }
+    if (!isValid) {
+      throw new OpenfortError('Invalid token signature', OpenfortErrorType.AUTHENTICATION_ERROR);
+    }
 
-  //   const now = KJUR.jws.IntDate.getNow();
-  //   if (payload.exp < now) {
-  //     return this.refreshTokens(authentication.refreshToken);
-  //   }
+    const payload = JSON.parse(parsedJWT.payloadPP);
 
-  //   return {
-  //     player: payload.sub!,
-  //     accessToken: authentication.token,
-  //     refreshToken: authentication.refreshToken,
-  //   };
-  // }
+    if (!payload.exp) {
+      return this.refreshTokens(authentication.refreshToken);
+    }
+
+    // const now = KJUR.jws.IntDate.getNow();
+    const now = JWK_UTILS.getNow();
+    if (payload.exp < now) {
+      return this.refreshTokens(authentication.refreshToken);
+    }
+
+    return {
+      player: payload.sub!,
+      accessToken: authentication.token,
+      refreshToken: authentication.refreshToken,
+    };
+  }
 
   // Faster validation function for browsers that support crypto.subtle
   async validateCredentialsWithCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
