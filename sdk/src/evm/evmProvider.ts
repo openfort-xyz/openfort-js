@@ -1,4 +1,4 @@
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type BackendApiClients } from '@openfort/openapi-clients';
 import { Authentication } from 'configuration/authentication';
 import {
@@ -53,7 +53,7 @@ export class EvmProvider implements Provider {
 
   readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>;
 
-  #rpcProvider: StaticJsonRpcProvider; // Used for read
+  #rpcProvider: StaticJsonRpcProvider | null = null; // Used for read
 
   readonly #backendApiClients: BackendApiClients;
 
@@ -73,10 +73,6 @@ export class EvmProvider implements Provider {
     this.#validateAndRefreshSession = validateAndRefreshSession;
 
     this.#backendApiClients = backendApiClients;
-
-    const account = Account.fromStorage(this.#storage);
-    const chainId = account?.chainId || 8453;
-    this.#rpcProvider = new StaticJsonRpcProvider(chainRpcs[chainId]);
 
     this.#backendApiClients = backendApiClients;
 
@@ -99,6 +95,19 @@ export class EvmProvider implements Provider {
       this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
     }
   };
+
+  async getRpcProvider(): Promise<StaticJsonRpcProvider> {
+    if (!this.#rpcProvider) {
+      await import('@ethersproject/providers').then((module) => {
+        this.#rpcProvider = new module.StaticJsonRpcProvider(chainRpcs[1]);
+      });
+    }
+    if (!this.#rpcProvider) {
+      throw new Error('RPC provider not initialized');
+    }
+
+    return this.#rpcProvider;
+  }
 
   async #performRequest(request: RequestArguments): Promise<any> {
     switch (request.method) {
@@ -171,12 +180,14 @@ export class EvmProvider implements Provider {
         }
         this.#validateAndRefreshSession();
 
+        const rpcProvider = await this.getRpcProvider();
+
         return await signTypedDataV4({
           method: request.method,
           params: request.params || [],
           signer,
           accountType: account.type,
-          rpcProvider: this.#rpcProvider,
+          rpcProvider,
 
         });
       }
@@ -203,7 +214,8 @@ export class EvmProvider implements Provider {
         // JsonRpcProvider, this function will still work as expected given
         // that detectNetwork call _uncachedDetectNetwork which will force
         // the provider to re-fetch the chainId from remote.
-        const { chainId } = await this.#rpcProvider.detectNetwork();
+        const rpcProvider = await this.getRpcProvider();
+        const { chainId } = await rpcProvider.detectNetwork();
         return numberToHex(chainId);
       }
       case 'wallet_switchEthereumChain': {
@@ -225,7 +237,9 @@ export class EvmProvider implements Provider {
         try {
           const chainIdNumber = parseInt(request.params[0].chainId, 16);
           await signer.switchChain({ chainId: chainIdNumber });
-          this.#rpcProvider = new StaticJsonRpcProvider(chainRpcs[chainIdNumber]);
+          await import('@ethersproject/providers').then((module) => {
+            this.#rpcProvider = new module.StaticJsonRpcProvider(chainRpcs[chainIdNumber]);
+          });
         } catch (error) {
           throw new JsonRpcError(
             RpcErrorCode.INTERNAL_ERROR,
@@ -242,9 +256,10 @@ export class EvmProvider implements Provider {
             'Unauthorized - must be authenticated and configured with a signer',
           );
         }
+        const rpcProvider = await this.getRpcProvider();
         return await addEthereumChain({
           params: request.params || [],
-          rpcProvider: this.#rpcProvider,
+          rpcProvider,
         });
       }
       // EIP-5792: Wallet Call API
@@ -321,7 +336,8 @@ export class EvmProvider implements Provider {
         });
       }
       case 'wallet_getCapabilities': {
-        const { chainId } = await this.#rpcProvider.detectNetwork();
+        const rpcProvider = await this.getRpcProvider();
+        const { chainId } = await rpcProvider.detectNetwork();
         const capabilities = {
           [numberToHex(chainId)]: {
             permissions: {
@@ -352,7 +368,8 @@ export class EvmProvider implements Provider {
       case 'eth_getTransactionByHash':
       case 'eth_getTransactionReceipt':
       case 'eth_getTransactionCount': {
-        return this.#rpcProvider.send(request.method, request.params || []);
+        const rpcProvider = await this.getRpcProvider();
+        return rpcProvider.send(request.method, request.params || []);
       }
       default: {
         throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`);
