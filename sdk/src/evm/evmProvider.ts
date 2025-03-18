@@ -1,6 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type BackendApiClients } from '@openfort/openapi-clients';
-import { hexlify } from '@ethersproject/bytes';
 import { Authentication } from 'configuration/authentication';
 import {
   Provider,
@@ -24,6 +23,7 @@ import { sendCalls } from './sendCalls';
 import { GetCallsStatusParameters, getCallStatus } from './getCallsStatus';
 import { personalSign } from './personalSign';
 import { estimateGas } from './estimateGas';
+import { numberToHex } from '../crypto/utils';
 
 export type EvmProviderInput = {
   storage: IStorage;
@@ -109,7 +109,7 @@ export class EvmProvider implements Provider {
       case 'eth_requestAccounts': {
         let account = Account.fromStorage(this.#storage);
         if (account) {
-          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: hexlify(account.chainId) });
+          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: numberToHex(account.chainId) });
           return [account.address];
         }
 
@@ -204,7 +204,7 @@ export class EvmProvider implements Provider {
         // that detectNetwork call _uncachedDetectNetwork which will force
         // the provider to re-fetch the chainId from remote.
         const { chainId } = await this.#rpcProvider.detectNetwork();
-        return hexlify(chainId);
+        return numberToHex(chainId);
       }
       case 'wallet_switchEthereumChain': {
         const signer = SignerManager.fromStorage();
@@ -323,7 +323,7 @@ export class EvmProvider implements Provider {
       case 'wallet_getCapabilities': {
         const { chainId } = await this.#rpcProvider.detectNetwork();
         const capabilities = {
-          [hexlify(chainId)]: {
+          [numberToHex(chainId)]: {
             permissions: {
               supported: true,
               signerTypes: ['account', 'key'],
