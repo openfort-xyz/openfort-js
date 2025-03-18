@@ -23,7 +23,7 @@ import { sendCalls } from './sendCalls';
 import { GetCallsStatusParameters, getCallStatus } from './getCallsStatus';
 import { personalSign } from './personalSign';
 import { estimateGas } from './estimateGas';
-import { numberToHex } from '../crypto/utils';
+import { numberToHex } from '../utils/crypto';
 
 export type EvmProviderInput = {
   storage: IStorage;

@@ -5,7 +5,7 @@ import {
   Hex,
   hexToBytes,
   sign,
-} from './utils';
+} from '../utils/crypto';
 
 export class KeyPair {
   private privateKey: Uint8Array;
