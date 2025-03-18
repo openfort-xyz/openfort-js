@@ -1,9 +1,7 @@
 import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
 import { AxiosRequestConfig } from 'axios';
 import * as crypto from 'crypto';
-import {
-  errors, importJWK, jwtVerify, KeyLike,
-} from 'jose';
+import { type KeyLike } from 'jose';
 import { Authentication } from './configuration/authentication';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import {
@@ -394,6 +392,12 @@ export class AuthManager {
     if (!authentication.refreshToken) {
       throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
+
+    const {
+      errors,
+      importJWK,
+      jwtVerify,
+    } = await import('jose');
 
     try {
       const key = (await importJWK(
