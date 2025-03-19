@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import Openfort, {
+import {
   EmbeddedState,
   ShieldAuthentication,
   ShieldAuthType,
@@ -7,13 +7,14 @@ import Openfort, {
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import { polygonAmoy } from 'viem/chains';
+import openfortInstance from '../utils/openfortConfig';
 
 interface AuthFormData {
   email: string;
   password: string;
 }
 
-function Authenticate({openfortInstance}: {openfortInstance: Openfort}) {
+function Authenticate() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState<AuthFormData>({
     email: '',
