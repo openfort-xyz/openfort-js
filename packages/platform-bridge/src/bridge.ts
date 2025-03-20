@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import Openfort, { OpenfortError, SDKConfiguration } from '@openfort/openfort-js';
+import { Openfort, OpenfortError, SDKConfiguration } from '@openfort/openfort-js';
 import { ethers } from 'ethers';
 
 const keyFunctionName = 'fxName';

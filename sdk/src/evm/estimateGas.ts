@@ -1,4 +1,4 @@
-import { BackendApiClients } from '@openfort/openapi-clients';
+import { type BackendApiClients } from '@openfort/openapi-clients';
 import { Account } from 'configuration/account';
 import { Authentication } from 'configuration/authentication';
 import { OpenfortErrorType, withOpenfortError } from 'errors/openfortError';

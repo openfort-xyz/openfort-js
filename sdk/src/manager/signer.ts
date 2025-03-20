@@ -1,4 +1,3 @@
-import { KeyPair } from 'crypto/key-pair';
 import { createConfig } from '@openfort/openapi-clients';
 import { StorageKeys } from '../storage/istorage';
 import { IframeManager, IframeConfiguration } from '../iframe/iframeManager';
@@ -10,12 +9,10 @@ import { Configuration } from '../configuration/configuration';
 import { Recovery } from '../configuration/recovery';
 import { Signer } from '../signer/isigner';
 import { EmbeddedSigner, Entropy } from '../signer/embedded';
-import { Session } from '../configuration/session';
-import { SessionSigner } from '../signer/session';
 import { Account } from '../configuration/account';
 
 export interface SignerConfiguration {
-  type: 'embedded' | 'session';
+  type: 'embedded';
   chainId: number | null;
 }
 
@@ -33,15 +30,6 @@ export class SignerManager {
     const signerConfiguration: SignerConfiguration = JSON.parse(signerData);
     if (signerConfiguration.type === 'embedded') {
       return this.embeddedFromStorage(signerConfiguration.chainId);
-    }
-
-    if (signerConfiguration.type === 'session') {
-      const session = Session.fromStorage(this.storage);
-      if (!session) {
-        throw new OpenfortError('Must have a session to create a signer', OpenfortErrorType.INVALID_CONFIGURATION);
-      }
-
-      return new SessionSigner(session.key, this.storage);
     }
 
     return null;
@@ -102,15 +90,6 @@ export class SignerManager {
     );
     iframeManagerSingleton = iframeManager;
     return iframeManager;
-  }
-
-  static session(): Signer {
-    let session = Session.fromStorage(this.storage);
-    if (!session) {
-      session = new Session(new KeyPair());
-    }
-
-    return new SessionSigner(session.key, this.storage);
   }
 
   static async embedded(

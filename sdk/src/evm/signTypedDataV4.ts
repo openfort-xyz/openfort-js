@@ -1,4 +1,4 @@
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { getSignedTypedData } from './walletHelpers';
 import { TypedDataPayload } from './types';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
