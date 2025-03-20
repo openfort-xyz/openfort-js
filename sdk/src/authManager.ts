@@ -1,10 +1,7 @@
 import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
 import { AxiosRequestConfig } from 'axios';
 import * as crypto from 'crypto';
-import {
-  errors, importJWK, jwtVerify, KeyLike,
-} from 'jose';
-import { KEYUTIL, KJUR, RSAKey } from 'jsrsasign';
+import { type KeyLike } from 'jose';
 import { Authentication } from './configuration/authentication';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import {
@@ -30,7 +27,6 @@ function base64URLEncode(str: Buffer) {
 function sha256(buffer: string) {
   return crypto.createHash('sha256').update(buffer).digest();
 }
-
 export class AuthManager {
   private readonly publishableKey: string;
 
@@ -339,16 +335,35 @@ export class AuthManager {
       throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
 
-    const ecKey = KEYUTIL.getKey({
+    if (!JWK_UTILS) {
+      // JWK_UTILS is a global variable that is set in the packages without node crypto support
+      // For your non node package to work you need to install jsrsasign library functions and add the following code:
+      /*
+        global.JWK_UTILS = {
+          getKey: KEYUTIL.getKey,
+          parse: KJUR.jws.JWS.parse,
+          verifyJWT: KJUR.jws.JWS.verifyJWT,
+          getNow: KJUR.jws.IntDate.getNow,
+        };
+      */
+      throw new OpenfortError('JWK_UTILS not available', OpenfortErrorType.INTERNAL_ERROR);
+    }
+
+    // const ecKey = KEYUTIL.getKey({
+    const ecKey = JWK_UTILS.getKey({
       kty: jwk.kty,
       crv: jwk.crv,
       x: jwk.x,
       y: jwk.y,
-    } as KJUR.jws.JWS.JsonWebKey);
+    });
+    // } as KJUR.jws.JWS.JsonWebKey);
 
-    const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
+    const parsedJWT = JWK_UTILS.parse(authentication.token);
+    // const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
 
-    const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
+    const isValid = JWK_UTILS.verifyJWT(authentication.token, ecKey, { alg: [jwk.alg] });
+    // const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
+
     if (!isValid) {
       throw new OpenfortError('Invalid token signature', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
@@ -359,7 +374,8 @@ export class AuthManager {
       return this.refreshTokens(authentication.refreshToken);
     }
 
-    const now = KJUR.jws.IntDate.getNow();
+    // const now = KJUR.jws.IntDate.getNow();
+    const now = JWK_UTILS.getNow();
     if (payload.exp < now) {
       return this.refreshTokens(authentication.refreshToken);
     }
@@ -376,6 +392,12 @@ export class AuthManager {
     if (!authentication.refreshToken) {
       throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
+
+    const {
+      errors,
+      importJWK,
+      jwtVerify,
+    } = await import('jose');
 
     try {
       const key = (await importJWK(
@@ -414,8 +436,9 @@ export class AuthManager {
     if (webCrypto?.subtle) {
       return this.validateCredentialsWithCrypto(jwk, authentication);
     }
+    return this.validateCredentialsWithCrypto(jwk, authentication);
 
-    return this.validateCredentialsWithoutCrypto(jwk, authentication);
+    // return this.validateCredentialsWithoutCrypto(jwk, authentication);
   }
 
   private readonly jwksStorageKey = 'openfort.jwk';

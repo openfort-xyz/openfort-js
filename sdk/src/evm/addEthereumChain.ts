@@ -1,4 +1,4 @@
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { SignerManager } from 'manager/signer';
 import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError';
 
