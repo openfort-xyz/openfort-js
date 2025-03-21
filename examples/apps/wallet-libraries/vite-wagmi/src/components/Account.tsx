@@ -1,6 +1,6 @@
 import {useAccount, useDisconnect, useEnsAvatar, useEnsName} from 'wagmi';
-import {openfortInstance} from '../main';
 import {useState} from 'react';
+import openfortInstance from '../utils/openfortConfig';
 
 export function Account() {
   const {address, connector} = useAccount();

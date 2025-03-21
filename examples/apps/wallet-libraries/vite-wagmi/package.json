@@ -16,7 +16,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.0",
     "viem": "2.x",
-    "wagmi": "^2.7.0"
+    "wagmi": "^2.14.15"
   },
   "devDependencies": {
     "@openfort/openfort-js": "^0.8.31",

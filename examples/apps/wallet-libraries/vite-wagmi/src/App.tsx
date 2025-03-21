@@ -4,7 +4,7 @@ import {WagmiProvider} from 'wagmi';
 import {Connect} from './components/Connect';
 import {config} from './wagmi';
 import {useEffect} from 'react';
-import {openfortInstance} from './main';
+import openfortInstance from './utils/openfortConfig';
 
 const queryClient = new QueryClient();
 
