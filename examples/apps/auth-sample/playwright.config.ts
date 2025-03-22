@@ -14,6 +14,12 @@ dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+const allDevicesTestMatch = [
+  "**/base.spec.ts",
+  "**/auth.spec.ts",
+  "**/linkedSocials.spec.ts",
+]
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -59,6 +65,7 @@ export default defineConfig({
         // Use prepared auth state.
         storageState: 'playwright/.auth/user.json',
       },
+      testMatch: allDevicesTestMatch,
       dependencies: ['setup'],
     },
 
@@ -70,16 +77,27 @@ export default defineConfig({
         storageState: 'playwright/.auth/user.json',
       },
       dependencies: ['setup'],
+      testMatch: allDevicesTestMatch,
     },
 
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
+    //   use: {
+    //     ...devices['Pixel 5'],
+    //     storageState: 'playwright/.auth/user.json',
+    //   },
+    //   dependencies: ['setup'],
+    //   testMatch: allDevicesTestMatch,
     // },
     // {
     //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
+    //   use: {
+    //     ...devices['iPhone 15'],
+    //     storageState: 'playwright/.auth/user.json',
+    //   },
+    //   dependencies: ['setup'],
+    //   testMatch: allDevicesTestMatch,
     // },
 
     /* Test against branded browsers. */
