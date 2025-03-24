@@ -12,8 +12,4 @@ export default defineConfig({
       }
     })
   ],
-  // your config might not have this `define` section
-  define: { 
-    global: {},
-  },
 })
