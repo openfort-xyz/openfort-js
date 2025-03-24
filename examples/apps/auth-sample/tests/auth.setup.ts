@@ -25,6 +25,9 @@ setup('authenticate', async ({ page }) => {
   await expect(page.locator('div.spinner')).toBeInViewport();
   await page.locator("div.spinner").waitFor({ state: 'hidden' });
 
+  // give some time to the console to load
+  await page.waitForTimeout(500);
+
   const consoleExists = await page.locator('h2').getByText('Console').count() > 0
   if (!consoleExists) {
     // if console doesn't exists we must be at the login page, so maybe we have to log in with wallet recovery instead

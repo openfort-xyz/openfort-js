@@ -1,4 +1,3 @@
-import { _TypedDataEncoder } from '@ethersproject/hash';
 import { UnionOmit } from 'utils/helpers';
 import { TypedDataPayload } from './types';
 import { Signer } from '../signer/isigner';
@@ -17,12 +16,16 @@ export const getSignedTypedData = async (
   delete types.EIP712Domain;
 
   // Hash the EIP712 payload and generate the complete payload
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { _TypedDataEncoder } = await import('@ethersproject/hash');
   let typedDataHash = _TypedDataEncoder.hash(typedData.domain, types, typedData.message);
 
-  if ([AccountType.UPGRADEABLE_V5,
+  if ([
+    AccountType.UPGRADEABLE_V5,
     AccountType.UPGRADEABLE_V6,
     AccountType.ZKSYNC_UPGRADEABLE_V1,
-    AccountType.ZKSYNC_UPGRADEABLE_V2].includes(accountType as AccountType)) {
+    AccountType.ZKSYNC_UPGRADEABLE_V2,
+  ].includes(accountType as AccountType)) {
     const updatedDomain: TypedDataPayload['domain'] = {
       name: 'Openfort',
       version: '0.5',

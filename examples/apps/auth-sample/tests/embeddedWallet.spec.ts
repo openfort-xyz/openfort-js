@@ -48,10 +48,6 @@ test('Export key', async ({ page }) => {
 // })
 
 test('Login with password recovery', async ({ page }, testInfo) => {
-  if (testInfo.project.name !== 'chromium') {
-    test.skip();
-  }
-
   await page.goto('/')
 
   let logger = new Logger(page)
