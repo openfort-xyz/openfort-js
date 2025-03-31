@@ -436,9 +436,7 @@ export class AuthManager {
     if (webCrypto?.subtle) {
       return this.validateCredentialsWithCrypto(jwk, authentication);
     }
-    return this.validateCredentialsWithCrypto(jwk, authentication);
-
-    // return this.validateCredentialsWithoutCrypto(jwk, authentication);
+    return this.validateCredentialsWithoutCrypto(jwk, authentication);
   }
 
   private readonly jwksStorageKey = 'openfort.jwk';
