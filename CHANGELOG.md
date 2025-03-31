@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.32] - 2025-03-12
+## [0.8.33] - 2025-03-12
 ### Fix
 - validate credentials for non browser apps
+
+## [0.8.32] - 2025-03-21
+### Feat
+- reduce size SDK
 
 ## [0.8.31] - 2025-03-12
 ### Fix
