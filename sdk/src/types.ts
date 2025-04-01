@@ -107,6 +107,8 @@ export enum ThirdPartyOAuthProvider {
   SUPABASE = 'supabase',
   CUSTOM = 'custom',
   OIDC = 'oidc',
+  APPLE = 'apple',
+  GOOGLE = 'google',
   TELEGRAM_MINI_APP = 'telegramMiniApp',
 }
 
@@ -118,6 +120,7 @@ export enum BasicAuthProvider {
 export const AUTH_PROVIDER = {
   email: 'email',
   wallet: 'wallet',
+  apple: 'apple',
   google: 'google',
   twitter: 'twitter',
   telegram: 'telegram',
@@ -139,6 +142,7 @@ export type AuthProvider = typeof AUTH_PROVIDER[keyof typeof AUTH_PROVIDER];
 export enum OAuthProvider {
   GOOGLE = 'google',
   TWITTER = 'twitter',
+  APPLE = 'apple',
   FACEBOOK = 'facebook',
   DISCORD = 'discord',
   EPIC_GAMES = 'epic_games',

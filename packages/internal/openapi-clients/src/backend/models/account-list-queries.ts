@@ -45,17 +45,23 @@ export interface AccountListQueries {
      */
     'order'?: SortOrder;
     /**
+     * Specifies the unique player ID (starts with pla_)
+     * @type {string}
+     * @memberof AccountListQueries
+     */
+    'player'?: string;
+    /**
+     * Specifies the address of the account
+     * @type {string}
+     * @memberof AccountListQueries
+     */
+    'address'?: string;
+    /**
      * Specifies the fields to expand in the response.
      * @type {Array<AccountResponseExpandable>}
      * @memberof AccountListQueries
      */
     'expand'?: Array<AccountResponseExpandable>;
-    /**
-     * Specifies the unique player ID (starts with pla_)
-     * @type {string}
-     * @memberof AccountListQueries
-     */
-    'player': string;
 }
 
 
