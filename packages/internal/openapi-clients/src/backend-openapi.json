@@ -52,7 +52,6 @@
           "facebook",
           "discord",
           "epic_games",
-          "telegram",
           "line",
           "apple"
         ],
@@ -63,14 +62,13 @@
         "enum": [
           "accelbyte",
           "firebase",
-          "apple",
-          "google",
+          "apple_native",
+          "google_native",
           "lootlocker",
           "playfab",
           "supabase",
           "custom",
-          "oidc",
-          "telegramMiniApp"
+          "oidc"
         ],
         "type": "string"
       },
@@ -190,11 +188,11 @@
           "email",
           "wallet",
           "google",
+          "apple",
           "twitter",
           "discord",
           "epic_games",
           "facebook",
-          "telegram",
           "accelbyte",
           "firebase",
           "lootlocker",
@@ -202,7 +200,8 @@
           "supabase",
           "custom",
           "oidc",
-          "telegramMiniApp"
+          "google_native",
+          "apple_native"
         ],
         "type": "string"
       },
@@ -1284,6 +1283,65 @@
         "type": "object",
         "additionalProperties": false
       },
+      "ThirdPartyOAuthProvider.GOOGLE_NATIVE": {
+        "enum": [
+          "google_native"
+        ],
+        "type": "string"
+      },
+      "GoogleNativeOAuthConfig": {
+        "description": "Google oauth configuration",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.GOOGLE_NATIVE",
+            "description": "OAuth provider type"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Google API client ID."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "clientId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ThirdPartyOAuthProvider.APPLE_NATIVE": {
+        "enum": [
+          "apple_native"
+        ],
+        "type": "string"
+      },
+      "AppleNativeOAuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.APPLE_NATIVE",
+            "description": "OAuth provider type"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Apple API client ID (Service ID)."
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "clientId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "OAuthProvider.GOOGLE": {
         "enum": [
           "google"
@@ -1350,40 +1408,6 @@
           "provider",
           "clientId",
           "clientSecret"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OAuthProvider.TELEGRAM": {
-        "enum": [
-          "telegram"
-        ],
-        "type": "string"
-      },
-      "TelegramOAuthConfig": {
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "description": "Enable OAuth provider."
-          },
-          "provider": {
-            "$ref": "#/components/schemas/OAuthProvider.TELEGRAM",
-            "description": "OAuth provider type"
-          },
-          "botUsername": {
-            "type": "string",
-            "description": "Telegram bot username."
-          },
-          "botToken": {
-            "type": "string",
-            "description": "Telegram bot token."
-          }
-        },
-        "required": [
-          "enabled",
-          "provider",
-          "botUsername",
-          "botToken"
         ],
         "type": "object",
         "additionalProperties": false
@@ -1519,35 +1543,6 @@
           "provider",
           "clientId",
           "clientSecret"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ThirdPartyOAuthProvider.TELEGRAM_MINI_APP": {
-        "enum": [
-          "telegramMiniApp"
-        ],
-        "type": "string"
-      },
-      "TelegramThirdPartyConfig": {
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "description": "Enable OAuth provider."
-          },
-          "provider": {
-            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.TELEGRAM_MINI_APP",
-            "description": "OAuth provider type"
-          },
-          "botToken": {
-            "type": "string",
-            "description": "Telegram bot token."
-          }
-        },
-        "required": [
-          "enabled",
-          "provider",
-          "botToken"
         ],
         "type": "object",
         "additionalProperties": false
@@ -1719,13 +1714,16 @@
             "$ref": "#/components/schemas/AccelbyteOAuthConfig"
           },
           {
+            "$ref": "#/components/schemas/GoogleNativeOAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/AppleNativeOAuthConfig"
+          },
+          {
             "$ref": "#/components/schemas/GoogleOAuthConfig"
           },
           {
             "$ref": "#/components/schemas/TwitterOAuthConfig"
-          },
-          {
-            "$ref": "#/components/schemas/TelegramOAuthConfig"
           },
           {
             "$ref": "#/components/schemas/FacebookOAuthConfig"
@@ -1738,9 +1736,6 @@
           },
           {
             "$ref": "#/components/schemas/DiscordOAuthConfig"
-          },
-          {
-            "$ref": "#/components/schemas/TelegramThirdPartyConfig"
           },
           {
             "$ref": "#/components/schemas/EpicGamesOAuthConfig"
@@ -1918,11 +1913,11 @@
       "OAuthProvders": {
         "enum": [
           "google",
+          "apple",
           "twitter",
           "facebook",
           "discord",
           "epic_games",
-          "telegram",
           "accelbyte",
           "firebase",
           "lootlocker",
@@ -1930,7 +1925,8 @@
           "supabase",
           "custom",
           "oidc",
-          "telegramMiniApp"
+          "google_native",
+          "apple_native"
         ],
         "type": "string"
       },

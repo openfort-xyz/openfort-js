@@ -15,32 +15,32 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ThirdPartyOAuthProviderTELEGRAMMINIAPP } from './third-party-oauth-provider-telegramminiapp';
+import { ThirdPartyOAuthProviderGOOGLENATIVE } from './third-party-oauth-provider-googlenative';
 
 /**
- * 
+ * Google oauth configuration
  * @export
- * @interface TelegramThirdPartyConfig
+ * @interface GoogleNativeOAuthConfig
  */
-export interface TelegramThirdPartyConfig {
+export interface GoogleNativeOAuthConfig {
     /**
      * Enable OAuth provider.
      * @type {boolean}
-     * @memberof TelegramThirdPartyConfig
+     * @memberof GoogleNativeOAuthConfig
      */
     'enabled': boolean;
     /**
      * 
-     * @type {ThirdPartyOAuthProviderTELEGRAMMINIAPP}
-     * @memberof TelegramThirdPartyConfig
+     * @type {ThirdPartyOAuthProviderGOOGLENATIVE}
+     * @memberof GoogleNativeOAuthConfig
      */
-    'provider': ThirdPartyOAuthProviderTELEGRAMMINIAPP;
+    'provider': ThirdPartyOAuthProviderGOOGLENATIVE;
     /**
-     * Telegram bot token.
+     * Google API client ID.
      * @type {string}
-     * @memberof TelegramThirdPartyConfig
+     * @memberof GoogleNativeOAuthConfig
      */
-    'botToken': string;
+    'clientId': string;
 }
 
 

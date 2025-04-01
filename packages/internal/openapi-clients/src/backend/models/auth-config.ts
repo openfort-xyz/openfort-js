@@ -18,6 +18,9 @@
 import { AccelbyteOAuthConfig } from './accelbyte-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { AppleNativeOAuthConfig } from './apple-native-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { AppleOAuthConfig } from './apple-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -39,6 +42,9 @@ import { FacebookOAuthConfig } from './facebook-oauth-config';
 import { FirebaseOAuthConfig } from './firebase-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { GoogleNativeOAuthConfig } from './google-native-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { GoogleOAuthConfig } from './google-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -55,12 +61,6 @@ import { PlayFabOAuthConfig } from './play-fab-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { SupabaseAuthConfig } from './supabase-auth-config';
-// May contain unused imports in some cases
-// @ts-ignore
-import { TelegramOAuthConfig } from './telegram-oauth-config';
-// May contain unused imports in some cases
-// @ts-ignore
-import { TelegramThirdPartyConfig } from './telegram-third-party-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { ThirdPartyOAuthProviderLOOTLOCKER } from './third-party-oauth-provider-lootlocker';
@@ -134,18 +134,6 @@ export interface AuthConfig {
      * @memberof AuthConfig
      */
     'clientSecret': string;
-    /**
-     * Telegram bot username.
-     * @type {string}
-     * @memberof AuthConfig
-     */
-    'botUsername': string;
-    /**
-     * Telegram bot token.
-     * @type {string}
-     * @memberof AuthConfig
-     */
-    'botToken': string;
     /**
      * Line Channel ID.
      * @type {string}

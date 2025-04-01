@@ -23,14 +23,13 @@
 export const ThirdPartyOAuthProvider = {
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',
-    Apple: 'apple',
-    Google: 'google',
+    AppleNative: 'apple_native',
+    GoogleNative: 'google_native',
     Lootlocker: 'lootlocker',
     Playfab: 'playfab',
     Supabase: 'supabase',
     Custom: 'custom',
-    Oidc: 'oidc',
-    TelegramMiniApp: 'telegramMiniApp'
+    Oidc: 'oidc'
 } as const;
 
 export type ThirdPartyOAuthProvider = typeof ThirdPartyOAuthProvider[keyof typeof ThirdPartyOAuthProvider];

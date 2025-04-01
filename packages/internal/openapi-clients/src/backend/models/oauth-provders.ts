@@ -22,11 +22,11 @@
 
 export const OAuthProvders = {
     Google: 'google',
+    Apple: 'apple',
     Twitter: 'twitter',
     Facebook: 'facebook',
     Discord: 'discord',
     EpicGames: 'epic_games',
-    Telegram: 'telegram',
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',
     Lootlocker: 'lootlocker',
@@ -34,7 +34,8 @@ export const OAuthProvders = {
     Supabase: 'supabase',
     Custom: 'custom',
     Oidc: 'oidc',
-    TelegramMiniApp: 'telegramMiniApp'
+    GoogleNative: 'google_native',
+    AppleNative: 'apple_native'
 } as const;
 
 export type OAuthProvders = typeof OAuthProvders[keyof typeof OAuthProvders];

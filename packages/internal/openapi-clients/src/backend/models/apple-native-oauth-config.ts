@@ -15,38 +15,32 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProviderTELEGRAM } from './oauth-provider-telegram';
+import { ThirdPartyOAuthProviderAPPLENATIVE } from './third-party-oauth-provider-applenative';
 
 /**
  * 
  * @export
- * @interface TelegramOAuthConfig
+ * @interface AppleNativeOAuthConfig
  */
-export interface TelegramOAuthConfig {
+export interface AppleNativeOAuthConfig {
     /**
      * Enable OAuth provider.
      * @type {boolean}
-     * @memberof TelegramOAuthConfig
+     * @memberof AppleNativeOAuthConfig
      */
     'enabled': boolean;
     /**
      * 
-     * @type {OAuthProviderTELEGRAM}
-     * @memberof TelegramOAuthConfig
+     * @type {ThirdPartyOAuthProviderAPPLENATIVE}
+     * @memberof AppleNativeOAuthConfig
      */
-    'provider': OAuthProviderTELEGRAM;
+    'provider': ThirdPartyOAuthProviderAPPLENATIVE;
     /**
-     * Telegram bot username.
+     * Apple API client ID (Service ID).
      * @type {string}
-     * @memberof TelegramOAuthConfig
+     * @memberof AppleNativeOAuthConfig
      */
-    'botUsername': string;
-    /**
-     * Telegram bot token.
-     * @type {string}
-     * @memberof TelegramOAuthConfig
-     */
-    'botToken': string;
+    'clientId': string;
 }
 
 
