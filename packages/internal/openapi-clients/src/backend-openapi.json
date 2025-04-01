@@ -53,7 +53,8 @@
           "discord",
           "epic_games",
           "telegram",
-          "line"
+          "line",
+          "apple"
         ],
         "type": "string"
       },
@@ -62,6 +63,8 @@
         "enum": [
           "accelbyte",
           "firebase",
+          "apple",
+          "google",
           "lootlocker",
           "playfab",
           "supabase",
@@ -1419,6 +1422,39 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OAuthProvider.APPLE": {
+        "enum": [
+          "apple"
+        ],
+        "type": "string"
+      },
+      "AppleOAuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/OAuthProvider.APPLE",
+            "description": "OAuth provider type"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "Apple API client ID (Service ID)."
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "Pre-generated client secret JWT"
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "clientId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "OAuthProvider.LINE": {
         "enum": [
           "line"
@@ -1693,6 +1729,9 @@
           },
           {
             "$ref": "#/components/schemas/FacebookOAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/AppleOAuthConfig"
           },
           {
             "$ref": "#/components/schemas/LineOAuthConfig"
@@ -2480,6 +2519,16 @@
             "$ref": "#/components/schemas/SortOrder",
             "description": "Specifies the order in which to sort the results."
           },
+          "player": {
+            "type": "string",
+            "description": "Specifies the unique player ID (starts with pla_)",
+            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+          },
+          "address": {
+            "type": "string",
+            "description": "Specifies the address of the account",
+            "example": "0x9590Ed0C18190a310f4e93CAccc4CC17270bED40"
+          },
           "expand": {
             "items": {
               "$ref": "#/components/schemas/AccountResponseExpandable"
@@ -2489,16 +2538,8 @@
             "example": [
               "transactionIntents"
             ]
-          },
-          "player": {
-            "type": "string",
-            "description": "Specifies the unique player ID (starts with pla_)",
-            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
           }
         },
-        "required": [
-          "player"
-        ],
         "type": "object",
         "additionalProperties": false
       },
@@ -8411,6 +8452,277 @@
         ],
         "type": "object",
         "additionalProperties": false
+      },
+      "ListResponse_Account_": {
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Account"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "number",
+            "format": "double"
+          },
+          "end": {
+            "type": "number",
+            "format": "double"
+          },
+          "total": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountsListResponse": {
+        "$ref": "#/components/schemas/ListResponse_Account_"
+      },
+      "AccountsListQueries": {
+        "properties": {
+          "limit": {
+            "type": "number",
+            "format": "double"
+          },
+          "skip": {
+            "type": "number",
+            "format": "double"
+          },
+          "order": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          "accountType": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountCreateRequest": {
+        "properties": {
+          "accountType": {
+            "type": "string",
+            "enum": [
+              "sol"
+            ],
+            "nullable": false
+          },
+          "publicKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accountType",
+          "publicKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListQueries": {
+        "properties": {
+          "limit": {
+            "type": "number",
+            "format": "double"
+          },
+          "skip": {
+            "type": "number",
+            "format": "double"
+          },
+          "order": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "DeviceCreateRequest": {
+        "properties": {
+          "share": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "share"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ShamirSigner": {
+        "properties": {
+          "share": {
+            "type": "string"
+          },
+          "publicKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "share",
+          "publicKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Signer": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "owner": {
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "type": "object"
+          },
+          "shamir": {
+            "$ref": "#/components/schemas/ShamirSigner"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "owner"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListResponse_Signer_": {
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Signer"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "number",
+            "format": "double"
+          },
+          "end": {
+            "type": "number",
+            "format": "double"
+          },
+          "total": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SignerListResponse": {
+        "$ref": "#/components/schemas/ListResponse_Signer_"
+      },
+      "SignerListQueries": {
+        "properties": {
+          "limit": {
+            "type": "number",
+            "format": "double"
+          },
+          "skip": {
+            "type": "number",
+            "format": "double"
+          },
+          "order": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          "signerType": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SignerResponse": {
+        "properties": {
+          "signer": {
+            "$ref": "#/components/schemas/Signer"
+          }
+        },
+        "required": [
+          "signer"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ShamirParams": {
+        "properties": {
+          "share": {
+            "type": "string"
+          },
+          "publicKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "share",
+          "publicKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateSignerRequest": {
+        "properties": {
+          "signerType": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          },
+          "params": {
+            "$ref": "#/components/schemas/ShamirParams"
+          }
+        },
+        "required": [
+          "signerType"
+        ],
+        "type": "object",
+        "additionalProperties": false
       }
     },
     "securitySchemes": {
@@ -10718,6 +11030,26 @@
             }
           },
           {
+            "description": "Specifies the unique player ID (starts with pla_)",
+            "in": "query",
+            "name": "player",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+          },
+          {
+            "description": "Specifies the address of the account",
+            "in": "query",
+            "name": "address",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x9590Ed0C18190a310f4e93CAccc4CC17270bED40"
+          },
+          {
             "description": "Specifies the fields to expand in the response.",
             "in": "query",
             "name": "expand",
@@ -10731,16 +11063,6 @@
             "example": [
               "transactionIntents"
             ]
-          },
-          {
-            "description": "Specifies the unique player ID (starts with pla_)",
-            "in": "query",
-            "name": "player",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
           }
         ]
       },
@@ -18390,6 +18712,491 @@
             }
           }
         }
+      }
+    },
+    "/v2/accounts": {
+      "get": {
+        "operationId": "listAccountsV2",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountsListResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Accounts"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "accountType",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createAccountV2",
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Accounts"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountCreateRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/{accountId}": {
+      "get": {
+        "operationId": "getAccountV2",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Accounts"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "accountId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/signers/{signerId}/devices": {
+      "get": {
+        "operationId": "ListDevices",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceListResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Devices"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "signerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreateDevice",
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Devices"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "signerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceCreateRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/signers/{signerId}/devices/{deviceId}": {
+      "get": {
+        "operationId": "GetDevice",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Devices"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "signerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "deviceId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/signers": {
+      "get": {
+        "operationId": "ListSigners",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignerListResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Signers"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "signerType",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreateSigner",
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignerResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Signers"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSignerRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/signers/{signerId}": {
+      "get": {
+        "operationId": "GetSigner",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignerResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Signers"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "signerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/signers/{signerId}/export": {
+      "post": {
+        "operationId": "ExportSigner",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Signers"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "signerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     }
   },

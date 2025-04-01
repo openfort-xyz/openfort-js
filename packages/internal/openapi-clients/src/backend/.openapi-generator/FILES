@@ -10,6 +10,7 @@ domain/admin-authentication-api.ts
 domain/authentication-api.ts
 domain/contracts-api.ts
 domain/default-api.ts
+domain/devices-api.ts
 domain/events-api.ts
 domain/exchange-api.ts
 domain/forwarder-contract-api.ts
@@ -20,6 +21,7 @@ domain/policies-api.ts
 domain/policy-rules-api.ts
 domain/sessions-api.ts
 domain/settings-api.ts
+domain/signers-api.ts
 domain/subscriptions-api.ts
 domain/transaction-intents-api.ts
 git_push.sh
@@ -28,6 +30,7 @@ models/abi-type.ts
 models/abi.ts
 models/accelbyte-oauth-config.ts
 models/account-abstraction-v6-details.ts
+models/account-create-request.ts
 models/account-event-response.ts
 models/account-inventory-list-queries.ts
 models/account-list-queries.ts
@@ -36,6 +39,7 @@ models/account-policy-rule-response.ts
 models/account-response-expandable.ts
 models/account-response.ts
 models/account.ts
+models/accounts-list-queries.ts
 models/amount.ts
 models/api-authorized-network-delete-response.ts
 models/api-authorized-network-list-response.ts
@@ -48,6 +52,7 @@ models/apitopic-balanceproject.ts
 models/apitopic-transactionsuccessful.ts
 models/apitopic.ts
 models/apitrigger-type.ts
+models/apple-oauth-config.ts
 models/asset-inventory.ts
 models/asset-type.ts
 models/auth-config.ts
@@ -112,6 +117,7 @@ models/create-policy-rule-request.ts
 models/create-project-api-key-request.ts
 models/create-project-request.ts
 models/create-session-request.ts
+models/create-signer-request.ts
 models/create-subscription-request.ts
 models/create-transaction-intent-request.ts
 models/create-trigger-request.ts
@@ -127,6 +133,7 @@ models/developer-account-list-response.ts
 models/developer-account-response-expandable.ts
 models/developer-account-response.ts
 models/developer-account.ts
+models/device-create-request.ts
 models/device-list-queries.ts
 models/device-response.ts
 models/discord-oauth-config.ts
@@ -196,6 +203,9 @@ models/jwt-key.ts
 models/line-oauth-config.ts
 models/linked-account-response.ts
 models/list-config-request.ts
+models/list-queries.ts
+models/list-response-account.ts
+models/list-response-signer.ts
 models/list-subscription-logs-request.ts
 models/log-response.ts
 models/log.ts
@@ -213,6 +223,7 @@ models/oauth-config-list-response.ts
 models/oauth-init-request-options.ts
 models/oauth-init-request.ts
 models/oauth-provders.ts
+models/oauth-provider-apple.ts
 models/oauth-provider-discord.ts
 models/oauth-provider-epicgames.ts
 models/oauth-provider-facebook.ts
@@ -291,9 +302,15 @@ models/session-list-queries.ts
 models/session-list-response.ts
 models/session-response-expandable.ts
 models/session-response.ts
+models/shamir-params.ts
+models/shamir-signer.ts
 models/sign-payload-request.ts
 models/sign-payload-response.ts
 models/signature-request.ts
+models/signer-list-queries.ts
+models/signer-owner.ts
+models/signer-response.ts
+models/signer.ts
 models/signup-request.ts
 models/siweauthenticate-request.ts
 models/siweinit-response.ts

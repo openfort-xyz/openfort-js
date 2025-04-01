@@ -18,6 +18,9 @@
 import { AccelbyteOAuthConfig } from './accelbyte-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { AppleOAuthConfig } from './apple-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { CustomAuthConfig } from './custom-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore

@@ -15,23 +15,22 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
- * @enum {string}
+ * @interface ShamirSigner
  */
-
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter',
-    Facebook: 'facebook',
-    Discord: 'discord',
-    EpicGames: 'epic_games',
-    Telegram: 'telegram',
-    Line: 'line',
-    Apple: 'apple'
-} as const;
-
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
-
-
+export interface ShamirSigner {
+    /**
+     * 
+     * @type {string}
+     * @memberof ShamirSigner
+     */
+    'share': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ShamirSigner
+     */
+    'publicKey': string;
+}
 

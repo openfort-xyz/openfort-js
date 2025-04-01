@@ -15,23 +15,16 @@
 
 
 /**
- * Enum of the supporting OAuth providers.
+ * 
  * @export
- * @enum {string}
+ * @interface DeviceCreateRequest
  */
-
-export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter',
-    Facebook: 'facebook',
-    Discord: 'discord',
-    EpicGames: 'epic_games',
-    Telegram: 'telegram',
-    Line: 'line',
-    Apple: 'apple'
-} as const;
-
-export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];
-
-
+export interface DeviceCreateRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof DeviceCreateRequest
+     */
+    'share': string;
+}
 
