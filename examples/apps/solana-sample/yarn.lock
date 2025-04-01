@@ -912,27 +912,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/openfort-js@npm:^0.8.31":
-  version: 0.8.31
-  resolution: "@openfort/openfort-js@npm:0.8.31"
+"@openfort/openfort-js@npm:^0.8.34":
+  version: 0.8.34
+  resolution: "@openfort/openfort-js@npm:0.8.34"
   dependencies:
-    "@ethersproject/bytes": ^5.8.0
     "@ethersproject/hash": ^5.8.0
     "@ethersproject/providers": ^5.8.0
-    "@ethersproject/signing-key": ^5.8.0
-    "@ethersproject/transactions": ^5.8.0
     "@noble/curves": ^1.1.0
     "@openfort/shield-js": ^0.1.14
-    axios: 1.8.2
+    axios: ^1.8.2
     buffer: ^6.0.3
-    crypto-browserify: ^3.12.0
     crypto-js: ^4.2.0
     es6-promise: ^4.2.8
     jose: ^5.2.2
-    jsrsasign: ^11.1.0
     path: ^0.12.7
-    stream-browserify: ^3.0.0
-  checksum: c01192c15c616d823451a1bea16cb957990acd1d50b38a7ea07b11987b73a0548939419874b080a6b4a0a8494443bb45f6250dc2a0c69584327b1c1fa5671525
+  checksum: c78cb83784207840646190106777048044b0d7b0829ab0afd2ba9a7b6a9cc59ea4dc05dbb82d432dcc8856f55b970f1c3f0cf6a0bfaf189cc4b391d86d00127b
   languageName: node
   linkType: hard
 
@@ -1735,14 +1729,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.8.2":
-  version: 1.8.2
-  resolution: "axios@npm:1.8.2"
+"axios@npm:^1.8.2":
+  version: 1.8.4
+  resolution: "axios@npm:1.8.4"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: c47a43b79a058aa9e53a65bec9ade35c9f6e76a3999c795a79a2d205fb5f803fd4245497a0209a9727cbbe4f558791dd852ad2c168c5fc030259c11598ed8fd7
+  checksum: e901dc1730bdcd769839b3d93ae6d6457a53d79b19a0eb623ebfea333441259ab51e63ca118baa47a5156567401466ac739f31087b4ee5e6770ab2e227484538
   languageName: node
   linkType: hard
 
@@ -2221,7 +2215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-browserify@npm:^3.12.0, crypto-browserify@npm:^3.12.1":
+"crypto-browserify@npm:^3.12.1":
   version: 3.12.1
   resolution: "crypto-browserify@npm:3.12.1"
   dependencies:
@@ -3515,13 +3509,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsrsasign@npm:^11.1.0":
-  version: 11.1.0
-  resolution: "jsrsasign@npm:11.1.0"
-  checksum: 1ce5eb44490be260c8b667d14fa8c62bfd75ee2b28f8193043ebd62dc9ac9d371a424d3e648cc2f0c220edada1ea4910d5c8cdebc69fc8c49087539c2e9009c6
-  languageName: node
-  linkType: hard
-
 "keyv@npm:^4.5.4":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
@@ -4808,7 +4795,7 @@ __metadata:
   resolution: "solana-sample@workspace:."
   dependencies:
     "@eslint/js": ^9.21.0
-    "@openfort/openfort-js": ^0.8.31
+    "@openfort/openfort-js": ^0.8.34
     "@solana/web3.js": ^1.98.0
     "@tailwindcss/vite": ^4.0.14
     "@types/react": ^19.0.10
