@@ -107,9 +107,8 @@ export enum ThirdPartyOAuthProvider {
   SUPABASE = 'supabase',
   CUSTOM = 'custom',
   OIDC = 'oidc',
-  APPLE = 'apple',
-  GOOGLE = 'google',
-  TELEGRAM_MINI_APP = 'telegramMiniApp',
+  APPLE_NATIVE = 'apple_native',
+  GOOGLE_NATIVE = 'google_native',
 }
 
 export enum BasicAuthProvider {
@@ -120,11 +119,13 @@ export enum BasicAuthProvider {
 export const AUTH_PROVIDER = {
   email: 'email',
   wallet: 'wallet',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  apple_native: 'apple_native',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  google_native: 'google_native',
   apple: 'apple',
   google: 'google',
   twitter: 'twitter',
-  telegram: 'telegram',
-  telegramMiniApp: 'telegramMiniApp',
   discord: 'discord',
   facebook: 'facebook',
   epicGames: 'epic_games',
@@ -146,7 +147,6 @@ export enum OAuthProvider {
   FACEBOOK = 'facebook',
   DISCORD = 'discord',
   EPIC_GAMES = 'epic_games',
-  TELEGRAM = 'telegram',
   LINE = 'line',
 }
 

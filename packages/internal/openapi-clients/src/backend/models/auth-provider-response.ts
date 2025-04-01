@@ -24,11 +24,11 @@ export const AuthProviderResponse = {
     Email: 'email',
     Wallet: 'wallet',
     Google: 'google',
+    Apple: 'apple',
     Twitter: 'twitter',
     Discord: 'discord',
     EpicGames: 'epic_games',
     Facebook: 'facebook',
-    Telegram: 'telegram',
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',
     Lootlocker: 'lootlocker',
@@ -36,7 +36,8 @@ export const AuthProviderResponse = {
     Supabase: 'supabase',
     Custom: 'custom',
     Oidc: 'oidc',
-    TelegramMiniApp: 'telegramMiniApp'
+    GoogleNative: 'google_native',
+    AppleNative: 'apple_native'
 } as const;
 
 export type AuthProviderResponse = typeof AuthProviderResponse[keyof typeof AuthProviderResponse];

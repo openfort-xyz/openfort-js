@@ -52,6 +52,7 @@ models/apitopic-balanceproject.ts
 models/apitopic-transactionsuccessful.ts
 models/apitopic.ts
 models/apitrigger-type.ts
+models/apple-native-oauth-config.ts
 models/apple-oauth-config.ts
 models/asset-inventory.ts
 models/asset-type.ts
@@ -188,6 +189,7 @@ models/gas-report-list-response.ts
 models/gas-report-transaction-intents-list-response.ts
 models/gas-report-transaction-intents.ts
 models/gas-report.ts
+models/google-native-oauth-config.ts
 models/google-oauth-config.ts
 models/grant-callback-request.ts
 models/grant-oauth-response.ts
@@ -229,7 +231,6 @@ models/oauth-provider-epicgames.ts
 models/oauth-provider-facebook.ts
 models/oauth-provider-google.ts
 models/oauth-provider-line.ts
-models/oauth-provider-telegram.ts
 models/oauth-provider-twitter.ts
 models/oauth-provider.ts
 models/oauth-request.ts
@@ -331,18 +332,17 @@ models/subscription-response-plan.ts
 models/subscription-response.ts
 models/supabase-auth-config.ts
 models/switch-chain-request.ts
-models/telegram-oauth-config.ts
-models/telegram-third-party-config.ts
 models/test-trigger200-response.ts
 models/third-party-link-request.ts
 models/third-party-oauth-provider-accelbyte.ts
+models/third-party-oauth-provider-applenative.ts
 models/third-party-oauth-provider-custom.ts
 models/third-party-oauth-provider-firebase.ts
+models/third-party-oauth-provider-googlenative.ts
 models/third-party-oauth-provider-lootlocker.ts
 models/third-party-oauth-provider-oidc.ts
 models/third-party-oauth-provider-playfab.ts
 models/third-party-oauth-provider-supabase.ts
-models/third-party-oauth-provider-telegramminiapp.ts
 models/third-party-oauth-provider.ts
 models/third-party-oauth-request.ts
 models/time-interval-type.ts

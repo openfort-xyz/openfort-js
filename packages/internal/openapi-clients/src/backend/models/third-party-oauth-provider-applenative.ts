@@ -20,11 +20,11 @@
  * @enum {string}
  */
 
-export const OAuthProviderTELEGRAM = {
-    Telegram: 'telegram'
+export const ThirdPartyOAuthProviderAPPLENATIVE = {
+    AppleNative: 'apple_native'
 } as const;
 
-export type OAuthProviderTELEGRAM = typeof OAuthProviderTELEGRAM[keyof typeof OAuthProviderTELEGRAM];
+export type ThirdPartyOAuthProviderAPPLENATIVE = typeof ThirdPartyOAuthProviderAPPLENATIVE[keyof typeof ThirdPartyOAuthProviderAPPLENATIVE];
 
 
 

@@ -26,7 +26,6 @@ export const OAuthProvider = {
     Facebook: 'facebook',
     Discord: 'discord',
     EpicGames: 'epic_games',
-    Telegram: 'telegram',
     Line: 'line',
     Apple: 'apple'
 } as const;
