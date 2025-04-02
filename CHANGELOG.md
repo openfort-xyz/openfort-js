@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.35] - 2025-04-02
+## [0.8.36] - 2025-04-02
 ### Fix
 - eip 1193 provider sign message
 
-## [0.8.34] - 2025-04-01
+## [0.8.35] - 2025-04-01
 ### Chore
 - update auth methods
 
