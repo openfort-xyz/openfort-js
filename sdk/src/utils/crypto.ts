@@ -108,3 +108,92 @@ export function sign({
 
   return serializeSignature(signature);
 }
+
+export function isHex(
+  value: unknown,
+  { strict = true }: { strict?: boolean | undefined } = {},
+): value is Hex {
+  if (!value) return false;
+  if (typeof value !== 'string') return false;
+  return strict ? /^0x[0-9a-fA-F]*$/.test(value) : value.startsWith('0x');
+}
+
+export type ByteArray = Uint8Array;
+export function sizeValue(value: Hex | ByteArray) {
+  if (isHex(value, { strict: false })) return Math.ceil((value.length - 2) / 2);
+  return value.length;
+}
+
+export type SizeOverflowErrorType = SizeOverflowError & {
+  name: 'SizeOverflowError'
+};
+export class SizeOverflowError extends Error {
+  constructor({ givenSize, maxSize }: { givenSize: number; maxSize: number }) {
+    super(
+      `Size cannot exceed ${maxSize} bytes. Given size: ${givenSize} bytes.`,
+    );
+  }
+}
+
+export function assertSize(
+  hexOrBytes: Hex | ByteArray,
+  { size }: { size: number },
+): void {
+  if (sizeValue(hexOrBytes) > size) {
+    throw new SizeOverflowError({
+      givenSize: sizeValue(hexOrBytes),
+      maxSize: size,
+    });
+  }
+}
+
+export type HexToStringOpts = {
+  /** Size (in bytes) of the hex value. */
+  size?: number | undefined
+};
+
+type TrimOptions = {
+  dir?: 'left' | 'right' | undefined
+};
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export type TrimReturnType<value extends ByteArray | Hex> = value extends Hex
+  ? Hex
+  : ByteArray;
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export type ErrorType<name extends string = 'Error'> = Error & { name: name };
+
+export type TrimErrorType = ErrorType;
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function trim<value extends ByteArray | Hex>(
+  hexOrBytes: value,
+  { dir = 'left' }: TrimOptions = {},
+): TrimReturnType<value> {
+  let data: any = typeof hexOrBytes === 'string' ? hexOrBytes.replace('0x', '') : hexOrBytes;
+
+  let sliceLength = 0;
+  for (let i = 0; i < data.length - 1; i++) {
+    if (data[dir === 'left' ? i : data.length - i - 1].toString() === '0') sliceLength++;
+    else break;
+  }
+  data = dir === 'left'
+    ? data.slice(sliceLength)
+    : data.slice(0, data.length - sliceLength);
+
+  if (typeof hexOrBytes === 'string') {
+    if (data.length === 1 && dir === 'right') data = `${data}0`;
+    return `0x${data.length % 2 === 1 ? `0${data}` : data
+    }` as TrimReturnType<value>;
+  }
+  return data as TrimReturnType<value>;
+}
+
+export function hexToString(hex: Hex, opts: HexToStringOpts = {}): string {
+  let bytes = hexToBytes(hex);
+  if (opts.size) {
+    assertSize(bytes, { size: opts.size });
+    bytes = trim(bytes, { dir: 'right' });
+  }
+  return new TextDecoder().decode(bytes);
+}

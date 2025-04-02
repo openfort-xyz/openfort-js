@@ -1,4 +1,5 @@
 import { Account } from 'configuration/account';
+import { hexToString } from 'utils/crypto';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer as OpenfortSigner } from '../signer/isigner';
 
@@ -24,7 +25,7 @@ export const personalSign = async ({
     throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'personal_sign requires the signer to be the from address');
   }
 
-  const signature = await signer.sign(message, false, true);
+  const signature = await signer.sign(hexToString(message as `0x${string}`), false, true);
 
   return signature;
 };
