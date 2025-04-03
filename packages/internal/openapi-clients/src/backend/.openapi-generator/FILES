@@ -57,6 +57,9 @@ models/apple-oauth-config.ts
 models/asset-inventory.ts
 models/asset-type.ts
 models/auth-config.ts
+models/auth-migration-list-response.ts
+models/auth-migration-response.ts
+models/auth-migration-status.ts
 models/auth-player-list-queries.ts
 models/auth-player-list-response.ts
 models/auth-player-response-player.ts
@@ -112,6 +115,7 @@ models/create-email-sample-request.ts
 models/create-event-request.ts
 models/create-exchange-request.ts
 models/create-forwarder-contract-request.ts
+models/create-migration-request.ts
 models/create-paymaster-request.ts
 models/create-policy-request.ts
 models/create-policy-rule-request.ts
@@ -205,6 +209,7 @@ models/jwt-key.ts
 models/line-oauth-config.ts
 models/linked-account-response.ts
 models/list-config-request.ts
+models/list-migrations-request.ts
 models/list-queries.ts
 models/list-response-account.ts
 models/list-response-signer.ts
@@ -215,6 +220,7 @@ models/login-oidcrequest.ts
 models/login-request.ts
 models/logout-request.ts
 models/loot-locker-oauth-config.ts
+models/mapping-strategy.ts
 models/money.ts
 models/month-range.ts
 models/my-ecosystem-response.ts
@@ -372,6 +378,7 @@ models/unlink-oauth-request.ts
 models/update-contract-request.ts
 models/update-developer-account-create-request.ts
 models/update-email-sample-request.ts
+models/update-migration-request.ts
 models/update-policy-request.ts
 models/update-policy-rule-request.ts
 models/update-project-api-key-request.ts

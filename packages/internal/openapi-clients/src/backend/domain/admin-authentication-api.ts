@@ -295,6 +295,44 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             };
         },
         /**
+         * Retrieves an authenticated player.  Players have linked accounts and are authenticated with a provider.
+         * @summary Authenticated player.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthPlayer: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getAuthPlayer', 'id', id)
+            const localVarPath = `/iam/v1/players/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Retrieves a list of authenticated players.  Players have linked accounts and are authenticated with a provider.
          * @summary List authenticated players.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -631,6 +669,17 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Retrieves an authenticated player.  Players have linked accounts and are authenticated with a provider.
+         * @summary Authenticated player.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAuthPlayer(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthPlayer(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Retrieves a list of authenticated players.  Players have linked accounts and are authenticated with a provider.
          * @summary List authenticated players.
          * @param {number} [limit] Specifies the maximum number of records to return.
@@ -773,6 +822,16 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
          */
         deleteOAuthConfig(requestParameters: AdminAuthenticationApiDeleteOAuthConfigRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.deleteOAuthConfig(requestParameters.provider, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves an authenticated player.  Players have linked accounts and are authenticated with a provider.
+         * @summary Authenticated player.
+         * @param {AdminAuthenticationApiGetAuthPlayerRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAuthPlayer(requestParameters: AdminAuthenticationApiGetAuthPlayerRequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
+            return localVarFp.getAuthPlayer(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves a list of authenticated players.  Players have linked accounts and are authenticated with a provider.
@@ -921,6 +980,20 @@ export interface AdminAuthenticationApiDeleteOAuthConfigRequest {
      * @memberof AdminAuthenticationApiDeleteOAuthConfig
      */
     readonly provider: OAuthProvider
+}
+
+/**
+ * Request parameters for getAuthPlayer operation in AdminAuthenticationApi.
+ * @export
+ * @interface AdminAuthenticationApiGetAuthPlayerRequest
+ */
+export interface AdminAuthenticationApiGetAuthPlayerRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof AdminAuthenticationApiGetAuthPlayer
+     */
+    readonly id: string
 }
 
 /**
@@ -1106,6 +1179,18 @@ export class AdminAuthenticationApi extends BaseAPI {
      */
     public deleteOAuthConfig(requestParameters: AdminAuthenticationApiDeleteOAuthConfigRequest, options?: AxiosRequestConfig) {
         return AdminAuthenticationApiFp(this.configuration).deleteOAuthConfig(requestParameters.provider, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves an authenticated player.  Players have linked accounts and are authenticated with a provider.
+     * @summary Authenticated player.
+     * @param {AdminAuthenticationApiGetAuthPlayerRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public getAuthPlayer(requestParameters: AdminAuthenticationApiGetAuthPlayerRequest, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).getAuthPlayer(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

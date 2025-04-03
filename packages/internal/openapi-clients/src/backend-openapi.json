@@ -1785,6 +1785,199 @@
         "type": "object",
         "additionalProperties": false
       },
+      "AuthMigrationStatus": {
+        "enum": [
+          "created",
+          "running",
+          "paused",
+          "completed",
+          "failed",
+          "canceled"
+        ],
+        "type": "string"
+      },
+      "MappingStrategy": {
+        "description": "Mapping strategy for the migration. This is used to transform the ids between the source and destination providers.\nFor the transformation, the order of the operations is:\n1. Trim the prefix and suffix from the destination id.\n2. Add the prefix and suffix to the destination id.\nWhen a user is authenticated in the destination provider, the id is transformed using the mapping strategy to find if exists in the source provider.\nIf the id is not found, the user is created in the destination provider.\nIf the id is found, the user in the destination provider is linked to the source provider.",
+        "properties": {
+          "trimPrefix": {
+            "type": "string",
+            "description": "Prefix to trim from the destination id."
+          },
+          "trimSuffix": {
+            "type": "string",
+            "description": "Suffix to trim from the destination id."
+          },
+          "addPrefix": {
+            "type": "string",
+            "description": "Prefix to add to the destination id."
+          },
+          "addSuffix": {
+            "type": "string",
+            "description": "Suffix to add to the destination id."
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthMigrationResponse": {
+        "description": "Auth Migration Response.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the migration."
+          },
+          "sourceProvider": {
+            "$ref": "#/components/schemas/AuthProvider",
+            "description": "The source provider for the migration."
+          },
+          "destinationProvider": {
+            "$ref": "#/components/schemas/AuthProvider",
+            "description": "The destination provider for the migration."
+          },
+          "status": {
+            "$ref": "#/components/schemas/AuthMigrationStatus",
+            "description": "The status of the migration."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The created date of the migration."
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "If the migration is finished, this will be the date it was finished."
+          },
+          "mappingStrategy": {
+            "$ref": "#/components/schemas/MappingStrategy",
+            "description": "The mapping strategy used for the migration.\nIf not provided, the direct mapping will be used."
+          }
+        },
+        "required": [
+          "id",
+          "sourceProvider",
+          "destinationProvider",
+          "status",
+          "createdAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateMigrationRequest": {
+        "properties": {
+          "mappingStrategy": {
+            "$ref": "#/components/schemas/MappingStrategy",
+            "description": "The mapping strategy used for the migration.\nIf not provided, the direct mapping will be used."
+          },
+          "destinationProvider": {
+            "$ref": "#/components/schemas/AuthProvider",
+            "description": "Destination provider"
+          },
+          "sourceProvider": {
+            "$ref": "#/components/schemas/AuthProvider",
+            "description": "Source provider"
+          }
+        },
+        "required": [
+          "destinationProvider",
+          "sourceProvider"
+        ],
+        "type": "object",
+        "description": "Request for migrating authentication from one provider to another"
+      },
+      "AuthMigrationListResponse": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AuthMigrationResponse"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListMigrationsRequest": {
+        "description": "Request for listing Migrations",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the maximum number of records to return.",
+            "minimum": 1
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the offset for the first records to return.",
+            "minimum": 0
+          },
+          "order": {
+            "$ref": "#/components/schemas/SortOrder",
+            "description": "Specifies the order in which to sort the results."
+          },
+          "sourceProvider": {
+            "$ref": "#/components/schemas/AuthProvider",
+            "description": "Source provider"
+          },
+          "destinationProvider": {
+            "$ref": "#/components/schemas/AuthProvider",
+            "description": "Destination provider"
+          },
+          "status": {
+            "items": {
+              "$ref": "#/components/schemas/AuthMigrationStatus"
+            },
+            "type": "array",
+            "description": "Status of the migration"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateMigrationRequest": {
+        "properties": {
+          "mappingStrategy": {
+            "$ref": "#/components/schemas/MappingStrategy",
+            "description": "The mapping strategy used for the migration.\nIf not provided, the direct mapping will be used."
+          },
+          "status": {
+            "$ref": "#/components/schemas/AuthMigrationStatus",
+            "description": "Status of the migration"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "description": "Request for update the status of a migration"
+      },
       "OAuthConfigListResponse": {
         "description": "Response for the OAuth config list method.",
         "properties": {
@@ -9152,6 +9345,64 @@
       }
     },
     "/iam/v1/players/{id}": {
+      "get": {
+        "operationId": "GetAuthPlayer",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthPlayerResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
+                      "object": "player",
+                      "createdAt": 1691658234,
+                      "linkedAccounts": [
+                        {
+                          "provider": "email",
+                          "email": "jaume@openfort.xyz",
+                          "disabled": false,
+                          "updatedAt": 1691658234
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieves an authenticated player.\n\nPlayers have linked accounts and are authenticated with a provider.",
+        "summary": "Authenticated player.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
       "delete": {
         "operationId": "DeleteAuthPlayer",
         "responses": {
@@ -9384,6 +9635,294 @@
             }
           }
         ]
+      }
+    },
+    "/iam/v1/migrations": {
+      "post": {
+        "operationId": "CreateAuthMigration",
+        "responses": {
+          "201": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMigrationResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "mig_...",
+                      "sourceProvider": "firebase",
+                      "destinationProvider": "google",
+                      "status": "created",
+                      "createdAt": "2025-04-03T10:23:23.799Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Create a new auth migration.",
+        "summary": "Create a new auth migration.",
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "description": "Specifies the auth migration request.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMigrationRequest",
+                "description": "Specifies the auth migration request."
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "ListAuthMigration",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMigrationListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "mig_...",
+                          "sourceProvider": "firebase",
+                          "destinationProvider": "google",
+                          "status": "created",
+                          "createdAt": "2025-04-03T10:23:23.801Z"
+                        }
+                      ],
+                      "object": "list",
+                      "url": "/iam/v1/migrations",
+                      "start": 0,
+                      "end": 1,
+                      "total": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Error response."
+          }
+        },
+        "description": "List all auth migrations.",
+        "summary": "List all auth migrations.",
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/SortOrder"
+            }
+          },
+          {
+            "description": "Source provider",
+            "in": "query",
+            "name": "sourceProvider",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthProvider"
+            }
+          },
+          {
+            "description": "Destination provider",
+            "in": "query",
+            "name": "destinationProvider",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AuthProvider"
+            }
+          },
+          {
+            "description": "Status of the migration",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AuthMigrationStatus"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/iam/v1/migrations/{id}": {
+      "get": {
+        "operationId": "GetAuthMigration",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMigrationResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "mig_...",
+                      "sourceProvider": "firebase",
+                      "destinationProvider": "google",
+                      "status": "created",
+                      "createdAt": "2025-04-03T10:23:23.800Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Error response."
+          }
+        },
+        "description": "Get the status of an auth migration.",
+        "summary": "Get the status of an auth migration.",
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the auth migration ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "UpdateAuthMigration",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMigrationResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "mig_...",
+                      "sourceProvider": "firebase",
+                      "destinationProvider": "google",
+                      "status": "created",
+                      "createdAt": "2025-04-03T10:23:23.802Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Error response."
+          }
+        },
+        "description": "Update the status of an auth migration.",
+        "summary": "Update the status of an auth migration.",
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the auth migration ID.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Specifies the update migration request.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMigrationRequest",
+                "description": "Specifies the update migration request."
+              }
+            }
+          }
+        }
       }
     },
     "/iam/v1/oauth": {
@@ -18548,6 +19087,12 @@
         "security": [
           {
             "sk": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "pk_access_token": []
           },
           {
             "pk_identity_token": []

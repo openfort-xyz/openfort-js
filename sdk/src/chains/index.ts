@@ -58,6 +58,8 @@ import sophonMainnet from './50104';
 import kromaTestnet from './2358';
 import kromaMainnet from './255';
 
+import titanTestnet from './85011';
+
 export const chainMap: { [key: number]: Chain } = {
   1: ethereum,
   300: zksyncSepolia,
@@ -97,6 +99,7 @@ export const chainMap: { [key: number]: Chain } = {
   7225878: saakuruMainnet,
   2741: abstract,
   11124: abstractTestnet,
+  85011: titanTestnet,
 };
 
 export default [
@@ -138,6 +141,7 @@ export default [
   kromaMainnet,
   saakuruMainnet,
   saakuruTestnet,
+  titanTestnet,
 ];
 
 export type Chain = {
@@ -226,4 +230,5 @@ export const chainRpcs: { [key: number]: string } = {
   666666666: 'https://rpc.degen.tips',
   888888888: 'https://rpc.ancient8.gg',
   999999999: 'https://sepolia.rpc.zora.energy',
+  85011: 'https://subnets.avax.network/criminalsa/testnet/rpc',
 };
