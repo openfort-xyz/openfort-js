@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
-    "@openfort/openfort-js": "^0.8.34",
-    "@openfort/openfort-node": "^0.6.65",
+    "@openfort/openfort-js": "^0.8.37",
+    "@openfort/openfort-node": "^0.6.66",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-label": "^2.1.0",

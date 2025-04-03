@@ -1181,9 +1181,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/openfort-js@npm:0.8.34":
-  version: 0.8.34
-  resolution: "@openfort/openfort-js@npm:0.8.34"
+"@openfort/openfort-js@npm:0.8.37":
+  version: 0.8.37
+  resolution: "@openfort/openfort-js@npm:0.8.37"
   dependencies:
     "@ethersproject/hash": ^5.8.0
     "@ethersproject/providers": ^5.8.0
@@ -1195,7 +1195,7 @@ __metadata:
     es6-promise: ^4.2.8
     jose: ^5.2.2
     path: ^0.12.7
-  checksum: c78cb83784207840646190106777048044b0d7b0829ab0afd2ba9a7b6a9cc59ea4dc05dbb82d432dcc8856f55b970f1c3f0cf6a0bfaf189cc4b391d86d00127b
+  checksum: 10ca12aeb22e47f6f7c29a59907abbaed5811fb7c66043ace5dff507ae0677284487320fe888cf921d00af7a834269e8c19c80a045147ce03d42021963514d34
   languageName: node
   linkType: hard
 
@@ -5875,7 +5875,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "wagmi-vite-app-openfort@workspace:."
   dependencies:
-    "@openfort/openfort-js": 0.8.34
+    "@openfort/openfort-js": 0.8.37
     "@tanstack/react-query": ^5.32.1
     "@types/react": ^18.2.18
     "@types/react-dom": ^18.2.7
