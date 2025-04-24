@@ -2228,7 +2228,7 @@ __metadata:
     jsonwebtoken: ^9.0.2
     lint-staged: ^13.0.3
     lucide-react: ^0.454.0
-    next: ^14.2.21
+    next: 14.2.25
     postcss: ^8.3.6
     prettier: ^2.7.1
     react: ^18.3.0
@@ -4529,7 +4529,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:^14.2.21":
+"next@npm:14.2.25":
   version: 14.2.25
   resolution: "next@npm:14.2.25"
   dependencies:

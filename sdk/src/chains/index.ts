@@ -59,6 +59,9 @@ import kromaTestnet from './2358';
 import kromaMainnet from './255';
 
 import titanTestnet from './85011';
+import titanMainnet from './84358';
+
+import monadTestnet from './10143';
 
 export const chainMap: { [key: number]: Chain } = {
   1: ethereum,
@@ -100,6 +103,8 @@ export const chainMap: { [key: number]: Chain } = {
   2741: abstract,
   11124: abstractTestnet,
   85011: titanTestnet,
+  84358: titanMainnet,
+  10143: monadTestnet,
 };
 
 export default [
@@ -142,6 +147,8 @@ export default [
   saakuruMainnet,
   saakuruTestnet,
   titanTestnet,
+  titanMainnet,
+  monadTestnet,
 ];
 
 export type Chain = {
@@ -231,4 +238,6 @@ export const chainRpcs: { [key: number]: string } = {
   888888888: 'https://rpc.ancient8.gg',
   999999999: 'https://sepolia.rpc.zora.energy',
   85011: 'https://subnets.avax.network/criminalsa/testnet/rpc',
+  84358: 'https://subnets.avax.network/titan/mainnet/rpc',
+  10143: 'https://testnet-rpc.monad.xyz',
 };

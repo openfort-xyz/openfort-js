@@ -25,7 +25,7 @@ function ConnectWalletPage() {
   const [status, setStatus] = useState<StatusType>(null);
   const WalletButtons = getWalletButtons({
     chains: [Chain.AMOY],
-    connectors: [WalletConnector.METAMASK],
+    connectors: [WalletConnector.METAMASK, WalletConnector.COINBASE],
   });
 
   const redirect = () => {
