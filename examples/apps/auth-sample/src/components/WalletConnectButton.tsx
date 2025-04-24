@@ -1,10 +1,10 @@
-import {polygonAmoy} from 'wagmi/chains';
+import {baseSepolia, polygonAmoy} from 'wagmi/chains';
 import React, {FunctionComponent, useState} from 'react';
 import {withWagmi} from './wagmiProvider';
-import {Connector, createConfig, http, useConnect} from 'wagmi';
+import {Connector, createConfig, http, useChainId, useConnect} from 'wagmi';
 import {Chain, WalletConnector} from '../utils/constants';
 import type {Chain as WagmiChain} from 'wagmi/chains';
-import {metaMask, walletConnect} from 'wagmi/connectors';
+import {coinbaseWallet, metaMask, walletConnect} from 'wagmi/connectors';
 import {Transport} from '@wagmi/core';
 import {OnSuccess, SignMessageFunction} from '../utils/types';
 import {createSIWEMessage} from '../utils/create-siwe-message';
@@ -66,7 +66,7 @@ const WalletConnectButtons = ({
   signMessage,
 }: WalletConnectButtonsProps) => {
   const {connectors, connect} = useConnect();
-
+  const chainId = useChainId()
   const [loading, setLoading] = useState<string>(null!);
 
   const initConnect = async (connector: Connector) => {
@@ -86,7 +86,7 @@ const WalletConnectButtons = ({
           if (address) {
             try {
               const {nonce} = await openfort.initSIWE({address});
-              const SIWEMessage = createSIWEMessage(address, nonce);
+              const SIWEMessage = createSIWEMessage(address, nonce, chainId);
               const signature = await signMessage(SIWEMessage);
               link
                 ? await openfort.linkWallet({
@@ -131,10 +131,12 @@ const WalletConnectButtons = ({
 
 const chainToWagmiChain = {
   [Chain.AMOY]: polygonAmoy,
+  [Chain.BASE_SEPOLIA]: baseSepolia,
 };
 const connectorToWagmiConnector = {
   [WalletConnector.METAMASK]: metaMask,
   [WalletConnector.WALLET_CONNECT]: walletConnect,
+  [WalletConnector.COINBASE]: coinbaseWallet,
 };
 
 export const getWalletButtons = (params: GetWalletButtonsParams) => {

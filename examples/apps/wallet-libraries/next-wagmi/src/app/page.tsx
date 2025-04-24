@@ -24,14 +24,12 @@ import {
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
+  useSendCalls
 } from 'wagmi'
-import { switchChain } from 'wagmi/actions'
-import { baseSepolia, sepolia } from 'wagmi/chains'
 import { useRouter } from 'next/navigation'
 
 import { wagmiContractConfig } from './contracts'
 import { openfortInstance } from '../openfort'
-import { useWriteContracts } from 'wagmi/experimental'
 import { erc7715Actions, GrantPermissionsReturnType } from 'viem/experimental'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 
@@ -435,15 +433,15 @@ function WriteContract() {
 
 
 function WriteContracts() {
-  const { data: hash, error, isPending, writeContracts } = useWriteContracts()
+  const { data: hash, error, isPending, sendCalls } = useSendCalls()
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const tokenId = formData.get('tokenId') as string
-    writeContracts(
+    sendCalls(
       {
-        contracts: [
+        calls: [
           {
             address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
             abi: parseAbi(['function mint(uint256 tokenId)']),
@@ -456,14 +454,14 @@ function WriteContracts() {
             functionName: 'mint',
             args: [BigInt(tokenId)],
           }
-        ]
+        ],
       }
     )
   }
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
-      hash: hash as `0x${string}`,
+      hash: hash?.id as `0x${string}`,
     })
 
   return (
@@ -475,7 +473,7 @@ function WriteContracts() {
           {isPending ? 'Confirming...' : 'Mint'}
         </button>
       </form>
-      {hash && <div>Transaction Hash: {hash}</div>}
+      {hash && <div>Transaction Hash: {hash?.id}</div>}
       {isConfirming && 'Waiting for confirmation...'}
       {isConfirmed && 'Transaction confirmed.'}
       {error && (
