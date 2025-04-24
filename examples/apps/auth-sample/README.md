@@ -1,6 +1,6 @@
-# Openfort Auth `create-next-app` Starter
+# Openfort Invisible wallet `create-next-app` Starter
 
-This is a template for integrating [**Openfort Auth**](https://www.openfort.io/) into a [NextJS](https://nextjs.org/) project. Check out the deployed app [here](https://create-next-app.openfort.xyz/)!
+This is a template for integrating [**Openfort Invisible Wallet**](https://www.openfort.io/) into a [NextJS](https://nextjs.org/) project. Check out the deployed app [here](https://create-next-app.openfort.xyz/)!
 
 This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-your-application/routing).
 
@@ -12,12 +12,12 @@ This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-yo
 mkdir -p openfort-auth-sample-nextjs && curl -L https://codeload.github.com/openfort-xyz/openfort-js/tar.gz/main | tar -xz --strip=4 -C openfort-auth-sample-nextjs openfort-js-main/examples/apps/auth-sample && cd openfort-auth-sample-nextjs
 ```
 
-2. Install the necessary dependencies (including [Openfort Auth](https://www.npmjs.com/package/@openfort/openfort-js)) with `npm`.
+2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `npm`.
 ```sh
 npm i 
 ```
 
-1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/api-keys).
+1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
 ```sh
 # In your terminal, create .env.local from .env.example
 cp .env.example .env.local
@@ -41,4 +41,4 @@ In your project directory, run `npm run dev`. You can now visit http://localhost
 - `components/Signatures/SignMessageButton.tsx` for how to sign messages.
 
 
-**Check out [our docs](https://www.openfort.io/docs/guides/getting-started) for more guidance around using Openfort in your app!**
+**Check out [our docs](https://www.openfort.io/docs/products/embedded-wallet/javascript/quickstart) for more guidance around using Openfort in your app!**
