@@ -11,7 +11,7 @@ mkdir -p openfort-wagmi-sample-next && curl -L https://codeload.github.com/openf
 
 **Step 2**
 
-Install the necessary dependencies (including [Openfort Auth](https://www.npmjs.com/package/@openfort/openfort-js)) with 
+Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with 
 
 ```sh
 npm i 
