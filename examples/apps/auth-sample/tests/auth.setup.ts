@@ -11,8 +11,14 @@ setup('authenticate', async ({ page }) => {
   // The new page should contain an h1 with "Sign in to account"
   await expect(page.locator('h1')).toContainText('Sign in to account')
 
-  await page.getByLabel('Email address').fill(process.env.E2E_TESTS_USER || "");
-  await page.getByLabel('Password').fill(process.env.E2E_TESTS_PASSWORD || "");
+  const email = process.env.E2E_TESTS_USER;
+  const password = process.env.E2E_TESTS_PASSWORD;
+  if (!email || !password) {
+    throw new Error('E2E_TESTS_USER and E2E_TESTS_PASSWORD environment variables must be set');
+  }
+
+  await page.getByLabel('Email address').fill(email);
+  await page.getByLabel('Password').fill(password);
 
   await page.getByRole('button', { name: 'Sign in' }).click();
 

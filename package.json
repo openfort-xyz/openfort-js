@@ -50,13 +50,10 @@
   },
   "workspaces": {
     "packages": [
+      "packages/**",
       "sdk",
-      "packages/internal/openapi-clients",
-      "packages/platform-bridge"
-    ],
-    "nohoist": [
       "examples/**",
-      "test/**"
+      "test"
     ]
   },
   "sideEffects": false

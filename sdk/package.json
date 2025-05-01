@@ -26,6 +26,7 @@
     "typecheck": "tsc --noEmit --jsx preserve",
     "lint": "eslint 'src/**/*.ts' --fix",
     "clean": "rimraf dist",
+    "dev": "NODE_ENV=development yarn rollup --config rollup.config.js --watch",
     "build": "yarn packageList && yarn clean && NODE_ENV=production yarn rollup --config rollup.config.js && rm -rf dist/types",
     "stats": "open ./stats.html"
   },
