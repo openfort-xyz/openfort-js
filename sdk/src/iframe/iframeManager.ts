@@ -131,9 +131,9 @@ export class IframeManager {
       }
       this.iframe = iframe;
     } else {
-      if (!global.openfortListener) return;
+      if (!global.openfort) return;
 
-      global.openfortListener((event: MessageEvent<any>) => {
+      global.openfort.openfortListener((event: MessageEvent<any>) => {
         if (event.origin === this.sdkConfiguration.iframeUrl) {
           let { data } = event;
           if (typeof data === 'string') data = JSON.parse(data);
@@ -146,8 +146,8 @@ export class IframeManager {
       this.iframe = {
         contentWindow: {
           postMessage: (message: MessageEvent<any>) => {
-            if (!global.openfortPostMessage) return;
-            global.openfortPostMessage(message);
+            if (!global.openfort) return;
+            global.openfort.openfortPostMessage(message);
           },
         },
       };
