@@ -6,7 +6,7 @@ import { TextField } from "../components/Fields";
 import { StatusType, Toast } from "../components/Toasts";
 import openfort from "../utils/openfortConfig";
 import { getURL } from "../utils/getUrl";
-import { AuthPlayerResponse, OAuthProvider } from "@openfort/openfort-js";
+import { AuthPlayerResponse, OAuthProvider, Openfort } from "@openfort/openfort-js";
 import { Button } from "@/components/ui/button";
 import Loading from "@/components/Loading";
 
@@ -121,7 +121,7 @@ function LoginPage() {
             Explore Openfort
           </p>
           <p className='text-gray-500'>
-          Sign in to the demo to access the dev tools.
+            Sign in to the demo to access the dev tools.
           </p>
           <Button variant={'outline'} size={'sm'} className="mt-2">
             <Link href='https://www.openfort.io/docs' target="_blank">
@@ -210,7 +210,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.initOAuth({
+                      const { url } = await openfort.initOAuth({
                         provider: OAuthProvider.GOOGLE,
                         options: {
                           redirectTo: getURL() + "/login",
@@ -227,7 +227,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.initOAuth({
+                      const { url } = await openfort.initOAuth({
                         provider: OAuthProvider.TWITTER,
                         options: {
                           redirectTo: getURL() + "/login",
@@ -244,7 +244,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.initOAuth({
+                      const { url } = await openfort.initOAuth({
                         provider: OAuthProvider.FACEBOOK,
                         options: {
                           redirectTo: getURL() + "/login",

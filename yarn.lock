@@ -2302,24 +2302,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@npm:0.8.37":
-  version: 0.8.37
-  resolution: "@openfort/openfort-js@npm:0.8.37"
-  dependencies:
-    "@ethersproject/hash": ^5.8.0
-    "@ethersproject/providers": ^5.8.0
-    "@noble/curves": ^1.1.0
-    "@openfort/shield-js": ^0.1.14
-    axios: ^1.8.2
-    buffer: ^6.0.3
-    crypto-js: ^4.2.0
-    es6-promise: ^4.2.8
-    jose: ^5.2.2
-    path: ^0.12.7
-  checksum: 10ca12aeb22e47f6f7c29a59907abbaed5811fb7c66043ace5dff507ae0677284487320fe888cf921d00af7a834269e8c19c80a045147ce03d42021963514d34
-  languageName: node
-  linkType: hard
-
 "@openfort/openfort-js@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@openfort/openfort-js@workspace:sdk"
@@ -2339,6 +2321,8 @@ __metadata:
     "@rollup/plugin-replace": ^5.0.2
     "@rollup/plugin-terser": ^0.4.3
     "@rollup/plugin-typescript": ^11.0.0
+    "@sentry/browser": ^9.15.0
+    "@sentry/core": ^9.15.0
     "@swc/jest": ^0.2.24
     "@types/crypto-js": ^4.2.2
     "@types/jest": ^29.4.3
@@ -4532,6 +4516,64 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry-internal/browser-utils@npm:9.15.0":
+  version: 9.15.0
+  resolution: "@sentry-internal/browser-utils@npm:9.15.0"
+  dependencies:
+    "@sentry/core": 9.15.0
+  checksum: 2bb548da1cbf486ae6e7152a0872905a04c3ad62179e4afb65522f89ff3cb593f0f1028fe55f95d19675148877628ddcd0c66ff24fcc6ea74d7af43ca9fbf2d6
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/feedback@npm:9.15.0":
+  version: 9.15.0
+  resolution: "@sentry-internal/feedback@npm:9.15.0"
+  dependencies:
+    "@sentry/core": 9.15.0
+  checksum: 18248962988bacb21ec4277a89db447a6ce969b9787a24feee16f298e9637904f56137a516c169062e38423a919cb53cc07ed87a5880b0796fcb7e901d27b02d
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/replay-canvas@npm:9.15.0":
+  version: 9.15.0
+  resolution: "@sentry-internal/replay-canvas@npm:9.15.0"
+  dependencies:
+    "@sentry-internal/replay": 9.15.0
+    "@sentry/core": 9.15.0
+  checksum: e7da66bc4f9bf167f2f6094c98965e16dd15dd2cd298d91b12c75d82d58be83c0cf343fcd9aa08b2a05b7acf871f05d95e63b9e15d3f603ea1c155961096fa16
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/replay@npm:9.15.0":
+  version: 9.15.0
+  resolution: "@sentry-internal/replay@npm:9.15.0"
+  dependencies:
+    "@sentry-internal/browser-utils": 9.15.0
+    "@sentry/core": 9.15.0
+  checksum: e700ea2c56d1d4e2aa53b4a87e6341fda305278357b0ada09d774bea8f0309ccac2de701fe43fa66f64ace3792ed98ff4cd905fce33cc6d952b78785ad2b9d72
+  languageName: node
+  linkType: hard
+
+"@sentry/browser@npm:^9.15.0":
+  version: 9.15.0
+  resolution: "@sentry/browser@npm:9.15.0"
+  dependencies:
+    "@sentry-internal/browser-utils": 9.15.0
+    "@sentry-internal/feedback": 9.15.0
+    "@sentry-internal/replay": 9.15.0
+    "@sentry-internal/replay-canvas": 9.15.0
+    "@sentry/core": 9.15.0
+  checksum: c1962130eb065d7264452b8b90100971cfd7ea2658d9633b1b5258ef7b4cd78662254d5094ab649fee7c6c197372d002de202f82e8659aa5bc92d8263be1ab52
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:9.15.0, @sentry/core@npm:^9.15.0":
+  version: 9.15.0
+  resolution: "@sentry/core@npm:9.15.0"
+  checksum: e8a3752db84d9eb592da27033f868746c37797a9064e5979a2997da5f84b439dddd1100ba0cbd846b008fc2362d73430afa81da352b163d9cdeebe1a5bd1ceab
+  languageName: node
+  linkType: hard
+
 "@sinclair/typebox@npm:^0.27.8":
   version: 0.27.8
   resolution: "@sinclair/typebox@npm:0.27.8"
@@ -6702,7 +6744,7 @@ __metadata:
   resolution: "auth-sample@workspace:examples/apps/auth-sample"
   dependencies:
     "@heroicons/react": ^2.0.13
-    "@openfort/openfort-js": 0.8.37
+    "@openfort/openfort-js": "workspace:sdk"
     "@openfort/openfort-node": ^0.6.66
     "@playwright/test": ^1.48.0
     "@radix-ui/react-dialog": ^1.1.2

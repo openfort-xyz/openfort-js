@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
-    "@openfort/openfort-js": "0.8.37",
+    "@openfort/openfort-js": "workspace:sdk",
     "@openfort/openfort-node": "^0.6.66",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-icons": "^1.3.0",
