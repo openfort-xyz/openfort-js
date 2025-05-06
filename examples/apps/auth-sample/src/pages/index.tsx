@@ -70,7 +70,7 @@ const HomePage: NextPage = () => {
                 Explore Openfort
               </p>
               <p className='text-gray-500'>
-              Sign in to the demo to access the dev tools.
+                Sign in to the demo to access the dev tools.
               </p>
               <Button variant={'outline'} size={'sm'} className="mt-2">
                 <Link href='https://www.openfort.io/docs' target="_blank">

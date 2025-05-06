@@ -335,22 +335,22 @@ export class AuthManager {
       throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
 
-    if (!JWK_UTILS) {
-      // JWK_UTILS is a global variable that is set in the packages without node crypto support
+    if (!openfort?.jwk) {
+      // openfort.jwk is a global variable that is set in the packages without node crypto support
       // For your non node package to work you need to install jsrsasign library functions and add the following code:
       /*
-        global.JWK_UTILS = {
+        global.openfort.jwk = {
           getKey: KEYUTIL.getKey,
           parse: KJUR.jws.JWS.parse,
           verifyJWT: KJUR.jws.JWS.verifyJWT,
           getNow: KJUR.jws.IntDate.getNow,
         };
       */
-      throw new OpenfortError('JWK_UTILS not available', OpenfortErrorType.INTERNAL_ERROR);
+      throw new OpenfortError('openfort not available', OpenfortErrorType.INTERNAL_ERROR);
     }
 
     // const ecKey = KEYUTIL.getKey({
-    const ecKey = JWK_UTILS.getKey({
+    const ecKey = openfort.jwk.getKey({
       kty: jwk.kty,
       crv: jwk.crv,
       x: jwk.x,
@@ -358,10 +358,10 @@ export class AuthManager {
     });
     // } as KJUR.jws.JWS.JsonWebKey);
 
-    const parsedJWT = JWK_UTILS.parse(authentication.token);
+    const parsedJWT = openfort.jwk.parse(authentication.token);
     // const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
 
-    const isValid = JWK_UTILS.verifyJWT(authentication.token, ecKey, { alg: [jwk.alg] });
+    const isValid = openfort.jwk.verifyJWT(authentication.token, ecKey, { alg: [jwk.alg] });
     // const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
 
     if (!isValid) {
@@ -375,7 +375,7 @@ export class AuthManager {
     }
 
     // const now = KJUR.jws.IntDate.getNow();
-    const now = JWK_UTILS.getNow();
+    const now = openfort.jwk.getNow();
     if (payload.exp < now) {
       return this.refreshTokens(authentication.refreshToken);
     }

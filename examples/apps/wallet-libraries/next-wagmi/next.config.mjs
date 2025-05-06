@@ -24,7 +24,6 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       'supports-color': path.join(dirname, 'node_modules/supports-color'),
-      'debug': path.join(dirname, 'node_modules/debug'),
     }
 
     // Handle Node.js modules and force CJS resolution for supports-color

@@ -1,30 +1,34 @@
 import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
 import { getSignedTypedData } from 'evm/walletHelpers';
-import { IStorage, StorageKeys } from './storage/istorage';
-import { LocalStorage } from './storage/localStorage';
+import { AuthManager } from './authManager';
+import { OpenfortSDKConfiguration } from './config';
+import { Account } from './configuration/account';
+import { Authentication } from './configuration/authentication';
+import { Configuration } from './configuration/configuration';
+import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
+import { EvmProvider, Provider, TypedDataPayload } from './evm';
+import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';
+import { MissingProjectEntropyError, MissingRecoveryPasswordError } from './iframe/iframeManager';
 import { ShieldAuthentication } from './iframe/types';
 import { SignerManager } from './manager/signer';
-import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
+import { Entropy } from './signer/embedded';
+import { IStorage, StorageKeys } from './storage/istorage';
+import { LocalStorage } from './storage/localStorage';
 import {
-  AccountType, CurrentAccount, Auth,
+  AccountType,
+  Auth,
   AuthPlayerResponse,
-  AuthResponse, EmbeddedState,
+  AuthResponse,
+  CurrentAccount,
+  EmbeddedState,
   InitAuthResponse,
   InitializeOAuthOptions,
   OAuthProvider, OpenfortEventMap,
-  SessionResponse, SIWEInitResponse, ThirdPartyOAuthProvider, TokenType, TransactionIntentResponse,
   RecoveryMethod,
+  SessionResponse, SIWEInitResponse, ThirdPartyOAuthProvider, TokenType, TransactionIntentResponse,
 } from './types';
-import { OpenfortSDKConfiguration } from './config';
-import { Configuration } from './configuration/configuration';
-import { Account } from './configuration/account';
-import { Entropy } from './signer/embedded';
-import { Authentication } from './configuration/authentication';
-import { MissingProjectEntropyError, MissingRecoveryPasswordError } from './iframe/iframeManager';
-import { AuthManager } from './authManager';
-import { EvmProvider, Provider, TypedDataPayload } from './evm';
 import TypedEventEmitter from './utils/typedEventEmitter';
-import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';
+import { InternalSentry, sentry } from './errors/sentry';
 
 export class Openfort {
   private readonly storage: IStorage;
@@ -44,6 +48,8 @@ export class Openfort {
       sdkConfiguration.overrides?.iframeUrl || 'https://embedded.openfort.xyz',
       sdkConfiguration.shieldConfiguration?.debug || false,
     );
+
+    InternalSentry.init();
 
     configuration.save();
   }
@@ -495,6 +501,8 @@ export class Openfort {
       if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
         await signer?.logout();
       }
+
+      sentry.captureException(e);
       throw e;
     }
 
@@ -776,6 +784,7 @@ export class Openfort {
       if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
         await signer?.logout();
       }
+      sentry.captureException(e);
       throw e;
     }
   }
