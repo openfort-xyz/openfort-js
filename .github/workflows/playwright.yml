@@ -35,6 +35,9 @@ jobs:
       run: yarn playwright install --with-deps
       working-directory: examples/apps/auth-sample
 
+    - name: Increase Git fetch timeout
+      run: git fetch --timeout=60
+
     - name: Run Playwright tests
       env:
         NEXTAUTH_OPENFORT_SECRET_KEY: ${{ secrets.NEXTAUTH_OPENFORT_SECRET_KEY }}
