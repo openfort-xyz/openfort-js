@@ -29,7 +29,6 @@
 
 The Openfort js library provides convenient access to handle client session keys and return signed messages back to Openfort from applications written in client-side JavaScript.
 
-
 ## Usage examples
 - [Openfort Auth + Embedded Wallet - Next.js](https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/auth-sample)
 - [Embedded Wallet Wagmi Next.js](https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/wallet-libraries/next-wagmi)
