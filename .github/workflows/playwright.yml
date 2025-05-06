@@ -24,19 +24,12 @@ jobs:
     - name: Install root dependencies
       run: yarn install --immutable
 
-    - name: Install auth-sample dependencies
-      run: yarn install
-      working-directory: examples/apps/auth-sample
-
     - name: Build
       run: yarn build
 
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
       working-directory: examples/apps/auth-sample
-
-    - name: Increase Git fetch timeout
-      run: git fetch --timeout=60
 
     - name: Run Playwright tests
       env:
@@ -53,7 +46,8 @@ jobs:
         NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
         NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
         E2E_TESTS_USER: ${{ vars.E2E_TESTS_USER }}
-      run: yarn test-e2e
+      run: yarn playwright test --reporter=dot --workers=5
+      working-directory: examples/apps/auth-sample
 
     - uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
       if: ${{ !cancelled() }}
