@@ -35,9 +35,7 @@ export const AuthProviderResponse = {
     Playfab: 'playfab',
     Supabase: 'supabase',
     Custom: 'custom',
-    Oidc: 'oidc',
-    GoogleNative: 'google_native',
-    AppleNative: 'apple_native'
+    Oidc: 'oidc'
 } as const;
 
 export type AuthProviderResponse = typeof AuthProviderResponse[keyof typeof AuthProviderResponse];

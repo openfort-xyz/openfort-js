@@ -23,8 +23,6 @@
 export const ThirdPartyOAuthProvider = {
     Accelbyte: 'accelbyte',
     Firebase: 'firebase',
-    AppleNative: 'apple_native',
-    GoogleNative: 'google_native',
     Lootlocker: 'lootlocker',
     Playfab: 'playfab',
     Supabase: 'supabase',

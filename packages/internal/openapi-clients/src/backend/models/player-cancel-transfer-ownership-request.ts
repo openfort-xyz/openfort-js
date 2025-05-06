@@ -27,7 +27,7 @@ export interface PlayerCancelTransferOwnershipRequest {
      */
     'policy': string;
     /**
-     * The chain ID. Must be a [supported chain](/chains).
+     * The chain ID. Must be a [supported chain](/development/chains).
      * @type {number}
      * @memberof PlayerCancelTransferOwnershipRequest
      */

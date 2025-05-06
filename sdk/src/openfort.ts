@@ -502,6 +502,28 @@ export class Openfort {
   }
 
   /**
+ * Login with idToken of OAuth provider.
+ *
+ * @param provider - OAuth provider.
+ * @param token - OAuth token.
+ * @param ecosystemGame - In case of ecosystem, the game that wants to authenticate.
+ * @returns An AuthResponse object.
+ */
+  public async loginWithIdToken(
+    {
+      provider, token, ecosystemGame,
+    }: { provider: OAuthProvider; token: string; ecosystemGame?: string },
+  ): Promise<AuthResponse> {
+    const previousAuth = Authentication.fromStorage(this.storage);
+    const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame);
+    if (previousAuth && previousAuth.player !== result.player.id) {
+      this.logout();
+    }
+    new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
+    return result;
+  }
+
+  /**
    * Initializes Sign-In with Ethereum (SIWE).
    *
    * @param address - Ethereum address.

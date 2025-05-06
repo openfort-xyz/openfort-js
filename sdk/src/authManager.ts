@@ -108,6 +108,27 @@ export class AuthManager {
     throw new Error('Failed to pool OAuth, try again later');
   }
 
+  public async loginWithIdToken(
+    provider: OAuthProvider,
+    token: string,
+    ecosystemGame?: string,
+  ): Promise<AuthResponse> {
+    const request = {
+      loginWithIdTokenRequest: {
+        provider,
+        token,
+      },
+    };
+    return withOpenfortError<AuthResponse>(async () => {
+      const response = await this.backendApiClients.authenticationApi.loginWithIdToken(
+        request,
+        AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
+      );
+      return response.data;
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
+  }
+
   public async authenticateThirdParty(
     provider: ThirdPartyOAuthProvider,
     token: string,

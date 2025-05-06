@@ -13,18 +13,29 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { OAuthProvider } from './oauth-provider';
 
 /**
- * The request to verify access token
+ * 
  * @export
- * @interface OAuthRequest
+ * @interface LoginWithIdTokenRequest
  */
-export interface OAuthRequest {
+export interface LoginWithIdTokenRequest {
     /**
-     * Access token to be verified
+     * 
+     * @type {OAuthProvider}
+     * @memberof LoginWithIdTokenRequest
+     */
+    'provider': OAuthProvider;
+    /**
+     * Token to be verified
      * @type {string}
-     * @memberof OAuthRequest
+     * @memberof LoginWithIdTokenRequest
      */
     'token': string;
 }
+
+
 

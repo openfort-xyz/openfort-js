@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@openfort/openfort-js": "^0.8.34",
+    "@openfort/openfort-js": "workspace:sdk",
     "@solana/web3.js": "^1.98.0",
     "@tailwindcss/vite": "^4.0.14",
     "buffer": "^6.0.3",

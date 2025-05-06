@@ -24,7 +24,7 @@ import { Interaction } from './interaction';
  */
 export interface CreateTransactionIntentRequest {
     /**
-     * The chain ID. Must be a [supported chain](/chains).
+     * The chain ID. Must be a [supported chain](/development/chains).
      * @type {number}
      * @memberof CreateTransactionIntentRequest
      */

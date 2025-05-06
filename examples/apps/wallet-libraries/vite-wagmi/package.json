@@ -1,5 +1,5 @@
 {
-  "name": "wagmi-vite-app-openfort",
+  "name": "wagmi-vite-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -16,10 +16,10 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.0",
     "viem": "2.x",
-    "wagmi": "^2.14.15"
+    "wagmi": "^2.15.2"
   },
   "devDependencies": {
-    "@openfort/openfort-js": "0.8.37",
+    "@openfort/openfort-js": "workspace:sdk",
     "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.4",
