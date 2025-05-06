@@ -8,19 +8,22 @@
   "license": "MIT",
   "scripts": {
     "test": "wsrun --exclude-missing -e test",
-    "test-e2e": "cd examples/apps/auth-sample && yarn playwright test",
-    "docs:build": "typedoc",
-    "docs:json": "typedoc --json docs/spec.json",
+    "test-e2e": "yarn workspace nextjs test",
     "typecheck": "wsrun --exclude-missing typecheck",
-    "lint": "cd sdk && yarn lint --no-error-on-unmatched-pattern",
-    "build": "NODE_OPTIONS=--max-old-space-size=14366 wsrun -y 4 -p @openfort/openfort-js -e -r --serial build",
+    "lint": "yarn workspace @openfort/openfort-js lint --no-error-on-unmatched-pattern",
     "postinstall": "husky install; ./.husky/install_gitleaks.sh",
+    "stats": "yarn workspace @openfort/openfort-js stats",
     "scan:secrets": "./.husky/run_gitleaks.sh",
-    "stats": "cd sdk && yarn stats",
-    "dev:nextjs": "yarn workspace nextjs run dev",
-    "build:nextjs": "yarn build && yarn workspace nextjs build",
-    "dev:wagmi": "yarn workspace wagmi-next-app run dev",
-    "build:wagmi": "yarn build && yarn workspace wagmi-next-app build"
+    "build": "yarn workspace @openfort/openfort-js build",
+    
+    "docs:json": "typedoc --json docs/spec.json",
+    "docs:build": "typedoc",
+
+    "nextjs:dev": "yarn workspace nextjs run dev",
+    "nextjs:build": "yarn build && yarn workspace nextjs build",
+
+    "wagmi:dev": "yarn workspace wagmi-next-app run dev",
+    "wagmi:build": "yarn build && yarn workspace wagmi-next-app build"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
