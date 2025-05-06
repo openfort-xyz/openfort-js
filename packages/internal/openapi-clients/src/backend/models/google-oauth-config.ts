@@ -46,7 +46,7 @@ export interface GoogleOAuthConfig {
      * @type {string}
      * @memberof GoogleOAuthConfig
      */
-    'clientSecret': string;
+    'clientSecret'?: string;
 }
 
 

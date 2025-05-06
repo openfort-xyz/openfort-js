@@ -18,9 +18,6 @@
 import { AccelbyteOAuthConfig } from './accelbyte-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
-import { AppleNativeOAuthConfig } from './apple-native-oauth-config';
-// May contain unused imports in some cases
-// @ts-ignore
 import { AppleOAuthConfig } from './apple-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -40,9 +37,6 @@ import { FacebookOAuthConfig } from './facebook-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { FirebaseOAuthConfig } from './firebase-oauth-config';
-// May contain unused imports in some cases
-// @ts-ignore
-import { GoogleNativeOAuthConfig } from './google-native-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { GoogleOAuthConfig } from './google-oauth-config';

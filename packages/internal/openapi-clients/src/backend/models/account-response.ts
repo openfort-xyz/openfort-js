@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EntityIdResponse } from './entity-id-response';
+import { AccountResponsePlayer } from './account-response-player';
 // May contain unused imports in some cases
 // @ts-ignore
 import { EntityTypeACCOUNT } from './entity-type-account';
@@ -103,10 +103,10 @@ export interface AccountResponse {
     'transactionIntents'?: Array<PlayerResponseTransactionIntentsInner>;
     /**
      * 
-     * @type {EntityIdResponse}
+     * @type {AccountResponsePlayer}
      * @memberof AccountResponse
      */
-    'player': EntityIdResponse;
+    'player': AccountResponsePlayer;
 }
 
 

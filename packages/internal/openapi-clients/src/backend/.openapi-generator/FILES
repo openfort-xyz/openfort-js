@@ -37,6 +37,7 @@ models/account-list-queries.ts
 models/account-list-response.ts
 models/account-policy-rule-response.ts
 models/account-response-expandable.ts
+models/account-response-player.ts
 models/account-response.ts
 models/account.ts
 models/accounts-list-queries.ts
@@ -52,7 +53,6 @@ models/apitopic-balanceproject.ts
 models/apitopic-transactionsuccessful.ts
 models/apitopic.ts
 models/apitrigger-type.ts
-models/apple-native-oauth-config.ts
 models/apple-oauth-config.ts
 models/asset-inventory.ts
 models/asset-type.ts
@@ -130,7 +130,6 @@ models/currency.ts
 models/custom-auth-config.ts
 models/delete-smtpconfig-response.ts
 models/deploy-request.ts
-models/deprecated-authenticated-player-response.ts
 models/developer-account-delete-response.ts
 models/developer-account-get-message-response.ts
 models/developer-account-list-queries.ts
@@ -193,7 +192,6 @@ models/gas-report-list-response.ts
 models/gas-report-transaction-intents-list-response.ts
 models/gas-report-transaction-intents.ts
 models/gas-report.ts
-models/google-native-oauth-config.ts
 models/google-oauth-config.ts
 models/grant-callback-request.ts
 models/grant-oauth-response.ts
@@ -218,6 +216,7 @@ models/log-response.ts
 models/log.ts
 models/login-oidcrequest.ts
 models/login-request.ts
+models/login-with-id-token-request.ts
 models/logout-request.ts
 models/loot-locker-oauth-config.ts
 models/mapping-strategy.ts
@@ -230,7 +229,6 @@ models/next-action-type.ts
 models/oauth-config-list-response.ts
 models/oauth-init-request-options.ts
 models/oauth-init-request.ts
-models/oauth-provders.ts
 models/oauth-provider-apple.ts
 models/oauth-provider-discord.ts
 models/oauth-provider-epicgames.ts
@@ -239,7 +237,6 @@ models/oauth-provider-google.ts
 models/oauth-provider-line.ts
 models/oauth-provider-twitter.ts
 models/oauth-provider.ts
-models/oauth-request.ts
 models/oauth-response.ts
 models/oidcauth-config.ts
 models/paging-queries.ts
@@ -341,10 +338,8 @@ models/switch-chain-request.ts
 models/test-trigger200-response.ts
 models/third-party-link-request.ts
 models/third-party-oauth-provider-accelbyte.ts
-models/third-party-oauth-provider-applenative.ts
 models/third-party-oauth-provider-custom.ts
 models/third-party-oauth-provider-firebase.ts
-models/third-party-oauth-provider-googlenative.ts
 models/third-party-oauth-provider-lootlocker.ts
 models/third-party-oauth-provider-oidc.ts
 models/third-party-oauth-provider-playfab.ts

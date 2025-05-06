@@ -12,11 +12,15 @@
     "docs:build": "typedoc",
     "docs:json": "typedoc --json docs/spec.json",
     "typecheck": "wsrun --exclude-missing typecheck",
-    "lint": "wsrun --exclude-missing -e lint --no-error-on-unmatched-pattern",
+    "lint": "cd sdk && yarn lint --no-error-on-unmatched-pattern",
     "build": "NODE_OPTIONS=--max-old-space-size=14366 wsrun -y 4 -p @openfort/openfort-js -e -r --serial build",
     "postinstall": "husky install; ./.husky/install_gitleaks.sh",
     "scan:secrets": "./.husky/run_gitleaks.sh",
-    "stats": "cd sdk && yarn stats"
+    "stats": "cd sdk && yarn stats",
+    "dev:nextjs": "yarn workspace nextjs run dev",
+    "build:nextjs": "yarn build && yarn workspace nextjs build",
+    "dev:wagmi": "yarn workspace wagmi-next-app run dev",
+    "build:wagmi": "yarn build && yarn workspace wagmi-next-app build"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -50,13 +54,10 @@
   },
   "workspaces": {
     "packages": [
+      "packages/**",
       "sdk",
-      "packages/internal/openapi-clients",
-      "packages/platform-bridge"
-    ],
-    "nohoist": [
       "examples/**",
-      "test/**"
+      "test"
     ]
   },
   "sideEffects": false

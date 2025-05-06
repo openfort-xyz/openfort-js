@@ -178,7 +178,7 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the fields to expand in the response.
-         * @param {number} [chainId] The chain ID. Must be a [supported chain](/chains).
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {Array<string>} [account] Filter by account ID or developer account (starts with acc_ or dac_ respectively).
          * @param {Array<string>} [player] Filter by player ID (starts with pla_).
          * @param {number} [status] Filter by successful (1) or failed (0) transaction intents.
@@ -350,7 +350,7 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the fields to expand in the response.
-         * @param {number} [chainId] The chain ID. Must be a [supported chain](/chains).
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {Array<string>} [account] Filter by account ID or developer account (starts with acc_ or dac_ respectively).
          * @param {Array<string>} [player] Filter by player ID (starts with pla_).
          * @param {number} [status] Filter by successful (1) or failed (0) transaction intents.
@@ -528,7 +528,7 @@ export interface TransactionIntentsApiGetTransactionIntentsRequest {
     readonly expand?: Array<TransactionIntentResponseExpandable>
 
     /**
-     * The chain ID. Must be a [supported chain](/chains).
+     * The chain ID. Must be a [supported chain](/development/chains).
      * @type {number}
      * @memberof TransactionIntentsApiGetTransactionIntents
      */

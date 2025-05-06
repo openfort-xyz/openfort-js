@@ -1,5 +1,5 @@
 {
-    "name": "wagmi-next-app-openfort",
+    "name": "wagmi-next-app",
     "private": true,
     "scripts": {
         "analyze": "ANALYZE=true next build",
@@ -15,10 +15,10 @@
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "viem": "2.x",
-        "wagmi": "^2.7.0"
+        "wagmi": "^2.15.2"
     },
     "devDependencies": {
-        "@openfort/openfort-js": "^0.8.37",
+        "@openfort/openfort-js": "workspace:sdk",
         "@types/node": "^22.10.7",
         "@types/react": "^19.0.7",
         "@types/react-dom": "^19.0.3",

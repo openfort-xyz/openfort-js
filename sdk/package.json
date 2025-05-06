@@ -1,6 +1,6 @@
 {
   "name": "@openfort/openfort-js",
-  "version": "0.8.38",
+  "version": "0.8.39",
   "author": "Openfort (https://www.openfort.io)",
   "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
   "repository": "openfort-xyz/openfort-js.git",
@@ -24,6 +24,7 @@
     "test:watch": "jest --watch",
     "packageList": "./scripts/generate-package-list.sh",
     "typecheck": "tsc --noEmit --jsx preserve",
+    "dev": "NODE_ENV=development yarn rollup --config rollup.config.js --watch",
     "lint": "eslint 'src/**/*.ts' --fix",
     "clean": "rimraf dist",
     "build": "yarn packageList && yarn clean && NODE_ENV=production yarn rollup --config rollup.config.js && rm -rf dist/types",

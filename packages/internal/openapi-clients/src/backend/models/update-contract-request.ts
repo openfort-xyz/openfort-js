@@ -30,7 +30,7 @@ export interface UpdateContractRequest {
      */
     'name'?: string;
     /**
-     * Specifies the chain ID of the contract. Must be a [supported chain](/chains).
+     * Specifies the chain ID of the contract. Must be a [supported chain](/development/chains).
      * @type {number}
      * @memberof UpdateContractRequest
      */

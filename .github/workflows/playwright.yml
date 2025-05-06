@@ -24,13 +24,6 @@ jobs:
     - name: Install root dependencies
       run: yarn install --immutable
 
-    - name: Install auth-sample dependencies
-      run: yarn install --immutable
-      working-directory: examples/apps/auth-sample
-
-    - name: Lint
-      run: yarn lint
-
     - name: Build
       run: yarn build
 

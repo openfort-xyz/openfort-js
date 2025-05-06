@@ -22,105 +22,13 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { AuthMigrationListResponse } from '../models';
-// @ts-ignore
-import { AuthMigrationResponse } from '../models';
-// @ts-ignore
-import { AuthMigrationStatus } from '../models';
-// @ts-ignore
-import { AuthProvider } from '../models';
-// @ts-ignore
 import { AuthProviderListResponse } from '../models';
-// @ts-ignore
-import { CreateMigrationRequest } from '../models';
-// @ts-ignore
-import { SortOrder } from '../models';
-// @ts-ignore
-import { UpdateMigrationRequest } from '../models';
 /**
  * DefaultApi - axios parameter creator
  * @export
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * Create a new auth migration.
-         * @summary Create a new auth migration.
-         * @param {CreateMigrationRequest} createMigrationRequest Specifies the auth migration request.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createAuthMigration: async (createMigrationRequest: CreateMigrationRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createMigrationRequest' is not null or undefined
-            assertParamExists('createAuthMigration', 'createMigrationRequest', createMigrationRequest)
-            const localVarPath = `/iam/v1/migrations`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createMigrationRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Get the status of an auth migration.
-         * @summary Get the status of an auth migration.
-         * @param {string} id Specifies the auth migration ID.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAuthMigration: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getAuthMigration', 'id', id)
-            const localVarPath = `/iam/v1/migrations/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * List configured auth methods for the current project environment.
          * @summary List of auth configurations.
@@ -160,114 +68,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * List all auth migrations.
-         * @summary List all auth migrations.
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {AuthProvider} [sourceProvider] Source provider
-         * @param {AuthProvider} [destinationProvider] Destination provider
-         * @param {Array<AuthMigrationStatus>} [status] Status of the migration
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listAuthMigration: async (limit?: number, skip?: number, order?: SortOrder, sourceProvider?: AuthProvider, destinationProvider?: AuthProvider, status?: Array<AuthMigrationStatus>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v1/migrations`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
-            }
-
-            if (order !== undefined) {
-                localVarQueryParameter['order'] = order;
-            }
-
-            if (sourceProvider !== undefined) {
-                localVarQueryParameter['sourceProvider'] = sourceProvider;
-            }
-
-            if (destinationProvider !== undefined) {
-                localVarQueryParameter['destinationProvider'] = destinationProvider;
-            }
-
-            if (status) {
-                localVarQueryParameter['status'] = status;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Update the status of an auth migration.
-         * @summary Update the status of an auth migration.
-         * @param {string} id Specifies the auth migration ID.
-         * @param {UpdateMigrationRequest} updateMigrationRequest Specifies the update migration request.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateAuthMigration: async (id: string, updateMigrationRequest: UpdateMigrationRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateAuthMigration', 'id', id)
-            // verify required parameter 'updateMigrationRequest' is not null or undefined
-            assertParamExists('updateAuthMigration', 'updateMigrationRequest', updateMigrationRequest)
-            const localVarPath = `/iam/v1/migrations/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(updateMigrationRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -279,28 +79,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
         /**
-         * Create a new auth migration.
-         * @summary Create a new auth migration.
-         * @param {CreateMigrationRequest} createMigrationRequest Specifies the auth migration request.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createAuthMigration(createMigrationRequest: CreateMigrationRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthMigrationResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createAuthMigration(createMigrationRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Get the status of an auth migration.
-         * @summary Get the status of an auth migration.
-         * @param {string} id Specifies the auth migration ID.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getAuthMigration(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthMigrationResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthMigration(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * List configured auth methods for the current project environment.
          * @summary List of auth configurations.
          * @param {boolean} [enabled] 
@@ -309,34 +87,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async list(enabled?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthProviderListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.list(enabled, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * List all auth migrations.
-         * @summary List all auth migrations.
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
-         * @param {AuthProvider} [sourceProvider] Source provider
-         * @param {AuthProvider} [destinationProvider] Destination provider
-         * @param {Array<AuthMigrationStatus>} [status] Status of the migration
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async listAuthMigration(limit?: number, skip?: number, order?: SortOrder, sourceProvider?: AuthProvider, destinationProvider?: AuthProvider, status?: Array<AuthMigrationStatus>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthMigrationListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listAuthMigration(limit, skip, order, sourceProvider, destinationProvider, status, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Update the status of an auth migration.
-         * @summary Update the status of an auth migration.
-         * @param {string} id Specifies the auth migration ID.
-         * @param {UpdateMigrationRequest} updateMigrationRequest Specifies the update migration request.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updateAuthMigration(id: string, updateMigrationRequest: UpdateMigrationRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthMigrationResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateAuthMigration(id, updateMigrationRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -350,26 +100,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = DefaultApiFp(configuration)
     return {
         /**
-         * Create a new auth migration.
-         * @summary Create a new auth migration.
-         * @param {DefaultApiCreateAuthMigrationRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createAuthMigration(requestParameters: DefaultApiCreateAuthMigrationRequest, options?: AxiosRequestConfig): AxiosPromise<AuthMigrationResponse> {
-            return localVarFp.createAuthMigration(requestParameters.createMigrationRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Get the status of an auth migration.
-         * @summary Get the status of an auth migration.
-         * @param {DefaultApiGetAuthMigrationRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAuthMigration(requestParameters: DefaultApiGetAuthMigrationRequest, options?: AxiosRequestConfig): AxiosPromise<AuthMigrationResponse> {
-            return localVarFp.getAuthMigration(requestParameters.id, options).then((request) => request(axios, basePath));
-        },
-        /**
          * List configured auth methods for the current project environment.
          * @summary List of auth configurations.
          * @param {DefaultApiListRequest} requestParameters Request parameters.
@@ -379,56 +109,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         list(requestParameters: DefaultApiListRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AuthProviderListResponse> {
             return localVarFp.list(requestParameters.enabled, options).then((request) => request(axios, basePath));
         },
-        /**
-         * List all auth migrations.
-         * @summary List all auth migrations.
-         * @param {DefaultApiListAuthMigrationRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listAuthMigration(requestParameters: DefaultApiListAuthMigrationRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AuthMigrationListResponse> {
-            return localVarFp.listAuthMigration(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.sourceProvider, requestParameters.destinationProvider, requestParameters.status, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Update the status of an auth migration.
-         * @summary Update the status of an auth migration.
-         * @param {DefaultApiUpdateAuthMigrationRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updateAuthMigration(requestParameters: DefaultApiUpdateAuthMigrationRequest, options?: AxiosRequestConfig): AxiosPromise<AuthMigrationResponse> {
-            return localVarFp.updateAuthMigration(requestParameters.id, requestParameters.updateMigrationRequest, options).then((request) => request(axios, basePath));
-        },
     };
 };
-
-/**
- * Request parameters for createAuthMigration operation in DefaultApi.
- * @export
- * @interface DefaultApiCreateAuthMigrationRequest
- */
-export interface DefaultApiCreateAuthMigrationRequest {
-    /**
-     * Specifies the auth migration request.
-     * @type {CreateMigrationRequest}
-     * @memberof DefaultApiCreateAuthMigration
-     */
-    readonly createMigrationRequest: CreateMigrationRequest
-}
-
-/**
- * Request parameters for getAuthMigration operation in DefaultApi.
- * @export
- * @interface DefaultApiGetAuthMigrationRequest
- */
-export interface DefaultApiGetAuthMigrationRequest {
-    /**
-     * Specifies the auth migration ID.
-     * @type {string}
-     * @memberof DefaultApiGetAuthMigration
-     */
-    readonly id: string
-}
 
 /**
  * Request parameters for list operation in DefaultApi.
@@ -445,106 +127,12 @@ export interface DefaultApiListRequest {
 }
 
 /**
- * Request parameters for listAuthMigration operation in DefaultApi.
- * @export
- * @interface DefaultApiListAuthMigrationRequest
- */
-export interface DefaultApiListAuthMigrationRequest {
-    /**
-     * Specifies the maximum number of records to return.
-     * @type {number}
-     * @memberof DefaultApiListAuthMigration
-     */
-    readonly limit?: number
-
-    /**
-     * Specifies the offset for the first records to return.
-     * @type {number}
-     * @memberof DefaultApiListAuthMigration
-     */
-    readonly skip?: number
-
-    /**
-     * Specifies the order in which to sort the results.
-     * @type {SortOrder}
-     * @memberof DefaultApiListAuthMigration
-     */
-    readonly order?: SortOrder
-
-    /**
-     * Source provider
-     * @type {AuthProvider}
-     * @memberof DefaultApiListAuthMigration
-     */
-    readonly sourceProvider?: AuthProvider
-
-    /**
-     * Destination provider
-     * @type {AuthProvider}
-     * @memberof DefaultApiListAuthMigration
-     */
-    readonly destinationProvider?: AuthProvider
-
-    /**
-     * Status of the migration
-     * @type {Array<AuthMigrationStatus>}
-     * @memberof DefaultApiListAuthMigration
-     */
-    readonly status?: Array<AuthMigrationStatus>
-}
-
-/**
- * Request parameters for updateAuthMigration operation in DefaultApi.
- * @export
- * @interface DefaultApiUpdateAuthMigrationRequest
- */
-export interface DefaultApiUpdateAuthMigrationRequest {
-    /**
-     * Specifies the auth migration ID.
-     * @type {string}
-     * @memberof DefaultApiUpdateAuthMigration
-     */
-    readonly id: string
-
-    /**
-     * Specifies the update migration request.
-     * @type {UpdateMigrationRequest}
-     * @memberof DefaultApiUpdateAuthMigration
-     */
-    readonly updateMigrationRequest: UpdateMigrationRequest
-}
-
-/**
  * DefaultApi - object-oriented interface
  * @export
  * @class DefaultApi
  * @extends {BaseAPI}
  */
 export class DefaultApi extends BaseAPI {
-    /**
-     * Create a new auth migration.
-     * @summary Create a new auth migration.
-     * @param {DefaultApiCreateAuthMigrationRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public createAuthMigration(requestParameters: DefaultApiCreateAuthMigrationRequest, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).createAuthMigration(requestParameters.createMigrationRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Get the status of an auth migration.
-     * @summary Get the status of an auth migration.
-     * @param {DefaultApiGetAuthMigrationRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public getAuthMigration(requestParameters: DefaultApiGetAuthMigrationRequest, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getAuthMigration(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      * List configured auth methods for the current project environment.
      * @summary List of auth configurations.
@@ -555,30 +143,6 @@ export class DefaultApi extends BaseAPI {
      */
     public list(requestParameters: DefaultApiListRequest = {}, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).list(requestParameters.enabled, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * List all auth migrations.
-     * @summary List all auth migrations.
-     * @param {DefaultApiListAuthMigrationRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public listAuthMigration(requestParameters: DefaultApiListAuthMigrationRequest = {}, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).listAuthMigration(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.sourceProvider, requestParameters.destinationProvider, requestParameters.status, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Update the status of an auth migration.
-     * @summary Update the status of an auth migration.
-     * @param {DefaultApiUpdateAuthMigrationRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public updateAuthMigration(requestParameters: DefaultApiUpdateAuthMigrationRequest, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).updateAuthMigration(requestParameters.id, requestParameters.updateMigrationRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
