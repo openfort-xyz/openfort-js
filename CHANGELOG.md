@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.40] - 2025-05-07
+### Feat
+- improve login response
+
+## [0.8.39] - 2025-05-06
+### Fix
+- google and apple native login
+
 ## [0.8.36] - 2025-04-02
 ### Fix
 - eip 1193 provider sign message
