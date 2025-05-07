@@ -62,7 +62,7 @@ function RegisterPage() {
             email: linkedAccount.email,
             state: router.query.state as string,
           });
-          router.push("/");
+          router.push("/login");
         }
       } catch (error) {
         setStatus({
@@ -110,11 +110,13 @@ function RegisterPage() {
           title: "Error signing up",
         });
       });
-    await openfort.requestEmailVerification({
-      email: email,
-      redirectUrl: getURL() + "/register",
-    });
-    if (data) {
+    if (data && "action" in data && data.action === "verify_email") {
+      await openfort.requestEmailVerification({
+        email: email,
+        redirectUrl: getURL() + "/register",
+      });
+    }
+    if (data && "player" in data) {
       setStatus({
         type: "success",
         title: "Successfully signed up",
