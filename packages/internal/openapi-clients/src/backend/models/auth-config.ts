@@ -81,6 +81,12 @@ export interface AuthConfig {
      */
     'provider': ThirdPartyOAuthProviderLOOTLOCKER;
     /**
+     * Allow unverified emails: Users will be able to sign in with unverified emails
+     * @type {boolean}
+     * @memberof AuthConfig
+     */
+    'allowUnverified': boolean;
+    /**
      * The unique Supabase URL which is supplied when you create a new project in your project dashboard.
      * @type {string}
      * @memberof AuthConfig

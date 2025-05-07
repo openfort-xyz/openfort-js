@@ -35,6 +35,12 @@ export interface EmailAuthConfig {
      * @memberof EmailAuthConfig
      */
     'provider': BasicAuthProviderEMAIL;
+    /**
+     * Allow unverified emails: Users will be able to sign in with unverified emails
+     * @type {boolean}
+     * @memberof EmailAuthConfig
+     */
+    'allowUnverified': boolean;
 }
 
 

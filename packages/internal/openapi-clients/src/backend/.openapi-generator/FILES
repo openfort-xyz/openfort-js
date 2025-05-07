@@ -41,6 +41,8 @@ models/account-response-player.ts
 models/account-response.ts
 models/account.ts
 models/accounts-list-queries.ts
+models/action-required-response.ts
+models/actions.ts
 models/amount.ts
 models/api-authorized-network-delete-response.ts
 models/api-authorized-network-list-response.ts
@@ -71,6 +73,7 @@ models/auth-provider-with-type-response.ts
 models/auth-provider.ts
 models/auth-response.ts
 models/auth-session-response.ts
+models/authenticate-oauth-request-provider.ts
 models/authenticate-oauth-request.ts
 models/authenticated-player-response.ts
 models/authentication-type.ts
@@ -205,6 +208,7 @@ models/inventory-response.ts
 models/jwt-key-response.ts
 models/jwt-key.ts
 models/line-oauth-config.ts
+models/link-email200-response.ts
 models/linked-account-response.ts
 models/list-config-request.ts
 models/list-migrations-request.ts
@@ -315,6 +319,7 @@ models/signer-list-queries.ts
 models/signer-owner.ts
 models/signer-response.ts
 models/signer.ts
+models/signup-email-password201-response.ts
 models/signup-request.ts
 models/siweauthenticate-request.ts
 models/siweinit-response.ts

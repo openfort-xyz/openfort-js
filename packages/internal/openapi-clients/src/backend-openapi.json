@@ -1158,11 +1158,16 @@
           "provider": {
             "$ref": "#/components/schemas/BasicAuthProvider.EMAIL",
             "description": "OAuth provider type"
+          },
+          "allowUnverified": {
+            "type": "boolean",
+            "description": "Allow unverified emails: Users will be able to sign in with unverified emails"
           }
         },
         "required": [
           "enabled",
-          "provider"
+          "provider",
+          "allowUnverified"
         ],
         "type": "object",
         "additionalProperties": false
@@ -2098,7 +2103,14 @@
       "AuthenticateOAuthRequest": {
         "properties": {
           "provider": {
-            "$ref": "#/components/schemas/OAuthProvider",
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OAuthProvider"
+              },
+              {
+                "$ref": "#/components/schemas/ThirdPartyOAuthProvider"
+              }
+            ],
             "description": "OAuth provider",
             "example": "firebase"
           },
@@ -2156,6 +2168,24 @@
         },
         "required": [
           "identityToken"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Actions": {
+        "enum": [
+          "verify_email"
+        ],
+        "type": "string"
+      },
+      "ActionRequiredResponse": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/Actions"
+          }
+        },
+        "required": [
+          "action"
         ],
         "type": "object",
         "additionalProperties": false
@@ -10271,7 +10301,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AuthResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ActionRequiredResponse"
+                    }
+                  ]
                 },
                 "examples": {
                   "Example 1": {
@@ -10344,7 +10381,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AuthResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ActionRequiredResponse"
+                    }
+                  ]
                 },
                 "examples": {
                   "Example 1": {
@@ -10550,7 +10594,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthPlayerResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AuthPlayerResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ActionRequiredResponse"
+                    }
+                  ]
                 }
               }
             }

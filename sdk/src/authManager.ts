@@ -5,6 +5,7 @@ import { type KeyLike } from 'jose';
 import { Authentication } from './configuration/authentication';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import {
+  ActionRequiredResponse,
   Auth,
   AuthPlayerResponse,
   AuthResponse, CodeChallengeMethodEnum,
@@ -210,7 +211,7 @@ export class AuthManager {
     email: string,
     password: string,
     ecosystemGame?: string,
-  ): Promise<AuthResponse> {
+  ): Promise<AuthResponse | ActionRequiredResponse> {
     const request = {
       loginRequest: {
         email,
@@ -331,7 +332,7 @@ export class AuthManager {
     password: string,
     name?: string,
     ecosystemGame?: string,
-  ): Promise<AuthResponse> {
+  ): Promise<AuthResponse | ActionRequiredResponse> {
     const request = {
       signupRequest: {
         email,
@@ -725,7 +726,7 @@ export class AuthManager {
     password: string,
     accessToken: string,
     ecosystemGame?: string,
-  ): Promise<AuthPlayerResponse> {
+  ): Promise<AuthPlayerResponse | ActionRequiredResponse> {
     const request = {
       loginRequest: {
         email,

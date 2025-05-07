@@ -30,6 +30,8 @@ import { AuthenticateOAuthRequest } from '../models';
 // @ts-ignore
 import { JwtKeyResponse } from '../models';
 // @ts-ignore
+import { LinkEmail200Response } from '../models';
+// @ts-ignore
 import { LoginOIDCRequest } from '../models';
 // @ts-ignore
 import { LoginRequest } from '../models';
@@ -57,6 +59,8 @@ import { SIWEAuthenticateRequest } from '../models';
 import { SIWEInitResponse } from '../models';
 // @ts-ignore
 import { SIWERequest } from '../models';
+// @ts-ignore
+import { SignupEmailPassword201Response } from '../models';
 // @ts-ignore
 import { SignupRequest } from '../models';
 // @ts-ignore
@@ -1172,7 +1176,7 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async linkEmail(loginRequest: LoginRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerResponse>> {
+        async linkEmail(loginRequest: LoginRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkEmail200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.linkEmail(loginRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1219,7 +1223,7 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async loginEmailPassword(loginRequest: LoginRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+        async loginEmailPassword(loginRequest: LoginRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignupEmailPassword201Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.loginEmailPassword(loginRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1340,7 +1344,7 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signupEmailPassword(signupRequest: SignupRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
+        async signupEmailPassword(signupRequest: SignupRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignupEmailPassword201Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signupEmailPassword(signupRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1466,7 +1470,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        linkEmail(requestParameters: AuthenticationApiLinkEmailRequest, options?: AxiosRequestConfig): AxiosPromise<AuthPlayerResponse> {
+        linkEmail(requestParameters: AuthenticationApiLinkEmailRequest, options?: AxiosRequestConfig): AxiosPromise<LinkEmail200Response> {
             return localVarFp.linkEmail(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1506,7 +1510,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        loginEmailPassword(requestParameters: AuthenticationApiLoginEmailPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
+        loginEmailPassword(requestParameters: AuthenticationApiLoginEmailPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<SignupEmailPassword201Response> {
             return localVarFp.loginEmailPassword(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1614,7 +1618,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signupEmailPassword(requestParameters: AuthenticationApiSignupEmailPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
+        signupEmailPassword(requestParameters: AuthenticationApiSignupEmailPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<SignupEmailPassword201Response> {
             return localVarFp.signupEmailPassword(requestParameters.signupRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**

@@ -380,6 +380,14 @@ export interface AuthResponse {
   'refreshToken': string;
 }
 
+export enum Actions {
+  ACTION_VERIFY_EMAIL = 'verify_email',
+}
+
+export interface ActionRequiredResponse {
+  action: Actions;
+}
+
 export interface AccountAbstractionV6Details {
   'userOperation': UserOperationV6;
   'userOperationHash': string;
