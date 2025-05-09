@@ -135,7 +135,9 @@ export class AuthManager {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
       },
-      (error) => { sentry.captureException(error); },
+      (error) => {
+        sentry.captureException(error);
+      },
     );
   }
 
