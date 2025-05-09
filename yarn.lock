@@ -2340,6 +2340,8 @@ __metadata:
     "@rollup/plugin-replace": ^5.0.2
     "@rollup/plugin-terser": ^0.4.3
     "@rollup/plugin-typescript": ^11.0.0
+    "@sentry/browser": ^9.15.0
+    "@sentry/core": ^9.15.0
     "@swc/jest": ^0.2.24
     "@types/crypto-js": ^4.2.2
     "@types/jest": ^29.4.3
@@ -4549,6 +4551,64 @@ __metadata:
     "@noble/hashes": ~1.8.0
     "@scure/base": ~1.2.5
   checksum: 96d46420780473d6c6c9700254a0eceec60302f61d7f9d7f29024e90c7acff3e8e40a5ee52dfaf104db539a10462e531996aaf9e69f082b8540b0a25870545fc
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/browser-utils@npm:9.17.0":
+  version: 9.17.0
+  resolution: "@sentry-internal/browser-utils@npm:9.17.0"
+  dependencies:
+    "@sentry/core": 9.17.0
+  checksum: c20314bc7f3c241415b29baa3f9d255e2d5713720b4c2488b09c767d2ae9a06abf5f49f526e689ffcad81af28d5d8223b4de0e9ec87921ce67469140efb7f05d
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/feedback@npm:9.17.0":
+  version: 9.17.0
+  resolution: "@sentry-internal/feedback@npm:9.17.0"
+  dependencies:
+    "@sentry/core": 9.17.0
+  checksum: 3968f9d7f27cac0e1bf83a194c3007d9fd1fc28e72b0c666a5a838e89ef76d17cd6a747649b7a1493156350b090785a04d8705354ebb9cd0524e0b0b7763f0c4
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/replay-canvas@npm:9.17.0":
+  version: 9.17.0
+  resolution: "@sentry-internal/replay-canvas@npm:9.17.0"
+  dependencies:
+    "@sentry-internal/replay": 9.17.0
+    "@sentry/core": 9.17.0
+  checksum: 0f8901d7e88ea16beb041d5e961432c9664c91bfc9c222c3d34e1e17aff778581d0505ba84f77fa20dfbcef9dcbeaef35a48a14098d4798d1051619b5448bb4a
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/replay@npm:9.17.0":
+  version: 9.17.0
+  resolution: "@sentry-internal/replay@npm:9.17.0"
+  dependencies:
+    "@sentry-internal/browser-utils": 9.17.0
+    "@sentry/core": 9.17.0
+  checksum: 19b1b6de8916da3b5af8b972abc2dfc45b9e33282eb8c8b6e77105e1193ae71619857ae39693995f3e1ae96c20f54979d7fbb56a662db5ff5f615c4238807a9c
+  languageName: node
+  linkType: hard
+
+"@sentry/browser@npm:^9.15.0":
+  version: 9.17.0
+  resolution: "@sentry/browser@npm:9.17.0"
+  dependencies:
+    "@sentry-internal/browser-utils": 9.17.0
+    "@sentry-internal/feedback": 9.17.0
+    "@sentry-internal/replay": 9.17.0
+    "@sentry-internal/replay-canvas": 9.17.0
+    "@sentry/core": 9.17.0
+  checksum: 285d011d0f205bc24664f600726db81e5c3d7ee582783238136f2fa0fa8573fde4625d6b46e892791ee46a401fcd4a7e5cd751d8f0b81c9732ffb69bf86e2018
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:9.17.0, @sentry/core@npm:^9.15.0":
+  version: 9.17.0
+  resolution: "@sentry/core@npm:9.17.0"
+  checksum: 07481aa222f5c4a596756b67216cc35d9624c9866cf8fc237ec3730543a9a73e8704091a1605a0e849e817c8fe87316dad1103aeff49d7d864f73e1c95c21715
   languageName: node
   linkType: hard
 
