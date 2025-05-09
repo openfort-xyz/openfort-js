@@ -3,10 +3,8 @@ import { Client } from '@sentry/core';
 const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296';
 
 export class InternalSentry {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static sentryInstance: Client;
 
-  // Queue to store calls made before Sentry is initialized
   private static queuedCalls: Array<{ fn: string; args: any[] }> = [];
 
   private static set sentry(sentry: Client) {
@@ -23,12 +21,10 @@ export class InternalSentry {
       throw new Error('Sentry DSN is not valid');
     }
 
-    // eslint-disable-next-line no-underscore-dangle
     this.sentryInstance = sentry;
   }
 
   public static get sentry(): Client {
-    // eslint-disable-next-line no-underscore-dangle
     return this.proxy;
   }
 
@@ -52,12 +48,10 @@ export class InternalSentry {
 
   private static proxy = new Proxy({} as Client, {
     get(_, prop: string) {
-      // If sentryInstance is initialized, call the function directly
       if (InternalSentry.sentryInstance && typeof (InternalSentry.sentryInstance as any)[prop] === 'function') {
         return (...args: any[]) => (InternalSentry.sentryInstance as any)[prop](...args);
       }
 
-      // // If not initialized, queue the call for later
       return (...args: any[]) => {
         InternalSentry.queuedCalls.push({ fn: prop, args });
       };
