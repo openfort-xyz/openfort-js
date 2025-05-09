@@ -17,6 +17,7 @@ import {
 } from './types';
 import DeviceCredentialsManager from './utils/deviceCredentialsManager';
 import { isBrowser } from './utils/helpers';
+import { sentry } from './errors/sentry';
 
 function base64URLEncode(str: Buffer) {
   return str.toString('base64')
@@ -143,14 +144,26 @@ export class AuthManager {
         tokenType,
       },
     };
-    return withOpenfortError<AuthPlayerResponse>(async () => {
-      const response = await this.backendApiClients.authenticationApi.thirdParty(
-        request,
-        AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
-      );
-      return response.data;
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
+    return withOpenfortError<AuthPlayerResponse>(
+      async () => {
+        const response = await this.backendApiClients.authenticationApi.thirdParty(
+          request,
+          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
+        );
+        return response.data;
+      },
+      {
+        default: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+      },
+      (error) => {
+        sentry.captureException(error, {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          event_id: 'authenticateThirdParty',
+        });
+      },
+    );
   }
 
   public async initSIWE(

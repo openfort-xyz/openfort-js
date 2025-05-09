@@ -1,6 +1,6 @@
 import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
 import { getSignedTypedData } from 'evm/walletHelpers';
-import { InternalSentry, sentry } from 'errors/sentry';
+import { InternalSentry } from 'errors/sentry';
 import { IStorage, StorageKeys } from './storage/istorage';
 import { LocalStorage } from './storage/localStorage';
 import { ShieldAuthentication } from './iframe/types';
@@ -502,8 +502,6 @@ export class Openfort {
     } catch (e) {
       if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
         await signer?.logout();
-      } else {
-        sentry.captureException(e);
       }
       throw e;
     }
@@ -807,8 +805,6 @@ export class Openfort {
     } catch (e) {
       if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
         await signer?.logout();
-      } else {
-        sentry.captureException(e);
       }
       throw e;
     }
