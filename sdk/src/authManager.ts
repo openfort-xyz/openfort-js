@@ -130,6 +130,8 @@ export class AuthManager {
     }, {
       default: OpenfortErrorType.AUTHENTICATION_ERROR,
       // eslint-disable-next-line @typescript-eslint/naming-convention
+      401: OpenfortErrorType.AUTHENTICATION_ERROR,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
     }, (error) => {
       sentry.captureAxiosError('loginWithIdToken', error);
@@ -157,6 +159,8 @@ export class AuthManager {
       return response.data;
     }, {
       default: OpenfortErrorType.AUTHENTICATION_ERROR,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      401: OpenfortErrorType.AUTHENTICATION_ERROR,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
     }, (error) => {
@@ -204,6 +208,8 @@ export class AuthManager {
       return response.data;
     }, {
       default: OpenfortErrorType.AUTHENTICATION_ERROR,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      401: OpenfortErrorType.AUTHENTICATION_ERROR,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
     }, (error) => {
@@ -372,6 +378,8 @@ export class AuthManager {
       return response.data;
     }, {
       default: OpenfortErrorType.USER_REGISTRATION_ERROR,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      401: OpenfortErrorType.USER_REGISTRATION_ERROR,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
     }, (error) => {
