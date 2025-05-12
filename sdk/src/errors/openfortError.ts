@@ -43,7 +43,7 @@ export interface StatusCodeOpenfortError {
 export const withOpenfortError = async <T>(
   fn: () => Promise<T>,
   customErrorType: StatusCodeOpenfortError,
-  onUnexpectedError?: (error: unknown) => void,
+  onUnexpectedError?: (error: unknown, openfortError: OpenfortError) => void,
 ): Promise<T> => {
   try {
     return await fn();
@@ -75,7 +75,7 @@ export const withOpenfortError = async <T>(
     const openfortError = new OpenfortError(errorMessage, errorType, data);
 
     if (statusCode === undefined || !customErrorType[statusCode]) {
-      onUnexpectedError?.(error);
+      onUnexpectedError?.(error, openfortError);
     }
 
     throw openfortError;

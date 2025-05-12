@@ -46,7 +46,7 @@ export class Openfort {
       sdkConfiguration.overrides?.iframeUrl || 'https://embedded.openfort.xyz',
       sdkConfiguration.shieldConfiguration?.debug || false,
     );
-    InternalSentry.init();
+    InternalSentry.init({ openfortConfiguration: configuration });
     configuration.save();
   }
 

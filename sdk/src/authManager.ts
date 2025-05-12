@@ -4,6 +4,7 @@ import * as crypto from 'crypto';
 import { type KeyLike } from 'jose';
 import { Authentication } from './configuration/authentication';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
+import { sentry } from './errors/sentry';
 import {
   ActionRequiredResponse,
   Auth,
@@ -17,7 +18,6 @@ import {
 } from './types';
 import DeviceCredentialsManager from './utils/deviceCredentialsManager';
 import { isBrowser } from './utils/helpers';
-import { sentry } from './errors/sentry';
 
 function base64URLEncode(str: Buffer) {
   return str.toString('base64')
@@ -127,8 +127,13 @@ export class AuthManager {
         AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
       );
       return response.data;
+    }, {
+      default: OpenfortErrorType.AUTHENTICATION_ERROR,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
+      403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+    }, (error) => {
+      sentry.captureAxiosError('loginWithIdToken', error);
+    });
   }
 
   public async authenticateThirdParty(
@@ -144,26 +149,19 @@ export class AuthManager {
         tokenType,
       },
     };
-    return withOpenfortError<AuthPlayerResponse>(
-      async () => {
-        const response = await this.backendApiClients.authenticationApi.thirdParty(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
-        );
-        return response.data;
-      },
-      {
-        default: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-      },
-      (error) => {
-        sentry.captureException(error, {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          event_id: 'authenticateThirdParty',
-        });
-      },
-    );
+    return withOpenfortError<AuthPlayerResponse>(async () => {
+      const response = await this.backendApiClients.authenticationApi.thirdParty(
+        request,
+        AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
+      );
+      return response.data;
+    }, {
+      default: OpenfortErrorType.AUTHENTICATION_ERROR,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+    }, (error) => {
+      sentry.captureAxiosError('authenticateThirdParty', error);
+    });
   }
 
   public async initSIWE(
@@ -204,8 +202,13 @@ export class AuthManager {
     return withOpenfortError<AuthResponse>(async () => {
       const response = await this.backendApiClients.authenticationApi.authenticateSIWE(request);
       return response.data;
+    }, {
+      default: OpenfortErrorType.AUTHENTICATION_ERROR,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
+      403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+    }, (error) => {
+      sentry.captureAxiosError('authenticateSIWE', error);
+    });
   }
 
   private static getEcosystemGameOptsOrUndefined(ecosystemGame?: string): AxiosRequestConfig | undefined {
@@ -238,8 +241,15 @@ export class AuthManager {
         AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
       );
       return response.data;
+    }, {
+      default: OpenfortErrorType.AUTHENTICATION_ERROR,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
+      401: OpenfortErrorType.AUTHENTICATION_ERROR,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+    }, (error) => {
+      sentry.captureAxiosError('loginEmailPassword', error);
+    });
   }
 
   public async requestResetPassword(
@@ -360,8 +370,13 @@ export class AuthManager {
         AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
       );
       return response.data;
+    }, {
+      default: OpenfortErrorType.USER_REGISTRATION_ERROR,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-    }, { default: OpenfortErrorType.USER_REGISTRATION_ERROR, 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM });
+      403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+    }, (error) => {
+      sentry.captureAxiosError('signupEmailPassword', error);
+    });
   }
 
   // Slower validation function for browsers that do not support crypto.subtle
