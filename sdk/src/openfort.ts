@@ -1,5 +1,6 @@
 import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
 import { getSignedTypedData } from 'evm/walletHelpers';
+import { InternalSentry } from 'errors/sentry';
 import { IStorage, StorageKeys } from './storage/istorage';
 import { LocalStorage } from './storage/localStorage';
 import { ShieldAuthentication } from './iframe/types';
@@ -45,7 +46,7 @@ export class Openfort {
       sdkConfiguration.overrides?.iframeUrl || 'https://embedded.openfort.xyz',
       sdkConfiguration.shieldConfiguration?.debug || false,
     );
-
+    InternalSentry.init({ openfortConfiguration: configuration });
     configuration.save();
   }
 

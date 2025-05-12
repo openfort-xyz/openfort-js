@@ -43,17 +43,17 @@ export interface StatusCodeOpenfortError {
 export const withOpenfortError = async <T>(
   fn: () => Promise<T>,
   customErrorType: StatusCodeOpenfortError,
+  onUnexpectedError?: (error: unknown, openfortError: OpenfortError) => void,
 ): Promise<T> => {
   try {
     return await fn();
   } catch (error) {
     let errorMessage: string;
     const data: Data = {};
-    let errorType: OpenfortErrorType = customErrorType.default;
+    let statusCode: number | undefined;
 
     if (isAxiosError(error)) {
-      const statusCode = error.response?.status;
-      errorType = statusCode ? customErrorType[statusCode] || customErrorType.default : customErrorType.default;
+      statusCode = error.response?.status;
 
       if (error.response?.data && error.response.data.error) {
         if (isAPIError(error.response.data.error)) {
@@ -68,6 +68,16 @@ export const withOpenfortError = async <T>(
       errorMessage = (error as Error).message;
     }
 
-    throw new OpenfortError(errorMessage, errorType, data);
+    const errorType = statusCode !== undefined && customErrorType[statusCode]
+      ? customErrorType[statusCode]
+      : customErrorType.default;
+
+    const openfortError = new OpenfortError(errorMessage, errorType, data);
+
+    if (statusCode === undefined || !customErrorType[statusCode]) {
+      onUnexpectedError?.(error, openfortError);
+    }
+
+    throw openfortError;
   }
 };
