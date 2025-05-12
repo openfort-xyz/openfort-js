@@ -7,8 +7,7 @@ import { AxiosError } from 'axios';
 import { Configuration } from '../configuration/configuration';
 import { PACKAGE, VERSION } from '../version';
 
-// const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296'; // Prod
-const SENTRY_DSN = 'https://c39d15ed53b1ffe9956b7221eb3c3986@o4509247673270272.ingest.de.sentry.io/4509247754666064';
+const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296'; // Prod
 
 declare module '@sentry/core' {
   // eslint-disable-next-line @typescript-eslint/no-shadow
