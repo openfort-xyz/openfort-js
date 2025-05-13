@@ -135,7 +135,7 @@ export class IframeManager {
     } else {
       if (!global.openfort) return;
 
-      global.openfort.openfortListener((event: MessageEvent<any>) => {
+      global.openfort.iframeListener((event: MessageEvent<any>) => {
         const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
         const eventOrigin = new URL(event.origin).origin;
         if (eventOrigin === iframeUrlOrigin) {
@@ -151,7 +151,7 @@ export class IframeManager {
         contentWindow: {
           postMessage: (message: MessageEvent<any>) => {
             if (!global.openfort) return;
-            global.openfort.openfortPostMessage(message);
+            global.openfort.iframePostMessage(message);
           },
         },
       };

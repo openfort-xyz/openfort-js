@@ -3,8 +3,8 @@
 
 declare global {
   var openfort: {
-    openfortListener: ((fn: ((event: MessageEvent<any>) => void)) => void);
-    openfortPostMessage: ((message: MessageEvent<any>) => void);
+    iframeListener: ((fn: ((event: MessageEvent<any>) => void)) => void);
+    iframePostMessage: ((message: MessageEvent<any>) => void);
     jwk: {
       getKey: (key: any) => any;
       parse: (sJWS: string) => any;
