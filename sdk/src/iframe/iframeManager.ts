@@ -103,7 +103,9 @@ export class IframeManager {
   public async iframeSetup(): Promise<void> {
     if (window.addEventListener) {
       window.addEventListener('message', (event) => {
-        if (event.origin === this.sdkConfiguration.iframeUrl) {
+        const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+        const eventOrigin = new URL(event.origin).origin;
+        if (eventOrigin === iframeUrlOrigin) {
           const { data } = event;
           if (data.action) {
             if (data.action === Event.PONG) {
@@ -134,7 +136,9 @@ export class IframeManager {
       if (!global.openfort) return;
 
       global.openfort.openfortListener((event: MessageEvent<any>) => {
-        if (event.origin === this.sdkConfiguration.iframeUrl) {
+        const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+        const eventOrigin = new URL(event.origin).origin;
+        if (eventOrigin === iframeUrlOrigin) {
           let { data } = event;
           if (typeof data === 'string') data = JSON.parse(data);
           if (data.action) {
