@@ -103,7 +103,9 @@ export class IframeManager {
   public async iframeSetup(): Promise<void> {
     if (window.addEventListener) {
       window.addEventListener('message', (event) => {
-        if (event.origin === this.sdkConfiguration.iframeUrl) {
+        const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+        const eventOrigin = new URL(event.origin).origin;
+        if (eventOrigin === iframeUrlOrigin) {
           const { data } = event;
           if (data.action) {
             if (data.action === Event.PONG) {
@@ -131,10 +133,12 @@ export class IframeManager {
       }
       this.iframe = iframe;
     } else {
-      if (!global.openfortListener) return;
+      if (!global.openfort) return;
 
-      global.openfortListener((event: MessageEvent<any>) => {
-        if (event.origin === this.sdkConfiguration.iframeUrl) {
+      global.openfort.iframeListener((event: MessageEvent<any>) => {
+        const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+        const eventOrigin = new URL(event.origin).origin;
+        if (eventOrigin === iframeUrlOrigin) {
           let { data } = event;
           if (typeof data === 'string') data = JSON.parse(data);
           if (data.action) {
@@ -146,8 +150,8 @@ export class IframeManager {
       this.iframe = {
         contentWindow: {
           postMessage: (message: MessageEvent<any>) => {
-            if (!global.openfortPostMessage) return;
-            global.openfortPostMessage(message);
+            if (!global.openfort) return;
+            global.openfort.iframePostMessage(message);
           },
         },
       };
@@ -195,7 +199,7 @@ export class IframeManager {
       const interval = setInterval(() => {
         if (retries > 100) {
           clearInterval(interval);
-          reject(NoResponseError);
+          reject(new NoResponseError());
         }
         retries++;
         const response = this.responses.get(uuid);

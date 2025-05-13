@@ -32,7 +32,7 @@ export const InformationToast: React.FC<InformationToastProps> = ({
         'radix-swipe-direction-right:translate-x-radix-toast-swipe-move-x',
         'radix-swipe-direction-down:radix-swipe-end:animate-toast-swipe-out-y',
         'radix-swipe-direction-down:translate-y-radix-toast-swipe-move-y',
-        'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-[ease]',
+        'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-in-out',
         'focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75'
       )}
     >
@@ -97,7 +97,7 @@ export const LoadingToast: React.FC<LoadingToastProps> = ({
         'radix-swipe-direction-right:translate-x-radix-toast-swipe-move-x',
         'radix-swipe-direction-down:radix-swipe-end:animate-toast-swipe-out-y',
         'radix-swipe-direction-down:translate-y-radix-toast-swipe-move-y',
-        'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-[ease]',
+        'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-in-out',
         'focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75'
       )}
     >
@@ -144,7 +144,7 @@ export const SuccessToast: React.FC<SuccessToastProps> = ({
         'radix-swipe-direction-right:translate-x-radix-toast-swipe-move-x',
         'radix-swipe-direction-down:radix-swipe-end:animate-toast-swipe-out-y',
         'radix-swipe-direction-down:translate-y-radix-toast-swipe-move-y',
-        'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-[ease]',
+        'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-in-out',
         'focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75'
       )}
     >
@@ -212,7 +212,7 @@ export const ErrorToast: React.FC<ErrorToastProps> = ({
         'radix-swipe-direction-right:translate-x-radix-toast-swipe-move-x',
         'radix-swipe-direction-down:radix-swipe-end:animate-toast-swipe-out-y',
         'radix-swipe-direction-down:translate-y-radix-toast-swipe-move-y',
-        'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-[ease]',
+        'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-in-out',
         'focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75'
       )}
     >
