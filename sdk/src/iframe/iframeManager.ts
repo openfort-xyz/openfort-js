@@ -199,7 +199,7 @@ export class IframeManager {
       const interval = setInterval(() => {
         if (retries > 100) {
           clearInterval(interval);
-          reject(NoResponseError);
+          reject(new NoResponseError());
         }
         retries++;
         const response = this.responses.get(uuid);
