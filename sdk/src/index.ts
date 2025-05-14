@@ -10,10 +10,14 @@ export {
   TokenType,
   OAuthProvider,
   AuthPlayerResponse,
+  AuthResponse,
+  AuthActionRequiredActions,
+  AuthActionRequiredResponse,
+  InitAuthResponse,
+  AuthType,
   SessionResponse,
   TransactionIntentResponse,
   SDKOverrides,
-  AuthType,
   RecoveryMethod,
 } from './types';
 export { ShieldAuthentication, ShieldAuthType } from './iframe/types';

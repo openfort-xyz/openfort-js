@@ -1,6 +1,6 @@
 {
   "name": "@openfort/openfort-js",
-  "version": "0.8.41",
+  "version": "0.8.42",
   "author": "Openfort (https://www.openfort.io)",
   "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
   "repository": "openfort-xyz/openfort-js.git",
@@ -20,14 +20,13 @@
   "scripts": {
     "test": "yarn lint && yarn test:unit && yarn typecheck",
     "test:unit": "jest --passWithNoTests",
-    "prebuild": "node -p \"'export const VERSION = ' + JSON.stringify(require('./package.json').version) + ';\\nexport const PACKAGE = ' + JSON.stringify(require('./package.json').name) + ';'\" > src/version.ts",
     "test:watch": "jest --watch",
     "packageList": "./scripts/generate-package-list.sh",
     "typecheck": "tsc --noEmit --jsx preserve",
     "dev": "NODE_ENV=development yarn rollup --config rollup.config.js --watch",
     "lint": "eslint 'src/**/*.ts' --fix",
     "clean": "rimraf dist",
-    "build": "yarn packageList && yarn clean && NODE_ENV=production yarn rollup --config rollup.config.js && rm -rf dist/types",
+    "build": "yarn packageList && node copyVersion.cjs && yarn clean && NODE_ENV=production yarn rollup --config rollup.config.js && rm -rf dist/types",
     "stats": "open ./stats.html"
   },
   "publishConfig": {
