@@ -6,7 +6,7 @@ import { Authentication } from './configuration/authentication';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import { sentry } from './errors/sentry';
 import {
-  ActionRequiredResponse,
+  AuthActionRequiredResponse,
   Auth,
   AuthPlayerResponse,
   AuthResponse, CodeChallengeMethodEnum,
@@ -233,7 +233,7 @@ export class AuthManager {
     email: string,
     password: string,
     ecosystemGame?: string,
-  ): Promise<AuthResponse | ActionRequiredResponse> {
+  ): Promise<AuthResponse | AuthActionRequiredResponse> {
     const request = {
       loginRequest: {
         email,
@@ -361,7 +361,7 @@ export class AuthManager {
     password: string,
     name?: string,
     ecosystemGame?: string,
-  ): Promise<AuthResponse | ActionRequiredResponse> {
+  ): Promise<AuthResponse | AuthActionRequiredResponse> {
     const request = {
       signupRequest: {
         email,
@@ -762,7 +762,7 @@ export class AuthManager {
     password: string,
     accessToken: string,
     ecosystemGame?: string,
-  ): Promise<AuthPlayerResponse | ActionRequiredResponse> {
+  ): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
     const request = {
       loginRequest: {
         email,

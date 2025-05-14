@@ -15,7 +15,7 @@ import {
   OAuthProvider, OpenfortEventMap,
   SessionResponse, SIWEInitResponse, ThirdPartyOAuthProvider, TokenType, TransactionIntentResponse,
   RecoveryMethod,
-  ActionRequiredResponse,
+  AuthActionRequiredResponse,
 } from './types';
 import { OpenfortSDKConfiguration } from './config';
 import { Configuration } from './configuration/configuration';
@@ -251,7 +251,7 @@ export class Openfort {
    */
   public async logInWithEmailPassword(
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
-  ): Promise<AuthResponse | ActionRequiredResponse> {
+  ): Promise<AuthResponse | AuthActionRequiredResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
     const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
     if ('action' in result) {
@@ -292,7 +292,7 @@ export class Openfort {
     {
       email, password, options, ecosystemGame,
     }: { email: string; password: string, options?: { data: { name: string } }, ecosystemGame?: string },
-  ): Promise<AuthResponse | ActionRequiredResponse> {
+  ): Promise<AuthResponse | AuthActionRequiredResponse> {
     const previousAuth = Authentication.fromStorage(this.storage);
     const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame);
     if ('action' in result) {
@@ -318,7 +318,7 @@ export class Openfort {
     {
       email, password, authToken, ecosystemGame,
     }: { email: string; password: string; authToken: string, ecosystemGame?: string },
-  ): Promise<AuthPlayerResponse | ActionRequiredResponse> {
+  ): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
     return await this.authManager.linkEmail(email, password, authToken, ecosystemGame);
   }
 
