@@ -15,6 +15,35 @@ function LoginPage() {
   const [status, setStatus] = useState<StatusType>(null);
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
 
+  // check if "state" exists in url query param and if it does make an api call:
+  useEffect(() => {
+    const verifyEmail = async () => {
+      try {
+        const email = localStorage.getItem("email");
+        if (
+          email && 
+          router.query.state
+        ) {
+          await openfort.verifyEmail({
+            email: email,
+            state: router.query.state as string,
+          });
+          localStorage.removeItem("email");
+          setStatus({
+            type: "success",
+            title: "Email verified! You can now sign in.",
+          });
+        }
+      } catch (error) {
+        setStatus({
+          type: "error",
+          title: "Error verifying email",
+        });
+      }
+    };
+    verifyEmail();
+  }, [router]);
+
   useEffect(() => {
     if (
       router.query.access_token &&

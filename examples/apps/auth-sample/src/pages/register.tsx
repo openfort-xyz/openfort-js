@@ -1,6 +1,5 @@
-import Head from "next/head";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "../components/Layouts/Layout";
 import { TextField } from "../components/Fields";
 import openfort from "../utils/openfortConfig";
@@ -36,44 +35,6 @@ function RegisterPage() {
 
   const [status, setStatus] = useState<StatusType>(null);
   const [error, setError] = useState<ErrorType>(null);
-
-  const linkedAccount = useMemo(() => {
-    // Find in linkedAccounts with provider email
-    const linkedAccount = user?.linkedAccounts?.find(
-      (account: any) => account.provider === "email"
-    );
-    return linkedAccount;
-  }, [user]);
-
-  // check if "state" exists in url query param and if it does make an api call:
-  useEffect(() => {
-    const verifyEmail = async () => {
-      try {
-        const email = localStorage.getItem("email");
-        if (
-          email && 
-          router.query.state
-        ) {
-          await openfort.verifyEmail({
-            email: email,
-            state: router.query.state as string,
-          });
-          localStorage.removeItem("email");
-          setStatus({
-            type: "success",
-            title: "Email verified! You can now sign in.",
-          });
-          router.push("/login");
-        }
-      } catch (error) {
-        setStatus({
-          type: "error",
-          title: "Error verifying email",
-        });
-      }
-    };
-    verifyEmail();
-  }, [linkedAccount, router]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -114,7 +75,7 @@ function RegisterPage() {
     if (data && "action" in data && data.action === "verify_email") {
       await openfort.requestEmailVerification({
         email: email,
-        redirectUrl: getURL() + "/register",
+        redirectUrl: getURL() + "/login",
       });
       localStorage.setItem("email", email);
       setEmailConfirmation(true);

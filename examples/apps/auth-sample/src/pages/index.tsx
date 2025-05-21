@@ -47,19 +47,6 @@ const HomePage: NextPage = () => {
     if (!user) fetchUser();
   }, [openfort]);
 
-  const linkedAccount = useMemo(() => {
-    const linkedAccount = user?.linkedAccounts?.find(
-      (account: any) => account.provider === "email"
-    );
-    return linkedAccount;
-  }, [user]);
-
-  useEffect(() => {
-    if (linkedAccount?.verified === false) {
-      router.push("/register");
-    }
-  }, [linkedAccount, router]);
-
   if (state === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
     return (
       <Layout sidebar={
