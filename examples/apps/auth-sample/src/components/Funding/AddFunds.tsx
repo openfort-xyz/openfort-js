@@ -26,7 +26,7 @@ const StepEnum = {
 const AddFunds: React.FC<{
   handleSetMessage: (message: string) => void;
 }> = ({handleSetMessage}) => {
-  const {state, getEOAAddress, getBalance} = useOpenfort();
+  const {state, getEvmProvider, getEOAAddress, getBalance} = useOpenfort();
 
   const [step, setStep] = useState<number>(0);
   const [service, setService] = useState<any>();
@@ -111,16 +111,20 @@ const AddFunds: React.FC<{
   // In charge of checking the balance of the account when manual funding is selected
   useEffect(() => {
     (async () => {
-      
+      const provider = getEvmProvider();
+      if (!provider) {
+        throw new Error('Failed to get EVM provider');
+      }
       if (step === StepEnum.MANUAL) {
         const accountBalance = await getBalance(
           accountAddress as Address,
-          polygonAmoy
+          polygonAmoy,
+          provider
         );
         setAccountBalance(accountBalance);
 
         const intervalBalance = setInterval(async () => {
-          const last = await getBalance(accountAddress as Address, polygonAmoy);
+          const last = await getBalance(accountAddress as Address, polygonAmoy, provider);
           if(last !== accountBalance) {
             setStep(StepEnum.COMPLETED);
             clearInterval(intervalBalanceId.current);

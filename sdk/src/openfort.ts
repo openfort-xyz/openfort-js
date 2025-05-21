@@ -73,6 +73,7 @@ export class Openfort {
   public getEthereumProvider(
     options?: {
       policy?: string;
+      chains?: Record<number, string>;
       providerInfo?: {
         icon: `data:image/${string}`; // RFC-2397
         name: string;
@@ -101,6 +102,7 @@ export class Openfort {
         backendApiClients: this.backendApiClients,
         policyId: finalOptions.policy,
         validateAndRefreshSession: this.validateAndRefreshToken.bind(this),
+        chains: finalOptions.chains,
       });
 
       if (finalOptions.announceProvider) {

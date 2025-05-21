@@ -10,7 +10,6 @@ import {Chain,} from '../../utils/constants';
 import {polygonAmoy, mainnet, base, type Chain as WagmiChain} from 'wagmi/chains';
 import { fromHex, Transport } from "viem";
 import { injected } from "wagmi/connectors";
-import openfortInstance from '../../utils/openfortConfig';
 import { useOpenfort } from "../../hooks/useOpenfort";
 import { EmbeddedState } from "@openfort/openfort-js";
 import { Button } from "../ui/button";

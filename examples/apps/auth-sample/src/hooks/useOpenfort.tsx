@@ -18,7 +18,8 @@ import {
 import axios from 'axios';
 import openfort from '../utils/openfortConfig';
 import { Address } from 'viem/accounts';
-import { Chain, createPublicClient, http } from 'viem';
+import { Chain, createPublicClient, custom, http } from 'viem';
+import { polygonAmoy } from 'viem/chains';
 
 interface ContextType {
   state: EmbeddedState;
@@ -48,7 +49,7 @@ interface ContextType {
   ) => Promise<{data?: string; error?: Error}>;
   logout: () => Promise<void>;
   getEOAAddress: () => Promise<string>;
-  getBalance: (address: Address, chain: Chain) => Promise<bigint>;
+  getBalance: (address: Address, chain: Chain, provider: Provider) => Promise<bigint>;
 }
 
 const OpenfortContext = createContext<ContextType | null>(null);
@@ -101,6 +102,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   const getEvmProvider = useCallback((): Provider => {
     const externalProvider = openfort.getEthereumProvider({
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
+      chains: {
+        [polygonAmoy.id]: "https://polygon-amoy.gateway.tenderly.co",
+      }
     });
     if (!externalProvider) {
       throw new Error('EVM provider is undefined');
@@ -237,11 +241,11 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     }
   }, []);
 
-  const getBalance = useCallback(async (address: Address, chain: Chain) => {
+  const getBalance = useCallback(async (address: Address, chain: Chain, provider: Provider) => {
     try {
       const publicClient = createPublicClient({
         chain,
-        transport: http(),
+        transport: custom(provider),
       });
       return await publicClient.getBalance({ address });
     } catch (err){

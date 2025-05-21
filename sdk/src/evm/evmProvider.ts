@@ -11,7 +11,7 @@ import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError';
 import { signTypedDataV4 } from './signTypedDataV4';
 import { OpenfortEventMap, OpenfortEvents } from '../types';
 import TypedEventEmitter from '../utils/typedEventEmitter';
-import { chainRpcs } from '../chains';
+import { defaultChainRpcs } from '../chains';
 import { Signer } from '../signer/isigner';
 import { Account } from '../configuration/account';
 import { SignerManager } from '../manager/signer';
@@ -28,6 +28,7 @@ import { numberToHex } from '../utils/crypto';
 export type EvmProviderInput = {
   storage: IStorage;
   signer?: Signer;
+  chains?: Record<number, string>
   account?: Account;
   authentication?: Authentication;
   backendApiClients: BackendApiClients;
@@ -41,6 +42,8 @@ export class EvmProvider implements Provider {
 
   #policyId?: string;
 
+  #customChains?: Record<number, string>;
+
   /**
    * Updates the policy ID for the provider
    * @param newPolicyId - The new policy ID to use
@@ -53,7 +56,7 @@ export class EvmProvider implements Provider {
 
   readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>;
 
-  #rpcProvider: StaticJsonRpcProvider | null = null; // Used for read
+  #rpcProvider: StaticJsonRpcProvider | null = null;
 
   readonly #backendApiClients: BackendApiClients;
 
@@ -64,9 +67,12 @@ export class EvmProvider implements Provider {
     backendApiClients,
     openfortEventEmitter,
     policyId,
+    chains,
     validateAndRefreshSession,
   }: EvmProviderInput) {
     this.#storage = storage;
+
+    this.#customChains = chains;
 
     this.#policyId = policyId;
 
@@ -102,7 +108,8 @@ export class EvmProvider implements Provider {
       const chainId = account?.chainId || 8453;
 
       await import('@ethersproject/providers').then((module) => {
-        this.#rpcProvider = new module.StaticJsonRpcProvider(chainRpcs[chainId]);
+        const rpcUrl = this.#customChains ? this.#customChains[chainId] : undefined;
+        this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainId]);
       });
     }
     if (!this.#rpcProvider) {
@@ -241,7 +248,8 @@ export class EvmProvider implements Provider {
           const chainIdNumber = parseInt(request.params[0].chainId, 16);
           await signer.switchChain({ chainId: chainIdNumber });
           await import('@ethersproject/providers').then((module) => {
-            this.#rpcProvider = new module.StaticJsonRpcProvider(chainRpcs[chainIdNumber]);
+            const rpcUrl = this.#customChains ? this.#customChains[chainIdNumber] : undefined;
+            this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainIdNumber]);
           });
         } catch (error) {
           throw new JsonRpcError(
