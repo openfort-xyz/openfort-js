@@ -42,9 +42,6 @@ function RegisterPage() {
     const linkedAccount = user?.linkedAccounts?.find(
       (account: any) => account.provider === "email"
     );
-    if (linkedAccount?.verified === false) {
-      setEmailConfirmation(true);
-    }
     return linkedAccount;
   }, [user]);
 
@@ -52,15 +49,19 @@ function RegisterPage() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
+        const email = localStorage.getItem("email");
         if (
-          linkedAccount &&
-          linkedAccount.verified === false &&
-          linkedAccount.email &&
+          email && 
           router.query.state
         ) {
           await openfort.verifyEmail({
-            email: linkedAccount.email,
+            email: email,
             state: router.query.state as string,
+          });
+          localStorage.removeItem("email");
+          setStatus({
+            type: "success",
+            title: "Email verified! You can now sign in.",
           });
           router.push("/login");
         }
@@ -115,15 +116,16 @@ function RegisterPage() {
         email: email,
         redirectUrl: getURL() + "/register",
       });
-    }
-    if (data && "player" in data) {
-      setStatus({
-        type: "success",
-        title: "Successfully signed up",
-      });
-      setUser(data.player);
+      localStorage.setItem("email", email);
       setEmailConfirmation(true);
     }
+    if (data && "player" in data) {
+      setUser(data.player);
+    }
+    setStatus({
+      type: "success",
+      title: "Successfully signed up",
+    });
   };
 
   return (
