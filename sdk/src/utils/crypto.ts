@@ -1,5 +1,5 @@
 import { secp256k1 } from '@noble/curves/secp256k1';
-import { bytesToHex as nobleBytesToHex, hexToBytes as nobleHexToBytes } from '@noble/hashes/utils';
+import { hexToBytes as nobleHexToBytes } from '@noble/hashes/utils';
 
 export type Hex = `0x${string}`;
 
@@ -8,23 +8,20 @@ export function randomUUID() {
   const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
 
-  // Per RFC4122 standard
-  bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
-  bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 10xxxxxx
+  // Set version 4 (0100xxxx)
+  bytes[6] = Math.floor(bytes[6] / 16) * 16 + 4;
 
-  const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0'));
+  // Set variant to 10xxxxxx
+  bytes[8] = Math.floor(bytes[8] / 64) * 64 + 128;
+
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0'));
   return [
     hex.slice(0, 4).join(''),
     hex.slice(4, 6).join(''),
     hex.slice(6, 8).join(''),
     hex.slice(8, 10).join(''),
-    hex.slice(10, 16).join('')
+    hex.slice(10, 16).join(''),
   ].join('-');
-}
-
-export function bytesToHex(value: Uint8Array): Hex {
-  const hex = nobleBytesToHex(value);
-  return `0x${hex}`;
 }
 
 export function hexToBytes(hexString: Hex | string | Uint8Array): Uint8Array {

@@ -1,6 +1,7 @@
 import type { RecoveryMethod } from 'types';
 import { IStorage, StorageKeys } from 'storage/istorage';
 import { LocalStorage } from 'storage/localStorage';
+import { randomUUID } from 'utils/crypto';
 import type { SDKConfiguration } from '../config';
 import {
   type ConfigureRequest,
@@ -100,7 +101,7 @@ export class IframeManager {
     this.storage = new LocalStorage();
   }
 
-  public async iframeSetup(): Promise<void> {
+  private async iframeSetup(): Promise<void> {
     if (window.addEventListener) {
       window.addEventListener('message', (event) => {
         const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
@@ -168,9 +169,10 @@ export class IframeManager {
     }
     const checkAndPing = async (): Promise<void> => {
       if (!this.isLoaded()) {
+        const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
         this.iframe?.contentWindow?.postMessage(
-          new PingRequest(this.generateShortUUID()),
-          '*',
+          new PingRequest(randomUUID()),
+          iframeUrlOrigin,
         );
         await new Promise<void>((resolve) => {
           setTimeout(resolve, 100);
@@ -234,7 +236,7 @@ export class IframeManager {
     }
     await this.waitForIframeLoad();
     const config: ConfigureRequest = {
-      uuid: this.generateShortUUID(),
+      uuid: randomUUID(),
       action: Event.CONFIGURE,
       chainId: iframeConfiguration.chainId,
       recovery: iframeConfiguration.recovery,
@@ -250,7 +252,8 @@ export class IframeManager {
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
     };
-    this.iframe?.contentWindow?.postMessage(config, '*');
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+    this.iframe?.contentWindow?.postMessage(config, iframeUrlOrigin);
     let response: ConfigureResponse;
     try {
       response = await this.waitForResponse<ConfigureResponse>(config.uuid);
@@ -271,7 +274,7 @@ export class IframeManager {
     requireHash?: boolean,
   ): Promise<string> {
     await this.waitForIframeLoad();
-    const uuid = this.generateShortUUID();
+    const uuid = randomUUID();
     const requestConfiguration: RequestConfiguration = {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
@@ -286,7 +289,8 @@ export class IframeManager {
       requireHash,
       requestConfiguration,
     );
-    this.iframe?.contentWindow?.postMessage(request, '*');
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
     let response: SignResponse;
     try {
       response = await this.waitForResponse<SignResponse>(uuid);
@@ -307,7 +311,7 @@ export class IframeManager {
     chainId: number,
   ): Promise<SwitchChainResponse> {
     await this.waitForIframeLoad();
-    const uuid = this.generateShortUUID();
+    const uuid = randomUUID();
     const requestConfiguration: RequestConfiguration = {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
@@ -320,7 +324,8 @@ export class IframeManager {
       chainId,
       requestConfiguration,
     );
-    this.iframe?.contentWindow?.postMessage(request, '*');
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
     let response: SwitchChainResponse;
     try {
       response = await this.waitForResponse<SwitchChainResponse>(uuid);
@@ -340,7 +345,7 @@ export class IframeManager {
     iframeConfiguration: IframeConfiguration,
   ): Promise<string> {
     await this.waitForIframeLoad();
-    const uuid = this.generateShortUUID();
+    const uuid = randomUUID();
     const requestConfiguration: RequestConfiguration = {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
@@ -352,7 +357,8 @@ export class IframeManager {
       uuid,
       requestConfiguration,
     );
-    this.iframe?.contentWindow?.postMessage(request, '*');
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
     let response: ExportPrivateKeyResponse;
     try {
       response = await this.waitForResponse<ExportPrivateKeyResponse>(uuid);
@@ -375,7 +381,7 @@ export class IframeManager {
     encryptionSession?: string,
   ): Promise<void> {
     await this.waitForIframeLoad();
-    const uuid = this.generateShortUUID();
+    const uuid = randomUUID();
     const requestConfiguration: RequestConfiguration = {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
@@ -390,7 +396,8 @@ export class IframeManager {
       encryptionSession,
       requestConfiguration,
     );
-    this.iframe?.contentWindow?.postMessage(request, '*');
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
     let response: SetRecoveryMethodResponse;
     try {
       response = await this.waitForResponse<SetRecoveryMethodResponse>(uuid);
@@ -408,10 +415,11 @@ export class IframeManager {
 
   async getCurrentUser(playerId: string): Promise<GetCurrentDeviceResponse | null> {
     await this.waitForIframeLoad();
-    const uuid = this.generateShortUUID();
+    const uuid = randomUUID();
 
     const request = new GetCurrentDeviceRequest(uuid, playerId);
-    this.iframe?.contentWindow?.postMessage(request, '*');
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
 
     try {
       const response = await this.waitForResponse<GetCurrentDeviceResponse>(uuid);
@@ -427,9 +435,10 @@ export class IframeManager {
 
   async logout(): Promise<void> {
     await this.waitForIframeLoad();
-    const uuid = this.generateShortUUID();
+    const uuid = randomUUID();
     const request = new LogoutRequest(uuid);
-    this.iframe?.contentWindow?.postMessage(request, '*');
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
     await this.waitForResponse<LogoutResponse>(uuid);
   }
 
@@ -446,9 +455,10 @@ export class IframeManager {
       iframeConfiguration.recovery.token = token;
     }
     await this.waitForIframeLoad();
-    const uuid = this.generateShortUUID();
+    const uuid = randomUUID();
     const request = new UpdateAuthenticationRequest(uuid, token);
-    this.iframe?.contentWindow?.postMessage(request, '*');
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
 
     try {
       await this.waitForResponse<UpdateAuthenticationResponse>(uuid);
@@ -460,17 +470,5 @@ export class IframeManager {
       }
       throw e;
     }
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  private generateShortUUID(length = 8) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(
-        Math.floor(Math.random() * characters.length),
-      );
-    }
-    return result;
   }
 }
