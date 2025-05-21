@@ -38,7 +38,7 @@ const EIP1193MintButton: React.FC<{
     setLoading(true);
     const publicClient = createPublicClient({
       chain: polygonAmoy,
-      transport: http()
+      transport: custom(provider)
     })
     const walletClient = createWalletClient({
       chain: polygonAmoy,
