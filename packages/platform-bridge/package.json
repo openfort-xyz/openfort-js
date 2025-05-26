@@ -1,5 +1,5 @@
 {
-  "name": "@openfort/platform-bridge",
+  "name": "platform-bridge",
   "version": "0.0.0",
   "dependencies": {
     "@openfort/openfort-js": "workspace:sdk",
@@ -10,8 +10,7 @@
     "parcel": "^2.15.0"
   },
   "scripts": {
-    "build": "yarn build:sdk && parcel build --no-cache --no-scope-hoist",
-    "build:sdk": "cd ../.. && yarn build",
+    "build": "parcel build --no-cache --no-scope-hoist",
     "lint": "eslint ./src --ext .ts,.jsx,.tsx --max-warnings=0",
     "start": "parcel"
   },

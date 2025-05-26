@@ -2384,17 +2384,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfort/platform-bridge@workspace:packages/platform-bridge":
-  version: 0.0.0-use.local
-  resolution: "@openfort/platform-bridge@workspace:packages/platform-bridge"
-  dependencies:
-    "@openfort/openfort-js": "workspace:sdk"
-    eslint: ^8.40.0
-    ethers: ^5.8.0
-    parcel: ^2.15.0
-  languageName: unknown
-  linkType: soft
-
 "@openfort/shield-js@npm:^0.1.14, @openfort/shield-js@npm:^0.1.7":
   version: 0.1.16
   resolution: "@openfort/shield-js@npm:0.1.16"
@@ -14177,6 +14166,17 @@ __metadata:
   checksum: b167bb8dac7bbf22b1d5e30ec223e6b064b84b63010c9d49384619a36734caf95ed23ad23d4f9bd975e8e8082b60a83395f43a89bb192df53a7c25a38ecb57d9
   languageName: node
   linkType: hard
+
+"platform-bridge@workspace:packages/platform-bridge":
+  version: 0.0.0-use.local
+  resolution: "platform-bridge@workspace:packages/platform-bridge"
+  dependencies:
+    "@openfort/openfort-js": "workspace:sdk"
+    eslint: ^8.40.0
+    ethers: ^5.8.0
+    parcel: ^2.15.0
+  languageName: unknown
+  linkType: soft
 
 "playwright-core@npm:1.52.0":
   version: 1.52.0
