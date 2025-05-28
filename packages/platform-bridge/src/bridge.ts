@@ -10,7 +10,6 @@ const OPENFORT_FUNCTIONS = {
   init: 'init',
   logout: 'logout',
   getEthereumProvider: 'getEthereumProvider',
-  configureSessionKey: 'configureSessionKey',
   configureEmbeddedSigner: 'configureEmbeddedSigner',
   logInWithEmailPassword: 'logInWithEmailPassword',
   signUpWithEmailPassword: 'signUpWithEmailPassword',
@@ -402,20 +401,6 @@ window.callFunction = async (jsonData: string) => {
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
-      }
-      case OPENFORT_FUNCTIONS.configureSessionKey: {
-        const sessionKey = openfortClient?.configureSessionKey();
-
-        callbackToGame({
-          ...{
-            responseFor: fxName,
-            requestId,
-            success: true,
-            sessionKey,
-          },
-          ...sessionKey,
         });
         break;
       }

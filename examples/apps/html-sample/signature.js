@@ -11,9 +11,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       publishableKey: 'pk_test_505bc088-905e-5a43-b60b-4c37ed1f887a',
     },
     shieldConfiguration: {
-      shieldPublishableKey: '56ca3248-d8a4-499c-b07b-aa9d50a2b577',
-      shieldEncryptionKey: 'ApIULM96wggoEnYQ5x+TO5KRiYiHZdcNQ7wKtV1dvulp',
-      debug: true,
+      shieldPublishableKey: 'a4b75269-65e7-49c4-a600-6b5d9d6eec66',
+      shieldEncryptionKey: '/cC/ElEv1bCHxvbE/UUH+bLIf8nSLZOrxj8TkKChiY4=',
     },
   });
 
@@ -35,11 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   auth.onIdTokenChanged(async (user) => {
     if (user) {
       const idToken = await user.getIdToken();
-      await openfort.authenticateWithThirdPartyProvider(
-        'firebase',
-        idToken,
-        'idToken'
-      );
+      const player = await openfort.authenticateWithThirdPartyProvider({
+        provider:'firebase',
+        token:idToken,
+        tokenType:'idToken'
+      });
       const embeddedState = openfort.getEmbeddedState();
       console.log(embeddedState);
       if (embeddedState !== 4) {
