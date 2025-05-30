@@ -34,7 +34,7 @@ const GetUserButton: React.FC<{
         onClick={handleUserMessage}
         variant="outline"
       >
-        {loading ? <Loading /> : 'Get user'}
+        {loading ? <Loading /> : 'Get user info'}
         </Button>
     </div>
   );
