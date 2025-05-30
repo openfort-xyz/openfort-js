@@ -33,7 +33,7 @@ const ExportPrivateKey: React.FC<{
         disabled={state !== EmbeddedState.READY}
         variant="outline"
       >
-        {loading ? <Loading /> : 'Export key'}
+        {loading ? <Loading /> : 'Export private key'}
       </Button>
     </div>
   );

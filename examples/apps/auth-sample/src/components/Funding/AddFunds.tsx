@@ -172,7 +172,7 @@ const AddFunds: React.FC<{
           disabled={step > 0}
           variant="outline"
         >
-          {step ? <Loading /> : 'Fund'}
+          {step ? <Loading /> : 'Add Funds'}
         </Button>
         </DialogTrigger>
 

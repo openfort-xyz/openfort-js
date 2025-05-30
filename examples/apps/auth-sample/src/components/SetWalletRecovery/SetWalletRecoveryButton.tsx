@@ -39,7 +39,7 @@ const SetWalletRecovery: React.FC<{
       <input
         name={`${RecoveryMethod.AUTOMATIC}-passwordRecovery`}
         placeholder="Old password recovery"
-        className="w-full p-2 border border-gray-200 rounded-lg mb-2"
+        className="w-full p-2 border border-gray-200 text-sm rounded-lg mb-2"
       />
       <Button
         className='w-full' 
@@ -52,7 +52,7 @@ const SetWalletRecovery: React.FC<{
         {loading === RecoveryMethod.AUTOMATIC ? (
           <Loading />
         ) : (
-          'Set Automatic Recovery'
+          'Change to Automatic Recovery'
         )}
       </Button>
       <div className="my-4 flex w-full justify-center">
@@ -62,7 +62,7 @@ const SetWalletRecovery: React.FC<{
       <input
         name={`${RecoveryMethod.PASSWORD}-passwordRecovery`}
         placeholder="New password recovery"
-        className="w-full p-2 border border-gray-200 rounded-lg mb-2"
+        className="w-full p-2 border border-gray-200 text-sm rounded-lg mb-2"
       />
       <Button 
         className='w-full' 
@@ -75,7 +75,7 @@ const SetWalletRecovery: React.FC<{
         {loading === RecoveryMethod.PASSWORD ? (
           <Loading />
         ) : (
-          'Set Password Recovery'
+          'Change to Manual Recovery'
         )}
       </Button>
     </div>

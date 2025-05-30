@@ -68,8 +68,7 @@ const HomePage: NextPage = () => {
           </div>
           <div className="p-6 mb-14 border-t bg-white">
             <p className="text-sm text-gray-600 mb-4">
-              Openfort gives you modular components so you can customize your
-              product for your users.
+              Openfort gives you modular components to customize your app. {' '}
               <a
                 href="https://www.openfort.io/docs/guides/getting-started"
                 className="text-blue-600 hover:underline"
@@ -87,9 +86,9 @@ const HomePage: NextPage = () => {
         <div className="flex min-h-full overflow-hidden pt-8 sm:py-12">
           <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
             <div className="-mx-4 flex-auto bg-white py-10 px-8 sm:mx-0 sm:flex-none sm:rounded-md sm:p-14 sm:shadow-2xl">
-              <h1>Set up your embedded signer</h1>
+              <h1>Secure your embedded wallet</h1>
               <p className="text-gray-400 mb-4">
-                Welcome, {user?.player?.name ?? user?.id}!
+                You're log in, {user?.player?.name ?? user?.id}!
               </p>
               <div className="absolute top-2 right-2">
                 <LogoutButton />
@@ -152,30 +151,27 @@ const HomePage: NextPage = () => {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <AccountActions handleSetMessage={handleSetMessage} />
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-            <h2 className="flex justify-left font-medium text-xl pb-4">
-              Signatures
+            <h2 className="flex justify-left font-medium text-lg pb-4">
+              Wallet Signatures
             </h2>
             <div>
-              <span className="font-medium text-black">Message: </span>Hello
-              World!
+              <span className="text-sm text-grey-400">Message: Hello
+              World!</span>
               <SignMessageButton handleSetMessage={handleSetMessage} />
             </div>
             <div>
-              <span className="font-medium text-black">Typed message: </span>
               <SignTypedDataButton handleSetMessage={handleSetMessage} />
             </div>
           </div>
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-            <h2 className="flex justify-left font-medium text-xl pb-4">
-              Linked socials
+            <h2 className="flex justify-left font-medium text-lg pb-4">
+              Linked Socials
             </h2>
 
             <div>
-              <span className="font-medium text-black">Get user: </span>
               <GetUserButton handleSetMessage={handleSetMessage} />
             </div>
             <div>
-              <span className="font-medium text-black">{"OAuth methods"}</span>
               {[
                 OAuthProvider.GOOGLE,
                 OAuthProvider.TWITTER,
@@ -186,6 +182,9 @@ const HomePage: NextPage = () => {
                 </div>
               ))}
             </div>
+            <legend className="test-sm leading-6 text-black">
+            Connect Wallet
+            </legend>
             <div>
               <Button
                 className="w-full"
@@ -194,48 +193,39 @@ const HomePage: NextPage = () => {
                 }}
                 variant="outline"
               >
-                {"Link a Wallet"}
+                {"Link wallet"}
               </Button>
             </div>
           </div>
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-            <h2 className="flex justify-left font-medium text-xl pb-4">
+            <h2 className="flex justify-left font-medium text-lg pb-4">
               Embedded wallet
             </h2>
             <div>
-              <span className="font-medium text-black">
-                Export wallet private key:
-              </span>
               <ExportPrivateKey handleSetMessage={handleSetMessage} />
             </div>
             <div>
-              <p className="font-medium text-black mb-4">
-                Change wallet recovery:
-              </p>
               <SetWalletRecovery handleSetMessage={handleSetMessage} />
             </div>
           </div>
 
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-            <h2 className="flex justify-left font-medium text-xl pb-4">
-              Wallet Connect
+            <h2 className="flex justify-left font-medium text-lg pb-4">
+              Pair via WalletConnect
             </h2>
             <div>
-              <p className="font-medium text-black mb-4">
-                Connect via WalletConnect:
-              </p>
               <SetPairingCodeWithWagmi handleSetMessage={handleSetMessage} />
             </div>
           </div>
 
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-            <h2 className="flex justify-left font-medium text-xl pb-4">
+            <h2 className="flex justify-left font-medium text-lg pb-4">
               Funding
             </h2>
             <div>
-              <p className="font-medium text-black mb-4">
+                <p className="text-sm text-black mb-4">
                 Add funds is on-ramp or transfer funds from another wallet.
-              </p>
+                </p>
               <AddFunds handleSetMessage={handleSetMessage} />
             </div>
           </div>

@@ -57,7 +57,7 @@ const AccountRecovery: React.FC = () => {
                   setLoadingPwd(false);
                 }}
               >
-                {loadingPwd ? <Loading /> : 'Continue with Password Recovery'}
+                {loadingPwd ? <Loading /> : 'Continue with Manual Recovery'}
               </Button>
             </div>
             <div className="relative my-10">
