@@ -15,9 +15,10 @@ git clone https://github.com/openfort-xyz/openfort-js.git
 2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `yarn`.
 ```sh
 yarn install
+yarn build
 ```
 
-1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
+3. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
 ```sh
 # In your terminal, create .env.local from .env.example
 cp .env.example .env.local

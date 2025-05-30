@@ -16,6 +16,8 @@
     "stats": "yarn workspace @openfort/openfort-js run stats",
     "dev": "yarn workspace @openfort/openfort-js run dev",
     "dev:nextjs": "yarn workspace nextjs run dev",
+    "dev:solana": "yarn workspace solana-vite run dev",
+    "dev:wagmi-vite": "yarn workspace wagmi-vite run dev",
     "dev:wagmi": "yarn workspace wagmi-next-app run dev",
     "build": "NODE_OPTIONS=--max-old-space-size=14366 wsrun -y 4 -p @openfort/openfort-js -e -r --serial build",
     "build:docs": "typedoc --json docs/spec.json",
