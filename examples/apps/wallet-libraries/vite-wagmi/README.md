@@ -1,33 +1,28 @@
 # Wagmi Kit - Vite
-**Step 1**
 
-Ensure you are using the latest `@openfort/openfort-js` by using the latest version from [`@openfort/openfort-js`](https://www.npmjs.com/package/@openfort/openfort-js) in the `package.json` file.
+## Getting Started
 
-Clone this repository and open it in your terminal. 
-
+1. Clone this repository and open it in your terminal. 
 ```sh
-mkdir -p openfort-wagmi-sample-vite && curl -L https://codeload.github.com/openfort-xyz/openfort-js/tar.gz/main | tar -xz --strip=4 -C openfort-wagmi-sample-vite openfort-js-main/examples/apps/wallet-libraries/vite-wagmi && cd openfort-wagmi-sample-vite
+git clone https://github.com/openfort-xyz/openfort-js.git
 ```
 
-**Step 2**
-
-Install the necessary dependencies (including [Openfort Auth](https://www.npmjs.com/package/@openfort/openfort-js)) with 
-
+2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `yarn`.
 ```sh
-npm i 
+yarn install
+yarn build
 ```
 
-**Step 3**
+3. Initialize your environment variables by copying the `.env.example` file to an `.env` file. Then, in `.env`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
+```sh
+# In your terminal, create .env from .env.example
+cp .env.example .env
 
-Update `OPENFORT_PUBLISHABLE_KEY`, `SHIELD_ENCRYPTION_PART` and `SHIELD_PUBLISHABLE_KEY` in `src/main.tsx`
-
-```ts
-// Openfort and Shield Publishable Key (you will find it in the Dashboard in the `API Keys` section)
-const OPENFORT_PUBLISHABLE_KEY = 'OF_PUBLISHABLE_KEY';
-const SHIELD_PUBLISHABLE_KEY = 'SHIELD_PUBLISHABLE_KEY'; 
-const SHIELD_ENCRYPTION_PART = 'SHIELD_PART'; 
+# Add your Openfort keys to .env
+VITE_APP_OPENFORT_PUBLISHABLE_KEY=
+VITE_APP_SHIELD_PUBLISHABLE_KEY=
 ```
 
-**Step 4**
+## Building locally
 
-In your project directory, run `npm run dev`. You can now visit http://localhost:3000 to see your app and login with Openfort!
+In your openfort-js project root, run `yarn dev:wagmi-vite`. 

@@ -9,15 +9,16 @@ This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-yo
 
 1. Clone this repository and open it in your terminal. 
 ```sh
-mkdir -p openfort-auth-sample-nextjs && curl -L https://codeload.github.com/openfort-xyz/openfort-js/tar.gz/main | tar -xz --strip=4 -C openfort-auth-sample-nextjs openfort-js-main/examples/apps/auth-sample && cd openfort-auth-sample-nextjs
+git clone https://github.com/openfort-xyz/openfort-js.git
 ```
 
-2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `npm`.
+2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `yarn`.
 ```sh
-npm i 
+yarn install
+yarn build
 ```
 
-1. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
+3. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
 ```sh
 # In your terminal, create .env.local from .env.example
 cp .env.example .env.local
@@ -33,8 +34,7 @@ NEXTAUTH_SHIELD_SECRET_KEY=
 
 ## Building locally
 
-In your project directory, run `npm run dev`. You can now visit http://localhost:3000 to see your app and login with Openfort!
-
+In your openfort-js project root, run `yarn dev:nextjs`. You can now visit http://localhost:3000 to see your app and login with Openfort!
 
 ## Check out:
 - `components/AccountActions/AccountActions.tsx` for how to send transactions.

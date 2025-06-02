@@ -10,7 +10,6 @@ import {
   useBalance,
   useBlockNumber,
   useChainId,
-  useConfig,
   useConnect,
   useConnections,
   useConnectorClient,
@@ -399,7 +398,7 @@ function WriteContract() {
     const formData = new FormData(e.target as HTMLFormElement)
     const tokenId = formData.get('tokenId') as string
     writeContract({
-      address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+      address: getAddress('0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2'),
       abi: parseAbi(['function mint(uint256 tokenId)']),
       functionName: 'mint',
       args: [BigInt(tokenId)],
@@ -443,13 +442,13 @@ function WriteContracts() {
       {
         calls: [
           {
-            address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+            to: getAddress('0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2'),
             abi: parseAbi(['function mint(uint256 tokenId)']),
             functionName: 'mint',
             args: [BigInt(tokenId)],
           },
           {
-            address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+            to: getAddress('0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2'),
             abi: parseAbi(['function mint(uint256 tokenId)']),
             functionName: 'mint',
             args: [BigInt(tokenId)],
