@@ -19,8 +19,8 @@ export default function AccountActions({ handleSetMessage }: { handleSetMessage:
 
   return (
     <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
-      <h2 className="font-medium text-xl pb-4">
-        Account actions
+      <h2 className="font-medium text-lg pb-4">
+        Wallet actions
       </h2>
       
       <div className="flex items-center space-x-2 mb-4">
@@ -29,7 +29,7 @@ export default function AccountActions({ handleSetMessage }: { handleSetMessage:
           checked={isProviderEnabled}
           onCheckedChange={setIsProviderEnabled}
         />
-        <Label htmlFor="provider-switch">EIP-1193 Provider</Label>
+        <Label htmlFor="provider-switch">Using the EIP-1193 Provider</Label>
       </div>
 
       {isProviderEnabled ? (
@@ -39,7 +39,7 @@ export default function AccountActions({ handleSetMessage }: { handleSetMessage:
       ) : (
         <div className='space-y-2'>
             <Alert className='bg-blue-50'>
-                <AlertTitle>Backend Action!</AlertTitle>
+                <AlertTitle>Openfort API</AlertTitle>
                 <AlertDescription>
                     This mode creates an API call to your backend to mint the NFT.
                 </AlertDescription>
@@ -48,7 +48,7 @@ export default function AccountActions({ handleSetMessage }: { handleSetMessage:
         </div>
       )}
         <fieldset>
-            <legend className="font-medium leading-6 text-black">
+            <legend className="test-sm leading-6 text-black">
             Session key duration
             </legend>
             <div className="mt-3 space-y-1">
