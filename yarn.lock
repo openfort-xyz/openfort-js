@@ -15283,6 +15283,7 @@ __metadata:
     ox: ^0.6.10
     react: ^19.0.0
     react-dom: ^19.0.0
+    tailwindcss: ^4.0.14
     typescript: ^5.7.2
     typescript-eslint: ^8.24.1
     vite: ^6.2.0
@@ -15842,7 +15843,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:4.1.8":
+"tailwindcss@npm:4.1.8, tailwindcss@npm:^4.0.14":
   version: 4.1.8
   resolution: "tailwindcss@npm:4.1.8"
   checksum: 1172a5a23dcdaab148a5e9e096709806009bd3d0cc6e0582cf5fd712014f6ba2810e60c349cb0002a93ca67f05b716235977d7d63b8830573d135dd360c39031
