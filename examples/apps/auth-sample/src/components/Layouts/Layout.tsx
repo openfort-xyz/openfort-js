@@ -19,7 +19,7 @@ export function Layout({
             </Link>
             <span className="text-gray-300 md:flex hidden">-</span>
             <p className="font-mono text-orange-600 font-medium pt-2">
-              Embedded Smart Wallet
+              Demo Embedded Wallet
             </p>
           </div>
           <div className="space-x-2 flex">
@@ -36,7 +36,7 @@ export function Layout({
               target="_blank"
               href="https://dashboard.openfort.xyz/auth/register"
             >
-              {"Get started with Openfort ->"}
+              {"Get started ->"}
             </a>
           </div>
         </div>
