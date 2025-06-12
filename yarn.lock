@@ -2340,6 +2340,7 @@ __metadata:
     jose: ^5.2.2
     parcel: ^2.15.0
     path: ^0.12.7
+    penpal: ^7.0.4
     prettier: ^2.8.8
     rimraf: ^2.6.2
     rollup: ^3.17.2
@@ -13682,6 +13683,13 @@ __metadata:
     safe-buffer: ^5.0.1
     sha.js: ^2.4.8
   checksum: 2c950a100b1da72123449208e231afc188d980177d021d7121e96a2de7f2abbc96ead2b87d03d8fe5c318face097f203270d7e27908af9f471c165a4e8e69c92
+  languageName: node
+  linkType: hard
+
+"penpal@npm:^7.0.4":
+  version: 7.0.4
+  resolution: "penpal@npm:7.0.4"
+  checksum: e0cb64554837718f89996ee51b6712f5d2994be386b5d9e9f8aedda69352176d4ab0c6f43303833d3fd30e5094848ffef184b6c28ba1785e9eea5dc6d14111f4
   languageName: node
   linkType: hard
 

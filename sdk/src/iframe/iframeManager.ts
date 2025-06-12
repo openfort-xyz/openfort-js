@@ -1,6 +1,9 @@
 import type { RecoveryMethod } from 'types';
 import { IStorage, StorageKeys } from 'storage/istorage';
 import { LocalStorage } from 'storage/localStorage';
+import {
+  PenpalError, WindowMessenger, connect, type Connection,
+} from 'penpal';
 import { randomUUID } from 'utils/crypto';
 import type { SDKConfiguration } from '../config';
 import {
@@ -8,11 +11,8 @@ import {
   ConfigureResponse,
   GetCurrentDeviceRequest,
   Event,
-  type IEventResponse,
-  LogoutRequest,
   LogoutResponse,
   NOT_CONFIGURED_ERROR,
-  PingRequest,
   SetRecoveryMethodResponse,
   type ShieldAuthentication,
   SignRequest,
@@ -24,7 +24,10 @@ import {
   type RequestConfiguration,
   MISSING_USER_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
-  ShieldAuthType, ExportPrivateKeyRequest, ExportPrivateKeyResponse, MISSING_PROJECT_ENTROPY_ERROR,
+  ShieldAuthType,
+  ExportPrivateKeyRequest,
+  ExportPrivateKeyResponse,
+  MISSING_PROJECT_ENTROPY_ERROR,
   SetRecoveryMethodRequest,
   SwitchChainRequest,
   SwitchChainResponse,
@@ -38,6 +41,19 @@ export interface IframeConfiguration {
   recovery: ShieldAuthentication | null;
   chainId: number | null;
   password: string | null;
+}
+
+interface IframeAPI {
+  configure(request: ConfigureRequest): Promise<ConfigureResponse>;
+  sign(request: SignRequest): Promise<SignResponse>;
+  switchChain(request: SwitchChainRequest): Promise<SwitchChainResponse>;
+  updateAuthentication(request: UpdateAuthenticationRequest): Promise<UpdateAuthenticationResponse>;
+  logout(request: any): Promise<LogoutResponse>;
+  export(request: ExportPrivateKeyRequest): Promise<ExportPrivateKeyResponse>;
+  setRecoveryMethod(request: SetRecoveryMethodRequest): Promise<SetRecoveryMethodResponse>;
+  getCurrentDevice(request: GetCurrentDeviceRequest): Promise<GetCurrentDeviceResponse>;
+  // Index signature to satisfy Iframe's Methods constraint
+  [key: string]: Function;
 }
 
 export class MissingRecoveryPasswordError extends Error {
@@ -85,16 +101,18 @@ export class NotConfiguredError extends Error {
   }
 }
 
-type WindowWrapper = { contentWindow: { postMessage: (message: any, targetOrigin: string) => void } };
-
 export class IframeManager {
-  private iframe: HTMLIFrameElement | WindowWrapper | undefined;
+  private iframe: HTMLIFrameElement | undefined;
 
-  private readonly responses: Map<string, IEventResponse> = new Map();
+  private connection: Connection<IframeAPI> | undefined;
+
+  private remote: IframeAPI | undefined;
 
   private readonly storage: IStorage;
 
   private readonly sdkConfiguration: SDKConfiguration;
+
+  private isInitialized = false;
 
   constructor(configuration: SDKConfiguration) {
     this.sdkConfiguration = configuration;
@@ -102,139 +120,111 @@ export class IframeManager {
   }
 
   private async iframeSetup(): Promise<void> {
-    if (window.addEventListener) {
-      window.addEventListener('message', (event) => {
-        const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-        const eventOrigin = new URL(event.origin).origin;
-        if (eventOrigin === iframeUrlOrigin) {
-          const { data } = event;
-          if (data.action) {
-            if (data.action === Event.PONG) {
-              this.responses.set('FIRST', data);
-            }
-            this.responses.set(data.uuid, data);
-          }
-        }
-      });
-      const previousIframe = document.getElementById(
-        'openfort-iframe',
-      ) as HTMLIFrameElement;
-      if (previousIframe) {
-        document.body.removeChild(previousIframe);
-      }
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.id = 'openfort-iframe';
-      document.body.appendChild(iframe);
+    if (!window.addEventListener) {
+      throw new Error('This environment does not support addEventListener');
+    }
 
-      if (this.sdkConfiguration.shieldConfiguration?.debug) {
-        iframe.src = `${this.sdkConfiguration.iframeUrl}?debug=true`;
-      } else {
-        iframe.src = this.sdkConfiguration.iframeUrl;
-      }
-      this.iframe = iframe;
+    const previousIframe = document.getElementById('openfort-iframe') as HTMLIFrameElement;
+    if (previousIframe) {
+      document.body.removeChild(previousIframe);
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.id = 'openfort-iframe';
+    document.body.appendChild(iframe);
+
+    if (this.sdkConfiguration.shieldConfiguration?.debug) {
+      iframe.src = `${this.sdkConfiguration.iframeUrl}?debug=true`;
     } else {
-      if (!global.openfort) return;
+      iframe.src = this.sdkConfiguration.iframeUrl;
+    }
 
-      global.openfort.iframeListener((event: MessageEvent<any>) => {
-        const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-        const eventOrigin = new URL(event.origin).origin;
-        if (eventOrigin === iframeUrlOrigin) {
-          let { data } = event;
-          if (typeof data === 'string') data = JSON.parse(data);
-          if (data.action) {
-            this.responses.set(data.uuid, data);
-          }
-        }
-      });
+    this.iframe = iframe;
 
-      this.iframe = {
-        contentWindow: {
-          postMessage: (message: MessageEvent<any>) => {
-            if (!global.openfort) return;
-            global.openfort.iframePostMessage(message);
-          },
-        },
+    await new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Iframe load timeout'));
+      }, 2000);
+
+      iframe.onload = () => {
+        clearTimeout(timeout);
+        resolve();
       };
+
+      iframe.onerror = () => {
+        clearTimeout(timeout);
+        reject(new Error('Failed to load iframe'));
+      };
+    });
+  }
+
+  private async establishIframeConnection(): Promise<void> {
+    if (!this.iframe?.contentWindow) {
+      throw new Error('Iframe not properly initialized');
+    }
+
+    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
+
+    const messenger = new WindowMessenger({
+      remoteWindow: this.iframe.contentWindow,
+      allowedOrigins: [iframeUrlOrigin],
+    });
+
+    this.connection = connect<IframeAPI>({
+      messenger,
+      timeout: 2000,
+    });
+
+    try {
+      this.remote = await this.connection.promise;
+      this.isInitialized = true;
+    } catch (error) {
+      const err = error as PenpalError;
+      throw new Error(`Failed to establish Iframe connection: ${err.cause || err.message}`, err);
     }
   }
 
   public isLoaded(): boolean {
-    return this.responses.get('FIRST') !== undefined;
+    return this.isInitialized && this.remote !== undefined;
   }
 
-  private async waitForIframeLoad(): Promise<void> {
-    if (!this.iframe) {
+  private async ensureConnection(): Promise<IframeAPI> {
+    if (!this.isLoaded()) {
       await this.iframeSetup();
+      await this.establishIframeConnection();
     }
-    const checkAndPing = async (): Promise<void> => {
-      if (!this.isLoaded()) {
-        const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-        this.iframe?.contentWindow?.postMessage(
-          new PingRequest(randomUUID()),
-          iframeUrlOrigin,
-        );
-        await new Promise<void>((resolve) => {
-          setTimeout(resolve, 100);
-        });
-        await checkAndPing();
-      }
-    };
 
-    await checkAndPing();
+    if (!this.remote) {
+      throw new Error('Failed to establish connection with iframe');
+    }
+
+    return this.remote;
   }
 
-  private responseConstructors = {
-    [Event.CONFIGURED]: ConfigureResponse,
-    [Event.AUTHENTICATION_UPDATED]: UpdateAuthenticationResponse,
-    [Event.CURRENT_DEVICE]: GetCurrentDeviceResponse,
-    [Event.SIGNED]: SignResponse,
-    [Event.CHAIN_SWITCHED]: SwitchChainResponse,
-    [Event.LOGGED_OUT]: LogoutResponse,
-    [Event.SET_RECOVERY_METHOD]: SetRecoveryMethodResponse,
-    [Event.EXPORT]: ExportPrivateKeyResponse,
-  };
-
-  private waitForResponse<T extends IEventResponse>(uuid: string): Promise<T> {
-    return new Promise((resolve, reject) => {
-      let retries = 0;
-      const interval = setInterval(() => {
-        if (retries > 100) {
-          clearInterval(interval);
-          reject(new NoResponseError());
-        }
-        retries++;
-        const response = this.responses.get(uuid);
-        if (response) {
-          clearInterval(interval);
-          this.responses.delete(uuid);
-          const responseConstructor = (this.responseConstructors as any)[response.action];
-          if (isErrorResponse(response)) {
-            if (response.error === NOT_CONFIGURED_ERROR) {
-              reject(new NotConfiguredError());
-            } else if (response.error === MISSING_USER_ENTROPY_ERROR) {
-              reject(new MissingRecoveryPasswordError());
-            } else if (response.error === MISSING_PROJECT_ENTROPY_ERROR) {
-              reject(new MissingProjectEntropyError());
-            } else if (response.error === INCORRECT_USER_ENTROPY_ERROR) {
-              reject(new WrongRecoveryPasswordError());
-            }
-            reject(new UnknownResponseError(response.error));
-          } else if (responseConstructor) {
-            resolve(response as T);
-          } else {
-            reject(new InvalidResponseError());
-          }
-        }
-      }, 100);
-    });
+  private static handleError(error: any): never {
+    if (isErrorResponse(error)) {
+      if (error.error === NOT_CONFIGURED_ERROR) {
+        throw new NotConfiguredError();
+      } else if (error.error === MISSING_USER_ENTROPY_ERROR) {
+        throw new MissingRecoveryPasswordError();
+      } else if (error.error === MISSING_PROJECT_ENTROPY_ERROR) {
+        throw new MissingProjectEntropyError();
+      } else if (error.error === INCORRECT_USER_ENTROPY_ERROR) {
+        throw new WrongRecoveryPasswordError();
+      }
+      throw new UnknownResponseError(error.error);
+    }
+    throw error;
   }
 
   async configure(iframeConfiguration: IframeConfiguration): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new Error('shieldConfiguration is required');
     }
-    await this.waitForIframeLoad();
+
+    const remote = await this.ensureConnection();
+
     const config: ConfigureRequest = {
       uuid: randomUUID(),
       action: Event.CONFIGURE,
@@ -252,19 +242,22 @@ export class IframeManager {
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
     };
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    this.iframe?.contentWindow?.postMessage(config, iframeUrlOrigin);
-    let response: ConfigureResponse;
+
     try {
-      response = await this.waitForResponse<ConfigureResponse>(config.uuid);
+      const response = await remote.configure(config);
+
+      if (isErrorResponse(response)) {
+        IframeManager.handleError(response);
+      }
+
+      sessionStorage.setItem('iframe-version', (response as ConfigureResponse).version ?? 'undefined');
+      return response as ConfigureResponse;
     } catch (e) {
       if (e instanceof WrongRecoveryPasswordError || e instanceof MissingRecoveryPasswordError) {
         this.storage.remove(StorageKeys.SIGNER);
       }
       throw e;
     }
-    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-    return response;
   }
 
   async sign(
@@ -273,8 +266,8 @@ export class IframeManager {
     requireArrayify?: boolean,
     requireHash?: boolean,
   ): Promise<string> {
-    await this.waitForIframeLoad();
-    const uuid = randomUUID();
+    const remote = await this.ensureConnection();
+
     const requestConfiguration: RequestConfiguration = {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
@@ -282,36 +275,39 @@ export class IframeManager {
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       openfortURL: this.sdkConfiguration.backendUrl,
     };
+
     const request = new SignRequest(
-      uuid,
+      randomUUID(),
       message,
       requireArrayify,
       requireHash,
       requestConfiguration,
     );
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
-    let response: SignResponse;
+
     try {
-      response = await this.waitForResponse<SignResponse>(uuid);
+      const response = await remote.sign(request);
+
+      if (isErrorResponse(response)) {
+        IframeManager.handleError(response);
+      }
+
+      sessionStorage.setItem('iframe-version', (response as SignResponse).version ?? 'undefined');
+      return (response as SignResponse).signature;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure(iframeConfiguration);
         return this.sign(iframeConfiguration, message, requireArrayify, requireHash);
       }
-
       throw e;
     }
-    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-    return response.signature;
   }
 
   async switchChain(
     iframeConfiguration: IframeConfiguration,
     chainId: number,
   ): Promise<SwitchChainResponse> {
-    await this.waitForIframeLoad();
-    const uuid = randomUUID();
+    const remote = await this.ensureConnection();
+
     const requestConfiguration: RequestConfiguration = {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
@@ -319,33 +315,34 @@ export class IframeManager {
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       openfortURL: this.sdkConfiguration.backendUrl,
     };
+
     const request = new SwitchChainRequest(
-      uuid,
+      randomUUID(),
       chainId,
       requestConfiguration,
     );
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
-    let response: SwitchChainResponse;
+
     try {
-      response = await this.waitForResponse<SwitchChainResponse>(uuid);
+      const response = await remote.switchChain(request);
+
+      if (isErrorResponse(response)) {
+        IframeManager.handleError(response);
+      }
+
+      sessionStorage.setItem('iframe-version', (response as SwitchChainResponse).version ?? 'undefined');
+      return response as SwitchChainResponse;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure(iframeConfiguration);
         return this.switchChain(iframeConfiguration, chainId);
       }
-
       throw e;
     }
-    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-    return response;
   }
 
-  async export(
-    iframeConfiguration: IframeConfiguration,
-  ): Promise<string> {
-    await this.waitForIframeLoad();
-    const uuid = randomUUID();
+  async export(iframeConfiguration: IframeConfiguration): Promise<string> {
+    const remote = await this.ensureConnection();
+
     const requestConfiguration: RequestConfiguration = {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
@@ -353,35 +350,39 @@ export class IframeManager {
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       openfortURL: this.sdkConfiguration.backendUrl,
     };
+
     const request = new ExportPrivateKeyRequest(
-      uuid,
+      randomUUID(),
       requestConfiguration,
     );
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
-    let response: ExportPrivateKeyResponse;
+
     try {
-      response = await this.waitForResponse<ExportPrivateKeyResponse>(uuid);
+      const response = await remote.export(request);
+
+      if (isErrorResponse(response)) {
+        IframeManager.handleError(response);
+      }
+
+      sessionStorage.setItem('iframe-version', (response as ExportPrivateKeyResponse).version ?? 'undefined');
+      return (response as ExportPrivateKeyResponse).key;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure(iframeConfiguration);
         return this.export(iframeConfiguration);
       }
-
       throw e;
     }
-    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-    return response.key;
   }
 
+  // eslint-disable-next-line consistent-return
   async setEmbeddedRecovery(
     iframeConfiguration: IframeConfiguration,
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
   ): Promise<void> {
-    await this.waitForIframeLoad();
-    const uuid = randomUUID();
+    const remote = await this.ensureConnection();
+
     const requestConfiguration: RequestConfiguration = {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
@@ -389,42 +390,46 @@ export class IframeManager {
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       openfortURL: this.sdkConfiguration.backendUrl,
     };
+
     const request = new SetRecoveryMethodRequest(
-      uuid,
+      randomUUID(),
       recoveryMethod,
       recoveryPassword,
       encryptionSession,
       requestConfiguration,
     );
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
-    let response: SetRecoveryMethodResponse;
+
     try {
-      response = await this.waitForResponse<SetRecoveryMethodResponse>(uuid);
+      const response = await remote.setRecoveryMethod(request);
+
+      if (isErrorResponse(response)) {
+        IframeManager.handleError(response);
+      }
+
+      sessionStorage.setItem('iframe-version', (response as SetRecoveryMethodResponse).version ?? 'undefined');
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure(iframeConfiguration);
         return this.setEmbeddedRecovery(iframeConfiguration, recoveryMethod, recoveryPassword, encryptionSession);
       }
-
       throw e;
     }
-    sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-    return Promise.resolve();
   }
 
   async getCurrentUser(playerId: string): Promise<GetCurrentDeviceResponse | null> {
-    await this.waitForIframeLoad();
-    const uuid = randomUUID();
+    const remote = await this.ensureConnection();
 
-    const request = new GetCurrentDeviceRequest(uuid, playerId);
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
+    const request = new GetCurrentDeviceRequest(randomUUID(), playerId);
 
     try {
-      const response = await this.waitForResponse<GetCurrentDeviceResponse>(uuid);
-      sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-      return response;
+      const response = await remote.getCurrentDevice(request);
+
+      if (isErrorResponse(response)) {
+        IframeManager.handleError(response);
+      }
+
+      sessionStorage.setItem('iframe-version', (response as GetCurrentDeviceResponse).version ?? 'undefined');
+      return response as GetCurrentDeviceResponse;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         return null;
@@ -434,12 +439,10 @@ export class IframeManager {
   }
 
   async logout(): Promise<void> {
-    await this.waitForIframeLoad();
-    const uuid = randomUUID();
-    const request = new LogoutRequest(uuid);
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
-    await this.waitForResponse<LogoutResponse>(uuid);
+    const remote = await this.ensureConnection();
+
+    const request = { uuid: randomUUID() };
+    await remote.logout(request);
   }
 
   async updateAuthentication(
@@ -447,28 +450,45 @@ export class IframeManager {
     token: string,
     shieldAuthType: ShieldAuthType,
   ): Promise<void> {
-    // eslint-disable-next-line no-param-reassign
-    iframeConfiguration.accessToken = token;
+    const updatedConfiguration = { ...iframeConfiguration };
 
-    if (shieldAuthType === ShieldAuthType.OPENFORT && iframeConfiguration.recovery) {
-      // eslint-disable-next-line no-param-reassign
-      iframeConfiguration.recovery.token = token;
+    updatedConfiguration.accessToken = token;
+
+    if (shieldAuthType === ShieldAuthType.OPENFORT && updatedConfiguration.recovery) {
+      updatedConfiguration.recovery = { ...updatedConfiguration.recovery, token };
     }
-    await this.waitForIframeLoad();
-    const uuid = randomUUID();
-    const request = new UpdateAuthenticationRequest(uuid, token);
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    this.iframe?.contentWindow?.postMessage(request, iframeUrlOrigin);
+
+    const remote = await this.ensureConnection();
+
+    const request = new UpdateAuthenticationRequest(randomUUID(), token);
 
     try {
-      await this.waitForResponse<UpdateAuthenticationResponse>(uuid);
+      await remote.updateAuthentication(request);
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(iframeConfiguration);
-        await this.updateAuthentication(iframeConfiguration, token, shieldAuthType);
+        await this.configure(updatedConfiguration);
+        await this.updateAuthentication(updatedConfiguration, token, shieldAuthType);
         return;
       }
       throw e;
+    }
+  }
+
+  destroy(): void {
+    if (this.connection) {
+      this.connection.destroy();
+      this.connection = undefined;
+    }
+
+    this.remote = undefined;
+    this.isInitialized = false;
+
+    if (this.iframe) {
+      const iframe = document.getElementById('openfort-iframe');
+      if (iframe && iframe.parentNode) {
+        iframe.parentNode.removeChild(iframe);
+      }
+      this.iframe = undefined;
     }
   }
 }
