@@ -29,17 +29,13 @@
 
 # Openfort JavaScript SDK
 
-[![npm version](https://badge.fury.io/js/@openfort/openfort-js.svg)](https://www.npmjs.com/package/@openfort/openfort-js)
 [![Documentation](https://img.shields.io/badge/docs-openfort.io-blue)](https://www.openfort.io/docs)
-[![Discord](https://img.shields.io/discord/YOUR_DISCORD_ID)](https://discord.gg/openfort)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
 [![Version](https://img.shields.io/npm/v/@openfort/openfort-js.svg)](https://www.npmjs.org/package/@openfort/openfort-js)
 
 **Build invisible wallets in minutes, not months.** JavaScript SDK for embedded wallets, session keys, and gasless transactions.
 
 ## Features
-
 - 🔐 **Session Keys** for gasless gaming experiences  
 - 💼 **Embedded Wallets** for mainstream user onboarding
 - ⚡ **Account Abstraction** for sponsored transactions
@@ -51,12 +47,12 @@
 - 🔧 **Developer-friendly** with TypeScript support
 - 📊 **Analytics** and monitoring dashboard
 
-
 ## ⚡ Quick Start
 
 ### 1. Install
 ```bash
 npm install @openfort/openfort-js
+```
 
 ## Usage examples
 - [Openfort Auth + Embedded Wallet - Next.js](https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/auth-sample)
