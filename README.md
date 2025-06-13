@@ -29,7 +29,7 @@
 
 # Openfort JavaScript SDK
 
-[![Downloads](https://img.shields.io/npm/dm/@openfort/openfort-kit.svg)](https://www.npmjs.com/package/@openfort/openfort-kit)
+[![Downloads](https://img.shields.io/npm/dm/@openfort/openfort-kit.svg)](https://www.npmjs.com/package/@openfort/openfort-js)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-openfort.io-blue)](https://www.openfort.io/docs/products/embedded-wallet/javascript)
 [![Version](https://img.shields.io/npm/v/@openfort/openfort-js.svg)](https://www.npmjs.org/package/@openfort/openfort-js)
