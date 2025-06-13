@@ -41,7 +41,6 @@
 - 💼 **Embedded Wallets** for mainstream user onboarding
 - ⚡ **Account Abstraction** for sponsored transactions
 - 🔒 **Non-custodial** wallet infrastructure with Shield encryption
-- 🎮 **Gaming-first** SDK with Unity and React Native support
 - 🌐 **Multi-chain** support (EVm and Solana)
 - 📱 **Social Auth** with Google, Discord, Twitter integration
 - 💸 **Gasless Transactions** with configurable gas policies
