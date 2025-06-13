@@ -7,7 +7,7 @@
       Website
     </a>
     <span> | </span>
-    <a href="https://www.openfort.io/docs">
+    <a href="https://www.openfort.io/docs/products/embedded-wallet/javascript">
       Documentation
     </a>
     <span> | </span>
@@ -29,8 +29,9 @@
 
 # Openfort JavaScript SDK
 
-[![Documentation](https://img.shields.io/badge/docs-openfort.io-blue)](https://www.openfort.io/docs)
+[![Downloads](https://img.shields.io/npm/dm/@openfort/openfort-kit.svg)](https://www.npmjs.com/package/@openfort/openfort-kit)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-openfort.io-blue)](https://www.openfort.io/docs/products/embedded-wallet/javascript)
 [![Version](https://img.shields.io/npm/v/@openfort/openfort-js.svg)](https://www.npmjs.org/package/@openfort/openfort-js)
 
 **Build invisible wallets in minutes, not months.** JavaScript SDK for embedded wallets, session keys, and gasless transactions.
