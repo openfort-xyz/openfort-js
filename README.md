@@ -18,17 +18,45 @@
     <a href="https://x.com/openfort_hq">
       X
     </a>
+        <span> | </span>
+    <a href="https://create-next-app.openfort.xyz/">
+      Demo
+    </a>
   </h4>
 </div>
 
 [banner-image]: https://blog-cms.openfort.xyz/uploads/openfortjs_f52fdc3f2d.png
 
-# Welcome to Openfort.js SDK
+# Openfort JavaScript SDK
+
+[![npm version](https://badge.fury.io/js/@openfort/openfort-js.svg)](https://www.npmjs.com/package/@openfort/openfort-js)
+[![Documentation](https://img.shields.io/badge/docs-openfort.io-blue)](https://www.openfort.io/docs)
+[![Discord](https://img.shields.io/discord/YOUR_DISCORD_ID)](https://discord.gg/openfort)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 [![Version](https://img.shields.io/npm/v/@openfort/openfort-js.svg)](https://www.npmjs.org/package/@openfort/openfort-js)
 
-The Openfort js library provides convenient access to handle client session keys and return signed messages back to Openfort from applications written in client-side JavaScript.
+**Build invisible wallets in minutes, not months.** JavaScript SDK for embedded wallets, session keys, and gasless transactions.
 
+## Features
+
+- 🔐 **Session Keys** for gasless gaming experiences  
+- 💼 **Embedded Wallets** for mainstream user onboarding
+- ⚡ **Account Abstraction** for sponsored transactions
+- 🔒 **Non-custodial** wallet infrastructure with Shield encryption
+- 🎮 **Gaming-first** SDK with Unity and React Native support
+- 🌐 **Multi-chain** support (EVm and Solana)
+- 📱 **Social Auth** with Google, Discord, Twitter integration
+- 💸 **Gasless Transactions** with configurable gas policies
+- 🔧 **Developer-friendly** with TypeScript support
+- 📊 **Analytics** and monitoring dashboard
+
+
+## ⚡ Quick Start
+
+### 1. Install
+```bash
+npm install @openfort/openfort-js
 
 ## Usage examples
 - [Openfort Auth + Embedded Wallet - Next.js](https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/auth-sample)
