@@ -111,7 +111,7 @@ const AddFunds: React.FC<{
   // In charge of checking the balance of the account when manual funding is selected
   useEffect(() => {
     (async () => {
-      const provider = getEvmProvider();
+      const provider = await getEvmProvider();
       if (!provider) {
         throw new Error('Failed to get EVM provider');
       }

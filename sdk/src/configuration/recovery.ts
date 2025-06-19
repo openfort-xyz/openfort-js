@@ -10,8 +10,8 @@ export class Recovery {
     this.customToken = customToken;
   }
 
-  public static fromStorage(storage: IStorage): Recovery | null {
-    const recovery = storage.get(StorageKeys.RECOVERY);
+  public static async fromStorage(storage: IStorage): Promise<Recovery | null> {
+    const recovery = await storage.get(StorageKeys.RECOVERY);
     if (!recovery) {
       return null;
     }

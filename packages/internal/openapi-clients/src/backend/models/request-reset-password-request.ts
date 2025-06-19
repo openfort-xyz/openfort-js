@@ -36,12 +36,6 @@ export interface RequestResetPasswordRequest {
      */
     'redirectUrl': string;
     /**
-     * Unique value to identify the request. It\'s used to mitigate CSRF attacks.
-     * @type {string}
-     * @memberof RequestResetPasswordRequest
-     */
-    'state'?: string;
-    /**
      * 
      * @type {CodeChallenge}
      * @memberof RequestResetPasswordRequest

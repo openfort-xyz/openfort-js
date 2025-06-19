@@ -34,7 +34,7 @@ export default function AccountActions({ handleSetMessage }: { handleSetMessage:
 
       {isProviderEnabled ? (
         <div>
-            <EIP1193MintButton handleSetMessage={handleSetMessage} />
+             <EIP1193MintButton handleSetMessage={handleSetMessage} />
         </div>
       ) : (
         <div className='space-y-2'>

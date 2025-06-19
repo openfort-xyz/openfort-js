@@ -90,7 +90,7 @@ const WalletConnectButtons = ({
               const signature = await signMessage(SIWEMessage);
               link
                 ? await openfort.linkWallet({
-                    authToken: openfort.getAccessToken() as string,
+                    authToken: (await openfort.getAccessToken()) as string,
                     signature,
                     message: SIWEMessage,
                     connectorType: connector?.type,

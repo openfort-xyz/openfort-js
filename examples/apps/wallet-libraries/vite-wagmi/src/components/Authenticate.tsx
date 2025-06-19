@@ -77,7 +77,7 @@ function Authenticate() {
       const chainId = polygonAmoy.id;
       const shieldAuth: ShieldAuthentication = {
         auth: ShieldAuthType.OPENFORT,
-        token: openfortInstance.getAccessToken()!,
+        token: (await openfortInstance.getAccessToken())!,
         encryptionSession: await getEncryptionSession(),
       };
       await openfortInstance.configureEmbeddedSigner(chainId, shieldAuth);

@@ -3,9 +3,8 @@ import {useOpenfort} from '../../hooks/useOpenfort';
 import {EmbeddedState} from '@openfort/openfort-js';
 import Loading from '../Loading';
 import { Button } from '../ui/button';
-import { createPublicClient, createWalletClient, custom, encodeFunctionData, http } from 'viem'
+import { createPublicClient, createWalletClient, custom, encodeFunctionData } from 'viem'
 import { polygonAmoy } from 'viem/chains';
-import { eip5792Actions } from 'viem/experimental'
 import { BaseError } from 'wagmi';
 
 const EIP1193MintButton: React.FC<{
@@ -16,130 +15,149 @@ const EIP1193MintButton: React.FC<{
   const [loadingBatch, setLoadingBatch] = useState(false);
 
   useEffect(() => {
-    const provider = getEvmProvider();
-    if (!provider) {
-      throw new Error('Failed to get EVM provider');
-    }
-    const walletClient = createWalletClient({
-      chain: polygonAmoy,
-      transport: custom(provider)
-    })
-    walletClient.getAddresses().then(([account]) => {
-      handleSetMessage(`Current account address: ${account}`);
-    }
-    )
-  },[])
+    const initializeProvider = async () => {
+      try {
+        const provider = await getEvmProvider();
+        if (!provider) {
+          throw new Error('Failed to get EVM provider');
+        }
+        const walletClient = createWalletClient({
+          chain: polygonAmoy,
+          transport: custom(provider)
+        })
+        const [account] = await walletClient.getAddresses();
+        handleSetMessage(`Current account address: ${account}`);
+      } catch (error) {
+        console.error('Error initializing provider:', error);
+        handleSetMessage('Failed to initialize provider');
+      }
+    };
+
+    initializeProvider();
+  }, []);
 
   const handleSendTransaction = async () => {
-    const provider = getEvmProvider();
-    if (!provider) {
-      throw new Error('Failed to get EVM provider');
-    }
-    setLoading(true);
-    const publicClient = createPublicClient({
-      chain: polygonAmoy,
-      transport: custom(provider)
-    })
-    const walletClient = createWalletClient({
-      chain: polygonAmoy,
-      transport: custom(provider)
-    })
-
-    const erc721Address = '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a';
-
-    // Read more about [ABI Formats](https://docs.soliditylang.org/en/latest/abi-spec.html#json).
-    const abi = [
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_to",
-            "type": "address"
-          }
-        ],
-        "name": "mint",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ]
-
-    const [account] = await walletClient.getAddresses()
-    const { request } = await publicClient.simulateContract({
-      account,
-      address: erc721Address,
-      abi: abi,
-      functionName: 'mint',
-      args: ['0x64452Dff1180b21dc50033e1680bB64CDd492582']
-    })
-   
-
-    let tx: `0x${string}`;
     try {
-      tx = await walletClient.writeContract(request)
-      console.log('Transaction hash:', tx);
-      handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
-      const receipt = await publicClient.getTransactionReceipt({hash: tx});
-      console.log('Transaction receipt:', receipt);
+      const provider = await getEvmProvider();
+      if (!provider) {
+        throw new Error('Failed to get EVM provider');
+      }
+      setLoading(true);
+      const publicClient = createPublicClient({
+        chain: polygonAmoy,
+        transport: custom(provider)
+      })
+      const walletClient = createWalletClient({
+        chain: polygonAmoy,
+        transport: custom(provider)
+      })
+
+      const erc721Address = '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a';
+
+      // Read more about [ABI Formats](https://docs.soliditylang.org/en/latest/abi-spec.html#json).
+      const abi = [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            }
+          ],
+          "name": "mint",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+
+      const [account] = await walletClient.getAddresses()
+      const { request } = await publicClient.simulateContract({
+        account,
+        address: erc721Address,
+        abi: abi,
+        functionName: 'mint',
+        args: ['0x64452Dff1180b21dc50033e1680bB64CDd492582']
+      })
+     
+
+      let tx: `0x${string}`;
+      try {
+        tx = await walletClient.writeContract(request)
+        console.log('Transaction hash:', tx);
+        handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
+        const receipt = await publicClient.getTransactionReceipt({hash: tx});
+        console.log('Transaction receipt:', receipt);
+      } catch (error) {
+        console.log('Error:', error);
+        handleSetMessage('Failed to send transaction: ' + (error as BaseError).details);
+      }
     } catch (error) {
-      console.log('Error:', error);
-      handleSetMessage('Failed to send transaction: ' + (error as BaseError).details);
+      console.error('Error in handleSendTransaction:', error);
+      handleSetMessage('Failed to get provider or send transaction');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSendCalls = async () => {
-    const provider = getEvmProvider();
-    if (!provider) {
-      throw new Error('Failed to get EVM provider');
-    }
-    setLoadingBatch(true);
-    const walletClient = createWalletClient({
-      chain: polygonAmoy,
-      transport: custom(provider)
-    }).extend(eip5792Actions()) 
-
-    const erc721Address = '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a';
-
-    // Read more about [ABI Formats](https://docs.soliditylang.org/en/latest/abi-spec.html#json).
-    const abi = [
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_to",
-            "type": "address"
-          }
-        ],
-        "name": "mint",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ]
-
-    const [account] = await walletClient.getAddresses()
-
     try {
-      const tx = await walletClient.sendCalls({ 
-        account,
-        calls: [
-          {
-            to: erc721Address,
-            data: encodeFunctionData({abi, functionName:"mint", args:['0x64452Dff1180b21dc50033e1680bB64CDd492582']})
-          },
-          {
-            to: erc721Address,
-            data: encodeFunctionData({abi, functionName:"mint", args:['0x64452Dff1180b21dc50033e1680bB64CDd492582']})
-          },
-        ],
-      })
+      const provider = await getEvmProvider();
+      if (!provider) {
+        throw new Error('Failed to get EVM provider');
+      }
+      setLoadingBatch(true);
+      const walletClient = createWalletClient({
+        chain: polygonAmoy,
+        transport: custom(provider)
+      }) 
 
-      handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
+      const erc721Address = '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a';
+
+      // Read more about [ABI Formats](https://docs.soliditylang.org/en/latest/abi-spec.html#json).
+      const abi = [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            }
+          ],
+          "name": "mint",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+
+      const [account] = await walletClient.getAddresses()
+
+      try {
+        const tx = await walletClient.sendCalls({ 
+          account,
+          calls: [
+            {
+              to: erc721Address,
+              data: encodeFunctionData({abi, functionName:"mint", args:['0x64452Dff1180b21dc50033e1680bB64CDd492582']})
+            },
+            {
+              to: erc721Address,
+              data: encodeFunctionData({abi, functionName:"mint", args:['0x64452Dff1180b21dc50033e1680bB64CDd492582']})
+            },
+          ],
+        })
+
+        handleSetMessage(`https://amoy.polygonscan.com/tx/${tx.id}`);
+      } catch (error) {
+        handleSetMessage('Failed to send transaction: ' + (error as BaseError).details);
+      }
     } catch (error) {
-      handleSetMessage('Failed to send transaction: ' + (error as BaseError).details);
+      console.error('Error in handleSendCalls:', error);
+      handleSetMessage('Failed to get provider or send batch calls');
+    } finally {
+      setLoadingBatch(false);
     }
-    setLoadingBatch(false);
   };
 
   return (

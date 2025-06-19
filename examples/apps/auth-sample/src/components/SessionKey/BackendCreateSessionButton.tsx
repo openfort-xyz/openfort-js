@@ -26,7 +26,7 @@ const BackendCreateSessionButton: React.FC<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${openfort.getAccessToken()}`,
+        Authorization: `Bearer ${await openfort.getAccessToken()}`,
       },
       body: JSON.stringify({
         sessionDuration: document.querySelector(
@@ -77,7 +77,7 @@ const BackendCreateSessionButton: React.FC<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${openfort.getAccessToken()}`,
+        Authorization: `Bearer ${await openfort.getAccessToken()}`,
       },
       body: JSON.stringify({
         sessionAddress: sessionSigner.address,

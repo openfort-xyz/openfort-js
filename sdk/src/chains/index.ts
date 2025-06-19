@@ -11,7 +11,6 @@ export const defaultChainRpcs: { [key: number]: string } = {
   300: 'https://sepolia.era.zksync.dev',
   324: 'https://mainnet.era.zksync.io',
   1946: 'https://rpc.minato.soneium.org',
-  2358: 'https://api.sepolia.kroma.network',
   2741: 'https://api.mainnet.abs.xyz',
   3939: 'https://test.doschain.com',
   4337: 'https://build.onbeam.com/rpc',

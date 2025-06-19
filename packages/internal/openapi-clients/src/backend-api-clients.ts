@@ -1,12 +1,21 @@
-import globalAxios from 'axios';
-
 import {
   TransactionIntentsApi,
   AccountsApi,
   SessionsApi,
   AuthenticationApi,
 } from './backend';
-import { OpenfortAPIConfiguration } from './config';
+import { OpenfortAPIConfiguration, createConfig, type OpenfortAPIConfigurationOptions } from './config';
+
+export interface BackendApiClientsOptions {
+  basePath: string;
+  accessToken: string;
+  retryConfig?: {
+    retries?: number;
+    retryDelay?: number;
+    retryCondition?: (error: any) => boolean;
+    onRetry?: (retryCount: number, error: any, requestConfig: any) => void;
+  };
+}
 
 export class BackendApiClients {
   public config: OpenfortAPIConfiguration;
@@ -19,14 +28,20 @@ export class BackendApiClients {
 
   public authenticationApi: AuthenticationApi;
 
-  constructor(config: OpenfortAPIConfiguration) {
-    // @ts-ignore
-    const axios = globalAxios.default ? globalAxios.default : globalAxios;
+  constructor(options: BackendApiClientsOptions) {
+    const configOptions: OpenfortAPIConfigurationOptions = {
+      basePath: options.basePath,
+      accessToken: options.accessToken,
+      retryConfig: options.retryConfig,
+    };
 
-    this.config = config;
-    this.transactionIntentsApi = new TransactionIntentsApi(config.backend, undefined, axios);
-    this.accountsApi = new AccountsApi(config.backend, undefined, axios);
-    this.sessionsApi = new SessionsApi(config.backend, undefined, axios);
-    this.authenticationApi = new AuthenticationApi(config.backend, undefined, axios);
+    this.config = {
+      backend: createConfig(configOptions),
+    };
+
+    this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend);
+    this.accountsApi = new AccountsApi(this.config.backend);
+    this.sessionsApi = new SessionsApi(this.config.backend);
+    this.authenticationApi = new AuthenticationApi(this.config.backend);
   }
 }

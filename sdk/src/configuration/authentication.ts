@@ -29,8 +29,8 @@ export class Authentication {
     this.thirdPartyTokenType = thirdPartyTokenType;
   }
 
-  public static fromStorage(storage: IStorage): Authentication | null {
-    const auth = storage.get(StorageKeys.AUTHENTICATION);
+  public static async fromStorage(storage: IStorage): Promise<Authentication | null> {
+    const auth = await storage.get(StorageKeys.AUTHENTICATION);
     if (!auth) {
       return null;
     }

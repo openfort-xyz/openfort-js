@@ -23,7 +23,7 @@ import { polygonAmoy } from 'viem/chains';
 
 interface ContextType {
   state: EmbeddedState;
-  getEvmProvider: () => Provider;
+  getEvmProvider: () => Promise<Provider>;
   handleRecovery: ({
     method,
     password,
@@ -99,8 +99,8 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     };
   }, []);
 
-  const getEvmProvider = useCallback((): Provider => {
-    const externalProvider = openfort.getEthereumProvider({
+  const getEvmProvider = useCallback(async(): Promise<Provider> => {
+    const externalProvider = await openfort.getEthereumProvider({
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
       chains: {
         [polygonAmoy.id]: "https://polygon-amoy.gateway.tenderly.co",
@@ -203,7 +203,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     async ({method, password, chainId}:{method: 'password' | 'automatic', password?: string, chainId: number}) => {
         const shieldAuth: ShieldAuthentication = {
           auth: ShieldAuthType.OPENFORT,
-          token: openfort.getAccessToken()!,
+          token: (await openfort.getAccessToken())!,
           encryptionSession: await getEncryptionSession(),
         };
         if (method === 'automatic') {

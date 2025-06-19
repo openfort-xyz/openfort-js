@@ -16,8 +16,8 @@ export class Account {
     this.ownerAddress = ownerAddress;
   }
 
-  public static fromStorage(storage: IStorage): Account | null {
-    const account = storage.get(StorageKeys.ACCOUNT);
+  public static async fromStorage(storage: IStorage): Promise<Account | null> {
+    const account = await storage.get(StorageKeys.ACCOUNT);
     if (!account) {
       return null;
     }

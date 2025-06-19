@@ -22,7 +22,7 @@ export const Content = () => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const state = openfort.getEmbeddedState()
+      const state = await openfort.getEmbeddedState()
       setEmbeddedState(state)
       console.log(state)
     }, 300)

@@ -5,7 +5,7 @@ import axios from 'axios';
 export const configureEmbeddedSigner = async (chain: number, password?: string) => {
   const shieldAuth: ShieldAuthentication = {
     auth: ShieldAuthType.OPENFORT,
-    token: openfortInstance.getAccessToken()!,
+    token: (await openfortInstance.getAccessToken())!,
     encryptionSession: await getEncryptionSession(),
   };
   await openfortInstance.configureEmbeddedSigner(chain, shieldAuth, password);

@@ -2326,14 +2326,12 @@ __metadata:
     "@sentry/core": ^9.15.0
     "@swc/core": ^1.11.24
     "@swc/jest": ^0.2.24
-    "@types/crypto-js": ^4.2.2
     "@types/jest": ^29.4.3
     "@typescript-eslint/eslint-plugin": ^5.57.1
     "@typescript-eslint/parser": ^5.57.1
     axios: ^1.8.2
+    axios-retry: ^4.5.0
     buffer: ^5.5.0||^6.0.0
-    crypto-js: ^4.2.0
-    es6-promise: ^4.2.8
     eslint: ^8.40.0
     jest: ^29.4.3
     jest-environment-jsdom: ^29.4.3
@@ -5170,13 +5168,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/crypto-js@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "@types/crypto-js@npm:4.2.2"
-  checksum: 727daa0d2db35f0abefbab865c23213b6ee6a270e27e177939bbe4b70d1e84c2202d9fac4ea84859c4b4d49a4ee50f948f601327a39b69ec013288018ba07ca5
-  languageName: node
-  linkType: hard
-
 "@types/debug@npm:^4.1.7":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
@@ -6926,6 +6917,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios-retry@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "axios-retry@npm:4.5.0"
+  dependencies:
+    is-retry-allowed: ^2.2.0
+  peerDependencies:
+    axios: 0.x || 1.x
+  checksum: ec831e566ed3a55d3c3c927c1d42c52f2c2f1a8ea99ff8521d3675c6313f8c77f704c7186299fda08b7dc0f771a2c5471e72d279789d5aade65ec3755ab3a1ff
+  languageName: node
+  linkType: hard
+
 "axios@npm:^1.8.2":
   version: 1.9.0
   resolution: "axios@npm:1.9.0"
@@ -7959,13 +7961,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "crypto-js@npm:4.2.0"
-  checksum: f051666dbc077c8324777f44fbd3aaea2986f198fe85092535130d17026c7c2ccf2d23ee5b29b36f7a4a07312db2fae23c9094b644cc35f7858b1b4fcaf27774
-  languageName: node
-  linkType: hard
-
 "css-what@npm:^6.1.0":
   version: 6.1.0
   resolution: "css-what@npm:6.1.0"
@@ -8749,7 +8744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es6-promise@npm:^4.0.3, es6-promise@npm:^4.2.4, es6-promise@npm:^4.2.8":
+"es6-promise@npm:^4.0.3, es6-promise@npm:^4.2.4":
   version: 4.2.8
   resolution: "es6-promise@npm:4.2.8"
   checksum: 95614a88873611cb9165a85d36afa7268af5c03a378b35ca7bda9508e1d4f1f6f19a788d4bc755b3fd37c8ebba40782018e02034564ff24c9d6fa37e959ad57d
@@ -10797,6 +10792,13 @@ __metadata:
     has-tostringtag: ^1.0.2
     hasown: ^2.0.2
   checksum: 99ee0b6d30ef1bb61fa4b22fae7056c6c9b3c693803c0c284ff7a8570f83075a7d38cda53b06b7996d441215c27895ea5d1af62124562e13d91b3dbec41a5e13
+  languageName: node
+  linkType: hard
+
+"is-retry-allowed@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "is-retry-allowed@npm:2.2.0"
+  checksum: 3d1103a9290b5d03626756a41054844633eac78bc5d3e3a95b13afeae94fa3cfbcf7f0b5520d83f75f48a25ce7b142fdbac4217dc4b0630f3ea55e866ec3a029
   languageName: node
   linkType: hard
 

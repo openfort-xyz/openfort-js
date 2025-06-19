@@ -1,10 +1,10 @@
-import type { RecoveryMethod } from 'types';
+import type { EmbeddedWalletMessagePoster, RecoveryMethod } from 'types';
 import { IStorage, StorageKeys } from 'storage/istorage';
-import { LocalStorage } from 'storage/localStorage';
 import {
   PenpalError, WindowMessenger, connect, type Connection,
 } from 'penpal';
 import { randomUUID } from 'utils/crypto';
+import { OpenfortError, OpenfortErrorType } from 'errors/openfortError';
 import type { SDKConfiguration } from '../config';
 import {
   type ConfigureRequest,
@@ -114,9 +114,11 @@ export class IframeManager {
 
   private isInitialized = false;
 
-  constructor(configuration: SDKConfiguration) {
+  private messagePoster: EmbeddedWalletMessagePoster | undefined;
+
+  constructor(configuration: SDKConfiguration, storage: IStorage) {
     this.sdkConfiguration = configuration;
-    this.storage = new LocalStorage();
+    this.storage = storage;
   }
 
   private async iframeSetup(): Promise<void> {
@@ -133,13 +135,7 @@ export class IframeManager {
     iframe.style.display = 'none';
     iframe.id = 'openfort-iframe';
     document.body.appendChild(iframe);
-
-    if (this.sdkConfiguration.shieldConfiguration?.debug) {
-      iframe.src = `${this.sdkConfiguration.iframeUrl}?debug=true`;
-    } else {
-      iframe.src = this.sdkConfiguration.iframeUrl;
-    }
-
+    iframe.src = this.sdkConfiguration.iframeUrl;
     this.iframe = iframe;
 
     await new Promise<void>((resolve, reject) => {
@@ -160,16 +156,27 @@ export class IframeManager {
   }
 
   private async establishIframeConnection(): Promise<void> {
-    if (!this.iframe?.contentWindow) {
-      throw new Error('Iframe not properly initialized');
-    }
-
     const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
 
-    const messenger = new WindowMessenger({
-      remoteWindow: this.iframe.contentWindow,
-      allowedOrigins: [iframeUrlOrigin],
-    });
+    let messenger: WindowMessenger;
+
+    if (this.messagePoster) {
+      // Use custom message poster directly
+      messenger = new WindowMessenger({
+        remoteWindow: this.messagePoster as any,
+        allowedOrigins: [iframeUrlOrigin],
+      });
+    } else {
+      // Use iframe contentWindow (default behavior)
+      if (!this.iframe?.contentWindow) {
+        throw new OpenfortError('Iframe does not have content window', OpenfortErrorType.INVALID_CONFIGURATION);
+      }
+
+      messenger = new WindowMessenger({
+        remoteWindow: this.iframe.contentWindow,
+        allowedOrigins: [iframeUrlOrigin],
+      });
+    }
 
     this.connection = connect<IframeAPI>({
       messenger,
@@ -474,6 +481,20 @@ export class IframeManager {
     }
   }
 
+  public setMessagePoster(poster: EmbeddedWalletMessagePoster): void {
+    this.messagePoster = poster;
+
+    // If already initialized, we need to re-establish the connection with the new poster
+    if (this.isInitialized) {
+      this.isInitialized = false;
+      this.remote = undefined;
+      if (this.connection) {
+        this.connection.destroy();
+        this.connection = undefined;
+      }
+    }
+  }
+
   destroy(): void {
     if (this.connection) {
       this.connection.destroy();
@@ -482,6 +503,7 @@ export class IframeManager {
 
     this.remote = undefined;
     this.isInitialized = false;
+    this.messagePoster = undefined;
 
     if (this.iframe) {
       const iframe = document.getElementById('openfort-iframe');

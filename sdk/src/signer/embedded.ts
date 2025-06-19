@@ -66,7 +66,7 @@ export class EmbeddedSigner implements Signer {
   }
 
   async updateAuthentication(): Promise<void> {
-    const authentication = Authentication.fromStorage(this.storage);
+    const authentication = await Authentication.fromStorage(this.storage);
     if (!authentication) {
       throw new OpenfortError(
         'Must provide authentication to update authentication',
@@ -74,7 +74,7 @@ export class EmbeddedSigner implements Signer {
       );
     }
 
-    const recovery = Recovery.fromStorage(this.storage);
+    const recovery = await Recovery.fromStorage(this.storage);
     if (!recovery) {
       throw new OpenfortError('Must have recovery to update authentication', OpenfortErrorType.INVALID_CONFIGURATION);
     }

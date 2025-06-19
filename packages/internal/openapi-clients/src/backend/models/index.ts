@@ -21,6 +21,8 @@ export * from './account-response-player';
 export * from './accounts-list-queries';
 export * from './action-required-response';
 export * from './actions';
+export * from './allowed-origins-request';
+export * from './allowed-origins-response';
 export * from './amount';
 export * from './api-authorized-network-delete-response';
 export * from './api-authorized-network-list-response';

@@ -1,8 +1,8 @@
-import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
+import { BackendApiClients } from '@openfort/openapi-clients';
 import { getSignedTypedData } from 'evm/walletHelpers';
 import { InternalSentry } from 'errors/sentry';
+import { StorageImplementation } from 'storage/storage';
 import { IStorage, StorageKeys } from './storage/istorage';
-import { LocalStorage } from './storage/localStorage';
 import { ShieldAuthentication } from './iframe/types';
 import { SignerManager } from './manager/signer';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
@@ -16,9 +16,9 @@ import {
   SessionResponse, SIWEInitResponse, ThirdPartyOAuthProvider, TokenType, TransactionIntentResponse,
   RecoveryMethod,
   AuthActionRequiredResponse,
+  EmbeddedWalletMessagePoster,
 } from './types';
-import { OpenfortSDKConfiguration } from './config';
-import { Configuration } from './configuration/configuration';
+import { OpenfortSDKConfiguration, SDKConfiguration } from './config';
 import { Account } from './configuration/account';
 import { Entropy } from './signer/embedded';
 import { Authentication } from './configuration/authentication';
@@ -29,32 +29,25 @@ import TypedEventEmitter from './utils/typedEventEmitter';
 import { announceProvider, openfortProviderInfo } from './evm/provider/eip6963';
 
 export class Openfort {
-  private readonly storage: IStorage;
+  private storage!: IStorage;
 
   private provider: EvmProvider | null = null;
 
   private iAuthManager: AuthManager | null = null;
 
+  private initialized: boolean = false;
+
   constructor(sdkConfiguration: OpenfortSDKConfiguration) {
-    this.storage = new LocalStorage();
-    const configuration = new Configuration(
-      sdkConfiguration.baseConfiguration.publishableKey,
-      sdkConfiguration.overrides?.backendUrl || 'https://api.openfort.xyz',
-      sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
-      sdkConfiguration.shieldConfiguration?.shieldEncryptionKey || '',
-      sdkConfiguration.overrides?.shieldUrl || 'https://shield.openfort.xyz',
-      sdkConfiguration.overrides?.iframeUrl || 'https://embedded.openfort.xyz',
-      sdkConfiguration.shieldConfiguration?.debug || false,
-    );
-    InternalSentry.init({ openfortConfiguration: configuration });
-    configuration.save();
+    const configuration = new SDKConfiguration(sdkConfiguration);
+    InternalSentry.init({ configuration });
   }
 
   /**
    * Logs the user out by flushing the signer and removing credentials.
    */
   public async logout(): Promise<void> {
-    const signer = SignerManager.fromStorage();
+    await this.ensureInitialized();
+    const signer = await SignerManager.fromStorage();
     this.storage.remove(StorageKeys.AUTHENTICATION);
     this.storage.remove(StorageKeys.SIGNER);
     this.storage.remove(StorageKeys.ACCOUNT);
@@ -70,27 +63,28 @@ export class Openfort {
    * @returns A Provider instance.
    * @throws {OpenfortError} If the signer is not an EmbeddedSigner.
    */
-  public getEthereumProvider(
+  public async getEthereumProvider(
     options?: {
       policy?: string;
       chains?: Record<number, string>;
       providerInfo?: {
-        icon: `data:image/${string}`; // RFC-2397
+        icon: `data:image/${string}`; // RFC-2397ƒ
         name: string;
         rdns: string;
       };
       announceProvider?: boolean;
     },
-  ): Provider {
+  ): Promise<Provider> {
+    await this.ensureInitialized();
     // Apply default options with proper type safety
     const defaultOptions = {
       announceProvider: true,
     };
     const finalOptions = { ...defaultOptions, ...options };
 
-    const authentication = Authentication.fromStorage(this.storage);
-    const signer = SignerManager.fromStorage();
-    const account = Account.fromStorage(this.storage);
+    const authentication = await Authentication.fromStorage(this.storage);
+    const signer = await SignerManager.fromStorage();
+    const account = await Account.fromStorage(this.storage);
 
     if (!this.provider) {
       this.provider = new EvmProvider({
@@ -130,14 +124,15 @@ export class Openfort {
     shieldAuthentication: ShieldAuthentication | null = null,
     recoveryPassword: string | null = null,
   ): Promise<void> {
+    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const configuration = Configuration.fromStorage();
+    const configuration = SDKConfiguration.fromStorage();
     let entropy: Entropy | null = null;
     if (recoveryPassword || shieldAuthentication?.encryptionSession) {
       entropy = {
         encryptionSession: shieldAuthentication?.encryptionSession || null,
         recoveryPassword: recoveryPassword || null,
-        encryptionPart: configuration?.shieldEncryptionKey || null,
+        encryptionPart: configuration?.shieldConfiguration?.shieldEncryptionKey || null,
       };
     }
     let recoveryType: 'openfort' | 'custom' | null = null;
@@ -157,13 +152,12 @@ export class Openfort {
    * @returns The signature.
    * @throws {OpenfortError} If no signer is configured.
    */
-  // eslint-disable-next-line class-methods-use-this
   public async signMessage(
     message: string | Uint8Array,
     options?: { hashMessage?: boolean; arrayifyMessage?: boolean },
   ): Promise<string> {
     await this.validateAndRefreshToken();
-    const signer = SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage();
     if (!signer) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
@@ -185,9 +179,10 @@ export class Openfort {
     types: TypedDataPayload['types'],
     message: TypedDataPayload['message'],
   ): Promise<string> {
+    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = SignerManager.fromStorage();
-    const account = Account.fromStorage(this.storage);
+    const signer = await SignerManager.fromStorage();
+    const account = await Account.fromStorage(this.storage);
 
     if (!signer || !account) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
@@ -212,10 +207,10 @@ export class Openfort {
    * @returns The private key.
    * @throws {OpenfortError} If no signer is configured.
    */
-  // eslint-disable-next-line class-methods-use-this
   public async exportPrivateKey(): Promise<string> {
+    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage();
     if (!signer) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
@@ -228,8 +223,9 @@ export class Openfort {
   }: {
     recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string
   }): Promise<void> {
+    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage();
     if (!signer) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
@@ -254,7 +250,8 @@ export class Openfort {
   public async logInWithEmailPassword(
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
-    const previousAuth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
     if ('action' in result) {
       return result;
@@ -272,7 +269,8 @@ export class Openfort {
    * @returns An AuthResponse object containing authentication details.
    */
   public async signUpGuest(): Promise<AuthResponse> {
-    const previousAuth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.registerGuest();
     if (previousAuth && previousAuth.player !== result.player.id) {
       this.logout();
@@ -295,7 +293,8 @@ export class Openfort {
       email, password, options, ecosystemGame,
     }: { email: string; password: string, options?: { data: { name: string } }, ecosystemGame?: string },
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
-    const previousAuth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame);
     if ('action' in result) {
       return result;
@@ -321,6 +320,7 @@ export class Openfort {
       email, password, authToken, ecosystemGame,
     }: { email: string; password: string; authToken: string, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
+    await this.ensureInitialized();
     return await this.authManager.linkEmail(email, password, authToken, ecosystemGame);
   }
 
@@ -346,6 +346,7 @@ export class Openfort {
   public async requestEmailVerification(
     { email, redirectUrl }: { email: string; redirectUrl: string },
   ): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.requestEmailVerification(email, redirectUrl);
   }
 
@@ -359,6 +360,7 @@ export class Openfort {
   public async resetPassword(
     { email, password, state }: { email: string; password: string; state: string },
   ): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.resetPassword(email, password, state);
   }
 
@@ -381,6 +383,7 @@ export class Openfort {
    * @param state - Verification state.
    */
   public async verifyEmail({ email, state }: { email: string; state: string }): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.verifyEmail(email, state);
   }
 
@@ -397,6 +400,7 @@ export class Openfort {
       provider: OAuthProvider; options?: InitializeOAuthOptions; ecosystemGame?: string
     },
   ): Promise<InitAuthResponse> {
+    await this.ensureInitialized();
     this.storage.remove(StorageKeys.AUTHENTICATION);
     return await this.authManager.initOAuth(provider, options, ecosystemGame);
   }
@@ -416,7 +420,8 @@ export class Openfort {
       provider: OAuthProvider; authToken: string; options?: InitializeOAuthOptions, ecosystemGame?: string
     },
   ): Promise<InitAuthResponse> {
-    const auth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
@@ -437,7 +442,8 @@ export class Openfort {
       provider, token, tokenType,
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType },
   ): Promise<AuthPlayerResponse> {
-    const auth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
@@ -455,6 +461,7 @@ export class Openfort {
   public async unlinkOAuth(
     { provider, authToken }: { provider: OAuthProvider; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.ensureInitialized();
     return await this.authManager.unlinkOAuth(provider, authToken);
   }
 
@@ -465,7 +472,7 @@ export class Openfort {
    * @returns An AuthResponse object.
    */
   public async poolOAuth(key: string): Promise<AuthResponse> {
-    const previousAuth = Authentication.fromStorage(this.storage);
+    const previousAuth = await Authentication.fromStorage(this.storage);
     const response = await this.authManager.poolOAuth(key);
     if (previousAuth && previousAuth.player !== response.player.id) {
       this.logout();
@@ -488,7 +495,8 @@ export class Openfort {
       provider, token, tokenType, ecosystemGame,
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse> {
-    const previousAuth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.authenticateThirdParty(provider, token, tokenType, ecosystemGame);
     let loggedOut = false;
     if (previousAuth && previousAuth.player !== result.id) {
@@ -498,7 +506,7 @@ export class Openfort {
     new Authentication('third_party', token, result.id, null, provider, tokenType).save(this.storage);
     if (loggedOut) return result;
 
-    const signer = SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage();
     try {
       await signer?.updateAuthentication();
     } catch (e) {
@@ -524,7 +532,8 @@ export class Openfort {
       provider, token, ecosystemGame,
     }: { provider: OAuthProvider; token: string; ecosystemGame?: string },
   ): Promise<AuthResponse> {
-    const previousAuth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame);
     if (previousAuth && previousAuth.player !== result.player.id) {
       this.logout();
@@ -543,6 +552,7 @@ export class Openfort {
   public async initSIWE(
     { address, ecosystemGame }: { address: string, ecosystemGame?: string },
   ): Promise<SIWEInitResponse> {
+    await this.ensureInitialized();
     return await this.authManager.initSIWE(address, ecosystemGame);
   }
 
@@ -558,7 +568,8 @@ export class Openfort {
   public async authenticateWithSIWE({
     signature, message, walletClientType, connectorType,
   }: { signature: string; message: string; walletClientType: string; connectorType: string }): Promise<AuthResponse> {
-    const previousAuth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType);
     if (previousAuth && previousAuth.player !== result.player.id) {
       this.logout();
@@ -582,6 +593,7 @@ export class Openfort {
       signature, message, walletClientType, connectorType, authToken,
     }: { signature: string; message: string; walletClientType: string; connectorType: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.ensureInitialized();
     return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken);
   }
 
@@ -603,7 +615,8 @@ export class Openfort {
    *
    * @param auth - Authentication details.
    */
-  public storeCredentials(auth: Auth): void {
+  public async storeCredentials(auth: Auth): Promise<void> {
+    await this.ensureInitialized();
     this.storage.remove(StorageKeys.AUTHENTICATION);
     if (!auth.player) {
       throw new OpenfortError('Player ID is required to store credentials', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -627,7 +640,8 @@ export class Openfort {
     signature: string | null = null,
     optimistic: boolean = false,
   ): Promise<TransactionIntentResponse> {
-    const configuration = Configuration.fromStorage();
+    await this.ensureInitialized();
+    const configuration = SDKConfiguration.fromStorage();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -641,7 +655,7 @@ export class Openfort {
         );
       }
 
-      const signer = SignerManager.fromStorage();
+      const signer = await SignerManager.fromStorage();
       if (!signer) {
         throw new OpenfortError(
           'In order to sign a transaction intent, a signer must be configured',
@@ -665,7 +679,8 @@ export class Openfort {
   }
 
   public async getAccount(): Promise<CurrentAccount> {
-    const account = Account.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const account = await Account.fromStorage(this.storage);
     if (!account) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
@@ -679,15 +694,34 @@ export class Openfort {
 
   // eslint-disable-next-line class-methods-use-this
   private get backendApiClients(): BackendApiClients {
-    const configuration = Configuration.fromStorage();
+    const configuration = SDKConfiguration.fromStorage();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
     return new BackendApiClients({
-      backend: createConfig({
-        basePath: configuration.openfortURL,
-        accessToken: configuration.publishableKey,
-      }),
+      basePath: configuration.backendUrl,
+      accessToken: configuration.baseConfiguration.publishableKey,
+      retryConfig: {
+        retries: 3,
+        retryDelay: 1000,
+        retryCondition: (error: any) => {
+          // Retry on network errors, 5xx server errors, and specific 4xx errors
+          const isNetworkError = !error.response;
+          const isServerError = error.response && error.response.status >= 500;
+          const isRetryableClientError = error.response
+            && [408, 429, 502, 503, 504].includes(error.response.status);
+
+          return Boolean(isNetworkError || isServerError || isRetryableClientError);
+        },
+        onRetry: (retryCount: number, error: any, requestConfig: any) => {
+          // Log retry attempts for debugging
+          console.warn(`Retrying request (attempt ${retryCount}):`, {
+            url: requestConfig.url,
+            method: requestConfig.method,
+            error: error.message,
+          });
+        },
+      },
     });
   }
 
@@ -704,6 +738,7 @@ export class Openfort {
     signature: string,
     optimistic?: boolean,
   ): Promise<SessionResponse> {
+    await this.ensureInitialized();
     const request = {
       id: sessionId,
       signatureRequest: {
@@ -721,18 +756,19 @@ export class Openfort {
    *
    * @returns The embedded state.
    */
-  public getEmbeddedState(): EmbeddedState {
+  public async getEmbeddedState(): Promise<EmbeddedState> {
+    await this.ensureInitialized();
     const auth = Authentication.fromStorage(this.storage);
     if (!auth) {
       return EmbeddedState.UNAUTHENTICATED;
     }
 
-    const signer = SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage();
     if (!signer || signer.type() !== 'embedded') {
       return EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED;
     }
 
-    const account = Account.fromStorage(this.storage);
+    const account = await Account.fromStorage(this.storage);
     if (!account) {
       return EmbeddedState.CREATING_ACCOUNT;
     }
@@ -745,19 +781,15 @@ export class Openfort {
    *
    * @returns The access token, or null if not available.
    */
-  public getAccessToken(): string | null {
-    return Authentication.fromStorage(this.storage)?.token ?? null;
+  public async getAccessToken(): Promise<string | null> {
+    await this.ensureInitialized();
+    return (await Authentication.fromStorage(this.storage))?.token ?? null;
   }
 
   // eslint-disable-next-line class-methods-use-this
   private get authManager(): AuthManager {
     if (!this.iAuthManager) {
-      const configuration = Configuration.fromStorage();
-      if (!configuration) {
-        throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
-      }
-
-      this.iAuthManager = new AuthManager(configuration.publishableKey, configuration.openfortURL);
+      this.iAuthManager = new AuthManager(this.storage);
     }
 
     return this.iAuthManager;
@@ -770,8 +802,9 @@ export class Openfort {
    * @throws {OpenfortError} If no access token is found.
    */
   public async getUser(): Promise<AuthPlayerResponse> {
+    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const authentication = Authentication.fromStorage(this.storage);
+    const authentication = await Authentication.fromStorage(this.storage);
     if (!authentication) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
@@ -782,7 +815,8 @@ export class Openfort {
    * Validates and refreshes the access token if needed.
    */
   public async validateAndRefreshToken(forceRefresh?: boolean): Promise<void> {
-    const auth = Authentication.fromStorage(this.storage);
+    await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
@@ -801,7 +835,7 @@ export class Openfort {
       credentials.player,
       credentials.refreshToken,
     ).save(this.storage);
-    const signer = SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage();
     try {
       await signer?.updateAuthentication();
     } catch (e) {
@@ -809,6 +843,42 @@ export class Openfort {
         await signer?.logout();
       }
       throw e;
+    }
+  }
+
+  public setMessagePoster(poster: EmbeddedWalletMessagePoster): void {
+    try {
+      this.setMessagePoster(poster);
+    } catch (e) {
+      throw new OpenfortError('Error setting message poster', OpenfortErrorType.INTERNAL_ERROR);
+    }
+  }
+
+  /**
+   * Ensures the SDK is initialized. This method guarantees that initialization
+   * happens exactly once, even if called concurrently from multiple methods.
+   *
+   * @returns Promise that resolves when initialization is complete
+   * @throws {OpenfortError} If initialization fails
+   */
+  private async ensureInitialized(): Promise<void> {
+    if (this.initialized) return;
+
+    try {
+      const config = SDKConfiguration.fromStorage();
+      this.storage = config?.storage ?? new StorageImplementation(localStorage);
+
+      if (!(await SDKConfiguration.isStorageAccessible(this.storage))) {
+        throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION);
+      }
+      SignerManager.storage = this.storage;
+      this.initialized = true;
+    } catch (error) {
+      console.error('Openfort SDK initialization failed:', error);
+      throw new OpenfortError(
+        'Openfort SDK initialization failed',
+        OpenfortErrorType.INTERNAL_ERROR,
+      );
     }
   }
 }

@@ -1,7 +1,8 @@
-import { BackendApiClients, createConfig } from '@openfort/openapi-clients';
+import { BackendApiClients } from '@openfort/openapi-clients';
 import { AxiosRequestConfig } from 'axios';
-import * as crypto from 'crypto';
 import { type KeyLike } from 'jose';
+import { SDKConfiguration } from 'config';
+import { IStorage } from 'storage/istorage';
 import { Authentication } from './configuration/authentication';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from './errors/openfortError';
 import { sentry } from './errors/sentry';
@@ -19,16 +20,6 @@ import {
 import DeviceCredentialsManager from './utils/deviceCredentialsManager';
 import { isBrowser } from './utils/helpers';
 
-function base64URLEncode(str: Buffer) {
-  return str.toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
-}
-
-function sha256(buffer: string) {
-  return crypto.createHash('sha256').update(buffer).digest();
-}
 export class AuthManager {
   private readonly publishableKey: string;
 
@@ -36,14 +27,37 @@ export class AuthManager {
 
   private readonly backendApiClients: BackendApiClients;
 
-  constructor(publishableKey: string, openfortURL: string) {
-    this.publishableKey = publishableKey;
-    this.deviceCredentialsManager = new DeviceCredentialsManager();
+  constructor(storage: IStorage) {
+    const configuration = SDKConfiguration.fromStorage();
+    if (!configuration) {
+      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+    this.publishableKey = configuration.baseConfiguration.publishableKey;
+    this.deviceCredentialsManager = new DeviceCredentialsManager({ storage });
     this.backendApiClients = new BackendApiClients({
-      backend: createConfig({
-        basePath: openfortURL,
-        accessToken: publishableKey,
-      }),
+      basePath: configuration.backendUrl,
+      accessToken: configuration.baseConfiguration.publishableKey,
+      retryConfig: {
+        retries: 3,
+        retryDelay: 1000,
+        retryCondition: (error: any) => {
+          // Retry on network errors, 5xx server errors, and specific 4xx errors
+          const isNetworkError = !error.response;
+          const isServerError = error.response && error.response.status >= 500;
+          const isRetryableClientError = error.response
+            && [408, 429, 502, 503, 504].includes(error.response.status);
+
+          return Boolean(isNetworkError || isServerError || isRetryableClientError);
+        },
+        onRetry: (retryCount: number, error: any, requestConfig: any) => {
+          // Log retry attempts for debugging
+          console.warn(`Retrying request (attempt ${retryCount}):`, {
+            url: requestConfig.url,
+            method: requestConfig.method,
+            error: error.message,
+          });
+        },
+      },
     });
   }
 
@@ -262,12 +276,14 @@ export class AuthManager {
     email: string,
     redirectUrl: string,
   ): Promise<void> {
-    const verifier = base64URLEncode(crypto.randomBytes(32));
-    const challenge = base64URLEncode(sha256(verifier));
+    const verifier = this.deviceCredentialsManager.createCodeVerifier();
+    const challenge = await this.deviceCredentialsManager.deriveCodeChallengeFromCodeVerifier({
+      codeVerifier: verifier,
+      method: CodeChallengeMethodEnum.S256,
+    });
 
     // https://auth0.com/docs/secure/attack-protection/state-parameters
-    const state = base64URLEncode(crypto.randomBytes(32));
-
+    const state = this.deviceCredentialsManager.createStateCode();
     this.deviceCredentialsManager.savePKCEData({ state, verifier });
 
     const request = {
@@ -312,12 +328,14 @@ export class AuthManager {
     email: string,
     redirectUrl: string,
   ): Promise<void> {
-    const verifier = base64URLEncode(crypto.randomBytes(32));
-    const challenge = base64URLEncode(sha256(verifier));
+    const verifier = this.deviceCredentialsManager.createCodeVerifier();
+    const challenge = await this.deviceCredentialsManager.deriveCodeChallengeFromCodeVerifier({
+      codeVerifier: verifier,
+      method: CodeChallengeMethodEnum.S256,
+    });
 
     // https://auth0.com/docs/secure/attack-protection/state-parameters
-    const state = base64URLEncode(crypto.randomBytes(32));
-
+    const state = this.deviceCredentialsManager.createStateCode();
     this.deviceCredentialsManager.savePKCEData({ state, verifier });
 
     const request = {
@@ -387,66 +405,8 @@ export class AuthManager {
     });
   }
 
-  // Slower validation function for browsers that do not support crypto.subtle
-  async validateCredentialsWithoutCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
-    if (!authentication.refreshToken) {
-      throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
-    }
-
-    if (!openfort?.jwk) {
-      // openfort.jwk is a global variable that is set in the packages without node crypto support
-      // For your non node package to work you need to install jsrsasign library functions and add the following code:
-      /*
-        global.openfort.jwk = {
-          getKey: KEYUTIL.getKey,
-          parse: KJUR.jws.JWS.parse,
-          verifyJWT: KJUR.jws.JWS.verifyJWT,
-          getNow: KJUR.jws.IntDate.getNow,
-        };
-      */
-      throw new OpenfortError('openfort not available', OpenfortErrorType.INTERNAL_ERROR);
-    }
-
-    // const ecKey = KEYUTIL.getKey({
-    const ecKey = openfort.jwk.getKey({
-      kty: jwk.kty,
-      crv: jwk.crv,
-      x: jwk.x,
-      y: jwk.y,
-    });
-    // } as KJUR.jws.JWS.JsonWebKey);
-
-    const parsedJWT = openfort.jwk.parse(authentication.token);
-    // const parsedJWT = KJUR.jws.JWS.parse(authentication.token);
-
-    const isValid = openfort.jwk.verifyJWT(authentication.token, ecKey, { alg: [jwk.alg] });
-    // const isValid = KJUR.jws.JWS.verifyJWT(authentication.token, ecKey as RSAKey, { alg: [jwk.alg] });
-
-    if (!isValid) {
-      throw new OpenfortError('Invalid token signature', OpenfortErrorType.AUTHENTICATION_ERROR);
-    }
-
-    const payload = JSON.parse(parsedJWT.payloadPP);
-
-    if (!payload.exp) {
-      return this.refreshTokens(authentication.refreshToken);
-    }
-
-    // const now = KJUR.jws.IntDate.getNow();
-    const now = openfort.jwk.getNow();
-    if (payload.exp < now) {
-      return this.refreshTokens(authentication.refreshToken);
-    }
-
-    return {
-      player: payload.sub!,
-      accessToken: authentication.token,
-      refreshToken: authentication.refreshToken,
-    };
-  }
-
   // Faster validation function for browsers that support crypto.subtle
-  async validateCredentialsWithCrypto(jwk: JWK, authentication: Authentication): Promise<Auth> {
+  async validateCredentialsInternal(jwk: JWK, authentication: Authentication): Promise<Auth> {
     if (!authentication.refreshToken) {
       throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
@@ -490,11 +450,7 @@ export class AuthManager {
       return this.refreshTokens(authentication.refreshToken, forceRefresh);
     }
 
-    const webCrypto = AuthManager.getWebCrypto();
-    if (webCrypto?.subtle) {
-      return this.validateCredentialsWithCrypto(jwk, authentication);
-    }
-    return this.validateCredentialsWithoutCrypto(jwk, authentication);
+    return this.validateCredentialsInternal(jwk, authentication);
   }
 
   private readonly jwksStorageKey = 'openfort.jwk';
@@ -576,7 +532,6 @@ export class AuthManager {
   public async getUser(
     auth: Authentication,
   ): Promise<AuthPlayerResponse> {
-    // TODO: Add storage of user info
     const response = await this.backendApiClients.authenticationApi.me({
       headers: {
         authorization: `Bearer ${this.publishableKey}`,
@@ -744,17 +699,6 @@ export class AuthManager {
       },
     });
     return authPlayerResponse.data;
-  }
-
-  private static getWebCrypto(): { subtle?: SubtleCrypto } | null {
-    if (isBrowser()) {
-      return window.crypto;
-    }
-    // Node.js environment
-    if (typeof global !== 'undefined' && (global as any).crypto) {
-      return (global as any).crypto;
-    }
-    return null;
   }
 
   public async linkEmail(

@@ -1,4 +1,5 @@
 import { Permission } from 'evm/registerSession';
+import { IStorage } from 'storage/istorage';
 
 export enum EmbeddedState {
   NONE,
@@ -7,6 +8,10 @@ export enum EmbeddedState {
   CREATING_ACCOUNT,
   READY,
 }
+
+export type EmbeddedWalletMessagePoster = {
+  postMessage: (message: any, targetOrigin: string, transfer?: Transferable) => void;
+};
 
 export enum OpenfortEvents {
   LOGGED_OUT = 'loggedOut',
@@ -92,6 +97,10 @@ export interface SDKOverrides {
   backendUrl?: string;
   iframeUrl?: string;
   shieldUrl?: string;
+  crypto?: {
+    digest: (algorithm: string, data: BufferSource) => Promise<ArrayBuffer>;
+  }
+  storage?: IStorage;
 }
 
 export enum TokenType {
