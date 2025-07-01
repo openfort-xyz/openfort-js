@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2025-07-01
+### Feat
+- Provide crypto digest implementation
+- provide storage implementation
+- namespace based structure
+- request retrial on network error
+- more robust iframe communication
+
 ## [0.8.44] - 2025-05-21
 ### Feat
 - Edit RPCs
