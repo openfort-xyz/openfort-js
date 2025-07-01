@@ -23,21 +23,21 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 console.log(openfort);
 
 document.querySelector<HTMLButtonElement>('#in')
-  ?.addEventListener('click', () => openfort.signUpGuest().then((r) => {
+  ?.addEventListener('click', () => openfort.auth.signUpGuest().then((r) => {
     console.log(r);
   }).catch((error) => {
     console.error('Sign up error:', error);
   }));
 
 document.querySelector<HTMLButtonElement>('#user')
-  ?.addEventListener('click', () => openfort.getUser().then((r) => {
+  ?.addEventListener('click', () => openfort.user.get().then((r) => {
     console.log(r);
   }).catch((error) => {
     console.error('Get user error:', error);
   }));
 
 document.querySelector<HTMLButtonElement>('#logout')
-  ?.addEventListener('click', () => openfort.logout().then(() => {
+  ?.addEventListener('click', () => openfort.auth.logout().then(() => {
     console.log("Logged out");
   }).catch((error) => {
     console.error('Logout error:', error);
