@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const auth = firebaseApp.auth();
 
   const signMessage = async (message) => {
-    const signature = await openfort.signMessage(message);
+    const signature = await openfort.embeddedWallet.signMessage(message);
     if (!signature) {
       addMessage(`Error: There was an error signing the message.`);
     }
@@ -27,19 +27,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const logout = async () => {
-    await openfort.logout();
+    await openfort.auth.logout();
     await auth.signOut();
   };
 
   auth.onIdTokenChanged(async (user) => {
     if (user) {
       const idToken = await user.getIdToken();
-      const player = await openfort.authenticateWithThirdPartyProvider({
+      const player = await openfort.auth.authenticateWithThirdPartyProvider({
         provider:'firebase',
         token:idToken,
         tokenType:'idToken'
       });
-      const embeddedState = openfort.getEmbeddedState();
+      const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       console.log(embeddedState);
       if (embeddedState !== 4) {
         window.location.href = 'index.html';

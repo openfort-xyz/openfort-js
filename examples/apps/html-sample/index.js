@@ -51,12 +51,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
       addMessage('Signed in');
       const idToken = await user.getIdToken();
-      const player = await openfort.authenticateWithThirdPartyProvider({
+      const player = await openfort.auth.authenticateWithThirdPartyProvider({
         provider:'firebase',
         token:idToken,
         tokenType:'idToken'
       });
-      const embeddedState = openfort.getEmbeddedState();
+      const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       if (embeddedState === 2) window.location.href = 'recover.html';
       if (embeddedState === 4) window.location.href = 'signature.html';
 

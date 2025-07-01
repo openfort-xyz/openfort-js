@@ -26,7 +26,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         authProvider: 'firebase',
         tokenType: 'idToken',
       };
-      await openfort.configureEmbeddedSigner(chainId, shieldAuth, password);
+      await openfort.embeddedWallet.configure(
+        {
+          chainId:chainId, 
+          shieldAuthentication: shieldAuth, 
+          recoveryParams: {
+            recoveryMethod: "password",
+            password:password
+          }
+        });
     } else if (method === 'automatic') {
       const shieldAuth = {
         auth: 'openfort',
@@ -34,11 +42,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         authProvider: 'firebase',
         tokenType: 'idToken',
       };
-      await openfort.configureEmbeddedSigner(chainId, shieldAuth);
+      await openfort.embeddedWallet.configure(
+        {
+          chainId:chainId, 
+          shieldAuthentication: shieldAuth, 
+          recoveryParams: {
+            recoveryMethod: "automatic"
+          }
+        });
     }
     addMessage('Recovery process completed.');
 
-    const embeddedState = openfort.getEmbeddedState();
+    const embeddedState = openfort.embeddedWallet.getEmbeddedState();
     if (embeddedState === 4) {
       window.location.href = 'signature.html';
     }
@@ -47,12 +62,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   auth.onIdTokenChanged(async (user) => {
     if (user) {
       const idToken = await user.getIdToken();
-      const player = await openfort.authenticateWithThirdPartyProvider({
+      await openfort.auth.authenticateWithThirdPartyProvider({
         provider:'firebase',
         token:idToken,
         tokenType:'idToken'
       });
-      const embeddedState = openfort.getEmbeddedState();
+      const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       if (embeddedState === 4) {
         window.location.href = 'signature.html';
       }
