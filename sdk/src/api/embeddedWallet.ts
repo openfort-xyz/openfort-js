@@ -87,8 +87,7 @@ export class EmbeddedWalletApi {
       throw new OpenfortError('Storage not available in EmbeddedWalletApi', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
-    SignerManager.storage = this.storage;
-    await SignerManager.embedded(params.chainId, entropy, recoveryType, customToken);
+    await SignerManager.embedded(this.storage, params.chainId, entropy, recoveryType, customToken);
     return this.get();
   }
 
@@ -98,7 +97,7 @@ export class EmbeddedWalletApi {
   ): Promise<string> {
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage(this.storage);
     if (!signer) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
@@ -113,7 +112,7 @@ export class EmbeddedWalletApi {
   ): Promise<string> {
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage(this.storage);
     const account = await Account.fromStorage(this.storage);
 
     if (!signer || !account) {
@@ -136,7 +135,7 @@ export class EmbeddedWalletApi {
   async exportPrivateKey(): Promise<string> {
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage(this.storage);
     if (!signer) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
@@ -151,7 +150,7 @@ export class EmbeddedWalletApi {
   }): Promise<void> {
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage(this.storage);
     if (!signer) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
@@ -226,22 +225,28 @@ export class EmbeddedWalletApi {
   }
 
   async getEmbeddedState(): Promise<EmbeddedState> {
-    const auth = Authentication.fromStorage(this.storage);
-    if (!auth) {
+    try {
+      const auth = await Authentication.fromStorage(this.storage);
+      if (!auth) {
+        return EmbeddedState.UNAUTHENTICATED;
+      }
+
+      const signer = await SignerManager.fromStorage(this.storage);
+      if (!signer) {
+        return EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED;
+      }
+
+      const account = await Account.fromStorage(this.storage);
+      if (!account) {
+        return EmbeddedState.CREATING_ACCOUNT;
+      }
+
+      return EmbeddedState.READY;
+    } catch (error) {
+      // If storage access fails, return unauthenticated state
+      console.error('Failed to get embedded state:', error);
       return EmbeddedState.UNAUTHENTICATED;
     }
-
-    const signer = await SignerManager.fromStorage();
-    if (!signer) {
-      return EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED;
-    }
-
-    const account = await Account.fromStorage(this.storage);
-    if (!account) {
-      return EmbeddedState.CREATING_ACCOUNT;
-    }
-
-    return EmbeddedState.READY;
   }
 
   /**
@@ -271,7 +276,7 @@ export class EmbeddedWalletApi {
     const finalOptions = { ...defaultOptions, ...options };
 
     const authentication = await Authentication.fromStorage(this.storage);
-    const signer = await SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage(this.storage);
     const account = await Account.fromStorage(this.storage);
 
     if (!this.provider) {

@@ -235,7 +235,7 @@ export class AuthApi {
    */
   async logout(): Promise<void> {
     await this.ensureInitialized();
-    const signer = await SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage(this.storage);
     this.storage.remove(StorageKeys.AUTHENTICATION);
     this.storage.remove(StorageKeys.SIGNER);
     this.storage.remove(StorageKeys.ACCOUNT);

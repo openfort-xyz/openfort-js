@@ -83,24 +83,89 @@ export class SDKConfiguration {
     this.save();
   }
 
-  public static async isStorageAccessible(storage: IStorage) {
+  public static async isStorageAccessible(storage: IStorage): Promise<boolean> {
     try {
-      const t = StorageKeys.TEST;
-      const s = 'blobby';
-      storage.save(t, s);
-      const i = await storage.get(t);
-      storage.remove(t);
-      return i === s;
-    } catch (t) {
+      const testKey = StorageKeys.TEST;
+      const testValue = 'openfort_storage_test';
+
+      // Test write
+      storage.save(testKey, testValue);
+
+      // Test read
+      const retrieved = await storage.get(testKey);
+
+      // Test remove
+      storage.remove(testKey);
+
+      // Verify the value was correctly stored and retrieved
+      return retrieved === testValue;
+    } catch (error) {
+      console.error('Storage accessibility check failed:', error);
       return false;
     }
   }
 
-  static fromStorage(): SDKConfiguration | null {
-    return CONFIGURATION;
+  static fromStorage(): SDKConfiguration | null;
+  static fromStorage(storage: IStorage): Promise<SDKConfiguration | null>;
+  static fromStorage(storage?: IStorage): SDKConfiguration | null | Promise<SDKConfiguration | null> {
+    // If no storage provided, return the global singleton synchronously
+    if (!storage) {
+      return CONFIGURATION;
+    }
+
+    // If storage provided, try to load from storage
+    return this.loadFromStorage(storage);
+  }
+
+  private static async loadFromStorage(storage: IStorage): Promise<SDKConfiguration | null> {
+    const data = await storage.get(StorageKeys.CONFIGURATION);
+    if (!data) return null;
+
+    try {
+      const parsed = JSON.parse(data);
+      const baseConfiguration = new OpenfortConfiguration({
+        publishableKey: parsed.publishableKey,
+      });
+
+      let shieldConfiguration: ShieldConfiguration | undefined;
+      if (parsed.shieldPublishableKey) {
+        shieldConfiguration = new ShieldConfiguration({
+          shieldPublishableKey: parsed.shieldPublishableKey,
+          shieldEncryptionKey: parsed.shieldEncryptionKey,
+          shieldDebug: parsed.shieldDebug,
+        });
+      }
+
+      const overrides: SDKOverrides = {
+        backendUrl: parsed.backendUrl,
+        iframeUrl: `${parsed.iframeUrl?.split('/')[0]}//${parsed.iframeUrl?.split('/')[2]}/iframe`, // Extract base URL
+        shieldUrl: parsed.shieldUrl,
+        storage,
+      };
+
+      return new SDKConfiguration({
+        baseConfiguration,
+        shieldConfiguration,
+        overrides,
+      });
+    } catch {
+      return null;
+    }
   }
 
   save(): void {
     CONFIGURATION = this;
+    // Also save to storage if available
+    if (this.storage) {
+      this.storage.save(StorageKeys.CONFIGURATION, JSON.stringify({
+        publishableKey: this.baseConfiguration.publishableKey,
+        backendUrl: this.backendUrl,
+        iframeUrl: this.iframeUrl,
+        shieldUrl: this.shieldUrl,
+        shieldPublishableKey: this.shieldConfiguration?.shieldPublishableKey,
+        shieldEncryptionKey: this.shieldConfiguration?.shieldEncryptionKey,
+        shieldDebug: this.shieldConfiguration?.debug,
+      }));
+    }
   }
 }

@@ -38,7 +38,7 @@ export class OpenfortInternal {
       credentials.player,
       credentials.refreshToken,
     ).save(this.storage);
-    const signer = await SignerManager.fromStorage();
+    const signer = await SignerManager.fromStorage(this.storage);
     try {
       await signer?.updateAuthentication();
     } catch (e) {

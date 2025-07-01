@@ -1,8 +1,7 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
 import { InternalSentry } from './errors/sentry';
-import { StorageImplementation } from '../storage/storage';
 import { IStorage } from '../storage/istorage';
-import { SignerManager } from '../wallets/signer';
+import { LazyStorage } from '../storage/lazyStorage';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { OpenfortSDKConfiguration, SDKConfiguration } from './config/config';
 import { AuthManager } from '../auth/authManager';
@@ -13,13 +12,15 @@ import { ProxyApi } from '../api/proxy';
 import { OpenfortInternal } from './openfortInternal';
 
 export class Openfort {
-  private storage!: IStorage;
+  private storage: IStorage;
 
   private iAuthManager: AuthManager | null = null;
 
   private openfortInternal!: OpenfortInternal;
 
-  private initialized: boolean = false;
+  private initPromise: Promise<void>;
+
+  private asyncInitPromise: Promise<void> | null = null;
 
   private authInstance?: AuthApi;
 
@@ -29,58 +30,60 @@ export class Openfort {
 
   private proxyInstance?: ProxyApi;
 
+  private configuration: SDKConfiguration;
+
   public get auth(): AuthApi {
     if (!this.authInstance) {
-      this.initializeSynchronously();
+      throw new OpenfortError(
+        'Openfort SDK not initialized. Please await waitForInitialization() before accessing auth.',
+        OpenfortErrorType.INVALID_CONFIGURATION,
+      );
     }
-    return this.authInstance!;
+    return this.authInstance;
   }
 
   public get embeddedWallet(): EmbeddedWalletApi {
     if (!this.embeddedWalletInstance) {
-      this.initializeSynchronously();
+      throw new OpenfortError(
+        'Openfort SDK not initialized. Please await waitForInitialization() before accessing embeddedWallet.',
+        OpenfortErrorType.INVALID_CONFIGURATION,
+      );
     }
-    return this.embeddedWalletInstance!;
+    return this.embeddedWalletInstance;
   }
 
   public get user(): UserApi {
     if (!this.userInstance) {
-      this.initializeSynchronously();
+      throw new OpenfortError(
+        'Openfort SDK not initialized. Please await waitForInitialization() before accessing user.',
+        OpenfortErrorType.INVALID_CONFIGURATION,
+      );
     }
-    return this.userInstance!;
+    return this.userInstance;
   }
 
   public get proxy(): ProxyApi {
     if (!this.proxyInstance) {
-      this.initializeSynchronously();
+      throw new OpenfortError(
+        'Openfort SDK not initialized. Please await waitForInitialization() before accessing proxy.',
+        OpenfortErrorType.INVALID_CONFIGURATION,
+      );
     }
-    return this.proxyInstance!;
+    return this.proxyInstance;
   }
 
   private initializeSynchronously(): void {
-    if (this.initialized) return;
-
     try {
-      const config = SDKConfiguration.fromStorage();
+      // Initialize auth manager with storage
+      this.iAuthManager = new AuthManager(this.storage);
 
-      if (config?.storage) {
-        this.storage = config.storage;
-      } else if (typeof localStorage !== 'undefined') {
-        this.storage = new StorageImplementation(localStorage);
-      } else {
-        throw new OpenfortError(
-          'No storage implementation available. Ensure storage is properly configured in SDKConfiguration.',
-          OpenfortErrorType.INVALID_CONFIGURATION,
-        );
-      }
-
-      // Initialize without async checks for immediate availability
+      // Initialize internal helper
       this.openfortInternal = new OpenfortInternal(
         this.storage,
         this.authManager,
       );
 
-      // Initialize APIs immediately
+      // Initialize all API instances with storage
       this.authInstance = new AuthApi(
         this.storage,
         this.authManager,
@@ -99,23 +102,44 @@ export class Openfort {
         this.ensureInitialized.bind(this),
       );
       this.proxyInstance = new ProxyApi(
+        this.storage,
         this.backendApiClients,
         () => this.openfortInternal.validateAndRefreshToken(),
         this.ensureInitialized.bind(this),
       );
-
-      this.initialized = true;
     } catch (error) {
       throw new OpenfortError(
-        'Openfort SDK initialization failed',
+        'Openfort SDK synchronous initialization failed',
         OpenfortErrorType.INVALID_CONFIGURATION,
       );
     }
   }
 
   constructor(sdkConfiguration: OpenfortSDKConfiguration) {
-    const configuration = new SDKConfiguration(sdkConfiguration);
-    InternalSentry.init({ configuration });
+    // Store configuration
+    this.configuration = new SDKConfiguration(sdkConfiguration);
+
+    // Always create lazy storage - no localStorage access here
+    this.storage = new LazyStorage(this.configuration.storage);
+
+    // Initialize Sentry
+    InternalSentry.init({ configuration: this.configuration });
+
+    // Only do synchronous initialization - no storage access
+    this.initializeSynchronously();
+
+    // Async initialization will be done lazily when needed
+    this.initPromise = Promise.resolve();
+  }
+
+  /**
+   * Wait for SDK initialization to complete. This triggers async initialization
+   * which includes storage access, so it should only be called in browser environments.
+   * @returns Promise that resolves when initialization is complete
+   */
+  public async waitForInitialization(): Promise<void> {
+    await this.initPromise;
+    await this.ensureAsyncInitialized();
   }
 
   /**
@@ -135,41 +159,61 @@ export class Openfort {
     return this.openfortInternal.validateAndRefreshToken(forceRefresh);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private get backendApiClients(): BackendApiClients {
-    const configuration = SDKConfiguration.fromStorage();
-    if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
     return new BackendApiClients({
-      basePath: configuration.backendUrl,
-      accessToken: configuration.baseConfiguration.publishableKey,
+      basePath: this.configuration.backendUrl,
+      accessToken: this.configuration.baseConfiguration.publishableKey,
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private get authManager(): AuthManager {
     if (!this.iAuthManager) {
-      // Ensure storage is available for AuthManager
-      if (!this.storage) {
-        const config = SDKConfiguration.fromStorage();
-        this.storage = config?.storage ?? new StorageImplementation(localStorage);
-      }
-      this.iAuthManager = new AuthManager(this.storage);
-
-      // Try to set backend API clients immediately if available
-      try {
-        const config = SDKConfiguration.fromStorage();
-        if (config) {
-          const backendClients = this.backendApiClients;
-          this.iAuthManager.setBackendApiClients(backendClients, config.baseConfiguration.publishableKey);
-        }
-      } catch {
-        // Backend clients not available yet, will be set later in ensureInitialized
-      }
+      throw new OpenfortError(
+        'AuthManager not initialized',
+        OpenfortErrorType.INTERNAL_ERROR,
+      );
     }
-
     return this.iAuthManager;
+  }
+
+  /**
+   * Performs async initialization tasks
+   * @private
+   */
+  private async initializeAsync(): Promise<void> {
+    try {
+      // Validate storage accessibility
+      if (!(await SDKConfiguration.isStorageAccessible(this.storage))) {
+        throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION);
+      }
+
+      // Storage is now passed explicitly to SignerManager methods
+
+      // Set up auth manager with backend clients
+      this.authManager.setBackendApiClients(
+        this.backendApiClients,
+        this.configuration.baseConfiguration.publishableKey,
+      );
+    } catch (error) {
+      throw new OpenfortError(
+        'Openfort SDK async initialization failed',
+        OpenfortErrorType.INTERNAL_ERROR,
+      );
+    }
+  }
+
+  /**
+   * Ensures async initialization is complete. This is called lazily when
+   * storage is actually needed, not during construction.
+   *
+   * @returns Promise that resolves when async initialization is complete
+   * @throws {OpenfortError} If initialization fails
+   */
+  private async ensureAsyncInitialized(): Promise<void> {
+    if (!this.asyncInitPromise) {
+      this.asyncInitPromise = this.initializeAsync();
+    }
+    await this.asyncInitPromise;
   }
 
   /**
@@ -180,30 +224,7 @@ export class Openfort {
    * @throws {OpenfortError} If initialization fails
    */
   private async ensureInitialized(): Promise<void> {
-    if (this.initialized) return;
-
-    // If not initialized yet, do synchronous initialization first
-    if (!this.authInstance || !this.userInstance || !this.embeddedWalletInstance || !this.proxyInstance) {
-      this.initializeSynchronously();
-    }
-
-    // Then do async validation
-    try {
-      if (!(await SDKConfiguration.isStorageAccessible(this.storage))) {
-        throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION);
-      }
-      SignerManager.storage = this.storage;
-
-      // Set up auth manager with backend clients
-      const config = SDKConfiguration.fromStorage();
-      if (config) {
-        this.authManager.setBackendApiClients(this.backendApiClients, config.baseConfiguration.publishableKey);
-      }
-    } catch (error) {
-      throw new OpenfortError(
-        'Openfort SDK initialization failed',
-        OpenfortErrorType.INTERNAL_ERROR,
-      );
-    }
+    await this.initPromise;
+    await this.ensureAsyncInitialized();
   }
 }

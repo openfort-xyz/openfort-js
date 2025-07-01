@@ -1,6 +1,7 @@
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { SignerManager } from '../signer';
 import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError';
+import { IStorage } from '../../storage/istorage';
 
 export interface AddEthereumChainParameter {
   chainId: string;
@@ -18,6 +19,7 @@ export interface AddEthereumChainParameter {
 export interface AddChainParams {
   rpcProvider: StaticJsonRpcProvider;
   params: Array<any>;
+  storage: IStorage;
 }
 
 const REQUIRED_CHAIN_PROPERTIES = ['chainId', 'chainName', 'nativeCurrency'];
@@ -102,6 +104,7 @@ const transformChainParameter = (chainParam: any): AddEthereumChainParameter => 
 export const addEthereumChain = async ({
   params,
   rpcProvider,
+  storage,
 }: AddChainParams): Promise<null | boolean> => {
   if (!params || !Array.isArray(params) || params.length === 0) {
     throw new JsonRpcError(
@@ -122,7 +125,7 @@ export const addEthereumChain = async ({
   }
 
   try {
-    const signer = await SignerManager.embedded();
+    const signer = await SignerManager.embedded(storage);
     if (!signer) {
       throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - no account available');
     }

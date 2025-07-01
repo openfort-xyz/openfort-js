@@ -3,9 +3,11 @@ import { SignerManager } from '../wallets/signer';
 import { SDKConfiguration } from '../core/config/config';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError';
 import { TransactionIntentResponse, SessionResponse } from '../types/types';
+import { IStorage } from '../storage/istorage';
 
 export class ProxyApi {
   constructor(
+    private storage: IStorage,
     private backendApiClients: BackendApiClients,
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
@@ -32,7 +34,7 @@ export class ProxyApi {
         );
       }
 
-      const signer = await SignerManager.fromStorage();
+      const signer = await SignerManager.fromStorage(this.storage);
       if (!signer) {
         throw new OpenfortError(
           'In order to sign a transaction intent, a signer must be configured',

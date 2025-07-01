@@ -14,35 +14,34 @@ export interface SignerConfiguration {
   chainId: number | null;
 }
 
-let iframeManagerSingleton: IframeManager | null = null;
+// IframeManager instances are cached by storage instance
+const iframeManagerCache = new WeakMap<IStorage, IframeManager>();
 
 export class SignerManager {
-  static storage: IStorage;
-
-  static async fromStorage(): Promise<Signer | null> {
-    if (!this.storage) {
-      return null;
+  static async fromStorage(storage: IStorage): Promise<Signer | null> {
+    if (!storage) {
+      throw new OpenfortError('Storage is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
-    const signerData = await this.storage.get(StorageKeys.SIGNER);
+
+    const signerData = await storage.get(StorageKeys.SIGNER);
     if (!signerData) {
       return null;
     }
 
     const signerConfiguration: SignerConfiguration = JSON.parse(signerData);
     if (signerConfiguration.type === 'embedded') {
-      return this.embeddedFromStorage(signerConfiguration.chainId);
+      return this.embeddedFromStorage(storage, signerConfiguration.chainId);
     }
-
     return null;
   }
 
-  private static async embeddedFromStorage(chainId: number | null): Promise<Signer | null> {
-    const { iframeManager } = this;
-    const authentication = await Authentication.fromStorage(SignerManager.storage);
+  private static async embeddedFromStorage(storage: IStorage, chainId: number | null): Promise<Signer | null> {
+    const iframeManager = this.getIframeManager(storage);
+    const authentication = await Authentication.fromStorage(storage);
     if (!authentication) {
       throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-    const recovery = await Recovery.fromStorage(SignerManager.storage);
+    const recovery = await Recovery.fromStorage(storage);
     if (!recovery) {
       throw new OpenfortError('Must have recovery to create a signer', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -52,17 +51,19 @@ export class SignerManager {
       thirdPartyProvider: authentication.thirdPartyProvider ?? null,
       accessToken: authentication.token,
       playerID: authentication.player,
-      recovery: this.shieldAuthentication(recovery, authentication, null),
+      recovery: this.shieldAuthentication(storage, recovery, authentication, null),
       chainId,
       password: null,
     };
 
-    return new EmbeddedSigner(iframeManager, iframeConfiguration, SignerManager.storage);
+    return new EmbeddedSigner(iframeManager, iframeConfiguration, storage);
   }
 
-  private static get iframeManager(): IframeManager {
-    if (iframeManagerSingleton) {
-      return iframeManagerSingleton;
+  private static getIframeManager(storage: IStorage): IframeManager {
+    // Check cache first
+    const cached = iframeManagerCache.get(storage);
+    if (cached) {
+      return cached;
     }
 
     const configuration = SDKConfiguration.fromStorage();
@@ -70,33 +71,27 @@ export class SignerManager {
       throw new OpenfortError('Must be configured to create a signer', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
-    if (!SignerManager.storage) {
-      throw new OpenfortError(
-        'Storage must be initialized before creating IframeManager',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
-    }
-
-    const iframeManager = new IframeManager(configuration, SignerManager.storage);
-    iframeManagerSingleton = iframeManager;
+    const iframeManager = new IframeManager(configuration, storage);
+    iframeManagerCache.set(storage, iframeManager);
     return iframeManager;
   }
 
   static async embedded(
+    storage: IStorage,
     chainId: number | null = null,
     entropy: Entropy | null = null,
     recoveryType: 'openfort' | 'custom' | null = null,
     customToken: string | null = null,
   ): Promise<Signer> {
-    if (!this.storage) {
-      throw new OpenfortError('Storage not initialized in SignerManager', OpenfortErrorType.INVALID_CONFIGURATION);
+    if (!storage) {
+      throw new OpenfortError('Storage is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
-    const { iframeManager } = this;
+    const iframeManager = this.getIframeManager(storage);
 
     let authentication;
     try {
-      authentication = await Authentication.fromStorage(SignerManager.storage);
+      authentication = await Authentication.fromStorage(storage);
     } catch (error) {
       throw new OpenfortError('Failed to access authentication storage', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -105,12 +100,12 @@ export class SignerManager {
       throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
-    const storedRecovery = await Recovery.fromStorage(SignerManager.storage);
+    const storedRecovery = await Recovery.fromStorage(storage);
     const shieldRecoveryType = recoveryType || storedRecovery?.type || 'openfort';
     const shieldCustomToken = customToken || storedRecovery?.customToken;
     const recovery = new Recovery(shieldRecoveryType, shieldCustomToken);
 
-    const shieldAuthentication = this.shieldAuthentication(recovery, authentication, entropy);
+    const shieldAuthentication = this.shieldAuthentication(storage, recovery, authentication, entropy);
 
     const iframeConfiguration: IframeConfiguration = {
       thirdPartyTokenType: authentication.thirdPartyTokenType ?? null,
@@ -127,12 +122,13 @@ export class SignerManager {
       chainId,
     };
     const resp = await iframeManager.configure(iframeConfiguration);
-    SignerManager.storage.save(StorageKeys.SIGNER, JSON.stringify(signerConfiguration));
-    new Account(resp.address, resp.chainId, resp.ownerAddress, resp.accountType).save(SignerManager.storage);
-    return new EmbeddedSigner(iframeManager, iframeConfiguration, SignerManager.storage);
+    storage.save(StorageKeys.SIGNER, JSON.stringify(signerConfiguration));
+    new Account(resp.address, resp.chainId, resp.ownerAddress, resp.accountType).save(storage);
+    return new EmbeddedSigner(iframeManager, iframeConfiguration, storage);
   }
 
   private static shieldAuthentication(
+    storage: IStorage,
     recovery: Recovery,
     authentication: Authentication,
     entropy: Entropy | null,
@@ -147,7 +143,7 @@ export class SignerManager {
         encryptionSession: entropy?.encryptionSession || undefined,
       };
 
-      new Recovery('openfort').save(SignerManager.storage);
+      new Recovery('openfort').save(storage);
     } else if (recovery.type === 'custom') {
       if (!recovery.customToken) {
         throw new OpenfortError('Custom recovery requires a token', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -156,7 +152,7 @@ export class SignerManager {
         auth: ShieldAuthType.CUSTOM,
         token: recovery.customToken,
       };
-      new Recovery('custom', recovery.customToken).save(SignerManager.storage);
+      new Recovery('custom', recovery.customToken).save(storage);
     }
     return shieldAuthentication;
   }
