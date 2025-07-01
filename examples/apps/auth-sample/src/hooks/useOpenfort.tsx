@@ -1,9 +1,9 @@
 import {
   EmbeddedState,
+  RecoveryMethod,
   ShieldAuthType,
   type TypedDataPayload,
   type Provider,
-  type RecoveryMethod,
   type ShieldAuthentication,
 } from '@openfort/openfort-js';
 import type React from 'react';
@@ -84,7 +84,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   useEffect(() => {
     const pollEmbeddedState = async () => {
       try {
-        const currentState = await openfort.getEmbeddedState();
+        const currentState = await openfort.embeddedWallet.getEmbeddedState();
         setState(currentState);
       } catch (err) {
         console.error('Error checking embedded state with Openfort:', err);
@@ -100,7 +100,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   }, []);
 
   const getEvmProvider = useCallback(async(): Promise<Provider> => {
-    const externalProvider = await openfort.getEthereumProvider({
+    const externalProvider = await openfort.embeddedWallet.getEthereumProvider({
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
       chains: {
         [polygonAmoy.id]: "https://polygon-amoy.gateway.tenderly.co",
@@ -118,7 +118,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
       options?: {hashMessage: boolean; arrayifyMessage: boolean}
     ): Promise<{data?: string; error?: Error}> => {
       try {
-        const data = await openfort.signMessage(message, options);
+        const data = await openfort.embeddedWallet.signMessage(message, options);
         return {data};
       } catch (err) {
         console.error('Error signing message:', err);
@@ -138,7 +138,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     error?: Error;
   }> => {
     try {
-      const data = await openfort.exportPrivateKey();
+      const data = await openfort.embeddedWallet.exportPrivateKey();
       return {data};
     } catch (err) {
       console.error('Error exporting private key:', err);
@@ -158,7 +158,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     ): Promise<{error?: Error}> => {
       try {
         const encryptionSession = await getEncryptionSession();
-        await openfort.setEmbeddedRecovery({
+        await openfort.embeddedWallet.setEmbeddedRecovery({
           recoveryMethod,
           recoveryPassword,
           encryptionSession,
@@ -184,7 +184,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
       message: TypedDataPayload['message']
     ): Promise<{data?: string; error?: Error}> => {
       try {
-        const data = await openfort.signTypedData(domain, types, message);
+        const data = await openfort.embeddedWallet.signTypedData(domain, types, message);
         return {data};
       } catch (err) {
         console.error('Error signing typed data:', err);
@@ -207,12 +207,12 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
           encryptionSession: await getEncryptionSession(),
         };
         if (method === 'automatic') {
-          await openfort.configureEmbeddedSigner(chainId, shieldAuth);
+          await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.AUTOMATIC}});
         } else if (method === 'password') {
           if (!password || password.length < 4) {
             throw new Error('Password recovery must be at least 4 characters');
           }
-          await openfort.configureEmbeddedSigner(chainId, shieldAuth, password);
+          await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSWORD, password: password}});
         }
     },
     []
@@ -220,7 +220,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const logout = useCallback(async () => {
     try {
-      await openfort.logout();
+      await openfort.auth.logout();
     } catch (err) {
       console.error('Error logging out with Openfort:', err);
       throw err instanceof Error
@@ -231,7 +231,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const getEOAAddress = useCallback(async () => {
     try { 
-      const account = await openfort.getAccount()
+      const account = await openfort.embeddedWallet.get()
       return (account.ownerAddress as `0x${string}`);
     } catch (err){
       console.error('Error obtaining EOA Address with Openfort:', err);

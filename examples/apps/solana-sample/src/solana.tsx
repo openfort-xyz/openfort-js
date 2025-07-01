@@ -39,7 +39,7 @@ async function sendSolanaTransaction(
   const serializedTransaction = transaction.serializeMessage();
 
   // Sign the transaction with openfort
-  const signature = await openfort.signMessage(serializedTransaction);
+  const signature = await openfort.embeddedWallet.signMessage(serializedTransaction);
 
   // Create a signed transaction by adding the signature
   transaction.addSignature(fromPublicKey, Buffer.from(Base58.toBytes(signature)));

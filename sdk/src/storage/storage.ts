@@ -7,21 +7,20 @@ export class StorageImplementation implements IStorage {
     this.storage = storage;
   }
 
-  public async get(key: string): Promise<string | null> {
-    return await this.storage.getItem(key);
+  public async get(key: StorageKeys): Promise<string | null> {
+    return Promise.resolve(this.storage.getItem(key));
   }
 
-  public save(key: string, value: string): void {
+  public save(key: StorageKeys, value: string): void {
     this.storage.setItem(key, value);
   }
 
-  public remove(key: string): void {
+  public remove(key: StorageKeys): void {
     this.storage.removeItem(key);
   }
 
   public flush(): void {
-    // eslint-disable-next-line no-restricted-syntax,guard-for-in
-    for (const key in StorageKeys) {
+    for (const key of Object.values(StorageKeys)) {
       this.storage.removeItem(key);
     }
   }

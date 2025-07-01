@@ -1,3 +1,5 @@
+import axios, { AxiosInstance } from 'axios';
+import axiosRetry from 'axios-retry';
 import {
   TransactionIntentsApi,
   AccountsApi,
@@ -9,12 +11,6 @@ import { OpenfortAPIConfiguration, createConfig, type OpenfortAPIConfigurationOp
 export interface BackendApiClientsOptions {
   basePath: string;
   accessToken: string;
-  retryConfig?: {
-    retries?: number;
-    retryDelay?: number;
-    retryCondition?: (error: any) => boolean;
-    onRetry?: (retryCount: number, error: any, requestConfig: any) => void;
-  };
 }
 
 export class BackendApiClients {
@@ -29,19 +25,27 @@ export class BackendApiClients {
   public authenticationApi: AuthenticationApi;
 
   constructor(options: BackendApiClientsOptions) {
+    const customAxiosInstance: AxiosInstance = axios.create();
+
+    axiosRetry(customAxiosInstance, {
+      retries: 3,
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: axiosRetry.isRetryableError,
+    });
+
     const configOptions: OpenfortAPIConfigurationOptions = {
       basePath: options.basePath,
       accessToken: options.accessToken,
-      retryConfig: options.retryConfig,
     };
 
     this.config = {
       backend: createConfig(configOptions),
     };
 
-    this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend);
-    this.accountsApi = new AccountsApi(this.config.backend);
-    this.sessionsApi = new SessionsApi(this.config.backend);
-    this.authenticationApi = new AuthenticationApi(this.config.backend);
+    // Pass the custom axios instance to all API constructors
+    this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend, undefined, customAxiosInstance);
+    this.accountsApi = new AccountsApi(this.config.backend, undefined, customAxiosInstance);
+    this.sessionsApi = new SessionsApi(this.config.backend, undefined, customAxiosInstance);
+    this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, customAxiosInstance);
   }
 }

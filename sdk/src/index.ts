@@ -1,31 +1,14 @@
-export { OpenfortError, OpenfortErrorType } from './errors/openfortError';
-export { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js';
-export {
-  InitializeOAuthOptions,
-  EmbeddedState,
-  ThirdPartyOAuthProvider,
-  BasicAuthProvider,
-  TokenType,
-  OAuthProvider,
-  AuthPlayerResponse,
-  AuthResponse,
-  AuthActionRequiredActions,
-  AuthActionRequiredResponse,
-  InitAuthResponse,
-  AuthType,
-  SessionResponse,
-  TransactionIntentResponse,
-  SDKOverrides,
-  RecoveryMethod,
-} from './types';
-export { ShieldAuthentication, ShieldAuthType } from './iframe/types';
-export { IStorage as Storage } from './storage/istorage';
-export {
-  MissingRecoveryPasswordError, MissingProjectEntropyError, WrongRecoveryPasswordError, NotConfiguredError,
-} from './iframe/iframeManager';
-export { Provider, TypedDataPayload } from './evm/types';
-export {
-  SDKConfiguration, OpenfortSDKConfiguration, OpenfortConfiguration, ShieldConfiguration,
-} from './config';
+// Export all types and interfaces
+export * from './types';
 
-export { Openfort } from './openfort';
+// Export main SDK classes
+export { Openfort } from './core/openfort';
+
+// Export API namespaces
+export { AuthApi } from './api/auth';
+export { EmbeddedWalletApi } from './api/embeddedWallet';
+export { UserApi } from './api/user';
+export { ProxyApi } from './api/proxy';
+
+// Export storage interface
+export { IStorage as Storage } from './storage/istorage';

@@ -36,7 +36,7 @@ const HomePage: NextPage = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const sessionData = await openfort.getUser().catch((error: Error) => {
+      const sessionData = await openfort.user.get().catch((error: Error) => {
         console.log("error", error);
       });
       if (sessionData) {

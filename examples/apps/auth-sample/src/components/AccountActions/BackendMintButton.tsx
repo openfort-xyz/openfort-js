@@ -26,7 +26,7 @@ const BackendMintButton: React.FC<{
     }
     const collectResponseJSON = await collectResponse.json();
 
-    const response = await openfort.sendSignatureTransactionIntentRequest(
+    const response = await openfort.proxy.sendSignatureTransactionIntentRequest(
       collectResponseJSON.transactionIntentId,
       collectResponseJSON.userOperationHash
     );

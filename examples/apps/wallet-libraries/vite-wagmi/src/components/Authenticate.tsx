@@ -29,7 +29,7 @@ function Authenticate() {
   useEffect(() => {
     const pollEmbeddedState = async () => {
       try {
-        const currentState = await openfortInstance.getEmbeddedState();
+        const currentState = await openfortInstance.embeddedWallet.getEmbeddedState();
         if (currentState === EmbeddedState.READY) {
           if (poller.current) clearInterval(poller.current);
           navigate('/');
@@ -80,7 +80,7 @@ function Authenticate() {
         token: (await openfortInstance.getAccessToken())!,
         encryptionSession: await getEncryptionSession(),
       };
-      await openfortInstance.configureEmbeddedSigner(chainId, shieldAuth);
+      await openfortInstance.embeddedWallet.configure({chainId, shieldAuthentication: shieldAuth});
     } catch (error) {
       console.error('Error configuring embedded signer:', error);
       setError('Failed to configure embedded signer. Please try again.');
@@ -100,13 +100,13 @@ function Authenticate() {
 
     try {
       if (isLogin) {
-        await openfortInstance.logInWithEmailPassword({
+        await openfortInstance.auth.logInWithEmailPassword({
           email: formData.email,
           password: formData.password,
         });
         console.log('User logged in successfully');
       } else {
-        await openfortInstance.signUpWithEmailPassword({
+        await openfortInstance.auth.signUpWithEmailPassword({
           email: formData.email,
           password: formData.password,
         });

@@ -39,7 +39,7 @@ const BackendMintButton: React.FC<{
       throw new Error('Failed to sign message with session key');
     }
 
-    const response = await openfort.sendSignatureTransactionIntentRequest(
+    const response = await openfort.proxy.sendSignatureTransactionIntentRequest(
       collectResponseJSON.transactionIntentId,
       null,
       signature

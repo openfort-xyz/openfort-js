@@ -40,13 +40,13 @@ export const Login = () => {
           className="w-full"
           onClick={async () => {
             if (isLoggingIn) {
-              await openfort.logInWithEmailPassword({
+              await openfort.auth.logInWithEmailPassword({
                 email,
                 password
               })
               return
             } else {
-              await openfort.signUpWithEmailPassword({
+              await openfort.auth.signUpWithEmailPassword({
                 email,
                 password
               })
@@ -79,7 +79,7 @@ export const Login = () => {
       </button>
       <button
         className="w-full"
-        onClick={() => openfort.signUpGuest()}
+        onClick={() => openfort.auth.signUpGuest()}
       >
         Login as guest
       </button>

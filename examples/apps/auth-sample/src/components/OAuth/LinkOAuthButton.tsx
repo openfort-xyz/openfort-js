@@ -16,7 +16,7 @@ const LinkOAuthButton: React.FC<{
     try {
       setLoading(true);
       const accessToken = (await openfort.getAccessToken()) as string;
-      const {url} = await openfort.initLinkOAuth({
+      const {url} = await openfort.auth.initLinkOAuth({
         authToken: accessToken,
         provider: provider,
         options: {

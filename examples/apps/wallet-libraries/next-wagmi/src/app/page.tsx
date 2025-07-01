@@ -85,7 +85,7 @@ function Account() {
       {account.status === 'connected' && (
         <button type="button" onClick={async() => {
           if (account.connector && account.connector.name.includes('Openfort')) {
-            await openfortInstance.logout();
+            await openfortInstance.auth.logout();
           }
           disconnect()
           }

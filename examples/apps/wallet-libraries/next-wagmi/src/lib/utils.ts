@@ -1,14 +1,18 @@
-import { ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
+import { RecoveryMethod, ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
 import { openfortInstance } from "../openfort";
 import axios from 'axios';
 
-export const configureEmbeddedSigner = async (chain: number, password?: string) => {
+export const configureEmbeddedSigner = async (chainId: number, password?: string) => {
   const shieldAuth: ShieldAuthentication = {
     auth: ShieldAuthType.OPENFORT,
     token: (await openfortInstance.getAccessToken())!,
     encryptionSession: await getEncryptionSession(),
   };
-  await openfortInstance.configureEmbeddedSigner(chain, shieldAuth, password);
+  await openfortInstance.embeddedWallet.configure({
+    chainId,
+    shieldAuthentication: shieldAuth,
+    recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+  });
 };
 
 const getEncryptionSession = async (): Promise<string> => {

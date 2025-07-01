@@ -25,7 +25,7 @@ function OpenfortSetup({ children }: { children: ReactNode }) {
   useEffect(() => {
     const pollEmbeddedState = async () => {
       try {
-        const currentState = await openfortInstance.getEmbeddedState()
+        const currentState = await openfortInstance.embeddedWallet.getEmbeddedState()
         if (currentState === EmbeddedState.READY) {
           if (poller.current) clearInterval(poller.current);
           router.push('/')
@@ -52,12 +52,12 @@ function OpenfortSetup({ children }: { children: ReactNode }) {
   useEffect(() => {
     const setupProvider = async () => {
       if (!openfortInstance) return;
-      openfortInstance.getEthereumProvider(
+      openfortInstance.embeddedWallet.getEthereumProvider(
         {
           policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA
         }
       );
-      const user = await openfortInstance.getUser().catch((err) => {
+      const user = await openfortInstance.user.get().catch((err) => {
         return null
       })
       if (user) {

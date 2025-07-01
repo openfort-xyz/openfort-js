@@ -11,7 +11,7 @@ const GetUserButton: React.FC<{
   const handleUserMessage = async () => {
     try {
       setLoading(true);
-      const user = await openfort.getUser().catch((error: Error) => {
+      const user = await openfort.user.get().catch((error: Error) => {
         console.log('error', error);
       });
       setLoading(false);
