@@ -27,3 +27,4 @@ docs/
 /examples/apps/auth-sample/blob-report/
 /examples/apps/auth-sample/playwright/.cache/
 /examples/apps/auth-sample/playwright/.auth/
+.claude/

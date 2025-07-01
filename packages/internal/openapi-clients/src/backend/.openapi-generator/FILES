@@ -43,6 +43,8 @@ models/account.ts
 models/accounts-list-queries.ts
 models/action-required-response.ts
 models/actions.ts
+models/allowed-origins-request.ts
+models/allowed-origins-response.ts
 models/amount.ts
 models/api-authorized-network-delete-response.ts
 models/api-authorized-network-list-response.ts

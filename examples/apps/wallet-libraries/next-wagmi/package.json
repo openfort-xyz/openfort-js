@@ -24,12 +24,9 @@
         "@types/react-dom": "^19.0.3",
         "bufferutil": "^4.0.8",
         "encoding": "^0.1.13",
-        "eslint": "^9.26.0",
-        "eslint-config-next": "^15.1.4",
         "lokijs": "^1.5.12",
         "pino-pretty": "^10.3.1",
         "supports-color": "^10.0.0",
-        "typescript": "^5.7.3",
         "utf-8-validate": "^5.0.2"
     }
 }

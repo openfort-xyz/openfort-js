@@ -35,7 +35,7 @@ export function Account() {
         onClick={async () => {
           setDisconnectTxt('Disconnecting ...');
           if (connector && connector.name.includes('Openfort')) {
-            await openfortInstance.logout();
+            await openfortInstance.auth.logout();
           }
           disconnect();
         }}

@@ -25,7 +25,7 @@ function RegisterPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const sessionData = await openfort.getUser().catch((error: Error) => {
+      const sessionData = await openfort.user.get().catch((error: Error) => {
         console.log("error", error);
       });
       if (sessionData) setUser(sessionData);
@@ -56,7 +56,7 @@ function RegisterPage() {
       title: "Signing up...",
     });
 
-    const data = await openfort
+    const data = await openfort.auth
       .signUpWithEmailPassword({
         email: email,
         password: password,
@@ -73,7 +73,7 @@ function RegisterPage() {
         });
       });
     if (data && "action" in data && data.action === "verify_email") {
-      await openfort.requestEmailVerification({
+      await openfort.auth.requestEmailVerification({
         email: email,
         redirectUrl: getURL() + "/login",
       });
@@ -203,7 +203,7 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.initOAuth({
+                      const { url } = await openfort.auth.initOAuth({
                         provider: OAuthProvider.GOOGLE,
                         options: {
                           redirectTo: getURL() + "/login",
@@ -220,7 +220,7 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.initOAuth({
+                      const { url } = await openfort.auth.initOAuth({
                         provider: OAuthProvider.TWITTER,
                         options: {
                           redirectTo: getURL() + "/login",
@@ -237,7 +237,7 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.initOAuth({
+                      const { url } = await openfort.auth.initOAuth({
                         provider: OAuthProvider.FACEBOOK,
                         options: {
                           redirectTo: getURL() + "/login",

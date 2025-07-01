@@ -20,7 +20,7 @@ const BackendMintButton: React.FC<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${openfort.getAccessToken()}`,
+        Authorization: `Bearer ${await openfort.getAccessToken()}`,
       },
     });
 
@@ -39,7 +39,7 @@ const BackendMintButton: React.FC<{
       throw new Error('Failed to sign message with session key');
     }
 
-    const response = await openfort.sendSignatureTransactionIntentRequest(
+    const response = await openfort.proxy.sendSignatureTransactionIntentRequest(
       collectResponseJSON.transactionIntentId,
       null,
       signature

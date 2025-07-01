@@ -1,38 +1,14 @@
-import { Openfort } from './openfort';
+// Export all types and interfaces
+export * from './types';
 
-export { OpenfortError, OpenfortErrorType } from './errors/openfortError';
-export { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js';
-export {
-  InitializeOAuthOptions,
-  EmbeddedState,
-  ThirdPartyOAuthProvider,
-  BasicAuthProvider,
-  TokenType,
-  OAuthProvider,
-  AuthPlayerResponse,
-  AuthResponse,
-  AuthActionRequiredActions,
-  AuthActionRequiredResponse,
-  InitAuthResponse,
-  AuthType,
-  SessionResponse,
-  TransactionIntentResponse,
-  SDKOverrides,
-  RecoveryMethod,
-} from './types';
-export { ShieldAuthentication, ShieldAuthType } from './iframe/types';
-export {
-  MissingRecoveryPasswordError, MissingProjectEntropyError, WrongRecoveryPasswordError, NotConfiguredError,
-} from './iframe/iframeManager';
-export { Provider, TypedDataPayload } from './evm/types';
-export { SDKConfiguration, OpenfortConfiguration, ShieldConfiguration } from './config';
+// Export main SDK classes
+export { Openfort } from './core/openfort';
 
-// Named export (tree-shakable)
-export { Openfort } from './openfort';
+// Export API namespaces
+export { AuthApi } from './api/auth';
+export { EmbeddedWalletApi } from './api/embeddedWallet';
+export { UserApi } from './api/user';
+export { ProxyApi } from './api/proxy';
 
-/**
- * @deprecated Use named imports instead: `import { Openfort } from '...'`
- */
-const DEPRECATED_OPENFORT = Openfort;
-
-export default DEPRECATED_OPENFORT;
+// Export storage interface
+export { IStorage as Storage } from './storage/istorage';

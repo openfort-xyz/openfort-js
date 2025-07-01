@@ -21,7 +21,7 @@ const EIP1193CreateSessionButton: React.FC<{
     address: `0x${string}`;
     privateKey: `0x${string}`;
   } | null> => {
-    const provider = getEvmProvider();
+    const provider = await getEvmProvider();
     if (!provider) {
       throw new Error('Failed to get EVM provider');
     }

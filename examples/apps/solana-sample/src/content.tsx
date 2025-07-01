@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AuthPlayerResponse, EmbeddedState, ShieldAuthType } from "@openfort/openfort-js"
+import { AuthPlayerResponse, EmbeddedAccount, EmbeddedState, RecoveryMethod, ShieldAuthType } from "@openfort/openfort-js"
 import { PublicKey } from "@solana/web3.js"
 import { CSSProperties, useEffect, useState } from "react"
 import { Login } from "./Login"
@@ -12,17 +12,12 @@ const chainId = 103
 export const Content = () => {
   const [embeddedState, setEmbeddedState] = useState(EmbeddedState.NONE)
   const [user, setUser] = useState<AuthPlayerResponse | null>(null)
-  const [account, setAccount] = useState<{
-    address: string;
-    ownerAddress: string;
-    accountType: string;
-    chainId: number;
-  }>()
-  const [goalChain, setGoalChain] = useState<number>()
+  const [account, setAccount] = useState<EmbeddedAccount>()
+  const [goalChain, setGoalChain] = useState<string>()
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const state = openfort.getEmbeddedState()
+      const state = await openfort.embeddedWallet.getEmbeddedState()
       setEmbeddedState(state)
       console.log(state)
     }, 300)
@@ -30,38 +25,49 @@ export const Content = () => {
     return () => clearInterval(interval)
   }, [])
 
-
   const getUser = async () => {
-    const user = await openfort.getUser()
+    const user = await openfort.user.get()
     setUser(user)
   }
 
   useEffect(() => {
-    if (EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED)
-      if (!user) getUser();
+    const handleEmbeddedState = async () => {
+      if (embeddedState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
+        if (!user) await getUser();
 
-    if (embeddedState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
-      console.log("configuring embedded signer")
-      openfort.configureEmbeddedSigner(chainId, {
-        auth: ShieldAuthType.OPENFORT,
-        token: openfort.getAccessToken()!,
-      }, "whatever")
-    }
+        console.log("configuring embedded signer")
+        openfort.embeddedWallet.configure(
+          { 
+            chainId, 
+            shieldAuthentication: {
+              auth: ShieldAuthType.OPENFORT,
+              token: (await openfort.getAccessToken())!,
+            },
+            recoveryParams: { recoveryMethod: RecoveryMethod.PASSWORD, password: "password" }
+          }
+        )
+      }
 
-    if (embeddedState === EmbeddedState.READY) {
-      openfort.getAccount().then(account =>
-        // console.log(account)
+      if (embeddedState === EmbeddedState.READY) {
+        const account = await openfort.embeddedWallet.get()
         setAccount(account)
-      )
+      }
     }
+
+    handleEmbeddedState()
   }, [embeddedState])
 
-  const configureChain = (chain: number) => {
+  const configureChain = async (chain: string) => {
     setGoalChain(chain)
-    openfort.configureEmbeddedSigner(chain, {
-      auth: ShieldAuthType.OPENFORT,
-      token: openfort.getAccessToken()!,
-    })
+    openfort.embeddedWallet.configure(
+      { 
+        chainId, 
+        shieldAuthentication: {
+          auth: ShieldAuthType.OPENFORT,
+          token: (await openfort.getAccessToken())!,
+        },
+      }
+    )
   }
 
   useEffect(() => {
@@ -69,24 +75,22 @@ export const Content = () => {
 
     let interval: NodeJS.Timeout | undefined
 
-    const startPullAccount = () => {
+    const startPollAccount = () => {
       interval = setInterval(async () => {
-        const account = await openfort.getAccount()
+        const account = await openfort.embeddedWallet.get()
         console.log("polling account", account)
         setAccount(account)
       }, 500)
     }
 
-    if (goalChain !== account?.chainId) {
-      startPullAccount()
+    if (account?.chainId && goalChain !== account.chainId) {
+      startPollAccount()
     }
 
     return () => {
       if (interval) clearInterval(interval)
     }
   }, [goalChain, account?.chainId])
-
-
 
   if (embeddedState === EmbeddedState.NONE || embeddedState === EmbeddedState.UNAUTHENTICATED) {
     return (
@@ -96,7 +100,8 @@ export const Content = () => {
     )
   }
 
-  const isSolana = account?.accountType === "sol";
+  const isSolana = account?.chainType === "solana";
+  
   return (
     <div className="text-white flex flex-col items-center gap-4">
       <p className="text-lg" onClick={() => getUser()}>Openfort user:
@@ -104,11 +109,11 @@ export const Content = () => {
           {user?.id}
         </span>
       </p>
-      <button onClick={() => openfort.logout()}>
+      <button onClick={() => openfort.auth.logout()}>
         Logout
       </button>
       <div className="flex flex-col items-center gap-4 opacity-[var(--opacity)]" style={{ "--opacity": goalChain && goalChain !== account?.chainId ? 0.5 : 1 } as CSSProperties}>
-        <button onClick={() => configureChain(isSolana ? 80002 : 103)}>
+        <button onClick={() => configureChain(isSolana ? '80002' : '103')}>
           Switch to {
             isSolana ? "Polygon" : "Solana"
           }
@@ -116,11 +121,11 @@ export const Content = () => {
         <div className="w-xl">
           {isSolana ? (
             account && (
-              <SolanaExternalSignerComponent publicKey={new PublicKey(account.ownerAddress)} />
+              <SolanaExternalSignerComponent publicKey={new PublicKey(account.ownerAddress!)} />
             )
           ) : (
             <div className="w-full">
-              <h2>{account?.accountType}</h2>
+              <h2>{account?.chainType}</h2>
               <div className="flex flex-col pt-2">
                 <p><strong>Address:</strong> {account?.address}</p>
                 <p><strong>Owner:</strong> {account?.ownerAddress}</p>
@@ -130,6 +135,6 @@ export const Content = () => {
           )}
         </div>
       </div>
-    </div >
+    </div>
   )
 }

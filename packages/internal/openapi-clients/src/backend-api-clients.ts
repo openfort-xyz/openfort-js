@@ -1,12 +1,17 @@
-import globalAxios from 'axios';
-
+import axios, { AxiosInstance } from 'axios';
+import axiosRetry from 'axios-retry';
 import {
   TransactionIntentsApi,
   AccountsApi,
   SessionsApi,
   AuthenticationApi,
 } from './backend';
-import { OpenfortAPIConfiguration } from './config';
+import { OpenfortAPIConfiguration, createConfig, type OpenfortAPIConfigurationOptions } from './config';
+
+export interface BackendApiClientsOptions {
+  basePath: string;
+  accessToken: string;
+}
 
 export class BackendApiClients {
   public config: OpenfortAPIConfiguration;
@@ -19,14 +24,28 @@ export class BackendApiClients {
 
   public authenticationApi: AuthenticationApi;
 
-  constructor(config: OpenfortAPIConfiguration) {
-    // @ts-ignore
-    const axios = globalAxios.default ? globalAxios.default : globalAxios;
+  constructor(options: BackendApiClientsOptions) {
+    const customAxiosInstance: AxiosInstance = axios.create();
 
-    this.config = config;
-    this.transactionIntentsApi = new TransactionIntentsApi(config.backend, undefined, axios);
-    this.accountsApi = new AccountsApi(config.backend, undefined, axios);
-    this.sessionsApi = new SessionsApi(config.backend, undefined, axios);
-    this.authenticationApi = new AuthenticationApi(config.backend, undefined, axios);
+    axiosRetry(customAxiosInstance, {
+      retries: 3,
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: axiosRetry.isRetryableError,
+    });
+
+    const configOptions: OpenfortAPIConfigurationOptions = {
+      basePath: options.basePath,
+      accessToken: options.accessToken,
+    };
+
+    this.config = {
+      backend: createConfig(configOptions),
+    };
+
+    // Pass the custom axios instance to all API constructors
+    this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend, undefined, customAxiosInstance);
+    this.accountsApi = new AccountsApi(this.config.backend, undefined, customAxiosInstance);
+    this.sessionsApi = new SessionsApi(this.config.backend, undefined, customAxiosInstance);
+    this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, customAxiosInstance);
   }
 }

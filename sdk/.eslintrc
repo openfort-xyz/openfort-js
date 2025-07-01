@@ -8,6 +8,15 @@
   },
   "rules": {
     "import/no-extraneous-dependencies": ["off"],
-    "import/export": ["off"]
+    "import/export": ["off"],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "class-methods-use-this": ["off"]
   }
 }

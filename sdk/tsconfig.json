@@ -3,6 +3,7 @@
     "baseUrl": "./src",
     "rootDirs": ["src"],
     "target": "es2022",
+    "lib": ["es2022", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,

@@ -8,15 +8,20 @@ import {
  */
 export type BackendAPIConfiguration = APIConfiguration;
 
-interface Environment {
+export interface Environment {
   basePath: string;
-  accessToken?: string;
+  accessToken: string;
+}
+
+export interface OpenfortAPIConfigurationOptions {
+  basePath: string;
+  accessToken: string;
 }
 
 export const createConfig = ({
   basePath,
   accessToken,
-}: Environment): BackendAPIConfiguration => {
+}: OpenfortAPIConfigurationOptions): BackendAPIConfiguration => {
   if (!basePath.trim()) {
     throw Error('basePath can not be empty');
   }

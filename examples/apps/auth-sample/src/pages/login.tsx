@@ -24,7 +24,7 @@ function LoginPage() {
           email && 
           router.query.state
         ) {
-          await openfort.verifyEmail({
+          await openfort.auth.verifyEmail({
             email: email,
             state: router.query.state as string,
           });
@@ -54,7 +54,7 @@ function LoginPage() {
         type: "loading",
         title: "Signing in...",
       });
-      openfort.storeCredentials({
+      openfort.auth.storeCredentials({
         player: router.query.player_id as string,
         accessToken: router.query.access_token as string,
         refreshToken: router.query.refresh_token as string,
@@ -65,7 +65,7 @@ function LoginPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const sessionData = await openfort.getUser().catch((error: Error) => {
+      const sessionData = await openfort.user.get().catch((error: Error) => {
         console.log("error", error);
       });
       if (sessionData) setUser(sessionData);
@@ -94,9 +94,10 @@ function LoginPage() {
       title: "Signing in...",
     });
 
-    const data = await openfort
+    const data = await openfort.auth
       .signUpGuest()
       .catch((error) => {
+        console.log("error", error);
         setStatus({
           type: "error",
           title: "Error signing in",
@@ -122,7 +123,7 @@ function LoginPage() {
 
     event.preventDefault();
 
-    const data = await openfort
+    const data = await openfort.auth
       .logInWithEmailPassword({
         email: email,
         password: password,
@@ -239,7 +240,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.initOAuth({
+                      const {url} = await openfort.auth.initOAuth({
                         provider: OAuthProvider.GOOGLE,
                         options: {
                           redirectTo: getURL() + "/login",
@@ -256,7 +257,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.initOAuth({
+                      const {url} = await openfort.auth.initOAuth({
                         provider: OAuthProvider.TWITTER,
                         options: {
                           redirectTo: getURL() + "/login",
@@ -273,7 +274,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.initOAuth({
+                      const {url} = await openfort.auth.initOAuth({
                         provider: OAuthProvider.FACEBOOK,
                         options: {
                           redirectTo: getURL() + "/login",

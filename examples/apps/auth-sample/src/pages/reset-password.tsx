@@ -46,7 +46,7 @@ function ResetPasswordPage() {
       });
       return;
     }
-    await openfort
+    await openfort.auth
       .resetPassword({
         password: password,
         email: email as string,

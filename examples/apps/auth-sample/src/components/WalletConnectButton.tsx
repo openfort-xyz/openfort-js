@@ -85,18 +85,18 @@ const WalletConnectButtons = ({
           if (connector.name === 'Openfort') onSuccess();
           if (address) {
             try {
-              const {nonce} = await openfort.initSIWE({address});
+              const {nonce} = await openfort.auth.initSIWE({address});
               const SIWEMessage = createSIWEMessage(address, nonce, chainId);
               const signature = await signMessage(SIWEMessage);
               link
-                ? await openfort.linkWallet({
-                    authToken: openfort.getAccessToken() as string,
+                ? await openfort.auth.linkWallet({
+                    authToken: (await openfort.getAccessToken()) as string,
                     signature,
                     message: SIWEMessage,
                     connectorType: connector?.type,
                     walletClientType: connector?.name,
                   })
-                : await openfort.authenticateWithSIWE({
+                : await openfort.auth.authenticateWithSIWE({
                     signature,
                     message: SIWEMessage,
                     connectorType: connector?.type,

@@ -18,7 +18,7 @@ function ForgotPasswordPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const sessionData = await openfort.getUser().catch((error: Error) => {
+      const sessionData = await openfort.user.get().catch((error: Error) => {
         console.log("error", error);
       });
       if (sessionData) setUser(sessionData);
@@ -46,7 +46,7 @@ function ForgotPasswordPage() {
 
     event.preventDefault();
     localStorage.setItem("openfort:email", email);
-    await openfort
+    await openfort.auth
       .requestResetPassword({
         email: email,
         redirectUrl: getURL() + "/reset-password",

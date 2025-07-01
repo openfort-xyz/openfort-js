@@ -3,12 +3,15 @@ export enum StorageKeys {
   SIGNER = 'openfort.signer',
   CONFIGURATION = 'openfort.configuration',
   ACCOUNT = 'openfort.account',
+  TEST = 'openfort.test',
   RECOVERY = 'openfort.recovery',
   SESSION = 'openfort.session',
+  PKCE_STATE = 'openfort.pkce_state',
+  PKCE_VERIFIER = 'openfort.pkce_verifier',
 }
 
 export interface IStorage {
-  get(key: StorageKeys): string | null;
+  get(key: StorageKeys): Promise<string | null>;
   save(key: StorageKeys, value: string): void;
   remove(key: StorageKeys): void;
   flush(): void;

@@ -18,7 +18,7 @@ function Authenticate() {
   useEffect(() => {
     if (openfortInstance) {
       setIsProcessing(true);
-      openfortInstance.getUser().then((user) => {
+      openfortInstance.user.get().then((user) => {
         if(user) {
           setShowRecoveryPasswordInput(true);
         }
@@ -76,13 +76,13 @@ function Authenticate() {
 
     try {
       if (isLogin) {
-        await openfortInstance.logInWithEmailPassword({
+        await openfortInstance.auth.logInWithEmailPassword({
           email: formData.email,
           password: formData.password,
         });
         console.log('User logged in successfully');
       } else {
-        await openfortInstance.signUpWithEmailPassword({
+        await openfortInstance.auth.signUpWithEmailPassword({
           email: formData.email,
           password: formData.password,
         });

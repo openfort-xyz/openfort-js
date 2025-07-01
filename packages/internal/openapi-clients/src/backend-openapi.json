@@ -2338,11 +2338,6 @@
             "description": "The URL sent to the user by email to reset the password. At the end of the URL, we will add the token in the format `?token=token`.",
             "example": "https://openfort.xyz/reset-password"
           },
-          "state": {
-            "type": "string",
-            "description": "Unique value to identify the request. It's used to mitigate CSRF attacks.",
-            "example": "515151"
-          },
           "challenge": {
             "$ref": "#/components/schemas/CodeChallenge",
             "description": "The Code Challenge if you want to use PKCE."
@@ -2369,8 +2364,7 @@
           },
           "state": {
             "type": "string",
-            "description": "Unique value to identify the request. It's used to mitigate CSRF attacks.",
-            "example": "515151"
+            "description": "Unique value to identify the request. It's used to mitigate CSRF attacks."
           },
           "challenge": {
             "$ref": "#/components/schemas/CodeChallengeVerify",
@@ -2402,8 +2396,7 @@
         "properties": {
           "refreshToken": {
             "type": "string",
-            "description": "Specifies the session refresh token.",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            "description": "Specifies the session refresh token."
           },
           "forceRefresh": {
             "type": "boolean",
@@ -2421,8 +2414,7 @@
         "properties": {
           "refreshToken": {
             "type": "string",
-            "description": "Specifies the refresh token.",
-            "example": "60b329f3-8e8d-49db-bf21-50c251269db2"
+            "description": "Specifies the refresh token."
           }
         },
         "required": [
@@ -3718,7 +3710,7 @@
           "documentationUrl": {
             "type": "string",
             "description": "Documentation URL of the ecosystem.",
-            "example": "https://www.openfort.xyz/docs"
+            "example": "https://www.openfort.io/docs"
           }
         },
         "required": [
@@ -3828,7 +3820,7 @@
           "documentationUrl": {
             "type": "string",
             "description": "Documentation URL of the ecosystem.",
-            "example": "https://www.openfort.xyz/docs"
+            "example": "https://www.openfort.io/docs"
           }
         },
         "required": [
@@ -4376,6 +4368,36 @@
         },
         "required": [
           "name"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AllowedOriginsResponse": {
+        "properties": {
+          "allowedOrigins": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "allowedOrigins"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AllowedOriginsRequest": {
+        "properties": {
+          "allowedOrigins": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "allowedOrigins"
         ],
         "type": "object",
         "additionalProperties": false

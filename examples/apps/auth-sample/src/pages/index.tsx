@@ -36,7 +36,7 @@ const HomePage: NextPage = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const sessionData = await openfort.getUser().catch((error: Error) => {
+      const sessionData = await openfort.user.get().catch((error: Error) => {
         console.log("error", error);
       });
       if (sessionData) {
@@ -106,8 +106,34 @@ const HomePage: NextPage = () => {
 
   if (state !== EmbeddedState.READY) {
     return (
-      <Layout sidebar={<div />}>
+      <Layout 
+        sidebar={
+          <>
+            <div className="flex-1 w-full" />
+            <div className="p-6 mb-14 border-t bg-white">
+              <p className="text-sm text-gray-600 mb-4">
+                Openfort gives you modular components so you can customize your
+                product for your users.
+                <a
+                  href="https://www.openfort.io/docs/guides/getting-started"
+                  className="text-blue-600 hover:underline"
+                >
+                  Learn more
+                </a>
+                .
+              </p>
+              <div className="flex gap-3">
+                <LogoutButton />
+              </div>
+            </div>
+          </>
+        }>
         <Loading />
+        {state === EmbeddedState.CREATING_ACCOUNT && (
+          <p className="text-gray-500 text-center">
+            Creating your account, please wait...
+          </p>
+        )}
       </Layout>
     );
   }

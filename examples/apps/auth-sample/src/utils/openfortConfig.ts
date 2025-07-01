@@ -2,8 +2,8 @@ import { Openfort } from '@openfort/openfort-js';
 
 
 export const shieldUrl = process.env.NEXT_PUBLIC_SHIELD_URL ?? 'https://shield.openfort.xyz';
-export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'https://api.openfort.xyz';
-export const iframeUrl = process.env.NEXT_PUBLIC_IFRAME_URL ?? 'https://embedded.openfort.xyz';
+export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+export const iframeUrl = process.env.NEXT_PUBLIC_IFRAME_URL;
 
 const openfort = new Openfort({
   baseConfiguration: {
@@ -11,6 +11,7 @@ const openfort = new Openfort({
   },
   shieldConfiguration: {
     shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+    debug: true,
   },
   overrides: {
     shieldUrl: shieldUrl,
