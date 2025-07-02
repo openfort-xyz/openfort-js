@@ -2,7 +2,7 @@ import {
   PenpalError, WindowMessenger, connect, type Connection,
 } from 'penpal';
 import type { RecoveryMethod } from '../types/types';
-import { IStorage, StorageKeys } from '../storage/istorage';
+import { IStorage } from '../storage/istorage';
 import { randomUUID } from '../utils/crypto';
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
 import type { SDKConfiguration } from '../core/config/config';
@@ -263,23 +263,16 @@ export class IframeManager {
       shieldURL: this.sdkConfiguration.shieldUrl,
     };
 
-    try {
-      const response = await remote.configure(config);
+    const response = await remote.configure(config);
 
-      if (isErrorResponse(response)) {
-        IframeManager.handleError(response);
-      }
-
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('iframe-version', (response as ConfigureResponse).version ?? 'undefined');
-      }
-      return response as ConfigureResponse;
-    } catch (e) {
-      if (e instanceof WrongRecoveryPasswordError || e instanceof MissingRecoveryPasswordError) {
-        this.storage.remove(StorageKeys.SIGNER);
-      }
-      throw e;
+    if (isErrorResponse(response)) {
+      IframeManager.handleError(response);
     }
+
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('iframe-version', (response as ConfigureResponse).version ?? 'undefined');
+    }
+    return response as ConfigureResponse;
   }
 
   async sign(

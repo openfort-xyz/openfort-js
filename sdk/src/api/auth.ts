@@ -237,7 +237,6 @@ export class AuthApi {
     await this.ensureInitialized();
     const signer = await SignerManager.fromStorage(this.storage);
     this.storage.remove(StorageKeys.AUTHENTICATION);
-    this.storage.remove(StorageKeys.SIGNER);
     this.storage.remove(StorageKeys.ACCOUNT);
     if (signer) {
       await signer.logout();

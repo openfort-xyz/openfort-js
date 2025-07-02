@@ -62,7 +62,6 @@ export class EmbeddedSigner implements Signer {
   async logout(): Promise<void> {
     await this.iframeManager.logout();
     this.storage.remove(StorageKeys.RECOVERY);
-    this.storage.remove(StorageKeys.SIGNER);
   }
 
   async updateAuthentication(): Promise<void> {

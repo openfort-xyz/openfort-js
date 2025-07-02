@@ -96,7 +96,6 @@ export class EvmProvider implements Provider {
     signer?.logout();
     this.#storage.remove(StorageKeys.ACCOUNT);
     this.#storage.remove(StorageKeys.AUTHENTICATION);
-    this.#storage.remove(StorageKeys.SIGNER);
 
     if (shouldEmitAccountsChanged) {
       this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
