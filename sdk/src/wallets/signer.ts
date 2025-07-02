@@ -9,11 +9,6 @@ import { Signer } from './isigner';
 import { EmbeddedSigner, Entropy } from './embedded';
 import { Account } from '../core/configuration/account';
 
-export interface SignerConfiguration {
-  type: 'embedded';
-  chainId: number | null;
-}
-
 // IframeManager instances are cached by storage instance
 const iframeManagerCache = new WeakMap<IStorage, IframeManager>();
 
@@ -23,16 +18,13 @@ export class SignerManager {
       throw new OpenfortError('Storage is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
-    const signerData = await storage.get(StorageKeys.SIGNER);
-    if (!signerData) {
+    const accountData = await storage.get(StorageKeys.ACCOUNT);
+    if (!accountData) {
       return null;
     }
 
-    const signerConfiguration: SignerConfiguration = JSON.parse(signerData);
-    if (signerConfiguration.type === 'embedded') {
-      return this.embeddedFromStorage(storage, signerConfiguration.chainId);
-    }
-    return null;
+    const account: Account = JSON.parse(accountData);
+    return this.embeddedFromStorage(storage, account.chainId);
   }
 
   private static async embeddedFromStorage(storage: IStorage, chainId: number | null): Promise<Signer | null> {
@@ -117,12 +109,7 @@ export class SignerManager {
       password: entropy?.recoveryPassword || null,
     };
 
-    const signerConfiguration: SignerConfiguration = {
-      type: 'embedded',
-      chainId,
-    };
     const resp = await iframeManager.configure(iframeConfiguration);
-    storage.save(StorageKeys.SIGNER, JSON.stringify(signerConfiguration));
     new Account(resp.address, resp.chainId, resp.ownerAddress, resp.accountType).save(storage);
     return new EmbeddedSigner(iframeManager, iframeConfiguration, storage);
   }
