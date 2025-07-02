@@ -25,7 +25,7 @@ const modules =
   },
   plugins: [
     nodeResolve({
-      resolveOnly: getPackages(),
+      resolveOnly: [...getPackages(), 'penpal'],
     }),
     json(),
     commonJs(),
@@ -67,7 +67,7 @@ const cjs = {
   },
   plugins: [
     nodeResolve({
-      resolveOnly: getPackages(),
+      resolveOnly: [...getPackages(), 'penpal'],
     }),
     json(),
     commonJs(),

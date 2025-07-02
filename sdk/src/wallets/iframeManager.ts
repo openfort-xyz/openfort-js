@@ -150,7 +150,7 @@ export class IframeManager {
     await new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Iframe load timeout'));
-      }, 2000);
+      }, 10000);
 
       iframe.onload = () => {
         clearTimeout(timeout);
