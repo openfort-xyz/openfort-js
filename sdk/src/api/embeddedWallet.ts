@@ -58,7 +58,6 @@ export class EmbeddedWalletApi {
   async configure(
     params: EmbeddedAccountConfigureParams = {},
   ): Promise<EmbeddedAccount> {
-    // Set default recoveryParams if not provided
     const recoveryParams = params.recoveryParams ?? {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
@@ -347,6 +346,6 @@ export class EmbeddedWalletApi {
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
-    return 'http://localhost:5173';
+    return configuration.iframeUrl;
   }
 }
