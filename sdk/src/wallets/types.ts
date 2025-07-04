@@ -39,36 +39,11 @@ export class GetCurrentDeviceRequest implements IEventRequest {
 
   action: Event = Event.GET_CURRENT_DEVICE;
 
-  playerID?: string;
+  playerID: string;
 
-  constructor(uuid: string, playerId?: string) {
+  constructor(uuid: string, playerId: string) {
     this.uuid = uuid;
     this.playerID = playerId;
-  }
-}
-
-export class PingRequest implements IEventRequest {
-  uuid: string;
-
-  action: Event = Event.PING;
-
-  constructor(uuid: string) {
-    this.uuid = uuid;
-  }
-}
-
-export class PongResponse implements IEventResponse {
-  uuid: string;
-
-  success: boolean;
-
-  action: Event = Event.PONG;
-
-  version = VERSION;
-
-  constructor(uuid: string) {
-    this.uuid = uuid;
-    this.success = true;
   }
 }
 

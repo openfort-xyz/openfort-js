@@ -2,9 +2,9 @@ import {
   PenpalError, WindowMessenger, connect, type Connection,
 } from 'penpal';
 import type { RecoveryMethod } from '../types/types';
-import { IStorage } from '../storage/istorage';
+import { IStorage, StorageKeys } from '../storage/istorage';
 import { randomUUID } from '../utils/crypto';
-import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
+import { Data, OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
 import type { SDKConfiguration } from '../core/config/config';
 import {
   type ConfigureRequest,
@@ -194,7 +194,11 @@ export class IframeManager {
       this.isInitialized = true;
     } catch (error) {
       const err = error as PenpalError;
-      throw new Error(`v3 Failed to establish Iframe connection: ${err.cause || err.message}`, err);
+      throw new OpenfortError(
+        `Failed to establish iFrame connection: ${err.cause || err.message}`,
+        OpenfortErrorType.INTERNAL_ERROR,
+        error as Data,
+      );
     }
   }
 
@@ -216,19 +220,21 @@ export class IframeManager {
     }
 
     if (!this.remote) {
-      throw new Error('Failed to establish connection with iframe');
+      throw new OpenfortError('Failed to establish iFrame connection', OpenfortErrorType.INTERNAL_ERROR);
     }
 
     return this.remote;
   }
 
-  private static handleError(error: any): never {
+  private handleError(error: any): never {
     if (isErrorResponse(error)) {
       if (error.error === NOT_CONFIGURED_ERROR) {
         throw new NotConfiguredError();
       } else if (error.error === MISSING_USER_ENTROPY_ERROR) {
+        this.storage.remove(StorageKeys.ACCOUNT);
         throw new MissingRecoveryPasswordError();
       } else if (error.error === MISSING_PROJECT_ENTROPY_ERROR) {
+        this.storage.remove(StorageKeys.ACCOUNT);
         throw new MissingProjectEntropyError();
       } else if (error.error === INCORRECT_USER_ENTROPY_ERROR) {
         throw new WrongRecoveryPasswordError();
@@ -266,7 +272,7 @@ export class IframeManager {
     const response = await remote.configure(config);
 
     if (isErrorResponse(response)) {
-      IframeManager.handleError(response);
+      this.handleError(response);
     }
 
     if (typeof sessionStorage !== 'undefined') {
@@ -303,7 +309,7 @@ export class IframeManager {
       const response = await remote.sign(request);
 
       if (isErrorResponse(response)) {
-        IframeManager.handleError(response);
+        this.handleError(response);
       }
 
       if (typeof sessionStorage !== 'undefined') {
@@ -343,7 +349,7 @@ export class IframeManager {
       const response = await remote.switchChain(request);
 
       if (isErrorResponse(response)) {
-        IframeManager.handleError(response);
+        this.handleError(response);
       }
 
       if (typeof sessionStorage !== 'undefined') {
@@ -379,7 +385,7 @@ export class IframeManager {
       const response = await remote.export(request);
 
       if (isErrorResponse(response)) {
-        IframeManager.handleError(response);
+        this.handleError(response);
       }
 
       if (typeof sessionStorage !== 'undefined') {
@@ -424,7 +430,7 @@ export class IframeManager {
       const response = await remote.setRecoveryMethod(request);
 
       if (isErrorResponse(response)) {
-        IframeManager.handleError(response);
+        this.handleError(response);
       }
 
       if (typeof sessionStorage !== 'undefined') {
@@ -448,7 +454,7 @@ export class IframeManager {
       const response = await remote.getCurrentDevice(request);
 
       if (isErrorResponse(response)) {
-        IframeManager.handleError(response);
+        this.handleError(response);
       }
 
       if (typeof sessionStorage !== 'undefined') {

@@ -35,7 +35,7 @@ export interface AccountCreateRequest {
 }
 
 export const AccountCreateRequestAccountTypeEnum = {
-    Sol: 'sol'
+    Solana: 'solana'
 } as const;
 
 export type AccountCreateRequestAccountTypeEnum = typeof AccountCreateRequestAccountTypeEnum[keyof typeof AccountCreateRequestAccountTypeEnum];
