@@ -88,13 +88,8 @@ export class SDKConfiguration {
       const testKey = StorageKeys.TEST;
       const testValue = 'openfort_storage_test';
 
-      // Test write
       storage.save(testKey, testValue);
-
-      // Test read
       const retrieved = await storage.get(testKey);
-
-      // Test remove
       storage.remove(testKey);
 
       // Verify the value was correctly stored and retrieved

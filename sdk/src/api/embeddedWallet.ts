@@ -175,9 +175,9 @@ export class EmbeddedWalletApi {
         id: auth.player,
       },
       address: account.address,
-      ownerAddress: account.ownerAddress,
-      chainType: 'ethereum',
-      implementationType: account.type,
+      ownerAddress: account.type === 'solana' ? undefined : account.ownerAddress,
+      chainType: account.type === 'solana' ? 'solana' : 'ethereum',
+      implementationType: account.type === 'solana' ? undefined : account.type,
     };
   }
 

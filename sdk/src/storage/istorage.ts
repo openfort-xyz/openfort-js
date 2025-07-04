@@ -1,6 +1,5 @@
 export enum StorageKeys {
   AUTHENTICATION = 'openfort.authentication',
-  SIGNER = 'openfort.signer',
   CONFIGURATION = 'openfort.configuration',
   ACCOUNT = 'openfort.account',
   TEST = 'openfort.test',

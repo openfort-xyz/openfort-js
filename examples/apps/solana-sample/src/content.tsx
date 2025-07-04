@@ -6,9 +6,6 @@ import { Login } from "./Login"
 import { openfort } from "./openfort"
 import SolanaExternalSignerComponent from "./solana"
 
-// const chainId = 80002
-const chainId = 103
-
 export const Content = () => {
   const [embeddedState, setEmbeddedState] = useState(EmbeddedState.NONE)
   const [user, setUser] = useState<AuthPlayerResponse | null>(null)
@@ -19,7 +16,7 @@ export const Content = () => {
     const interval = setInterval(async () => {
       const state = await openfort.embeddedWallet.getEmbeddedState()
       setEmbeddedState(state)
-      console.log(state)
+      console.log(`Embedded Wallet state: ${state}`)
     }, 300)
 
     return () => clearInterval(interval)
@@ -27,6 +24,7 @@ export const Content = () => {
 
   const getUser = async () => {
     const user = await openfort.user.get()
+    console.log("User:", user)
     setUser(user)
   }
 
@@ -36,9 +34,9 @@ export const Content = () => {
         if (!user) await getUser();
 
         console.log("configuring embedded signer")
-        openfort.embeddedWallet.configure(
+        await openfort.embeddedWallet.configure(
           { 
-            chainId, 
+            chainId:103, 
             shieldAuthentication: {
               auth: ShieldAuthType.OPENFORT,
               token: (await openfort.getAccessToken())!,
@@ -59,9 +57,9 @@ export const Content = () => {
 
   const configureChain = async (chain: string) => {
     setGoalChain(chain)
-    openfort.embeddedWallet.configure(
+    await openfort.embeddedWallet.configure(
       { 
-        chainId, 
+        chainId: parseInt(chain), 
         shieldAuthentication: {
           auth: ShieldAuthType.OPENFORT,
           token: (await openfort.getAccessToken())!,
@@ -99,7 +97,7 @@ export const Content = () => {
       </div>
     )
   }
-
+  console.log("Embedded wallet:", account)
   const isSolana = account?.chainType === "solana";
   
   return (
@@ -121,14 +119,14 @@ export const Content = () => {
         <div className="w-xl">
           {isSolana ? (
             account && (
-              <SolanaExternalSignerComponent publicKey={new PublicKey(account.ownerAddress!)} />
+              <SolanaExternalSignerComponent publicKey={new PublicKey(account.address)} />
             )
           ) : (
             <div className="w-full">
               <h2>{account?.chainType}</h2>
               <div className="flex flex-col pt-2">
                 <p><strong>Address:</strong> {account?.address}</p>
-                <p><strong>Owner:</strong> {account?.ownerAddress}</p>
+                {account?.ownerAddress && <p><strong>Owner:</strong> {account.ownerAddress}</p>}
                 <p><strong>Chain id:</strong> {account?.chainId}</p>
               </div>
             </div>
