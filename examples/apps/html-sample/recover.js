@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     shieldConfiguration: {
       shieldPublishableKey: 'a4b75269-65e7-49c4-a600-6b5d9d6eec66',
       shieldEncryptionKey: '/cC/ElEv1bCHxvbE/UUH+bLIf8nSLZOrxj8TkKChiY4=',
+      debug:true
     },
   });
 
@@ -53,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     addMessage('Recovery process completed.');
 
-    const embeddedState = openfort.embeddedWallet.getEmbeddedState();
+    const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
     if (embeddedState === 4) {
       window.location.href = 'signature.html';
     }

@@ -32,6 +32,7 @@ import {
   SwitchChainRequest,
   SwitchChainResponse,
 } from './types';
+import { sentry } from '../core/errors/sentry';
 
 export interface IframeConfiguration {
   thirdPartyTokenType: string | null;
@@ -194,6 +195,7 @@ export class IframeManager {
       this.isInitialized = true;
     } catch (error) {
       const err = error as PenpalError;
+      sentry.captureException(err);
       throw new OpenfortError(
         `Failed to establish iFrame connection: ${err.cause || err.message}`,
         OpenfortErrorType.INTERNAL_ERROR,
