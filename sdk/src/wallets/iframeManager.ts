@@ -142,26 +142,35 @@ export class IframeManager {
     }
 
     const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
     iframe.id = 'openfort-iframe';
-    document.body.appendChild(iframe);
+    iframe.style.display = 'none';
     iframe.src = this.sdkConfiguration.iframeUrl;
+
+    // Append to document
+    document.body.appendChild(iframe);
     this.iframe = iframe;
 
+    let timeout: number | null = null;
+
+    // Wait for postmessage of the iframe
     await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Iframe load timeout'));
+      const onMessage = (event: MessageEvent) => {
+        const isValidOrigin = new URL(this.sdkConfiguration.iframeUrl).origin === event.origin;
+        const isReadyMessage = event.data?.type === 'iframe-ready';
+
+        if (isValidOrigin && isReadyMessage) {
+          if (timeout) clearTimeout(timeout);
+          window.removeEventListener('message', onMessage);
+          resolve();
+        }
+      };
+
+      timeout = window.setTimeout(() => {
+        window.removeEventListener('message', onMessage);
+        reject(new Error('Iframe handshake timeout'));
       }, 10000);
 
-      iframe.onload = () => {
-        clearTimeout(timeout);
-        resolve();
-      };
-
-      iframe.onerror = () => {
-        clearTimeout(timeout);
-        reject(new Error('Failed to load iframe'));
-      };
+      window.addEventListener('message', onMessage);
     });
   }
 
