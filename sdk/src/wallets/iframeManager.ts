@@ -156,18 +156,17 @@ export class IframeManager {
     await new Promise<void>((resolve, reject) => {
       const onMessage = (event: MessageEvent<{ status: 'ready' | 'error' }>) => {
         const isValidOrigin = new URL(this.sdkConfiguration.iframeUrl).origin === event.origin;
-        if (!isValidOrigin) return;
 
-        if (event.data.status === 'ready') {
-          if (timeout) clearTimeout(timeout);
-          window.removeEventListener('message', onMessage);
-          resolve();
-        }
-
-        if (event.data.status === 'error') {
+        if (!isValidOrigin || event.data.status === 'error') {
           if (timeout) clearTimeout(timeout);
           window.removeEventListener('message', onMessage);
           reject();
+        }
+
+        if (isValidOrigin && event.data.status === 'ready') {
+          if (timeout) clearTimeout(timeout);
+          window.removeEventListener('message', onMessage);
+          resolve();
         }
       };
 
