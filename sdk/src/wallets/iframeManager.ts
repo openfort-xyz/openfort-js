@@ -154,14 +154,20 @@ export class IframeManager {
 
     // Wait for postmessage of the iframe
     await new Promise<void>((resolve, reject) => {
-      const onMessage = (event: MessageEvent) => {
+      const onMessage = (event: MessageEvent<{ status: 'ready' | 'error' }>) => {
         const isValidOrigin = new URL(this.sdkConfiguration.iframeUrl).origin === event.origin;
-        const isReadyMessage = event.data?.type === 'iframe-ready';
+        if (!isValidOrigin) return;
 
-        if (isValidOrigin && isReadyMessage) {
+        if (event.data.status === 'ready') {
           if (timeout) clearTimeout(timeout);
           window.removeEventListener('message', onMessage);
           resolve();
+        }
+
+        if (event.data.status === 'error') {
+          if (timeout) clearTimeout(timeout);
+          window.removeEventListener('message', onMessage);
+          reject();
         }
       };
 
