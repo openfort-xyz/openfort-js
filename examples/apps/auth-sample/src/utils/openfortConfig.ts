@@ -1,7 +1,7 @@
 import { Openfort } from '@openfort/openfort-js';
 
 
-export const shieldUrl = process.env.NEXT_PUBLIC_SHIELD_URL ?? 'https://shield.openfort.xyz';
+export const shieldUrl = process.env.NEXT_PUBLIC_SHIELD_URL ?? 'https://shield.openfort.io';
 export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 export const iframeUrl = process.env.NEXT_PUBLIC_IFRAME_URL;
 
