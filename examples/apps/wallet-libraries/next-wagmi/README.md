@@ -19,7 +19,9 @@ yarn build
 ```sh
 # In your terminal, create .env.local from .env.example
 cp .env.example .env.local
+```
 
+```sh
 # Add your Openfort keys to .env.local
 NEXTAUTH_OPENFORT_SECRET_KEY=
 NEXT_PUBLIC_OPENFORT_PUBLIC_KEY=
