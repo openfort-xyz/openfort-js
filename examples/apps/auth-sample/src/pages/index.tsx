@@ -173,9 +173,9 @@ const HomePage: NextPage = () => {
         </>
       }
     >
-      <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
+      <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6 pb-8">
         <p className="text-gray-400 mb-2">Welcome, {user?.id}!</p>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <AccountActions handleSetMessage={handleSetMessage} />
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
             <h2 className="flex justify-left font-medium text-xl pb-4">
