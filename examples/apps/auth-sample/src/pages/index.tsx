@@ -75,7 +75,7 @@ const HomePage: NextPage = () => {
               Openfort gives you modular components so you can customize your
               product for your users.
               <a
-                href="https://www.openfort.io/docs/guides/getting-started"
+                href="https://www.openfort.io/docs/products/embedded-wallet"
                 className="text-blue-600 hover:underline"
               >
                 Learn more
@@ -119,7 +119,7 @@ const HomePage: NextPage = () => {
                 Openfort gives you modular components so you can customize your
                 product for your users.
                 <a
-                  href="https://www.openfort.io/docs/guides/getting-started"
+                  href="https://www.openfort.io/docs/products/embedded-wallet"
                   className="text-blue-600 hover:underline"
                 >
                   Learn more
@@ -163,7 +163,7 @@ const HomePage: NextPage = () => {
               Openfort gives you modular components so you can customize your
               product for your users.
               <a
-                href="https://www.openfort.io/docs/guides/getting-started"
+                href="https://www.openfort.io/docs/products/embedded-wallet"
                 className="text-blue-600 hover:underline"
               >
                 Learn more
