@@ -43,8 +43,10 @@ export const InformationToast: React.FC<InformationToastProps> = ({
               <ToastPrimitive.Title className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {status.title}
               </ToastPrimitive.Title>
-              <ToastPrimitive.Description className="mt-1 text-sm text-gray-700 dark:text-gray-400">
-                {status.description}
+              <ToastPrimitive.Description asChild >
+                <pre className='className="m-0 text-sm text-gray-700 bg-gray-100 p-2 rounded-lg dark:text-gray-400 whitespace-pre-wrap max-w-full break-all'>
+                  {status.description}
+                </pre>
               </ToastPrimitive.Description>
             </div>
           )}

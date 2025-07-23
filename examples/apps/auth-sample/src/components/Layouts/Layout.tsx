@@ -1,6 +1,8 @@
+import { cn } from "@/lib/utils";
+import { Cross1Icon, GitHubLogoIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { useState } from "react";
 import { Logo } from "../Logo";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 export function Layout({
   sidebar,
@@ -9,16 +11,30 @@ export function Layout({
   sidebar: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <header className="sticky top-0 z-50 bg-white border-b">
         <div className="flex justify-between items-center p-4">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 overflow-hidden">
+            <button
+              className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Toggle sidebar"
+            >
+              {
+                sidebarOpen ?
+                  <Cross1Icon className="size-4" /> :
+                  <HamburgerMenuIcon className="size-4" />
+              }
+            </button>
+
             <Link href="/" aria-label="Home">
               <Logo className="h-8 w-auto md:flex hidden" />
             </Link>
-            <span className="text-gray-300 md:flex hidden">-</span>
-            <p className="font-mono text-orange-600 font-medium pt-2">
+            <span className="text-gray-300 md:flex hidden md:pt-2">-</span>
+            <p className="font-mono text-orange-600 font-medium md:pt-2 whitespace-nowrap truncate">
               Embedded Smart Wallet
             </p>
           </div>
@@ -41,12 +57,17 @@ export function Layout({
           </div>
         </div>
       </header>
-      <main className="h-screen flex">
-        <div className="w-full md:w-1/4 hidden md:flex max-w-sm bg-white border-r flex-col h-screen fixed">
+      <main className="h-full flex w-full overflow-hidden">
+        <div className={cn(
+          sidebarOpen ? "flex fixed w-screen" : "hidden",
+          "w-xs md:flex md:max-w-sm lg:shrink-0 bg-white border-r flex-col h-full 2xl:fixed min-h-screen z-50"
+        )}>
           {sidebar}
         </div>
-        <div className="w-full my-4">{children}</div>
+        <div className="w-full py-4 mx-auto overflow-auto">
+          {children}
+        </div>
       </main>
-    </>
+    </div>
   );
 }
