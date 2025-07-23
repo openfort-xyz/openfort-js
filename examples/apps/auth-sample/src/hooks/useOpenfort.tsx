@@ -103,7 +103,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     const externalProvider = await openfort.embeddedWallet.getEthereumProvider({
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
       chains: {
-        [polygonAmoy.id]: "https://polygon-amoy.gateway.tenderly.co",
+        [polygonAmoy.id]: "https://rpc-amoy.polygon.technology",
       }
     });
     if (!externalProvider) {
