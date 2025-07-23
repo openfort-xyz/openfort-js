@@ -86,8 +86,6 @@ const EIP1193MintButton: React.FC<{
         tx = await walletClient.writeContract(request)
         console.log('Transaction hash:', tx);
         handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
-        const receipt = await publicClient.waitForTransactionReceipt({hash: tx});
-        console.log('Transaction receipt:', receipt);
       } catch (error) {
         console.log('Error:', error);
         handleSetMessage('Failed to send transaction: ' + (error as BaseError).details);

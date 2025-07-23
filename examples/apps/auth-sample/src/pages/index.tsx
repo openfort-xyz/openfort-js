@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
 import AccountActions from "@/components/AccountActions/AccountActions";
 import Link from "next/link";
+import { StatusType, Toast } from "@/components/Toasts";
 
 const HomePage: NextPage = () => {
   const { state } = useOpenfort();
@@ -28,9 +29,12 @@ const HomePage: NextPage = () => {
   const router = useRouter();
   const [message, setMessage] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [status, setStatus] = useState<StatusType>(null);
 
   const handleSetMessage = (message: string) => {
     const newMessage = `> ${message} \n\n`;
+    if (window.innerWidth < 768)
+      setStatus({ type: "information", description: "> " + message });
     setMessage((prev) => newMessage + prev);
   };
 
@@ -57,7 +61,7 @@ const HomePage: NextPage = () => {
                 Explore Openfort
               </p>
               <p className='text-gray-500'>
-              Sign in to the demo to access the dev tools.
+                Sign in to the demo to access the dev tools.
               </p>
               <Button variant={'outline'} size={'sm'} className="mt-2">
                 <Link href='https://www.openfort.io/docs' target="_blank">
@@ -106,7 +110,7 @@ const HomePage: NextPage = () => {
 
   if (state !== EmbeddedState.READY) {
     return (
-      <Layout 
+      <Layout
         sidebar={
           <>
             <div className="flex-1 w-full" />
@@ -149,7 +153,7 @@ const HomePage: NextPage = () => {
           <div className="flex-1 w-full">
             <textarea
               ref={textareaRef}
-              className="no-scrollbar h-full w-full border-0 bg-gray-100 p-4 font-mono text-xs text-black"
+              className="no-scrollbar h-full w-full border-0 bg-gray-100 p-4 font-mono text-xs text-black resize-none focus:ring-0"
               value={message}
               readOnly
             />
@@ -267,6 +271,7 @@ const HomePage: NextPage = () => {
           </div>
         </div>
       </div>
+      <Toast status={status} setStatus={setStatus} />
     </Layout>
   );
 };
