@@ -2337,7 +2337,6 @@ __metadata:
     jest-environment-jsdom: ^29.4.3
     jose: ^5.2.2
     parcel: ^2.15.0
-    penpal: ^7.0.4
     prettier: ^2.8.8
     rimraf: ^2.6.2
     rollup: ^3.17.2

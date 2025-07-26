@@ -5,58 +5,53 @@ import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
 import { Recovery } from '../core/configuration/recovery';
 import { ShieldAuthType } from './types';
 import type { Signer } from './isigner';
-import type { IframeConfiguration, IframeManager } from './iframeManager';
+import type { IframeManager } from './iframeManager';
 import { type IStorage, StorageKeys } from '../storage/istorage';
 
-export interface Entropy {
-  encryptionSession: string | null;
-  recoveryPassword: string | null;
-  encryptionPart: string | null;
-}
-
 export class EmbeddedSigner implements Signer {
-  iframeManager: IframeManager;
-
-  iframeConfiguration: IframeConfiguration;
-
-  storage: IStorage;
-
-  constructor(iframeManager: IframeManager, iframeConfiguration: IframeConfiguration, storage: IStorage) {
-    this.iframeManager = iframeManager;
-    this.iframeConfiguration = iframeConfiguration;
-    this.storage = storage;
-  }
+  constructor(
+    private readonly iframeManager: IframeManager,
+    private readonly storage: IStorage,
+  ) { }
 
   async sign(
     message: Uint8Array | string,
     requireArrayify?: boolean,
     requireHash?: boolean,
   ): Promise<string> {
-    return await this.iframeManager.sign(this.iframeConfiguration, message, requireArrayify, requireHash);
+    return await this.iframeManager.sign(message, requireArrayify, requireHash);
   }
 
   async export(): Promise<string> {
-    return await this.iframeManager.export(this.iframeConfiguration);
+    return await this.iframeManager.export();
   }
 
-  async switchChain(
-    { chainId }: { chainId: number },
-  ): Promise<void> {
-    const deviceAccount = await this.iframeManager
-      .switchChain(this.iframeConfiguration, chainId);
+  async switchChain({ chainId }: { chainId: number }): Promise<void> {
+    const response = await this.iframeManager.switchChain(chainId);
+
+    // Update stored account with new chain info
     new Account(
-      deviceAccount.address,
-      deviceAccount.chainId,
-      deviceAccount.ownerAddress,
-      deviceAccount.accountType,
+      response.address,
+      response.chainId,
+      response.ownerAddress,
+      response.accountType,
     ).save(this.storage);
   }
 
-  async setEmbeddedRecovery({ recoveryMethod, recoveryPassword, encryptionSession }: {
-    recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string
+  async setEmbeddedRecovery({
+    recoveryMethod,
+    recoveryPassword,
+    encryptionSession,
+  }: {
+    recoveryMethod: RecoveryMethod;
+    recoveryPassword?: string;
+    encryptionSession?: string;
   }): Promise<void> {
-    await this.iframeManager
-      .setEmbeddedRecovery(this.iframeConfiguration, recoveryMethod, recoveryPassword, encryptionSession);
+    await this.iframeManager.setEmbeddedRecovery(
+      recoveryMethod,
+      recoveryPassword,
+      encryptionSession,
+    );
   }
 
   async logout(): Promise<void> {
@@ -75,10 +70,13 @@ export class EmbeddedSigner implements Signer {
 
     const recovery = await Recovery.fromStorage(this.storage);
     if (!recovery) {
-      throw new OpenfortError('Must have recovery to update authentication', OpenfortErrorType.INVALID_CONFIGURATION);
+      throw new OpenfortError(
+        'Must have recovery to update authentication',
+        OpenfortErrorType.INVALID_CONFIGURATION,
+      );
     }
+
     await this.iframeManager.updateAuthentication(
-      this.iframeConfiguration,
       authentication.token,
       recovery.type === 'openfort' ? ShieldAuthType.OPENFORT : ShieldAuthType.CUSTOM,
     );

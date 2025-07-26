@@ -19,13 +19,13 @@
       X
     </a>
         <span> | </span>
-    <a href="https://create-next-app.openfort.xyz/">
+    <a href="https://create-next-app.openfort.io/">
       Demo
     </a>
   </h4>
 </div>
 
-[banner-image]: https://blog-cms.openfort.xyz/uploads/openfortjs_f52fdc3f2d.png
+[banner-image]: https://blog-cms.openfort.io/uploads/openfortjs_f52fdc3f2d.png
 
 # Openfort JavaScript SDK
 

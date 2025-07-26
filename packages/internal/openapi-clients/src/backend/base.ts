@@ -19,7 +19,7 @@ import type { Configuration } from './configuration';
 import type { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 
-export const BASE_PATH = "https://api.openfort.xyz".replace(/\/+$/, "");
+export const BASE_PATH = "https://api.openfort.io".replace(/\/+$/, "");
 
 /**
  *

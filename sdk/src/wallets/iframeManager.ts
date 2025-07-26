@@ -1,36 +1,41 @@
 import {
-  PenpalError, WindowMessenger, connect, type Connection,
-} from 'penpal';
-import type { RecoveryMethod } from '../types/types';
+  connect, Message, Messenger, PenpalError, type Connection,
+} from './messaging/browserMessenger';
 import { IStorage, StorageKeys } from '../storage/istorage';
-import { randomUUID } from '../utils/crypto';
+import { SDKConfiguration } from '../core/config/config';
 import { Data, OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
-import type { SDKConfiguration } from '../core/config/config';
+import { debugLog } from '../utils/debug';
+import { randomUUID } from '../utils/crypto';
+import { Authentication } from '../core/configuration/authentication';
+import { Recovery } from '../core/configuration/recovery';
+import { Account } from '../core/configuration/account';
+import type { RecoveryMethod } from '../types/types';
+import { ReactNativeMessenger } from './messaging';
 import {
-  type ConfigureRequest,
+  ConfigureRequest,
   ConfigureResponse,
-  GetCurrentDeviceRequest,
-  Event,
-  LogoutResponse,
-  NOT_CONFIGURED_ERROR,
-  SetRecoveryMethodResponse,
-  type ShieldAuthentication,
   SignRequest,
   SignResponse,
-  UpdateAuthenticationRequest,
-  UpdateAuthenticationResponse,
-  GetCurrentDeviceResponse,
-  isErrorResponse,
-  type RequestConfiguration,
-  MISSING_USER_ENTROPY_ERROR,
-  INCORRECT_USER_ENTROPY_ERROR,
-  ShieldAuthType,
-  ExportPrivateKeyRequest,
-  ExportPrivateKeyResponse,
-  MISSING_PROJECT_ENTROPY_ERROR,
-  SetRecoveryMethodRequest,
   SwitchChainRequest,
   SwitchChainResponse,
+  ExportPrivateKeyRequest,
+  ExportPrivateKeyResponse,
+  SetRecoveryMethodRequest,
+  SetRecoveryMethodResponse,
+  GetCurrentDeviceRequest,
+  GetCurrentDeviceResponse,
+  UpdateAuthenticationRequest,
+  Event,
+  isErrorResponse,
+  NOT_CONFIGURED_ERROR,
+  MISSING_USER_ENTROPY_ERROR,
+  MISSING_PROJECT_ENTROPY_ERROR,
+  INCORRECT_USER_ENTROPY_ERROR,
+  ShieldAuthType,
+  type ShieldAuthentication,
+  type RequestConfiguration,
+  LogoutResponse,
+  UpdateAuthenticationResponse,
 } from './types';
 import { sentry } from '../core/errors/sentry';
 
@@ -103,7 +108,7 @@ export class NotConfiguredError extends Error {
 }
 
 export class IframeManager {
-  private iframe: HTMLIFrameElement | undefined;
+  private messenger: Messenger;
 
   private connection: Connection<IframeAPI> | undefined;
 
@@ -115,7 +120,9 @@ export class IframeManager {
 
   private isInitialized = false;
 
-  constructor(configuration: SDKConfiguration, storage: IStorage) {
+  private currentConfiguration: IframeConfiguration | undefined;
+
+  constructor(configuration: SDKConfiguration, storage: IStorage, messenger: Messenger) {
     if (!configuration) {
       throw new OpenfortError('Configuration is required for IframeManager', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -124,78 +131,45 @@ export class IframeManager {
       throw new OpenfortError('Storage is required for IframeManager', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
+    if (!messenger) {
+      throw new OpenfortError('Messenger is required for IframeManager', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
     this.sdkConfiguration = configuration;
     this.storage = storage;
+    this.messenger = messenger;
   }
 
-  private async iframeSetup(): Promise<void> {
-    if (typeof document === 'undefined') {
-      throw new OpenfortError(
-        'Document is not available. Please provide a message poster for non-browser environments.',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
+  /**
+   * Initialize the connection to the iframe/WebView
+   */
+  private async initialize(): Promise<void> {
+    if (this.isInitialized) {
+      return;
     }
 
-    const previousIframe = document.getElementById('openfort-iframe') as HTMLIFrameElement;
-    if (previousIframe) {
-      document.body.removeChild(previousIframe);
-    }
+    debugLog('Initializing IframeManager connection...');
 
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.id = 'openfort-iframe';
-    document.body.appendChild(iframe);
-    iframe.src = this.sdkConfiguration.iframeUrl;
-    this.iframe = iframe;
-
-    await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Iframe load timeout'));
-      }, 10000);
-
-      iframe.onload = () => {
-        clearTimeout(timeout);
-        resolve();
-      };
-
-      iframe.onerror = () => {
-        clearTimeout(timeout);
-        reject(new Error('Failed to load iframe'));
-      };
-    });
-  }
-
-  private async establishIframeConnection(): Promise<void> {
-    // Use iframe contentWindow (browser behavior)
-
-    if (typeof document === 'undefined') {
-      throw new OpenfortError(
-        'Document is not available.',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
-    }
-
-    if (!this.iframe?.contentWindow) {
-      throw new OpenfortError('Iframe does not have content window', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
-
-    const iframeUrlOrigin = new URL(this.sdkConfiguration.iframeUrl).origin;
-    const messenger = new WindowMessenger({
-      remoteWindow: this.iframe.contentWindow,
-      allowedOrigins: [iframeUrlOrigin],
+    this.messenger.initialize({
+      validateReceivedMessage: (data: unknown): data is Message => !!(data && typeof data === 'object'),
+      log: debugLog,
     });
 
     this.connection = connect<IframeAPI>({
-      messenger,
-      timeout: 5000,
+      messenger: this.messenger,
+      timeout: 10000,
+      log: debugLog,
     });
 
     try {
       this.remote = await this.connection.promise;
       this.isInitialized = true;
+      debugLog('IframeManager connection established');
     } catch (error) {
       const err = error as PenpalError;
       sentry.captureException(err);
+      this.destroy();
+      debugLog('Failed to establish connection:', err);
       throw new OpenfortError(
         `Failed to establish iFrame connection: ${err.cause || err.message}`,
         OpenfortErrorType.INTERNAL_ERROR,
@@ -204,25 +178,13 @@ export class IframeManager {
     }
   }
 
-  public isLoaded(): boolean {
-    return this.isInitialized && this.remote !== undefined;
-  }
-
-  private async ensureConnection(): Promise<IframeAPI> {
-    if (!this.isLoaded()) {
-      // Check if document is available before attempting iframe setup
-      if (typeof document === 'undefined') {
-        throw new OpenfortError(
-          'Document is not available.',
-          OpenfortErrorType.INVALID_CONFIGURATION,
-        );
-      }
-      await this.iframeSetup();
-      await this.establishIframeConnection();
+  public async ensureConnection(): Promise<IframeAPI> {
+    if (!this.isInitialized || !this.remote) {
+      await this.initialize();
     }
 
     if (!this.remote) {
-      throw new OpenfortError('Failed to establish iFrame connection', OpenfortErrorType.INTERNAL_ERROR);
+      throw new OpenfortError('Failed to establish connection', OpenfortErrorType.INTERNAL_ERROR);
     }
 
     return this.remote;
@@ -241,14 +203,36 @@ export class IframeManager {
       } else if (error.error === INCORRECT_USER_ENTROPY_ERROR) {
         throw new WrongRecoveryPasswordError();
       }
-      throw new UnknownResponseError(error.error);
+      throw new OpenfortError(`Unknown error: ${error.error}`, OpenfortErrorType.INTERNAL_ERROR);
     }
     throw error;
   }
 
+  private buildRequestConfiguration(): RequestConfiguration {
+    if (!this.currentConfiguration) {
+      throw new OpenfortError('IframeManager not configured', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
+    return {
+      thirdPartyProvider: this.currentConfiguration.thirdPartyProvider ?? undefined,
+      thirdPartyTokenType: this.currentConfiguration.thirdPartyTokenType ?? undefined,
+      token: this.currentConfiguration.accessToken ?? undefined,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      openfortURL: this.sdkConfiguration.backendUrl,
+    };
+  }
+
+  private buildIFrameRequestConfiguration(): IframeConfiguration {
+    if (!this.currentConfiguration) {
+      throw new OpenfortError('IframeManager not configured', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
+    return this.currentConfiguration;
+  }
+
   async configure(iframeConfiguration: IframeConfiguration): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
-      throw new Error('shieldConfiguration is required');
+      throw new OpenfortError('shieldConfiguration is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
     const remote = await this.ensureConnection();
@@ -277,6 +261,10 @@ export class IframeManager {
       this.handleError(response);
     }
 
+    // Store configuration for future requests
+    this.currentConfiguration = iframeConfiguration;
+
+    // Store version if available
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.setItem('iframe-version', (response as ConfigureResponse).version ?? 'undefined');
     }
@@ -284,27 +272,18 @@ export class IframeManager {
   }
 
   async sign(
-    iframeConfiguration: IframeConfiguration,
     message: string | Uint8Array,
     requireArrayify?: boolean,
     requireHash?: boolean,
   ): Promise<string> {
     const remote = await this.ensureConnection();
 
-    const requestConfiguration: RequestConfiguration = {
-      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
-      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
-      token: iframeConfiguration.accessToken ?? undefined,
-      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
-      openfortURL: this.sdkConfiguration.backendUrl,
-    };
-
     const request = new SignRequest(
       randomUUID(),
       message,
       requireArrayify,
       requireHash,
-      requestConfiguration,
+      this.buildRequestConfiguration(),
     );
 
     try {
@@ -320,31 +299,20 @@ export class IframeManager {
       return (response as SignResponse).signature;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(iframeConfiguration);
-        return this.sign(iframeConfiguration, message, requireArrayify, requireHash);
+        await this.configure(this.buildIFrameRequestConfiguration());
+        return this.sign(message, requireArrayify, requireHash);
       }
       throw e;
     }
   }
 
-  async switchChain(
-    iframeConfiguration: IframeConfiguration,
-    chainId: number,
-  ): Promise<SwitchChainResponse> {
+  async switchChain(chainId: number): Promise<SwitchChainResponse> {
     const remote = await this.ensureConnection();
-
-    const requestConfiguration: RequestConfiguration = {
-      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
-      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
-      token: iframeConfiguration.accessToken ?? undefined,
-      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
-      openfortURL: this.sdkConfiguration.backendUrl,
-    };
 
     const request = new SwitchChainRequest(
       randomUUID(),
       chainId,
-      requestConfiguration,
+      this.buildRequestConfiguration(),
     );
 
     try {
@@ -354,33 +322,26 @@ export class IframeManager {
         this.handleError(response);
       }
 
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('iframe-version', (response as SwitchChainResponse).version ?? 'undefined');
+      // Update stored chain ID
+      if (this.currentConfiguration) {
+        this.currentConfiguration.chainId = chainId;
       }
       return response as SwitchChainResponse;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(iframeConfiguration);
-        return this.switchChain(iframeConfiguration, chainId);
+        await this.configure(this.buildIFrameRequestConfiguration());
+        return this.switchChain(chainId);
       }
       throw e;
     }
   }
 
-  async export(iframeConfiguration: IframeConfiguration): Promise<string> {
+  async export(): Promise<string> {
     const remote = await this.ensureConnection();
-
-    const requestConfiguration: RequestConfiguration = {
-      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
-      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
-      token: iframeConfiguration.accessToken ?? undefined,
-      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
-      openfortURL: this.sdkConfiguration.backendUrl,
-    };
 
     const request = new ExportPrivateKeyRequest(
       randomUUID(),
-      requestConfiguration,
+      this.buildRequestConfiguration(),
     );
 
     try {
@@ -396,8 +357,8 @@ export class IframeManager {
       return (response as ExportPrivateKeyResponse).key;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(iframeConfiguration);
-        return this.export(iframeConfiguration);
+        await this.configure(this.buildIFrameRequestConfiguration());
+        return this.export();
       }
       throw e;
     }
@@ -405,27 +366,18 @@ export class IframeManager {
 
   // eslint-disable-next-line consistent-return
   async setEmbeddedRecovery(
-    iframeConfiguration: IframeConfiguration,
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
   ): Promise<void> {
     const remote = await this.ensureConnection();
 
-    const requestConfiguration: RequestConfiguration = {
-      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
-      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
-      token: iframeConfiguration.accessToken ?? undefined,
-      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
-      openfortURL: this.sdkConfiguration.backendUrl,
-    };
-
     const request = new SetRecoveryMethodRequest(
       randomUUID(),
       recoveryMethod,
       recoveryPassword,
       encryptionSession,
-      requestConfiguration,
+      this.buildRequestConfiguration(),
     );
 
     try {
@@ -440,14 +392,14 @@ export class IframeManager {
       }
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(iframeConfiguration);
-        return this.setEmbeddedRecovery(iframeConfiguration, recoveryMethod, recoveryPassword, encryptionSession);
+        await this.configure(this.buildIFrameRequestConfiguration());
+        return this.setEmbeddedRecovery(recoveryMethod, recoveryPassword, encryptionSession);
       }
       throw e;
     }
   }
 
-  async getCurrentUser(playerId: string): Promise<GetCurrentDeviceResponse | null> {
+  async getCurrentDevice(playerId: string): Promise<GetCurrentDeviceResponse | null> {
     const remote = await this.ensureConnection();
 
     const request = new GetCurrentDeviceRequest(randomUUID(), playerId);
@@ -471,40 +423,97 @@ export class IframeManager {
     }
   }
 
-  async logout(): Promise<void> {
-    const remote = await this.ensureConnection();
-
-    const request = { uuid: randomUUID() };
-    await remote.logout(request);
-  }
-
-  async updateAuthentication(
-    iframeConfiguration: IframeConfiguration,
-    token: string,
-    shieldAuthType: ShieldAuthType,
-  ): Promise<void> {
-    const updatedConfiguration = { ...iframeConfiguration };
-
-    updatedConfiguration.accessToken = token;
-
-    if (shieldAuthType === ShieldAuthType.OPENFORT && updatedConfiguration.recovery) {
-      updatedConfiguration.recovery = { ...updatedConfiguration.recovery, token };
-    }
-
+  async updateAuthentication(token: string, shieldAuthType: ShieldAuthType): Promise<void> {
     const remote = await this.ensureConnection();
 
     const request = new UpdateAuthenticationRequest(randomUUID(), token);
 
     try {
       await remote.updateAuthentication(request);
+
+      // Update stored configuration
+      if (this.currentConfiguration) {
+        this.currentConfiguration.accessToken = token;
+        if (shieldAuthType === ShieldAuthType.OPENFORT && this.currentConfiguration.recovery) {
+          this.currentConfiguration.recovery = { ...this.currentConfiguration.recovery, token };
+        }
+      }
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(updatedConfiguration);
-        await this.updateAuthentication(updatedConfiguration, token, shieldAuthType);
+        await this.configure(this.buildIFrameRequestConfiguration());
+        await this.updateAuthentication(token, shieldAuthType);
         return;
       }
       throw e;
     }
+  }
+
+  /**
+   * Logout
+   */
+  async logout(): Promise<void> {
+    const remote = await this.ensureConnection();
+    const request = { uuid: randomUUID() };
+    await remote.logout(request);
+    this.currentConfiguration = undefined;
+  }
+
+  /**
+   * Handle incoming message (for React Native)
+   */
+  onMessage(message: any): void {
+    if (this.messenger instanceof ReactNativeMessenger) {
+      // If we receive a penpal SYN and haven't initialized connection, do it now
+      if (message && message.namespace === 'penpal' && message.type === 'SYN'
+        && !this.isInitialized && !this.connection) {
+        debugLog('Received SYN message before connection initialized, setting up connection handlers...');
+
+        // If messenger has been used before, reset it
+        if ((this.messenger as ReactNativeMessenger).hasBeenUsed) {
+          debugLog('Resetting messenger for new connection...');
+          (this.messenger as ReactNativeMessenger).reset();
+        }
+
+        // Initialize the messenger if not already done (check if it's ReactNativeMessenger)
+        if (this.messenger instanceof ReactNativeMessenger) {
+          // ReactNativeMessenger might not be initialized yet
+          this.messenger.initialize({
+            validateReceivedMessage: (data: unknown): data is Message => !!(data && typeof data === 'object'),
+            log: debugLog,
+          });
+        }
+
+        // Initialize the connection to set up handlers
+        this.connection = connect<IframeAPI>({
+          messenger: this.messenger,
+          timeout: 10000,
+          log: debugLog,
+        });
+
+        // Store the promise for later
+        this.connection.promise.then((remote) => {
+          this.remote = remote;
+          this.isInitialized = true;
+          debugLog('IframeManager connection established');
+        }).catch((error) => {
+          debugLog('Failed to establish connection:', error);
+          // Reset connection on failure to allow retry
+          this.connection = undefined;
+          this.isInitialized = false;
+          // Reset the messenger for future use
+          if (this.messenger instanceof ReactNativeMessenger) {
+            (this.messenger as ReactNativeMessenger).reset();
+          }
+        });
+      }
+
+      // Always handle the message
+      this.messenger.handleMessage(message);
+    }
+  }
+
+  isLoaded(): boolean {
+    return this.isInitialized && this.remote !== undefined;
   }
 
   destroy(): void {
@@ -515,13 +524,74 @@ export class IframeManager {
 
     this.remote = undefined;
     this.isInitialized = false;
+    this.currentConfiguration = undefined;
 
-    if (this.iframe && typeof document !== 'undefined') {
-      const iframe = document.getElementById('openfort-iframe');
-      if (iframe && iframe.parentNode) {
-        iframe.parentNode.removeChild(iframe);
-      }
-      this.iframe = undefined;
+    this.messenger.destroy();
+  }
+
+  /**
+   * Create embedded signer with current authentication
+   */
+  async createEmbeddedSigner(
+    chainId: number | null = null,
+    entropy?: {
+      recoveryPassword?: string;
+      encryptionSession?: string;
+    },
+    recoveryType?: 'openfort' | 'custom',
+    customToken?: string,
+  ): Promise<{ address: string; chainId: number; ownerAddress: string; accountType: string }> {
+    // Get authentication from storage
+    const authentication = await Authentication.fromStorage(this.storage);
+    if (!authentication) {
+      throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
+
+    // Build shield authentication
+    let shieldAuthentication: ShieldAuthentication | null = null;
+    const storedRecovery = await Recovery.fromStorage(this.storage);
+    const finalRecoveryType = recoveryType || storedRecovery?.type || 'openfort';
+    const finalCustomToken = customToken || storedRecovery?.customToken;
+
+    if (finalRecoveryType === 'openfort') {
+      shieldAuthentication = {
+        auth: ShieldAuthType.OPENFORT,
+        authProvider: authentication.thirdPartyProvider || undefined,
+        token: authentication.token,
+        tokenType: authentication.thirdPartyTokenType || undefined,
+        encryptionSession: entropy?.encryptionSession || undefined,
+      };
+      new Recovery('openfort').save(this.storage);
+    } else if (finalRecoveryType === 'custom') {
+      if (!finalCustomToken) {
+        throw new OpenfortError('Custom recovery requires a token', OpenfortErrorType.INVALID_CONFIGURATION);
+      }
+      shieldAuthentication = {
+        auth: ShieldAuthType.CUSTOM,
+        token: finalCustomToken,
+      };
+      new Recovery('custom', finalCustomToken).save(this.storage);
+    }
+
+    const iframeConfiguration: IframeConfiguration = {
+      thirdPartyTokenType: authentication.thirdPartyTokenType ?? null,
+      thirdPartyProvider: authentication.thirdPartyProvider ?? null,
+      accessToken: authentication.token,
+      playerID: authentication.player,
+      recovery: shieldAuthentication,
+      chainId,
+      password: entropy?.recoveryPassword || null,
+    };
+
+    // Configure and save account
+    const response = await this.configure(iframeConfiguration);
+    new Account(response.address, response.chainId, response.ownerAddress, response.accountType).save(this.storage);
+
+    return {
+      address: response.address,
+      chainId: response.chainId,
+      ownerAddress: response.ownerAddress,
+      accountType: response.accountType,
+    };
   }
 }

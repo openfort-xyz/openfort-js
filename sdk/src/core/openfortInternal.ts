@@ -1,9 +1,7 @@
 import { IStorage } from '../storage/istorage';
-import { SignerManager } from '../wallets/signer';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { Authentication } from './configuration/authentication';
 import { AuthManager } from '../auth/authManager';
-import { MissingRecoveryPasswordError, MissingProjectEntropyError } from '../wallets/iframeManager';
 
 export class OpenfortInternal {
   constructor(
@@ -38,14 +36,5 @@ export class OpenfortInternal {
       credentials.player,
       credentials.refreshToken,
     ).save(this.storage);
-    const signer = await SignerManager.fromStorage(this.storage);
-    try {
-      await signer?.updateAuthentication();
-    } catch (e) {
-      if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
-        await signer?.logout();
-      }
-      throw e;
-    }
   }
 }

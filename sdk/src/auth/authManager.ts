@@ -145,12 +145,13 @@ export class AuthManager {
     ecosystemGame?: string,
   ): Promise<InitAuthResponse> {
     const usePooling = options?.usePooling ?? false;
-    // eslint-disable-next-line no-param-reassign
-    delete options?.usePooling;
+    const skipBrowserRedirect = options?.skipBrowserRedirect ?? false;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { usePooling: _usePooling, skipBrowserRedirect: _skipBrowserRedirect, ...restOptions } = options || {};
     const request = {
       oAuthInitRequest: {
         provider,
-        options,
+        options: restOptions,
         usePooling,
       },
     };
@@ -159,7 +160,7 @@ export class AuthManager {
       AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
     ), { default: OpenfortErrorType.AUTHENTICATION_ERROR });
 
-    if (typeof window !== 'undefined' && !options?.skipBrowserRedirect) {
+    if (typeof window !== 'undefined' && !skipBrowserRedirect) {
       window.location.assign(result.data.url);
     }
     return {
@@ -589,7 +590,6 @@ export class AuthManager {
   public async getUser(
     auth: Authentication,
   ): Promise<AuthPlayerResponse> {
-    // TODO: Add storage of user info
     return withOpenfortError<AuthPlayerResponse>(async () => {
       const response = await this.backendApiClients.authenticationApi.me({
         headers: {
@@ -648,6 +648,9 @@ export class AuthManager {
     options?: InitializeOAuthOptions,
     ecosystemGame?: string,
   ): Promise<InitAuthResponse> {
+    const skipBrowserRedirect = options?.skipBrowserRedirect ?? false;
+    // eslint-disable-next-line no-param-reassign
+    delete options?.skipBrowserRedirect;
     const request = {
       oAuthInitRequest: {
         provider,
@@ -672,7 +675,7 @@ export class AuthManager {
       },
     ), { default: OpenfortErrorType.AUTHENTICATION_ERROR });
 
-    if (typeof window !== 'undefined' && !options?.skipBrowserRedirect) {
+    if (typeof window !== 'undefined' && !skipBrowserRedirect) {
       window.location.assign(result.data.url);
     }
     return {
