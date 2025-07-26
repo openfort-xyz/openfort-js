@@ -106,6 +106,20 @@ export class Openfort {
         this.backendApiClients,
         () => this.openfortInternal.validateAndRefreshToken(),
         this.ensureInitialized.bind(this),
+        async () => {
+          // Get sign function from embedded wallet
+          if (!this.embeddedWalletInstance) {
+            throw new OpenfortError(
+              'Embedded wallet not initialized',
+              OpenfortErrorType.MISSING_SIGNER_ERROR,
+            );
+          }
+          const wallet = this.embeddedWalletInstance;
+          return (message: string | Uint8Array) => wallet.signMessage(
+            message,
+            { hashMessage: false, arrayifyMessage: false },
+          );
+        },
       );
     } catch (error) {
       throw new OpenfortError(
@@ -116,13 +130,11 @@ export class Openfort {
   }
 
   constructor(sdkConfiguration: OpenfortSDKConfiguration) {
-    // Store configuration
     this.configuration = new SDKConfiguration(sdkConfiguration);
 
     // Always create lazy storage - no localStorage access here
     this.storage = new LazyStorage(this.configuration.storage);
 
-    // Initialize Sentry
     InternalSentry.init({ configuration: this.configuration });
 
     // Only do synchronous initialization - no storage access

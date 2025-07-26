@@ -506,3 +506,7 @@ export interface RequestConfiguration {
   publishableKey: string;
   openfortURL?: string;
 }
+
+export interface MessagePoster {
+  postMessage(message: string): void;
+}

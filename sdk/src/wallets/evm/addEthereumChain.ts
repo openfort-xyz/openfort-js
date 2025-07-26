@@ -1,6 +1,5 @@
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { SignerManager } from '../signer';
-import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError';
+import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { IStorage } from '../../storage/istorage';
 
 export interface AddEthereumChainParameter {
@@ -33,17 +32,17 @@ const validateNativeCurrency = (nativeCurrency: any): boolean => {
 
   const hasRequiredProperties = (
     'name' in nativeCurrency
-        && 'symbol' in nativeCurrency
-        && 'decimals' in nativeCurrency
+    && 'symbol' in nativeCurrency
+    && 'decimals' in nativeCurrency
   );
 
   if (!hasRequiredProperties) return false;
 
   return (
     typeof nativeCurrency.name === 'string'
-        && typeof nativeCurrency.symbol === 'string'
-        && typeof nativeCurrency.decimals === 'number'
-        && Number.isInteger(nativeCurrency.decimals)
+    && typeof nativeCurrency.symbol === 'string'
+    && typeof nativeCurrency.decimals === 'number'
+    && Number.isInteger(nativeCurrency.decimals)
   );
 };
 
@@ -104,7 +103,7 @@ const transformChainParameter = (chainParam: any): AddEthereumChainParameter => 
 export const addEthereumChain = async ({
   params,
   rpcProvider,
-  storage,
+  storage: _storage,
 }: AddChainParams): Promise<null | boolean> => {
   if (!params || !Array.isArray(params) || params.length === 0) {
     throw new JsonRpcError(
@@ -124,24 +123,6 @@ export const addEthereumChain = async ({
     return false;
   }
 
-  try {
-    const signer = await SignerManager.embedded(storage);
-    if (!signer) {
-      throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - no account available');
-    }
-
-    // If we successfully configured the chain, return null (success)
-    return null;
-  } catch (error: any) {
-    if (error instanceof Error) {
-      throw new JsonRpcError(
-        RpcErrorCode.INTERNAL_ERROR,
-        `Failed to add chain: ${error.message}`,
-      );
-    }
-    throw new JsonRpcError(
-      RpcErrorCode.INTERNAL_ERROR,
-      'Failed to add chain',
-    );
-  }
+  // Return null to indicate the chain was "added" successfully
+  return null;
 };

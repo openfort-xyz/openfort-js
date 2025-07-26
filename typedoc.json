@@ -13,9 +13,9 @@
   "readme": "./sdk/README.md",
   // Potentially useful for debugging
   "logLevel": "Verbose",
-  "titleLink": "https://www.openfort.xyz/docs/",
+  "titleLink": "https://www.openfort.io/docs/",
   "navigationLinks": {
-    "Openfort Docs": "https://www.openfort.xyz/docs",
-    "Openfort Dashboard": "https://dashboard.openfort.xyz"
+    "Openfort Docs": "https://www.openfort.io/docs",
+    "Openfort Dashboard": "https://dashboard.openfort.io"
   }
 }

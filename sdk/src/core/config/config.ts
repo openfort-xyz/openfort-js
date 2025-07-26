@@ -66,13 +66,13 @@ export class SDKConfiguration {
   }: OpenfortSDKConfiguration) {
     this.shieldConfiguration = shieldConfiguration;
     this.baseConfiguration = baseConfiguration;
-    this.backendUrl = overrides?.backendUrl || 'https://api.openfort.xyz';
-    this.iframeUrl = overrides?.iframeUrl || 'https://embed.openfort.xyz/iframe';
-    this.iframeUrl = `${this.iframeUrl}/${this.baseConfiguration.publishableKey}`;
+    this.backendUrl = overrides?.backendUrl || 'https://api.openfort.io';
+    this.iframeUrl = overrides?.iframeUrl || 'https://embed.openfort.io';
+    this.iframeUrl = `${this.iframeUrl}/iframe/${this.baseConfiguration.publishableKey}`;
     if (shieldConfiguration?.debug) {
       this.iframeUrl = `${this.iframeUrl}?debug=true`;
     }
-    this.shieldUrl = overrides?.shieldUrl || 'https://shield.openfort.xyz';
+    this.shieldUrl = overrides?.shieldUrl || 'https://shield.openfort.io';
     this.storage = overrides?.storage;
 
     // Set crypto digest override if provided
@@ -95,7 +95,7 @@ export class SDKConfiguration {
       // Verify the value was correctly stored and retrieved
       return retrieved === testValue;
     } catch (error) {
-      console.error('Storage accessibility check failed:', error);
+      // Storage accessibility check failed
       return false;
     }
   }
@@ -133,7 +133,7 @@ export class SDKConfiguration {
 
       const overrides: SDKOverrides = {
         backendUrl: parsed.backendUrl,
-        iframeUrl: `${parsed.iframeUrl?.split('/')[0]}//${parsed.iframeUrl?.split('/')[2]}/iframe`, // Extract base URL
+        iframeUrl: parsed.iframeUrl,
         shieldUrl: parsed.shieldUrl,
         storage,
       };

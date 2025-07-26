@@ -1,5 +1,4 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { SignerManager } from '../wallets/signer';
 import { SDKConfiguration } from '../core/config/config';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError';
 import { TransactionIntentResponse, SessionResponse } from '../types/types';
@@ -11,6 +10,7 @@ export class ProxyApi {
     private backendApiClients: BackendApiClients,
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
+    private getSignerSignFunction?: () => Promise<(message: string | Uint8Array) => Promise<string>>,
   ) { }
 
   async sendSignatureTransactionIntentRequest(
@@ -34,15 +34,16 @@ export class ProxyApi {
         );
       }
 
-      const signer = await SignerManager.fromStorage(this.storage);
-      if (!signer) {
+      if (!this.getSignerSignFunction) {
         throw new OpenfortError(
           'In order to sign a transaction intent, a signer must be configured',
           OpenfortErrorType.MISSING_SIGNER_ERROR,
         );
       }
 
-      newSignature = await signer.sign(signableHash);
+      const signFunction = await this.getSignerSignFunction();
+
+      newSignature = await signFunction(signableHash);
     }
 
     const request = {

@@ -118,9 +118,9 @@ window.callFunction = async (jsonData: string) => {
               shieldDebug: request.shieldDebug ?? false,
             } : undefined,
             overrides: {
-              backendUrl: request?.backendUrl ?? 'https://api.openfort.xyz',
+              backendUrl: request?.backendUrl ?? 'https://api.openfort.io',
               iframeUrl: request?.iframeUrl,
-              shieldUrl: request?.shieldUrl ?? 'https://shield.openfort.xyz',
+              shieldUrl: request?.shieldUrl ?? 'https://shield.openfort.io',
             },
           };
           openfortClient = new Openfort(configuration as unknown as SDKConfiguration);

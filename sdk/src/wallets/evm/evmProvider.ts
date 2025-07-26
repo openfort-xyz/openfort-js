@@ -15,7 +15,6 @@ import TypedEventEmitter from '../../utils/typedEventEmitter';
 import { defaultChainRpcs } from '../../utils/chains';
 import { Signer } from '../isigner';
 import { Account } from '../../core/configuration/account';
-import { SignerManager } from '../signer';
 import { IStorage, StorageKeys } from '../../storage/istorage';
 import { addEthereumChain } from './addEthereumChain';
 import { registerSession } from './registerSession';
@@ -45,12 +44,22 @@ export class EvmProvider implements Provider {
 
   #customChains?: Record<number, string>;
 
+  #signer?: Signer;
+
   /**
    * Updates the policy ID for the provider
    * @param newPolicyId - The new policy ID to use
    */
   public updatePolicy(newPolicy: string) {
     this.#policyId = newPolicy;
+  }
+
+  /**
+   * Updates the signer for the provider
+   * @param signer - The new signer to use
+   */
+  public updateSigner(signer: Signer | undefined) {
+    this.#signer = signer;
   }
 
   readonly #validateAndRefreshSession: () => Promise<void>;
@@ -65,6 +74,7 @@ export class EvmProvider implements Provider {
 
   constructor({
     storage,
+    signer,
     backendApiClients,
     openfortEventEmitter,
     policyId,
@@ -72,6 +82,7 @@ export class EvmProvider implements Provider {
     validateAndRefreshSession,
   }: EvmProviderInput) {
     this.#storage = storage;
+    this.#signer = signer;
 
     this.#customChains = chains;
 
@@ -88,12 +99,22 @@ export class EvmProvider implements Provider {
     openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout);
   }
 
+  #ensureSigner(): Signer {
+    if (!this.#signer) {
+      throw new JsonRpcError(
+        ProviderErrorCode.UNAUTHORIZED,
+        'No signer configured. Please configure an embedded wallet first.',
+      );
+    }
+    return this.#signer;
+  }
+
   #handleLogout = async () => {
     const account = await Account.fromStorage(this.#storage);
     const shouldEmitAccountsChanged = !!account;
 
-    const signer = await SignerManager.fromStorage(this.#storage);
-    signer?.logout();
+    // Logout is handled at a higher level - just clear local state
+    this.#signer = undefined;
     this.#storage.remove(StorageKeys.ACCOUNT);
     this.#storage.remove(StorageKeys.AUTHENTICATION);
 
@@ -126,34 +147,22 @@ export class EvmProvider implements Provider {
         return account ? [account.address] : [];
       }
       case 'eth_requestAccounts': {
-        let account = await Account.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage);
         if (account) {
           this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: numberToHex(account.chainId) });
           return [account.address];
         }
 
-        const signer = await SignerManager.fromStorage(this.#storage);
-        if (!signer) {
-          throw new JsonRpcError(
-            ProviderErrorCode.UNAUTHORIZED,
-            'Unauthorized - must be authenticated and configured with a signer',
-          );
-        }
-
-        await SignerManager.embedded(this.#storage);
-        account = await Account.fromStorage(this.#storage);
-        if (!account) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - no account available');
-        }
-
-        this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [account.address]);
-        return [account.address];
+        throw new JsonRpcError(
+          ProviderErrorCode.UNAUTHORIZED,
+          'No account configured. Please configure an embedded wallet first.',
+        );
       }
       case 'eth_sendTransaction': {
         const account = await Account.fromStorage(this.#storage);
-        const signer = await SignerManager.fromStorage(this.#storage);
+        const signer = this.#ensureSigner();
         const authentication = await Authentication.fromStorage(this.#storage);
-        if (!account || !signer || !authentication) {
+        if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         await this.#validateAndRefreshSession();
@@ -184,8 +193,8 @@ export class EvmProvider implements Provider {
       case 'eth_signTypedData':
       case 'eth_signTypedData_v4': {
         const account = await Account.fromStorage(this.#storage);
-        const signer = await SignerManager.fromStorage(this.#storage);
-        if (!account || !signer) {
+        const signer = this.#ensureSigner();
+        if (!account) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         await this.#validateAndRefreshSession();
@@ -203,8 +212,8 @@ export class EvmProvider implements Provider {
       }
       case 'personal_sign': {
         const account = await Account.fromStorage(this.#storage);
-        const signer = await SignerManager.fromStorage(this.#storage);
-        if (!account || !signer) {
+        const signer = this.#ensureSigner();
+        if (!account) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         await this.#validateAndRefreshSession();
@@ -229,13 +238,7 @@ export class EvmProvider implements Provider {
         return numberToHex(chainId);
       }
       case 'wallet_switchEthereumChain': {
-        const signer = await SignerManager.fromStorage(this.#storage);
-        if (!signer) {
-          throw new JsonRpcError(
-            ProviderErrorCode.UNAUTHORIZED,
-            'Unauthorized - must be authenticated and configured with a signer',
-          );
-        }
+        const signer = this.#ensureSigner();
         if (!request.params || !Array.isArray(request.params) || request.params.length === 0) {
           throw new JsonRpcError(
             RpcErrorCode.INVALID_PARAMS,
@@ -252,21 +255,16 @@ export class EvmProvider implements Provider {
             this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainIdNumber]);
           });
         } catch (error) {
+          const err = error as Error;
           throw new JsonRpcError(
             RpcErrorCode.INTERNAL_ERROR,
-            'Failed to switch chain',
+            `Failed to switch chain: ${err.message}`,
           );
         }
         return null;
       }
       case 'wallet_addEthereumChain': {
-        const signer = await SignerManager.fromStorage(this.#storage);
-        if (!signer) {
-          throw new JsonRpcError(
-            ProviderErrorCode.UNAUTHORIZED,
-            'Unauthorized - must be authenticated and configured with a signer',
-          );
-        }
+        this.#ensureSigner(); // Ensure signer exists
         const rpcProvider = await this.getRpcProvider();
         return await addEthereumChain({
           params: request.params || [],
@@ -280,9 +278,9 @@ export class EvmProvider implements Provider {
       }
       case 'wallet_getCallsStatus': {
         const account = await Account.fromStorage(this.#storage);
-        const signer = await SignerManager.fromStorage(this.#storage);
+        this.#ensureSigner(); // Ensure signer exists
         const authentication = await Authentication.fromStorage(this.#storage);
-        if (!account || !signer || !authentication) {
+        if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         await this.#validateAndRefreshSession();
@@ -296,9 +294,9 @@ export class EvmProvider implements Provider {
       }
       case 'wallet_sendCalls': {
         const account = await Account.fromStorage(this.#storage);
-        const signer = await SignerManager.fromStorage(this.#storage);
+        const signer = this.#ensureSigner();
         const authentication = await Authentication.fromStorage(this.#storage);
-        if (!account || !signer || !authentication) {
+        if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         await this.#validateAndRefreshSession();
@@ -313,9 +311,9 @@ export class EvmProvider implements Provider {
       }
       case 'wallet_grantPermissions': {
         const account = await Account.fromStorage(this.#storage);
-        const signer = await SignerManager.fromStorage(this.#storage);
+        const signer = this.#ensureSigner();
         const authentication = await Authentication.fromStorage(this.#storage);
-        if (!account || !signer || !authentication) {
+        if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         await this.#validateAndRefreshSession();
@@ -332,9 +330,9 @@ export class EvmProvider implements Provider {
       // EIP-7715: Wallet Session Key API
       case 'wallet_revokePermissions': {
         const account = await Account.fromStorage(this.#storage);
-        const signer = await SignerManager.fromStorage(this.#storage);
+        const signer = this.#ensureSigner();
         const authentication = await Authentication.fromStorage(this.#storage);
-        if (!account || !signer || !authentication) {
+        if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
         await this.#validateAndRefreshSession();

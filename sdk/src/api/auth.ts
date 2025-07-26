@@ -1,7 +1,6 @@
 import { IStorage, StorageKeys } from '../storage/istorage';
 import { AuthManager } from '../auth/authManager';
 import { Authentication } from '../core/configuration/authentication';
-import { SignerManager } from '../wallets/signer';
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
 import {
   AuthResponse,
@@ -74,24 +73,28 @@ export class AuthApi {
       email, password, authToken, ecosystemGame,
     }: { email: string; password: string; authToken: string, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
+    await this.ensureInitialized();
     return await this.authManager.linkEmail(email, password, authToken, ecosystemGame);
   }
 
   async unlinkEmailPassword(
     { email, authToken }: { email: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.ensureInitialized();
     return await this.authManager.unlinkEmail(email, authToken);
   }
 
   async requestEmailVerification(
     { email, redirectUrl }: { email: string; redirectUrl: string },
   ): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.requestEmailVerification(email, redirectUrl);
   }
 
   async resetPassword(
     { email, password, state }: { email: string; password: string; state: string },
   ): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.resetPassword(email, password, state);
   }
 
@@ -103,6 +106,7 @@ export class AuthApi {
   }
 
   async verifyEmail({ email, state }: { email: string; state: string }): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.verifyEmail(email, state);
   }
 
@@ -122,6 +126,7 @@ export class AuthApi {
       provider: OAuthProvider; authToken: string; options?: InitializeOAuthOptions, ecosystemGame?: string
     },
   ): Promise<InitAuthResponse> {
+    await this.ensureInitialized();
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
@@ -134,6 +139,7 @@ export class AuthApi {
       provider, token, tokenType,
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType },
   ): Promise<AuthPlayerResponse> {
+    await this.ensureInitialized();
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
@@ -144,6 +150,7 @@ export class AuthApi {
   async unlinkOAuth(
     { provider, authToken }: { provider: OAuthProvider; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.ensureInitialized();
     return await this.authManager.unlinkOAuth(provider, authToken);
   }
 
@@ -213,12 +220,14 @@ export class AuthApi {
       signature, message, walletClientType, connectorType, authToken,
     }: { signature: string; message: string; walletClientType: string; connectorType: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.ensureInitialized();
     return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken);
   }
 
   async unlinkWallet(
     { address, authToken }: { address: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.ensureInitialized();
     return await this.authManager.unlinkWallet(address, authToken);
   }
 
@@ -235,11 +244,8 @@ export class AuthApi {
    */
   async logout(): Promise<void> {
     await this.ensureInitialized();
-    const signer = await SignerManager.fromStorage(this.storage);
+
     this.storage.remove(StorageKeys.AUTHENTICATION);
     this.storage.remove(StorageKeys.ACCOUNT);
-    if (signer) {
-      await signer.logout();
-    }
   }
 }
