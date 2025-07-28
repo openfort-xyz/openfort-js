@@ -109,7 +109,6 @@ export class EmbeddedWalletApi {
       return this.signer;
     }
 
-    // Check if we have the required data in storage
     const account = await Account.fromStorage(this.storage);
     const auth = await Authentication.fromStorage(this.storage);
 
@@ -274,7 +273,7 @@ export class EmbeddedWalletApi {
 
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.INTERNAL_ERROR);
+      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
     return {
