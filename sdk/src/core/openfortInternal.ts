@@ -36,7 +36,7 @@ export class OpenfortInternal extends TypedEventEmitter<{ tokenRefreshed: [token
     }
     const credentials = await this.authManager.validateCredentials(auth, forceRefresh);
     if (!credentials.player) {
-      throw new OpenfortError('No player found in credentials', OpenfortErrorType.INTERNAL_ERROR);
+      throw new OpenfortError('No user found in credentials', OpenfortErrorType.INTERNAL_ERROR);
     }
     if (credentials.accessToken === auth.token) return;
 

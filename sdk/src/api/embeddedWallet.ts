@@ -41,6 +41,7 @@ export class EmbeddedWalletApi {
   ) {
     // Subscribe to token refresh events
     this.openfortInternal.on('tokenRefreshed', (token: string) => {
+      debugLog('Token refreshed:', token);
       this.handleTokenRefreshed(token);
     });
 
@@ -459,7 +460,6 @@ export class EmbeddedWalletApi {
   }
 
   private async handleTokenRefreshed(_newToken: string): Promise<void> {
-    // Update embedded signer authentication when token is refreshed
     if (this.signer) {
       try {
         await this.signer.updateAuthentication();

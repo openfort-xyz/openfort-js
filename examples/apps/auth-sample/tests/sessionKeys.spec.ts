@@ -32,7 +32,7 @@ import { TEST_MINT_SUCCESS_TEXT } from './constants';
 
 test('Mint Session NFT', async ({ page }) => {
   test.setTimeout(60000)
-  
+
   await page.goto('/')
 
   const logger = new Logger(page)
@@ -55,7 +55,7 @@ test('Mint Session NFT', async ({ page }) => {
   expect(lastLog).toContain('Session key registered successfully')
 
   expect((await mintNftButton.isDisabled()).valueOf()).toBe(false)
-  
+
   mintNftButton.click()
 
   await logger.waitForNewLogs()

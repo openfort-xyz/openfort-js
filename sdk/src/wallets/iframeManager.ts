@@ -422,25 +422,24 @@ export class IframeManager {
     }
   }
 
-  async updateAuthentication(token: string, shieldAuthType: ShieldAuthType): Promise<void> {
+  async updateAuthentication(token: string): Promise<void> {
     const remote = await this.ensureConnection();
-
     const request = new UpdateAuthenticationRequest(randomUUID(), token);
 
     try {
+      debugLog('Updating authentication in iframe with token:', token);
       await remote.updateAuthentication(request);
-
-      // Update stored configuration
+      debugLog('Done updating auth');
       if (this.currentConfiguration) {
         this.currentConfiguration.accessToken = token;
-        if (shieldAuthType === ShieldAuthType.OPENFORT && this.currentConfiguration.recovery) {
+        if (this.currentConfiguration.recovery) {
           this.currentConfiguration.recovery = { ...this.currentConfiguration.recovery, token };
         }
       }
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure(this.buildIFrameRequestConfiguration());
-        await this.updateAuthentication(token, shieldAuthType);
+        await this.updateAuthentication(token);
         return;
       }
       throw e;

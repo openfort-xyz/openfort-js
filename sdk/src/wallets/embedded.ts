@@ -2,7 +2,6 @@ import type { RecoveryMethod } from '../types/types';
 import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
-import { ShieldAuthType } from './types';
 import type { Signer } from './isigner';
 import type { IframeManager } from './iframeManager';
 import { StorageKeys, type IStorage } from '../storage/istorage';
@@ -69,7 +68,6 @@ export class EmbeddedSigner implements Signer {
 
     await this.iframeManager.updateAuthentication(
       authentication.token,
-      ShieldAuthType.OPENFORT,
     );
   }
 }

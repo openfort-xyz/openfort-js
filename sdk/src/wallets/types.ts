@@ -496,7 +496,6 @@ export interface ShieldAuthentication {
 
 export enum ShieldAuthType {
   OPENFORT = 'openfort',
-  CUSTOM = 'custom',
 }
 
 export interface RequestConfiguration {
