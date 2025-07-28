@@ -3,24 +3,17 @@ import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { Authentication } from './configuration/authentication';
 import { AuthManager } from '../auth/authManager';
 import TypedEventEmitter from '../utils/typedEventEmitter';
+import { OpenfortEventMap, OpenfortEvents } from '../types/types';
 
-export class OpenfortInternal extends TypedEventEmitter<{ tokenRefreshed: [token: string]; userLoggedOut: [] }> {
+export class OpenfortInternal {
   constructor(
     private storage: IStorage,
     private authManager: AuthManager,
-  ) {
-    super();
-  }
+    private eventEmitter: TypedEventEmitter<OpenfortEventMap>,
+  ) {}
 
   async getAccessToken(): Promise<string | null> {
     return (await Authentication.fromStorage(this.storage))?.token ?? null;
-  }
-
-  /**
-   * Emit logout event to notify all listeners
-   */
-  emitLogout(): void {
-    this.emit('userLoggedOut');
   }
 
   /**
@@ -47,6 +40,6 @@ export class OpenfortInternal extends TypedEventEmitter<{ tokenRefreshed: [token
       credentials.refreshToken,
     ).save(this.storage);
 
-    this.emit('tokenRefreshed', credentials.accessToken);
+    this.eventEmitter.emit(OpenfortEvents.TOKEN_REFRESHED, credentials.accessToken);
   }
 }

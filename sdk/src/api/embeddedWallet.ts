@@ -14,6 +14,7 @@ import {
   OpenfortEventMap,
   EmbeddedAccount,
   EmbeddedAccountConfigureParams,
+  OpenfortEvents,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { IframeManager, IframeConfiguration } from '../wallets/iframeManager';
@@ -22,7 +23,6 @@ import { WindowMessenger, Message } from '../wallets/messaging/browserMessenger'
 import { ReactNativeMessenger } from '../wallets/messaging';
 import { MessagePoster, ShieldAuthType } from '../wallets/types';
 import { debugLog } from '../utils/debug';
-import { OpenfortInternal } from '../core/openfortInternal';
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null;
@@ -37,15 +37,13 @@ export class EmbeddedWalletApi {
     private readonly storage: IStorage,
     private readonly validateAndRefreshToken: () => Promise<void>,
     private readonly ensureInitialized: () => Promise<void>,
-    private readonly openfortInternal: OpenfortInternal,
+    private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) {
-    // Subscribe to token refresh events
-    this.openfortInternal.on('tokenRefreshed', (token: string) => {
+    this.eventEmitter.on(OpenfortEvents.TOKEN_REFRESHED, (token: string) => {
       this.handleTokenRefreshed(token);
     });
 
-    // Subscribe to logout events
-    this.openfortInternal.on('userLoggedOut', () => {
+    this.eventEmitter.on(OpenfortEvents.LOGGED_OUT, () => {
       this.handleLogout();
     });
   }
@@ -134,11 +132,7 @@ export class EmbeddedWalletApi {
     await iframeManager.configure(iframeConfig);
 
     this.signer = new EmbeddedSigner(iframeManager, this.storage);
-
-    // Update provider's signer if it exists
-    if (this.provider) {
-      this.provider.updateSigner(this.signer);
-    }
+    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, this.signer);
 
     return this.signer;
   }
@@ -200,11 +194,7 @@ export class EmbeddedWalletApi {
 
     // Create signer instance
     this.signer = new EmbeddedSigner(iframeManager, this.storage);
-
-    // Update provider's signer if it exists
-    if (this.provider) {
-      this.provider.updateSigner(this.signer);
-    }
+    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, this.signer);
 
     return this.get();
   }
@@ -378,7 +368,7 @@ export class EmbeddedWalletApi {
     if (!this.provider) {
       this.provider = new EvmProvider({
         storage: this.storage,
-        openfortEventEmitter: new TypedEventEmitter<OpenfortEventMap>(),
+        openfortEventEmitter: this.eventEmitter,
         signer: signer || undefined,
         account: account || undefined,
         authentication: authentication || undefined,

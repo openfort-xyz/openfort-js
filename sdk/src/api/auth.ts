@@ -13,8 +13,10 @@ import {
   TokenType,
   InitializeOAuthOptions,
   Auth,
+  OpenfortEventMap,
+  OpenfortEvents,
 } from '../types/types';
-import { OpenfortInternal } from '../core/openfortInternal';
+import TypedEventEmitter from '../utils/typedEventEmitter';
 
 export class AuthApi {
   constructor(
@@ -22,7 +24,7 @@ export class AuthApi {
     private authManager: AuthManager,
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
-    private openfortInternal: OpenfortInternal,
+    private eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) { }
 
   async logInWithEmailPassword(
@@ -252,6 +254,6 @@ export class AuthApi {
     }
     await this.authManager.logout(previousAuth.token, previousAuth.refreshToken);
     this.storage.remove(StorageKeys.AUTHENTICATION);
-    this.openfortInternal.emitLogout();
+    this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
   }
 }

@@ -10,6 +10,8 @@ import { EmbeddedWalletApi } from '../api/embeddedWallet';
 import { UserApi } from '../api/user';
 import { ProxyApi } from '../api/proxy';
 import { OpenfortInternal } from './openfortInternal';
+import TypedEventEmitter from '../utils/typedEventEmitter';
+import { OpenfortEventMap } from '../types/types';
 
 export class Openfort {
   private storage: IStorage;
@@ -31,6 +33,8 @@ export class Openfort {
   private proxyInstance?: ProxyApi;
 
   private configuration: SDKConfiguration;
+
+  public eventEmitter: TypedEventEmitter<OpenfortEventMap>;
 
   public get auth(): AuthApi {
     if (!this.authInstance) {
@@ -81,6 +85,7 @@ export class Openfort {
       this.openfortInternal = new OpenfortInternal(
         this.storage,
         this.authManager,
+        this.eventEmitter,
       );
 
       // Initialize all API instances with storage
@@ -89,13 +94,13 @@ export class Openfort {
         this.authManager,
         this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
-        this.openfortInternal,
+        this.eventEmitter,
       );
       this.embeddedWalletInstance = new EmbeddedWalletApi(
         this.storage,
         this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
-        this.openfortInternal,
+        this.eventEmitter,
       );
       this.userInstance = new UserApi(
         this.storage,
@@ -135,6 +140,9 @@ export class Openfort {
 
     // Always create lazy storage - no localStorage access here
     this.storage = new LazyStorage(this.configuration.storage);
+
+    // Create the centralized event emitter
+    this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>();
 
     InternalSentry.init({ configuration: this.configuration });
 

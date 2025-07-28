@@ -15,7 +15,7 @@ import TypedEventEmitter from '../../utils/typedEventEmitter';
 import { defaultChainRpcs } from '../../utils/chains';
 import { Signer } from '../isigner';
 import { Account } from '../../core/configuration/account';
-import { IStorage, StorageKeys } from '../../storage/istorage';
+import { IStorage } from '../../storage/istorage';
 import { addEthereumChain } from './addEthereumChain';
 import { registerSession } from './registerSession';
 import { RevokePermissionsRequestParams, revokeSession } from './revokeSession';
@@ -54,14 +54,6 @@ export class EvmProvider implements Provider {
     this.#policyId = newPolicy;
   }
 
-  /**
-   * Updates the signer for the provider
-   * @param signer - The new signer to use
-   */
-  public updateSigner(signer: Signer | undefined) {
-    this.#signer = signer;
-  }
-
   readonly #validateAndRefreshSession: () => Promise<void>;
 
   readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>;
@@ -97,6 +89,9 @@ export class EvmProvider implements Provider {
     this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>();
 
     openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout);
+    openfortEventEmitter.on(OpenfortEvents.SIGNER_CONFIGURED, (configuredSigner: Signer) => {
+      this.#signer = configuredSigner;
+    });
   }
 
   #ensureSigner(): Signer {
@@ -110,17 +105,8 @@ export class EvmProvider implements Provider {
   }
 
   #handleLogout = async () => {
-    const account = await Account.fromStorage(this.#storage);
-    const shouldEmitAccountsChanged = !!account;
-
-    // Logout is handled at a higher level - just clear local state
     this.#signer = undefined;
-    this.#storage.remove(StorageKeys.ACCOUNT);
-    this.#storage.remove(StorageKeys.AUTHENTICATION);
-
-    if (shouldEmitAccountsChanged) {
-      this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
-    }
+    this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
   };
 
   async getRpcProvider(): Promise<StaticJsonRpcProvider> {
@@ -155,7 +141,7 @@ export class EvmProvider implements Provider {
 
         throw new JsonRpcError(
           ProviderErrorCode.UNAUTHORIZED,
-          'No account configured. Please configure an embedded wallet first.',
+          'Unauthorized - must be authenticated and configured with a signer.',
         );
       }
       case 'eth_sendTransaction': {
