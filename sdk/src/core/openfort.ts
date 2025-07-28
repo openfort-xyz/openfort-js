@@ -94,12 +94,12 @@ export class Openfort {
         this.storage,
         () => this.openfortInternal.validateAndRefreshToken(),
         this.ensureInitialized.bind(this),
+        this.openfortInternal,
       );
       this.userInstance = new UserApi(
         this.storage,
         this.authManager,
         () => this.openfortInternal.validateAndRefreshToken(),
-        this.ensureInitialized.bind(this),
       );
       this.proxyInstance = new ProxyApi(
         this.storage,
@@ -198,8 +198,6 @@ export class Openfort {
       if (!(await SDKConfiguration.isStorageAccessible(this.storage))) {
         throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION);
       }
-
-      // Storage is now passed explicitly to SignerManager methods
 
       // Set up auth manager with backend clients
       this.authManager.setBackendApiClients(

@@ -23,6 +23,7 @@ import { ReactNativeMessenger } from '../wallets/messaging';
 import { Recovery } from '../core/configuration/recovery';
 import { MessagePoster, ShieldAuthType } from '../wallets/types';
 import { debugLog } from '../utils/debug';
+import { OpenfortInternal } from '../core/openfortInternal';
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null;
@@ -37,7 +38,13 @@ export class EmbeddedWalletApi {
     private readonly storage: IStorage,
     private readonly validateAndRefreshToken: () => Promise<void>,
     private readonly ensureInitialized: () => Promise<void>,
-  ) { }
+    private readonly openfortInternal: OpenfortInternal,
+  ) {
+    // Subscribe to token refresh events
+    this.openfortInternal.on('tokenRefreshed', (token: string) => {
+      this.handleTokenRefreshed(token);
+    });
+  }
 
   private get backendApiClients(): BackendApiClients {
     const configuration = SDKConfiguration.fromStorage();
@@ -168,7 +175,6 @@ export class EmbeddedWalletApi {
   }
 
   async configure(params: EmbeddedAccountConfigureParams = {}): Promise<EmbeddedAccount> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
 
     const recoveryParams = params.recoveryParams ?? {
@@ -225,7 +231,6 @@ export class EmbeddedWalletApi {
     message: string | Uint8Array,
     options?: { hashMessage?: boolean; arrayifyMessage?: boolean },
   ): Promise<string> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
@@ -238,7 +243,6 @@ export class EmbeddedWalletApi {
     types: TypedDataPayload['types'],
     message: TypedDataPayload['message'],
   ): Promise<string> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
@@ -257,7 +261,6 @@ export class EmbeddedWalletApi {
   }
 
   async exportPrivateKey(): Promise<string> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
@@ -273,7 +276,6 @@ export class EmbeddedWalletApi {
     recoveryPassword?: string;
     encryptionSession?: string;
   }): Promise<void> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
@@ -310,7 +312,6 @@ export class EmbeddedWalletApi {
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
@@ -474,6 +475,18 @@ export class EmbeddedWalletApi {
     if (this.signer) {
       const iframeManager = this.getIframeManager();
       this.signer = new EmbeddedSigner(iframeManager, this.storage);
+    }
+  }
+
+  private async handleTokenRefreshed(_newToken: string): Promise<void> {
+    // Update embedded signer authentication when token is refreshed
+    if (this.signer) {
+      try {
+        await this.signer.updateAuthentication();
+        debugLog('Updated embedded signer authentication after token refresh');
+      } catch (error) {
+        debugLog('Failed to update embedded signer authentication:', error);
+      }
     }
   }
 

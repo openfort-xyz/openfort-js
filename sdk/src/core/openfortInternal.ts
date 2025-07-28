@@ -2,12 +2,15 @@ import { IStorage } from '../storage/istorage';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { Authentication } from './configuration/authentication';
 import { AuthManager } from '../auth/authManager';
+import TypedEventEmitter from '../utils/typedEventEmitter';
 
-export class OpenfortInternal {
+export class OpenfortInternal extends TypedEventEmitter<{ tokenRefreshed: [token: string] }> {
   constructor(
     private storage: IStorage,
     private authManager: AuthManager,
-  ) { }
+  ) {
+    super();
+  }
 
   async getAccessToken(): Promise<string | null> {
     return (await Authentication.fromStorage(this.storage))?.token ?? null;
@@ -36,5 +39,7 @@ export class OpenfortInternal {
       credentials.player,
       credentials.refreshToken,
     ).save(this.storage);
+
+    this.emit('tokenRefreshed', credentials.accessToken);
   }
 }

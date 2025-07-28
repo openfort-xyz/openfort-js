@@ -73,14 +73,14 @@ export class AuthApi {
       email, password, authToken, ecosystemGame,
     }: { email: string; password: string; authToken: string, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
-    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
     return await this.authManager.linkEmail(email, password, authToken, ecosystemGame);
   }
 
   async unlinkEmailPassword(
     { email, authToken }: { email: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
-    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
     return await this.authManager.unlinkEmail(email, authToken);
   }
 
@@ -126,7 +126,7 @@ export class AuthApi {
       provider: OAuthProvider; authToken: string; options?: InitializeOAuthOptions, ecosystemGame?: string
     },
   ): Promise<InitAuthResponse> {
-    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
@@ -139,7 +139,7 @@ export class AuthApi {
       provider, token, tokenType,
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType },
   ): Promise<AuthPlayerResponse> {
-    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
@@ -150,7 +150,7 @@ export class AuthApi {
   async unlinkOAuth(
     { provider, authToken }: { provider: OAuthProvider; authToken: string },
   ): Promise<AuthPlayerResponse> {
-    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
     return await this.authManager.unlinkOAuth(provider, authToken);
   }
 
@@ -220,14 +220,14 @@ export class AuthApi {
       signature, message, walletClientType, connectorType, authToken,
     }: { signature: string; message: string; walletClientType: string; connectorType: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
-    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
     return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken);
   }
 
   async unlinkWallet(
     { address, authToken }: { address: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
-    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
     return await this.authManager.unlinkWallet(address, authToken);
   }
 
@@ -243,8 +243,13 @@ export class AuthApi {
    * Logs the user out by flushing the signer and removing credentials.
    */
   async logout(): Promise<void> {
-    await this.ensureInitialized();
-
+    await this.validateAndRefreshToken();
+    const previousAuth = await Authentication.fromStorage(this.storage);
+    if (!previousAuth || !previousAuth.refreshToken) {
+      return; // No previous authentication to log out
+    }
+    await this.validateAndRefreshToken();
+    await this.authManager.logout(previousAuth.token, previousAuth.refreshToken);
     this.storage.remove(StorageKeys.AUTHENTICATION);
     this.storage.remove(StorageKeys.ACCOUNT);
   }
