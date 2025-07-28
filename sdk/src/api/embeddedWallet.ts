@@ -44,6 +44,11 @@ export class EmbeddedWalletApi {
     this.openfortInternal.on('tokenRefreshed', (token: string) => {
       this.handleTokenRefreshed(token);
     });
+
+    // Subscribe to logout events
+    this.openfortInternal.on('userLoggedOut', () => {
+      this.handleLogout();
+    });
   }
 
   private get backendApiClients(): BackendApiClients {
@@ -487,6 +492,30 @@ export class EmbeddedWalletApi {
       } catch (error) {
         debugLog('Failed to update embedded signer authentication:', error);
       }
+    }
+  }
+
+  private async handleLogout(): Promise<void> {
+    // Clean up embedded signer when user logs out
+    if (this.signer) {
+      try {
+        await this.signer.logout();
+        debugLog('Logged out embedded signer');
+      } catch (error) {
+        debugLog('Failed to logout embedded signer:', error);
+      }
+      this.signer = null;
+    }
+
+    // Clean up iframe manager if it exists
+    if (this.iframeManager) {
+      this.iframeManager.destroy();
+      this.iframeManager = null;
+    }
+
+    // Clean up provider if it exists
+    if (this.provider) {
+      this.provider = null;
     }
   }
 

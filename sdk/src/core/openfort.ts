@@ -87,24 +87,25 @@ export class Openfort {
       this.authInstance = new AuthApi(
         this.storage,
         this.authManager,
-        () => this.openfortInternal.validateAndRefreshToken(),
+        this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
+        this.openfortInternal,
       );
       this.embeddedWalletInstance = new EmbeddedWalletApi(
         this.storage,
-        () => this.openfortInternal.validateAndRefreshToken(),
+        this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
         this.openfortInternal,
       );
       this.userInstance = new UserApi(
         this.storage,
         this.authManager,
-        () => this.openfortInternal.validateAndRefreshToken(),
+        this.validateAndRefreshToken.bind(this),
       );
       this.proxyInstance = new ProxyApi(
         this.storage,
         this.backendApiClients,
-        () => this.openfortInternal.validateAndRefreshToken(),
+        this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
         async () => {
           // Get sign function from embedded wallet

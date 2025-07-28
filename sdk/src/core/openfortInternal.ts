@@ -4,7 +4,7 @@ import { Authentication } from './configuration/authentication';
 import { AuthManager } from '../auth/authManager';
 import TypedEventEmitter from '../utils/typedEventEmitter';
 
-export class OpenfortInternal extends TypedEventEmitter<{ tokenRefreshed: [token: string] }> {
+export class OpenfortInternal extends TypedEventEmitter<{ tokenRefreshed: [token: string]; userLoggedOut: [] }> {
   constructor(
     private storage: IStorage,
     private authManager: AuthManager,
@@ -14,6 +14,13 @@ export class OpenfortInternal extends TypedEventEmitter<{ tokenRefreshed: [token
 
   async getAccessToken(): Promise<string | null> {
     return (await Authentication.fromStorage(this.storage))?.token ?? null;
+  }
+
+  /**
+   * Emit logout event to notify all listeners
+   */
+  emitLogout(): void {
+    this.emit('userLoggedOut');
   }
 
   /**

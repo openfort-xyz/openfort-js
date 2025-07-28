@@ -14,6 +14,7 @@ import {
   InitializeOAuthOptions,
   Auth,
 } from '../types/types';
+import { OpenfortInternal } from '../core/openfortInternal';
 
 export class AuthApi {
   constructor(
@@ -21,6 +22,7 @@ export class AuthApi {
     private authManager: AuthManager,
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
+    private openfortInternal: OpenfortInternal,
   ) { }
 
   async logInWithEmailPassword(
@@ -252,5 +254,7 @@ export class AuthApi {
     await this.authManager.logout(previousAuth.token, previousAuth.refreshToken);
     this.storage.remove(StorageKeys.AUTHENTICATION);
     this.storage.remove(StorageKeys.ACCOUNT);
+    // Emit logout event to notify all listeners
+    this.openfortInternal.emitLogout();
   }
 }
