@@ -447,10 +447,7 @@ export class IframeManager {
     }
   }
 
-  /**
-   * Logout
-   */
-  async logout(): Promise<void> {
+  async disconnect(): Promise<void> {
     const remote = await this.ensureConnection();
     const request = { uuid: randomUUID() };
     await remote.logout(request);

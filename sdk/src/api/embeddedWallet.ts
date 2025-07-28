@@ -474,7 +474,7 @@ export class EmbeddedWalletApi {
     // Clean up embedded signer when user logs out
     if (this.signer) {
       try {
-        await this.signer.logout();
+        await this.signer.disconnect();
         debugLog('Logged out embedded signer');
       } catch (error) {
         debugLog('Failed to logout embedded signer:', error);

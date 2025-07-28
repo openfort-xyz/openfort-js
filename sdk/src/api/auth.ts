@@ -250,11 +250,8 @@ export class AuthApi {
     if (!previousAuth || !previousAuth.refreshToken) {
       return; // No previous authentication to log out
     }
-    await this.validateAndRefreshToken();
     await this.authManager.logout(previousAuth.token, previousAuth.refreshToken);
     this.storage.remove(StorageKeys.AUTHENTICATION);
-    this.storage.remove(StorageKeys.ACCOUNT);
-    // Emit logout event to notify all listeners
     this.openfortInternal.emitLogout();
   }
 }

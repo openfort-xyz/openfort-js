@@ -5,7 +5,7 @@ import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
 import { ShieldAuthType } from './types';
 import type { Signer } from './isigner';
 import type { IframeManager } from './iframeManager';
-import { type IStorage } from '../storage/istorage';
+import { StorageKeys, type IStorage } from '../storage/istorage';
 
 export class EmbeddedSigner implements Signer {
   constructor(
@@ -53,8 +53,9 @@ export class EmbeddedSigner implements Signer {
     );
   }
 
-  async logout(): Promise<void> {
-    await this.iframeManager.logout();
+  async disconnect(): Promise<void> {
+    await this.iframeManager.disconnect();
+    this.storage.remove(StorageKeys.ACCOUNT);
   }
 
   async updateAuthentication(): Promise<void> {
