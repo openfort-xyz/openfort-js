@@ -41,7 +41,6 @@ export class EmbeddedWalletApi {
   ) {
     // Subscribe to token refresh events
     this.openfortInternal.on('tokenRefreshed', (token: string) => {
-      debugLog('Token refreshed:', token);
       this.handleTokenRefreshed(token);
     });
 
