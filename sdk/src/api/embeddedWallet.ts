@@ -110,10 +110,13 @@ export class EmbeddedWalletApi {
     }
 
     const account = await Account.fromStorage(this.storage);
-    const auth = await Authentication.fromStorage(this.storage);
-
-    if (!account || !auth) {
+    if (!account) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
+    }
+
+    const auth = await Authentication.fromStorage(this.storage);
+    if (!auth) {
+      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
     const iframeConfig: IframeConfiguration = {
