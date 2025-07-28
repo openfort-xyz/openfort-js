@@ -7,7 +7,6 @@ import { Data, OpenfortError, OpenfortErrorType } from '../core/errors/openfortE
 import { debugLog } from '../utils/debug';
 import { randomUUID } from '../utils/crypto';
 import { Authentication } from '../core/configuration/authentication';
-import { Recovery } from '../core/configuration/recovery';
 import { Account } from '../core/configuration/account';
 import type { RecoveryMethod } from '../types/types';
 import { ReactNativeMessenger } from './messaging';
@@ -538,8 +537,6 @@ export class IframeManager {
       recoveryPassword?: string;
       encryptionSession?: string;
     },
-    recoveryType?: 'openfort' | 'custom',
-    customToken?: string,
   ): Promise<{ address: string; chainId: number; ownerAddress: string; accountType: string }> {
     // Get authentication from storage
     const authentication = await Authentication.fromStorage(this.storage);
@@ -547,31 +544,13 @@ export class IframeManager {
       throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
-    // Build shield authentication
-    let shieldAuthentication: ShieldAuthentication | null = null;
-    const storedRecovery = await Recovery.fromStorage(this.storage);
-    const finalRecoveryType = recoveryType || storedRecovery?.type || 'openfort';
-    const finalCustomToken = customToken || storedRecovery?.customToken;
-
-    if (finalRecoveryType === 'openfort') {
-      shieldAuthentication = {
-        auth: ShieldAuthType.OPENFORT,
-        authProvider: authentication.thirdPartyProvider || undefined,
-        token: authentication.token,
-        tokenType: authentication.thirdPartyTokenType || undefined,
-        encryptionSession: entropy?.encryptionSession || undefined,
-      };
-      new Recovery('openfort').save(this.storage);
-    } else if (finalRecoveryType === 'custom') {
-      if (!finalCustomToken) {
-        throw new OpenfortError('Custom recovery requires a token', OpenfortErrorType.INVALID_CONFIGURATION);
-      }
-      shieldAuthentication = {
-        auth: ShieldAuthType.CUSTOM,
-        token: finalCustomToken,
-      };
-      new Recovery('custom', finalCustomToken).save(this.storage);
-    }
+    const shieldAuthentication = {
+      auth: ShieldAuthType.OPENFORT,
+      authProvider: authentication.thirdPartyProvider || undefined,
+      token: authentication.token,
+      tokenType: authentication.thirdPartyTokenType || undefined,
+      encryptionSession: entropy?.encryptionSession || undefined,
+    };
 
     const iframeConfiguration: IframeConfiguration = {
       thirdPartyTokenType: authentication.thirdPartyTokenType ?? null,

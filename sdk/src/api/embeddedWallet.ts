@@ -20,7 +20,6 @@ import { IframeManager, IframeConfiguration } from '../wallets/iframeManager';
 import { EmbeddedSigner } from '../wallets/embedded';
 import { WindowMessenger, Message } from '../wallets/messaging/browserMessenger';
 import { ReactNativeMessenger } from '../wallets/messaging';
-import { Recovery } from '../core/configuration/recovery';
 import { MessagePoster, ShieldAuthType } from '../wallets/types';
 import { debugLog } from '../utils/debug';
 import { OpenfortInternal } from '../core/openfortInternal';
@@ -93,24 +92,13 @@ export class EmbeddedWalletApi {
     return this.iframeManager;
   }
 
-  private buildShieldAuthentication(recovery: Recovery, auth: Authentication) {
-    if (recovery.type === 'openfort') {
-      return {
-        auth: ShieldAuthType.OPENFORT,
-        authProvider: auth.thirdPartyProvider || undefined,
-        token: auth.token,
-        tokenType: auth.thirdPartyTokenType || undefined,
-      };
-    }
-
-    if (recovery.type === 'custom' && recovery.customToken) {
-      return {
-        auth: ShieldAuthType.CUSTOM,
-        token: recovery.customToken,
-      };
-    }
-
-    return null;
+  private buildShieldAuthentication(auth: Authentication) {
+    return {
+      auth: ShieldAuthType.OPENFORT,
+      authProvider: auth.thirdPartyProvider || undefined,
+      token: auth.token,
+      tokenType: auth.thirdPartyTokenType || undefined,
+    };
   }
 
   /**
@@ -124,9 +112,8 @@ export class EmbeddedWalletApi {
     // Check if we have the required data in storage
     const account = await Account.fromStorage(this.storage);
     const auth = await Authentication.fromStorage(this.storage);
-    const recovery = await Recovery.fromStorage(this.storage);
 
-    if (!account || !auth || !recovery) {
+    if (!account || !auth) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
 
@@ -135,7 +122,7 @@ export class EmbeddedWalletApi {
       thirdPartyProvider: auth.thirdPartyProvider ?? null,
       accessToken: auth.token,
       playerID: auth.player,
-      recovery: this.buildShieldAuthentication(recovery, auth),
+      recovery: this.buildShieldAuthentication(auth),
       chainId: account.chainId,
       password: null,
     };
@@ -202,23 +189,11 @@ export class EmbeddedWalletApi {
       };
     }
 
-    // Determine recovery type
-    let recoveryType: 'openfort' | 'custom' | undefined;
-    let customToken: string | undefined;
-    if (params.shieldAuthentication) {
-      recoveryType = params.shieldAuthentication.auth === 'openfort'
-        ? 'openfort'
-        : 'custom';
-      customToken = params.shieldAuthentication.token;
-    }
-
     // Create embedded signer through iframe manager
     const iframeManager = this.getIframeManager();
     await iframeManager.createEmbeddedSigner(
       params.chainId || null,
       entropy,
-      recoveryType,
-      customToken,
     );
 
     // Create signer instance

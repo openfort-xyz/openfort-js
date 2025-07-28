@@ -2,11 +2,10 @@ import type { RecoveryMethod } from '../types/types';
 import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
-import { Recovery } from '../core/configuration/recovery';
 import { ShieldAuthType } from './types';
 import type { Signer } from './isigner';
 import type { IframeManager } from './iframeManager';
-import { type IStorage, StorageKeys } from '../storage/istorage';
+import { type IStorage } from '../storage/istorage';
 
 export class EmbeddedSigner implements Signer {
   constructor(
@@ -56,7 +55,6 @@ export class EmbeddedSigner implements Signer {
 
   async logout(): Promise<void> {
     await this.iframeManager.logout();
-    this.storage.remove(StorageKeys.RECOVERY);
   }
 
   async updateAuthentication(): Promise<void> {
@@ -68,17 +66,9 @@ export class EmbeddedSigner implements Signer {
       );
     }
 
-    const recovery = await Recovery.fromStorage(this.storage);
-    if (!recovery) {
-      throw new OpenfortError(
-        'Must have recovery to update authentication',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
-    }
-
     await this.iframeManager.updateAuthentication(
       authentication.token,
-      recovery.type === 'openfort' ? ShieldAuthType.OPENFORT : ShieldAuthType.CUSTOM,
+      ShieldAuthType.OPENFORT,
     );
   }
 }
