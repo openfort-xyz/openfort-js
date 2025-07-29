@@ -18,6 +18,7 @@ import {
   EmbeddedAccount,
   RecoverParams as _RecoverParams,
   EmbeddedAccountConfigureParams,
+  EmbeddedAccountRecoverParams,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { IframeManager } from '../wallets/iframeManager';
@@ -87,6 +88,56 @@ export class EmbeddedWalletApi {
     }
 
     await SignerManager.embedded(this.storage, params.chainId, entropy, recoveryType, customToken);
+    return this.get();
+  }
+
+  async create(
+    accountType: string,
+    chainType: string,
+  ): Promise<EmbeddedAccount> {
+    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
+    const signer = await SignerManager.fromStorage(this.storage);
+    if (!signer) {
+      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
+    }
+
+    await signer.create(accountType, chainType);
+    return this.get();
+  }
+
+  async recover(
+    params: EmbeddedAccountRecoverParams,
+  ): Promise<EmbeddedAccount> {
+    const recoveryParams = params.recoveryParams ?? {
+      recoveryMethod: RecoveryMethod.AUTOMATIC,
+    };
+
+    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
+    const configuration = SDKConfiguration.fromStorage();
+
+    let entropy: Entropy | null = null;
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
+      entropy = {
+        encryptionSession: params.shieldAuthentication?.encryptionSession || null,
+        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD ? recoveryParams.password : null,
+        encryptionPart: configuration?.shieldConfiguration?.shieldEncryptionKey || null,
+      };
+    }
+
+    let recoveryType: 'openfort' | 'custom' | null = null;
+    let customToken: string | null = null;
+    if (params.shieldAuthentication) {
+      recoveryType = params.shieldAuthentication.auth === 'openfort' ? 'openfort' : 'custom';
+      customToken = params.shieldAuthentication.token;
+    }
+
+    if (!this.storage) {
+      throw new OpenfortError('Storage not available in EmbeddedWalletApi', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
+    await SignerManager.recoveredEmbedded(this.storage, params.accountUuid, entropy, recoveryType, customToken);
     return this.get();
   }
 

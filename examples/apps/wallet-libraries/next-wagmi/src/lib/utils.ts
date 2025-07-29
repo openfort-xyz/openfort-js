@@ -15,6 +15,19 @@ export const configureEmbeddedSigner = async (chainId: number, password?: string
   });
 };
 
+export const recoverEmbeddedSigner = async (accountUuid: string, password?: string) => {
+  const shieldAuth: ShieldAuthentication = {
+    auth: ShieldAuthType.OPENFORT,
+    token: (await openfortInstance.getAccessToken())!,
+    encryptionSession: await getEncryptionSession(),
+  };
+  await openfortInstance.embeddedWallet.recover({
+    accountUuid,
+    shieldAuthentication: shieldAuth,
+    recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+  });
+};
+
 const getEncryptionSession = async (): Promise<string> => {
   try {
     const response = await axios.post<{ session: string }>(

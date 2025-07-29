@@ -59,6 +59,7 @@ export default function App() {
       <WriteContract />
       <WriteContracts />
       <GrantPermission />
+      <CreateWithNewMethod />
     </>
   )
 }
@@ -682,6 +683,86 @@ function GrantPermission() {
           Registered! Permission context: {result.permissionsContext}
         </div>
       )}
+      {error && (
+        <div className="mt-4 p-4 bg-red-100 rounded">
+          Error: {error.details || error.message}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CreateWithNewMethod() {
+  const [error, setError] = useState<BaseError | null>(null);
+  const [pending, setPending] = useState(false);
+  const [result, setResult] = useState<any | null>(null);
+  const [accountType, setAccountType] = useState('Smart Account');
+  const [chainType, setChainType] = useState('EVM');
+
+  async function handleCreate() {
+    setPending(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const embeddedAccount = await openfortInstance.embeddedWallet.create(accountType, chainType);
+      setResult(embeddedAccount);
+    } catch (err) {
+      setError(err as BaseError);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div>
+      <h2>Create with new method</h2>
+      
+      <div className="space-y-4">
+        <div>
+          <label className="block">
+            Account Type:
+            <select 
+              value={accountType} 
+              onChange={(e) => setAccountType(e.target.value)}
+              className="mt-1 block w-full rounded border p-2"
+            >
+              <option value="Externally Owned Account">Externally Owned Account</option>
+              <option value="Smart Account">Smart Account</option>
+            </select>
+          </label>
+        </div>
+
+        <div>
+          <label className="block">
+            Chain Type:
+            <select 
+              value={chainType} 
+              onChange={(e) => setChainType(e.target.value)}
+              className="mt-1 block w-full rounded border p-2"
+            >
+              <option value="EVM">EVM</option>
+              <option value="SVM">SVM</option>
+            </select>
+          </label>
+        </div>
+
+        <button 
+          onClick={handleCreate}
+          disabled={pending}
+          className="px-4 py-2 bg-purple-500 text-white rounded disabled:bg-gray-400"
+        >
+          {pending ? 'Creating...' : 'Create with new method'}
+        </button>
+      </div>
+
+      {result && (
+        <div className="mt-4 p-4 bg-green-100 rounded">
+          <h3 className="font-bold">Account Created!</h3>
+          <pre className="text-sm">{JSON.stringify(result, null, 2)}</pre>
+        </div>
+      )}
+      
       {error && (
         <div className="mt-4 p-4 bg-red-100 rounded">
           Error: {error.details || error.message}

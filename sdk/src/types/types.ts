@@ -434,6 +434,12 @@ export type EmbeddedAccountConfigureParams = {
   recoveryParams?: RecoverParams;
 };
 
+export type EmbeddedAccountRecoverParams = {
+  accountUuid: string;
+  shieldAuthentication?: ShieldAuthentication;
+  recoveryParams?: RecoverParams;
+};
+
 export type RecoverParams = {
   recoveryMethod: RecoveryMethod.AUTOMATIC;
 } | {

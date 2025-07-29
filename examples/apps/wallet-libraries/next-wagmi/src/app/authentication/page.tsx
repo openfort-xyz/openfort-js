@@ -6,7 +6,7 @@ import { sepolia } from 'viem/chains';
 import { MissingRecoveryPasswordError } from '@openfort/openfort-js';
 
 import { openfortInstance } from '../../openfort';
-import { configureEmbeddedSigner, getURL } from '../../lib/utils';
+import { configureEmbeddedSigner, recoverEmbeddedSigner, getURL } from '../../lib/utils';
 import { useSearchParams } from 'next/navigation';
 
 interface AuthFormData {
@@ -39,6 +39,8 @@ function Authenticate() {
   const [emailConfirmation, setEmailConfirmation] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showRecoveryPasswordInput, setShowRecoveryPasswordInput] = useState(false);
+  const [showAccountUuidInput, setShowAccountUuidInput] = useState(false);
+  const [accountUuid, setAccountUuid] = useState('');
   const { chainId } = useAccount();
 
 
@@ -73,6 +75,10 @@ function Authenticate() {
 
   const handleRecoveryPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRecoveryPasswordInput(e.target.value);
+  };
+
+  const handleAccountUuidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAccountUuid(e.target.value);
   };
 
   const handleRecoveryPasswordSubmit = async (e: React.FormEvent) => {
@@ -152,6 +158,47 @@ function Authenticate() {
     setStatus(null);
   };
 
+  const handleRecoverLogin = () => {
+    setShowAccountUuidInput(true);
+  };
+
+  const handleAccountUuidSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus(null);
+    setIsLoading(true);
+    setIsProcessing(true);
+
+    try {
+      // First login with email and password (same as login flow)
+      await openfortInstance.auth.logInWithEmailPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log('User logged in successfully');
+      
+      // Then recover embedded signer instead of configuring it
+      try {
+        await recoverEmbeddedSigner(accountUuid, recoveryPasswordInput);
+        setShowAccountUuidInput(false);
+      } catch (error) {
+        if (error instanceof MissingRecoveryPasswordError) {
+          setStatus('Please set a recovery password to use the embedded signer');
+          setShowRecoveryPasswordInput(true);
+        } else {
+          throw error;
+        }
+      }
+    } catch (error) {
+      console.error('Account recovery error:', error);
+      setStatus(
+        error instanceof Error ? error.message : 'An unexpected error occurred'
+      );
+    } finally {
+      setIsLoading(false);
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <div className="auth-container">
       <h2 className="auth-title">{isLogin ? 'Login' : 'Register'}</h2>
@@ -181,7 +228,7 @@ function Authenticate() {
                 onChange={handleInputChange}
                 required
                 className="auth-input"
-                disabled={isProcessing || showRecoveryPasswordInput}
+                disabled={isProcessing || showRecoveryPasswordInput || showAccountUuidInput}
               />
             </div>
             <div className="auth-input-group">
@@ -196,12 +243,12 @@ function Authenticate() {
                 onChange={handleInputChange}
                 required
                 className="auth-input"
-                disabled={isProcessing || showRecoveryPasswordInput}
+                disabled={isProcessing || showRecoveryPasswordInput || showAccountUuidInput}
               />
             </div>
             <button
               type="submit"
-              disabled={isLoading || isProcessing || showRecoveryPasswordInput}
+              disabled={isLoading || isProcessing || showRecoveryPasswordInput || showAccountUuidInput}
               className="auth-button relative flex items-center justify-center"
             >
               {isProcessing
@@ -211,6 +258,16 @@ function Authenticate() {
                 : isLogin ? 'Login' : 'Register'
               }
             </button>
+            {isLogin && (
+              <button
+                type="button"
+                onClick={handleRecoverLogin}
+                disabled={isLoading || isProcessing || showRecoveryPasswordInput || showAccountUuidInput}
+                className="auth-button relative flex items-center justify-center mt-2"
+              >
+                Login Recovered
+              </button>
+            )}
           </form>
         )}
 
@@ -245,15 +302,47 @@ function Authenticate() {
           </button>
         </form>
       )}
+
+      {showAccountUuidInput && (
+        <form onSubmit={handleAccountUuidSubmit} className="auth-form">
+          <div className="auth-input-group">
+            <label htmlFor="accountUuid" className="auth-label">
+              Account UUID:
+            </label>
+            <input
+              type="text"
+              id="accountUuid"
+              name="accountUuid"
+              value={accountUuid}
+              onChange={handleAccountUuidChange}
+              required
+              className="auth-input"
+              disabled={isLoading}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading || isProcessing}
+            className="relative flex items-center justify-center"
+          >
+            {isProcessing
+              ? 'Recovering account...'
+              : isLoading
+              ? 'Continue...'
+              : 'Continue'
+            }
+          </button>
+        </form>
+      )}
       {status && <div>{status}</div>}
 
-      {!showRecoveryPasswordInput && (
+      {!showRecoveryPasswordInput && !showAccountUuidInput && (
         <p className="auth-toggle-text">
           {isLogin ? "Don't have an account? " : 'Already have an account? '}
           <button
             onClick={toggleAuthMode}
             className="auth-toggle-button"
-            disabled={isProcessing}
+            disabled={isProcessing || showAccountUuidInput}
           >
             {isLogin ? 'Register' : 'Login'}
           </button>

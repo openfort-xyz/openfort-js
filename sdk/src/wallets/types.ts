@@ -4,6 +4,8 @@ import type { RecoveryMethod } from '../types/types';
 export enum Event {
   LOADED = 'loaded',
   CONFIGURE = 'configure',
+  RECOVER = 'recover',
+  CREATE = 'create',
   CONFIGURED = 'configured',
   UPDATE_AUTHENTICATION = 'update-authentication',
   AUTHENTICATION_UPDATED = 'authentication-updated',
@@ -134,6 +136,142 @@ export class ConfigureRequest implements IEventRequest {
     this.shieldAPIKey = shieldAPIKey;
     this.accessToken = accessToken;
     this.playerID = playerID;
+    this.thirdPartyProvider = thirdPartyProvider;
+    this.thirdPartyTokenType = thirdPartyTokenType;
+    this.encryptionKey = encryptionKey;
+    this.openfortURL = openfortURL;
+    this.shieldURL = shieldURL;
+    this.encryptionPart = encryptionPart;
+    this.encryptionSession = encryptionSession;
+  }
+}
+
+export class CreateRequest implements IEventRequest {
+  uuid: string;
+
+  action: Event = Event.CREATE;
+
+  accountType: string;
+
+  chainType: string;
+
+  chainId: number | null;
+
+  recovery: ShieldAuthentication | null;
+
+  publishableKey: string;
+
+  shieldAPIKey: string;
+
+  accessToken: string | null;
+
+  encryptionKey: string | null;
+
+  encryptionPart: string | null;
+
+  encryptionSession: string | null;
+
+  openfortURL: string;
+
+  shieldURL: string;
+
+  thirdPartyProvider: string | null;
+
+  thirdPartyTokenType: string | null;
+
+  playerID: string | null;
+
+  constructor(
+    uuid: string,
+    accountType: string,
+    chainType: string,
+    chainId: number,
+    recovery: ShieldAuthentication,
+    publishableKey: string,
+    shieldAPIKey: string,
+    accessToken: string,
+    playerID: string,
+    openfortURL: string,
+    shieldURL: string,
+    encryptionKey: string | null = null,
+    thirdPartyProvider: string | null = null,
+    thirdPartyTokenType: string | null = null,
+    encryptionPart: string | null = null,
+    encryptionSession: string | null = null,
+  ) {
+    this.uuid = uuid;
+    this.accountType = accountType;
+    this.chainType = chainType;
+    this.chainId = chainId;
+    this.recovery = recovery;
+    this.publishableKey = publishableKey;
+    this.shieldAPIKey = shieldAPIKey;
+    this.accessToken = accessToken;
+    this.playerID = playerID;
+    this.thirdPartyProvider = thirdPartyProvider;
+    this.thirdPartyTokenType = thirdPartyTokenType;
+    this.encryptionKey = encryptionKey;
+    this.openfortURL = openfortURL;
+    this.shieldURL = shieldURL;
+    this.encryptionPart = encryptionPart;
+    this.encryptionSession = encryptionSession;
+  }
+}
+
+export class RecoverRequest implements IEventRequest {
+  uuid: string;
+
+  action: Event = Event.RECOVER;
+
+  recovery: ShieldAuthentication | null;
+
+  publishableKey: string;
+
+  shieldAPIKey: string;
+
+  accessToken: string | null;
+
+  encryptionKey: string | null;
+
+  encryptionPart: string | null;
+
+  encryptionSession: string | null;
+
+  openfortURL: string;
+
+  shieldURL: string;
+
+  thirdPartyProvider: string | null;
+
+  thirdPartyTokenType: string | null;
+
+  playerID: string | null;
+
+  accountUuid: string;
+
+  constructor(
+    uuid: string,
+    recovery: ShieldAuthentication,
+    publishableKey: string,
+    shieldAPIKey: string,
+    accessToken: string,
+    playerID: string,
+    accountUuid: string,
+    openfortURL: string,
+    shieldURL: string,
+    encryptionKey: string | null = null,
+    thirdPartyProvider: string | null = null,
+    thirdPartyTokenType: string | null = null,
+    encryptionPart: string | null = null,
+    encryptionSession: string | null = null,
+  ) {
+    this.uuid = uuid;
+    this.recovery = recovery;
+    this.publishableKey = publishableKey;
+    this.shieldAPIKey = shieldAPIKey;
+    this.accessToken = accessToken;
+    this.playerID = playerID;
+    this.accountUuid = accountUuid;
     this.thirdPartyProvider = thirdPartyProvider;
     this.thirdPartyTokenType = thirdPartyTokenType;
     this.encryptionKey = encryptionKey;

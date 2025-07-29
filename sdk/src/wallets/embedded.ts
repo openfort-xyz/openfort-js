@@ -52,6 +52,33 @@ export class EmbeddedSigner implements Signer {
     ).save(this.storage);
   }
 
+  async create(
+    accountType: string,
+    chainType: string,
+  ): Promise<void> {
+    const deviceAccount = await this.iframeManager
+      .create(this.iframeConfiguration, accountType, chainType);
+    new Account(
+      deviceAccount.address,
+      deviceAccount.chainId,
+      deviceAccount.ownerAddress,
+      deviceAccount.accountType,
+    ).save(this.storage);
+  }
+
+  async recover(
+    accountUuid: string,
+  ): Promise<void> {
+    const deviceAccount = await this.iframeManager
+      .recover(this.iframeConfiguration, accountUuid);
+    new Account(
+      deviceAccount.address,
+      deviceAccount.chainId,
+      deviceAccount.ownerAddress,
+      deviceAccount.accountType,
+    ).save(this.storage);
+  }
+
   async setEmbeddedRecovery({ recoveryMethod, recoveryPassword, encryptionSession }: {
     recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string
   }): Promise<void> {

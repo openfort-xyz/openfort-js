@@ -110,6 +110,54 @@ export class SignerManager {
     };
 
     const resp = await iframeManager.configure(iframeConfiguration);
+    // looks like accountType here is actually smart account implementation type
+    new Account(resp.address, resp.chainId, resp.ownerAddress, resp.accountType).save(storage);
+    return new EmbeddedSigner(iframeManager, iframeConfiguration, storage);
+  }
+
+  static async recoveredEmbedded(
+    storage: IStorage,
+    accountUuid: string,
+    entropy: Entropy | null = null,
+    recoveryType: 'openfort' | 'custom' | null = null,
+    customToken: string | null = null,
+  ): Promise<Signer> {
+    if (!storage) {
+      throw new OpenfortError('Storage is required', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
+    const iframeManager = this.getIframeManager(storage);
+
+    let authentication;
+    try {
+      authentication = await Authentication.fromStorage(storage);
+    } catch (error) {
+      throw new OpenfortError('Failed to access authentication storage', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
+    if (!authentication) {
+      throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    }
+
+    const storedRecovery = await Recovery.fromStorage(storage);
+    const shieldRecoveryType = recoveryType || storedRecovery?.type || 'openfort';
+    const shieldCustomToken = customToken || storedRecovery?.customToken;
+    const recovery = new Recovery(shieldRecoveryType, shieldCustomToken);
+
+    const shieldAuthentication = this.shieldAuthentication(storage, recovery, authentication, entropy);
+
+    const iframeConfiguration: IframeConfiguration = {
+      thirdPartyTokenType: authentication.thirdPartyTokenType ?? null,
+      thirdPartyProvider: authentication.thirdPartyProvider ?? null,
+      accessToken: authentication.token,
+      playerID: authentication.player,
+      recovery: shieldAuthentication,
+      chainId: null,
+      password: entropy?.recoveryPassword || null,
+    };
+
+    const resp = await iframeManager.recover(iframeConfiguration, accountUuid);
+    // looks like accountType here is actually smart account implementation type
     new Account(resp.address, resp.chainId, resp.ownerAddress, resp.accountType).save(storage);
     return new EmbeddedSigner(iframeManager, iframeConfiguration, storage);
   }
