@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
 import AccountActions from "@/components/AccountActions/AccountActions";
 import Link from "next/link";
+import { StatusType, Toast } from "@/components/Toasts";
 
 const HomePage: NextPage = () => {
   const { state } = useOpenfort();
@@ -28,9 +29,12 @@ const HomePage: NextPage = () => {
   const router = useRouter();
   const [message, setMessage] = useState<string>("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [status, setStatus] = useState<StatusType>(null);
 
   const handleSetMessage = (message: string) => {
     const newMessage = `> ${message} \n\n`;
+    if (window.innerWidth < 768)
+      setStatus({ type: "information", description: "> " + message });
     setMessage((prev) => newMessage + prev);
   };
 
@@ -57,7 +61,7 @@ const HomePage: NextPage = () => {
                 Explore Openfort
               </p>
               <p className='text-gray-500'>
-              Sign in to the demo to access the dev tools.
+                Sign in to the demo to access the dev tools.
               </p>
               <Button variant={'outline'} size={'sm'} className="mt-2" asChild>
                 <Link href='https://www.openfort.io/docs' target="_blank">
@@ -106,7 +110,7 @@ const HomePage: NextPage = () => {
 
   if (state !== EmbeddedState.READY) {
     return (
-      <Layout 
+      <Layout
         sidebar={
           <>
             <div className="flex-1 w-full" />
@@ -115,7 +119,7 @@ const HomePage: NextPage = () => {
                 Openfort gives you modular components so you can customize your
                 product for your users.
                 <a
-                  href="https://www.openfort.io/docs/guides/getting-started"
+                  href="https://www.openfort.io/docs/products/embedded-wallet"
                   className="text-blue-600 hover:underline"
                 >
                   Learn more
@@ -149,7 +153,7 @@ const HomePage: NextPage = () => {
           <div className="flex-1 w-full">
             <textarea
               ref={textareaRef}
-              className="no-scrollbar h-full w-full border-0 bg-gray-100 p-4 font-mono text-xs text-black"
+              className="no-scrollbar h-full w-full border-0 bg-gray-100 p-4 font-mono text-xs text-black resize-none focus:ring-0"
               value={message}
               readOnly
             />
@@ -173,9 +177,9 @@ const HomePage: NextPage = () => {
         </>
       }
     >
-      <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
+      <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6 pb-8">
         <p className="text-gray-400 mb-2">Welcome, {user?.id}!</p>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <AccountActions handleSetMessage={handleSetMessage} />
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
             <h2 className="flex justify-left font-medium text-xl pb-4">
@@ -267,6 +271,7 @@ const HomePage: NextPage = () => {
           </div>
         </div>
       </div>
+      <Toast status={status} setStatus={setStatus} />
     </Layout>
   );
 };
