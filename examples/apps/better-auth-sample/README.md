@@ -35,7 +35,7 @@ Fill it with the Openfort project keys and the URL of the `express.js` backend. 
 cd backend/ && cp .env.example .env
 ```
 
-Fill it with the [Better Auth environment variables](https://www.better-auth.com/docs/installation#set-environment-variables), backend URL and port, and if you want to set up the authentication with Google, add your `client ID` and `client secret`. For this last part, you will need to create an OAuth application at the [Google Cloud Console](https://console.cloud.google.com/). Other providers can be added equivalently — check out the [Better Auth documentation](https://www.better-auth.com/docs/introduction) for the specifics.
+Fill it with the [Better Auth environment variables](https://www.better-auth.com/docs/installation#set-environment-variables), backend URL and port, and if you want to set up the authentication with Google, add your `client ID` and `client secret`. For this last part, you will need to create an OAuth application at the [Google Cloud Console](https://console.cloud.google.com/) and add the allowed callback url `http://localhost:8000/api/auth/callback/google`. Other providers can be added equivalently — check out the [Better Auth documentation](https://www.better-auth.com/docs/introduction) for the specifics.
 
 ### 3. Install the packages
 
