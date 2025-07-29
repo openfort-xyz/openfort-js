@@ -177,10 +177,7 @@ export class Openfort {
    */
   public async validateAndRefreshToken(forceRefresh?: boolean): Promise<void> {
     await this.ensureInitialized();
-    await this.openfortInternal.validateAndRefreshToken(forceRefresh);
-    return new Promise((resolve) => {
-      setTimeout(resolve, 50);
-    });
+    return await this.openfortInternal.validateAndRefreshToken(forceRefresh);
   }
 
   private get backendApiClients(): BackendApiClients {

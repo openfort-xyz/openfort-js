@@ -59,7 +59,7 @@ const HomePage: NextPage = () => {
               <p className='text-gray-500'>
               Sign in to the demo to access the dev tools.
               </p>
-              <Button variant={'outline'} size={'sm'} className="mt-2">
+              <Button variant={'outline'} size={'sm'} className="mt-2" asChild>
                 <Link href='https://www.openfort.io/docs' target="_blank">
                   Explore the Docs
                 </Link>
@@ -71,7 +71,7 @@ const HomePage: NextPage = () => {
               Openfort gives you modular components so you can customize your
               product for your users.
               <a
-                href="https://www.openfort.io/docs/guides/getting-started"
+                href="https://www.openfort.io/docs/products/embedded-wallet/react/kit/create-react-app"
                 className="text-blue-600 hover:underline"
               >
                 Learn more
@@ -159,7 +159,7 @@ const HomePage: NextPage = () => {
               Openfort gives you modular components so you can customize your
               product for your users.
               <a
-                href="https://www.openfort.io/docs/guides/getting-started"
+                href="https://www.openfort.io/docs/products/embedded-wallet/react/kit/create-react-app"
                 className="text-blue-600 hover:underline"
               >
                 Learn more

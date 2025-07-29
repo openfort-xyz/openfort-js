@@ -1,3 +1,4 @@
+import { debugLog } from 'utils/debug';
 import { IStorage } from '../storage/istorage';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { Authentication } from './configuration/authentication';
@@ -10,10 +11,11 @@ export class OpenfortInternal {
     private storage: IStorage,
     private authManager: AuthManager,
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>,
-  ) {}
+  ) { }
 
   async getAccessToken(): Promise<string | null> {
-    return (await Authentication.fromStorage(this.storage))?.token ?? null;
+    const token = (await Authentication.fromStorage(this.storage))?.token ?? null;
+    return token;
   }
 
   /**
@@ -27,11 +29,13 @@ export class OpenfortInternal {
     if (auth.type !== 'jwt') {
       return;
     }
+    debugLog('validating credentials...');
     const credentials = await this.authManager.validateCredentials(auth, forceRefresh);
     if (!credentials.player) {
       throw new OpenfortError('No user found in credentials', OpenfortErrorType.INTERNAL_ERROR);
     }
     if (credentials.accessToken === auth.token) return;
+    debugLog('tokens refreshed');
 
     new Authentication(
       'jwt',
@@ -40,6 +44,6 @@ export class OpenfortInternal {
       credentials.refreshToken,
     ).save(this.storage);
 
-    this.eventEmitter.emit(OpenfortEvents.TOKEN_REFRESHED, credentials.accessToken);
+    this.eventEmitter.emit(OpenfortEvents.TOKEN_REFRESHED);
   }
 }

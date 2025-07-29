@@ -1,5 +1,5 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { IStorage } from '../storage/istorage';
+import { IStorage, StorageKeys } from '../storage/istorage';
 import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
 import { SDKConfiguration } from '../core/config/config';
@@ -17,21 +17,27 @@ import {
   OpenfortEvents,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
-import { IframeManager, IframeConfiguration } from '../wallets/iframeManager';
+import { IframeManager } from '../wallets/iframeManager';
 import { EmbeddedSigner } from '../wallets/embedded';
-import { WindowMessenger, Message } from '../wallets/messaging/browserMessenger';
+import { WindowMessenger } from '../wallets/messaging/browserMessenger';
 import { ReactNativeMessenger } from '../wallets/messaging';
-import { MessagePoster, ShieldAuthType } from '../wallets/types';
+import { MessagePoster } from '../wallets/types';
 import { debugLog } from '../utils/debug';
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null;
 
+  private iframeManagerPromise: Promise<IframeManager> | null = null;
+
   private signer: EmbeddedSigner | null = null;
+
+  private signerPromise: Promise<EmbeddedSigner> | null = null;
 
   private provider: EvmProvider | null = null;
 
   private messagePoster: MessagePoster | null = null;
+
+  private messenger: ReactNativeMessenger | null = null;
 
   constructor(
     private readonly storage: IStorage,
@@ -39,11 +45,13 @@ export class EmbeddedWalletApi {
     private readonly ensureInitialized: () => Promise<void>,
     private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) {
-    this.eventEmitter.on(OpenfortEvents.TOKEN_REFRESHED, (token: string) => {
-      this.handleTokenRefreshed(token);
+    this.eventEmitter.on(OpenfortEvents.TOKEN_REFRESHED, () => {
+      debugLog('Handling token refresh event in EmbeddedWalletApi');
+      this.handleTokenRefreshed();
     });
 
     this.eventEmitter.on(OpenfortEvents.LOGGED_OUT, () => {
+      debugLog('Handling logout event in EmbeddedWalletApi');
       this.handleLogout();
     });
   }
@@ -59,82 +67,93 @@ export class EmbeddedWalletApi {
     });
   }
 
-  private getIframeManager(): IframeManager {
-    if (!this.iframeManager) {
-      const configuration = SDKConfiguration.fromStorage();
-      if (!configuration) {
-        throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
-      }
-
-      let messenger;
-      if (this.messagePoster) {
-        // React Native mode
-        messenger = new ReactNativeMessenger(this.messagePoster);
-        // Initialize the messenger immediately to handle early WebView messages
-        messenger.initialize({
-          validateReceivedMessage: (data: unknown): data is Message => !!(data && typeof data === 'object'),
-          log: debugLog,
-        });
-      } else {
-        // Browser mode - create iframe and WindowMessenger
-        const iframe = this.createIframe(configuration.iframeUrl);
-        const iframeOrigin = new URL(configuration.iframeUrl).origin;
-        messenger = new WindowMessenger({
-          remoteWindow: iframe.contentWindow!,
-          allowedOrigins: [iframeOrigin],
-        });
-      }
-
-      this.iframeManager = new IframeManager(configuration, this.storage, messenger);
+  private async getIframeManager(): Promise<IframeManager> {
+    // Return existing instance if available
+    if (this.iframeManager) {
+      return this.iframeManager;
     }
-    return this.iframeManager;
+
+    // If already initializing, return the existing promise
+    if (this.iframeManagerPromise) {
+      return this.iframeManagerPromise;
+    }
+
+    // Create initialization promise
+    this.iframeManagerPromise = this.createIframeManager();
+
+    try {
+      this.iframeManager = await this.iframeManagerPromise;
+      // Clear promise only after successful completion
+      this.iframeManagerPromise = null;
+      return this.iframeManager;
+    } catch (error) {
+      // Clear the promise on failure so we can retry
+      this.iframeManagerPromise = null;
+      throw error;
+    }
   }
 
-  private buildShieldAuthentication(auth: Authentication) {
-    return {
-      auth: ShieldAuthType.OPENFORT,
-      authProvider: auth.thirdPartyProvider || undefined,
-      token: auth.token,
-      tokenType: auth.thirdPartyTokenType || undefined,
-    };
+  private async createIframeManager(): Promise<IframeManager> {
+    const configuration = SDKConfiguration.fromStorage();
+    if (!configuration) {
+      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
+    let messenger;
+    if (this.messagePoster) {
+      this.messenger = new ReactNativeMessenger(this.messagePoster);
+      debugLog('Created new ReactNativeMessenger instance');
+      messenger = this.messenger;
+    } else {
+      // Browser mode - create iframe and WindowMessenger
+      const iframe = this.createIframe(configuration.iframeUrl);
+      const iframeOrigin = new URL(configuration.iframeUrl).origin;
+      messenger = new WindowMessenger({
+        remoteWindow: iframe.contentWindow!,
+        allowedOrigins: [iframeOrigin],
+      });
+    }
+    const iframeManager = new IframeManager(configuration, this.storage, messenger);
+
+    await iframeManager.initialize();
+    return iframeManager;
   }
 
   /**
    * Ensure signer is available, creating it from storage if needed
    */
   private async ensureSigner(): Promise<EmbeddedSigner> {
+    // Return existing instance if available
     if (this.signer) {
       return this.signer;
     }
 
-    const account = await Account.fromStorage(this.storage);
-    if (!account) {
-      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
+    // If already creating signer, return the existing promise
+    if (this.signerPromise) {
+      return this.signerPromise;
     }
 
-    const auth = await Authentication.fromStorage(this.storage);
-    if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    // Create signer initialization promise
+    this.signerPromise = this.createSigner();
+
+    try {
+      this.signer = await this.signerPromise;
+      return this.signer;
+    } catch (error) {
+      // Clear the promise on failure so we can retry
+      this.signerPromise = null;
+      throw error;
+    } finally {
+      // Clear the promise once complete
+      this.signerPromise = null;
     }
+  }
 
-    const iframeConfig: IframeConfiguration = {
-      thirdPartyTokenType: auth.thirdPartyTokenType ?? null,
-      thirdPartyProvider: auth.thirdPartyProvider ?? null,
-      accessToken: auth.token,
-      playerID: auth.player,
-      recovery: this.buildShieldAuthentication(auth),
-      chainId: account.chainId,
-      password: null,
-    };
-
-    // Get iframe manager and configure it with stored authentication data
-    const iframeManager = this.getIframeManager();
-    await iframeManager.configure(iframeConfig);
-
-    this.signer = new EmbeddedSigner(iframeManager, this.storage);
-    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, this.signer);
-
-    return this.signer;
+  private async createSigner(): Promise<EmbeddedSigner> {
+    const iframeManager = await this.getIframeManager();
+    const signer = new EmbeddedSigner(iframeManager, this.storage);
+    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
+    return signer;
   }
 
   private createIframe(url: string): HTMLIFrameElement {
@@ -174,7 +193,6 @@ export class EmbeddedWalletApi {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
-    // Prepare entropy if needed
     let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
       entropy = {
@@ -185,18 +203,26 @@ export class EmbeddedWalletApi {
       };
     }
 
-    // Create embedded signer through iframe manager
-    const iframeManager = this.getIframeManager();
-    await iframeManager.createEmbeddedSigner(
-      params.chainId || null,
+    const iframeManager = await this.getIframeManager();
+    const response = await iframeManager.configure({
+      chainId: params.chainId,
       entropy,
-    );
-
-    // Create signer instance
-    this.signer = new EmbeddedSigner(iframeManager, this.storage);
-    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, this.signer);
-
-    return this.get();
+    });
+    new Account(response.address, response.chainId, response.ownerAddress, response.accountType).save(this.storage);
+    const signer = new EmbeddedSigner(iframeManager, this.storage);
+    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
+    const auth = await Authentication.fromStorage(this.storage);
+    if (!auth) {
+      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    }
+    return {
+      chainId: response.chainId.toString(),
+      owner: { id: auth.player },
+      address: response.address,
+      ownerAddress: response.accountType === 'solana' ? undefined : response.ownerAddress,
+      chainType: response.accountType === 'solana' ? 'solana' : 'ethereum',
+      implementationType: response.accountType === 'solana' ? undefined : response.accountType,
+    };
   }
 
   async signMessage(
@@ -399,7 +425,7 @@ export class EmbeddedWalletApi {
         });
       }
 
-      const iframeManager = this.getIframeManager();
+      const iframeManager = await this.getIframeManager();
       if (!iframeManager.isLoaded()) {
         return false;
       }
@@ -430,34 +456,43 @@ export class EmbeddedWalletApi {
     return configuration.iframeUrl;
   }
 
-  setMessagePoster(poster: MessagePoster): void {
+  async setMessagePoster(poster: MessagePoster): Promise<void> {
     if (!poster || typeof poster.postMessage !== 'function') {
       throw new OpenfortError('Invalid message poster', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
     this.messagePoster = poster;
 
+    // Reset messenger to use new poster
+    if (this.messenger) {
+      this.messenger.destroy();
+      this.messenger = null;
+    }
+
     // Reset iframe manager to use new poster
     if (this.iframeManager) {
       this.iframeManager.destroy();
       this.iframeManager = null;
+      this.iframeManagerPromise = null;
     }
 
-    // Recreate signer if it exists
+    // Reset signer to force recreation with new poster
     if (this.signer) {
-      const iframeManager = this.getIframeManager();
-      this.signer = new EmbeddedSigner(iframeManager, this.storage);
+      this.signer = null;
+      this.signerPromise = null;
     }
   }
 
-  private async handleTokenRefreshed(_newToken: string): Promise<void> {
-    if (this.signer) {
+  private async handleTokenRefreshed(): Promise<void> {
+    if (this.iframeManager) {
       try {
-        await this.signer.updateAuthentication();
-        debugLog('Updated embedded signer authentication after token refresh');
+        await this.iframeManager.updateAuthentication();
+        debugLog('Updated IframeManager authentication after token refresh');
       } catch (error) {
-        debugLog('Failed to update embedded signer authentication:', error);
+        debugLog('Failed to update IframeManager authentication:', error);
       }
+    } else {
+      debugLog('IframeManager not initialized, skipping authentication update');
     }
   }
 
@@ -471,12 +506,21 @@ export class EmbeddedWalletApi {
         debugLog('Failed to logout embedded signer:', error);
       }
       this.signer = null;
+      this.signerPromise = null;
     }
+    this.storage.remove(StorageKeys.ACCOUNT);
 
     // Clean up iframe manager if it exists
     if (this.iframeManager) {
       this.iframeManager.destroy();
       this.iframeManager = null;
+      this.iframeManagerPromise = null;
+    }
+
+    // Clean up messenger if it exists
+    if (this.messenger) {
+      this.messenger.destroy();
+      this.messenger = null;
     }
 
     // Clean up provider if it exists
@@ -485,7 +529,7 @@ export class EmbeddedWalletApi {
     }
   }
 
-  onMessage(message: Record<string, unknown>): void {
+  async onMessage(message: Record<string, unknown>): Promise<void> {
     if (!message || typeof message !== 'object') {
       debugLog('Invalid message received:', message);
       return;
@@ -494,7 +538,7 @@ export class EmbeddedWalletApi {
     debugLog('EmbeddedWalletApi onMessage:', message);
 
     // Get or create iframe manager
-    const iframeManager = this.getIframeManager();
+    const iframeManager = await this.getIframeManager();
 
     // If this is a penpal SYN message and we haven't initialized yet,
     // we need to ensure the connection is set up to handle it

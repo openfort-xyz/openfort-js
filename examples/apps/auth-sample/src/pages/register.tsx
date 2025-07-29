@@ -99,7 +99,7 @@ function RegisterPage() {
           <p className='text-gray-500'>
           Sign in to the demo to access the dev tools.
           </p>
-          <Button variant={'outline'} size={'sm'} className="mt-2">
+          <Button variant={'outline'} size={'sm'} className="mt-2" asChild>
             <Link href='https://www.openfort.io/docs' target="_blank">
               Explore the Docs
             </Link>
