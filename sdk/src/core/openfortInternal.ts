@@ -1,5 +1,5 @@
 import { debugLog } from 'utils/debug';
-import { IStorage } from '../storage/istorage';
+import { IStorage, StorageKeys } from '../storage/istorage';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { Authentication } from './configuration/authentication';
 import { AuthManager } from '../auth/authManager';
@@ -30,7 +30,14 @@ export class OpenfortInternal {
       return;
     }
     debugLog('validating credentials...');
-    const credentials = await this.authManager.validateCredentials(auth, forceRefresh);
+    let credentials;
+    try {
+      credentials = await this.authManager.validateCredentials(auth, forceRefresh);
+    } catch (error) {
+      this.storage.remove(StorageKeys.AUTHENTICATION);
+      this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
+      throw error;
+    }
     if (!credentials.player) {
       throw new OpenfortError('No user found in credentials', OpenfortErrorType.INTERNAL_ERROR);
     }
