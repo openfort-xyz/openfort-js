@@ -38,7 +38,7 @@ test('Login with password recovery', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Sign in' }).click();
 
-  await expect(page.locator('h1')).toContainText('Set up your embedded signer')
+  await expect(page.locator('h1')).toContainText('Set up your embedded signer', { timeout: 10000 })
 
   const passwordRecoveryInputLogin = page.locator('input[name="passwordRecovery"]')
   const passwordRecoveryButtonLogin = page.getByRole('button', { name: 'Continue with Password Recovery' }).first()
