@@ -265,6 +265,43 @@
         ],
         "type": "string"
       },
+      "TransactionStatus": {
+        "enum": [
+          "none",
+          "new",
+          "sent",
+          "dropped",
+          "indexed",
+          "confirmed",
+          "reverted",
+          "notfound",
+          "replaced",
+          "expired"
+        ],
+        "type": "string"
+      },
+      "Transition": {
+        "description": "A transition represents a change in the status of a transaction intent.",
+        "properties": {
+          "fromStatus": {
+            "$ref": "#/components/schemas/TransactionStatus"
+          },
+          "toStatus": {
+            "$ref": "#/components/schemas/TransactionStatus"
+          },
+          "at": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "fromStatus",
+          "toStatus",
+          "at"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "ZKSyncDetails": {
         "properties": {
           "from": {
@@ -701,6 +738,13 @@
             "$ref": "#/components/schemas/TransactionAbstractionType",
             "description": "The transaction abstraction type",
             "example": "accountAbstractionV6"
+          },
+          "transitions": {
+            "items": {
+              "$ref": "#/components/schemas/Transition"
+            },
+            "type": "array",
+            "description": "Transition of statuses the transaction has gone through."
           },
           "details": {
             "anyOf": [
@@ -2677,6 +2721,12 @@
             "$ref": "#/components/schemas/SortOrder",
             "description": "Specifies the order in which to sort the results."
           },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Must be a [supported chain](/development/chains).",
+            "example": 80002
+          },
           "player": {
             "type": "string",
             "description": "Specifies the unique player ID (starts with pla_)",
@@ -2991,6 +3041,13 @@
             "$ref": "#/components/schemas/TransactionAbstractionType",
             "description": "The transaction abstraction type",
             "example": "accountAbstractionV6"
+          },
+          "transitions": {
+            "items": {
+              "$ref": "#/components/schemas/Transition"
+            },
+            "type": "array",
+            "description": "Transition of statuses the transaction has gone through."
           },
           "details": {
             "anyOf": [
@@ -4348,9 +4405,6 @@
           }
         },
         "required": [
-          "currentPeriodEnd",
-          "currentPeriodStart",
-          "canceledAt",
           "plan"
         ],
         "type": "object",
@@ -8652,7 +8706,7 @@
               "desc"
             ]
           },
-          "accountType": {
+          "chainType": {
             "type": "string"
           }
         },
@@ -8661,10 +8715,10 @@
       },
       "AccountCreateRequest": {
         "properties": {
-          "accountType": {
+          "chainType": {
             "type": "string",
             "enum": [
-              "sol"
+              "solana"
             ],
             "nullable": false
           },
@@ -8673,7 +8727,7 @@
           }
         },
         "required": [
-          "accountType",
+          "chainType",
           "publicKey"
         ],
         "type": "object",
@@ -11119,6 +11173,17 @@
             }
           },
           {
+            "description": "The chain ID. Must be a [supported chain](/development/chains).",
+            "in": "query",
+            "name": "chainId",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": 80002
+          },
+          {
             "description": "Specifies the unique player ID (starts with pla_)",
             "in": "query",
             "name": "player",
@@ -12897,6 +12962,23 @@
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
+                        }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
                         }
                       ]
                     }
@@ -14693,6 +14775,23 @@
                             "0x63B7...484f"
                           ]
                         }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
+                        }
                       ]
                     }
                   }
@@ -14816,6 +14915,23 @@
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
+                        }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
                         }
                       ]
                     }
@@ -15840,6 +15956,23 @@
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
+                        }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
                         }
                       ]
                     }
@@ -18032,6 +18165,23 @@
                                 "0x63B7...484f"
                               ]
                             }
+                          ],
+                          "transitions": [
+                            {
+                              "fromStatus": "none",
+                              "toStatus": "new",
+                              "at": 1750154762
+                            },
+                            {
+                              "fromStatus": "new",
+                              "toStatus": "sent",
+                              "at": 1750154762
+                            },
+                            {
+                              "fromStatus": "sent",
+                              "toStatus": "indexed",
+                              "at": 1750154762
+                            }
                           ]
                         }
                       ]
@@ -18252,6 +18402,23 @@
                           "functionArgs": [
                             "0x63B7...484f"
                           ]
+                        }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
                         }
                       ]
                     }
@@ -18499,6 +18666,23 @@
                             "0x63B7...484f"
                           ]
                         }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
+                        }
                       ]
                     }
                   }
@@ -18741,6 +18925,23 @@
                             "0x63B7...484f"
                           ]
                         }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
+                        }
                       ]
                     }
                   }
@@ -18868,7 +19069,7 @@
           },
           {
             "in": "query",
-            "name": "accountType",
+            "name": "chainType",
             "required": false,
             "schema": {
               "type": "string"

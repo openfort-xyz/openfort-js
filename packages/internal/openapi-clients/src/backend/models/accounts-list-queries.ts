@@ -43,7 +43,7 @@ export interface AccountsListQueries {
      * @type {string}
      * @memberof AccountsListQueries
      */
-    'accountType'?: string;
+    'chainType'?: string;
 }
 
 export const AccountsListQueriesOrderEnum = {

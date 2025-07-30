@@ -1,5 +1,5 @@
 import { debugLog } from 'utils/debug';
-import type { RecoveryMethod } from '../types/types';
+import type { RecoverParams, RecoveryMethod } from '../types/types';
 import { Account } from '../core/configuration/account';
 import type { Signer } from './isigner';
 import type { IframeManager } from './iframeManager';
@@ -39,7 +39,7 @@ export class EmbeddedSigner implements Signer {
     { accountUuid, chainId }: { accountUuid: string, chainId: number },
   ): Promise<void> {
     const deviceAccount = await this.iframeManager
-      .switchChainV2(this.iframeConfiguration, accountUuid, chainId);
+      .switchChainV2(accountUuid, chainId);
     new Account(
       deviceAccount.address,
       deviceAccount.chainId,
@@ -53,7 +53,7 @@ export class EmbeddedSigner implements Signer {
     chainType: string,
   ): Promise<void> {
     const deviceAccount = await this.iframeManager
-      .create(this.iframeConfiguration, accountType, chainType);
+      .create(accountType, chainType);
     new Account(
       deviceAccount.address,
       deviceAccount.chainId,
@@ -63,10 +63,10 @@ export class EmbeddedSigner implements Signer {
   }
 
   async recover(
-    accountUuid: string,
+    params: RecoverParams,
   ): Promise<void> {
     const deviceAccount = await this.iframeManager
-      .recover(this.iframeConfiguration, accountUuid);
+      .recover(params);
     new Account(
       deviceAccount.address,
       deviceAccount.chainId,

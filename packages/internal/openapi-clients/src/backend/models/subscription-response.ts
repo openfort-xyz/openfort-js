@@ -28,19 +28,19 @@ export interface SubscriptionResponse {
      * @type {string}
      * @memberof SubscriptionResponse
      */
-    'currentPeriodEnd': string;
+    'currentPeriodEnd'?: string;
     /**
      * 
      * @type {string}
      * @memberof SubscriptionResponse
      */
-    'currentPeriodStart': string;
+    'currentPeriodStart'?: string;
     /**
      * 
      * @type {string}
      * @memberof SubscriptionResponse
      */
-    'canceledAt': string;
+    'canceledAt'?: string;
     /**
      * 
      * @type {SubscriptionResponsePlan}

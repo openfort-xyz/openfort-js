@@ -383,13 +383,14 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [player] Specifies the unique player ID (starts with pla_)
          * @param {string} [address] Specifies the address of the account
          * @param {Array<AccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccounts: async (limit?: number, skip?: number, order?: SortOrder, player?: string, address?: string, expand?: Array<AccountResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccounts: async (limit?: number, skip?: number, order?: SortOrder, chainId?: number, player?: string, address?: string, expand?: Array<AccountResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -416,6 +417,10 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
 
             if (order !== undefined) {
                 localVarQueryParameter['order'] = order;
+            }
+
+            if (chainId !== undefined) {
+                localVarQueryParameter['chainId'] = chainId;
             }
 
             if (player !== undefined) {
@@ -446,11 +451,11 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {number} [limit] 
          * @param {number} [skip] 
          * @param {ListAccountsV2OrderEnum} [order] 
-         * @param {string} [accountType] 
+         * @param {string} [chainType] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAccountsV2: async (limit?: number, skip?: number, order?: ListAccountsV2OrderEnum, accountType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listAccountsV2: async (limit?: number, skip?: number, order?: ListAccountsV2OrderEnum, chainType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -475,8 +480,8 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
                 localVarQueryParameter['order'] = order;
             }
 
-            if (accountType !== undefined) {
-                localVarQueryParameter['accountType'] = accountType;
+            if (chainType !== undefined) {
+                localVarQueryParameter['chainType'] = chainType;
             }
 
 
@@ -765,14 +770,15 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [player] Specifies the unique player ID (starts with pla_)
          * @param {string} [address] Specifies the address of the account
          * @param {Array<AccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccounts(limit?: number, skip?: number, order?: SortOrder, player?: string, address?: string, expand?: Array<AccountResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccounts(limit, skip, order, player, address, expand, options);
+        async getAccounts(limit?: number, skip?: number, order?: SortOrder, chainId?: number, player?: string, address?: string, expand?: Array<AccountResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccounts(limit, skip, order, chainId, player, address, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -780,12 +786,12 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {number} [limit] 
          * @param {number} [skip] 
          * @param {ListAccountsV2OrderEnum} [order] 
-         * @param {string} [accountType] 
+         * @param {string} [chainType] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAccountsV2(limit?: number, skip?: number, order?: ListAccountsV2OrderEnum, accountType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListResponseAccount>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listAccountsV2(limit, skip, order, accountType, options);
+        async listAccountsV2(limit?: number, skip?: number, order?: ListAccountsV2OrderEnum, chainType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListResponseAccount>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAccountsV2(limit, skip, order, chainType, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -930,7 +936,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         getAccounts(requestParameters: AccountsApiGetAccountsRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AccountListResponse> {
-            return localVarFp.getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(axios, basePath));
+            return localVarFp.getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -939,7 +945,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         listAccountsV2(requestParameters: AccountsApiListAccountsV2Request = {}, options?: AxiosRequestConfig): AxiosPromise<ListResponseAccount> {
-            return localVarFp.listAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.accountType, options).then((request) => request(axios, basePath));
+            return localVarFp.listAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainType, options).then((request) => request(axios, basePath));
         },
         /**
          * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
@@ -1152,6 +1158,13 @@ export interface AccountsApiGetAccountsRequest {
     readonly order?: SortOrder
 
     /**
+     * The chain ID. Must be a [supported chain](/development/chains).
+     * @type {number}
+     * @memberof AccountsApiGetAccounts
+     */
+    readonly chainId?: number
+
+    /**
      * Specifies the unique player ID (starts with pla_)
      * @type {string}
      * @memberof AccountsApiGetAccounts
@@ -1205,7 +1218,7 @@ export interface AccountsApiListAccountsV2Request {
      * @type {string}
      * @memberof AccountsApiListAccountsV2
      */
-    readonly accountType?: string
+    readonly chainType?: string
 }
 
 /**
@@ -1394,7 +1407,7 @@ export class AccountsApi extends BaseAPI {
      * @memberof AccountsApi
      */
     public getAccounts(requestParameters: AccountsApiGetAccountsRequest = {}, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(this.axios, this.basePath));
+        return AccountsApiFp(this.configuration).getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1405,7 +1418,7 @@ export class AccountsApi extends BaseAPI {
      * @memberof AccountsApi
      */
     public listAccountsV2(requestParameters: AccountsApiListAccountsV2Request = {}, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).listAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.accountType, options).then((request) => request(this.axios, this.basePath));
+        return AccountsApiFp(this.configuration).listAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainType, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

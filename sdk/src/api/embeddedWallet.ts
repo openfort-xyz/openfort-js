@@ -251,12 +251,9 @@ export class EmbeddedWalletApi {
   ): Promise<EmbeddedAccount> {
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage(this.storage);
-    if (!signer) {
-      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
-    }
+    const iframeManager = await this.getIframeManager();
 
-    await signer.create(accountType, chainType);
+    await iframeManager.create(accountType, chainType);
     return this.get();
   }
 
@@ -269,29 +266,31 @@ export class EmbeddedWalletApi {
 
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const configuration = SDKConfiguration.fromStorage();
 
-    let entropy: Entropy | null = null;
+    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
       entropy = {
-        encryptionSession: params.shieldAuthentication?.encryptionSession || null,
-        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD ? recoveryParams.password : null,
-        encryptionPart: configuration?.shieldConfiguration?.shieldEncryptionKey || null,
+        encryptionSession: params.shieldAuthentication?.encryptionSession,
+        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
+          ? recoveryParams.password
+          : undefined,
       };
     }
 
-    let recoveryType: 'openfort' | 'custom' | null = null;
-    let customToken: string | null = null;
-    if (params.shieldAuthentication) {
-      recoveryType = params.shieldAuthentication.auth === 'openfort' ? 'openfort' : 'custom';
-      customToken = params.shieldAuthentication.token;
-    }
+    // let recoveryType: 'openfort' | 'custom' | null = null;
+    // let customToken: string | null = null;
+    // if (params.shieldAuthentication) {
+    // recoveryType = params.shieldAuthentication.auth === 'openfort' ? 'openfort' : 'custom';
+    // customToken = params.shieldAuthentication.token;
+    // }
 
     if (!this.storage) {
       throw new OpenfortError('Storage not available in EmbeddedWalletApi', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
-    await signer.recover(this.storage, params.accountUuid, entropy, recoveryType, customToken);
+    const iframeManager = await this.getIframeManager();
+
+    await iframeManager.recover({ accountUuid: params.accountUuid, entropy });
     return this.get();
   }
 
@@ -361,12 +360,9 @@ export class EmbeddedWalletApi {
   }): Promise<void> {
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage(this.storage);
-    if (!signer) {
-      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
-    }
+    const iframeManager = await this.getIframeManager();
 
-    await signer.switchChainV2({ accountUuid, chainId });
+    await iframeManager.switchChainV2(accountUuid, chainId);
   }
 
   async get(): Promise<EmbeddedAccount> {

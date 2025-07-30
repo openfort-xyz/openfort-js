@@ -45,6 +45,12 @@ export interface AccountListQueries {
      */
     'order'?: SortOrder;
     /**
+     * The chain ID. Must be a [supported chain](/development/chains).
+     * @type {number}
+     * @memberof AccountListQueries
+     */
+    'chainId'?: number;
+    /**
      * Specifies the unique player ID (starts with pla_)
      * @type {string}
      * @memberof AccountListQueries

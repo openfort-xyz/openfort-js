@@ -34,6 +34,9 @@ import { TransactionAbstractionType } from './transaction-abstraction-type';
 // May contain unused imports in some cases
 // @ts-ignore
 import { TransactionIntentDetails } from './transaction-intent-details';
+// May contain unused imports in some cases
+// @ts-ignore
+import { Transition } from './transition';
 
 /**
  * 
@@ -77,6 +80,12 @@ export interface TransactionIntent {
      * @memberof TransactionIntent
      */
     'abstractionType': TransactionAbstractionType;
+    /**
+     * Transition of statuses the transaction has gone through.
+     * @type {Array<Transition>}
+     * @memberof TransactionIntent
+     */
+    'transitions'?: Array<Transition>;
     /**
      * 
      * @type {TransactionIntentDetails}

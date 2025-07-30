@@ -40,6 +40,9 @@ import { TransactionIntentResponsePlayer } from './transaction-intent-response-p
 // May contain unused imports in some cases
 // @ts-ignore
 import { TransactionIntentResponsePolicy } from './transaction-intent-response-policy';
+// May contain unused imports in some cases
+// @ts-ignore
+import { Transition } from './transition';
 
 /**
  * 
@@ -83,6 +86,12 @@ export interface TransactionIntentResponse {
      * @memberof TransactionIntentResponse
      */
     'abstractionType': TransactionAbstractionType;
+    /**
+     * Transition of statuses the transaction has gone through.
+     * @type {Array<Transition>}
+     * @memberof TransactionIntentResponse
+     */
+    'transitions'?: Array<Transition>;
     /**
      * 
      * @type {TransactionIntentDetails}

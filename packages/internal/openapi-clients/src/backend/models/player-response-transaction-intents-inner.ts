@@ -37,6 +37,9 @@ import { TransactionIntent } from './transaction-intent';
 // May contain unused imports in some cases
 // @ts-ignore
 import { TransactionIntentDetails } from './transaction-intent-details';
+// May contain unused imports in some cases
+// @ts-ignore
+import { Transition } from './transition';
 
 /**
  * 
@@ -80,6 +83,12 @@ export interface PlayerResponseTransactionIntentsInner {
      * @memberof PlayerResponseTransactionIntentsInner
      */
     'abstractionType': TransactionAbstractionType;
+    /**
+     * Transition of statuses the transaction has gone through.
+     * @type {Array<Transition>}
+     * @memberof PlayerResponseTransactionIntentsInner
+     */
+    'transitions'?: Array<Transition>;
     /**
      * 
      * @type {TransactionIntentDetails}

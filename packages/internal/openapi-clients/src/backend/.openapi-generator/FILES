@@ -369,7 +369,9 @@ models/transaction-intent-response-policy.ts
 models/transaction-intent-response.ts
 models/transaction-intent.ts
 models/transaction-stat.ts
+models/transaction-status.ts
 models/transfer-ownership-request.ts
+models/transition.ts
 models/trigger-delete-response.ts
 models/trigger-response.ts
 models/twitter-oauth-config.ts

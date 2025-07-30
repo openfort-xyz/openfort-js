@@ -25,7 +25,7 @@ export interface AccountCreateRequest {
      * @type {string}
      * @memberof AccountCreateRequest
      */
-    'accountType': AccountCreateRequestAccountTypeEnum;
+    'chainType': AccountCreateRequestChainTypeEnum;
     /**
      * 
      * @type {string}
@@ -34,10 +34,10 @@ export interface AccountCreateRequest {
     'publicKey': string;
 }
 
-export const AccountCreateRequestAccountTypeEnum = {
+export const AccountCreateRequestChainTypeEnum = {
     Solana: 'solana'
 } as const;
 
-export type AccountCreateRequestAccountTypeEnum = typeof AccountCreateRequestAccountTypeEnum[keyof typeof AccountCreateRequestAccountTypeEnum];
+export type AccountCreateRequestChainTypeEnum = typeof AccountCreateRequestChainTypeEnum[keyof typeof AccountCreateRequestChainTypeEnum];
 
 

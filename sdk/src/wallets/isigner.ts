@@ -1,4 +1,4 @@
-import type { RecoveryMethod } from '../types/types';
+import type { RecoverParams, RecoveryMethod } from '../types/types';
 
 export interface Signer {
   sign(
@@ -9,11 +9,10 @@ export interface Signer {
   disconnect(): Promise<void>;
   switchChain({ chainId }: { chainId: number }): Promise<void>;
   switchChainV2({ accountUuid, chainId }: { accountUuid: string, chainId: number }): Promise<void>;
-  updateAuthentication(): Promise<void>;
   setEmbeddedRecovery(
     { recoveryMethod, recoveryPassword, encryptionSession }:
     { recoveryMethod: RecoveryMethod; recoveryPassword?: string, encryptionSession?: string }): Promise<void>;
   export(): Promise<string>;
   create(accountType: string, chainType: string): Promise<void>;
-  recover(accountUuid: string): Promise<void>;
+  recover(params: RecoverParams): Promise<void>;
 }

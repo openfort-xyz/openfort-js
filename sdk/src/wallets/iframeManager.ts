@@ -60,6 +60,14 @@ interface ConfigurationRequest {
   }
 }
 
+interface RecoverParams {
+  accountUuid: string,
+  entropy?: {
+    recoveryPassword?: string;
+    encryptionSession?: string;
+  }
+}
+
 interface IframeAPI {
   configure(request: ConfigureRequest): Promise<ConfigureResponse>;
   create(request: CreateRequest): Promise<ConfigureResponse>;
@@ -309,7 +317,6 @@ export class IframeManager {
   }
 
   async create(
-    iframeConfiguration: IframeConfiguration,
     accountType: string,
     chainType: string,
   ): Promise<ConfigureResponse> {
@@ -318,6 +325,8 @@ export class IframeManager {
     }
 
     const remote = await this.ensureConnection();
+
+    const iframeConfiguration = await this.buildIFrameRequestConfiguration();
 
     const request = new CreateRequest(
       randomUUID(),
@@ -351,14 +360,23 @@ export class IframeManager {
   }
 
   async recover(
-    iframeConfiguration: IframeConfiguration,
-    accountUuid: string,
+    params: RecoverParams,
   ): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new Error('shieldConfiguration is required');
     }
 
+    const acc = await Account.fromStorage(this.storage);
+
     const remote = await this.ensureConnection();
+
+    const iframeConfiguration = await this.buildIFrameRequestConfiguration();
+    iframeConfiguration.chainId = acc?.chainId ?? null;
+    iframeConfiguration.password = params?.entropy?.recoveryPassword ?? null;
+    iframeConfiguration.recovery = {
+      ...iframeConfiguration.recovery as ShieldAuthentication,
+      encryptionSession: params?.entropy?.encryptionSession,
+    };
 
     const request = new RecoverRequest(
       randomUUID(),
@@ -367,7 +385,7 @@ export class IframeManager {
       this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       iframeConfiguration.accessToken!,
       iframeConfiguration.playerID || '',
-      accountUuid,
+      params.accountUuid,
       this.sdkConfiguration.backendUrl,
       this.sdkConfiguration.shieldUrl,
       iframeConfiguration.password,
@@ -457,25 +475,16 @@ export class IframeManager {
   }
 
   async switchChainV2(
-    iframeConfiguration: IframeConfiguration,
     accountUuid: string,
     chainId: number,
   ): Promise<SwitchChainV2Response> {
     const remote = await this.ensureConnection();
 
-    const requestConfiguration: RequestConfiguration = {
-      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
-      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
-      token: iframeConfiguration.accessToken ?? undefined,
-      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
-      openfortURL: this.sdkConfiguration.backendUrl,
-    };
-
     const request = new SwitchChainV2Request(
       randomUUID(),
       accountUuid,
       chainId,
-      requestConfiguration,
+      await this.buildRequestConfiguration(),
     );
 
     try {
@@ -491,8 +500,8 @@ export class IframeManager {
       return response as SwitchChainV2Response;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(iframeConfiguration);
-        return this.switchChainV2(iframeConfiguration, accountUuid, chainId);
+        await this.configure(this.configurationRequest);
+        return this.switchChainV2(accountUuid, chainId);
       }
       throw e;
     }
