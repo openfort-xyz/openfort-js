@@ -9,6 +9,7 @@
   "scripts": {
     "test": "wsrun --exclude-missing -e test",
     "test-e2e": "yarn workspace nextjs run test",
+    "test-e2e-ui": "yarn workspace nextjs run test-ui",
     "typecheck": "wsrun --exclude-missing typecheck",
     "lint": "yarn workspace @openfort/openfort-js run lint --no-error-on-unmatched-pattern",
     "postinstall": "husky install; ./.husky/install_gitleaks.sh",
