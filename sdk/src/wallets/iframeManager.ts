@@ -33,6 +33,8 @@ import {
   SetRecoveryMethodRequest,
   SwitchChainRequest,
   SwitchChainResponse,
+  SwitchChainV2Request,
+  SwitchChainV2Response,
 } from './types';
 import { sentry } from '../core/errors/sentry';
 
@@ -52,6 +54,7 @@ interface IframeAPI {
   recover(request: RecoverRequest): Promise<ConfigureResponse>;
   sign(request: SignRequest): Promise<SignResponse>;
   switchChain(request: SwitchChainRequest): Promise<SwitchChainResponse>;
+  switchChainV2(request: SwitchChainV2Request): Promise<SwitchChainV2Response>;
   updateAuthentication(request: UpdateAuthenticationRequest): Promise<UpdateAuthenticationResponse>;
   logout(request: any): Promise<LogoutResponse>;
   export(request: ExportPrivateKeyRequest): Promise<ExportPrivateKeyResponse>;
@@ -447,6 +450,48 @@ export class IframeManager {
       if (e instanceof NotConfiguredError) {
         await this.configure(iframeConfiguration);
         return this.switchChain(iframeConfiguration, chainId);
+      }
+      throw e;
+    }
+  }
+
+  async switchChainV2(
+    iframeConfiguration: IframeConfiguration,
+    accountUuid: string,
+    chainId: number,
+  ): Promise<SwitchChainV2Response> {
+    const remote = await this.ensureConnection();
+
+    const requestConfiguration: RequestConfiguration = {
+      thirdPartyProvider: iframeConfiguration.thirdPartyProvider ?? undefined,
+      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType ?? undefined,
+      token: iframeConfiguration.accessToken ?? undefined,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      openfortURL: this.sdkConfiguration.backendUrl,
+    };
+
+    const request = new SwitchChainV2Request(
+      randomUUID(),
+      accountUuid,
+      chainId,
+      requestConfiguration,
+    );
+
+    try {
+      const response = await remote.switchChainV2(request);
+
+      if (isErrorResponse(response)) {
+        this.handleError(response);
+      }
+
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('iframe-version', (response as SwitchChainV2Response).version ?? 'undefined');
+      }
+      return response as SwitchChainV2Response;
+    } catch (e) {
+      if (e instanceof NotConfiguredError) {
+        await this.configure(iframeConfiguration);
+        return this.switchChainV2(iframeConfiguration, accountUuid, chainId);
       }
       throw e;
     }

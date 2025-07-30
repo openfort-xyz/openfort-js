@@ -8,6 +8,7 @@ export interface Signer {
   ): Promise<string>;
   logout(): Promise<void>;
   switchChain({ chainId }: { chainId: number }): Promise<void>;
+  switchChainV2({ accountUuid, chainId }: { accountUuid: string, chainId: number }): Promise<void>;
   updateAuthentication(): Promise<void>;
   setEmbeddedRecovery(
     { recoveryMethod, recoveryPassword, encryptionSession }:

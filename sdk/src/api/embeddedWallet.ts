@@ -211,6 +211,21 @@ export class EmbeddedWalletApi {
     await signer.setEmbeddedRecovery({ recoveryMethod, recoveryPassword, encryptionSession });
   }
 
+  async switchChainV2({
+    accountUuid, chainId,
+  }: {
+    accountUuid: string, chainId: number
+  }): Promise<void> {
+    await this.ensureInitialized();
+    await this.validateAndRefreshToken();
+    const signer = await SignerManager.fromStorage(this.storage);
+    if (!signer) {
+      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
+    }
+
+    await signer.switchChainV2({ accountUuid, chainId });
+  }
+
   async get(): Promise<EmbeddedAccount> {
     const account = await Account.fromStorage(this.storage);
     if (!account) {

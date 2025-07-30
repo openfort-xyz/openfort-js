@@ -336,6 +336,25 @@ export class SwitchChainRequest implements IEventRequest {
   }
 }
 
+export class SwitchChainV2Request implements IEventRequest {
+  uuid: string;
+
+  action: Event = Event.SWITCH_CHAIN;
+
+  accountUuid: string;
+
+  chainId: number;
+
+  requestConfiguration?: RequestConfiguration;
+
+  constructor(uuid: string, accountUuid: string, chainId: number, requestConfiguration?: RequestConfiguration) {
+    this.uuid = uuid;
+    this.accountUuid = accountUuid;
+    this.chainId = chainId;
+    this.requestConfiguration = requestConfiguration;
+  }
+}
+
 export class ExportPrivateKeyRequest implements IEventRequest {
   uuid: string;
 
@@ -513,6 +532,44 @@ export class ConfigureResponse implements IConfigureResponse {
 }
 
 export class SwitchChainResponse implements ISwitchChainResponse {
+  uuid: string;
+
+  success: boolean;
+
+  deviceID: string;
+
+  address: string;
+
+  chainId: number;
+
+  accountType: string;
+
+  ownerAddress: string;
+
+  version: string | null;
+
+  action: Event = Event.CHAIN_SWITCHED;
+
+  constructor(
+    uuid: string,
+    deviceID: string,
+    accountType: string,
+    chainId: number,
+    address: string,
+    ownerAddress: string,
+  ) {
+    this.success = true;
+    this.deviceID = deviceID;
+    this.uuid = uuid;
+    this.accountType = accountType;
+    this.chainId = chainId;
+    this.address = address;
+    this.ownerAddress = ownerAddress;
+    this.version = null;
+  }
+}
+
+export class SwitchChainV2Response implements ISwitchChainResponse {
   uuid: string;
 
   success: boolean;
