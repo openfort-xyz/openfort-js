@@ -1,3 +1,4 @@
+import { Signer } from '../wallets/isigner';
 import { ShieldAuthentication } from '../wallets/types';
 
 export enum EmbeddedState {
@@ -10,10 +11,14 @@ export enum EmbeddedState {
 
 export enum OpenfortEvents {
   LOGGED_OUT = 'loggedOut',
+  SIGNER_CONFIGURED = 'signerConfigured',
+  TOKEN_REFRESHED = 'tokenRefreshed',
 }
 
 export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.LOGGED_OUT]: [];
+  [OpenfortEvents.SIGNER_CONFIGURED]: [Signer];
+  [OpenfortEvents.TOKEN_REFRESHED]: [];
 }
 
 export type SessionKey = {

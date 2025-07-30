@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
-import { type State, useAccount, useConnect, WagmiProvider } from 'wagmi'
+import { type State, useAccount, WagmiProvider } from 'wagmi'
 import { useRouter } from 'next/navigation'
 import { EmbeddedState } from '@openfort/openfort-js'
 

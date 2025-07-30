@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
+import { shieldUrl } from '../../../openfort';
 
 export async function POST(request: Request) {
     try {
-        const response = await fetch("https://shield.openfort.xyz/project/encryption-session", {
+        const response = await fetch(`${shieldUrl}/project/encryption-session`, {
             headers: {
                 "Content-Type": "application/json",
                 "x-api-key": process.env.NEXT_PUBLIC_SHIELD_API_KEY!,

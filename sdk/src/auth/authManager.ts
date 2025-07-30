@@ -1,6 +1,7 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
 import { AxiosRequestConfig } from 'axios';
 import { decodeJwt, base64url } from 'jose';
+import { debugLog } from 'utils/debug';
 import { Authentication } from '../core/configuration/authentication';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError';
 import { sentry } from '../core/errors/sentry';
@@ -36,7 +37,6 @@ function getRandomBytes(length: number): Uint8Array {
   return bytes;
 }
 
-// Simple token decoder class similar to Privy's approach
 class TokenDecoder {
   private decodedPayload: any;
 
@@ -67,6 +67,7 @@ class TokenDecoder {
     if (!this.expiration) {
       return true;
     }
+    debugLog('Token expiration:', (this.expiration - bufferSeconds) * 1000, 'Current time:', Date.now());
     return Date.now() >= (this.expiration - bufferSeconds) * 1000;
   }
 
@@ -145,12 +146,13 @@ export class AuthManager {
     ecosystemGame?: string,
   ): Promise<InitAuthResponse> {
     const usePooling = options?.usePooling ?? false;
-    // eslint-disable-next-line no-param-reassign
-    delete options?.usePooling;
+    const skipBrowserRedirect = options?.skipBrowserRedirect ?? false;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { usePooling: _usePooling, skipBrowserRedirect: _skipBrowserRedirect, ...restOptions } = options || {};
     const request = {
       oAuthInitRequest: {
         provider,
-        options,
+        options: restOptions,
         usePooling,
       },
     };
@@ -159,7 +161,7 @@ export class AuthManager {
       AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame),
     ), { default: OpenfortErrorType.AUTHENTICATION_ERROR });
 
-    if (typeof window !== 'undefined' && !options?.skipBrowserRedirect) {
+    if (typeof window !== 'undefined' && !skipBrowserRedirect) {
       window.location.assign(result.data.url);
     }
     return {
@@ -492,12 +494,6 @@ export class AuthManager {
     });
   }
 
-  /**
-   * Validates credentials following Privy's approach:
-   * - Only decode and check expiration on client
-   * - No cryptographic verification
-   * - Server verifies on every API call
-   */
   public async validateCredentials(authentication: Authentication, forceRefresh?: boolean): Promise<Auth> {
     if (!authentication.refreshToken) {
       throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR);
@@ -507,7 +503,7 @@ export class AuthManager {
     if (forceRefresh) {
       return this.refreshTokens(authentication.refreshToken, forceRefresh);
     }
-
+    debugLog('Validating credentials with token:', authentication.token);
     // Try to decode the token (no verification)
     const decodedToken = TokenDecoder.parse(authentication.token);
 
@@ -518,37 +514,23 @@ export class AuthManager {
 
     // Check if token is expired
     if (decodedToken.isExpired()) {
-      // Token is expired, refresh it
+      debugLog('Token expired, refreshing...');
       return this.refreshTokens(authentication.refreshToken);
     }
 
     // Token appears valid (not expired), return it
     // The server will verify it on the next API call
     return {
-      player: decodedToken.subject || '',
+      player: decodedToken.subject,
       accessToken: authentication.token,
       refreshToken: authentication.refreshToken,
     };
   }
 
   /**
-   * Check if a token is active (exists and not expired)
-   * Similar to Privy's tokenIsActive method
-   */
-  public isTokenActive(token: string | null): boolean {
-    if (!token) {
-      return false;
-    }
-
-    const decoded = TokenDecoder.parse(token);
-    return decoded !== null && !decoded.isExpired(30);
-  }
-
-  /**
    * Refresh tokens with the server
    * Server will verify the refresh token and issue new tokens
    */
-
   private async refreshTokens(refreshToken: string, forceRefresh?: boolean): Promise<Auth> {
     const request = {
       refreshTokenRequest: {
@@ -589,7 +571,6 @@ export class AuthManager {
   public async getUser(
     auth: Authentication,
   ): Promise<AuthPlayerResponse> {
-    // TODO: Add storage of user info
     return withOpenfortError<AuthPlayerResponse>(async () => {
       const response = await this.backendApiClients.authenticationApi.me({
         headers: {
@@ -648,6 +629,9 @@ export class AuthManager {
     options?: InitializeOAuthOptions,
     ecosystemGame?: string,
   ): Promise<InitAuthResponse> {
+    const skipBrowserRedirect = options?.skipBrowserRedirect ?? false;
+    // eslint-disable-next-line no-param-reassign
+    delete options?.skipBrowserRedirect;
     const request = {
       oAuthInitRequest: {
         provider,
@@ -672,7 +656,7 @@ export class AuthManager {
       },
     ), { default: OpenfortErrorType.AUTHENTICATION_ERROR });
 
-    if (typeof window !== 'undefined' && !options?.skipBrowserRedirect) {
+    if (typeof window !== 'undefined' && !skipBrowserRedirect) {
       window.location.assign(result.data.url);
     }
     return {

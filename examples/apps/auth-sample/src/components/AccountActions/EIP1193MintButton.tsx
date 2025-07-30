@@ -84,7 +84,6 @@ const EIP1193MintButton: React.FC<{
       let tx: `0x${string}`;
       try {
         tx = await walletClient.writeContract(request)
-        console.log('Transaction hash:', tx);
         handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`);
       } catch (error) {
         console.log('Error:', error);

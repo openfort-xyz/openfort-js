@@ -1,18 +1,21 @@
-import { IStorage } from '../storage/istorage';
-import { SignerManager } from '../wallets/signer';
+import { debugLog } from 'utils/debug';
+import { IStorage, StorageKeys } from '../storage/istorage';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { Authentication } from './configuration/authentication';
 import { AuthManager } from '../auth/authManager';
-import { MissingRecoveryPasswordError, MissingProjectEntropyError } from '../wallets/iframeManager';
+import TypedEventEmitter from '../utils/typedEventEmitter';
+import { OpenfortEventMap, OpenfortEvents } from '../types/types';
 
 export class OpenfortInternal {
   constructor(
     private storage: IStorage,
     private authManager: AuthManager,
+    private eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) { }
 
   async getAccessToken(): Promise<string | null> {
-    return (await Authentication.fromStorage(this.storage))?.token ?? null;
+    const token = (await Authentication.fromStorage(this.storage))?.token ?? null;
+    return token;
   }
 
   /**
@@ -26,11 +29,20 @@ export class OpenfortInternal {
     if (auth.type !== 'jwt') {
       return;
     }
-    const credentials = await this.authManager.validateCredentials(auth, forceRefresh);
+    debugLog('validating credentials...');
+    let credentials;
+    try {
+      credentials = await this.authManager.validateCredentials(auth, forceRefresh);
+    } catch (error) {
+      this.storage.remove(StorageKeys.AUTHENTICATION);
+      this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
+      throw error;
+    }
     if (!credentials.player) {
-      throw new OpenfortError('No player found in credentials', OpenfortErrorType.INTERNAL_ERROR);
+      throw new OpenfortError('No user found in credentials', OpenfortErrorType.INTERNAL_ERROR);
     }
     if (credentials.accessToken === auth.token) return;
+    debugLog('tokens refreshed');
 
     new Authentication(
       'jwt',
@@ -38,14 +50,7 @@ export class OpenfortInternal {
       credentials.player,
       credentials.refreshToken,
     ).save(this.storage);
-    const signer = await SignerManager.fromStorage(this.storage);
-    try {
-      await signer?.updateAuthentication();
-    } catch (e) {
-      if (e instanceof MissingRecoveryPasswordError || e instanceof MissingProjectEntropyError) {
-        await signer?.logout();
-      }
-      throw e;
-    }
+
+    this.eventEmitter.emit(OpenfortEvents.TOKEN_REFRESHED);
   }
 }

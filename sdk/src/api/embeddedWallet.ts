@@ -1,11 +1,8 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { IStorage } from '../storage/istorage';
-import { SignerManager } from '../wallets/signer';
+import { IStorage, StorageKeys } from '../storage/istorage';
 import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
 import { SDKConfiguration } from '../core/config/config';
-import { ShieldAuthentication as _ShieldAuthentication } from '../wallets/types';
-import { Entropy } from '../wallets/embedded';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError';
 import { getSignedTypedData } from '../wallets/evm/walletHelpers';
 import { EvmProvider, Provider } from '../wallets/evm';
@@ -16,23 +13,49 @@ import {
   RecoveryMethod,
   OpenfortEventMap,
   EmbeddedAccount,
-  RecoverParams as _RecoverParams,
   EmbeddedAccountConfigureParams,
   EmbeddedAccountRecoverParams,
+  OpenfortEvents,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { IframeManager } from '../wallets/iframeManager';
+import { EmbeddedSigner } from '../wallets/embedded';
+import { WindowMessenger } from '../wallets/messaging/browserMessenger';
+import { ReactNativeMessenger } from '../wallets/messaging';
+import { MessagePoster } from '../wallets/types';
+import { debugLog } from '../utils/debug';
 
 export class EmbeddedWalletApi {
-  private provider: EvmProvider | null = null;
-
   private iframeManager: IframeManager | null = null;
 
+  private iframeManagerPromise: Promise<IframeManager> | null = null;
+
+  private signer: EmbeddedSigner | null = null;
+
+  private signerPromise: Promise<EmbeddedSigner> | null = null;
+
+  private provider: EvmProvider | null = null;
+
+  private messagePoster: MessagePoster | null = null;
+
+  private messenger: ReactNativeMessenger | null = null;
+
   constructor(
-    private storage: IStorage,
-    private validateAndRefreshToken: () => Promise<void>,
-    private ensureInitialized: () => Promise<void>,
-  ) { }
+    private readonly storage: IStorage,
+    private readonly validateAndRefreshToken: () => Promise<void>,
+    private readonly ensureInitialized: () => Promise<void>,
+    private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
+  ) {
+    this.eventEmitter.on(OpenfortEvents.TOKEN_REFRESHED, () => {
+      debugLog('Handling token refresh event in EmbeddedWalletApi');
+      this.handleTokenRefreshed();
+    });
+
+    this.eventEmitter.on(OpenfortEvents.LOGGED_OUT, () => {
+      debugLog('Handling logout event in EmbeddedWalletApi');
+      this.handleLogout();
+    });
+  }
 
   private get backendApiClients(): BackendApiClients {
     const configuration = SDKConfiguration.fromStorage();
@@ -45,50 +68,181 @@ export class EmbeddedWalletApi {
     });
   }
 
-  private getIframeManager(): IframeManager {
-    if (!this.iframeManager) {
-      const configuration = SDKConfiguration.fromStorage();
-      if (!configuration) {
-        throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
-      }
-      this.iframeManager = new IframeManager(configuration, this.storage);
+  private async getIframeManager(): Promise<IframeManager> {
+    debugLog('[HANDSHAKE DEBUG] getIframeManager called');
+
+    // Return existing instance if available
+    if (this.iframeManager) {
+      debugLog('[HANDSHAKE DEBUG] Returning existing iframeManager instance');
+      return this.iframeManager;
     }
-    return this.iframeManager;
+
+    // If already initializing, return the existing promise
+    if (this.iframeManagerPromise) {
+      debugLog('[HANDSHAKE DEBUG] Returning existing iframeManagerPromise');
+      return this.iframeManagerPromise;
+    }
+
+    // Create initialization promise
+    debugLog('[HANDSHAKE DEBUG] Creating new iframeManager');
+    this.iframeManagerPromise = this.createIframeManager();
+
+    try {
+      debugLog('[HANDSHAKE DEBUG] Awaiting iframeManager creation');
+      this.iframeManager = await this.iframeManagerPromise;
+      debugLog('[HANDSHAKE DEBUG] IframeManager created successfully');
+      // Clear promise only after successful completion
+      this.iframeManagerPromise = null;
+      return this.iframeManager;
+    } catch (error) {
+      debugLog('[HANDSHAKE DEBUG] Error creating iframeManager:', error);
+      // Clear the promise on failure so we can retry
+      this.iframeManagerPromise = null;
+      throw error;
+    }
   }
 
-  async configure(
-    params: EmbeddedAccountConfigureParams = {},
-  ): Promise<EmbeddedAccount> {
+  private async createIframeManager(): Promise<IframeManager> {
+    debugLog('[HANDSHAKE DEBUG] createIframeManager starting');
+
+    const configuration = SDKConfiguration.fromStorage();
+    if (!configuration) {
+      debugLog('[HANDSHAKE DEBUG] Configuration not found');
+      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+    debugLog('[HANDSHAKE DEBUG] Configuration found');
+
+    let messenger;
+    if (this.messagePoster) {
+      debugLog('[HANDSHAKE DEBUG] Creating ReactNativeMessenger with messagePoster');
+      this.messenger = new ReactNativeMessenger(this.messagePoster);
+      debugLog('[HANDSHAKE DEBUG] Created new ReactNativeMessenger instance');
+      messenger = this.messenger;
+    } else {
+      debugLog('[HANDSHAKE DEBUG] Creating WindowMessenger for browser mode');
+      // Browser mode - create iframe and WindowMessenger
+      const iframe = this.createIframe(configuration.iframeUrl);
+      const iframeOrigin = new URL(configuration.iframeUrl).origin;
+      messenger = new WindowMessenger({
+        remoteWindow: iframe.contentWindow!,
+        allowedOrigins: [iframeOrigin],
+      });
+      debugLog('[HANDSHAKE DEBUG] Created WindowMessenger');
+    }
+
+    debugLog('[HANDSHAKE DEBUG] Creating IframeManager instance');
+    const iframeManager = new IframeManager(configuration, this.storage, messenger);
+
+    debugLog('[HANDSHAKE DEBUG] Initializing IframeManager');
+    await iframeManager.initialize();
+    debugLog('[HANDSHAKE DEBUG] IframeManager initialized successfully');
+    return iframeManager;
+  }
+
+  /**
+   * Ensure signer is available, creating it from storage if needed
+   */
+  private async ensureSigner(): Promise<EmbeddedSigner> {
+    // Return existing instance if available
+    if (this.signer) {
+      return this.signer;
+    }
+
+    // If already creating signer, return the existing promise
+    if (this.signerPromise) {
+      return this.signerPromise;
+    }
+
+    // Create signer initialization promise
+    this.signerPromise = this.createSigner();
+
+    try {
+      this.signer = await this.signerPromise;
+      return this.signer;
+    } catch (error) {
+      // Clear the promise on failure so we can retry
+      this.signerPromise = null;
+      throw error;
+    } finally {
+      // Clear the promise once complete
+      this.signerPromise = null;
+    }
+  }
+
+  private async createSigner(): Promise<EmbeddedSigner> {
+    const iframeManager = await this.getIframeManager();
+    const signer = new EmbeddedSigner(iframeManager, this.storage);
+    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
+    return signer;
+  }
+
+  private createIframe(url: string): HTMLIFrameElement {
+    if (typeof document === 'undefined') {
+      throw new OpenfortError(
+        'Document is not available. Please provide a message poster for non-browser environments.',
+        OpenfortErrorType.INVALID_CONFIGURATION,
+      );
+    }
+
+    // Remove any existing iframe
+    const existingIframe = document.getElementById('openfort-iframe');
+    if (existingIframe) {
+      existingIframe.remove();
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.id = 'openfort-iframe';
+    iframe.src = url;
+
+    document.body.appendChild(iframe);
+    debugLog('Iframe created and appended to document');
+
+    return iframe;
+  }
+
+  async configure(params: EmbeddedAccountConfigureParams = {}): Promise<EmbeddedAccount> {
+    await this.validateAndRefreshToken();
+
     const recoveryParams = params.recoveryParams ?? {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    await this.ensureInitialized();
-    await this.validateAndRefreshToken();
     const configuration = SDKConfiguration.fromStorage();
+    if (!configuration) {
+      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
 
-    let entropy: Entropy | null = null;
+    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
       entropy = {
-        encryptionSession: params.shieldAuthentication?.encryptionSession || null,
-        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD ? recoveryParams.password : null,
-        encryptionPart: configuration?.shieldConfiguration?.shieldEncryptionKey || null,
+        encryptionSession: params.shieldAuthentication?.encryptionSession,
+        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
+          ? recoveryParams.password
+          : undefined,
       };
     }
 
-    let recoveryType: 'openfort' | 'custom' | null = null;
-    let customToken: string | null = null;
-    if (params.shieldAuthentication) {
-      recoveryType = params.shieldAuthentication.auth === 'openfort' ? 'openfort' : 'custom';
-      customToken = params.shieldAuthentication.token;
+    const iframeManager = await this.getIframeManager();
+    const response = await iframeManager.configure({
+      chainId: params.chainId,
+      entropy,
+    });
+    new Account(response.address, response.chainId, response.ownerAddress, response.accountType).save(this.storage);
+    const signer = new EmbeddedSigner(iframeManager, this.storage);
+    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
+    const auth = await Authentication.fromStorage(this.storage);
+    if (!auth) {
+      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-
-    if (!this.storage) {
-      throw new OpenfortError('Storage not available in EmbeddedWalletApi', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
-
-    await SignerManager.embedded(this.storage, params.chainId, entropy, recoveryType, customToken);
-    return this.get();
+    return {
+      chainId: response.chainId.toString(),
+      owner: { id: auth.player },
+      address: response.address,
+      ownerAddress: response.accountType === 'solana' ? undefined : response.ownerAddress,
+      chainType: response.accountType === 'solana' ? 'solana' : 'ethereum',
+      implementationType: response.accountType === 'solana' ? undefined : response.accountType,
+    };
   }
 
   async create(
@@ -137,7 +291,7 @@ export class EmbeddedWalletApi {
       throw new OpenfortError('Storage not available in EmbeddedWalletApi', OpenfortErrorType.INVALID_CONFIGURATION);
     }
 
-    await SignerManager.recoveredEmbedded(this.storage, params.accountUuid, entropy, recoveryType, customToken);
+    await signer.recover(this.storage, params.accountUuid, entropy, recoveryType, customToken);
     return this.get();
   }
 
@@ -145,12 +299,9 @@ export class EmbeddedWalletApi {
     message: string | Uint8Array,
     options?: { hashMessage?: boolean; arrayifyMessage?: boolean },
   ): Promise<string> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage(this.storage);
-    if (!signer) {
-      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
-    }
+
+    const signer = await this.ensureSigner();
     const { hashMessage = true, arrayifyMessage = false } = options || {};
     return await signer.sign(message, arrayifyMessage, hashMessage);
   }
@@ -160,21 +311,16 @@ export class EmbeddedWalletApi {
     types: TypedDataPayload['types'],
     message: TypedDataPayload['message'],
   ): Promise<string> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage(this.storage);
-    const account = await Account.fromStorage(this.storage);
 
-    if (!signer || !account) {
-      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
+    const signer = await this.ensureSigner();
+    const account = await Account.fromStorage(this.storage);
+    if (!account) {
+      throw new OpenfortError('No account found', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
 
     return await getSignedTypedData(
-      {
-        domain,
-        types,
-        message,
-      },
+      { domain, types, message },
       account.type,
       Number(account.chainId),
       signer,
@@ -183,27 +329,24 @@ export class EmbeddedWalletApi {
   }
 
   async exportPrivateKey(): Promise<string> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage(this.storage);
-    if (!signer) {
-      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
-    }
 
+    const signer = await this.ensureSigner();
     return await signer.export();
   }
 
   async setEmbeddedRecovery({
-    recoveryMethod, recoveryPassword, encryptionSession,
+    recoveryMethod,
+    recoveryPassword,
+    encryptionSession,
   }: {
-    recoveryMethod: RecoveryMethod, recoveryPassword?: string, encryptionSession?: string
+    recoveryMethod: RecoveryMethod;
+    recoveryPassword?: string;
+    encryptionSession?: string;
   }): Promise<void> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const signer = await SignerManager.fromStorage(this.storage);
-    if (!signer) {
-      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
-    }
+
+    const signer = await this.ensureSigner();
     if (recoveryMethod === 'password' && !recoveryPassword) {
       throw new OpenfortError('Recovery password is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -231,15 +374,15 @@ export class EmbeddedWalletApi {
     if (!account) {
       throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
+
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.INTERNAL_ERROR);
+      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
+
     return {
       chainId: account.chainId.toString(),
-      owner: {
-        id: auth.player,
-      },
+      owner: { id: auth.player },
       address: account.address,
       ownerAddress: account.type === 'solana' ? undefined : account.ownerAddress,
       chainType: account.type === 'solana' ? 'solana' : 'ethereum',
@@ -252,7 +395,6 @@ export class EmbeddedWalletApi {
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
@@ -275,9 +417,7 @@ export class EmbeddedWalletApi {
       );
 
       return response.data.data.map((account) => ({
-        owner: {
-          id: account.player.id,
-        },
+        owner: { id: account.player.id },
         chainType: 'ethereum',
         address: account.address,
         ownerAddress: account.ownerAddress,
@@ -285,7 +425,6 @@ export class EmbeddedWalletApi {
         implementationType: account.accountType,
         chainId: account.chainId.toString(),
       }));
-      // eslint-disable-next-line @typescript-eslint/naming-convention
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
@@ -296,58 +435,51 @@ export class EmbeddedWalletApi {
         return EmbeddedState.UNAUTHENTICATED;
       }
 
-      const signer = await SignerManager.fromStorage(this.storage);
-      if (!signer) {
-        return EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED;
-      }
-
       const account = await Account.fromStorage(this.storage);
       if (!account) {
-        return EmbeddedState.CREATING_ACCOUNT;
+        return EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED;
       }
 
       return EmbeddedState.READY;
     } catch (error) {
-      // If storage access fails, return unauthenticated state
-      console.error('Failed to get embedded state:', error);
+      debugLog('Failed to get embedded state:', error);
       return EmbeddedState.UNAUTHENTICATED;
     }
   }
 
-  /**
-   * Returns an Ethereum provider using the configured signer.
-   *
-   * @param options - Configuration options for the Ethereum provider.
-   * @returns A Provider instance.
-   * @throws {OpenfortError} If the signer is not an EmbeddedSigner.
-   */
-  async getEthereumProvider(
-    options?: {
-      policy?: string;
-      chains?: Record<number, string>;
-      providerInfo?: {
-        icon: `data:image/${string}`; // RFC-2397ƒ
-        name: string;
-        rdns: string;
-      };
-      announceProvider?: boolean;
-    },
-  ): Promise<Provider> {
+  async getEthereumProvider(options?: {
+    policy?: string;
+    chains?: Record<number, string>;
+    providerInfo?: {
+      icon: `data:image/${string}`;
+      name: string;
+      rdns: string;
+    };
+    announceProvider?: boolean;
+  }): Promise<Provider> {
     await this.ensureInitialized();
-    // Apply default options with proper type safety
+
     const defaultOptions = {
       announceProvider: true,
     };
     const finalOptions = { ...defaultOptions, ...options };
 
     const authentication = await Authentication.fromStorage(this.storage);
-    const signer = await SignerManager.fromStorage(this.storage);
     const account = await Account.fromStorage(this.storage);
+
+    // Try to get signer if account exists, but don't fail if it doesn't
+    let signer;
+    try {
+      signer = account ? await this.ensureSigner() : undefined;
+    } catch (error) {
+      // Signer not available, provider will work without it for read operations
+      signer = undefined;
+    }
 
     if (!this.provider) {
       this.provider = new EvmProvider({
         storage: this.storage,
-        openfortEventEmitter: new TypedEventEmitter<OpenfortEventMap>(),
+        openfortEventEmitter: this.eventEmitter,
         signer: signer || undefined,
         account: account || undefined,
         authentication: authentication || undefined,
@@ -372,37 +504,31 @@ export class EmbeddedWalletApi {
 
   async ping(delay: number): Promise<boolean> {
     try {
-      const iframeManager = this.getIframeManager();
-
-      // Test if iframe is loaded and responsive
-      if (!iframeManager.isLoaded()) {
-        return false;
-      }
-
-      // Add delay if specified
       if (delay > 0) {
         await new Promise<void>((resolve) => {
           setTimeout(resolve, delay);
         });
       }
 
-      // Test connection by attempting to get current user
-      // This is a lightweight operation that confirms the iframe is responsive
+      const iframeManager = await this.getIframeManager();
+      if (!iframeManager.isLoaded()) {
+        return false;
+      }
+
+      // Test connection by getting current device
       const auth = await Authentication.fromStorage(this.storage);
       if (auth) {
         try {
-          await iframeManager.getCurrentUser(auth.player);
+          await iframeManager.getCurrentDevice(auth.player);
           return true;
         } catch (error) {
-          // If getCurrentUser fails, iframe might not be responsive
           return false;
         }
       }
 
-      // If no auth, just check if iframe is loaded
       return iframeManager.isLoaded();
     } catch (error) {
-      // Any error means iframe is not responsive
+      debugLog('Ping failed:', error);
       return false;
     }
   }
@@ -413,5 +539,118 @@ export class EmbeddedWalletApi {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
     return configuration.iframeUrl;
+  }
+
+  async setMessagePoster(poster: MessagePoster): Promise<void> {
+    if (!poster || typeof poster.postMessage !== 'function') {
+      throw new OpenfortError('Invalid message poster', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+
+    this.messagePoster = poster;
+
+    // Reset messenger to use new poster
+    if (this.messenger) {
+      this.messenger.destroy();
+      this.messenger = null;
+    }
+
+    // Reset iframe manager to use new poster
+    if (this.iframeManager) {
+      this.iframeManager.destroy();
+      this.iframeManager = null;
+      this.iframeManagerPromise = null;
+    }
+
+    // Reset signer to force recreation with new poster
+    if (this.signer) {
+      this.signer = null;
+      this.signerPromise = null;
+    }
+  }
+
+  private async handleTokenRefreshed(): Promise<void> {
+    if (this.iframeManager) {
+      try {
+        await this.iframeManager.updateAuthentication();
+        debugLog('Updated IframeManager authentication after token refresh');
+      } catch (error) {
+        debugLog('Failed to update IframeManager authentication:', error);
+      }
+    } else {
+      debugLog('IframeManager not initialized, skipping authentication update');
+    }
+  }
+
+  private async handleLogout(): Promise<void> {
+    // Clean up embedded signer when user logs out
+    if (this.signer) {
+      try {
+        await this.signer.disconnect();
+        debugLog('Logged out embedded signer');
+      } catch (error) {
+        debugLog('Failed to logout embedded signer:', error);
+      }
+      this.signer = null;
+      this.signerPromise = null;
+    }
+    this.storage.remove(StorageKeys.ACCOUNT);
+
+    // Clean up iframe manager if it exists
+    if (this.iframeManager) {
+      this.iframeManager.destroy();
+      this.iframeManager = null;
+      this.iframeManagerPromise = null;
+    }
+
+    // Clean up messenger if it exists
+    if (this.messenger) {
+      this.messenger.destroy();
+      this.messenger = null;
+    }
+
+    // Clean up provider if it exists
+    if (this.provider) {
+      this.provider = null;
+    }
+  }
+
+  async onMessage(message: Record<string, unknown>): Promise<void> {
+    if (!message || typeof message !== 'object') {
+      debugLog('Invalid message received:', message);
+      return;
+    }
+
+    debugLog('[HANDSHAKE DEBUG] EmbeddedWalletApi onMessage:', message);
+
+    // Check if this is a penpal message
+    const isPenpalMessage = (message.namespace === 'penpal' && message.type === 'SYN')
+      || (message.penpal && typeof message.penpal === 'string');
+
+    // If we have a ReactNativeMessenger already created, pass the message directly to it
+    // This handles the case where synAck arrives while IframeManager is still initializing
+    if (isPenpalMessage && this.messenger && this.messagePoster) {
+      debugLog('[HANDSHAKE DEBUG] Passing message directly to existing ReactNativeMessenger');
+      this.messenger.handleMessage(message);
+      return;
+    }
+
+    // Get or create iframe manager
+    const iframeManager = await this.getIframeManager();
+    debugLog(`[HANDSHAKE DEBUG] IframeManager obtained, isLoaded: ${iframeManager.isLoaded()}`);
+
+    // If this is a penpal message and we haven't initialized yet,
+    // we need to ensure the connection is set up to handle it
+    if (isPenpalMessage && !iframeManager.isLoaded()) {
+      debugLog('[HANDSHAKE DEBUG] Received penpal message before connection initialized, setting up connection...');
+      // The connection will be initialized when we call onMessage
+    }
+
+    debugLog('[HANDSHAKE DEBUG] Calling iframeManager.onMessage');
+    await iframeManager.onMessage(message);
+    debugLog('[HANDSHAKE DEBUG] iframeManager.onMessage completed');
+  }
+
+  isReady(): boolean {
+    return this.iframeManager?.isLoaded() || false;
   }
 }

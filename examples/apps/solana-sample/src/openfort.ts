@@ -1,6 +1,6 @@
 import { Openfort } from "@openfort/openfort-js";
 
-export const shieldUrl = import.meta.env.VITE_SHIELD_URL ?? 'https://shield.openfort.xyz';
+export const shieldUrl = import.meta.env.VITE_SHIELD_URL ?? 'https://shield.openfort.io';
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const iframeUrl = import.meta.env.VITE_IFRAME_URL;
 

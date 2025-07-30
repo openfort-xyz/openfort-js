@@ -6,7 +6,7 @@ export interface Signer {
     requireArrayify?: boolean,
     requireHash?: boolean
   ): Promise<string>;
-  logout(): Promise<void>;
+  disconnect(): Promise<void>;
   switchChain({ chainId }: { chainId: number }): Promise<void>;
   switchChainV2({ accountUuid, chainId }: { accountUuid: string, chainId: number }): Promise<void>;
   updateAuthentication(): Promise<void>;
