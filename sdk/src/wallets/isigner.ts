@@ -1,5 +1,5 @@
-import type { RecoverParams, RecoveryMethod } from '../types/types';
-import { EmbeddedSignerConfigureRequest } from './iframeManager';
+import type { RecoveryMethod } from '../types/types';
+import { EmbeddedSignerConfigureRequest, RecoverParams } from './iframeManager';
 import { ConfigureResponse } from './types';
 
 export interface Signer {

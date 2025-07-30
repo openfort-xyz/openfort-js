@@ -60,7 +60,7 @@ export interface EmbeddedSignerConfigureRequest {
   }
 }
 
-interface RecoverParams {
+export interface RecoverParams {
   accountUuid: string,
   entropy?: {
     recoveryPassword?: string;
