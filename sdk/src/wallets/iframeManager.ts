@@ -52,7 +52,7 @@ export interface IframeConfiguration {
   password: string | null;
 }
 
-export interface IframeConfigurationRequest {
+export interface EmbeddedSignerConfigureRequest {
   chainId?: number,
   entropy?: {
     recoveryPassword?: string;
@@ -141,8 +141,6 @@ export class IframeManager {
   private readonly sdkConfiguration: SDKConfiguration;
 
   private isInitialized = false;
-
-  private configurationRequest: IframeConfigurationRequest | undefined;
 
   constructor(configuration: SDKConfiguration, storage: IStorage, messenger: Messenger) {
     if (!configuration) {
@@ -270,7 +268,7 @@ export class IframeManager {
     return iframeConfiguration;
   }
 
-  async configure(request?: IframeConfigurationRequest): Promise<ConfigureResponse> {
+  async configure(request?: EmbeddedSignerConfigureRequest): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new OpenfortError('shieldConfiguration is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -437,7 +435,7 @@ export class IframeManager {
       return (response as SignResponse).signature;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(this.configurationRequest);
+        await this.configure();
         return this.sign(message, requireArrayify, requireHash);
       }
       throw e;
@@ -459,14 +457,10 @@ export class IframeManager {
       if (isErrorResponse(response)) {
         this.handleError(response);
       }
-
-      if (this.configurationRequest) {
-        this.configurationRequest.chainId = chainId;
-      }
       return response;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(this.configurationRequest);
+        await this.configure();
         return this.switchChain(chainId);
       }
       throw e;
@@ -499,7 +493,7 @@ export class IframeManager {
       return response as SwitchChainV2Response;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(this.configurationRequest);
+        await this.configure();
         return this.switchChainV2(accountUuid, chainId);
       }
       throw e;
@@ -527,7 +521,7 @@ export class IframeManager {
       return response.key;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(this.configurationRequest);
+        await this.configure();
         return this.export();
       }
       throw e;
@@ -562,7 +556,7 @@ export class IframeManager {
       }
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(this.configurationRequest);
+        await this.configure();
         return this.setEmbeddedRecovery(recoveryMethod, recoveryPassword, encryptionSession);
       }
       throw e;
@@ -614,7 +608,7 @@ export class IframeManager {
       }
     } catch (e) {
       if (e instanceof NotConfiguredError) {
-        await this.configure(this.configurationRequest);
+        await this.configure();
         await this.updateAuthentication();
         return;
       }
@@ -626,7 +620,6 @@ export class IframeManager {
     const remote = await this.ensureConnection();
     const request = { uuid: randomUUID() };
     await remote.logout(request);
-    this.configurationRequest = undefined;
   }
 
   /**
@@ -672,7 +665,6 @@ export class IframeManager {
 
     this.remote = undefined;
     this.isInitialized = false;
-    this.configurationRequest = undefined;
 
     this.messenger.destroy();
   }
