@@ -131,12 +131,7 @@ export class EmbeddedWalletApi {
     }
 
     debugLog('[HANDSHAKE DEBUG] Creating IframeManager instance');
-    const iframeManager = new IframeManager(configuration, this.storage, messenger);
-
-    debugLog('[HANDSHAKE DEBUG] Initializing IframeManager');
-    await iframeManager.initialize();
-    debugLog('[HANDSHAKE DEBUG] IframeManager initialized successfully');
-    return iframeManager;
+    return new IframeManager(configuration, this.storage, messenger);
   }
 
   /**
@@ -201,17 +196,12 @@ export class EmbeddedWalletApi {
     return iframe;
   }
 
-  async configure(params: EmbeddedAccountConfigureParams = {}): Promise<EmbeddedAccount> {
+  async configure(params: EmbeddedAccountConfigureParams): Promise<EmbeddedAccount> {
     await this.validateAndRefreshToken();
 
     const recoveryParams = params.recoveryParams ?? {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
-
-    const configuration = SDKConfiguration.fromStorage();
-    if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
 
     let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
@@ -222,26 +212,23 @@ export class EmbeddedWalletApi {
           : undefined,
       };
     }
-
-    const iframeManager = await this.getIframeManager();
-    const response = await iframeManager.configure({
+    const signer = await this.ensureSigner();
+    const account = await signer.configure({
       chainId: params.chainId,
       entropy,
     });
-    new Account(response.address, response.chainId, response.ownerAddress, response.accountType).save(this.storage);
-    const signer = new EmbeddedSigner(iframeManager, this.storage);
-    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
+
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
     return {
-      chainId: response.chainId.toString(),
+      chainId: account.chainId.toString(),
       owner: { id: auth.player },
-      address: response.address,
-      ownerAddress: response.accountType === 'solana' ? undefined : response.ownerAddress,
-      chainType: response.accountType === 'solana' ? 'solana' : 'ethereum',
-      implementationType: response.accountType === 'solana' ? undefined : response.accountType,
+      address: account.address,
+      ownerAddress: account.accountType === 'solana' ? undefined : account.ownerAddress,
+      chainType: account.accountType === 'solana' ? 'solana' : 'ethereum',
+      implementationType: account.accountType === 'solana' ? undefined : account.accountType,
     };
   }
 

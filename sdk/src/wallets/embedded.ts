@@ -1,9 +1,9 @@
-import { debugLog } from 'utils/debug';
 import type { RecoverParams, RecoveryMethod } from '../types/types';
 import { Account } from '../core/configuration/account';
 import type { Signer } from './isigner';
-import type { IframeManager } from './iframeManager';
+import type { IframeConfigurationRequest, IframeManager } from './iframeManager';
 import { type IStorage } from '../storage/istorage';
+import { ConfigureResponse } from './types';
 
 export class EmbeddedSigner implements Signer {
   constructor(
@@ -11,12 +11,24 @@ export class EmbeddedSigner implements Signer {
     private readonly storage: IStorage,
   ) { }
 
+  async configure(
+    params: IframeConfigurationRequest,
+  ): Promise<ConfigureResponse> {
+    const response = await this.iframeManager.configure(params);
+    new Account(
+      response.address,
+      response.chainId,
+      response.ownerAddress,
+      response.accountType,
+    ).save(this.storage);
+    return response;
+  }
+
   async sign(
     message: Uint8Array | string,
     requireArrayify?: boolean,
     requireHash?: boolean,
   ): Promise<string> {
-    debugLog('Signing message:', message, 'requireArrayify:', requireArrayify, 'requireHash:', requireHash);
     return await this.iframeManager.sign(message, requireArrayify, requireHash);
   }
 
@@ -26,7 +38,6 @@ export class EmbeddedSigner implements Signer {
 
   async switchChain({ chainId }: { chainId: number }): Promise<void> {
     const response = await this.iframeManager.switchChain(chainId);
-
     new Account(
       response.address,
       response.chainId,

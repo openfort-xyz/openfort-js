@@ -52,7 +52,7 @@ export interface IframeConfiguration {
   password: string | null;
 }
 
-interface ConfigurationRequest {
+export interface IframeConfigurationRequest {
   chainId?: number,
   entropy?: {
     recoveryPassword?: string;
@@ -142,7 +142,7 @@ export class IframeManager {
 
   private isInitialized = false;
 
-  private configurationRequest: ConfigurationRequest | undefined;
+  private configurationRequest: IframeConfigurationRequest | undefined;
 
   constructor(configuration: SDKConfiguration, storage: IStorage, messenger: Messenger) {
     if (!configuration) {
@@ -270,7 +270,7 @@ export class IframeManager {
     return iframeConfiguration;
   }
 
-  async configure(request?: ConfigurationRequest): Promise<ConfigureResponse> {
+  async configure(request?: IframeConfigurationRequest): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new OpenfortError('shieldConfiguration is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -460,7 +460,6 @@ export class IframeManager {
         this.handleError(response);
       }
 
-      // Update stored chain ID
       if (this.configurationRequest) {
         this.configurationRequest.chainId = chainId;
       }
