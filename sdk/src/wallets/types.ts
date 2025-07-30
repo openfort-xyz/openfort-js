@@ -496,7 +496,6 @@ export interface ShieldAuthentication {
 
 export enum ShieldAuthType {
   OPENFORT = 'openfort',
-  CUSTOM = 'custom',
 }
 
 export interface RequestConfiguration {
@@ -505,4 +504,8 @@ export interface RequestConfiguration {
   thirdPartyTokenType?: string;
   publishableKey: string;
   openfortURL?: string;
+}
+
+export interface MessagePoster {
+  postMessage(message: string): void;
 }

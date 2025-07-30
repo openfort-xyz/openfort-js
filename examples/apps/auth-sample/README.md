@@ -1,6 +1,6 @@
 # Openfort Invisible wallet `create-next-app` Starter
 
-This is a template for integrating [**Openfort Invisible Wallet**](https://www.openfort.io/) into a [NextJS](https://nextjs.org/) project. Check out the deployed app [here](https://create-next-app.openfort.xyz/)!
+This is a template for integrating [**Openfort Invisible Wallet**](https://www.openfort.io/) into a [NextJS](https://nextjs.org/) project. Check out the deployed app [here](https://create-next-app.openfort.io/)!
 
 This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-your-application/routing).
 

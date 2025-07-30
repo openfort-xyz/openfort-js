@@ -84,7 +84,7 @@ export const revokeSession = async ({
 }: WalletRequestPermissionsParams): Promise<{}> => {
   const param = params[0];
   if (!param.permissionContext) {
-    await signer.logout();
+    await signer.disconnect();
     return {};
   }
   const openfortTransaction = await buildOpenfortTransactions(

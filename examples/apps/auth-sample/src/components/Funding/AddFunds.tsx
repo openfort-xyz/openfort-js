@@ -165,7 +165,7 @@ const AddFunds: React.FC<{
   return (
     <>
       <Dialog onOpenChange={handleDialogOpen}>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <Button
           type="button"
           className='w-full' 

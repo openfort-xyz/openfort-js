@@ -14,7 +14,7 @@ export function ConnectorsList() {
       error &&
       activeConnector?.name === 'Openfort' &&
       error.message ===
-        'Unauthorized - must be authenticated and configured with a signer'
+        'Unauthorized - must be authenticated and configured with a signer.'
     ) {
       navigate('/authentication');
     }

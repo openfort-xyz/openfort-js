@@ -15,7 +15,7 @@ export class Logger {
 
         await this.textArea.textContent()
 
-        await expect(this.textArea).toHaveValue(/.*> User:/, { timeout: 10000 })
+        await expect(this.textArea).toHaveValue(/.*> Current account/, { timeout: 10000 })
 
         this.logs.push(await this.textArea.inputValue())
     }

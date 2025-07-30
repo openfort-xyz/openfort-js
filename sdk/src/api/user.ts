@@ -9,11 +9,9 @@ export class UserApi {
     private storage: IStorage,
     private authManager: AuthManager,
     private validateAndRefreshToken: () => Promise<void>,
-    private ensureInitialized: () => Promise<void>,
   ) { }
 
   async get(): Promise<AuthPlayerResponse> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
     const authentication = await Authentication.fromStorage(this.storage);
     if (!authentication) {

@@ -1,6 +1,6 @@
 # Wagmi Kit - Next.js
 
-Check out the deployed app [here](https://wagmi.openfort.xyz/)!
+Check out the deployed app [here](https://wagmi.openfort.io/)!
 
 ## Getting Started
 
@@ -31,7 +31,7 @@ NEXTAUTH_SHIELD_ENCRYPTION_SHARE=
 NEXTAUTH_SHIELD_SECRET_KEY=
 ```
 
-If you want to sponsor transactions, you can add policies to your `.env.local` file. You can create gas sponsorship policies [from your Openfort dashboard](https://www.openfort.io/docs/development/gas-sponsorship).
+If you want to sponsor transactions, you can add policies to your `.env.local` file. You can create gas sponsorship policies [from your Openfort dashboard](https://www.openfort.io/docs/configuration/gas-sponsorship).
 
 
 ```sh

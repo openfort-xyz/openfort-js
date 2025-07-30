@@ -152,6 +152,26 @@ function Authenticate() {
     setStatus(null);
   };
 
+  const handleCreateGuestAccount = async () => {
+    setStatus(null);
+    setIsLoading(true);
+    setIsProcessing(true);
+    try {
+      const data = await openfortInstance.auth.signUpGuest();
+      console.log('Guest account created:', data);
+      setStatus('Guest account created successfully');
+      await configureEmbeddedSigner(chainId ?? sepolia.id);
+    } catch (error) {
+      console.error('Error creating guest account:', error);
+      setStatus(
+        error instanceof Error ? error.message : 'An unexpected error occurred'
+      );
+    } finally {
+      setIsLoading(false);
+      setIsProcessing(false);
+    }
+  }
+
   return (
     <div className="auth-container">
       <h2 className="auth-title">{isLogin ? 'Login' : 'Register'}</h2>
@@ -259,6 +279,16 @@ function Authenticate() {
           </button>
         </p>
       )}
+        <p className="auth-toggle-text">
+          {'Create a guest account? '}
+          <button
+            onClick={handleCreateGuestAccount}
+            className="auth-toggle-button"
+            disabled={isProcessing}
+          >
+            {'Create'}
+          </button>
+        </p>
     </div>
   );
 }

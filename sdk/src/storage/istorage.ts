@@ -3,7 +3,6 @@ export enum StorageKeys {
   CONFIGURATION = 'openfort.configuration',
   ACCOUNT = 'openfort.account',
   TEST = 'openfort.test',
-  RECOVERY = 'openfort.recovery',
   SESSION = 'openfort.session',
   PKCE_STATE = 'openfort.pkce_state',
   PKCE_VERIFIER = 'openfort.pkce_verifier',

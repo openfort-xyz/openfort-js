@@ -1,7 +1,6 @@
 import { IStorage, StorageKeys } from '../storage/istorage';
 import { AuthManager } from '../auth/authManager';
 import { Authentication } from '../core/configuration/authentication';
-import { SignerManager } from '../wallets/signer';
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
 import {
   AuthResponse,
@@ -14,7 +13,10 @@ import {
   TokenType,
   InitializeOAuthOptions,
   Auth,
+  OpenfortEventMap,
+  OpenfortEvents,
 } from '../types/types';
+import TypedEventEmitter from '../utils/typedEventEmitter';
 
 export class AuthApi {
   constructor(
@@ -22,19 +24,16 @@ export class AuthApi {
     private authManager: AuthManager,
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
+    private eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) { }
 
   async logInWithEmailPassword(
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
     if ('action' in result) {
       return result;
-    }
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
     }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
@@ -42,11 +41,7 @@ export class AuthApi {
 
   async signUpGuest(): Promise<AuthResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.registerGuest();
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
-    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }
@@ -57,13 +52,9 @@ export class AuthApi {
     }: { email: string; password: string, options?: { data: { name: string } }, ecosystemGame?: string },
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame);
     if ('action' in result) {
       return result;
-    }
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
     }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
@@ -74,24 +65,28 @@ export class AuthApi {
       email, password, authToken, ecosystemGame,
     }: { email: string; password: string; authToken: string, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
+    await this.validateAndRefreshToken();
     return await this.authManager.linkEmail(email, password, authToken, ecosystemGame);
   }
 
   async unlinkEmailPassword(
     { email, authToken }: { email: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken();
     return await this.authManager.unlinkEmail(email, authToken);
   }
 
   async requestEmailVerification(
     { email, redirectUrl }: { email: string; redirectUrl: string },
   ): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.requestEmailVerification(email, redirectUrl);
   }
 
   async resetPassword(
     { email, password, state }: { email: string; password: string; state: string },
   ): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.resetPassword(email, password, state);
   }
 
@@ -103,6 +98,7 @@ export class AuthApi {
   }
 
   async verifyEmail({ email, state }: { email: string; state: string }): Promise<void> {
+    await this.ensureInitialized();
     await this.authManager.verifyEmail(email, state);
   }
 
@@ -122,6 +118,7 @@ export class AuthApi {
       provider: OAuthProvider; authToken: string; options?: InitializeOAuthOptions, ecosystemGame?: string
     },
   ): Promise<InitAuthResponse> {
+    await this.validateAndRefreshToken();
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
@@ -134,6 +131,7 @@ export class AuthApi {
       provider, token, tokenType,
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType },
   ): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken();
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
@@ -144,16 +142,13 @@ export class AuthApi {
   async unlinkOAuth(
     { provider, authToken }: { provider: OAuthProvider; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken();
     return await this.authManager.unlinkOAuth(provider, authToken);
   }
 
   async poolOAuth(key: string): Promise<AuthResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const response = await this.authManager.poolOAuth(key);
-    if (previousAuth && previousAuth.player !== response.player.id) {
-      await this.logout();
-    }
     new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage);
     return response;
   }
@@ -164,11 +159,7 @@ export class AuthApi {
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.authenticateThirdParty(provider, token, tokenType, ecosystemGame);
-    if (previousAuth && previousAuth.player !== result.id) {
-      await this.logout();
-    }
     new Authentication('third_party', token, result.id, null, provider, tokenType).save(this.storage);
     return result;
   }
@@ -179,11 +170,7 @@ export class AuthApi {
     }: { provider: OAuthProvider; token: string; ecosystemGame?: string },
   ): Promise<AuthResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame);
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
-    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }
@@ -199,11 +186,7 @@ export class AuthApi {
     signature, message, walletClientType, connectorType,
   }: { signature: string; message: string; walletClientType: string; connectorType: string }): Promise<AuthResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType);
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
-    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }
@@ -213,12 +196,14 @@ export class AuthApi {
       signature, message, walletClientType, connectorType, authToken,
     }: { signature: string; message: string; walletClientType: string; connectorType: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken();
     return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken);
   }
 
   async unlinkWallet(
     { address, authToken }: { address: string; authToken: string },
   ): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken();
     return await this.authManager.unlinkWallet(address, authToken);
   }
 
@@ -234,12 +219,16 @@ export class AuthApi {
    * Logs the user out by flushing the signer and removing credentials.
    */
   async logout(): Promise<void> {
-    await this.ensureInitialized();
-    const signer = await SignerManager.fromStorage(this.storage);
-    this.storage.remove(StorageKeys.AUTHENTICATION);
-    this.storage.remove(StorageKeys.ACCOUNT);
-    if (signer) {
-      await signer.logout();
+    const previousAuth = await Authentication.fromStorage(this.storage);
+    if (!previousAuth || !previousAuth.refreshToken) {
+      return; // No previous authentication to log out
     }
+    try {
+      await this.authManager.logout(previousAuth.token, previousAuth.refreshToken);
+    } catch (error) {
+      // Ignoring logout errors as we're clearing local state anyway
+    }
+    this.storage.remove(StorageKeys.AUTHENTICATION);
+    this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
   }
 }
