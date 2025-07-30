@@ -226,8 +226,9 @@ export class AuthApi {
     try {
       await this.authManager.logout(previousAuth.token, previousAuth.refreshToken);
     } catch (error) {
-      this.storage.remove(StorageKeys.AUTHENTICATION);
-      this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
+      // Ignoring logout errors as we're clearing local state anyway
     }
+    this.storage.remove(StorageKeys.AUTHENTICATION);
+    this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
   }
 }

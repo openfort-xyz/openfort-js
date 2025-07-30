@@ -1,3 +1,4 @@
+import { Account } from 'core/configuration/account';
 import {
   connect, Message, Messenger, PenpalError, type Connection,
 } from './messaging/browserMessenger';
@@ -258,10 +259,10 @@ export class IframeManager {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new OpenfortError('shieldConfiguration is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
-
+    const acc = await Account.fromStorage(this.storage);
     const remote = await this.ensureConnection();
     const iframeConfiguration = await this.buildIFrameRequestConfiguration();
-    iframeConfiguration.chainId = request?.chainId ?? null;
+    iframeConfiguration.chainId = request?.chainId ?? acc?.chainId ?? null;
     iframeConfiguration.password = request?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.recovery = {
       ...iframeConfiguration.recovery as ShieldAuthentication,
