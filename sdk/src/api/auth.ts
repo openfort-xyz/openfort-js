@@ -31,13 +31,9 @@ export class AuthApi {
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
     if ('action' in result) {
       return result;
-    }
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
     }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
@@ -45,11 +41,7 @@ export class AuthApi {
 
   async signUpGuest(): Promise<AuthResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.registerGuest();
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
-    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }
@@ -60,13 +52,9 @@ export class AuthApi {
     }: { email: string; password: string, options?: { data: { name: string } }, ecosystemGame?: string },
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame);
     if ('action' in result) {
       return result;
-    }
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
     }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
@@ -160,11 +148,7 @@ export class AuthApi {
 
   async poolOAuth(key: string): Promise<AuthResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const response = await this.authManager.poolOAuth(key);
-    if (previousAuth && previousAuth.player !== response.player.id) {
-      await this.logout();
-    }
     new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage);
     return response;
   }
@@ -175,11 +159,7 @@ export class AuthApi {
     }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType, ecosystemGame?: string },
   ): Promise<AuthPlayerResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.authenticateThirdParty(provider, token, tokenType, ecosystemGame);
-    if (previousAuth && previousAuth.player !== result.id) {
-      await this.logout();
-    }
     new Authentication('third_party', token, result.id, null, provider, tokenType).save(this.storage);
     return result;
   }
@@ -190,11 +170,7 @@ export class AuthApi {
     }: { provider: OAuthProvider; token: string; ecosystemGame?: string },
   ): Promise<AuthResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame);
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
-    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }
@@ -210,11 +186,7 @@ export class AuthApi {
     signature, message, walletClientType, connectorType,
   }: { signature: string; message: string; walletClientType: string; connectorType: string }): Promise<AuthResponse> {
     await this.ensureInitialized();
-    const previousAuth = await Authentication.fromStorage(this.storage);
     const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType);
-    if (previousAuth && previousAuth.player !== result.player.id) {
-      await this.logout();
-    }
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
   }

@@ -491,10 +491,31 @@ export class IframeManager {
   /**
    * Handle incoming message (for React Native)
    */
-  onMessage(message: any): void {
+  async onMessage(message: any): Promise<void> {
+    debugLog('[HANDSHAKE DEBUG] IframeManager.onMessage called with:', message);
+
     if (this.messenger instanceof ReactNativeMessenger) {
-      // Just handle the message - initialization should be done through ensureConnection()
+      // If we haven't initialized yet, do it now
+      if (!this.isInitialized && !this.connection) {
+        debugLog('[HANDSHAKE DEBUG] First message received, initializing connection...');
+
+        // Initialize connection asynchronously but don't wait for it
+        // This allows the handshake messages to be processed immediately
+        this.initialize().catch((error) => {
+          debugLog('[HANDSHAKE DEBUG] Failed to initialize connection:', error);
+        });
+      } else {
+        debugLog(
+          '[HANDSHAKE DEBUG] Connection already initialized '
+          + `(isInitialized: ${this.isInitialized}, hasConnection: ${!!this.connection})`,
+        );
+      }
+
+      // Always handle the message
+      debugLog('[HANDSHAKE DEBUG] Passing message to ReactNativeMessenger');
       this.messenger.handleMessage(message);
+    } else {
+      debugLog('[HANDSHAKE DEBUG] Not a ReactNativeMessenger, ignoring message');
     }
   }
 

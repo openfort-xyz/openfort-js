@@ -68,25 +68,33 @@ export class EmbeddedWalletApi {
   }
 
   private async getIframeManager(): Promise<IframeManager> {
+    debugLog('[HANDSHAKE DEBUG] getIframeManager called');
+
     // Return existing instance if available
     if (this.iframeManager) {
+      debugLog('[HANDSHAKE DEBUG] Returning existing iframeManager instance');
       return this.iframeManager;
     }
 
     // If already initializing, return the existing promise
     if (this.iframeManagerPromise) {
+      debugLog('[HANDSHAKE DEBUG] Returning existing iframeManagerPromise');
       return this.iframeManagerPromise;
     }
 
     // Create initialization promise
+    debugLog('[HANDSHAKE DEBUG] Creating new iframeManager');
     this.iframeManagerPromise = this.createIframeManager();
 
     try {
+      debugLog('[HANDSHAKE DEBUG] Awaiting iframeManager creation');
       this.iframeManager = await this.iframeManagerPromise;
+      debugLog('[HANDSHAKE DEBUG] IframeManager created successfully');
       // Clear promise only after successful completion
       this.iframeManagerPromise = null;
       return this.iframeManager;
     } catch (error) {
+      debugLog('[HANDSHAKE DEBUG] Error creating iframeManager:', error);
       // Clear the promise on failure so we can retry
       this.iframeManagerPromise = null;
       throw error;
@@ -94,17 +102,23 @@ export class EmbeddedWalletApi {
   }
 
   private async createIframeManager(): Promise<IframeManager> {
+    debugLog('[HANDSHAKE DEBUG] createIframeManager starting');
+
     const configuration = SDKConfiguration.fromStorage();
     if (!configuration) {
+      debugLog('[HANDSHAKE DEBUG] Configuration not found');
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
+    debugLog('[HANDSHAKE DEBUG] Configuration found');
 
     let messenger;
     if (this.messagePoster) {
+      debugLog('[HANDSHAKE DEBUG] Creating ReactNativeMessenger with messagePoster');
       this.messenger = new ReactNativeMessenger(this.messagePoster);
-      debugLog('Created new ReactNativeMessenger instance');
+      debugLog('[HANDSHAKE DEBUG] Created new ReactNativeMessenger instance');
       messenger = this.messenger;
     } else {
+      debugLog('[HANDSHAKE DEBUG] Creating WindowMessenger for browser mode');
       // Browser mode - create iframe and WindowMessenger
       const iframe = this.createIframe(configuration.iframeUrl);
       const iframeOrigin = new URL(configuration.iframeUrl).origin;
@@ -112,10 +126,15 @@ export class EmbeddedWalletApi {
         remoteWindow: iframe.contentWindow!,
         allowedOrigins: [iframeOrigin],
       });
+      debugLog('[HANDSHAKE DEBUG] Created WindowMessenger');
     }
+
+    debugLog('[HANDSHAKE DEBUG] Creating IframeManager instance');
     const iframeManager = new IframeManager(configuration, this.storage, messenger);
 
+    debugLog('[HANDSHAKE DEBUG] Initializing IframeManager');
     await iframeManager.initialize();
+    debugLog('[HANDSHAKE DEBUG] IframeManager initialized successfully');
     return iframeManager;
   }
 
@@ -535,19 +554,34 @@ export class EmbeddedWalletApi {
       return;
     }
 
-    debugLog('EmbeddedWalletApi onMessage:', message);
+    debugLog('[HANDSHAKE DEBUG] EmbeddedWalletApi onMessage:', message);
+
+    // Check if this is a penpal message
+    const isPenpalMessage = (message.namespace === 'penpal' && message.type === 'SYN')
+      || (message.penpal && typeof message.penpal === 'string');
+
+    // If we have a ReactNativeMessenger already created, pass the message directly to it
+    // This handles the case where synAck arrives while IframeManager is still initializing
+    if (isPenpalMessage && this.messenger && this.messagePoster) {
+      debugLog('[HANDSHAKE DEBUG] Passing message directly to existing ReactNativeMessenger');
+      this.messenger.handleMessage(message);
+      return;
+    }
 
     // Get or create iframe manager
     const iframeManager = await this.getIframeManager();
+    debugLog(`[HANDSHAKE DEBUG] IframeManager obtained, isLoaded: ${iframeManager.isLoaded()}`);
 
-    // If this is a penpal SYN message and we haven't initialized yet,
+    // If this is a penpal message and we haven't initialized yet,
     // we need to ensure the connection is set up to handle it
-    if (message.namespace === 'penpal' && message.type === 'SYN' && !iframeManager.isLoaded()) {
-      debugLog('Received SYN before connection initialized, setting up connection...');
+    if (isPenpalMessage && !iframeManager.isLoaded()) {
+      debugLog('[HANDSHAKE DEBUG] Received penpal message before connection initialized, setting up connection...');
       // The connection will be initialized when we call onMessage
     }
 
-    iframeManager.onMessage(message);
+    debugLog('[HANDSHAKE DEBUG] Calling iframeManager.onMessage');
+    await iframeManager.onMessage(message);
+    debugLog('[HANDSHAKE DEBUG] iframeManager.onMessage completed');
   }
 
   isReady(): boolean {

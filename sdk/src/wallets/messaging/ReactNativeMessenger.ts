@@ -106,35 +106,46 @@ export class ReactNativeMessenger implements Messenger {
    * This should be called by the parent component when WebView's onMessage fires
    */
   handleMessage(message: any): void {
+    debugLog('[HANDSHAKE DEBUG] ReactNativeMessenger.handleMessage called with:', message);
+
     if (!this.isInitialized) {
       const bufferSize = this.messageBuffer.length + 1;
-      debugLog(`ReactNativeMessenger: Message received but not initialized, buffering message (${bufferSize} total)`);
+      debugLog(
+        '[HANDSHAKE DEBUG] ReactNativeMessenger: Message received but not initialized, '
+        + `buffering message (${bufferSize} total)`,
+      );
       this.messageBuffer.push(message);
       return;
     }
 
+    debugLog('[HANDSHAKE DEBUG] ReactNativeMessenger is initialized, processing message');
     this.processMessage(message);
   }
 
   private processMessage(message: any): void {
-    debugLog('ReactNativeMessenger processing message:', message);
+    debugLog('[HANDSHAKE DEBUG] ReactNativeMessenger processing message:', message);
 
     // Convert deprecated format messages back to modern format
     const convertedMessage = this.convertFromDeprecatedFormat(message);
+    debugLog('[HANDSHAKE DEBUG] Message after conversion:', convertedMessage);
 
     // Validate message if validator provided
     if (this.validateMessage && !this.validateMessage(convertedMessage)) {
-      debugLog('Message validation failed:', convertedMessage);
+      debugLog('[HANDSHAKE DEBUG] Message validation failed:', convertedMessage);
       return;
     }
 
     // Route to all registered handlers
-    debugLog(`Routing message to ${this.handlers.size} handlers`);
+    debugLog(`[HANDSHAKE DEBUG] Routing message to ${this.handlers.size} handlers`);
+    let handlerIndex = 0;
     this.handlers.forEach((handler) => {
+      handlerIndex++;
       try {
+        debugLog(`[HANDSHAKE DEBUG] Calling handler ${handlerIndex}/${this.handlers.size}`);
         handler(convertedMessage);
+        debugLog(`[HANDSHAKE DEBUG] Handler ${handlerIndex} completed successfully`);
       } catch (error) {
-        debugLog('Error in message handler:', error);
+        debugLog(`[HANDSHAKE DEBUG] Error in handler ${handlerIndex}:`, error);
       }
     });
   }
@@ -220,28 +231,45 @@ export class ReactNativeMessenger implements Messenger {
     // Handle deprecated penpal messages from iframe
     if (message?.penpal) {
       switch (message.penpal) {
-        case 'syn':
-          debugLog('React Native: Converting deprecated SYN to modern format', { originalMessage: message });
-          return {
+        case 'syn': {
+          debugLog('[HANDSHAKE DEBUG] React Native: Converting deprecated SYN to modern format', {
+            originalMessage: message,
+          });
+          const modernSyn = {
             namespace: 'penpal',
             type: 'SYN',
             participantId: message.participantId,
           };
+          debugLog('[HANDSHAKE DEBUG] Converted SYN:', modernSyn);
+          return modernSyn;
+        }
 
-        case 'synAck':
-          debugLog('React Native: Converting deprecated synAck to modern ACK1 format', { originalMessage: message });
-          return {
+        case 'synAck': {
+          debugLog('[HANDSHAKE DEBUG] React Native: Converting deprecated synAck to modern ACK1 format', {
+            originalMessage: message,
+          });
+          const modernAck1 = {
             namespace: 'penpal',
             type: 'ACK1',
-            methodPaths: message.methodNames || [],
+            methodPaths: message.methodNames?.map((name: string) => name.split('.')) || [],
+            channel: undefined,
           };
+          debugLog('[HANDSHAKE DEBUG] Converted ACK1:', modernAck1);
+          return modernAck1;
+        }
 
-        case 'ack':
-          debugLog('React Native: Converting deprecated ack to modern ACK2 format', { originalMessage: message });
-          return {
+        case 'ack': {
+          debugLog('[HANDSHAKE DEBUG] React Native: Converting deprecated ack to modern ACK2 format', {
+            originalMessage: message,
+          });
+          const modernAck2 = {
             namespace: 'penpal',
             type: 'ACK2',
+            channel: undefined,
           };
+          debugLog('[HANDSHAKE DEBUG] Converted ACK2:', modernAck2);
+          return modernAck2;
+        }
 
         case 'reply': {
           debugLog('React Native: Converting deprecated reply to modern REPLY format', { originalMessage: message });
