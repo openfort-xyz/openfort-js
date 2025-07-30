@@ -104,5 +104,6 @@ export class EmbeddedSigner implements Signer {
 
   async disconnect(): Promise<void> {
     await this.iframeManager.disconnect();
+    this.iframeManager.destroy();
   }
 }

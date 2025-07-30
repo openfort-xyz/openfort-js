@@ -565,36 +565,14 @@ export class EmbeddedWalletApi {
   }
 
   private async handleLogout(): Promise<void> {
-    // Clean up embedded signer when user logs out
-    if (this.signer) {
-      try {
-        await this.signer.disconnect();
-        debugLog('Logged out embedded signer');
-      } catch (error) {
-        debugLog('Failed to logout embedded signer:', error);
-      }
-      this.signer = null;
-      this.signerPromise = null;
-    }
+    if (this.signer) await this.signer.disconnect();
+    this.provider = null;
+    this.messenger = null;
+    this.iframeManager = null;
+    this.iframeManagerPromise = null;
+    this.signer = null;
+    this.signerPromise = null;
     this.storage.remove(StorageKeys.ACCOUNT);
-
-    // Clean up iframe manager if it exists
-    if (this.iframeManager) {
-      this.iframeManager.destroy();
-      this.iframeManager = null;
-      this.iframeManagerPromise = null;
-    }
-
-    // Clean up messenger if it exists
-    if (this.messenger) {
-      this.messenger.destroy();
-      this.messenger = null;
-    }
-
-    // Clean up provider if it exists
-    if (this.provider) {
-      this.provider = null;
-    }
   }
 
   async onMessage(message: Record<string, unknown>): Promise<void> {

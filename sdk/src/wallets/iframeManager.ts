@@ -658,14 +658,10 @@ export class IframeManager {
   }
 
   destroy(): void {
-    if (this.connection) {
-      this.connection.destroy();
-      this.connection = undefined;
-    }
-
+    if (this.connection) this.connection.destroy();
+    this.messenger.destroy();
     this.remote = undefined;
     this.isInitialized = false;
-
-    this.messenger.destroy();
+    this.connection = undefined;
   }
 }

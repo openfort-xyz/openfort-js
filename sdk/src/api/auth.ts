@@ -219,12 +219,12 @@ export class AuthApi {
    * Logs the user out by flushing the signer and removing credentials.
    */
   async logout(): Promise<void> {
-    const previousAuth = await Authentication.fromStorage(this.storage);
-    if (!previousAuth || !previousAuth.refreshToken) {
+    const auth = await Authentication.fromStorage(this.storage);
+    if (!auth || !auth.refreshToken) {
       return; // No previous authentication to log out
     }
     try {
-      await this.authManager.logout(previousAuth.token, previousAuth.refreshToken);
+      await this.authManager.logout(auth.token, auth.refreshToken);
     } catch (error) {
       // Ignoring logout errors as we're clearing local state anyway
     }
