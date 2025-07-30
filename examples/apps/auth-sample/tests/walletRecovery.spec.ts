@@ -2,7 +2,6 @@ import test, { expect } from '@playwright/test';
 import { Logger } from './Logger';
 import { authenticate } from './authenticate';
 
-// Completely unset baseURL for this file.
 test.use({
   storageState: [async ({ }, use) => use(undefined), { scope: 'test' }],
 });
