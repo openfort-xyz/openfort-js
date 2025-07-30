@@ -1,7 +1,7 @@
-import type { RecoverParams, RecoveryMethod } from '../types/types';
+import type { RecoveryMethod } from '../types/types';
 import { Account } from '../core/configuration/account';
 import type { Signer } from './isigner';
-import type { IframeConfigurationRequest, IframeManager } from './iframeManager';
+import type { IframeConfigurationRequest, IframeManager, RecoverParams } from './iframeManager';
 import { type IStorage } from '../storage/istorage';
 import { ConfigureResponse } from './types';
 
