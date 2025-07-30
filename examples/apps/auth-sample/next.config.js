@@ -12,7 +12,7 @@ const nextConfig = {
       net: false,
       tls: false,
     };
-    
+
     // Handle ESM/CommonJS interop issues
     config.module.rules.push({
       test: /\.m?js$/,
@@ -21,7 +21,7 @@ const nextConfig = {
         fullySpecified: false,
       },
     });
-    
+
     return config;
   },
 };

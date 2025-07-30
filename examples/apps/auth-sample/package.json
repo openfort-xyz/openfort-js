@@ -6,7 +6,8 @@
     "start": "next start",
     "lint": "next lint",
     "prettier": "prettier -w \"**/*.ts\" \"**/*.tsx\"",
-    "test": "playwright test --ui"
+    "test": "playwright test",
+    "test-ui": "playwright test --ui"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
