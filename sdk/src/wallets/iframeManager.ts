@@ -142,6 +142,8 @@ export class IframeManager {
 
   private isInitialized = false;
 
+  private initializationPromise: Promise<void> | null = null;
+
   constructor(configuration: SDKConfiguration, storage: IStorage, messenger: Messenger) {
     if (!configuration) {
       throw new OpenfortError('Configuration is required for IframeManager', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -164,10 +166,34 @@ export class IframeManager {
    * Initialize the connection to the iframe/WebView
    */
   public async initialize(): Promise<void> {
+    // If already initialized, return immediately
     if (this.isInitialized) {
       return;
     }
 
+    // If initialization is in progress, return the existing promise
+    if (this.initializationPromise) {
+      await this.initializationPromise;
+      return;
+    }
+
+    // Start new initialization
+    this.initializationPromise = this.doInitialize();
+
+    try {
+      await this.initializationPromise;
+      this.isInitialized = true;
+    } catch (error) {
+      // Clear the promise on failure to allow retry
+      this.initializationPromise = null;
+      throw error;
+    }
+  }
+
+  /**
+   * Performs the actual initialization work
+   */
+  private async doInitialize(): Promise<void> {
     debugLog('Initializing IframeManager connection...');
 
     this.messenger.initialize({
@@ -183,7 +209,6 @@ export class IframeManager {
 
     try {
       this.remote = await this.connection.promise;
-      this.isInitialized = true;
       debugLog('IframeManager connection established');
     } catch (error) {
       const err = error as PenpalError;
@@ -663,5 +688,6 @@ export class IframeManager {
     this.remote = undefined;
     this.isInitialized = false;
     this.connection = undefined;
+    this.initializationPromise = null;
   }
 }

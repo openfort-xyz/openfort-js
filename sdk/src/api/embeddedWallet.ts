@@ -450,7 +450,6 @@ export class EmbeddedWalletApi {
     const authentication = await Authentication.fromStorage(this.storage);
     const account = await Account.fromStorage(this.storage);
 
-    // Try to get signer if account exists, but don't fail if it doesn't
     let signer;
     try {
       signer = account ? await this.ensureSigner() : undefined;
@@ -531,24 +530,14 @@ export class EmbeddedWalletApi {
 
     this.messagePoster = poster;
 
-    // Reset messenger to use new poster
-    if (this.messenger) {
-      this.messenger.destroy();
-      this.messenger = null;
-    }
+    if (this.messenger) this.messenger.destroy();
+    if (this.iframeManager) this.iframeManager.destroy();
 
-    // Reset iframe manager to use new poster
-    if (this.iframeManager) {
-      this.iframeManager.destroy();
-      this.iframeManager = null;
-      this.iframeManagerPromise = null;
-    }
-
-    // Reset signer to force recreation with new poster
-    if (this.signer) {
-      this.signer = null;
-      this.signerPromise = null;
-    }
+    this.signer = null;
+    this.signerPromise = null;
+    this.iframeManager = null;
+    this.iframeManagerPromise = null;
+    this.messenger = null;
   }
 
   private async handleTokenRefreshed(): Promise<void> {
