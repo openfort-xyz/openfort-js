@@ -40,6 +40,7 @@ export class AuthApi {
   }
 
   async signUpGuest(): Promise<AuthResponse> {
+    // TODO:  throw error if already logged in
     await this.ensureInitialized();
     const result = await this.authManager.registerGuest();
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
@@ -220,11 +221,9 @@ export class AuthApi {
    */
   async logout(): Promise<void> {
     const auth = await Authentication.fromStorage(this.storage);
-    if (!auth || !auth.refreshToken) {
-      return; // No previous authentication to log out
-    }
+    if (!auth) return;
     try {
-      await this.authManager.logout(auth.token, auth.refreshToken);
+      if (auth.type !== 'third_party') await this.authManager.logout(auth.token, auth?.refreshToken!);
     } catch (error) {
       // Ignoring logout errors as we're clearing local state anyway
     }

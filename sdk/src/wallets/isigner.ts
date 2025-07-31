@@ -1,5 +1,5 @@
 import type { RecoveryMethod } from '../types/types';
-import { EmbeddedSignerConfigureRequest, RecoverParams } from './iframeManager';
+import { SignerConfigureRequest, SignerRecoverRequest, SignerCreateRequest } from './iframeManager';
 import { ConfigureResponse } from './types';
 
 export interface Signer {
@@ -9,12 +9,12 @@ export interface Signer {
     requireHash?: boolean
   ): Promise<string>;
   disconnect(): Promise<void>;
-  configure(params: EmbeddedSignerConfigureRequest): Promise<ConfigureResponse>;
+  configure(params: SignerConfigureRequest): Promise<ConfigureResponse>;
   switchChain({ chainId }: { chainId: number }): Promise<void>;
   setEmbeddedRecovery(
     { recoveryMethod, recoveryPassword, encryptionSession }:
     { recoveryMethod: RecoveryMethod; recoveryPassword?: string, encryptionSession?: string }): Promise<void>;
   export(): Promise<string>;
-  create(accountType: string, chainType: string): Promise<ConfigureResponse>;
-  recover(params: RecoverParams): Promise<ConfigureResponse>;
+  create(params: SignerCreateRequest): Promise<ConfigureResponse>;
+  recover(params: SignerRecoverRequest): Promise<ConfigureResponse>;
 }

@@ -15,6 +15,7 @@ import {
   EmbeddedAccount,
   EmbeddedAccountConfigureParams,
   EmbeddedAccountRecoverParams,
+  EmbeddedAccountCreateParams,
   OpenfortEvents,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
@@ -196,7 +197,9 @@ export class EmbeddedWalletApi {
     return iframe;
   }
 
-  async configure(params: EmbeddedAccountConfigureParams): Promise<EmbeddedAccount> {
+  async configure(
+    params: EmbeddedAccountConfigureParams,
+  ): Promise<EmbeddedAccount> {
     await this.validateAndRefreshToken();
 
     const recoveryParams = params.recoveryParams ?? {
@@ -233,15 +236,13 @@ export class EmbeddedWalletApi {
   }
 
   async create(
-    accountType: string,
-    chainType: string,
+    params: EmbeddedAccountCreateParams,
   ): Promise<EmbeddedAccount> {
-    await this.ensureInitialized();
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
 
-    const account = await signer.create(accountType, chainType);
+    const account = await signer.create(params);
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
@@ -276,7 +277,7 @@ export class EmbeddedWalletApi {
     }
     const signer = await this.ensureSigner();
     const account = await signer.recover({
-      accountUuid: params.accountUuid,
+      account: params.account,
       entropy,
     });
 

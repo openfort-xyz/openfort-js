@@ -1,7 +1,9 @@
 import type { RecoveryMethod } from '../types/types';
 import { Account } from '../core/configuration/account';
 import type { Signer } from './isigner';
-import type { EmbeddedSignerConfigureRequest, IframeManager, RecoverParams } from './iframeManager';
+import type {
+  SignerConfigureRequest, IframeManager, SignerRecoverRequest, SignerCreateRequest,
+} from './iframeManager';
 import { type IStorage } from '../storage/istorage';
 import { ConfigureResponse } from './types';
 
@@ -12,7 +14,7 @@ export class EmbeddedSigner implements Signer {
   ) { }
 
   async configure(
-    params: EmbeddedSignerConfigureRequest,
+    params: SignerConfigureRequest,
   ): Promise<ConfigureResponse> {
     const response = await this.iframeManager.configure(params);
     new Account(
@@ -47,11 +49,10 @@ export class EmbeddedSigner implements Signer {
   }
 
   async create(
-    accountType: string,
-    chainType: string,
+    params: SignerCreateRequest,
   ): Promise<ConfigureResponse> {
     const response = await this.iframeManager
-      .create(accountType, chainType);
+      .create(params);
     new Account(
       response.address,
       response.chainId,
@@ -62,7 +63,7 @@ export class EmbeddedSigner implements Signer {
   }
 
   async recover(
-    params: RecoverParams,
+    params: SignerRecoverRequest,
   ): Promise<ConfigureResponse> {
     const response = await this.iframeManager
       .recover(params);

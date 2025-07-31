@@ -8,7 +8,7 @@ import { Data, OpenfortError, OpenfortErrorType } from '../core/errors/openfortE
 import { debugLog } from '../utils/debug';
 import { randomUUID } from '../utils/crypto';
 import { Authentication } from '../core/configuration/authentication';
-import type { RecoveryMethod } from '../types/types';
+import type { AccountTypeEnum, ChainTypeEnum, RecoveryMethod } from '../types/types';
 import { ReactNativeMessenger } from './messaging';
 import {
   ConfigureRequest,
@@ -50,7 +50,7 @@ export interface IframeConfiguration {
   password: string | null;
 }
 
-export interface EmbeddedSignerConfigureRequest {
+export interface SignerConfigureRequest {
   chainId?: number,
   entropy?: {
     recoveryPassword?: string;
@@ -58,8 +58,13 @@ export interface EmbeddedSignerConfigureRequest {
   }
 }
 
-export interface RecoverParams {
-  accountUuid: string,
+export interface SignerCreateRequest {
+  accountType: AccountTypeEnum;
+  chainType: ChainTypeEnum;
+}
+
+export interface SignerRecoverRequest {
+  account: string,
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
@@ -290,7 +295,7 @@ export class IframeManager {
     return iframeConfiguration;
   }
 
-  async configure(request?: EmbeddedSignerConfigureRequest): Promise<ConfigureResponse> {
+  async configure(request?: SignerConfigureRequest): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new OpenfortError('shieldConfiguration is required', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -337,8 +342,7 @@ export class IframeManager {
   }
 
   async create(
-    accountType: string,
-    chainType: string,
+    params: SignerCreateRequest,
   ): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new Error('shieldConfiguration is required');
@@ -350,8 +354,8 @@ export class IframeManager {
 
     const request = new CreateRequest(
       randomUUID(),
-      accountType,
-      chainType,
+      params.accountType,
+      params.chainType,
       iframeConfiguration.chainId ?? 1, // TODO: do not just put random number here
       iframeConfiguration.recovery || { auth: ShieldAuthType.OPENFORT, token: '' },
       this.sdkConfiguration.baseConfiguration.publishableKey,
@@ -380,7 +384,7 @@ export class IframeManager {
   }
 
   async recover(
-    params: RecoverParams,
+    params: SignerRecoverRequest,
   ): Promise<ConfigureResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new Error('shieldConfiguration is required');
@@ -405,7 +409,7 @@ export class IframeManager {
       this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       iframeConfiguration.accessToken!,
       iframeConfiguration.playerID || '',
-      params.accountUuid,
+      params.account,
       this.sdkConfiguration.backendUrl,
       this.sdkConfiguration.shieldUrl,
       iframeConfiguration.password,

@@ -420,6 +420,16 @@ export enum CodeChallengeMethodEnum {
   S256 = 'S256',
 }
 
+export enum AccountTypeEnum {
+  EOA = 'eoa',
+  SMART_ACCOUNT = 'smart_account',
+}
+
+export enum ChainTypeEnum {
+  EVM = 'evm',
+  SVM = 'svm',
+}
+
 export type EmbeddedAccount = {
   owner: {
     id: string;
@@ -440,9 +450,14 @@ export type EmbeddedAccountConfigureParams = {
 };
 
 export type EmbeddedAccountRecoverParams = {
-  accountUuid: string;
+  account: string;
   shieldAuthentication?: ShieldAuthentication;
   recoveryParams?: RecoverParams;
+};
+
+export type EmbeddedAccountCreateParams = {
+  accountType: AccountTypeEnum;
+  chainType: ChainTypeEnum;
 };
 
 export type RecoverParams = {
