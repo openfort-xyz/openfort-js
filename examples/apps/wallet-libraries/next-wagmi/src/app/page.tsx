@@ -48,7 +48,6 @@ export default function App() {
       <Connect />
       <SwitchAccount />
       <SwitchChain />
-      <SwitchChainV2 />
       <SignMessage />
       <Connections />
       <BlockNumber />
@@ -210,51 +209,6 @@ function SwitchChain() {
       ))}
 
       {error?.message}
-    </div>
-  )
-}
-
-function SwitchChainV2() {
-  const chainId = useChainId()
-  const { chains } = useSwitchChain()
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-
-  const handleSwitchChainV2 = async (targetChainId: number) => {
-    setError(null)
-    setLoading(true)
-    
-    try {
-      // Get the current embedded account to retrieve the accountUuid
-      const embeddedAccount = await openfortInstance.embeddedWallet.get()
-      const accountUuid = embeddedAccount.owner.id
-      
-      // Use the new switchChainV2 method on the embeddedWallet API
-      await openfortInstance.embeddedWallet.switchChainV2({ accountUuid, chainId: targetChainId })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to switch chain')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <div>
-      <h2>Switch Chain V2</h2>
-
-      {chains.map((chain) => (
-        <button
-          disabled={chainId === chain.id || loading}
-          key={`v2-${chain.id}`}
-          onClick={() => handleSwitchChainV2(chain.id)}
-          type="button"
-        >
-          {chain.name} (V2)
-        </button>
-      ))}
-
-      {loading && <div>Switching chain...</div>}
-      {error && <div style={{ color: 'red' }}>Error: {error}</div>}
     </div>
   )
 }

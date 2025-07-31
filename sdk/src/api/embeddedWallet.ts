@@ -336,18 +336,6 @@ export class EmbeddedWalletApi {
     await signer.setEmbeddedRecovery({ recoveryMethod, recoveryPassword, encryptionSession });
   }
 
-  async switchChainV2({
-    accountUuid, chainId,
-  }: {
-    accountUuid: string, chainId: number
-  }): Promise<void> {
-    await this.ensureInitialized();
-    await this.validateAndRefreshToken();
-    const iframeManager = await this.getIframeManager();
-
-    await iframeManager.switchChainV2(accountUuid, chainId);
-  }
-
   async get(): Promise<EmbeddedAccount> {
     const account = await Account.fromStorage(this.storage);
     if (!account) {
