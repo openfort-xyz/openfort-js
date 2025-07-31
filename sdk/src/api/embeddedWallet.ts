@@ -238,9 +238,11 @@ export class EmbeddedWalletApi {
   ): Promise<EmbeddedAccount> {
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
-    const iframeManager = await this.getIframeManager();
 
-    await iframeManager.create(accountType, chainType);
+    const signer = await this.ensureSigner();
+
+    await signer.create(accountType, chainType);
+
     const newAccount = await this.get();
     return newAccount;
   }
