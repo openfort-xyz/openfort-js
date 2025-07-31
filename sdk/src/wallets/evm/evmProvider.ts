@@ -198,14 +198,11 @@ export class EvmProvider implements Provider {
         });
       }
       case 'personal_sign': {
-        debugLog('[personal_sign] request:', request);
         const account = await Account.fromStorage(this.#storage);
-        debugLog('[personal_sign] account:', account);
-        const signer = await this.#ensureSigner();
-        debugLog('[personal_sign] signer:', signer);
         if (!account) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        const signer = await this.#ensureSigner();
         await this.#validateAndRefreshSession();
         debugLog('[personal_sign] validateAndRefreshSession:');
 
