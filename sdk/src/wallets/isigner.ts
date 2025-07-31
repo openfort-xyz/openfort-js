@@ -15,6 +15,6 @@ export interface Signer {
     { recoveryMethod, recoveryPassword, encryptionSession }:
     { recoveryMethod: RecoveryMethod; recoveryPassword?: string, encryptionSession?: string }): Promise<void>;
   export(): Promise<string>;
-  create(accountType: string, chainType: string): Promise<void>;
-  recover(params: RecoverParams): Promise<void>;
+  create(accountType: string, chainType: string): Promise<ConfigureResponse>;
+  recover(params: RecoverParams): Promise<ConfigureResponse>;
 }

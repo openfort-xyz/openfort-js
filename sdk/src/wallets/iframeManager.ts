@@ -25,8 +25,6 @@ import {
   SignResponse,
   SwitchChainRequest,
   SwitchChainResponse,
-  SwitchChainV2Request,
-  SwitchChainV2Response,
   ExportPrivateKeyRequest,
   ExportPrivateKeyResponse,
   SetRecoveryMethodRequest,
@@ -74,7 +72,6 @@ interface IframeAPI {
   recover(request: RecoverRequest): Promise<ConfigureResponse>;
   sign(request: SignRequest): Promise<SignResponse>;
   switchChain(request: SwitchChainRequest): Promise<SwitchChainResponse>;
-  switchChainV2(request: SwitchChainV2Request): Promise<SwitchChainV2Response>;
   updateAuthentication(request: UpdateAuthenticationRequest): Promise<UpdateAuthenticationResponse>;
   logout(request: any): Promise<LogoutResponse>;
   export(request: ExportPrivateKeyRequest): Promise<ExportPrivateKeyResponse>;
@@ -487,39 +484,6 @@ export class IframeManager {
       if (e instanceof NotConfiguredError) {
         await this.configure();
         return this.switchChain(chainId);
-      }
-      throw e;
-    }
-  }
-
-  async switchChainV2(
-    accountUuid: string,
-    chainId: number,
-  ): Promise<SwitchChainV2Response> {
-    const remote = await this.ensureConnection();
-
-    const request = new SwitchChainV2Request(
-      randomUUID(),
-      accountUuid,
-      chainId,
-      await this.buildRequestConfiguration(),
-    );
-
-    try {
-      const response = await remote.switchChainV2(request);
-
-      if (isErrorResponse(response)) {
-        this.handleError(response);
-      }
-
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('iframe-version', (response as SwitchChainV2Response).version ?? 'undefined');
-      }
-      return response as SwitchChainV2Response;
-    } catch (e) {
-      if (e instanceof NotConfiguredError) {
-        await this.configure();
-        return this.switchChainV2(accountUuid, chainId);
       }
       throw e;
     }

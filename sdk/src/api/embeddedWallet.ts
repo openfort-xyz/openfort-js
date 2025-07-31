@@ -241,10 +241,19 @@ export class EmbeddedWalletApi {
 
     const signer = await this.ensureSigner();
 
-    await signer.create(accountType, chainType);
-
-    const newAccount = await this.get();
-    return newAccount;
+    const account = await signer.create(accountType, chainType);
+    const auth = await Authentication.fromStorage(this.storage);
+    if (!auth) {
+      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    }
+    return {
+      chainId: account.chainId.toString(),
+      owner: { id: auth.player },
+      address: account.address,
+      ownerAddress: account.accountType === 'solana' ? undefined : account.ownerAddress,
+      chainType: account.accountType === 'solana' ? 'solana' : 'ethereum',
+      implementationType: account.accountType === 'solana' ? undefined : account.accountType,
+    };
   }
 
   async recover(
@@ -266,7 +275,7 @@ export class EmbeddedWalletApi {
       };
     }
     const signer = await this.ensureSigner();
-    await signer.recover({
+    const account = await signer.recover({
       accountUuid: params.accountUuid,
       entropy,
     });
@@ -275,8 +284,14 @@ export class EmbeddedWalletApi {
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-    const newAccount = await this.get();
-    return newAccount;
+    return {
+      chainId: account.chainId.toString(),
+      owner: { id: auth.player },
+      address: account.address,
+      ownerAddress: account.accountType === 'solana' ? undefined : account.ownerAddress,
+      chainType: account.accountType === 'solana' ? 'solana' : 'ethereum',
+      implementationType: account.accountType === 'solana' ? undefined : account.accountType,
+    };
   }
 
   async signMessage(

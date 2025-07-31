@@ -49,28 +49,30 @@ export class EmbeddedSigner implements Signer {
   async create(
     accountType: string,
     chainType: string,
-  ): Promise<void> {
-    const deviceAccount = await this.iframeManager
+  ): Promise<ConfigureResponse> {
+    const response = await this.iframeManager
       .create(accountType, chainType);
     new Account(
-      deviceAccount.address,
-      deviceAccount.chainId,
-      deviceAccount.ownerAddress,
-      deviceAccount.accountType,
+      response.address,
+      response.chainId,
+      response.ownerAddress,
+      response.accountType,
     ).save(this.storage);
+    return response;
   }
 
   async recover(
     params: RecoverParams,
-  ): Promise<void> {
-    const deviceAccount = await this.iframeManager
+  ): Promise<ConfigureResponse> {
+    const response = await this.iframeManager
       .recover(params);
     new Account(
-      deviceAccount.address,
-      deviceAccount.chainId,
-      deviceAccount.ownerAddress,
-      deviceAccount.accountType,
+      response.address,
+      response.chainId,
+      response.ownerAddress,
+      response.accountType,
     ).save(this.storage);
+    return response;
   }
 
   async setEmbeddedRecovery({
