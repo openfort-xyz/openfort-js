@@ -241,18 +241,18 @@ export class EmbeddedWalletApi {
     const iframeManager = await this.getIframeManager();
 
     await iframeManager.create(accountType, chainType);
-    return this.get();
+    const newAccount = await this.get();
+    return newAccount;
   }
 
   async recover(
     params: EmbeddedAccountRecoverParams,
   ): Promise<EmbeddedAccount> {
+    await this.validateAndRefreshToken();
+
     const recoveryParams = params.recoveryParams ?? {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
-
-    await this.ensureInitialized();
-    await this.validateAndRefreshToken();
 
     let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
@@ -263,22 +263,18 @@ export class EmbeddedWalletApi {
           : undefined,
       };
     }
+    const signer = await this.ensureSigner();
+    await signer.recover({
+      accountUuid: params.accountUuid,
+      entropy,
+    });
 
-    // let recoveryType: 'openfort' | 'custom' | null = null;
-    // let customToken: string | null = null;
-    // if (params.shieldAuthentication) {
-    // recoveryType = params.shieldAuthentication.auth === 'openfort' ? 'openfort' : 'custom';
-    // customToken = params.shieldAuthentication.token;
-    // }
-
-    if (!this.storage) {
-      throw new OpenfortError('Storage not available in EmbeddedWalletApi', OpenfortErrorType.INVALID_CONFIGURATION);
+    const auth = await Authentication.fromStorage(this.storage);
+    if (!auth) {
+      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-
-    const iframeManager = await this.getIframeManager();
-
-    await iframeManager.recover({ accountUuid: params.accountUuid, entropy });
-    return this.get();
+    const newAccount = await this.get();
+    return newAccount;
   }
 
   async signMessage(
