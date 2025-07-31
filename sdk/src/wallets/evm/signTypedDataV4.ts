@@ -1,5 +1,5 @@
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { getSignedTypedData } from './walletHelpers';
+import { signMessage } from './walletHelpers';
 import { TypedDataPayload } from './types';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer } from '../isigner';
@@ -74,9 +74,16 @@ export const signTypedDataV4 = async ({
 
   const { chainId } = await rpcProvider.detectNetwork();
   const typedData = transformTypedData(typedDataParam, chainId);
+  // Hash the EIP712 payload and generate the complete payload
+  // @ts-ignore
+  delete typedData.EIP712Domain;
 
-  const signature = await getSignedTypedData(
-    typedData,
+  // Hash the EIP712 payload and generate the complete payload
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { _TypedDataEncoder } = await import('@ethersproject/hash');
+  const typedDataHash = _TypedDataEncoder.hash(typedData.domain, typedData.types, typedData.message);
+  const signature = await signMessage(
+    typedDataHash,
     accountType,
     chainId,
     signer,

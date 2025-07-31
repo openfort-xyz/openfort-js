@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, type FormEvent } from 'react'
-import { Address, type Hex, createWalletClient, custom, formatEther, getAddress, parseAbi, parseEther } from 'viem'
+import { Address, type Hex, createPublicClient, createWalletClient, custom, formatEther, getAddress, hashMessage, http, parseAbi, parseEther } from 'viem'
 import {
   type BaseError,
   Connector,
@@ -23,7 +23,8 @@ import {
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
-  useSendCalls
+  useSendCalls,
+  useSignTypedData
 } from 'wagmi'
 import { useRouter } from 'next/navigation'
 
@@ -31,7 +32,8 @@ import { wagmiContractConfig } from './contracts'
 import { openfortInstance } from '../openfort'
 import { erc7715Actions, GrantPermissionsReturnType } from 'viem/experimental'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
-
+import { createSiweMessage, generateSiweNonce, parseSiweMessage } from 'viem/siwe'
+import axios from 'axios';
 export default function App() {
   useAccountEffect({
     onConnect(_data) {
@@ -48,6 +50,7 @@ export default function App() {
       <Connect />
       <SwitchAccount />
       <SwitchChain />
+      <SIWE />
       <SignMessage />
       <Connections />
       <BlockNumber />
@@ -212,6 +215,58 @@ function SwitchChain() {
     </div>
   )
 }
+
+function SIWE() {
+  const { signMessageAsync, error } = useSignMessage()
+  const { signTypedDataAsync } = useSignTypedData()
+  const { address, chain } = useAccount()
+  const chainId = useChainId()
+  const [verification, setVerification] = useState<string | null>(null)
+
+  return (
+    <div>
+      <h2>SIWE Message</h2>
+
+      <form
+        onSubmit={async(event) => {
+          event.preventDefault()
+          const nonce = generateSiweNonce()
+          
+          const message = createSiweMessage({
+            address: address!,
+            chainId: chainId,
+            domain: 'example.com',
+            nonce: nonce,
+            uri: window.location.origin,
+            version: '1',
+          })
+          const signature  = await signMessageAsync({message})
+          const publicClient = createPublicClient({
+              chain: chain,
+              transport: http()
+          })
+          const success = await publicClient.verifyMessage({
+              address: address!,
+              message: message,
+              signature: signature,
+          });
+          if(!success) {
+              setVerification('Verification failed');
+          } else {
+              setVerification('Verification successful');
+          }
+        } 
+      }
+      >
+        <button type="submit">authenticate</button>
+        <p>{error?.message}</p>
+      </form>
+
+      {verification}
+    </div>
+  )
+}
+
 
 function SignMessage() {
   const { data, signMessage, error } = useSignMessage()

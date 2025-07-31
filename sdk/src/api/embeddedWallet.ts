@@ -4,7 +4,7 @@ import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
 import { SDKConfiguration } from '../core/config/config';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError';
-import { getSignedTypedData } from '../wallets/evm/walletHelpers';
+import { signMessage } from '../wallets/evm/walletHelpers';
 import { EvmProvider, Provider } from '../wallets/evm';
 import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -294,6 +294,12 @@ export class EmbeddedWalletApi {
     };
   }
 
+  /**
+   * Signs a personal message using the configured signer
+   * @param message The message to sign
+   * @param options Optional parameters to control message signing behavior
+   * @returns The signed message
+   */
   async signMessage(
     message: string | Uint8Array,
     options?: { hashMessage?: boolean; arrayifyMessage?: boolean },
@@ -317,9 +323,15 @@ export class EmbeddedWalletApi {
     if (!account) {
       throw new OpenfortError('No account found', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
-
-    return await getSignedTypedData(
-      { domain, types, message },
+    // Hash the EIP712 payload and generate the complete payload
+    const typesWithoutDomain = { ...types };
+    delete typesWithoutDomain.EIP712Domain;
+    // Hash the EIP712 payload and generate the complete payload
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { _TypedDataEncoder } = await import('@ethersproject/hash');
+    const typedDataHash = _TypedDataEncoder.hash(domain, typesWithoutDomain, message);
+    return await signMessage(
+      typedDataHash,
       account.type,
       Number(account.chainId),
       signer,

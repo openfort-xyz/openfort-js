@@ -2,6 +2,7 @@ import { Account } from '../../core/configuration/account';
 import { hexToString } from '../../utils/crypto';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
 import { Signer as OpenfortSigner } from '../isigner';
+import { signMessage } from './walletHelpers';
 
 interface PersonalSignParams {
   signer: OpenfortSigner;
@@ -24,8 +25,13 @@ export const personalSign = async ({
   if (fromAddress.toLowerCase() !== account.address.toLowerCase()) {
     throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'personal_sign requires the signer to be the from address');
   }
+  const { hashMessage } = await import('@ethersproject/hash');
 
-  const signature = await signer.sign(hexToString(message as `0x${string}`), false, true);
-
-  return signature;
+  return await signMessage(
+    hashMessage(hexToString(message as `0x${string}`)),
+    account.type,
+    Number(account.chainId),
+    signer,
+    fromAddress,
+  );
 };
