@@ -76,12 +76,14 @@ export const signTypedDataV4 = async ({
   const typedData = transformTypedData(typedDataParam, chainId);
   // Hash the EIP712 payload and generate the complete payload
   // @ts-ignore
-  delete typedData.EIP712Domain;
+  const types = { ...typedData.types };
+  // @ts-ignore
+  delete types.EIP712Domain;
 
   // Hash the EIP712 payload and generate the complete payload
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { _TypedDataEncoder } = await import('@ethersproject/hash');
-  const typedDataHash = _TypedDataEncoder.hash(typedData.domain, typedData.types, typedData.message);
+  const typedDataHash = _TypedDataEncoder.hash(typedData.domain, types, typedData.message);
   const signature = await signMessage(
     typedDataHash,
     accountType,

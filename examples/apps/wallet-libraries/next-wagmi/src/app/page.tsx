@@ -24,7 +24,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
   useSendCalls,
-  useSignTypedData
+  useSignTypedData,
 } from 'wagmi'
 import { useRouter } from 'next/navigation'
 
@@ -52,6 +52,7 @@ export default function App() {
       <SwitchChain />
       <SIWE />
       <SignMessage />
+      <SignTypedData />
       <Connections />
       <BlockNumber />
       <Balance />
@@ -218,7 +219,6 @@ function SwitchChain() {
 
 function SIWE() {
   const { signMessageAsync, error } = useSignMessage()
-  const { signTypedDataAsync } = useSignTypedData()
   const { address, chain } = useAccount()
   const chainId = useChainId()
   const [verification, setVerification] = useState<string | null>(null)
@@ -266,6 +266,105 @@ function SIWE() {
     </div>
   )
 }
+
+function SignTypedData() {
+  const { signTypedDataAsync, error } = useSignTypedData()
+  const { address, chain } = useAccount()
+  const [verification, setVerification] = useState<string | null>(null)
+
+  return (
+    <div>
+      <h2>Sign Typed Data Message</h2>
+
+      <form
+        onSubmit={async(event) => {
+          event.preventDefault()
+          const signature = await signTypedDataAsync({
+              domain: {
+                  name: "Ether Mail",
+                  version: "1",
+                  chainId: chain?.id,
+                  verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+              },
+              types: {
+                  Person: [
+                      { name: "name", type: "string" },
+                      { name: "wallet", type: "address" }
+                  ],
+                  Mail: [
+                      { name: "from", type: "Person" },
+                      { name: "to", type: "Person" },
+                      { name: "contents", type: "string" }
+                  ]
+              },
+              primaryType: "Mail",
+              message: {
+                  from: {
+                      name: "Cow",
+                      wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                  },
+                  to: {
+                      name: "Bob",
+                      wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+                  },
+                  contents: "Hello, Bob!"
+              }
+          })
+          const publicClient = createPublicClient({
+            chain: chain,
+            transport: http()
+          })
+          const isVerified = await publicClient.verifyTypedData({
+            address: address!,
+            domain: {
+                name: "Ether Mail",
+                version: "1",
+                chainId: chain?.id,
+                verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            types: {
+                Person: [
+                    { name: "name", type: "string" },
+                    { name: "wallet", type: "address" }
+                ],
+                Mail: [
+                    { name: "from", type: "Person" },
+                    { name: "to", type: "Person" },
+                    { name: "contents", type: "string" }
+                ]
+            },
+            primaryType: "Mail",
+            message: {
+                from: {
+                    name: "Cow",
+                    wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                },
+                to: {
+                    name: "Bob",
+                    wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+                },
+                contents: "Hello, Bob!"
+            },
+            signature
+        })
+
+        if(!isVerified) {
+            setVerification('Verification failed');
+        } else {
+            setVerification('Verification successful');
+        }
+        }
+      }
+      >
+        <button type="submit">authenticate</button>
+        <p>{error?.message}</p>
+      </form>
+
+      {verification}
+    </div>
+  )
+}
+
 
 
 function SignMessage() {
