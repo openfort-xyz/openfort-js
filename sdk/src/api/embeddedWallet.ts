@@ -170,7 +170,6 @@ export class EmbeddedWalletApi {
   private async createSigner(): Promise<EmbeddedSigner> {
     const iframeManager = await this.getIframeManager();
     const signer = new EmbeddedSigner(iframeManager, this.storage, this.backendApiClients);
-    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
     return signer;
   }
 
@@ -224,13 +223,10 @@ export class EmbeddedWalletApi {
     });
 
     const auth = await Authentication.fromStorage(this.storage);
-    if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth.player,
+      user: auth!.player,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -264,14 +260,13 @@ export class EmbeddedWalletApi {
       chainId: params.chainId,
       entropy,
     });
+    this.signer = null;
+    this.signerPromise = null;
     const auth = await Authentication.fromStorage(this.storage);
-    if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth.player,
+      user: auth!.player,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -303,15 +298,14 @@ export class EmbeddedWalletApi {
       account: params.account,
       entropy,
     });
+    this.signer = null;
+    this.signerPromise = null;
 
     const auth = await Authentication.fromStorage(this.storage);
-    if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth.player,
+      user: auth!.player,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -426,7 +420,9 @@ export class EmbeddedWalletApi {
     }
     return withOpenfortError<EmbeddedAccount[]>(async () => {
       const response = await this.backendApiClients.accountsApi.getAccountsV2(
-        undefined,
+        {
+          // accountType: AccountTypeEnum.SMART_ACCOUNT,
+        },
         {
           headers: {
             authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
@@ -493,19 +489,11 @@ export class EmbeddedWalletApi {
     const authentication = await Authentication.fromStorage(this.storage);
     const account = await Account.fromStorage(this.storage);
 
-    let signer;
-    try {
-      signer = account ? await this.ensureSigner() : undefined;
-    } catch (error) {
-      // Signer not available, provider will work without it for read operations
-      signer = undefined;
-    }
-
     if (!this.provider) {
       this.provider = new EvmProvider({
         storage: this.storage,
         openfortEventEmitter: this.eventEmitter,
-        signer: signer || undefined,
+        ensureSigner: this.ensureSigner.bind(this),
         account: account || undefined,
         authentication: authentication || undefined,
         backendApiClients: this.backendApiClients,

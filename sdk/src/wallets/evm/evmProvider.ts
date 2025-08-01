@@ -2,6 +2,7 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type BackendApiClients } from '@openfort/openapi-clients';
 import { GrantPermissionsParameters } from 'types';
 import { debugLog } from 'utils/debug';
+import { EmbeddedSigner } from 'wallets/embedded';
 import { Authentication } from '../../core/configuration/authentication';
 import {
   Provider,
@@ -28,7 +29,7 @@ import { numberToHex } from '../../utils/crypto';
 
 export type EvmProviderInput = {
   storage: IStorage;
-  signer?: Signer;
+  ensureSigner: () => Promise<EmbeddedSigner>;
   chains?: Record<number, string>
   account?: Account;
   authentication?: Authentication;
@@ -65,17 +66,20 @@ export class EvmProvider implements Provider {
 
   public readonly isOpenfort: boolean = true;
 
+  readonly #ensureSignerFn: () => Promise<EmbeddedSigner>;
+
   constructor({
     storage,
-    signer,
     backendApiClients,
     openfortEventEmitter,
     policyId,
+    ensureSigner,
     chains,
     validateAndRefreshSession,
   }: EvmProviderInput) {
+    this.#ensureSignerFn = ensureSigner;
+
     this.#storage = storage;
-    this.#signer = signer;
 
     this.#customChains = chains;
 
@@ -90,20 +94,17 @@ export class EvmProvider implements Provider {
     this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>();
 
     openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout);
-    openfortEventEmitter.on(OpenfortEvents.SIGNER_CONFIGURED, (configuredSigner: Signer) => {
-      this.#signer = configuredSigner;
-    });
   }
 
-  #ensureSigner(): Signer {
+  #ensureSigner = async (): Promise<Signer> => {
     if (!this.#signer) {
-      throw new JsonRpcError(
-        ProviderErrorCode.UNAUTHORIZED,
-        'No signer configured. Please configure an embedded wallet first.',
-      );
+      console.log('[EvmProvider] Ensuring signer...');
+      this.#signer = await this.#ensureSignerFn(); // ✅ Call the stored function
+      console.log('[EvmProvider] Signer ensured:', this.#signer);
     }
+    console.log('[EvmProvider] Returning signer:');
     return this.#signer;
-  }
+  };
 
   #handleLogout = async () => {
     this.#signer = undefined;

@@ -36,7 +36,7 @@ export class EmbeddedSigner implements Signer {
         const response = await this.backendApiClients.accountsApi.getAccountsV2(
           {
             chainId: iframeResponse.chainId,
-
+            // address: iframeResponse.address,
           },
           {
             headers: {
