@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { openfortInstance } from '../openfort';
 import { EmbeddedAccount } from '@openfort/openfort-js';
-import { useAccount } from 'wagmi';
-import { createEmbeddedSigner, recoverEmbeddedSigner } from '../lib/utils';
+import { useAccount, useConnectorClient } from 'wagmi';
+import { configureEmbeddedSigner, createEmbeddedSigner, recoverEmbeddedSigner } from '../lib/utils';
+import { reconnect } from 'wagmi/actions';
+import { baseSepolia } from 'viem/chains';
 
 interface WalletData {
   id: string;
@@ -24,6 +26,7 @@ function WalletList({ isVisible }: WalletListProps) {
   const [isCreating, setIsCreating] = useState(false);
   const [isRecovering, setIsRecovering] = useState<string | null>(null);
   const { address: activeAddress } = useAccount();
+
 
   const loadWallets = async () => {
     if (!isVisible) return;
@@ -52,6 +55,21 @@ function WalletList({ isVisible }: WalletListProps) {
     
     try {
       await createEmbeddedSigner();
+      await loadWallets();
+    } catch (err) {
+      console.error('Error creating wallet:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create wallet');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+    const handleConfigureWallet = async () => {
+    setIsCreating(true);
+    setError(null);
+    
+    try {
+      await configureEmbeddedSigner(baseSepolia.id);
       await loadWallets();
     } catch (err) {
       console.error('Error creating wallet:', err);
@@ -127,6 +145,13 @@ function WalletList({ isVisible }: WalletListProps) {
         disabled={isCreating}
       >
         {isCreating ? 'Creating...' : 'Create New Wallet'}
+      </button>
+      <button
+        className="button create-wallet-button"
+        onClick={handleConfigureWallet}
+        disabled={isCreating}
+      >
+        {isCreating ? 'Configure...' : 'Configure New Wallet'}
       </button>
     </div>
   );

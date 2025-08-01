@@ -174,10 +174,6 @@ function Connect() {
 
     const handleAuthSuccess = () => {
       setIsAuthenticated(true);
-      // After successful authentication, retry the connection
-      if (activeConnector) {
-        connect({connector: activeConnector, chainId});
-      }
     };
   
     return (
@@ -194,7 +190,6 @@ function Connect() {
             ))}
         </div>
         {error && <div className="error">Error: {error.message}</div>}
-        
         <WalletList isVisible={isAuthenticated} />
         
         <AuthModal 
