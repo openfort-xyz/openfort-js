@@ -17,14 +17,20 @@
 /**
  * 
  * @export
- * @interface SignerOwner
+ * @interface SwitchChainQueriesV2
  */
-export interface SignerOwner {
+export interface SwitchChainQueriesV2 {
     /**
-     * 
+     * The account ID (starts with acc_)
      * @type {string}
-     * @memberof SignerOwner
+     * @memberof SwitchChainQueriesV2
      */
-    'id': string;
+    'account': string;
+    /**
+     * The target chain ID. Must be a [supported chain](/development/chains).
+     * @type {number}
+     * @memberof SwitchChainQueriesV2
+     */
+    'chainId': number;
 }
 

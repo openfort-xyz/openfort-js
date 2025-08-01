@@ -1,12 +1,11 @@
 'use client'
 
 import { useEffect, useState, type FormEvent } from 'react'
-import { Address, type Hex, createPublicClient, createWalletClient, custom, formatEther, getAddress, hashMessage, http, parseAbi, parseEther } from 'viem'
+import { Address, type Hex, createPublicClient, createWalletClient, custom, formatEther, getAddress, http, parseAbi, parseEther } from 'viem'
 import {
   type BaseError,
   Connector,
   useAccount,
-  useAccountEffect,
   useBalance,
   useBlockNumber,
   useChainId,
@@ -26,26 +25,62 @@ import {
   useSendCalls,
   useSignTypedData,
 } from 'wagmi'
-import { useRouter } from 'next/navigation'
 
 import { wagmiContractConfig } from './contracts'
 import { openfortInstance } from '../openfort'
 import { erc7715Actions, GrantPermissionsReturnType } from 'viem/experimental'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
-import { createSiweMessage, generateSiweNonce, parseSiweMessage } from 'viem/siwe'
-import axios from 'axios';
+import { createSiweMessage, generateSiweNonce } from 'viem/siwe'
+import AuthModal from '../components/AuthModal'
+import WalletList from '../components/WalletList'
+import { useSearchParams } from 'next/navigation'
+
 export default function App() {
-  useAccountEffect({
-    onConnect(_data) {
-      // console.log('onConnect', data)
-    },
-    onDisconnect() {
-      // console.log('onDisconnect')
-    },
-  })
+  const searchParams = useSearchParams();
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const verifyEmail = async () => {
+      try {
+        const email = localStorage.getItem("email");
+        const state = searchParams.get('state');
+        if (
+          email && 
+          state
+        ) {
+          await openfortInstance.auth.verifyEmail({
+            email: email,
+            state: state,
+          });
+          localStorage.removeItem("email");
+          setVerificationStatus('Email verified successfully! You can now sign in.');
+          
+          // Clear the URL parameters
+          const url = new URL(window.location.href);
+          url.searchParams.delete('state');
+          window.history.replaceState({}, '', url.toString());
+        }
+      } catch (error) {
+        setVerificationStatus('Error verifying email. Please try again.');
+        console.log('Error verifying email:', error);
+      }
+    };
+    verifyEmail();
+  }, [searchParams]);
 
   return (
     <>
+      {verificationStatus && (
+        <div className="verification-banner">
+          {verificationStatus}
+          <button 
+            onClick={() => setVerificationStatus(null)}
+            className="verification-close"
+          >
+            ×
+          </button>
+        </div>
+      )}
       <Account />
       <Connect />
       <SwitchAccount />
@@ -63,7 +98,6 @@ export default function App() {
       <WriteContract />
       <WriteContracts />
       <GrantPermission />
-      <CreateWithNewMethod />
     </>
   )
 }
@@ -76,7 +110,7 @@ function Account() {
   })
 
   return (
-    <div>
+    <div className="account-container">
       <h2>Account</h2>
 
       <div>
@@ -105,9 +139,9 @@ function Account() {
 function Connect() {
     const chainId = useChainId();
     const {connectors, connect, error} = useConnect();
-    const router = useRouter()
-    const [activeConnector, setActiveConnector] =
-    useState<Connector | null>(null);
+    const [activeConnector, setActiveConnector] = useState<Connector | null>(null);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
   
     useEffect(() => {
       console.log('Connect: useEffect', { error, activeConnector });
@@ -117,13 +151,33 @@ function Connect() {
         error.message ===
           'Unauthorized - must be authenticated and configured with a signer.'
       ) {
-        router.push('/authentication');
+        setShowAuthModal(true);
       }
-    }, [error, activeConnector, router]);
+    }, [error, activeConnector]);
+
+    useEffect(() => {
+      const checkAuthStatus = async () => {
+        try {
+          const user = await openfortInstance.user.get();
+          setIsAuthenticated(!!user);
+        } catch {
+          setIsAuthenticated(false);
+        }
+      };
+      checkAuthStatus();
+    }, []);
   
     const handleConnect = (connector: Connector) => {
       setActiveConnector(connector);
       connect({connector, chainId});
+    };
+
+    const handleAuthSuccess = () => {
+      setIsAuthenticated(true);
+      // After successful authentication, retry the connection
+      if (activeConnector) {
+        connect({connector: activeConnector, chainId});
+      }
     };
   
     return (
@@ -140,6 +194,14 @@ function Connect() {
             ))}
         </div>
         {error && <div className="error">Error: {error.message}</div>}
+        
+        <WalletList isVisible={isAuthenticated} />
+        
+        <AuthModal 
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onAuthSuccess={handleAuthSuccess}
+        />
       </div>
     );
 }
@@ -838,86 +900,6 @@ function GrantPermission() {
           Registered! Permission context: {result.permissionsContext}
         </div>
       )}
-      {error && (
-        <div className="mt-4 p-4 bg-red-100 rounded">
-          Error: {error.details || error.message}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function CreateWithNewMethod() {
-  const [error, setError] = useState<BaseError | null>(null);
-  const [pending, setPending] = useState(false);
-  const [result, setResult] = useState<any | null>(null);
-  const [accountType, setAccountType] = useState('Smart Account');
-  const [chainType, setChainType] = useState('EVM');
-
-  async function handleCreate() {
-    setPending(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const embeddedAccount = await openfortInstance.embeddedWallet.create(accountType, chainType);
-      setResult(embeddedAccount);
-    } catch (err) {
-      setError(err as BaseError);
-    } finally {
-      setPending(false);
-    }
-  }
-
-  return (
-    <div>
-      <h2>Create with new method</h2>
-      
-      <div className="space-y-4">
-        <div>
-          <label className="block">
-            Account Type:
-            <select 
-              value={accountType} 
-              onChange={(e) => setAccountType(e.target.value)}
-              className="mt-1 block w-full rounded border p-2"
-            >
-              <option value="Externally Owned Account">Externally Owned Account</option>
-              <option value="Smart Account">Smart Account</option>
-            </select>
-          </label>
-        </div>
-
-        <div>
-          <label className="block">
-            Chain Type:
-            <select 
-              value={chainType} 
-              onChange={(e) => setChainType(e.target.value)}
-              className="mt-1 block w-full rounded border p-2"
-            >
-              <option value="EVM">EVM</option>
-              <option value="SVM">SVM</option>
-            </select>
-          </label>
-        </div>
-
-        <button 
-          onClick={handleCreate}
-          disabled={pending}
-          className="px-4 py-2 bg-purple-500 text-white rounded disabled:bg-gray-400"
-        >
-          {pending ? 'Creating...' : 'Create with new method'}
-        </button>
-      </div>
-
-      {result && (
-        <div className="mt-4 p-4 bg-green-100 rounded">
-          <h3 className="font-bold">Account Created!</h3>
-          <pre className="text-sm">{JSON.stringify(result, null, 2)}</pre>
-        </div>
-      )}
-      
       {error && (
         <div className="mt-4 p-4 bg-red-100 rounded">
           Error: {error.details || error.message}

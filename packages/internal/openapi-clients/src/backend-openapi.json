@@ -5046,6 +5046,82 @@
         "type": "object",
         "additionalProperties": false
       },
+      "EmbeddedV2Response": {
+        "properties": {
+          "share": {
+            "type": "string"
+          },
+          "accountType": {
+            "type": "string"
+          },
+          "implementationType": {
+            "type": "string"
+          },
+          "implementationAddress": {
+            "type": "string"
+          },
+          "factoryAddress": {
+            "type": "string"
+          },
+          "salt": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "ownerAddress": {
+            "type": "string"
+          },
+          "chainType": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "device": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          },
+          "signer": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accountType",
+          "address",
+          "ownerAddress",
+          "chainType",
+          "chainId",
+          "account",
+          "signer"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RegisterEmbeddedRequest": {
+        "properties": {
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "address": {
+            "type": "string"
+          },
+          "share": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chainId",
+          "address",
+          "share"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "EmbeddedResponse": {
         "properties": {
           "share": {
@@ -5070,27 +5146,6 @@
           "accountType",
           "address",
           "chainId"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "RegisterEmbeddedRequest": {
-        "properties": {
-          "chainId": {
-            "type": "number",
-            "format": "double"
-          },
-          "address": {
-            "type": "string"
-          },
-          "share": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "chainId",
-          "address",
-          "share"
         ],
         "type": "object",
         "additionalProperties": false
@@ -8552,6 +8607,303 @@
         "type": "object",
         "additionalProperties": false
       },
+      "SmartAccountData": {
+        "properties": {
+          "implementationType": {
+            "type": "string"
+          },
+          "factoryAddress": {
+            "type": "string"
+          },
+          "implementationAddress": {
+            "type": "string"
+          },
+          "salt": {
+            "type": "string"
+          },
+          "deployedTx": {
+            "type": "string"
+          },
+          "deployedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "implementationType",
+          "factoryAddress",
+          "implementationAddress",
+          "salt",
+          "active"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountV2Response": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "accountType": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "ownerAddress": {
+            "type": "string"
+          },
+          "chainType": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "updatedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "smartAccount": {
+            "$ref": "#/components/schemas/SmartAccountData"
+          }
+        },
+        "required": [
+          "id",
+          "user",
+          "accountType",
+          "address",
+          "chainType",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BaseEntityListResponse_AccountV2Response_": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AccountV2Response"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountListV2Response": {
+        "$ref": "#/components/schemas/BaseEntityListResponse_AccountV2Response_"
+      },
+      "AccountListQueriesV2": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the maximum number of records to return.",
+            "minimum": 1
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the offset for the first records to return.",
+            "minimum": 0
+          },
+          "order": {
+            "$ref": "#/components/schemas/SortOrder",
+            "description": "Specifies the order in which to sort the results."
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Must be a [supported chain](/development/chains).",
+            "example": 80002
+          },
+          "user": {
+            "type": "string",
+            "description": "Specifies the unique user ID (starts with pla_)",
+            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+          },
+          "chainType": {
+            "type": "string",
+            "description": "Specifies the type of chain",
+            "example": "EVM"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SignerIdResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SwitchChainQueriesV2": {
+        "properties": {
+          "account": {
+            "type": "string",
+            "description": "The account ID (starts with acc_)"
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The target chain ID. Must be a [supported chain](/development/chains).",
+            "example": 80002
+          }
+        },
+        "required": [
+          "account",
+          "chainId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RecoverV2Response": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          },
+          "signerAddress": {
+            "type": "string"
+          },
+          "signer": {
+            "type": "string"
+          },
+          "share": {
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "account",
+          "signerAddress",
+          "signer",
+          "share",
+          "isPrimary",
+          "createdAt",
+          "user"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RecoverV2EmbeddedRequest": {
+        "properties": {
+          "accountUuid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accountUuid"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RegisterEmbeddedV2Request": {
+        "properties": {
+          "accountUuid": {
+            "type": "string"
+          },
+          "share": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accountUuid",
+          "share"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateEmbeddedRequest": {
+        "properties": {
+          "accountType": {
+            "type": "string"
+          },
+          "chainType": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "address": {
+            "type": "string"
+          },
+          "privateKey": {
+            "type": "string"
+          },
+          "kmsKey": {
+            "type": "string"
+          },
+          "share": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accountType",
+          "chainType",
+          "chainId",
+          "address"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "Currency": {
         "enum": [
           "usd"
@@ -8648,277 +9000,6 @@
         },
         "required": [
           "plan"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ListResponse_Account_": {
-        "properties": {
-          "url": {
-            "type": "string"
-          },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/Account"
-            },
-            "type": "array"
-          },
-          "start": {
-            "type": "number",
-            "format": "double"
-          },
-          "end": {
-            "type": "number",
-            "format": "double"
-          },
-          "total": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "required": [
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "AccountsListResponse": {
-        "$ref": "#/components/schemas/ListResponse_Account_"
-      },
-      "AccountsListQueries": {
-        "properties": {
-          "limit": {
-            "type": "number",
-            "format": "double"
-          },
-          "skip": {
-            "type": "number",
-            "format": "double"
-          },
-          "order": {
-            "type": "string",
-            "enum": [
-              "asc",
-              "desc"
-            ]
-          },
-          "chainType": {
-            "type": "string"
-          }
-        },
-        "type": "object",
-        "additionalProperties": false
-      },
-      "AccountCreateRequest": {
-        "properties": {
-          "chainType": {
-            "type": "string",
-            "enum": [
-              "solana"
-            ],
-            "nullable": false
-          },
-          "publicKey": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "chainType",
-          "publicKey"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ListQueries": {
-        "properties": {
-          "limit": {
-            "type": "number",
-            "format": "double"
-          },
-          "skip": {
-            "type": "number",
-            "format": "double"
-          },
-          "order": {
-            "type": "string",
-            "enum": [
-              "asc",
-              "desc"
-            ]
-          }
-        },
-        "type": "object",
-        "additionalProperties": false
-      },
-      "DeviceCreateRequest": {
-        "properties": {
-          "share": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "share"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ShamirSigner": {
-        "properties": {
-          "share": {
-            "type": "string"
-          },
-          "publicKey": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "share",
-          "publicKey"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Signer": {
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
-          },
-          "owner": {
-            "properties": {
-              "id": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "id"
-            ],
-            "type": "object"
-          },
-          "shamir": {
-            "$ref": "#/components/schemas/ShamirSigner"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "owner"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ListResponse_Signer_": {
-        "properties": {
-          "url": {
-            "type": "string"
-          },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/Signer"
-            },
-            "type": "array"
-          },
-          "start": {
-            "type": "number",
-            "format": "double"
-          },
-          "end": {
-            "type": "number",
-            "format": "double"
-          },
-          "total": {
-            "type": "number",
-            "format": "double"
-          }
-        },
-        "required": [
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "SignerListResponse": {
-        "$ref": "#/components/schemas/ListResponse_Signer_"
-      },
-      "SignerListQueries": {
-        "properties": {
-          "limit": {
-            "type": "number",
-            "format": "double"
-          },
-          "skip": {
-            "type": "number",
-            "format": "double"
-          },
-          "order": {
-            "type": "string",
-            "enum": [
-              "asc",
-              "desc"
-            ]
-          },
-          "signerType": {
-            "type": "string"
-          },
-          "account": {
-            "type": "string"
-          }
-        },
-        "type": "object",
-        "additionalProperties": false
-      },
-      "SignerResponse": {
-        "properties": {
-          "signer": {
-            "$ref": "#/components/schemas/Signer"
-          }
-        },
-        "required": [
-          "signer"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ShamirParams": {
-        "properties": {
-          "share": {
-            "type": "string"
-          },
-          "publicKey": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "share",
-          "publicKey"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "CreateSignerRequest": {
-        "properties": {
-          "signerType": {
-            "type": "string"
-          },
-          "account": {
-            "type": "string"
-          },
-          "params": {
-            "$ref": "#/components/schemas/ShamirParams"
-          }
-        },
-        "required": [
-          "signerType"
         ],
         "type": "object",
         "additionalProperties": false
@@ -19012,19 +19093,24 @@
     },
     "/v2/accounts": {
       "get": {
-        "operationId": "listAccountsV2",
+        "operationId": "getAccountsV2",
         "responses": {
           "200": {
-            "description": "",
+            "description": "Successful response.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccountsListResponse"
+                  "$ref": "#/components/schemas/AccountListV2Response"
                 }
               }
             }
+          },
+          "401": {
+            "description": "Error response."
           }
         },
+        "description": "Returns a list of accounts for the given player.\n\nThis object represents a player's account, which is a blockchain smart account that can be used to interact with the blockchain.\n\nThe accounts are returned sorted by creation date, with the most recently created accounts appearing first.\n\nReturns the latest 10 transaction intents for each account.\n\nBy default, a maximum of 10 accounts are shown per page.",
+        "summary": "List accounts of a player.",
         "tags": [
           "Accounts"
         ],
@@ -19034,100 +19120,96 @@
           },
           {
             "pk_third_party": []
+          },
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
           }
         ],
         "parameters": [
           {
+            "description": "Specifies the maximum number of records to return.",
             "in": "query",
             "name": "limit",
             "required": false,
             "schema": {
-              "format": "double",
-              "type": "number"
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
             }
           },
           {
+            "description": "Specifies the offset for the first records to return.",
             "in": "query",
             "name": "skip",
             "required": false,
             "schema": {
-              "format": "double",
-              "type": "number"
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
+            "description": "Specifies the order in which to sort the results.",
             "in": "query",
             "name": "order",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": [
-                "asc",
-                "desc"
-              ]
+              "$ref": "#/components/schemas/SortOrder"
             }
           },
           {
+            "description": "The chain ID. Must be a [supported chain](/development/chains).",
+            "in": "query",
+            "name": "chainId",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": 80002
+          },
+          {
+            "description": "Specifies the unique user ID (starts with pla_)",
+            "in": "query",
+            "name": "user",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+          },
+          {
+            "description": "Specifies the type of chain",
             "in": "query",
             "name": "chainType",
             "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "EVM"
           }
         ]
-      },
-      "post": {
-        "operationId": "createAccountV2",
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Accounts"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AccountCreateRequest"
-              }
-            }
-          }
-        }
       }
     },
-    "/v2/accounts/{accountId}": {
+    "/v2/accounts/{id}": {
       "get": {
         "operationId": "getAccountV2",
         "responses": {
           "200": {
-            "description": "",
+            "description": "Successful response.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AccountResponse"
+                  "$ref": "#/components/schemas/AccountV2Response"
                 }
               }
             }
+          },
+          "401": {
+            "description": "Error response."
           }
         },
         "tags": [
@@ -19139,12 +19221,18 @@
           },
           {
             "pk_third_party": []
+          },
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
           }
         ],
         "parameters": [
           {
             "in": "path",
-            "name": "accountId",
+            "name": "id",
             "required": true,
             "schema": {
               "type": "string"
@@ -19153,23 +19241,26 @@
         ]
       }
     },
-    "/v2/signers/{signerId}/devices": {
+    "/v2/accounts/signer/address": {
       "get": {
-        "operationId": "ListDevices",
+        "operationId": "GetSignerIdByAddress",
         "responses": {
           "200": {
-            "description": "",
+            "description": "Successful response.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeviceListResponse"
+                  "$ref": "#/components/schemas/SignerIdResponse"
                 }
               }
             }
+          },
+          "401": {
+            "description": "Error response."
           }
         },
         "tags": [
-          "Devices"
+          "Accounts"
         ],
         "security": [
           {
@@ -19177,233 +19268,46 @@
           },
           {
             "pk_third_party": []
+          },
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
           }
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "signerId",
+            "in": "query",
+            "name": "addr",
             "required": true,
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "double",
-              "type": "number"
-            }
-          },
-          {
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "double",
-              "type": "number"
-            }
-          },
-          {
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "asc",
-                "desc"
-              ]
-            }
           }
         ]
-      },
+      }
+    },
+    "/v2/accounts/switch-chain": {
       "post": {
-        "operationId": "CreateDevice",
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeviceResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Devices"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "signerId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceCreateRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/signers/{signerId}/devices/{deviceId}": {
-      "get": {
-        "operationId": "GetDevice",
+        "operationId": "switchChainV2",
         "responses": {
           "200": {
-            "description": "",
+            "description": "Successful response.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeviceResponse"
+                  "$ref": "#/components/schemas/AccountV2Response"
                 }
               }
             }
+          },
+          "401": {
+            "description": "Error response."
           }
         },
         "tags": [
-          "Devices"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "signerId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "deviceId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/signers": {
-      "get": {
-        "operationId": "ListSigners",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SignerListResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Signers"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "double",
-              "type": "number"
-            }
-          },
-          {
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "double",
-              "type": "number"
-            }
-          },
-          {
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "asc",
-                "desc"
-              ]
-            }
-          },
-          {
-            "in": "query",
-            "name": "signerType",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "account",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      },
-      "post": {
-        "operationId": "CreateSigner",
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SignerResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Signers"
+          "Accounts"
         ],
         "security": [
           {
@@ -19419,80 +19323,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateSignerRequest"
+                "$ref": "#/components/schemas/SwitchChainQueriesV2"
               }
             }
           }
         }
-      }
-    },
-    "/v2/signers/{signerId}": {
-      "get": {
-        "operationId": "GetSigner",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SignerResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Signers"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "signerId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/signers/{signerId}/export": {
-      "post": {
-        "operationId": "ExportSigner",
-        "responses": {
-          "204": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Signers"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "signerId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
       }
     }
   },

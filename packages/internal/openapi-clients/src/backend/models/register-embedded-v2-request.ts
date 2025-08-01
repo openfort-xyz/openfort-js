@@ -17,34 +17,20 @@
 /**
  * 
  * @export
- * @interface ListQueries
+ * @interface RegisterEmbeddedV2Request
  */
-export interface ListQueries {
-    /**
-     * 
-     * @type {number}
-     * @memberof ListQueries
-     */
-    'limit'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ListQueries
-     */
-    'skip'?: number;
+export interface RegisterEmbeddedV2Request {
     /**
      * 
      * @type {string}
-     * @memberof ListQueries
+     * @memberof RegisterEmbeddedV2Request
      */
-    'order'?: ListQueriesOrderEnum;
+    'accountUuid': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RegisterEmbeddedV2Request
+     */
+    'share': string;
 }
-
-export const ListQueriesOrderEnum = {
-    Asc: 'asc',
-    Desc: 'desc'
-} as const;
-
-export type ListQueriesOrderEnum = typeof ListQueriesOrderEnum[keyof typeof ListQueriesOrderEnum];
-
 

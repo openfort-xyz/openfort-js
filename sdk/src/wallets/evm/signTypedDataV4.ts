@@ -6,7 +6,7 @@ import { Signer } from '../isigner';
 
 export type SignTypedDataV4Params = {
   signer: Signer;
-  accountType: string;
+  implementationType: string;
   rpcProvider: StaticJsonRpcProvider;
   method: string;
   params: Array<any>;
@@ -63,7 +63,7 @@ export const signTypedDataV4 = async ({
   params,
   method,
   signer,
-  accountType,
+  implementationType,
   rpcProvider,
 }: SignTypedDataV4Params): Promise<string> => {
   const fromAddress: string = params[0];
@@ -86,7 +86,7 @@ export const signTypedDataV4 = async ({
   const typedDataHash = _TypedDataEncoder.hash(typedData.domain, types, typedData.message);
   const signature = await signMessage(
     typedDataHash,
-    accountType,
+    implementationType,
     chainId,
     signer,
     fromAddress,

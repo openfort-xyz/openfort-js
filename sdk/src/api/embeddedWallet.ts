@@ -17,6 +17,8 @@ import {
   EmbeddedAccountRecoverParams,
   EmbeddedAccountCreateParams,
   OpenfortEvents,
+  ChainTypeEnum,
+  AccountTypeEnum,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { IframeManager } from '../wallets/iframeManager';
@@ -167,7 +169,7 @@ export class EmbeddedWalletApi {
 
   private async createSigner(): Promise<EmbeddedSigner> {
     const iframeManager = await this.getIframeManager();
-    const signer = new EmbeddedSigner(iframeManager, this.storage);
+    const signer = new EmbeddedSigner(iframeManager, this.storage, this.backendApiClients);
     this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
     return signer;
   }
@@ -226,12 +228,14 @@ export class EmbeddedWalletApi {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
     return {
-      chainId: account.chainId.toString(),
-      owner: { id: auth.player },
+      id: account.id,
+      chainId: account.chainId,
+      user: auth.player,
       address: account.address,
-      ownerAddress: account.accountType === 'solana' ? undefined : account.ownerAddress,
-      chainType: account.accountType === 'solana' ? 'solana' : 'ethereum',
-      implementationType: account.accountType === 'solana' ? undefined : account.accountType,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
     };
   }
 
@@ -239,21 +243,40 @@ export class EmbeddedWalletApi {
     params: EmbeddedAccountCreateParams,
   ): Promise<EmbeddedAccount> {
     await this.validateAndRefreshToken();
+    const recoveryParams = params.recoveryParams ?? {
+      recoveryMethod: RecoveryMethod.AUTOMATIC,
+    };
 
+    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
+      entropy = {
+        encryptionSession: params.shieldAuthentication?.encryptionSession,
+        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
+          ? recoveryParams.password
+          : undefined,
+      };
+    }
     const signer = await this.ensureSigner();
 
-    const account = await signer.create(params);
+    const account = await signer.create({
+      accountType: params.accountType,
+      chainType: params.chainType,
+      chainId: params.chainId,
+      entropy,
+    });
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
     return {
-      chainId: account.chainId.toString(),
-      owner: { id: auth.player },
+      id: account.id,
+      chainId: account.chainId,
+      user: auth.player,
       address: account.address,
-      ownerAddress: account.accountType === 'solana' ? undefined : account.ownerAddress,
-      chainType: account.accountType === 'solana' ? 'solana' : 'ethereum',
-      implementationType: account.accountType === 'solana' ? undefined : account.accountType,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
     };
   }
 
@@ -286,12 +309,14 @@ export class EmbeddedWalletApi {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
     return {
-      chainId: account.chainId.toString(),
-      owner: { id: auth.player },
+      id: account.id,
+      chainId: account.chainId,
+      user: auth.player,
       address: account.address,
-      ownerAddress: account.accountType === 'solana' ? undefined : account.ownerAddress,
-      chainType: account.accountType === 'solana' ? 'solana' : 'ethereum',
-      implementationType: account.accountType === 'solana' ? undefined : account.accountType,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
     };
   }
 
@@ -333,7 +358,7 @@ export class EmbeddedWalletApi {
     const typedDataHash = _TypedDataEncoder.hash(domain, typesWithoutDomain, message);
     return await signMessage(
       typedDataHash,
-      account.type,
+      account.implementationType!,
       Number(account.chainId),
       signer,
       account.address,
@@ -378,12 +403,14 @@ export class EmbeddedWalletApi {
     }
 
     return {
-      chainId: account.chainId.toString(),
-      owner: { id: auth.player },
+      id: account.id,
+      chainId: account.chainId,
+      user: auth.player,
       address: account.address,
-      ownerAddress: account.type === 'solana' ? undefined : account.ownerAddress,
-      chainType: account.type === 'solana' ? 'solana' : 'ethereum',
-      implementationType: account.type === 'solana' ? undefined : account.type,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
     };
   }
 
@@ -398,7 +425,7 @@ export class EmbeddedWalletApi {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
     return withOpenfortError<EmbeddedAccount[]>(async () => {
-      const response = await this.backendApiClients.accountsApi.getAccounts(
+      const response = await this.backendApiClients.accountsApi.getAccountsV2(
         undefined,
         {
           headers: {
@@ -414,13 +441,15 @@ export class EmbeddedWalletApi {
       );
 
       return response.data.data.map((account) => ({
-        owner: { id: account.player.id },
-        chainType: 'ethereum',
+        user: account.user,
+        chainType: account.accountType as ChainTypeEnum,
+        id: account.id,
         address: account.address,
         ownerAddress: account.ownerAddress,
+        accountType: account.accountType as AccountTypeEnum,
         createdAt: account.createdAt,
-        implementationType: account.accountType,
-        chainId: account.chainId.toString(),
+        implementationType: account.smartAccount?.implementationType,
+        chainId: account.chainId,
       }));
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }

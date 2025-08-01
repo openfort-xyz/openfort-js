@@ -4,9 +4,11 @@ import type { RecoveryMethod } from '../types/types';
 export enum Event {
   LOADED = 'loaded',
   CONFIGURE = 'configure',
-  RECOVER = 'recover',
-  CREATE = 'create',
   CONFIGURED = 'configured',
+  RECOVER = 'recover',
+  RECOVERED = 'recovered',
+  CREATE = 'create',
+  CREATED = 'created',
   UPDATE_AUTHENTICATION = 'update-authentication',
   AUTHENTICATION_UPDATED = 'authentication-updated',
   SIGN = 'sign',
@@ -247,7 +249,7 @@ export class RecoverRequest implements IEventRequest {
 
   playerID: string | null;
 
-  accountUuid: string;
+  account: string;
 
   constructor(
     uuid: string,
@@ -256,7 +258,7 @@ export class RecoverRequest implements IEventRequest {
     shieldAPIKey: string,
     accessToken: string,
     playerID: string,
-    accountUuid: string,
+    account: string,
     openfortURL: string,
     shieldURL: string,
     encryptionKey: string | null = null,
@@ -271,7 +273,7 @@ export class RecoverRequest implements IEventRequest {
     this.shieldAPIKey = shieldAPIKey;
     this.accessToken = accessToken;
     this.playerID = playerID;
-    this.accountUuid = accountUuid;
+    this.account = account;
     this.thirdPartyProvider = thirdPartyProvider;
     this.thirdPartyTokenType = thirdPartyTokenType;
     this.encryptionKey = encryptionKey;
@@ -431,8 +433,8 @@ export interface IErrorResponse extends IEventResponse {
 export interface IConfigureResponse extends IEventResponse {
   deviceID: string;
   address: string;
-  chainId: number;
-  accountType: string;
+  chainId?: number;
+  accountType?: string;
 }
 
 export type IUpdateAuthenticationResponse = IEventResponse;
@@ -479,15 +481,13 @@ export class ConfigureResponse implements IConfigureResponse {
 
   success: boolean;
 
+  account: string;
+
   deviceID: string;
 
   address: string;
 
   chainId: number;
-
-  accountType: string;
-
-  ownerAddress: string;
 
   action: Event = Event.CONFIGURED;
 
@@ -496,19 +496,75 @@ export class ConfigureResponse implements IConfigureResponse {
   constructor(
     uuid: string,
     deviceID: string,
-    accountType: string,
     chainId: number,
     address: string,
-    ownerAddress: string,
+    account: string,
   ) {
     this.success = true;
     this.deviceID = deviceID;
     this.uuid = uuid;
-    this.accountType = accountType;
     this.chainId = chainId;
     this.address = address;
-    this.ownerAddress = ownerAddress;
+    this.account = account;
     this.version = null;
+  }
+}
+
+export class CreateResponse implements IConfigureResponse {
+  uuid: string;
+
+  account: string;
+
+  success: boolean;
+
+  deviceID: string;
+
+  address: string;
+
+  action: Event = Event.CREATED;
+
+  version = VERSION;
+
+  constructor(
+    uuid: string,
+    account: string,
+    deviceID: string,
+    address: string,
+  ) {
+    this.success = true;
+    this.account = account;
+    this.deviceID = deviceID;
+    this.uuid = uuid;
+    this.address = address;
+  }
+}
+
+export class RecoverResponse implements IConfigureResponse {
+  uuid: string;
+
+  account: string;
+
+  success: boolean;
+
+  deviceID: string;
+
+  address: string;
+
+  action: Event = Event.RECOVERED;
+
+  version = VERSION;
+
+  constructor(
+    uuid: string,
+    account: string,
+    deviceID: string,
+    address: string,
+  ) {
+    this.success = true;
+    this.account = account;
+    this.deviceID = deviceID;
+    this.uuid = uuid;
+    this.address = address;
   }
 }
 

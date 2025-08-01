@@ -37,6 +37,8 @@ import {
   ShieldAuthType,
   type RequestConfiguration,
   UpdateAuthenticationResponse,
+  CreateResponse,
+  RecoverResponse,
 } from './types';
 import { sentry } from '../core/errors/sentry';
 
@@ -61,6 +63,11 @@ export interface SignerConfigureRequest {
 export interface SignerCreateRequest {
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
+  chainId: number,
+  entropy?: {
+    recoveryPassword?: string;
+    encryptionSession?: string;
+  }
 }
 
 export interface SignerRecoverRequest {
@@ -73,8 +80,8 @@ export interface SignerRecoverRequest {
 
 interface IframeAPI {
   configure(request: ConfigureRequest): Promise<ConfigureResponse>;
-  create(request: CreateRequest): Promise<ConfigureResponse>;
-  recover(request: RecoverRequest): Promise<ConfigureResponse>;
+  create(request: CreateRequest): Promise<CreateResponse>;
+  recover(request: RecoverRequest): Promise<RecoverResponse>;
   sign(request: SignRequest): Promise<SignResponse>;
   switchChain(request: SwitchChainRequest): Promise<SwitchChainResponse>;
   updateAuthentication(request: UpdateAuthenticationRequest): Promise<UpdateAuthenticationResponse>;
@@ -335,7 +342,7 @@ export class IframeManager {
 
     // Store version if available
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('iframe-version', (response as ConfigureResponse).version ?? 'undefined');
+      sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
     }
 
     return response;
@@ -343,7 +350,7 @@ export class IframeManager {
 
   async create(
     params: SignerCreateRequest,
-  ): Promise<ConfigureResponse> {
+  ): Promise<CreateResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new Error('shieldConfiguration is required');
     }
@@ -352,24 +359,25 @@ export class IframeManager {
 
     const iframeConfiguration = await this.buildIFrameRequestConfiguration();
 
-    const request = new CreateRequest(
-      randomUUID(),
-      params.accountType,
-      params.chainType,
-      iframeConfiguration.chainId ?? 1, // TODO: do not just put random number here
-      iframeConfiguration.recovery || { auth: ShieldAuthType.OPENFORT, token: '' },
-      this.sdkConfiguration.baseConfiguration.publishableKey,
-      this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
-      iframeConfiguration.accessToken!,
-      iframeConfiguration.playerID || '',
-      this.sdkConfiguration.backendUrl,
-      this.sdkConfiguration.shieldUrl,
-      iframeConfiguration.password,
-      iframeConfiguration.thirdPartyProvider,
-      iframeConfiguration.thirdPartyTokenType,
-      this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
-      iframeConfiguration.recovery?.encryptionSession ?? null,
-    );
+    const request: CreateRequest = {
+      uuid: randomUUID(),
+      action: Event.CREATE,
+      recovery: iframeConfiguration.recovery,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
+      accessToken: iframeConfiguration.accessToken,
+      playerID: iframeConfiguration.playerID,
+      thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
+      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
+      encryptionKey: iframeConfiguration.password,
+      encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
+      encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
+      openfortURL: this.sdkConfiguration.backendUrl,
+      shieldURL: this.sdkConfiguration.shieldUrl,
+      chainId: params.chainId,
+      accountType: params.accountType,
+      chainType: params.chainType,
+    };
 
     const response = await remote.create(request);
 
@@ -378,14 +386,14 @@ export class IframeManager {
     }
 
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('iframe-version', (response as ConfigureResponse).version ?? 'undefined');
+      sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
     }
-    return response as ConfigureResponse;
+    return response;
   }
 
   async recover(
     params: SignerRecoverRequest,
-  ): Promise<ConfigureResponse> {
+  ): Promise<RecoverResponse> {
     if (!this.sdkConfiguration.shieldConfiguration) {
       throw new Error('shieldConfiguration is required');
     }
@@ -402,22 +410,23 @@ export class IframeManager {
       encryptionSession: params?.entropy?.encryptionSession,
     };
 
-    const request = new RecoverRequest(
-      randomUUID(),
-      iframeConfiguration.recovery || { auth: ShieldAuthType.OPENFORT, token: '' },
-      this.sdkConfiguration.baseConfiguration.publishableKey,
-      this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
-      iframeConfiguration.accessToken!,
-      iframeConfiguration.playerID || '',
-      params.account,
-      this.sdkConfiguration.backendUrl,
-      this.sdkConfiguration.shieldUrl,
-      iframeConfiguration.password,
-      iframeConfiguration.thirdPartyProvider,
-      iframeConfiguration.thirdPartyTokenType,
-      this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
-      iframeConfiguration.recovery?.encryptionSession ?? null,
-    );
+    const request: RecoverRequest = {
+      uuid: randomUUID(),
+      action: Event.RECOVER,
+      recovery: iframeConfiguration.recovery,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
+      accessToken: iframeConfiguration.accessToken,
+      playerID: iframeConfiguration.playerID,
+      thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
+      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
+      encryptionKey: iframeConfiguration.password,
+      encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
+      encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
+      openfortURL: this.sdkConfiguration.backendUrl,
+      shieldURL: this.sdkConfiguration.shieldUrl,
+      account: params.account,
+    };
 
     const response = await remote.recover(request);
 
@@ -426,9 +435,9 @@ export class IframeManager {
     }
 
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('iframe-version', (response as ConfigureResponse).version ?? 'undefined');
+      sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
     }
-    return response as ConfigureResponse;
+    return response;
   }
 
   async sign(
@@ -456,9 +465,9 @@ export class IframeManager {
       }
 
       if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('iframe-version', (response as SignResponse).version ?? 'undefined');
+        sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
       }
-      return (response as SignResponse).signature;
+      return response.signature;
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure();

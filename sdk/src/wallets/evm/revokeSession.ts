@@ -46,7 +46,7 @@ const buildOpenfortTransactions = async (
 ): Promise<SessionResponse> => {
   const sessionRequest = formatSessionRequest(
     params.permissionContext,
-    account.chainId,
+    account.chainId!,
     authentication.player,
     policyId,
   );
@@ -100,7 +100,7 @@ export const revokeSession = async ({
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature;
     // zkSync based chains need a different signature
-    if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId)) {
+    if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId!)) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false);
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);

@@ -31,6 +31,10 @@ export class AuthApi {
     { email, password, ecosystemGame }: { email: string; password: string, ecosystemGame?: string },
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
     await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR);
+    }
     const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame);
     if ('action' in result) {
       return result;
@@ -40,8 +44,11 @@ export class AuthApi {
   }
 
   async signUpGuest(): Promise<AuthResponse> {
-    // TODO:  throw error if already logged in
     await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR);
+    }
     const result = await this.authManager.registerGuest();
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
@@ -53,6 +60,10 @@ export class AuthApi {
     }: { email: string; password: string, options?: { data: { name: string } }, ecosystemGame?: string },
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
     await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR);
+    }
     const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame);
     if ('action' in result) {
       return result;
@@ -109,6 +120,10 @@ export class AuthApi {
     },
   ): Promise<InitAuthResponse> {
     await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR);
+    }
     return await this.authManager.initOAuth(provider, options, ecosystemGame);
   }
 
@@ -171,6 +186,10 @@ export class AuthApi {
     }: { provider: OAuthProvider; token: string; ecosystemGame?: string },
   ): Promise<AuthResponse> {
     await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR);
+    }
     const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame);
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;
@@ -187,6 +206,10 @@ export class AuthApi {
     signature, message, walletClientType, connectorType,
   }: { signature: string; message: string; walletClientType: string; connectorType: string }): Promise<AuthResponse> {
     await this.ensureInitialized();
+    const auth = await Authentication.fromStorage(this.storage);
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR);
+    }
     const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType);
     new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage);
     return result;

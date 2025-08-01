@@ -1,19 +1,20 @@
-import { RecoveryMethod, ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
+import { AccountTypeEnum, ChainTypeEnum, RecoveryMethod, ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
 import { openfortInstance } from "../openfort";
 import axios from 'axios';
+import { baseSepolia } from "viem/chains";
 
-export const configureEmbeddedSigner = async (chainId: number, password?: string) => {
-  const shieldAuth: ShieldAuthentication = {
-    auth: ShieldAuthType.OPENFORT,
-    token: (await openfortInstance.getAccessToken())!,
-    encryptionSession: await getEncryptionSession(),
-  };
-  await openfortInstance.embeddedWallet.configure({
-    chainId,
-    shieldAuthentication: shieldAuth,
-    recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
-  });
-};
+// export const configureEmbeddedSigner = async (chainId: number, password?: string) => {
+//   const shieldAuth: ShieldAuthentication = {
+//     auth: ShieldAuthType.OPENFORT,
+//     token: (await openfortInstance.getAccessToken())!,
+//     encryptionSession: await getEncryptionSession(),
+//   };
+//   await openfortInstance.embeddedWallet.configure({
+//     chainId,
+//     shieldAuthentication: shieldAuth,
+//     recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+//   });
+// };
 
 export const recoverEmbeddedSigner = async (account: string, password?: string) => {
   const shieldAuth: ShieldAuthentication = {
@@ -22,9 +23,23 @@ export const recoverEmbeddedSigner = async (account: string, password?: string) 
     encryptionSession: await getEncryptionSession(),
   };
   await openfortInstance.embeddedWallet.recover({
-    accountUuid: account,
+    account: account,
     shieldAuthentication: shieldAuth,
     recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+  });
+};
+
+export const createEmbeddedSigner = async () => {
+  const shieldAuth: ShieldAuthentication = {
+    auth: ShieldAuthType.OPENFORT,
+    token: (await openfortInstance.getAccessToken())!,
+    encryptionSession: await getEncryptionSession(),
+  };
+  await openfortInstance.embeddedWallet.create({
+    chainId: baseSepolia.id, // Default to Ethereum mainnet, change as needed.
+    accountType: AccountTypeEnum.SMART_ACCOUNT,
+    chainType: ChainTypeEnum.EVM,
+    shieldAuthentication: shieldAuth,
   });
 };
 

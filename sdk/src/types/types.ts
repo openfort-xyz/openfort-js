@@ -421,26 +421,26 @@ export enum CodeChallengeMethodEnum {
 }
 
 export enum AccountTypeEnum {
-  EOA = 'eoa',
-  SMART_ACCOUNT = 'smart_account',
+  EOA = 'Externally Owned Account',
+  SMART_ACCOUNT = 'Smart Account',
 }
 
 export enum ChainTypeEnum {
-  EVM = 'evm',
-  SVM = 'svm',
+  EVM = 'EVM',
+  SVM = 'SVM',
 }
 
 export type EmbeddedAccount = {
-  owner: {
-    id: string;
-  };
-  chainType: 'solana' | 'ethereum';
+  user: string;
+  id: string;
+  chainType: ChainTypeEnum;
   address: string;
   /** @deprecated  */
   ownerAddress?: string;
   createdAt?: number;
   implementationType?: string;
-  chainId?: string;
+  accountType: AccountTypeEnum;
+  chainId?: number;
 };
 
 export type EmbeddedAccountConfigureParams = {
@@ -458,6 +458,9 @@ export type EmbeddedAccountRecoverParams = {
 export type EmbeddedAccountCreateParams = {
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
+  chainId: number;
+  shieldAuthentication?: ShieldAuthentication;
+  recoveryParams?: RecoverParams;
 };
 
 export type RecoverParams = {

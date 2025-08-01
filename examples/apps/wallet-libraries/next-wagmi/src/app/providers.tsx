@@ -9,7 +9,6 @@ import { EmbeddedState } from '@openfort/openfort-js'
 import { getConfig } from '../wagmi'
 import { openfortInstance } from '../openfort'
 import { sepolia } from 'viem/chains'
-import { configureEmbeddedSigner } from '../lib/utils'
 
 interface ProvidersProps {
   children: ReactNode
@@ -57,12 +56,6 @@ function OpenfortSetup({ children }: { children: ReactNode }) {
           policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA
         }
       );
-      const user = await openfortInstance.user.get().catch((err) => {
-        return null
-      })
-      if (user) {
-        await configureEmbeddedSigner(chainId ?? sepolia.id);
-      }
     };
 
     setupProvider();

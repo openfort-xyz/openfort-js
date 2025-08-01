@@ -17,20 +17,14 @@
 /**
  * 
  * @export
- * @interface ShamirParams
+ * @interface SignerIdResponse
  */
-export interface ShamirParams {
+export interface SignerIdResponse {
     /**
      * 
      * @type {string}
-     * @memberof ShamirParams
+     * @memberof SignerIdResponse
      */
-    'share': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ShamirParams
-     */
-    'publicKey': string;
+    'id': string;
 }
 

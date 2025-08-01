@@ -128,6 +128,7 @@ export class EvmProvider implements Provider {
   }
 
   async #performRequest(request: RequestArguments): Promise<any> {
+    console.log('[EvmProvider] Performing request:', request);
     switch (request.method) {
       case 'eth_accounts': {
         const account = await Account.fromStorage(this.#storage);
@@ -136,7 +137,7 @@ export class EvmProvider implements Provider {
       case 'eth_requestAccounts': {
         const account = await Account.fromStorage(this.#storage);
         if (account) {
-          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: numberToHex(account.chainId) });
+          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: String(account.chainId) });
           return [account.address];
         }
 
@@ -192,7 +193,7 @@ export class EvmProvider implements Provider {
           method: request.method,
           params: request.params || [],
           signer,
-          accountType: account.type,
+          implementationType: account.implementationType!,
           rpcProvider,
 
         });
