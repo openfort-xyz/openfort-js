@@ -25,11 +25,13 @@ const formatSessionRequest = (
   chainId: number,
   player: string,
   policyId?: string,
+  account?: string,
 ): RevokeSessionRequest => {
   const request: RevokeSessionRequest = {
     address,
     chainId,
     player,
+    account,
   };
 
   if (policyId) request.policy = policyId;
@@ -49,6 +51,7 @@ const buildOpenfortTransactions = async (
     account.chainId!,
     authentication.player,
     policyId,
+    account.id,
   );
 
   return withOpenfortError<SessionResponse>(async () => {

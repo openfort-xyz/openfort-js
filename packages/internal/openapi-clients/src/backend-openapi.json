@@ -7766,6 +7766,11 @@
             "type": "string",
             "description": "The player ID (starts with pla_).",
             "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "account": {
+            "type": "string",
+            "description": "ID of the Account this TransactionIntent is executed with, if one exists (starts with `acc_` or `dac_`).\n\nWhen providing a Player and ChainID, you can omit this parameter.",
+            "example": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60"
           }
         },
         "required": [
@@ -7804,6 +7809,11 @@
             "type": "string",
             "description": "The player ID (starts with pla_).",
             "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "account": {
+            "type": "string",
+            "description": "ID of the Account this TransactionIntent is executed with, if one exists (starts with `acc_` or `dac_`).\n\nWhen providing a Player and ChainID, you can omit this parameter.",
+            "example": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60"
           }
         },
         "required": [
@@ -8844,19 +8854,19 @@
       },
       "RecoverV2EmbeddedRequest": {
         "properties": {
-          "accountUuid": {
+          "account": {
             "type": "string"
           }
         },
         "required": [
-          "accountUuid"
+          "account"
         ],
         "type": "object",
         "additionalProperties": false
       },
       "RegisterEmbeddedV2Request": {
         "properties": {
-          "accountUuid": {
+          "account": {
             "type": "string"
           },
           "share": {
@@ -8864,7 +8874,7 @@
           }
         },
         "required": [
-          "accountUuid",
+          "account",
           "share"
         ],
         "type": "object",

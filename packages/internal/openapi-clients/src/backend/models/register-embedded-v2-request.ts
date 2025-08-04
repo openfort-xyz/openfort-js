@@ -25,7 +25,7 @@ export interface RegisterEmbeddedV2Request {
      * @type {string}
      * @memberof RegisterEmbeddedV2Request
      */
-    'accountUuid': string;
+    'account': string;
     /**
      * 
      * @type {string}

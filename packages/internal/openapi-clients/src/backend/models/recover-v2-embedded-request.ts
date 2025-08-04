@@ -25,6 +25,6 @@ export interface RecoverV2EmbeddedRequest {
      * @type {string}
      * @memberof RecoverV2EmbeddedRequest
      */
-    'accountUuid': string;
+    'account': string;
 }
 
