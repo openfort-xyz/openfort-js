@@ -12,7 +12,7 @@ export const configureEmbeddedSigner = async (chainId: number, password?: string
   await openfortInstance.embeddedWallet.configure({
     chainId,
     shieldAuthentication: shieldAuth,
-    recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+    // not defining recoveryParams will default to automatic recovery
   });
 
   // Announce the provider so wagmi can discover it
@@ -22,7 +22,7 @@ export const configureEmbeddedSigner = async (chainId: number, password?: string
   });
 };
 
-export const recoverEmbeddedSigner = async (account: string, password?: string) => {
+export const recoverEmbeddedSigner = async (account: string, chainId: number) => {
   const shieldAuth: ShieldAuthentication = {
     auth: ShieldAuthType.OPENFORT,
     token: (await openfortInstance.getAccessToken())!,
@@ -31,17 +31,17 @@ export const recoverEmbeddedSigner = async (account: string, password?: string) 
   await openfortInstance.embeddedWallet.recover({
     account: account,
     shieldAuthentication: shieldAuth,
-    recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+    // not defining recoveryParams will default to automatic recovery
   });
 
   // Announce the provider so wagmi can discover it
   await openfortInstance.embeddedWallet.getEthereumProvider({
-    policy: process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
+    policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
     announceProvider: true
   });
 };
 
-export const createEmbeddedSigner = async () => {
+export const createEmbeddedSigner = async (chainId: number) => {
   const shieldAuth: ShieldAuthentication = {
     auth: ShieldAuthType.OPENFORT,
     token: (await openfortInstance.getAccessToken())!,
@@ -57,7 +57,7 @@ export const createEmbeddedSigner = async () => {
 
   // Announce the provider so wagmi can discover it
   await openfortInstance.embeddedWallet.getEthereumProvider({
-    policy: process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
+    policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
     announceProvider: true
   });
 };

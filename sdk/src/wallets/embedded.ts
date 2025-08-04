@@ -124,7 +124,7 @@ export class EmbeddedSigner implements Signer {
     const resp = await this.iframeManager.switchChain(chainId);
     const acc = await Account.fromStorage(this.storage);
 
-    new Account({ ...acc!, id: resp.account, chainId }).save(this.storage);
+    new Account({ ...acc!, id: resp.account!, chainId }).save(this.storage);
   }
 
   async create(

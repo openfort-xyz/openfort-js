@@ -3,9 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { openfortInstance } from '../openfort';
 import { AccountTypeEnum, EmbeddedAccount } from '@openfort/openfort-js';
-import { useAccount } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 import { configureEmbeddedSigner, createEmbeddedSigner, recoverEmbeddedSigner } from '../lib/utils';
-import { baseSepolia } from 'viem/chains';
 
 interface WalletListProps {
   isVisible: boolean;
@@ -15,6 +14,7 @@ function WalletList({ isVisible }: WalletListProps) {
   const [wallets, setWallets] = useState<EmbeddedAccount[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const chainId = useChainId();
   const [isCreating, setIsCreating] = useState(false);
   const [isRecovering, setIsRecovering] = useState<string | null>(null);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
@@ -59,7 +59,7 @@ function WalletList({ isVisible }: WalletListProps) {
   useEffect(() => {
     if (hasLoadedOnce && wallets.length === 0 && isVisible && !isLoading && !isCreating) {
       setIsCreating(true);
-      createEmbeddedSigner()
+      createEmbeddedSigner(chainId)
         .then(() => {
           loadWallets();
         })
@@ -76,7 +76,7 @@ function WalletList({ isVisible }: WalletListProps) {
     setError(null);
     
     try { 
-      await createEmbeddedSigner();
+      await createEmbeddedSigner(chainId);
       await loadWallets();
     } catch (err) {
       console.error('Error creating wallet:', err);
@@ -91,7 +91,7 @@ function WalletList({ isVisible }: WalletListProps) {
     setError(null);
     
     try {
-      await configureEmbeddedSigner(baseSepolia.id);
+      await configureEmbeddedSigner(chainId);
       await loadWallets();
     } catch (err) {
       console.error('Error creating wallet:', err);
@@ -106,7 +106,7 @@ function WalletList({ isVisible }: WalletListProps) {
     setError(null);
     
     try {
-      await recoverEmbeddedSigner(walletId);
+      await recoverEmbeddedSigner(walletId, chainId);
     } catch (err) {
       console.error('Error recovering wallet:', err);
       setError(err instanceof Error ? err.message : 'Failed to recover wallet');

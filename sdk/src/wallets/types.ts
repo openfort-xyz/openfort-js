@@ -587,7 +587,7 @@ export class SwitchChainResponse implements ISwitchChainResponse {
 
   action: Event = Event.CHAIN_SWITCHED;
 
-  account: string;
+  account: string | null;
 
   constructor(
     uuid: string,
