@@ -39,6 +39,7 @@ const buildOpenfortTransactions = async (
     const response = await backendApiClients.transactionIntentsApi.createTransactionIntent(
       {
         createTransactionIntentRequest: {
+          account: account.id,
           policy: policyId,
           chainId: account.chainId!,
           interactions,
