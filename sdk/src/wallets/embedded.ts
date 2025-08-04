@@ -121,11 +121,10 @@ export class EmbeddedSigner implements Signer {
   }
 
   async switchChain({ chainId }: { chainId: number }): Promise<void> {
-    await this.iframeManager.switchChain(chainId);
+    const resp = await this.iframeManager.switchChain(chainId);
     const acc = await Account.fromStorage(this.storage);
-    new Account(
-      { ...acc!, chainId },
-    ).save(this.storage);
+
+    new Account({ ...acc!, id: resp.account, chainId }).save(this.storage);
   }
 
   async create(
