@@ -101,7 +101,7 @@ function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
     setIsLoading(true);
     setIsProcessing(true);
     try {
-      const data = await openfortInstance.auth.signUpGuest();
+      await openfortInstance.auth.signUpGuest();
       
       setStatus('Guest account created successfully');
       onAuthSuccess?.();

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { openfortInstance } from '../openfort';
-import { EmbeddedAccount } from '@openfort/openfort-js';
+import { AccountTypeEnum, EmbeddedAccount } from '@openfort/openfort-js';
 import { useAccount, useConnectorClient } from 'wagmi';
 import { configureEmbeddedSigner, createEmbeddedSigner, recoverEmbeddedSigner } from '../lib/utils';
 import { reconnect } from 'wagmi/actions';
@@ -36,7 +36,18 @@ function WalletList({ isVisible }: WalletListProps) {
     
     try {
       const walletsResponse = await openfortInstance.embeddedWallet.list();
-      setWallets(walletsResponse);
+      const smartWallets = walletsResponse.filter(wallet => wallet.accountType === AccountTypeEnum.SMART_ACCOUNT);
+      
+      // Filter to keep only unique addresses
+      const uniqueWallets = smartWallets.reduce((acc: EmbeddedAccount[], wallet) => {
+        const existingWallet = acc.find(w => w.address.toLowerCase() === wallet.address.toLowerCase());
+        if (!existingWallet) {
+          acc.push(wallet);
+        }
+        return acc;
+      }, []);
+      
+      setWallets(uniqueWallets);
     } catch (err) {
       console.error('Error loading wallets:', err);
       setError(err instanceof Error ? err.message : 'Failed to load wallets');
@@ -53,7 +64,7 @@ function WalletList({ isVisible }: WalletListProps) {
     setIsCreating(true);
     setError(null);
     
-    try {
+    try { 
       await createEmbeddedSigner();
       await loadWallets();
     } catch (err) {
@@ -151,7 +162,7 @@ function WalletList({ isVisible }: WalletListProps) {
         onClick={handleConfigureWallet}
         disabled={isCreating}
       >
-        {isCreating ? 'Configure...' : 'Configure New Wallet'}
+        {isCreating ? 'Configure...' : 'Configure Wallet'}
       </button>
     </div>
   );

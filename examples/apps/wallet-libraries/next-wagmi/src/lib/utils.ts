@@ -36,10 +36,11 @@ export const createEmbeddedSigner = async () => {
     encryptionSession: await getEncryptionSession(),
   };
   await openfortInstance.embeddedWallet.create({
-    chainId: baseSepolia.id, // Default to Ethereum mainnet, change as needed.
+    chainId: baseSepolia.id,
     accountType: AccountTypeEnum.SMART_ACCOUNT,
     chainType: ChainTypeEnum.EVM,
     shieldAuthentication: shieldAuth,
+    // not defining recoveryParams will default to automatic recovery
   });
 };
 
@@ -68,4 +69,3 @@ export const getURL = () => {
 
   return url;
 };
-

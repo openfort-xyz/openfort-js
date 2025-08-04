@@ -124,6 +124,8 @@ function Account() {
       {account.status === 'connected' && (
         <button type="button" onClick={async() => {
           if (account.connector && account.connector.name.includes('Openfort')) {
+            // without explicit logout, openfort embedded wallet is just disconnected
+            // but the user is still authenticated
             await openfortInstance.auth.logout();
           }
           disconnect()
@@ -174,6 +176,8 @@ function Connect() {
 
     const handleAuthSuccess = () => {
       setIsAuthenticated(true);
+      // after successful authentication, we can connect to the active connector which should be xyz.openfort
+      if(activeConnector) connect({connector: activeConnector, chainId});
     };
   
     return (
@@ -209,6 +213,7 @@ function ConnectorButton({
     onClick: () => void;
     }) {
     const [ready, setReady] = useState(false);
+    
     useEffect(() => {
         (async () => {
         const provider = await connector.getProvider();
@@ -230,11 +235,14 @@ function ConnectorButton({
 
 function SwitchAccount() {
   const account = useAccount()
-  const { connectors, switchAccount } = useSwitchAccount()
+  const { connectors, switchAccount, status: sStatus } = useSwitchAccount()
+  const { status } = useConnect()
+  
 
   return (
     <div>
       <h2>Switch Account</h2>
+
 
       {connectors.map((connector) => (
         <button
