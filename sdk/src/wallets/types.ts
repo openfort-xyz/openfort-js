@@ -587,6 +587,8 @@ export class SwitchChainResponse implements ISwitchChainResponse {
 
   action: Event = Event.CHAIN_SWITCHED;
 
+  account: string;
+
   constructor(
     uuid: string,
     deviceID: string,
@@ -594,6 +596,7 @@ export class SwitchChainResponse implements ISwitchChainResponse {
     chainId: number,
     address: string,
     ownerAddress: string,
+    account: string,
   ) {
     this.success = true;
     this.deviceID = deviceID;
@@ -603,6 +606,7 @@ export class SwitchChainResponse implements ISwitchChainResponse {
     this.address = address;
     this.ownerAddress = ownerAddress;
     this.version = null;
+    this.account = account;
   }
 }
 
