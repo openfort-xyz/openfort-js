@@ -94,21 +94,23 @@ export class EvmProvider implements Provider {
     this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>();
 
     openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout);
+    openfortEventEmitter.on(OpenfortEvents.SWITCH_ACCOUNT, this.#handleSwitchAccount);
   }
 
   #ensureSigner = async (): Promise<Signer> => {
     if (!this.#signer) {
-      console.log('[EvmProvider] Ensuring signer...');
-      this.#signer = await this.#ensureSignerFn(); // ✅ Call the stored function
-      console.log('[EvmProvider] Signer ensured:', this.#signer);
+      this.#signer = await this.#ensureSignerFn();
     }
-    console.log('[EvmProvider] Returning signer:');
     return this.#signer;
   };
 
   #handleLogout = async () => {
     this.#signer = undefined;
     this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
+  };
+
+  #handleSwitchAccount = async (address: string) => {
+    this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [address]);
   };
 
   async getRpcProvider(): Promise<StaticJsonRpcProvider> {

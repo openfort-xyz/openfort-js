@@ -169,7 +169,7 @@ export class EmbeddedWalletApi {
 
   private async createSigner(): Promise<EmbeddedSigner> {
     const iframeManager = await this.getIframeManager();
-    const signer = new EmbeddedSigner(iframeManager, this.storage, this.backendApiClients);
+    const signer = new EmbeddedSigner(iframeManager, this.storage, this.backendApiClients, this.eventEmitter);
     return signer;
   }
 

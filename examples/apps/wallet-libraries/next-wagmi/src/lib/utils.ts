@@ -1,7 +1,7 @@
 import { AccountTypeEnum, ChainTypeEnum, RecoveryMethod, ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
 import { openfortInstance } from "../openfort";
 import axios from 'axios';
-import { baseSepolia } from "viem/chains";
+import { baseSepolia, sepolia } from "viem/chains";
 
 export const configureEmbeddedSigner = async (chainId: number, password?: string) => {
   const shieldAuth: ShieldAuthentication = {
@@ -13,6 +13,12 @@ export const configureEmbeddedSigner = async (chainId: number, password?: string
     chainId,
     shieldAuthentication: shieldAuth,
     recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+  });
+
+  // Announce the provider so wagmi can discover it
+  await openfortInstance.embeddedWallet.getEthereumProvider({
+    policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
+    announceProvider: true
   });
 };
 
@@ -26,6 +32,12 @@ export const recoverEmbeddedSigner = async (account: string, password?: string) 
     account: account,
     shieldAuthentication: shieldAuth,
     recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+  });
+
+  // Announce the provider so wagmi can discover it
+  await openfortInstance.embeddedWallet.getEthereumProvider({
+    policy: process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
+    announceProvider: true
   });
 };
 
@@ -41,6 +53,12 @@ export const createEmbeddedSigner = async () => {
     chainType: ChainTypeEnum.EVM,
     shieldAuthentication: shieldAuth,
     // not defining recoveryParams will default to automatic recovery
+  });
+
+  // Announce the provider so wagmi can discover it
+  await openfortInstance.embeddedWallet.getEthereumProvider({
+    policy: process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
+    announceProvider: true
   });
 };
 

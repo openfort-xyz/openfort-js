@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Address, type Hex, createPublicClient, createWalletClient, custom, formatEther, getAddress, http, parseAbi, parseEther } from 'viem'
 import {
   type BaseError,
@@ -140,22 +140,24 @@ function Account() {
 
 function Connect() {
     const chainId = useChainId();
-    const {connectors, connect, error} = useConnect();
+    const {connectors, connect, error, status} = useConnect();
     const [activeConnector, setActiveConnector] = useState<Connector | null>(null);
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isInAuthFlow, setIsInAuthFlow] = useState(false);
   
     useEffect(() => {
-      console.log('Connect: useEffect', { error, activeConnector });
+      // Only show modal if we're not already in an auth flow
       if (
         error &&
         activeConnector?.name === 'Openfort' &&
-        error.message ===
-          'Unauthorized - must be authenticated and configured with a signer.'
+        error.message === 'Unauthorized - must be authenticated and configured with a signer.' &&
+        !isInAuthFlow
       ) {
         setShowAuthModal(true);
+        setIsInAuthFlow(true);
       }
-    }, [error, activeConnector]);
+    }, [error, activeConnector, isInAuthFlow]);
 
     useEffect(() => {
       const checkAuthStatus = async () => {
@@ -167,17 +169,27 @@ function Connect() {
         }
       };
       checkAuthStatus();
-    }, []);
+    }, [status]);
   
     const handleConnect = (connector: Connector) => {
       setActiveConnector(connector);
+      setIsInAuthFlow(false); // Reset auth flow state when initiating new connection
       connect({connector, chainId});
     };
 
     const handleAuthSuccess = () => {
       setIsAuthenticated(true);
-      // after successful authentication, we can connect to the active connector which should be xyz.openfort
-      if(activeConnector) connect({connector: activeConnector, chainId});
+      setShowAuthModal(false);
+      
+      if(activeConnector) {
+        connect({connector: activeConnector, chainId});
+      }
+    };
+
+    const handleModalClose = () => {
+      setShowAuthModal(false);
+      setIsInAuthFlow(false); // Reset auth flow when user closes modal
+      setActiveConnector(null); // Clear connector since user cancelled
     };
   
     return (
@@ -198,13 +210,12 @@ function Connect() {
         
         <AuthModal 
           isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
+          onClose={handleModalClose}
           onAuthSuccess={handleAuthSuccess}
         />
       </div>
     );
 }
-
 function ConnectorButton({
     connector,
     onClick,
@@ -235,8 +246,7 @@ function ConnectorButton({
 
 function SwitchAccount() {
   const account = useAccount()
-  const { connectors, switchAccount, status: sStatus } = useSwitchAccount()
-  const { status } = useConnect()
+  const { connectors, switchAccount } = useSwitchAccount()
   
 
   return (

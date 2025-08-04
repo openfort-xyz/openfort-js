@@ -3,17 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { openfortInstance } from '../openfort';
 import { AccountTypeEnum, EmbeddedAccount } from '@openfort/openfort-js';
-import { useAccount, useConnectorClient } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { configureEmbeddedSigner, createEmbeddedSigner, recoverEmbeddedSigner } from '../lib/utils';
-import { reconnect } from 'wagmi/actions';
 import { baseSepolia } from 'viem/chains';
-
-interface WalletData {
-  id: string;
-  address: string;
-  accountType: string;
-  chainType: string;
-}
 
 interface WalletListProps {
   isVisible: boolean;
@@ -25,8 +17,8 @@ function WalletList({ isVisible }: WalletListProps) {
   const [error, setError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isRecovering, setIsRecovering] = useState<string | null>(null);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const { address: activeAddress } = useAccount();
-
 
   const loadWallets = async () => {
     if (!isVisible) return;
@@ -48,17 +40,36 @@ function WalletList({ isVisible }: WalletListProps) {
       }, []);
       
       setWallets(uniqueWallets);
+      setHasLoadedOnce(true);
     } catch (err) {
       console.error('Error loading wallets:', err);
       setError(err instanceof Error ? err.message : 'Failed to load wallets');
+      setHasLoadedOnce(true);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Load wallets when component becomes visible
   useEffect(() => {
     loadWallets();
   }, [isVisible]);
+
+  // Auto-create wallet only after initial load if none exist
+  useEffect(() => {
+    if (hasLoadedOnce && wallets.length === 0 && isVisible && !isLoading && !isCreating) {
+      setIsCreating(true);
+      createEmbeddedSigner()
+        .then(() => {
+          loadWallets();
+        })
+        .catch((err) => {
+          console.error('Error auto-creating wallet:', err);
+          setError(err instanceof Error ? err.message : 'Failed to create wallet');
+        })
+        .finally(() => setIsCreating(false));
+    }
+  }, [hasLoadedOnce, wallets.length, isVisible, isLoading, isCreating]);
 
   const handleCreateWallet = async () => {
     setIsCreating(true);
@@ -75,7 +86,7 @@ function WalletList({ isVisible }: WalletListProps) {
     }
   };
 
-    const handleConfigureWallet = async () => {
+  const handleConfigureWallet = async () => {
     setIsCreating(true);
     setError(null);
     
@@ -96,7 +107,6 @@ function WalletList({ isVisible }: WalletListProps) {
     
     try {
       await recoverEmbeddedSigner(walletId);
-      await loadWallets();
     } catch (err) {
       console.error('Error recovering wallet:', err);
       setError(err instanceof Error ? err.message : 'Failed to recover wallet');
@@ -116,7 +126,11 @@ function WalletList({ isVisible }: WalletListProps) {
       {error && <div className="error">Error: {error}</div>}
       
       {!isLoading && wallets.length === 0 && !error && (
-        <div>No wallets found. Create your first wallet below.</div>
+        <div>
+          {isCreating 
+            ? 'Creating your first wallet...' 
+            : 'No wallets found. Create your first wallet below.'}
+        </div>
       )}
       
       {wallets.length > 0 && (
@@ -139,7 +153,7 @@ function WalletList({ isVisible }: WalletListProps) {
                   <button
                     className="button"
                     onClick={() => handleRecoverWallet(wallet.id)}
-                    disabled={isRecovering === wallet.id}
+                    disabled={isRecovering === wallet.id || isCreating}
                   >
                     {isRecovering === wallet.id ? 'Recovering...' : 'Recover'}
                   </button>
@@ -153,16 +167,16 @@ function WalletList({ isVisible }: WalletListProps) {
       <button
         className="button create-wallet-button"
         onClick={handleCreateWallet}
-        disabled={isCreating}
+        disabled={isCreating || isRecovering !== null}
       >
         {isCreating ? 'Creating...' : 'Create New Wallet'}
       </button>
       <button
         className="button create-wallet-button"
         onClick={handleConfigureWallet}
-        disabled={isCreating}
+        disabled={isCreating || isRecovering !== null}
       >
-        {isCreating ? 'Configure...' : 'Configure Wallet'}
+        {isCreating ? 'Configuring...' : 'Configure Wallet'}
       </button>
     </div>
   );

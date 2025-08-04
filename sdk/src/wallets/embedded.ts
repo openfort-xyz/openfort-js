@@ -2,21 +2,24 @@ import { BackendApiClients } from '@openfort/openapi-clients';
 import { Authentication } from 'core/configuration/authentication';
 import { OpenfortError, OpenfortErrorType, SDKConfiguration } from 'types';
 import { withOpenfortError } from 'core/errors/openfortError';
-import type {
-  AccountTypeEnum, ChainTypeEnum, RecoveryMethod,
+import TypedEventEmitter from 'utils/typedEventEmitter';
+import {
+  OpenfortEvents,
+  type AccountTypeEnum, type ChainTypeEnum, type OpenfortEventMap, type RecoveryMethod,
 } from '../types/types';
 import { Account } from '../core/configuration/account';
 import type { Signer } from './isigner';
 import type {
   SignerConfigureRequest, IframeManager, SignerRecoverRequest, SignerCreateRequest,
 } from './iframeManager';
-import { StorageKeys, type IStorage } from '../storage/istorage';
+import { type IStorage } from '../storage/istorage';
 
 export class EmbeddedSigner implements Signer {
   constructor(
     private readonly iframeManager: IframeManager,
     private readonly storage: IStorage,
     private readonly backendApiClients: BackendApiClients,
+    private eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) { }
 
   async configure(
@@ -66,6 +69,7 @@ export class EmbeddedSigner implements Signer {
           chainId: response.data.data[0].chainId,
         });
         account.save(this.storage);
+        this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.data[0].address);
         return account;
       }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
     }
@@ -99,6 +103,7 @@ export class EmbeddedSigner implements Signer {
         chainId: response.data.chainId,
       });
       account.save(this.storage);
+      this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
       return account;
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
@@ -166,6 +171,7 @@ export class EmbeddedSigner implements Signer {
         chainId: response.data.chainId,
       });
       account.save(this.storage);
+      this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
       return account;
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
@@ -213,6 +219,7 @@ export class EmbeddedSigner implements Signer {
         chainId: response.data.chainId,
       });
       account.save(this.storage);
+      this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
       return account;
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
@@ -234,8 +241,6 @@ export class EmbeddedSigner implements Signer {
   }
 
   async disconnect(): Promise<void> {
-    await this.iframeManager.disconnect();
-    this.iframeManager.destroy();
-    this.storage.remove(StorageKeys.ACCOUNT);
+    this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
   }
 }
