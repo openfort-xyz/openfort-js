@@ -123,7 +123,7 @@ export class Openfort {
           const signer = this.embeddedWalletInstance;
           return (message: string | Uint8Array) => signer.signMessage(
             message,
-            { hashMessage: false, arrayifyMessage: false },
+            { hashMessage: false, arrayifyMessage: true },
           );
         },
       );

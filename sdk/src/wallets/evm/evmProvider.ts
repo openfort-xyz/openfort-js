@@ -131,7 +131,6 @@ export class EvmProvider implements Provider {
   }
 
   async #performRequest(request: RequestArguments): Promise<any> {
-    console.log('[EvmProvider] Performing request:', request);
     switch (request.method) {
       case 'eth_accounts': {
         const account = await Account.fromStorage(this.#storage);
