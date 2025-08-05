@@ -59,6 +59,18 @@ export interface AccountListQueriesV2 {
      * @memberof AccountListQueriesV2
      */
     'chainType'?: string;
+    /**
+     * Specifies the type of account
+     * @type {string}
+     * @memberof AccountListQueriesV2
+     */
+    'accountType'?: string;
+    /**
+     * Specifies the account address
+     * @type {string}
+     * @memberof AccountListQueriesV2
+     */
+    'address'?: string;
 }
 
 

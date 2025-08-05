@@ -428,10 +428,12 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [user] Specifies the unique user ID (starts with pla_)
          * @param {string} [chainType] Specifies the type of chain
+         * @param {string} [accountType] Specifies the type of account
+         * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountsV2: async (limit?: number, skip?: number, order?: SortOrder, chainId?: number, user?: string, chainType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountsV2: async (limit?: number, skip?: number, order?: SortOrder, chainId?: number, user?: string, chainType?: string, accountType?: string, address?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -472,6 +474,14 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
                 localVarQueryParameter['chainType'] = chainType;
             }
 
+            if (accountType !== undefined) {
+                localVarQueryParameter['accountType'] = accountType;
+            }
+
+            if (address !== undefined) {
+                localVarQueryParameter['address'] = address;
+            }
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -485,14 +495,14 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} addr 
+         * @param {string} address 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSignerIdByAddress: async (addr: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'addr' is not null or undefined
-            assertParamExists('getSignerIdByAddress', 'addr', addr)
-            const localVarPath = `/v2/accounts/signer/address`;
+        getSignerIdByAddress: async (address: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'address' is not null or undefined
+            assertParamExists('getSignerIdByAddress', 'address', address)
+            const localVarPath = `/v2/accounts/signer`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -508,8 +518,8 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-            if (addr !== undefined) {
-                localVarQueryParameter['addr'] = addr;
+            if (address !== undefined) {
+                localVarQueryParameter['address'] = address;
             }
 
 
@@ -843,21 +853,23 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [user] Specifies the unique user ID (starts with pla_)
          * @param {string} [chainType] Specifies the type of chain
+         * @param {string} [accountType] Specifies the type of account
+         * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountsV2(limit?: number, skip?: number, order?: SortOrder, chainId?: number, user?: string, chainType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAccountV2Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountsV2(limit, skip, order, chainId, user, chainType, options);
+        async getAccountsV2(limit?: number, skip?: number, order?: SortOrder, chainId?: number, user?: string, chainType?: string, accountType?: string, address?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAccountV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountsV2(limit, skip, order, chainId, user, chainType, accountType, address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
-         * @param {string} addr 
+         * @param {string} address 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSignerIdByAddress(addr: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignerIdResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getSignerIdByAddress(addr, options);
+        async getSignerIdByAddress(address: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignerIdResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSignerIdByAddress(address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1013,7 +1025,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         getAccountsV2(requestParameters: AccountsApiGetAccountsV2Request = {}, options?: AxiosRequestConfig): AxiosPromise<BaseEntityListResponseAccountV2Response> {
-            return localVarFp.getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, options).then((request) => request(axios, basePath));
+            return localVarFp.getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, requestParameters.accountType, requestParameters.address, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1022,7 +1034,7 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         getSignerIdByAddress(requestParameters: AccountsApiGetSignerIdByAddressRequest, options?: AxiosRequestConfig): AxiosPromise<SignerIdResponse> {
-            return localVarFp.getSignerIdByAddress(requestParameters.addr, options).then((request) => request(axios, basePath));
+            return localVarFp.getSignerIdByAddress(requestParameters.address, options).then((request) => request(axios, basePath));
         },
         /**
          * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
@@ -1305,6 +1317,20 @@ export interface AccountsApiGetAccountsV2Request {
      * @memberof AccountsApiGetAccountsV2
      */
     readonly chainType?: string
+
+    /**
+     * Specifies the type of account
+     * @type {string}
+     * @memberof AccountsApiGetAccountsV2
+     */
+    readonly accountType?: string
+
+    /**
+     * Specifies the account address
+     * @type {string}
+     * @memberof AccountsApiGetAccountsV2
+     */
+    readonly address?: string
 }
 
 /**
@@ -1318,7 +1344,7 @@ export interface AccountsApiGetSignerIdByAddressRequest {
      * @type {string}
      * @memberof AccountsApiGetSignerIdByAddress
      */
-    readonly addr: string
+    readonly address: string
 }
 
 /**
@@ -1522,7 +1548,7 @@ export class AccountsApi extends BaseAPI {
      * @memberof AccountsApi
      */
     public getAccountsV2(requestParameters: AccountsApiGetAccountsV2Request = {}, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, options).then((request) => request(this.axios, this.basePath));
+        return AccountsApiFp(this.configuration).getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, requestParameters.accountType, requestParameters.address, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1533,7 +1559,7 @@ export class AccountsApi extends BaseAPI {
      * @memberof AccountsApi
      */
     public getSignerIdByAddress(requestParameters: AccountsApiGetSignerIdByAddressRequest, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).getSignerIdByAddress(requestParameters.addr, options).then((request) => request(this.axios, this.basePath));
+        return AccountsApiFp(this.configuration).getSignerIdByAddress(requestParameters.address, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

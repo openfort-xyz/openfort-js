@@ -142,7 +142,7 @@ function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
                 </h3>
                 <div className="text-xs font-medium text-green-900">
                   {`You've successfully signed up. Please check your email to
-                  confirm your account before signing in to the Openfort dashboard`}
+                  confirm your account before signing in`}
                 </div>
               </div>
             </div>

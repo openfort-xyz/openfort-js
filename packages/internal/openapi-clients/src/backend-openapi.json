@@ -8774,6 +8774,16 @@
             "type": "string",
             "description": "Specifies the type of chain",
             "example": "EVM"
+          },
+          "accountType": {
+            "type": "string",
+            "description": "Specifies the type of account",
+            "example": "Smart Account"
+          },
+          "address": {
+            "type": "string",
+            "description": "Specifies the account address",
+            "example": "0xf7b4c54cca21cccf42796502bf94e2838fbd44c4"
           }
         },
         "type": "object",
@@ -19200,6 +19210,73 @@
               "type": "string"
             },
             "example": "EVM"
+          },
+          {
+            "description": "Specifies the type of account",
+            "in": "query",
+            "name": "accountType",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Smart Account"
+          },
+          {
+            "description": "Specifies the account address",
+            "in": "query",
+            "name": "address",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0xf7b4c54cca21cccf42796502bf94e2838fbd44c4"
+          }
+        ]
+      }
+    },
+    "/v2/accounts/signer": {
+      "get": {
+        "operationId": "GetSignerIdByAddress",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignerIdResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "tags": [
+          "Accounts"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
@@ -19243,53 +19320,6 @@
           {
             "in": "path",
             "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/accounts/signer/address": {
-      "get": {
-        "operationId": "GetSignerIdByAddress",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SignerIdResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "tags": [
-          "Accounts"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          },
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "addr",
             "required": true,
             "schema": {
               "type": "string"

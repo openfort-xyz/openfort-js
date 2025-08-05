@@ -421,7 +421,7 @@ export class EmbeddedWalletApi {
     return withOpenfortError<EmbeddedAccount[]>(async () => {
       const response = await this.backendApiClients.accountsApi.getAccountsV2(
         {
-          // accountType: AccountTypeEnum.SMART_ACCOUNT,
+          accountType: AccountTypeEnum.SMART_ACCOUNT,
         },
         {
           headers: {
