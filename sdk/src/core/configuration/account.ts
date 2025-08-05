@@ -12,6 +12,7 @@ export class Account {
     this.ownerAddress = account.ownerAddress;
     this.createdAt = account.createdAt;
     this.implementationType = account.implementationType;
+    this.type = account.type;
   }
 
   public readonly user: string;
@@ -31,6 +32,9 @@ export class Account {
   public readonly createdAt?: number;
 
   public readonly implementationType?: string;
+
+  // legacy field for backward compatibility
+  public readonly type?: string;
 
   save(storage: IStorage): void {
     storage.save(StorageKeys.ACCOUNT, JSON.stringify({

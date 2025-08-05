@@ -29,7 +29,7 @@ export const personalSign = async ({
 
   return await signMessage(
     hashMessage(hexToString(message as `0x${string}`)),
-    account.implementationType!,
+    (account.implementationType || account.type)!,
     Number(account.chainId),
     signer,
     fromAddress,

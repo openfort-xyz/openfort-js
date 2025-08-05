@@ -352,7 +352,7 @@ export class EmbeddedWalletApi {
     const typedDataHash = _TypedDataEncoder.hash(domain, typesWithoutDomain, message);
     return await signMessage(
       typedDataHash,
-      account.implementationType!,
+      (account.implementationType || account.type)!,
       Number(account.chainId),
       signer,
       account.address,

@@ -438,6 +438,8 @@ export type EmbeddedAccount = {
   ownerAddress?: string;
   createdAt?: number;
   implementationType?: string;
+  /** @deprecated  */
+  type?: string;
   accountType: AccountTypeEnum;
   chainId?: number;
 };

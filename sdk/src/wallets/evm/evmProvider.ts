@@ -195,7 +195,7 @@ export class EvmProvider implements Provider {
           method: request.method,
           params: request.params || [],
           signer,
-          implementationType: account.implementationType!,
+          implementationType: (account.implementationType || account.type)!,
           rpcProvider,
 
         });
