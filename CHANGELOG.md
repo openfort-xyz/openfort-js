@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for create and recover embedded signer
 - Fix personal_sign for smart account
 - Fix timeout with iframe when doing getEthereumProvider
+- Support signature verifications for un-deployed accounts
 
 ## [0.9.5] - 2025-07-30
 ### Fix
