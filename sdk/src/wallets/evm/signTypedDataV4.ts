@@ -1,4 +1,5 @@
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
+import { Account } from 'core/configuration/account';
 import { signMessage } from './walletHelpers';
 import { TypedDataPayload } from './types';
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError';
@@ -10,6 +11,7 @@ export type SignTypedDataV4Params = {
   rpcProvider: StaticJsonRpcProvider;
   method: string;
   params: Array<any>;
+  account: Account;
 };
 
 const REQUIRED_TYPED_DATA_PROPERTIES = ['types', 'domain', 'primaryType', 'message'];
@@ -65,6 +67,7 @@ export const signTypedDataV4 = async ({
   signer,
   implementationType,
   rpcProvider,
+  account,
 }: SignTypedDataV4Params): Promise<string> => {
   const fromAddress: string = params[0];
   const typedDataParam: string | object = params[1];
@@ -84,13 +87,16 @@ export const signTypedDataV4 = async ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { _TypedDataEncoder } = await import('@ethersproject/hash');
   const typedDataHash = _TypedDataEncoder.hash(typedData.domain, types, typedData.message);
-  const signature = await signMessage(
-    typedDataHash,
+  const signature = await signMessage({
+    hash: typedDataHash,
     implementationType,
     chainId,
     signer,
-    fromAddress,
-  );
+    address: fromAddress,
+    ownerAddress: account.ownerAddress,
+    factoryAddress: account.factoryAddress,
+    salt: account.salt,
+  });
 
   return signature;
 };

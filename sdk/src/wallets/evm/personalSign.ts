@@ -27,11 +27,14 @@ export const personalSign = async ({
   }
   const { hashMessage } = await import('@ethersproject/hash');
 
-  return await signMessage(
-    hashMessage(hexToString(message as `0x${string}`)),
-    (account.implementationType || account.type)!,
-    Number(account.chainId),
+  return await signMessage({
+    hash: hashMessage(hexToString(message as `0x${string}`)),
+    implementationType: (account.implementationType || account.type)!,
+    chainId: Number(account.chainId),
     signer,
-    fromAddress,
-  );
+    address: fromAddress,
+    salt: account.salt,
+    factoryAddress: account.factoryAddress,
+    ownerAddress: account.ownerAddress,
+  });
 };

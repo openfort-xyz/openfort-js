@@ -434,14 +434,16 @@ export type EmbeddedAccount = {
   id: string;
   chainType: ChainTypeEnum;
   address: string;
-  /** @deprecated  */
-  ownerAddress?: string;
   createdAt?: number;
   implementationType?: string;
-  /** @deprecated  */
-  type?: string;
+  factoryAddress?: string;
+  salt?: string;
   accountType: AccountTypeEnum;
   chainId?: number;
+  /** @deprecated  */
+  ownerAddress?: string;
+  /** @deprecated  */
+  type?: string;
 };
 
 export type EmbeddedAccountConfigureParams = {

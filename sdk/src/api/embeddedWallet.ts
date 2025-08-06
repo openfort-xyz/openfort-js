@@ -350,13 +350,16 @@ export class EmbeddedWalletApi {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { _TypedDataEncoder } = await import('@ethersproject/hash');
     const typedDataHash = _TypedDataEncoder.hash(domain, typesWithoutDomain, message);
-    return await signMessage(
-      typedDataHash,
-      (account.implementationType || account.type)!,
-      Number(account.chainId),
+    return await signMessage({
+      hash: typedDataHash,
+      implementationType: (account.implementationType || account.type)!,
+      chainId: Number(account.chainId),
       signer,
-      account.address,
-    );
+      address: account.address,
+      ownerAddress: account.ownerAddress,
+      factoryAddress: account.factoryAddress,
+      salt: account.salt,
+    });
   }
 
   async exportPrivateKey(): Promise<string> {

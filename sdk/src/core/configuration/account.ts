@@ -9,9 +9,11 @@ export class Account {
     this.address = account.address;
     this.accountType = account.accountType;
     this.chainId = account.chainId;
-    this.ownerAddress = account.ownerAddress;
     this.createdAt = account.createdAt;
     this.implementationType = account.implementationType;
+    this.factoryAddress = account.factoryAddress;
+    this.salt = account.salt;
+    this.ownerAddress = account.ownerAddress;
     this.type = account.type;
   }
 
@@ -28,6 +30,10 @@ export class Account {
   public readonly chainId?: number;
 
   public readonly ownerAddress?: string;
+
+  public readonly factoryAddress?: string;
+
+  public readonly salt?: string;
 
   public readonly createdAt?: number;
 
@@ -47,6 +53,8 @@ export class Account {
       ownerAddress: this.ownerAddress,
       createdAt: this.createdAt,
       implementationType: this.implementationType,
+      factoryAddress: this.factoryAddress,
+      salt: this.salt,
     }));
   }
 

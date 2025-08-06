@@ -67,6 +67,8 @@ export class EmbeddedSigner implements Signer {
           createdAt: response.data.data[0].createdAt,
           implementationType: response.data.data[0].smartAccount?.implementationType,
           chainId: response.data.data[0].chainId,
+          factoryAddress: response.data.data[0].smartAccount?.factoryAddress,
+          salt: response.data.data[0].smartAccount?.salt,
         });
         account.save(this.storage);
         this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.data[0].address);
@@ -101,6 +103,8 @@ export class EmbeddedSigner implements Signer {
         createdAt: response.data.createdAt,
         implementationType: response.data.smartAccount?.implementationType,
         chainId: response.data.chainId,
+        salt: response.data.smartAccount?.salt,
+        factoryAddress: response.data.smartAccount?.factoryAddress,
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
@@ -168,6 +172,8 @@ export class EmbeddedSigner implements Signer {
         createdAt: response.data.createdAt,
         implementationType: response.data.smartAccount?.implementationType,
         chainId: response.data.chainId,
+        salt: response.data.smartAccount?.salt,
+        factoryAddress: response.data.smartAccount?.factoryAddress,
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
@@ -216,6 +222,8 @@ export class EmbeddedSigner implements Signer {
         createdAt: response.data.createdAt,
         implementationType: response.data.smartAccount?.implementationType,
         chainId: response.data.chainId,
+        salt: response.data.smartAccount?.salt,
+        factoryAddress: response.data.smartAccount?.factoryAddress,
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);

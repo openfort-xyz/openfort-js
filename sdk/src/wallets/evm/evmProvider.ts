@@ -197,7 +197,7 @@ export class EvmProvider implements Provider {
           signer,
           implementationType: (account.implementationType || account.type)!,
           rpcProvider,
-
+          account,
         });
       }
       case 'personal_sign': {
