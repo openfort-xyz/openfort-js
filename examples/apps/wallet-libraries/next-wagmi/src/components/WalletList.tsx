@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { openfortInstance } from '../openfort';
 import { AccountTypeEnum, EmbeddedAccount } from '@openfort/openfort-js';
 import { useAccount, useChainId } from 'wagmi';
-import { configureEmbeddedSigner, createEmbeddedSigner, recoverEmbeddedSigner } from '../lib/utils';
+import { createEmbeddedSigner, recoverEmbeddedSigner } from '../lib/utils';
 
 interface WalletListProps {
   isVisible: boolean;
@@ -86,21 +86,6 @@ function WalletList({ isVisible }: WalletListProps) {
     }
   };
 
-  const handleConfigureWallet = async () => {
-    setIsCreating(true);
-    setError(null);
-    
-    try {
-      await configureEmbeddedSigner(chainId);
-      await loadWallets();
-    } catch (err) {
-      console.error('Error creating wallet:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create wallet');
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
   const handleRecoverWallet = async (walletId: string) => {
     setIsRecovering(walletId);
     setError(null);
@@ -170,13 +155,6 @@ function WalletList({ isVisible }: WalletListProps) {
         disabled={isCreating || isRecovering !== null}
       >
         {isCreating ? 'Creating...' : 'Create New Wallet'}
-      </button>
-      <button
-        className="button create-wallet-button"
-        onClick={handleConfigureWallet}
-        disabled={isCreating || isRecovering !== null}
-      >
-        {isCreating ? 'Configuring...' : 'Configure Wallet'}
       </button>
     </div>
   );
