@@ -1,4 +1,3 @@
-import { Signer } from '../wallets/isigner';
 import { ShieldAuthentication } from '../wallets/types';
 
 export enum EmbeddedState {
@@ -11,14 +10,14 @@ export enum EmbeddedState {
 
 export enum OpenfortEvents {
   LOGGED_OUT = 'loggedOut',
-  SIGNER_CONFIGURED = 'signerConfigured',
+  SWITCH_ACCOUNT = 'switchAccount',
   TOKEN_REFRESHED = 'tokenRefreshed',
 }
 
 export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.LOGGED_OUT]: [];
-  [OpenfortEvents.SIGNER_CONFIGURED]: [Signer];
   [OpenfortEvents.TOKEN_REFRESHED]: [];
+  [OpenfortEvents.SWITCH_ACCOUNT]: [string];
 }
 
 export type SessionKey = {
@@ -420,21 +419,49 @@ export enum CodeChallengeMethodEnum {
   S256 = 'S256',
 }
 
+export enum AccountTypeEnum {
+  EOA = 'Externally Owned Account',
+  SMART_ACCOUNT = 'Smart Account',
+}
+
+export enum ChainTypeEnum {
+  EVM = 'EVM',
+  SVM = 'SVM',
+}
+
 export type EmbeddedAccount = {
-  owner: {
-    id: string;
-  };
-  chainType: 'solana' | 'ethereum';
+  user: string;
+  id: string;
+  chainType: ChainTypeEnum;
   address: string;
-  /** @deprecated  */
-  ownerAddress?: string;
   createdAt?: number;
   implementationType?: string;
-  chainId?: string;
+  factoryAddress?: string;
+  salt?: string;
+  accountType: AccountTypeEnum;
+  chainId?: number;
+  /** @deprecated  */
+  ownerAddress?: string;
+  /** @deprecated  */
+  type?: string;
 };
 
 export type EmbeddedAccountConfigureParams = {
   chainId?: number;
+  shieldAuthentication?: ShieldAuthentication;
+  recoveryParams?: RecoverParams;
+};
+
+export type EmbeddedAccountRecoverParams = {
+  account: string;
+  shieldAuthentication?: ShieldAuthentication;
+  recoveryParams?: RecoverParams;
+};
+
+export type EmbeddedAccountCreateParams = {
+  accountType: AccountTypeEnum;
+  chainType: ChainTypeEnum;
+  chainId: number;
   shieldAuthentication?: ShieldAuthentication;
   recoveryParams?: RecoverParams;
 };

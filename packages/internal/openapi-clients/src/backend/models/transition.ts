@@ -15,43 +15,33 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Signer } from './signer';
+import { TransactionStatus } from './transaction-status';
 
 /**
- * 
+ * A transition represents a change in the status of a transaction intent.
  * @export
- * @interface ListResponseSigner
+ * @interface Transition
  */
-export interface ListResponseSigner {
+export interface Transition {
     /**
      * 
-     * @type {string}
-     * @memberof ListResponseSigner
+     * @type {TransactionStatus}
+     * @memberof Transition
      */
-    'url': string;
+    'fromStatus': TransactionStatus;
     /**
      * 
-     * @type {Array<Signer>}
-     * @memberof ListResponseSigner
+     * @type {TransactionStatus}
+     * @memberof Transition
      */
-    'data': Array<Signer>;
-    /**
-     * 
-     * @type {number}
-     * @memberof ListResponseSigner
-     */
-    'start': number;
+    'toStatus': TransactionStatus;
     /**
      * 
      * @type {number}
-     * @memberof ListResponseSigner
+     * @memberof Transition
      */
-    'end': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof ListResponseSigner
-     */
-    'total': number;
+    'at': number;
 }
+
+
 

@@ -15,59 +15,62 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AccountResponseExpandable } from './account-response-expandable';
-// May contain unused imports in some cases
-// @ts-ignore
 import { SortOrder } from './sort-order';
 
 /**
  * 
  * @export
- * @interface AccountListQueries
+ * @interface AccountListQueriesV2
  */
-export interface AccountListQueries {
+export interface AccountListQueriesV2 {
     /**
      * Specifies the maximum number of records to return.
      * @type {number}
-     * @memberof AccountListQueries
+     * @memberof AccountListQueriesV2
      */
     'limit'?: number;
     /**
      * Specifies the offset for the first records to return.
      * @type {number}
-     * @memberof AccountListQueries
+     * @memberof AccountListQueriesV2
      */
     'skip'?: number;
     /**
      * 
      * @type {SortOrder}
-     * @memberof AccountListQueries
+     * @memberof AccountListQueriesV2
      */
     'order'?: SortOrder;
     /**
      * The chain ID. Must be a [supported chain](/development/chains).
      * @type {number}
-     * @memberof AccountListQueries
+     * @memberof AccountListQueriesV2
      */
     'chainId'?: number;
     /**
-     * Specifies the unique player ID (starts with pla_)
+     * Specifies the unique user ID (starts with pla_)
      * @type {string}
-     * @memberof AccountListQueries
+     * @memberof AccountListQueriesV2
      */
-    'player'?: string;
+    'user'?: string;
     /**
-     * Specifies the address of the account
+     * Specifies the type of chain
      * @type {string}
-     * @memberof AccountListQueries
+     * @memberof AccountListQueriesV2
+     */
+    'chainType'?: string;
+    /**
+     * Specifies the type of account
+     * @type {string}
+     * @memberof AccountListQueriesV2
+     */
+    'accountType'?: string;
+    /**
+     * Specifies the account address
+     * @type {string}
+     * @memberof AccountListQueriesV2
      */
     'address'?: string;
-    /**
-     * Specifies the fields to expand in the response.
-     * @type {Array<AccountResponseExpandable>}
-     * @memberof AccountListQueries
-     */
-    'expand'?: Array<AccountResponseExpandable>;
 }
 
 

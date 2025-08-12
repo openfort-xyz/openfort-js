@@ -1,17 +1,45 @@
-import { RecoveryMethod, ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
+import { AccountTypeEnum, ChainTypeEnum, ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
 import { openfortInstance } from "../openfort";
 import axios from 'axios';
+import { baseSepolia, sepolia } from "viem/chains";
 
-export const configureEmbeddedSigner = async (chainId: number, password?: string) => {
+export const recoverEmbeddedSigner = async (account: string, chainId: number) => {
   const shieldAuth: ShieldAuthentication = {
     auth: ShieldAuthType.OPENFORT,
     token: (await openfortInstance.getAccessToken())!,
     encryptionSession: await getEncryptionSession(),
   };
-  await openfortInstance.embeddedWallet.configure({
-    chainId,
+  await openfortInstance.embeddedWallet.recover({
+    account: account,
     shieldAuthentication: shieldAuth,
-    recoveryParams: password ? { recoveryMethod: RecoveryMethod.PASSWORD, password } : { recoveryMethod: RecoveryMethod.AUTOMATIC }
+    // not defining recoveryParams will default to automatic recovery
+  });
+
+  // Announce the provider so wagmi can discover it
+  await openfortInstance.embeddedWallet.getEthereumProvider({
+    policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
+    announceProvider: true
+  });
+};
+
+export const createEmbeddedSigner = async (chainId: number) => {
+  const shieldAuth: ShieldAuthentication = {
+    auth: ShieldAuthType.OPENFORT,
+    token: (await openfortInstance.getAccessToken())!,
+    encryptionSession: await getEncryptionSession(),
+  };
+  await openfortInstance.embeddedWallet.create({
+    chainId: baseSepolia.id,
+    accountType: AccountTypeEnum.SMART_ACCOUNT,
+    chainType: ChainTypeEnum.EVM,
+    shieldAuthentication: shieldAuth,
+    // not defining recoveryParams will default to automatic recovery
+  });
+
+  // Announce the provider so wagmi can discover it
+  await openfortInstance.embeddedWallet.getEthereumProvider({
+    policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
+    announceProvider: true
   });
 };
 
@@ -40,4 +68,3 @@ export const getURL = () => {
 
   return url;
 };
-

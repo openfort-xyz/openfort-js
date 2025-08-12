@@ -1,4 +1,4 @@
-import { http, cookieStorage, createConfig, createStorage } from 'wagmi'
+import { http, createConfig, createStorage, cookieStorage } from 'wagmi'
 import { baseSepolia, sepolia } from 'wagmi/chains'
 import { injected, coinbaseWallet } from 'wagmi/connectors'
 

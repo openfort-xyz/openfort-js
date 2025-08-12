@@ -65,7 +65,7 @@ const formatSessionRequest = (
   whitelist?: string[],
   player?: string,
   limit?: number,
-  externalOwnerAddress?: string,
+  account?: string,
 ): CreateSessionRequest => {
   const request: CreateSessionRequest = {
     address,
@@ -75,10 +75,10 @@ const formatSessionRequest = (
     optimistic,
     whitelist,
     player,
+    account,
   };
 
   if (policyId) request.policy = policyId;
-  if (externalOwnerAddress) request.externalOwnerAddress = externalOwnerAddress;
   if (limit) request.limit = limit;
 
   return request;
@@ -129,7 +129,7 @@ const buildOpenfortTransactions = async (
 
   const sessionRequest = formatSessionRequest(
     sessionAddress,
-    account.chainId,
+    account.chainId!,
     now,
     expiry,
     policyId,
@@ -137,6 +137,7 @@ const buildOpenfortTransactions = async (
     whitelist,
     authentication.player,
     limit,
+    account.id,
   );
   return withOpenfortError<SessionResponse>(async () => {
     const response = await backendApiClients.sessionsApi.createSession(
@@ -200,7 +201,7 @@ export const registerSession = async ({
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature: string;
     // zkSync based chains need a different signature
-    if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId)) {
+    if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId!)) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false);
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash);

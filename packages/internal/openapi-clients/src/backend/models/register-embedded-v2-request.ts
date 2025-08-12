@@ -13,33 +13,24 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { ShamirParams } from './shamir-params';
 
 /**
  * 
  * @export
- * @interface CreateSignerRequest
+ * @interface RegisterEmbeddedV2Request
  */
-export interface CreateSignerRequest {
+export interface RegisterEmbeddedV2Request {
     /**
      * 
      * @type {string}
-     * @memberof CreateSignerRequest
+     * @memberof RegisterEmbeddedV2Request
      */
-    'signerType': string;
+    'account': string;
     /**
      * 
      * @type {string}
-     * @memberof CreateSignerRequest
+     * @memberof RegisterEmbeddedV2Request
      */
-    'account'?: string;
-    /**
-     * 
-     * @type {ShamirParams}
-     * @memberof CreateSignerRequest
-     */
-    'params'?: ShamirParams;
+    'share': string;
 }
 

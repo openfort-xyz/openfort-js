@@ -1,36 +1,44 @@
-import { UnionOmit } from '../../utils/helpers';
 import { TypedDataPayload } from './types';
 import { Signer } from '../isigner';
 import { AccountType } from '../../types/types';
 
-export const getSignedTypedData = async (
-  typedData: UnionOmit<TypedDataPayload, 'primaryType'>,
-  accountType: string,
+type SignMessageParameters = {
+  hash: string,
+  implementationType: string,
   chainId: number,
   signer: Signer,
-  evmAddress: string,
+  address: string,
+  factoryAddress?: string
+  ownerAddress?: string
+  salt?: string
+};
+const erc6492MagicBytes = '0x6492649264926492649264926492649264926492649264926492649264926492' as const;
+
+export const signMessage = async (
+  parameters: SignMessageParameters,
 ): Promise<string> => {
-  // Ethers auto-generates the EIP712Domain type in the TypedDataEncoder, and so it needs to be removed
-  const types = { ...typedData.types };
-  // @ts-ignore
-  delete types.EIP712Domain;
-
-  // Hash the EIP712 payload and generate the complete payload
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { _TypedDataEncoder } = await import('@ethersproject/hash');
-  let typedDataHash = _TypedDataEncoder.hash(typedData.domain, types, typedData.message);
-
+  const {
+    hash,
+    signer,
+    ownerAddress,
+    factoryAddress,
+    salt,
+    chainId,
+    address,
+    implementationType,
+  } = parameters;
+  let typedDataHash = hash;
   if ([
     AccountType.UPGRADEABLE_V5,
     AccountType.UPGRADEABLE_V6,
     AccountType.ZKSYNC_UPGRADEABLE_V1,
     AccountType.ZKSYNC_UPGRADEABLE_V2,
-  ].includes(accountType as AccountType)) {
+  ].includes(implementationType as AccountType)) {
     const updatedDomain: TypedDataPayload['domain'] = {
       name: 'Openfort',
       version: '0.5',
       chainId: Number(chainId),
-      verifyingContract: evmAddress,
+      verifyingContract: address,
     };
     const updatedTypes = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -39,10 +47,32 @@ export const getSignedTypedData = async (
     const updatedMessage = {
       hashedMessage: typedDataHash,
     };
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { _TypedDataEncoder } = await import('@ethersproject/hash');
     typedDataHash = _TypedDataEncoder.hash(updatedDomain, updatedTypes, updatedMessage);
   }
 
-  const ethsigNoType = await signer.sign(typedDataHash, false, false);
-
-  return ethsigNoType;
+  const signature = await signer.sign(typedDataHash, false, false);
+  if (factoryAddress && salt) {
+    if ([
+      AccountType.UPGRADEABLE_V5,
+      AccountType.UPGRADEABLE_V6,
+    ].includes(implementationType as AccountType)) {
+      const { id } = await import('@ethersproject/hash');
+      const { defaultAbiCoder } = await import('@ethersproject/abi');
+      const { hexConcat } = await import('@ethersproject/bytes');
+      const createAccountSelector = id('createAccountWithNonce(address,bytes32,bool)').slice(0, 10);
+      const encodedParams = defaultAbiCoder.encode(
+        ['address', 'bytes32', 'bool'],
+        [ownerAddress, salt, false],
+      );
+      const factoryCalldata = hexConcat([createAccountSelector, encodedParams]);
+      const metadata = defaultAbiCoder.encode(
+        ['address', 'bytes', 'bytes'],
+        [factoryAddress, factoryCalldata, signature],
+      );
+      return hexConcat([metadata, erc6492MagicBytes]);
+    }
+  }
+  return signature;
 };

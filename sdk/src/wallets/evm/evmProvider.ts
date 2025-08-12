@@ -2,6 +2,7 @@ import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type BackendApiClients } from '@openfort/openapi-clients';
 import { GrantPermissionsParameters } from 'types';
 import { debugLog } from 'utils/debug';
+import { EmbeddedSigner } from 'wallets/embedded';
 import { Authentication } from '../../core/configuration/authentication';
 import {
   Provider,
@@ -28,7 +29,7 @@ import { numberToHex } from '../../utils/crypto';
 
 export type EvmProviderInput = {
   storage: IStorage;
-  signer?: Signer;
+  ensureSigner: () => Promise<EmbeddedSigner>;
   chains?: Record<number, string>
   account?: Account;
   authentication?: Authentication;
@@ -65,17 +66,20 @@ export class EvmProvider implements Provider {
 
   public readonly isOpenfort: boolean = true;
 
+  readonly #ensureSignerFn: () => Promise<EmbeddedSigner>;
+
   constructor({
     storage,
-    signer,
     backendApiClients,
     openfortEventEmitter,
     policyId,
+    ensureSigner,
     chains,
     validateAndRefreshSession,
   }: EvmProviderInput) {
+    this.#ensureSignerFn = ensureSigner;
+
     this.#storage = storage;
-    this.#signer = signer;
 
     this.#customChains = chains;
 
@@ -90,24 +94,23 @@ export class EvmProvider implements Provider {
     this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>();
 
     openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout);
-    openfortEventEmitter.on(OpenfortEvents.SIGNER_CONFIGURED, (configuredSigner: Signer) => {
-      this.#signer = configuredSigner;
-    });
+    openfortEventEmitter.on(OpenfortEvents.SWITCH_ACCOUNT, this.#handleSwitchAccount);
   }
 
-  #ensureSigner(): Signer {
+  #ensureSigner = async (): Promise<Signer> => {
     if (!this.#signer) {
-      throw new JsonRpcError(
-        ProviderErrorCode.UNAUTHORIZED,
-        'No signer configured. Please configure an embedded wallet first.',
-      );
+      this.#signer = await this.#ensureSignerFn();
     }
     return this.#signer;
-  }
+  };
 
   #handleLogout = async () => {
     this.#signer = undefined;
     this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
+  };
+
+  #handleSwitchAccount = async (address: string) => {
+    this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [address]);
   };
 
   async getRpcProvider(): Promise<StaticJsonRpcProvider> {
@@ -136,7 +139,7 @@ export class EvmProvider implements Provider {
       case 'eth_requestAccounts': {
         const account = await Account.fromStorage(this.#storage);
         if (account) {
-          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: numberToHex(account.chainId) });
+          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: String(account.chainId) });
           return [account.address];
         }
 
@@ -192,20 +195,17 @@ export class EvmProvider implements Provider {
           method: request.method,
           params: request.params || [],
           signer,
-          accountType: account.type,
+          implementationType: (account.implementationType || account.type)!,
           rpcProvider,
-
+          account,
         });
       }
       case 'personal_sign': {
-        debugLog('[personal_sign] request:', request);
         const account = await Account.fromStorage(this.#storage);
-        debugLog('[personal_sign] account:', account);
-        const signer = await this.#ensureSigner();
-        debugLog('[personal_sign] signer:', signer);
         if (!account) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
         }
+        const signer = await this.#ensureSigner();
         await this.#validateAndRefreshSession();
         debugLog('[personal_sign] validateAndRefreshSession:');
 

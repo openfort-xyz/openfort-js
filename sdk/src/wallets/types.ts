@@ -5,6 +5,10 @@ export enum Event {
   LOADED = 'loaded',
   CONFIGURE = 'configure',
   CONFIGURED = 'configured',
+  RECOVER = 'recover',
+  RECOVERED = 'recovered',
+  CREATE = 'create',
+  CREATED = 'created',
   UPDATE_AUTHENTICATION = 'update-authentication',
   AUTHENTICATION_UPDATED = 'authentication-updated',
   SIGN = 'sign',
@@ -134,6 +138,142 @@ export class ConfigureRequest implements IEventRequest {
     this.shieldAPIKey = shieldAPIKey;
     this.accessToken = accessToken;
     this.playerID = playerID;
+    this.thirdPartyProvider = thirdPartyProvider;
+    this.thirdPartyTokenType = thirdPartyTokenType;
+    this.encryptionKey = encryptionKey;
+    this.openfortURL = openfortURL;
+    this.shieldURL = shieldURL;
+    this.encryptionPart = encryptionPart;
+    this.encryptionSession = encryptionSession;
+  }
+}
+
+export class CreateRequest implements IEventRequest {
+  uuid: string;
+
+  action: Event = Event.CREATE;
+
+  accountType: string;
+
+  chainType: string;
+
+  chainId: number | null;
+
+  recovery: ShieldAuthentication | null;
+
+  publishableKey: string;
+
+  shieldAPIKey: string;
+
+  accessToken: string | null;
+
+  encryptionKey: string | null;
+
+  encryptionPart: string | null;
+
+  encryptionSession: string | null;
+
+  openfortURL: string;
+
+  shieldURL: string;
+
+  thirdPartyProvider: string | null;
+
+  thirdPartyTokenType: string | null;
+
+  playerID: string | null;
+
+  constructor(
+    uuid: string,
+    accountType: string,
+    chainType: string,
+    chainId: number,
+    recovery: ShieldAuthentication,
+    publishableKey: string,
+    shieldAPIKey: string,
+    accessToken: string,
+    playerID: string,
+    openfortURL: string,
+    shieldURL: string,
+    encryptionKey: string | null = null,
+    thirdPartyProvider: string | null = null,
+    thirdPartyTokenType: string | null = null,
+    encryptionPart: string | null = null,
+    encryptionSession: string | null = null,
+  ) {
+    this.uuid = uuid;
+    this.accountType = accountType;
+    this.chainType = chainType;
+    this.chainId = chainId;
+    this.recovery = recovery;
+    this.publishableKey = publishableKey;
+    this.shieldAPIKey = shieldAPIKey;
+    this.accessToken = accessToken;
+    this.playerID = playerID;
+    this.thirdPartyProvider = thirdPartyProvider;
+    this.thirdPartyTokenType = thirdPartyTokenType;
+    this.encryptionKey = encryptionKey;
+    this.openfortURL = openfortURL;
+    this.shieldURL = shieldURL;
+    this.encryptionPart = encryptionPart;
+    this.encryptionSession = encryptionSession;
+  }
+}
+
+export class RecoverRequest implements IEventRequest {
+  uuid: string;
+
+  action: Event = Event.RECOVER;
+
+  recovery: ShieldAuthentication | null;
+
+  publishableKey: string;
+
+  shieldAPIKey: string;
+
+  accessToken: string | null;
+
+  encryptionKey: string | null;
+
+  encryptionPart: string | null;
+
+  encryptionSession: string | null;
+
+  openfortURL: string;
+
+  shieldURL: string;
+
+  thirdPartyProvider: string | null;
+
+  thirdPartyTokenType: string | null;
+
+  playerID: string | null;
+
+  account: string;
+
+  constructor(
+    uuid: string,
+    recovery: ShieldAuthentication,
+    publishableKey: string,
+    shieldAPIKey: string,
+    accessToken: string,
+    playerID: string,
+    account: string,
+    openfortURL: string,
+    shieldURL: string,
+    encryptionKey: string | null = null,
+    thirdPartyProvider: string | null = null,
+    thirdPartyTokenType: string | null = null,
+    encryptionPart: string | null = null,
+    encryptionSession: string | null = null,
+  ) {
+    this.uuid = uuid;
+    this.recovery = recovery;
+    this.publishableKey = publishableKey;
+    this.shieldAPIKey = shieldAPIKey;
+    this.accessToken = accessToken;
+    this.playerID = playerID;
+    this.account = account;
     this.thirdPartyProvider = thirdPartyProvider;
     this.thirdPartyTokenType = thirdPartyTokenType;
     this.encryptionKey = encryptionKey;
@@ -293,8 +433,8 @@ export interface IErrorResponse extends IEventResponse {
 export interface IConfigureResponse extends IEventResponse {
   deviceID: string;
   address: string;
-  chainId: number;
-  accountType: string;
+  chainId?: number;
+  accountType?: string;
 }
 
 export type IUpdateAuthenticationResponse = IEventResponse;
@@ -341,15 +481,13 @@ export class ConfigureResponse implements IConfigureResponse {
 
   success: boolean;
 
+  account: string;
+
   deviceID: string;
 
   address: string;
 
   chainId: number;
-
-  accountType: string;
-
-  ownerAddress: string;
 
   action: Event = Event.CONFIGURED;
 
@@ -358,19 +496,75 @@ export class ConfigureResponse implements IConfigureResponse {
   constructor(
     uuid: string,
     deviceID: string,
-    accountType: string,
     chainId: number,
     address: string,
-    ownerAddress: string,
+    account: string,
   ) {
     this.success = true;
     this.deviceID = deviceID;
     this.uuid = uuid;
-    this.accountType = accountType;
     this.chainId = chainId;
     this.address = address;
-    this.ownerAddress = ownerAddress;
+    this.account = account;
     this.version = null;
+  }
+}
+
+export class CreateResponse implements IConfigureResponse {
+  uuid: string;
+
+  account: string;
+
+  success: boolean;
+
+  deviceID: string;
+
+  address: string;
+
+  action: Event = Event.CREATED;
+
+  version = VERSION;
+
+  constructor(
+    uuid: string,
+    account: string,
+    deviceID: string,
+    address: string,
+  ) {
+    this.success = true;
+    this.account = account;
+    this.deviceID = deviceID;
+    this.uuid = uuid;
+    this.address = address;
+  }
+}
+
+export class RecoverResponse implements IConfigureResponse {
+  uuid: string;
+
+  account: string;
+
+  success: boolean;
+
+  deviceID: string;
+
+  address: string;
+
+  action: Event = Event.RECOVERED;
+
+  version = VERSION;
+
+  constructor(
+    uuid: string,
+    account: string,
+    deviceID: string,
+    address: string,
+  ) {
+    this.success = true;
+    this.account = account;
+    this.deviceID = deviceID;
+    this.uuid = uuid;
+    this.address = address;
   }
 }
 
@@ -393,6 +587,8 @@ export class SwitchChainResponse implements ISwitchChainResponse {
 
   action: Event = Event.CHAIN_SWITCHED;
 
+  account: string | null;
+
   constructor(
     uuid: string,
     deviceID: string,
@@ -400,6 +596,7 @@ export class SwitchChainResponse implements ISwitchChainResponse {
     chainId: number,
     address: string,
     ownerAddress: string,
+    account: string,
   ) {
     this.success = true;
     this.deviceID = deviceID;
@@ -409,6 +606,7 @@ export class SwitchChainResponse implements ISwitchChainResponse {
     this.address = address;
     this.ownerAddress = ownerAddress;
     this.version = null;
+    this.account = account;
   }
 }
 
@@ -482,8 +680,11 @@ export class UpdateAuthenticationRequest implements IEventRequest {
 }
 
 export interface ShieldAuthentication {
-  // Whether its using Openfort (either third-party or not) or a custom provider to verify the access token
-  auth: ShieldAuthType;
+  /**
+   * Whether its using Openfort (either third-party or not) or a custom provider to verify the access token
+   * @deprecated this will be removed in the future, no longer needed
+   */
+  auth?: ShieldAuthType;
   // The auth token, either idToken or accessToken
   token: string;
   // When using a third party auth provider, the provider name

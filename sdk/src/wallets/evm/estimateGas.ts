@@ -38,7 +38,7 @@ const buildOpenfortTransactions = async (
       {
         createTransactionIntentRequest: {
           policy: policyId,
-          chainId: account.chainId,
+          chainId: account.chainId!,
           interactions,
         },
       },

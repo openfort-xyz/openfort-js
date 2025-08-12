@@ -120,10 +120,10 @@ export class Openfort {
               OpenfortErrorType.MISSING_SIGNER_ERROR,
             );
           }
-          const wallet = this.embeddedWalletInstance;
-          return (message: string | Uint8Array) => wallet.signMessage(
+          const signer = this.embeddedWalletInstance;
+          return (message: string | Uint8Array) => signer.signMessage(
             message,
-            { hashMessage: false, arrayifyMessage: false },
+            { hashMessage: true, arrayifyMessage: true },
           );
         },
       );

@@ -17,6 +17,8 @@ export {
   TransactionIntentResponse,
   RecoveryMethod,
   EmbeddedAccount,
+  AccountTypeEnum,
+  ChainTypeEnum,
 } from './types';
 export { ShieldAuthentication, ShieldAuthType } from '../wallets/types';
 export { IStorage as Storage } from '../storage/istorage';

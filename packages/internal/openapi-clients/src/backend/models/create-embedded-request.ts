@@ -17,46 +17,50 @@
 /**
  * 
  * @export
- * @interface SignerListQueries
+ * @interface CreateEmbeddedRequest
  */
-export interface SignerListQueries {
+export interface CreateEmbeddedRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateEmbeddedRequest
+     */
+    'accountType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateEmbeddedRequest
+     */
+    'chainType': string;
     /**
      * 
      * @type {number}
-     * @memberof SignerListQueries
+     * @memberof CreateEmbeddedRequest
      */
-    'limit'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof SignerListQueries
-     */
-    'skip'?: number;
+    'chainId': number;
     /**
      * 
      * @type {string}
-     * @memberof SignerListQueries
+     * @memberof CreateEmbeddedRequest
      */
-    'order'?: SignerListQueriesOrderEnum;
+    'address': string;
     /**
      * 
      * @type {string}
-     * @memberof SignerListQueries
+     * @memberof CreateEmbeddedRequest
      */
-    'signerType'?: string;
+    'privateKey'?: string;
     /**
      * 
      * @type {string}
-     * @memberof SignerListQueries
+     * @memberof CreateEmbeddedRequest
      */
-    'account'?: string;
+    'kmsKey'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateEmbeddedRequest
+     */
+    'share'?: string;
 }
-
-export const SignerListQueriesOrderEnum = {
-    Asc: 'asc',
-    Desc: 'desc'
-} as const;
-
-export type SignerListQueriesOrderEnum = typeof SignerListQueriesOrderEnum[keyof typeof SignerListQueriesOrderEnum];
-
 

@@ -80,5 +80,11 @@ export interface CreateSessionRequest {
      * @memberof CreateSessionRequest
      */
     'player'?: string;
+    /**
+     * ID of the Account this TransactionIntent is executed with, if one exists (starts with `acc_` or `dac_`).  When providing a Player and ChainID, you can omit this parameter.
+     * @type {string}
+     * @memberof CreateSessionRequest
+     */
+    'account'?: string;
 }
 

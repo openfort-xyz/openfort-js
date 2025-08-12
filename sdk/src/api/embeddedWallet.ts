@@ -4,7 +4,7 @@ import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
 import { SDKConfiguration } from '../core/config/config';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError';
-import { getSignedTypedData } from '../wallets/evm/walletHelpers';
+import { signMessage } from '../wallets/evm/walletHelpers';
 import { EvmProvider, Provider } from '../wallets/evm';
 import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -14,7 +14,11 @@ import {
   OpenfortEventMap,
   EmbeddedAccount,
   EmbeddedAccountConfigureParams,
+  EmbeddedAccountRecoverParams,
+  EmbeddedAccountCreateParams,
   OpenfortEvents,
+  ChainTypeEnum,
+  AccountTypeEnum,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { IframeManager } from '../wallets/iframeManager';
@@ -130,12 +134,7 @@ export class EmbeddedWalletApi {
     }
 
     debugLog('[HANDSHAKE DEBUG] Creating IframeManager instance');
-    const iframeManager = new IframeManager(configuration, this.storage, messenger);
-
-    debugLog('[HANDSHAKE DEBUG] Initializing IframeManager');
-    await iframeManager.initialize();
-    debugLog('[HANDSHAKE DEBUG] IframeManager initialized successfully');
-    return iframeManager;
+    return new IframeManager(configuration, this.storage, messenger);
   }
 
   /**
@@ -170,8 +169,7 @@ export class EmbeddedWalletApi {
 
   private async createSigner(): Promise<EmbeddedSigner> {
     const iframeManager = await this.getIframeManager();
-    const signer = new EmbeddedSigner(iframeManager, this.storage);
-    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
+    const signer = new EmbeddedSigner(iframeManager, this.storage, this.backendApiClients, this.eventEmitter);
     return signer;
   }
 
@@ -200,17 +198,14 @@ export class EmbeddedWalletApi {
     return iframe;
   }
 
-  async configure(params: EmbeddedAccountConfigureParams = {}): Promise<EmbeddedAccount> {
+  async configure(
+    params: EmbeddedAccountConfigureParams,
+  ): Promise<EmbeddedAccount> {
     await this.validateAndRefreshToken();
 
     const recoveryParams = params.recoveryParams ?? {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
-
-    const configuration = SDKConfiguration.fromStorage();
-    if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
 
     let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
@@ -221,29 +216,110 @@ export class EmbeddedWalletApi {
           : undefined,
       };
     }
-
-    const iframeManager = await this.getIframeManager();
-    const response = await iframeManager.configure({
+    const signer = await this.ensureSigner();
+    const account = await signer.configure({
       chainId: params.chainId,
       entropy,
     });
-    new Account(response.address, response.chainId, response.ownerAddress, response.accountType).save(this.storage);
-    const signer = new EmbeddedSigner(iframeManager, this.storage);
-    this.eventEmitter.emit(OpenfortEvents.SIGNER_CONFIGURED, signer);
+
     const auth = await Authentication.fromStorage(this.storage);
-    if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
     return {
-      chainId: response.chainId.toString(),
-      owner: { id: auth.player },
-      address: response.address,
-      ownerAddress: response.accountType === 'solana' ? undefined : response.ownerAddress,
-      chainType: response.accountType === 'solana' ? 'solana' : 'ethereum',
-      implementationType: response.accountType === 'solana' ? undefined : response.accountType,
+      id: account.id,
+      chainId: account.chainId,
+      user: auth!.player,
+      address: account.address,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
     };
   }
 
+  async create(
+    params: EmbeddedAccountCreateParams,
+  ): Promise<EmbeddedAccount> {
+    await this.validateAndRefreshToken();
+    const recoveryParams = params.recoveryParams ?? {
+      recoveryMethod: RecoveryMethod.AUTOMATIC,
+    };
+
+    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
+      entropy = {
+        encryptionSession: params.shieldAuthentication?.encryptionSession,
+        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
+          ? recoveryParams.password
+          : undefined,
+      };
+    }
+    const signer = await this.ensureSigner();
+
+    const account = await signer.create({
+      accountType: params.accountType,
+      chainType: params.chainType,
+      chainId: params.chainId,
+      entropy,
+    });
+    this.signer = null;
+    this.signerPromise = null;
+    const auth = await Authentication.fromStorage(this.storage);
+    return {
+      id: account.id,
+      chainId: account.chainId,
+      user: auth!.player,
+      address: account.address,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
+    };
+  }
+
+  async recover(
+    params: EmbeddedAccountRecoverParams,
+  ): Promise<EmbeddedAccount> {
+    await this.validateAndRefreshToken();
+
+    const recoveryParams = params.recoveryParams ?? {
+      recoveryMethod: RecoveryMethod.AUTOMATIC,
+    };
+
+    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
+      entropy = {
+        encryptionSession: params.shieldAuthentication?.encryptionSession,
+        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
+          ? recoveryParams.password
+          : undefined,
+      };
+    }
+    const signer = await this.ensureSigner();
+    const account = await signer.recover({
+      account: params.account,
+      entropy,
+    });
+    this.signer = null;
+    this.signerPromise = null;
+
+    const auth = await Authentication.fromStorage(this.storage);
+    return {
+      id: account.id,
+      chainId: account.chainId,
+      user: auth!.player,
+      address: account.address,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
+    };
+  }
+
+  /**
+   * Signs a personal message using the configured signer
+   * @param message The message to sign
+   * @param options Optional parameters to control message signing behavior
+   * @returns The signed message
+   */
   async signMessage(
     message: string | Uint8Array,
     options?: { hashMessage?: boolean; arrayifyMessage?: boolean },
@@ -267,14 +343,23 @@ export class EmbeddedWalletApi {
     if (!account) {
       throw new OpenfortError('No account found', OpenfortErrorType.MISSING_SIGNER_ERROR);
     }
-
-    return await getSignedTypedData(
-      { domain, types, message },
-      account.type,
-      Number(account.chainId),
+    // Hash the EIP712 payload and generate the complete payload
+    const typesWithoutDomain = { ...types };
+    delete typesWithoutDomain.EIP712Domain;
+    // Hash the EIP712 payload and generate the complete payload
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { _TypedDataEncoder } = await import('@ethersproject/hash');
+    const typedDataHash = _TypedDataEncoder.hash(domain, typesWithoutDomain, message);
+    return await signMessage({
+      hash: typedDataHash,
+      implementationType: (account.implementationType || account.type)!,
+      chainId: Number(account.chainId),
       signer,
-      account.address,
-    );
+      address: account.address,
+      ownerAddress: account.ownerAddress,
+      factoryAddress: account.factoryAddress,
+      salt: account.salt,
+    });
   }
 
   async exportPrivateKey(): Promise<string> {
@@ -315,12 +400,14 @@ export class EmbeddedWalletApi {
     }
 
     return {
-      chainId: account.chainId.toString(),
-      owner: { id: auth.player },
+      id: account.id,
+      chainId: account.chainId,
+      user: auth.player,
       address: account.address,
-      ownerAddress: account.type === 'solana' ? undefined : account.ownerAddress,
-      chainType: account.type === 'solana' ? 'solana' : 'ethereum',
-      implementationType: account.type === 'solana' ? undefined : account.type,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
     };
   }
 
@@ -335,8 +422,10 @@ export class EmbeddedWalletApi {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
     return withOpenfortError<EmbeddedAccount[]>(async () => {
-      const response = await this.backendApiClients.accountsApi.getAccounts(
-        undefined,
+      const response = await this.backendApiClients.accountsApi.getAccountsV2(
+        {
+          accountType: AccountTypeEnum.SMART_ACCOUNT,
+        },
         {
           headers: {
             authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
@@ -351,13 +440,15 @@ export class EmbeddedWalletApi {
       );
 
       return response.data.data.map((account) => ({
-        owner: { id: account.player.id },
-        chainType: 'ethereum',
+        user: account.user,
+        chainType: account.accountType as ChainTypeEnum,
+        id: account.id,
         address: account.address,
         ownerAddress: account.ownerAddress,
+        accountType: account.accountType as AccountTypeEnum,
         createdAt: account.createdAt,
-        implementationType: account.accountType,
-        chainId: account.chainId.toString(),
+        implementationType: account.smartAccount?.implementationType,
+        chainId: account.chainId,
       }));
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
@@ -401,20 +492,11 @@ export class EmbeddedWalletApi {
     const authentication = await Authentication.fromStorage(this.storage);
     const account = await Account.fromStorage(this.storage);
 
-    // Try to get signer if account exists, but don't fail if it doesn't
-    let signer;
-    try {
-      signer = account ? await this.ensureSigner() : undefined;
-    } catch (error) {
-      // Signer not available, provider will work without it for read operations
-      signer = undefined;
-    }
-
     if (!this.provider) {
       this.provider = new EvmProvider({
         storage: this.storage,
         openfortEventEmitter: this.eventEmitter,
-        signer: signer || undefined,
+        ensureSigner: this.ensureSigner.bind(this),
         account: account || undefined,
         authentication: authentication || undefined,
         backendApiClients: this.backendApiClients,
@@ -482,24 +564,14 @@ export class EmbeddedWalletApi {
 
     this.messagePoster = poster;
 
-    // Reset messenger to use new poster
-    if (this.messenger) {
-      this.messenger.destroy();
-      this.messenger = null;
-    }
+    if (this.messenger) this.messenger.destroy();
+    if (this.iframeManager) this.iframeManager.destroy();
 
-    // Reset iframe manager to use new poster
-    if (this.iframeManager) {
-      this.iframeManager.destroy();
-      this.iframeManager = null;
-      this.iframeManagerPromise = null;
-    }
-
-    // Reset signer to force recreation with new poster
-    if (this.signer) {
-      this.signer = null;
-      this.signerPromise = null;
-    }
+    this.signer = null;
+    this.signerPromise = null;
+    this.iframeManager = null;
+    this.iframeManagerPromise = null;
+    this.messenger = null;
   }
 
   private async handleTokenRefreshed(): Promise<void> {
@@ -516,36 +588,13 @@ export class EmbeddedWalletApi {
   }
 
   private async handleLogout(): Promise<void> {
-    // Clean up embedded signer when user logs out
-    if (this.signer) {
-      try {
-        await this.signer.disconnect();
-        debugLog('Logged out embedded signer');
-      } catch (error) {
-        debugLog('Failed to logout embedded signer:', error);
-      }
-      this.signer = null;
-      this.signerPromise = null;
-    }
+    this.provider = null;
+    this.messenger = null;
+    this.iframeManager = null;
+    this.iframeManagerPromise = null;
+    this.signer = null;
+    this.signerPromise = null;
     this.storage.remove(StorageKeys.ACCOUNT);
-
-    // Clean up iframe manager if it exists
-    if (this.iframeManager) {
-      this.iframeManager.destroy();
-      this.iframeManager = null;
-      this.iframeManagerPromise = null;
-    }
-
-    // Clean up messenger if it exists
-    if (this.messenger) {
-      this.messenger.destroy();
-      this.messenger = null;
-    }
-
-    // Clean up provider if it exists
-    if (this.provider) {
-      this.provider = null;
-    }
   }
 
   async onMessage(message: Record<string, unknown>): Promise<void> {

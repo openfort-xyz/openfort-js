@@ -17,14 +17,14 @@
 /**
  * 
  * @export
- * @interface DeviceCreateRequest
+ * @interface SignerIdResponse
  */
-export interface DeviceCreateRequest {
+export interface SignerIdResponse {
     /**
      * 
      * @type {string}
-     * @memberof DeviceCreateRequest
+     * @memberof SignerIdResponse
      */
-    'share': string;
+    'id': string;
 }
 

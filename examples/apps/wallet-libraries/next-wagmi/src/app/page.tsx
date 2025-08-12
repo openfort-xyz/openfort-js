@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useState, type FormEvent } from 'react'
-import { Address, type Hex, createWalletClient, custom, formatEther, getAddress, parseAbi, parseEther } from 'viem'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Address, type Hex, createPublicClient, createWalletClient, custom, formatEther, getAddress, http, parseAbi, parseEther } from 'viem'
 import {
   type BaseError,
   Connector,
   useAccount,
-  useAccountEffect,
   useBalance,
   useBlockNumber,
   useChainId,
@@ -23,32 +22,72 @@ import {
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
-  useSendCalls
+  useSendCalls,
+  useSignTypedData,
 } from 'wagmi'
-import { useRouter } from 'next/navigation'
 
 import { wagmiContractConfig } from './contracts'
 import { openfortInstance } from '../openfort'
 import { erc7715Actions, GrantPermissionsReturnType } from 'viem/experimental'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
+import { createSiweMessage, generateSiweNonce } from 'viem/siwe'
+import AuthModal from '../components/AuthModal'
+import WalletList from '../components/WalletList'
+import { useSearchParams } from 'next/navigation'
 
 export default function App() {
-  useAccountEffect({
-    onConnect(_data) {
-      // console.log('onConnect', data)
-    },
-    onDisconnect() {
-      // console.log('onDisconnect')
-    },
-  })
+  const searchParams = useSearchParams();
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const verifyEmail = async () => {
+      try {
+        const email = localStorage.getItem("email");
+        const state = searchParams.get('state');
+        if (
+          email && 
+          state
+        ) {
+          await openfortInstance.auth.verifyEmail({
+            email: email,
+            state: state,
+          });
+          localStorage.removeItem("email");
+          setVerificationStatus('Email verified successfully! You can now sign in.');
+          
+          // Clear the URL parameters
+          const url = new URL(window.location.href);
+          url.searchParams.delete('state');
+          window.history.replaceState({}, '', url.toString());
+        }
+      } catch (error) {
+        setVerificationStatus('Error verifying email. Please try again.');
+        console.log('Error verifying email:', error);
+      }
+    };
+    verifyEmail();
+  }, [searchParams]);
 
   return (
     <>
+      {verificationStatus && (
+        <div className="verification-banner">
+          {verificationStatus}
+          <button 
+            onClick={() => setVerificationStatus(null)}
+            className="verification-close"
+          >
+            ×
+          </button>
+        </div>
+      )}
       <Account />
       <Connect />
       <SwitchAccount />
       <SwitchChain />
+      <SIWE />
       <SignMessage />
+      <SignTypedData />
       <Connections />
       <BlockNumber />
       <Balance />
@@ -71,7 +110,7 @@ function Account() {
   })
 
   return (
-    <div>
+    <div className="account-container">
       <h2>Account</h2>
 
       <div>
@@ -85,6 +124,8 @@ function Account() {
       {account.status === 'connected' && (
         <button type="button" onClick={async() => {
           if (account.connector && account.connector.name.includes('Openfort')) {
+            // without explicit logout, openfort embedded wallet is just disconnected
+            // but the user is still authenticated
             await openfortInstance.auth.logout();
           }
           disconnect()
@@ -99,26 +140,56 @@ function Account() {
 
 function Connect() {
     const chainId = useChainId();
-    const {connectors, connect, error} = useConnect();
-    const router = useRouter()
-    const [activeConnector, setActiveConnector] =
-    useState<Connector | null>(null);
+    const {connectors, connect, error, status} = useConnect();
+    const [activeConnector, setActiveConnector] = useState<Connector | null>(null);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isInAuthFlow, setIsInAuthFlow] = useState(false);
   
     useEffect(() => {
-      console.log('Connect: useEffect', { error, activeConnector });
+      // Only show modal if we're not already in an auth flow
       if (
         error &&
         activeConnector?.name === 'Openfort' &&
-        error.message ===
-          'Unauthorized - must be authenticated and configured with a signer.'
+        error.message === 'Unauthorized - must be authenticated and configured with a signer.' &&
+        !isInAuthFlow
       ) {
-        router.push('/authentication');
+        setShowAuthModal(true);
+        setIsInAuthFlow(true);
       }
-    }, [error, activeConnector, router]);
+    }, [error, activeConnector, isInAuthFlow]);
+
+    useEffect(() => {
+      const checkAuthStatus = async () => {
+        try {
+          const user = await openfortInstance.user.get();
+          setIsAuthenticated(!!user);
+        } catch {
+          setIsAuthenticated(false);
+        }
+      };
+      checkAuthStatus();
+    }, [status]);
   
     const handleConnect = (connector: Connector) => {
       setActiveConnector(connector);
+      setIsInAuthFlow(false); // Reset auth flow state when initiating new connection
       connect({connector, chainId});
+    };
+
+    const handleAuthSuccess = () => {
+      setIsAuthenticated(true);
+      setShowAuthModal(false);
+      
+      if(activeConnector) {
+        connect({connector: activeConnector, chainId});
+      }
+    };
+
+    const handleModalClose = () => {
+      setShowAuthModal(false);
+      setIsInAuthFlow(false); // Reset auth flow when user closes modal
+      setActiveConnector(null); // Clear connector since user cancelled
     };
   
     return (
@@ -135,10 +206,16 @@ function Connect() {
             ))}
         </div>
         {error && <div className="error">Error: {error.message}</div>}
+        <WalletList isVisible={isAuthenticated} />
+        
+        <AuthModal 
+          isOpen={showAuthModal}
+          onClose={handleModalClose}
+          onAuthSuccess={handleAuthSuccess}
+        />
       </div>
     );
 }
-
 function ConnectorButton({
     connector,
     onClick,
@@ -147,6 +224,7 @@ function ConnectorButton({
     onClick: () => void;
     }) {
     const [ready, setReady] = useState(false);
+    
     useEffect(() => {
         (async () => {
         const provider = await connector.getProvider();
@@ -169,10 +247,12 @@ function ConnectorButton({
 function SwitchAccount() {
   const account = useAccount()
   const { connectors, switchAccount } = useSwitchAccount()
+  
 
   return (
     <div>
       <h2>Switch Account</h2>
+
 
       {connectors.map((connector) => (
         <button
@@ -211,6 +291,156 @@ function SwitchChain() {
     </div>
   )
 }
+
+function SIWE() {
+  const { signMessageAsync, error } = useSignMessage()
+  const { address, chain } = useAccount()
+  const chainId = useChainId()
+  const [verification, setVerification] = useState<string | null>(null)
+
+  return (
+    <div>
+      <h2>SIWE Message</h2>
+
+      <form
+        onSubmit={async(event) => {
+          event.preventDefault()
+          const nonce = generateSiweNonce()
+          
+          const message = createSiweMessage({
+            address: address!,
+            chainId: chainId,
+            domain: 'example.com',
+            nonce: nonce,
+            uri: window.location.origin,
+            version: '1',
+          })
+          const signature  = await signMessageAsync({message})
+          const publicClient = createPublicClient({
+              chain: chain,
+              transport: http()
+          })
+          const success = await publicClient.verifyMessage({
+              address: address!,
+              message: message,
+              signature: signature,
+          });
+          if(!success) {
+              setVerification('Verification failed');
+          } else {
+              setVerification('Verification successful');
+          }
+        } 
+      }
+      >
+        <button type="submit">authenticate</button>
+        <p>{error?.message}</p>
+      </form>
+
+      {verification}
+    </div>
+  )
+}
+
+function SignTypedData() {
+  const { signTypedDataAsync, error } = useSignTypedData()
+  const { address, chain } = useAccount()
+  const [verification, setVerification] = useState<string | null>(null)
+
+  return (
+    <div>
+      <h2>Sign Typed Data Message</h2>
+
+      <form
+        onSubmit={async(event) => {
+          event.preventDefault()
+          const signature = await signTypedDataAsync({
+              domain: {
+                  name: "Ether Mail",
+                  version: "1",
+                  chainId: chain?.id,
+                  verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+              },
+              types: {
+                  Person: [
+                      { name: "name", type: "string" },
+                      { name: "wallet", type: "address" }
+                  ],
+                  Mail: [
+                      { name: "from", type: "Person" },
+                      { name: "to", type: "Person" },
+                      { name: "contents", type: "string" }
+                  ]
+              },
+              primaryType: "Mail",
+              message: {
+                  from: {
+                      name: "Cow",
+                      wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                  },
+                  to: {
+                      name: "Bob",
+                      wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+                  },
+                  contents: "Hello, Bob!"
+              }
+          })
+          const publicClient = createPublicClient({
+            chain: chain,
+            transport: http()
+          })
+          const isVerified = await publicClient.verifyTypedData({
+            address: address!,
+            domain: {
+                name: "Ether Mail",
+                version: "1",
+                chainId: chain?.id,
+                verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            types: {
+                Person: [
+                    { name: "name", type: "string" },
+                    { name: "wallet", type: "address" }
+                ],
+                Mail: [
+                    { name: "from", type: "Person" },
+                    { name: "to", type: "Person" },
+                    { name: "contents", type: "string" }
+                ]
+            },
+            primaryType: "Mail",
+            message: {
+                from: {
+                    name: "Cow",
+                    wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                },
+                to: {
+                    name: "Bob",
+                    wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+                },
+                contents: "Hello, Bob!"
+            },
+            signature
+        })
+
+        if(!isVerified) {
+            setVerification('Verification failed');
+        } else {
+            setVerification('Verification successful');
+        }
+        }
+      }
+      >
+        <button type="submit">authenticate</button>
+        <p>{error?.message}</p>
+      </form>
+
+      {verification}
+    </div>
+  )
+}
+
+
 
 function SignMessage() {
   const { data, signMessage, error } = useSignMessage()

@@ -19,7 +19,6 @@ export * from './domain/admin-authentication-api';
 export * from './domain/authentication-api';
 export * from './domain/contracts-api';
 export * from './domain/default-api';
-export * from './domain/devices-api';
 export * from './domain/events-api';
 export * from './domain/exchange-api';
 export * from './domain/forwarder-contract-api';
@@ -30,7 +29,6 @@ export * from './domain/policies-api';
 export * from './domain/policy-rules-api';
 export * from './domain/sessions-api';
 export * from './domain/settings-api';
-export * from './domain/signers-api';
 export * from './domain/subscriptions-api';
 export * from './domain/transaction-intents-api';
 

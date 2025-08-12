@@ -17,20 +17,20 @@
 /**
  * 
  * @export
- * @interface ShamirSigner
+ * @interface SwitchChainQueriesV2
  */
-export interface ShamirSigner {
+export interface SwitchChainQueriesV2 {
     /**
-     * 
+     * The account ID (starts with acc_)
      * @type {string}
-     * @memberof ShamirSigner
+     * @memberof SwitchChainQueriesV2
      */
-    'share': string;
+    'account': string;
     /**
-     * 
-     * @type {string}
-     * @memberof ShamirSigner
+     * The target chain ID. Must be a [supported chain](/development/chains).
+     * @type {number}
+     * @memberof SwitchChainQueriesV2
      */
-    'publicKey': string;
+    'chainId': number;
 }
 

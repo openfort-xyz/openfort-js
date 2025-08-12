@@ -1,3 +1,5 @@
+API_DOCS_URL ?= https://api.openfort.io
+
 .PHONY: generate-backend-openapi
 generate-backend-openapi: get-backend-openapi generate-backend-api-client
 
@@ -5,7 +7,7 @@ generate-backend-openapi: get-backend-openapi generate-backend-api-client
 get-backend-openapi:
 	rm -f src/backend-openapi.json && touch src/backend-openapi.json && \
 	curl -H "Accept: application/json+v3" \
-    https://api.openfort.io/api-docs/swagger.json \
+    $(API_DOCS_URL)/api-docs/swagger.json \
     -o src/backend-openapi.json
 
 .PHONY: generate-backend-api-client

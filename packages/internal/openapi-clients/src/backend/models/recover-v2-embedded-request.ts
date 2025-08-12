@@ -17,14 +17,14 @@
 /**
  * 
  * @export
- * @interface SignerOwner
+ * @interface RecoverV2EmbeddedRequest
  */
-export interface SignerOwner {
+export interface RecoverV2EmbeddedRequest {
     /**
      * 
      * @type {string}
-     * @memberof SignerOwner
+     * @memberof RecoverV2EmbeddedRequest
      */
-    'id': string;
+    'account': string;
 }
 

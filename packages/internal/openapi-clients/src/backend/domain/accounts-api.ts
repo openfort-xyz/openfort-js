@@ -22,13 +22,15 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { AccountCreateRequest } from '../models';
-// @ts-ignore
 import { AccountListResponse } from '../models';
 // @ts-ignore
 import { AccountResponse } from '../models';
 // @ts-ignore
 import { AccountResponseExpandable } from '../models';
+// @ts-ignore
+import { AccountV2Response } from '../models';
+// @ts-ignore
+import { BaseEntityListResponseAccountV2Response } from '../models';
 // @ts-ignore
 import { CancelTransferOwnershipRequest } from '../models';
 // @ts-ignore
@@ -38,15 +40,17 @@ import { CreateAccountRequest } from '../models';
 // @ts-ignore
 import { DeployRequest } from '../models';
 // @ts-ignore
-import { ListResponseAccount } from '../models';
-// @ts-ignore
 import { SignPayloadRequest } from '../models';
 // @ts-ignore
 import { SignPayloadResponse } from '../models';
 // @ts-ignore
+import { SignerIdResponse } from '../models';
+// @ts-ignore
 import { SortOrder } from '../models';
 // @ts-ignore
 import { StartRecoveryRequest } from '../models';
+// @ts-ignore
+import { SwitchChainQueriesV2 } from '../models';
 // @ts-ignore
 import { TransactionIntentResponse } from '../models';
 // @ts-ignore
@@ -186,41 +190,6 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {AccountCreateRequest} accountCreateRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createAccountV2: async (accountCreateRequest: AccountCreateRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'accountCreateRequest' is not null or undefined
-            assertParamExists('createAccountV2', 'accountCreateRequest', accountCreateRequest)
-            const localVarPath = `/v2/accounts`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(accountCreateRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
          * @summary Deploy an account.
          * @param {string} id Specifies the unique account ID (starts with acc_).
@@ -346,15 +315,15 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {string} accountId 
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountV2: async (accountId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'accountId' is not null or undefined
-            assertParamExists('getAccountV2', 'accountId', accountId)
-            const localVarPath = `/v2/accounts/{accountId}`
-                .replace(`{${"accountId"}}`, encodeURIComponent(String(accountId)));
+        getAccountV2: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getAccountV2', 'id', id)
+            const localVarPath = `/v2/accounts/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -365,6 +334,10 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -383,13 +356,14 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [player] Specifies the unique player ID (starts with pla_)
          * @param {string} [address] Specifies the address of the account
          * @param {Array<AccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccounts: async (limit?: number, skip?: number, order?: SortOrder, player?: string, address?: string, expand?: Array<AccountResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccounts: async (limit?: number, skip?: number, order?: SortOrder, chainId?: number, player?: string, address?: string, expand?: Array<AccountResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -418,6 +392,10 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
                 localVarQueryParameter['order'] = order;
             }
 
+            if (chainId !== undefined) {
+                localVarQueryParameter['chainId'] = chainId;
+            }
+
             if (player !== undefined) {
                 localVarQueryParameter['player'] = player;
             }
@@ -442,15 +420,20 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @param {number} [limit] 
-         * @param {number} [skip] 
-         * @param {ListAccountsV2OrderEnum} [order] 
-         * @param {string} [accountType] 
+         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List accounts of a player.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
+         * @param {string} [user] Specifies the unique user ID (starts with pla_)
+         * @param {string} [chainType] Specifies the type of chain
+         * @param {string} [accountType] Specifies the type of account
+         * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAccountsV2: async (limit?: number, skip?: number, order?: ListAccountsV2OrderEnum, accountType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountsV2: async (limit?: number, skip?: number, order?: SortOrder, chainId?: number, user?: string, chainType?: string, accountType?: string, address?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -462,6 +445,10 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (limit !== undefined) {
                 localVarQueryParameter['limit'] = limit;
@@ -475,8 +462,64 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
                 localVarQueryParameter['order'] = order;
             }
 
+            if (chainId !== undefined) {
+                localVarQueryParameter['chainId'] = chainId;
+            }
+
+            if (user !== undefined) {
+                localVarQueryParameter['user'] = user;
+            }
+
+            if (chainType !== undefined) {
+                localVarQueryParameter['chainType'] = chainType;
+            }
+
             if (accountType !== undefined) {
                 localVarQueryParameter['accountType'] = accountType;
+            }
+
+            if (address !== undefined) {
+                localVarQueryParameter['address'] = address;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} address 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSignerIdByAddress: async (address: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'address' is not null or undefined
+            assertParamExists('getSignerIdByAddress', 'address', address)
+            const localVarPath = `/v2/accounts/signer`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (address !== undefined) {
+                localVarQueryParameter['address'] = address;
             }
 
 
@@ -623,6 +666,41 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
+         * 
+         * @param {SwitchChainQueriesV2} switchChainQueriesV2 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        switchChainV2: async (switchChainQueriesV2: SwitchChainQueriesV2, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'switchChainQueriesV2' is not null or undefined
+            assertParamExists('switchChainV2', 'switchChainQueriesV2', switchChainQueriesV2)
+            const localVarPath = `/v2/accounts/switch-chain`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(switchChainQueriesV2, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
          * @summary Sync account state with the blockchain
          * @param {string} id Specifies the unique account ID (starts with acc_).
@@ -706,16 +784,6 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @param {AccountCreateRequest} accountCreateRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createAccountV2(accountCreateRequest: AccountCreateRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createAccountV2(accountCreateRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
          * @summary Deploy an account.
          * @param {string} id Specifies the unique account ID (starts with acc_).
@@ -751,12 +819,12 @@ export const AccountsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} accountId 
+         * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountV2(accountId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountV2(accountId, options);
+        async getAccountV2(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountV2(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -765,27 +833,43 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [player] Specifies the unique player ID (starts with pla_)
          * @param {string} [address] Specifies the address of the account
          * @param {Array<AccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccounts(limit?: number, skip?: number, order?: SortOrder, player?: string, address?: string, expand?: Array<AccountResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccounts(limit, skip, order, player, address, expand, options);
+        async getAccounts(limit?: number, skip?: number, order?: SortOrder, chainId?: number, player?: string, address?: string, expand?: Array<AccountResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccounts(limit, skip, order, chainId, player, address, expand, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List accounts of a player.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
+         * @param {string} [user] Specifies the unique user ID (starts with pla_)
+         * @param {string} [chainType] Specifies the type of chain
+         * @param {string} [accountType] Specifies the type of account
+         * @param {string} [address] Specifies the account address
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAccountsV2(limit?: number, skip?: number, order?: SortOrder, chainId?: number, user?: string, chainType?: string, accountType?: string, address?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAccountV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountsV2(limit, skip, order, chainId, user, chainType, accountType, address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
-         * @param {number} [limit] 
-         * @param {number} [skip] 
-         * @param {ListAccountsV2OrderEnum} [order] 
-         * @param {string} [accountType] 
+         * @param {string} address 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAccountsV2(limit?: number, skip?: number, order?: ListAccountsV2OrderEnum, accountType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ListResponseAccount>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listAccountsV2(limit, skip, order, accountType, options);
+        async getSignerIdByAddress(address: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignerIdResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSignerIdByAddress(address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -822,6 +906,16 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          */
         async startRecovery(id: string, startRecoveryRequest: StartRecoveryRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.startRecovery(id, startRecoveryRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {SwitchChainQueriesV2} switchChainQueriesV2 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async switchChainV2(switchChainQueriesV2: SwitchChainQueriesV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.switchChainV2(switchChainQueriesV2, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -876,15 +970,6 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.createAccount(requestParameters.createAccountRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {AccountsApiCreateAccountV2Request} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createAccountV2(requestParameters: AccountsApiCreateAccountV2Request, options?: AxiosRequestConfig): AxiosPromise<AccountResponse> {
-            return localVarFp.createAccountV2(requestParameters.accountCreateRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
          * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
          * @summary Deploy an account.
          * @param {AccountsApiDeployAccountRequest} requestParameters Request parameters.
@@ -919,8 +1004,8 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountV2(requestParameters: AccountsApiGetAccountV2Request, options?: AxiosRequestConfig): AxiosPromise<AccountResponse> {
-            return localVarFp.getAccountV2(requestParameters.accountId, options).then((request) => request(axios, basePath));
+        getAccountV2(requestParameters: AccountsApiGetAccountV2Request, options?: AxiosRequestConfig): AxiosPromise<AccountV2Response> {
+            return localVarFp.getAccountV2(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
@@ -930,16 +1015,26 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          * @throws {RequiredError}
          */
         getAccounts(requestParameters: AccountsApiGetAccountsRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AccountListResponse> {
-            return localVarFp.getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(axios, basePath));
+            return localVarFp.getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @param {AccountsApiListAccountsV2Request} requestParameters Request parameters.
+         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List accounts of a player.
+         * @param {AccountsApiGetAccountsV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAccountsV2(requestParameters: AccountsApiListAccountsV2Request = {}, options?: AxiosRequestConfig): AxiosPromise<ListResponseAccount> {
-            return localVarFp.listAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.accountType, options).then((request) => request(axios, basePath));
+        getAccountsV2(requestParameters: AccountsApiGetAccountsV2Request = {}, options?: AxiosRequestConfig): AxiosPromise<BaseEntityListResponseAccountV2Response> {
+            return localVarFp.getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, requestParameters.accountType, requestParameters.address, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AccountsApiGetSignerIdByAddressRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSignerIdByAddress(requestParameters: AccountsApiGetSignerIdByAddressRequest, options?: AxiosRequestConfig): AxiosPromise<SignerIdResponse> {
+            return localVarFp.getSignerIdByAddress(requestParameters.address, options).then((request) => request(axios, basePath));
         },
         /**
          * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
@@ -970,6 +1065,15 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          */
         startRecovery(requestParameters: AccountsApiStartRecoveryRequest, options?: AxiosRequestConfig): AxiosPromise<TransactionIntentResponse> {
             return localVarFp.startRecovery(requestParameters.id, requestParameters.startRecoveryRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {AccountsApiSwitchChainV2Request} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        switchChainV2(requestParameters: AccountsApiSwitchChainV2Request, options?: AxiosRequestConfig): AxiosPromise<AccountV2Response> {
+            return localVarFp.switchChainV2(requestParameters.switchChainQueriesV2, options).then((request) => request(axios, basePath));
         },
         /**
          * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
@@ -1041,20 +1145,6 @@ export interface AccountsApiCreateAccountRequest {
 }
 
 /**
- * Request parameters for createAccountV2 operation in AccountsApi.
- * @export
- * @interface AccountsApiCreateAccountV2Request
- */
-export interface AccountsApiCreateAccountV2Request {
-    /**
-     * 
-     * @type {AccountCreateRequest}
-     * @memberof AccountsApiCreateAccountV2
-     */
-    readonly accountCreateRequest: AccountCreateRequest
-}
-
-/**
  * Request parameters for deployAccount operation in AccountsApi.
  * @export
  * @interface AccountsApiDeployAccountRequest
@@ -1121,7 +1211,7 @@ export interface AccountsApiGetAccountV2Request {
      * @type {string}
      * @memberof AccountsApiGetAccountV2
      */
-    readonly accountId: string
+    readonly id: string
 }
 
 /**
@@ -1152,6 +1242,13 @@ export interface AccountsApiGetAccountsRequest {
     readonly order?: SortOrder
 
     /**
+     * The chain ID. Must be a [supported chain](/development/chains).
+     * @type {number}
+     * @memberof AccountsApiGetAccounts
+     */
+    readonly chainId?: number
+
+    /**
      * Specifies the unique player ID (starts with pla_)
      * @type {string}
      * @memberof AccountsApiGetAccounts
@@ -1174,38 +1271,80 @@ export interface AccountsApiGetAccountsRequest {
 }
 
 /**
- * Request parameters for listAccountsV2 operation in AccountsApi.
+ * Request parameters for getAccountsV2 operation in AccountsApi.
  * @export
- * @interface AccountsApiListAccountsV2Request
+ * @interface AccountsApiGetAccountsV2Request
  */
-export interface AccountsApiListAccountsV2Request {
+export interface AccountsApiGetAccountsV2Request {
     /**
-     * 
+     * Specifies the maximum number of records to return.
      * @type {number}
-     * @memberof AccountsApiListAccountsV2
+     * @memberof AccountsApiGetAccountsV2
      */
     readonly limit?: number
 
     /**
-     * 
+     * Specifies the offset for the first records to return.
      * @type {number}
-     * @memberof AccountsApiListAccountsV2
+     * @memberof AccountsApiGetAccountsV2
      */
     readonly skip?: number
 
     /**
-     * 
-     * @type {'asc' | 'desc'}
-     * @memberof AccountsApiListAccountsV2
+     * Specifies the order in which to sort the results.
+     * @type {SortOrder}
+     * @memberof AccountsApiGetAccountsV2
      */
-    readonly order?: ListAccountsV2OrderEnum
+    readonly order?: SortOrder
 
+    /**
+     * The chain ID. Must be a [supported chain](/development/chains).
+     * @type {number}
+     * @memberof AccountsApiGetAccountsV2
+     */
+    readonly chainId?: number
+
+    /**
+     * Specifies the unique user ID (starts with pla_)
+     * @type {string}
+     * @memberof AccountsApiGetAccountsV2
+     */
+    readonly user?: string
+
+    /**
+     * Specifies the type of chain
+     * @type {string}
+     * @memberof AccountsApiGetAccountsV2
+     */
+    readonly chainType?: string
+
+    /**
+     * Specifies the type of account
+     * @type {string}
+     * @memberof AccountsApiGetAccountsV2
+     */
+    readonly accountType?: string
+
+    /**
+     * Specifies the account address
+     * @type {string}
+     * @memberof AccountsApiGetAccountsV2
+     */
+    readonly address?: string
+}
+
+/**
+ * Request parameters for getSignerIdByAddress operation in AccountsApi.
+ * @export
+ * @interface AccountsApiGetSignerIdByAddressRequest
+ */
+export interface AccountsApiGetSignerIdByAddressRequest {
     /**
      * 
      * @type {string}
-     * @memberof AccountsApiListAccountsV2
+     * @memberof AccountsApiGetSignerIdByAddress
      */
-    readonly accountType?: string
+    readonly address: string
 }
 
 /**
@@ -1272,6 +1411,20 @@ export interface AccountsApiStartRecoveryRequest {
 }
 
 /**
+ * Request parameters for switchChainV2 operation in AccountsApi.
+ * @export
+ * @interface AccountsApiSwitchChainV2Request
+ */
+export interface AccountsApiSwitchChainV2Request {
+    /**
+     * 
+     * @type {SwitchChainQueriesV2}
+     * @memberof AccountsApiSwitchChainV2
+     */
+    readonly switchChainQueriesV2: SwitchChainQueriesV2
+}
+
+/**
  * Request parameters for syncAccount operation in AccountsApi.
  * @export
  * @interface AccountsApiSyncAccountRequest
@@ -1329,17 +1482,6 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * 
-     * @param {AccountsApiCreateAccountV2Request} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccountsApi
-     */
-    public createAccountV2(requestParameters: AccountsApiCreateAccountV2Request, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).createAccountV2(requestParameters.accountCreateRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
      * @summary Deploy an account.
      * @param {AccountsApiDeployAccountRequest} requestParameters Request parameters.
@@ -1382,7 +1524,7 @@ export class AccountsApi extends BaseAPI {
      * @memberof AccountsApi
      */
     public getAccountV2(requestParameters: AccountsApiGetAccountV2Request, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).getAccountV2(requestParameters.accountId, options).then((request) => request(this.axios, this.basePath));
+        return AccountsApiFp(this.configuration).getAccountV2(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1394,18 +1536,30 @@ export class AccountsApi extends BaseAPI {
      * @memberof AccountsApi
      */
     public getAccounts(requestParameters: AccountsApiGetAccountsRequest = {}, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(this.axios, this.basePath));
+        return AccountsApiFp(this.configuration).getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @param {AccountsApiListAccountsV2Request} requestParameters Request parameters.
+     * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
+     * @summary List accounts of a player.
+     * @param {AccountsApiGetAccountsV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountsApi
      */
-    public listAccountsV2(requestParameters: AccountsApiListAccountsV2Request = {}, options?: AxiosRequestConfig) {
-        return AccountsApiFp(this.configuration).listAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.accountType, options).then((request) => request(this.axios, this.basePath));
+    public getAccountsV2(requestParameters: AccountsApiGetAccountsV2Request = {}, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, requestParameters.accountType, requestParameters.address, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AccountsApiGetSignerIdByAddressRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApi
+     */
+    public getSignerIdByAddress(requestParameters: AccountsApiGetSignerIdByAddressRequest, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).getSignerIdByAddress(requestParameters.address, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1445,6 +1599,17 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
+     * 
+     * @param {AccountsApiSwitchChainV2Request} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApi
+     */
+    public switchChainV2(requestParameters: AccountsApiSwitchChainV2Request, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).switchChainV2(requestParameters.switchChainQueriesV2, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
      * @summary Sync account state with the blockchain
      * @param {AccountsApiSyncAccountRequest} requestParameters Request parameters.
@@ -1457,11 +1622,3 @@ export class AccountsApi extends BaseAPI {
     }
 }
 
-/**
- * @export
- */
-export const ListAccountsV2OrderEnum = {
-    Asc: 'asc',
-    Desc: 'desc'
-} as const;
-export type ListAccountsV2OrderEnum = typeof ListAccountsV2OrderEnum[keyof typeof ListAccountsV2OrderEnum];

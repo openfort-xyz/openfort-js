@@ -17,20 +17,23 @@
 /**
  * 
  * @export
- * @interface ShamirParams
+ * @enum {string}
  */
-export interface ShamirParams {
-    /**
-     * 
-     * @type {string}
-     * @memberof ShamirParams
-     */
-    'share': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ShamirParams
-     */
-    'publicKey': string;
-}
+
+export const TransactionStatus = {
+    None: 'none',
+    New: 'new',
+    Sent: 'sent',
+    Dropped: 'dropped',
+    Indexed: 'indexed',
+    Confirmed: 'confirmed',
+    Reverted: 'reverted',
+    Notfound: 'notfound',
+    Replaced: 'replaced',
+    Expired: 'expired'
+} as const;
+
+export type TransactionStatus = typeof TransactionStatus[keyof typeof TransactionStatus];
+
+
 
