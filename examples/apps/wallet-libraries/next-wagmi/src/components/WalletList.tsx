@@ -10,8 +10,12 @@ interface WalletListProps {
   isVisible: boolean;
 }
 
+type WalletWithChainIds = EmbeddedAccount & {
+  chainIds: number[];
+};
+
 function WalletList({ isVisible }: WalletListProps) {
-  const [wallets, setWallets] = useState<EmbeddedAccount[]>([]);
+  const [wallets, setWallets] = useState<WalletWithChainIds[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const chainId = useChainId();
@@ -30,14 +34,28 @@ function WalletList({ isVisible }: WalletListProps) {
       const walletsResponse = await openfortInstance.embeddedWallet.list();
       const smartWallets = walletsResponse.filter(wallet => wallet.accountType === AccountTypeEnum.SMART_ACCOUNT);
       
-      // Filter to keep only unique addresses
-      const uniqueWallets = smartWallets.reduce((acc: EmbeddedAccount[], wallet) => {
-        const existingWallet = acc.find(w => w.address.toLowerCase() === wallet.address.toLowerCase());
-        if (!existingWallet) {
-          acc.push(wallet);
+      // Group wallets by address and merge chain IDs
+      const walletMap = new Map<string, WalletWithChainIds>();
+      
+      smartWallets.forEach(wallet => {
+        const addressKey = wallet.address.toLowerCase();
+        const existing = walletMap.get(addressKey);
+        
+        if (existing) {
+          // Add chainId to existing wallet's chainIds array if not already present
+          if (wallet.chainId && !existing.chainIds.includes(wallet.chainId)) {
+            existing.chainIds.push(wallet.chainId);
+          }
+        } else {
+          // Create new entry with chainIds array
+          walletMap.set(addressKey, {
+            ...wallet,
+            chainIds: wallet.chainId ? [wallet.chainId] : []
+          });
         }
-        return acc;
-      }, []);
+      });
+      
+      const uniqueWallets = Array.from(walletMap.values());
       
       setWallets(uniqueWallets);
       setHasLoadedOnce(true);
@@ -131,7 +149,7 @@ function WalletList({ isVisible }: WalletListProps) {
                     {isActive && <span className="wallet-active-badge">Active</span>}
                   </div>
                   <div className="wallet-details">
-                    {wallet.implementationType} • {wallet.chainType}
+                    {wallet.implementationType} • {wallet.chainType} • Chain IDs: {wallet.chainIds.length > 0 ? wallet.chainIds.join(', ') : 'N/A'}
                   </div>
                 </div>
                 {!isActive && (
