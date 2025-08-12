@@ -2308,6 +2308,8 @@ __metadata:
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:
     "@babel/core": ^7.26.10
+    "@ethersproject/abi": ^5.8.0
+    "@ethersproject/bytes": ^5.8.0
     "@ethersproject/hash": ^5.8.0
     "@ethersproject/providers": ^5.8.0
     "@openfort/openapi-clients": 0.0.0
