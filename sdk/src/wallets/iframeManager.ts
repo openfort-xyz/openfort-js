@@ -358,7 +358,12 @@ export class IframeManager {
     const remote = await this.ensureConnection();
 
     const iframeConfiguration = await this.buildIFrameRequestConfiguration();
-
+    iframeConfiguration.chainId = params.chainId;
+    iframeConfiguration.password = params?.entropy?.recoveryPassword ?? null;
+    iframeConfiguration.recovery = {
+      ...iframeConfiguration.recovery as ShieldAuthentication,
+      encryptionSession: params?.entropy?.encryptionSession,
+    };
     const request: CreateRequest = {
       uuid: randomUUID(),
       action: Event.CREATE,

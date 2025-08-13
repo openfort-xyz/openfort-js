@@ -123,11 +123,11 @@ function Account() {
 
       {account.status === 'connected' && (
         <button type="button" onClick={async() => {
-          // if (account.connector && account.connector.name.includes('Openfort')) {
-          //   // without explicit logout, openfort embedded wallet is just disconnected
-          //   // but the user is still authenticated
-          //   await openfortInstance.auth.logout();
-          // }
+          if (account.connector && account.connector.name.includes('Openfort')) {
+            // without explicit logout, openfort embedded wallet is just disconnected
+            // but the user is still authenticated
+            await openfortInstance.auth.logout();
+          }
           disconnect()
           }
           }>
