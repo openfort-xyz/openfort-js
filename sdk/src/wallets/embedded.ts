@@ -12,7 +12,7 @@ import type { Signer } from './isigner';
 import type {
   SignerConfigureRequest, IframeManager, SignerRecoverRequest, SignerCreateRequest,
 } from './iframeManager';
-import { type IStorage } from '../storage/istorage';
+import { StorageKeys, type IStorage } from '../storage/istorage';
 
 export class EmbeddedSigner implements Signer {
   constructor(
@@ -249,5 +249,6 @@ export class EmbeddedSigner implements Signer {
 
   async disconnect(): Promise<void> {
     await this.iframeManager.disconnect();
+    this.storage.remove(StorageKeys.ACCOUNT);
   }
 }

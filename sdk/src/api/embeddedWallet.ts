@@ -1,5 +1,5 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { IStorage, StorageKeys } from '../storage/istorage';
+import { IStorage } from '../storage/istorage';
 import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
 import { SDKConfiguration } from '../core/config/config';
@@ -590,7 +590,6 @@ export class EmbeddedWalletApi {
     this.iframeManagerPromise = null;
     this.signer = null;
     this.signerPromise = null;
-    this.storage.remove(StorageKeys.ACCOUNT);
   }
 
   async onMessage(message: Record<string, unknown>): Promise<void> {
