@@ -248,6 +248,6 @@ export class EmbeddedSigner implements Signer {
   }
 
   async disconnect(): Promise<void> {
-    this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
+    await this.iframeManager.disconnect();
   }
 }

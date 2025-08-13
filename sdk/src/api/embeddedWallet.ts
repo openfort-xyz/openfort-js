@@ -260,8 +260,6 @@ export class EmbeddedWalletApi {
       chainId: params.chainId,
       entropy,
     });
-    this.signer = null;
-    this.signerPromise = null;
     const auth = await Authentication.fromStorage(this.storage);
     return {
       id: account.id,
@@ -298,9 +296,6 @@ export class EmbeddedWalletApi {
       account: params.account,
       entropy,
     });
-    this.signer = null;
-    this.signerPromise = null;
-
     const auth = await Authentication.fromStorage(this.storage);
     return {
       id: account.id,
@@ -588,6 +583,7 @@ export class EmbeddedWalletApi {
   }
 
   private async handleLogout(): Promise<void> {
+    if (this.signer) await this.signer.disconnect();
     this.provider = null;
     this.messenger = null;
     this.iframeManager = null;
