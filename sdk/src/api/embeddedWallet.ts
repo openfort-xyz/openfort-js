@@ -583,7 +583,8 @@ export class EmbeddedWalletApi {
   }
 
   private async handleLogout(): Promise<void> {
-    if (this.signer) await this.signer.disconnect();
+    const signer = await this.ensureSigner();
+    await signer.disconnect();
     this.provider = null;
     this.messenger = null;
     this.iframeManager = null;
