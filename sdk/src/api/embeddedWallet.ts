@@ -436,7 +436,7 @@ export class EmbeddedWalletApi {
 
       return response.data.data.map((account) => ({
         user: account.user,
-        chainType: account.accountType as ChainTypeEnum,
+        chainType: account.chainType as ChainTypeEnum,
         id: account.id,
         address: account.address,
         ownerAddress: account.ownerAddress,
