@@ -307,18 +307,22 @@ export class SignRequest implements IEventRequest {
 
   requestConfiguration?: RequestConfiguration;
 
+  chainType: string;
+
   constructor(
     uuid: string,
     message: string | Uint8Array,
     requireArrayify?: boolean,
     requireHash?: boolean,
     requestConfiguration?: RequestConfiguration,
+    chainType?: string,
   ) {
     this.uuid = uuid;
     this.message = message;
     this.requireArrayify = requireArrayify;
     this.requireHash = requireHash;
     this.requestConfiguration = requestConfiguration;
+    this.chainType = chainType || 'EVM';
   }
 }
 

@@ -449,6 +449,7 @@ export class IframeManager {
     message: string | Uint8Array,
     requireArrayify?: boolean,
     requireHash?: boolean,
+    chainType?: string,
   ): Promise<string> {
     debugLog('[iframe] ensureConnection');
     const remote = await this.ensureConnection();
@@ -459,6 +460,7 @@ export class IframeManager {
       requireArrayify,
       requireHash,
       await this.buildRequestConfiguration(),
+      chainType,
     );
     debugLog('[iframe] done ensureConnection');
 
