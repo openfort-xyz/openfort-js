@@ -14,6 +14,7 @@ export const Content = () => {
   const [showAccounts, setShowAccounts] = useState(false)
   const [message, setMessage] = useState("")
   const [signature, setSignature] = useState("")
+  const [privateKey, setPrivateKey] = useState("")
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -91,6 +92,17 @@ export const Content = () => {
       setSignature(sig)
     } catch (error) {
       console.error("Error signing message:", error)
+    }
+  }
+
+  const exportPrivateKey = async () => {
+    try {
+      console.log("Exporting private key...")
+      const key = await openfort.embeddedWallet.exportPrivateKey()
+      console.log("Private key exported:", key)
+      setPrivateKey(key)
+    } catch (error) {
+      console.error("Error exporting private key:", error)
     }
   }
 
@@ -244,13 +256,21 @@ export const Content = () => {
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <button
-                onClick={signMessage}
-                disabled={!message.trim()}
-                className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed px-4 py-2 rounded text-white font-medium transition-colors"
-              >
-                Sign
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={signMessage}
+                  disabled={!message.trim()}
+                  className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed px-4 py-2 rounded text-white font-medium transition-colors"
+                >
+                  Sign
+                </button>
+                <button
+                  onClick={exportPrivateKey}
+                  className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-medium transition-colors"
+                >
+                  Export Private Key
+                </button>
+              </div>
               {signature && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -258,6 +278,16 @@ export const Content = () => {
                   </label>
                   <div className="p-3 bg-gray-700 rounded-md border border-gray-600">
                     <code className="text-xs text-green-400 break-all">{signature}</code>
+                  </div>
+                </div>
+              )}
+              {privateKey && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Private Key:
+                  </label>
+                  <div className="p-3 bg-gray-700 rounded-md border border-gray-600">
+                    <code className="text-xs text-red-400 break-all">{privateKey}</code>
                   </div>
                 </div>
               )}
