@@ -43,6 +43,19 @@ export const createEmbeddedSigner = async (chainId: number) => {
   });
 };
 
+export const createEthereumEOA = async () => {
+  const shieldAuth: ShieldAuthentication = {
+    auth: ShieldAuthType.OPENFORT,
+    token: (await openfortInstance.getAccessToken())!,
+    encryptionSession: await getEncryptionSession(),
+  };
+  await openfortInstance.embeddedWallet.create({
+    accountType: AccountTypeEnum.EOA,
+    chainType: ChainTypeEnum.EVM,
+    shieldAuthentication: shieldAuth,
+  });
+};
+
 const getEncryptionSession = async (): Promise<string> => {
   try {
     const response = await axios.post<{ session: string }>(

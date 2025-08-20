@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { openfortInstance } from '../openfort';
-import { AccountTypeEnum, EmbeddedAccount } from '@openfort/openfort-js';
+import { AccountTypeEnum, ChainTypeEnum, EmbeddedAccount } from '@openfort/openfort-js';
 import { useAccount, useChainId } from 'wagmi';
-import { createEmbeddedSigner, recoverEmbeddedSigner } from '../lib/utils';
+import { createEmbeddedSigner, recoverEmbeddedSigner, createEthereumEOA } from '../lib/utils';
 
 interface WalletListProps {
   isVisible: boolean;
@@ -24,6 +24,46 @@ function WalletList({ isVisible }: WalletListProps) {
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const { address: activeAddress } = useAccount();
 
+  const processSmartAccounts = (wallets: EmbeddedAccount[], walletMap: Map<string, WalletWithChainIds>) => {
+    wallets
+      .filter(wallet => wallet.accountType === AccountTypeEnum.SMART_ACCOUNT)
+      .forEach(wallet => {
+        const addressKey = wallet.address.toLowerCase();
+        const existing = walletMap.get(addressKey);
+        
+        if (existing) {
+          if (wallet.chainId && !existing.chainIds.includes(wallet.chainId)) {
+            existing.chainIds.push(wallet.chainId);
+          }
+        } else {
+          walletMap.set(addressKey, {
+            ...wallet,
+            chainIds: wallet.chainId ? [wallet.chainId] : []
+          });
+        }
+      });
+  };
+
+  const processEOAWallets = (wallets: EmbeddedAccount[], eoaMap: Map<string, WalletWithChainIds>) => {
+    wallets.forEach(wallet => {
+      if (wallet.accountType === AccountTypeEnum.EOA) {
+        const existingEoa = eoaMap.get(wallet.address);
+        if (existingEoa) {
+          eoaMap.delete(wallet.address);
+        } else {
+          eoaMap.set(wallet.address, {...wallet, chainIds: []});
+        }
+      } else if (wallet.accountType === AccountTypeEnum.SMART_ACCOUNT && wallet.ownerAddress) {
+        const existingEoa = eoaMap.get(wallet.ownerAddress);
+        if (existingEoa) {
+          eoaMap.delete(wallet.ownerAddress);
+        } else {
+          eoaMap.set(wallet.ownerAddress, {...wallet, chainIds: []});
+        }
+      }
+    });
+  };
+
   const loadWallets = async () => {
     if (!isVisible) return;
     
@@ -31,33 +71,18 @@ function WalletList({ isVisible }: WalletListProps) {
     setError(null);
     
     try {
-      const walletsResponse = await openfortInstance.embeddedWallet.list();
-      const smartWallets = walletsResponse.filter(wallet => wallet.accountType === AccountTypeEnum.SMART_ACCOUNT);
+      const walletsResponse = await openfortInstance.embeddedWallet.listWithConfig({chainType: ChainTypeEnum.EVM});
       
-      // Group wallets by address and merge chain IDs
       const walletMap = new Map<string, WalletWithChainIds>();
+      const eoaMap = new Map<string, WalletWithChainIds>();
       
-      smartWallets.forEach(wallet => {
-        const addressKey = wallet.address.toLowerCase();
-        const existing = walletMap.get(addressKey);
-        
-        if (existing) {
-          // Add chainId to existing wallet's chainIds array if not already present
-          if (wallet.chainId && !existing.chainIds.includes(wallet.chainId)) {
-            existing.chainIds.push(wallet.chainId);
-          }
-        } else {
-          // Create new entry with chainIds array
-          walletMap.set(addressKey, {
-            ...wallet,
-            chainIds: wallet.chainId ? [wallet.chainId] : []
-          });
-        }
-      });
+      processSmartAccounts(walletsResponse, walletMap);
+      processEOAWallets(walletsResponse, eoaMap);
       
       const uniqueWallets = Array.from(walletMap.values());
+      const uniqueEOAs = Array.from(eoaMap.values());
       
-      setWallets(uniqueWallets);
+      setWallets([...uniqueWallets, ...uniqueEOAs]);
       setHasLoadedOnce(true);
     } catch (err) {
       console.error('Error loading wallets:', err);
@@ -99,6 +124,21 @@ function WalletList({ isVisible }: WalletListProps) {
     } catch (err) {
       console.error('Error creating wallet:', err);
       setError(err instanceof Error ? err.message : 'Failed to create wallet');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleCreateEOA = async () => {
+    setIsCreating(true);
+    setError(null);
+    
+    try {
+      await createEthereumEOA();
+      await loadWallets();
+    } catch (err) {
+      console.error('Error creating EOA:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create EOA');
     } finally {
       setIsCreating(false);
     }
@@ -149,7 +189,7 @@ function WalletList({ isVisible }: WalletListProps) {
                     {isActive && <span className="wallet-active-badge">Active</span>}
                   </div>
                   <div className="wallet-details">
-                    {wallet.implementationType} • {wallet.chainType} • Chain IDs: {wallet.chainIds.length > 0 ? wallet.chainIds.join(', ') : 'N/A'}
+                    {wallet.implementationType || wallet.accountType} • {wallet.chainType}{wallet.chainIds.length > 0 ? ` • Chain IDs: ${wallet.chainIds.join(', ')}` : ''}
                   </div>
                 </div>
                 {!isActive && (
@@ -173,6 +213,14 @@ function WalletList({ isVisible }: WalletListProps) {
         disabled={isCreating || isRecovering !== null}
       >
         {isCreating ? 'Creating...' : 'Create New Wallet'}
+      </button>
+      
+      <button
+        className="button create-wallet-button"
+        onClick={handleCreateEOA}
+        disabled={isCreating || isRecovering !== null}
+      >
+        {isCreating ? 'Creating...' : 'Create EOA'}
       </button>
     </div>
   );

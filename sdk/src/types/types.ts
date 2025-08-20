@@ -461,7 +461,7 @@ export type EmbeddedAccountRecoverParams = {
 export type EmbeddedAccountCreateParams = {
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
-  chainId: number;
+  chainId?: number;
   shieldAuthentication?: ShieldAuthentication;
   recoveryParams?: RecoverParams;
 };
