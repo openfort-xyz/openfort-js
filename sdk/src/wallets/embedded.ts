@@ -59,7 +59,7 @@ export class EmbeddedSigner implements Signer {
 
         const account = new Account({
           user: response.data.data[0].user,
-          chainType: response.data.data[0].accountType as ChainTypeEnum,
+          chainType: response.data.data[0].chainType as ChainTypeEnum,
           id: response.data.data[0].id,
           address: response.data.data[0].address,
           ownerAddress: response.data.data[0].ownerAddress,
@@ -95,7 +95,7 @@ export class EmbeddedSigner implements Signer {
 
       const account = new Account({
         user: response.data.user,
-        chainType: response.data.accountType as ChainTypeEnum,
+        chainType: response.data.chainType as ChainTypeEnum,
         id: response.data.id,
         address: response.data.address,
         ownerAddress: response.data.ownerAddress,
@@ -165,7 +165,7 @@ export class EmbeddedSigner implements Signer {
 
       const account = new Account({
         user: response.data.user,
-        chainType: response.data.accountType as ChainTypeEnum,
+        chainType: response.data.chainType as ChainTypeEnum,
         id: response.data.id,
         address: response.data.address,
         ownerAddress: response.data.ownerAddress,
@@ -215,7 +215,7 @@ export class EmbeddedSigner implements Signer {
 
       const account = new Account({
         user: response.data.user,
-        chainType: response.data.accountType as ChainTypeEnum,
+        chainType: response.data.chainType as ChainTypeEnum,
         id: response.data.id,
         address: response.data.address,
         ownerAddress: response.data.ownerAddress,
