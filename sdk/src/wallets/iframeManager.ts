@@ -34,20 +34,29 @@ import {
   MISSING_USER_ENTROPY_ERROR,
   MISSING_PROJECT_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
-  ShieldAuthType,
   type RequestConfiguration,
   UpdateAuthenticationResponse,
   CreateResponse,
   RecoverResponse,
+  ShieldAuthType,
 } from './types';
 import { sentry } from '../core/errors/sentry';
+
+// TODO: Most of these parameters are repeated in the iframe configuration.
+// Consider refactoring to avoid duplication.
+export interface IframeAuthentication extends ShieldAuthentication {
+  auth?: ShieldAuthType;
+  authProvider?: string | null;
+  token?: string | null;
+  tokenType?: string | null;
+}
 
 export interface IframeConfiguration {
   thirdPartyTokenType: string | null;
   thirdPartyProvider: string | null;
   accessToken: string | null;
   playerID: string | null;
-  recovery: ShieldAuthentication | null;
+  recovery: IframeAuthentication | null;
   chainId: number | null;
   password: string | null;
 }
@@ -283,7 +292,7 @@ export class IframeManager {
       throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
-    const shieldAuthentication: ShieldAuthentication = {
+    const shieldAuthentication: IframeAuthentication = {
       auth: ShieldAuthType.OPENFORT,
       authProvider: authentication.thirdPartyProvider,
       token: authentication.token,
@@ -312,7 +321,7 @@ export class IframeManager {
     iframeConfiguration.chainId = request?.chainId ?? acc?.chainId ?? null;
     iframeConfiguration.password = request?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.recovery = {
-      ...iframeConfiguration.recovery as ShieldAuthentication,
+      ...iframeConfiguration.recovery,
       encryptionSession: request?.entropy?.encryptionSession,
     };
 
@@ -361,7 +370,7 @@ export class IframeManager {
     iframeConfiguration.chainId = params.chainId;
     iframeConfiguration.password = params?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.recovery = {
-      ...iframeConfiguration.recovery as ShieldAuthentication,
+      ...iframeConfiguration.recovery,
       encryptionSession: params?.entropy?.encryptionSession,
     };
     const request: CreateRequest = {
@@ -411,7 +420,7 @@ export class IframeManager {
     iframeConfiguration.chainId = acc?.chainId ?? null;
     iframeConfiguration.password = params?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.recovery = {
-      ...iframeConfiguration.recovery as ShieldAuthentication,
+      ...iframeConfiguration.recovery,
       encryptionSession: params?.entropy?.encryptionSession,
     };
 

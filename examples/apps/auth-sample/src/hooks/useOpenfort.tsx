@@ -202,8 +202,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   const handleRecovery = useCallback(
     async ({method, password, chainId}:{method: 'password' | 'automatic', password?: string, chainId: number}) => {
         const shieldAuth: ShieldAuthentication = {
-          auth: ShieldAuthType.OPENFORT,
-          token: (await openfort.getAccessToken())!,
           encryptionSession: await getEncryptionSession(),
         };
         if (method === 'automatic') {

@@ -76,8 +76,6 @@ function Authenticate() {
     try {
       const chainId = polygonAmoy.id;
       const shieldAuth: ShieldAuthentication = {
-        auth: ShieldAuthType.OPENFORT,
-        token: (await openfortInstance.getAccessToken())!,
         encryptionSession: await getEncryptionSession(),
       };
       await openfortInstance.embeddedWallet.configure({chainId, shieldAuthentication: shieldAuth});

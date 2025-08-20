@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AuthPlayerResponse, EmbeddedAccount, EmbeddedState, RecoveryMethod, ShieldAuthType } from "@openfort/openfort-js"
+import { AuthPlayerResponse, EmbeddedAccount, EmbeddedState, RecoveryMethod } from "@openfort/openfort-js"
 import { PublicKey } from "@solana/web3.js"
 import { CSSProperties, useEffect, useState } from "react"
 import { Login } from "./Login"
@@ -35,12 +35,8 @@ export const Content = () => {
 
         console.log("configuring embedded signer")
         await openfort.embeddedWallet.configure(
-          { 
-            chainId:103, 
-            shieldAuthentication: {
-              auth: ShieldAuthType.OPENFORT,
-              token: (await openfort.getAccessToken())!,
-            },
+          {
+            chainId: 103,
             recoveryParams: { recoveryMethod: RecoveryMethod.PASSWORD, password: "password" }
           }
         )
@@ -58,12 +54,8 @@ export const Content = () => {
   const configureChain = async (chain: string) => {
     setGoalChain(chain)
     await openfort.embeddedWallet.configure(
-      { 
-        chainId: parseInt(chain), 
-        shieldAuthentication: {
-          auth: ShieldAuthType.OPENFORT,
-          token: (await openfort.getAccessToken())!,
-        },
+      {
+        chainId: parseInt(chain),
       }
     )
   }
@@ -99,7 +91,7 @@ export const Content = () => {
   }
   console.log("Embedded wallet:", account)
   const isSolana = account?.chainType === "solana";
-  
+
   return (
     <div className="text-white flex flex-col items-center gap-4">
       <p className="text-lg" onClick={() => getUser()}>Openfort user:

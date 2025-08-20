@@ -5,8 +5,6 @@ import { baseSepolia, sepolia } from "viem/chains";
 
 export const recoverEmbeddedSigner = async (account: string, chainId: number) => {
   const shieldAuth: ShieldAuthentication = {
-    auth: ShieldAuthType.OPENFORT,
-    token: (await openfortInstance.getAccessToken())!,
     encryptionSession: await getEncryptionSession(),
   };
   await openfortInstance.embeddedWallet.recover({
@@ -24,8 +22,6 @@ export const recoverEmbeddedSigner = async (account: string, chainId: number) =>
 
 export const createEmbeddedSigner = async (chainId: number) => {
   const shieldAuth: ShieldAuthentication = {
-    auth: ShieldAuthType.OPENFORT,
-    token: (await openfortInstance.getAccessToken())!,
     encryptionSession: await getEncryptionSession(),
   };
   await openfortInstance.embeddedWallet.create({
