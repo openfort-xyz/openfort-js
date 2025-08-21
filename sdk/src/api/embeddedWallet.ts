@@ -201,6 +201,7 @@ export class EmbeddedWalletApi {
   async configure(
     params: EmbeddedAccountConfigureParams,
   ): Promise<EmbeddedAccount> {
+    console.log('EMBEDDED API CONFIGURE!');
     await this.validateAndRefreshToken();
 
     const recoveryParams = params.recoveryParams ?? {
@@ -216,10 +217,13 @@ export class EmbeddedWalletApi {
           : undefined,
       };
     }
+
     const signer = await this.ensureSigner();
+    console.log('Calling signer.cfg');
     const account = await signer.configure({
       chainId: params.chainId,
       entropy,
+      usePasskey: params.usePasskey,
     });
 
     const auth = await Authentication.fromStorage(this.storage);
@@ -232,6 +236,7 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      usePasskey: params.recoveryParams?.recoveryMethod === RecoveryMethod.PASSKEY,
     };
   }
 

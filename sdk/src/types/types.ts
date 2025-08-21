@@ -35,6 +35,7 @@ export type CurrentAccount = {
 export enum RecoveryMethod {
   PASSWORD = 'password',
   AUTOMATIC = 'automatic',
+  PASSKEY = 'passkey',
 }
 
 export enum AccountType {
@@ -444,12 +445,14 @@ export type EmbeddedAccount = {
   ownerAddress?: string;
   /** @deprecated  */
   type?: string;
+  usePasskey?: boolean;
 };
 
 export type EmbeddedAccountConfigureParams = {
   chainId?: number;
   shieldAuthentication?: ShieldAuthentication;
   recoveryParams?: RecoverParams;
+  usePasskey?: boolean;
 };
 
 export type EmbeddedAccountRecoverParams = {
@@ -471,4 +474,6 @@ export type RecoverParams = {
 } | {
   recoveryMethod: RecoveryMethod.PASSWORD;
   password: string;
+} | {
+  recoveryMethod: RecoveryMethod.PASSKEY;
 };

@@ -29,7 +29,7 @@ interface ContextType {
     password,
     chainId
 }:{
-  method: 'password' | 'automatic',
+  method: 'password' | 'automatic' | 'passkey',
   chainId:number
   password?: string,
 }) => Promise<void>;
@@ -200,7 +200,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   );
 
   const handleRecovery = useCallback(
-    async ({method, password, chainId}:{method: 'password' | 'automatic', password?: string, chainId: number}) => {
+    async ({method, password, chainId}:{method: 'password' | 'automatic' | 'passkey', password?: string, chainId: number}) => {
         const shieldAuth: ShieldAuthentication = {
           auth: ShieldAuthType.OPENFORT,
           token: (await openfort.getAccessToken())!,
@@ -213,6 +213,10 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
             throw new Error('Password recovery must be at least 4 characters');
           }
           await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSWORD, password: password}});
+        }
+        else {
+          console.log(`USING PASSKEY BUTTON W/ METHOD ${method}`);
+          await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, usePasskey: true, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY}})
         }
     },
     []

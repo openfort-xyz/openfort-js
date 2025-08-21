@@ -98,6 +98,36 @@ const AccountRecovery: React.FC = () => {
                 {loadingAut ? <Loading /> : 'Continue with Automatic Recovery'}
               </Button>
             </div>
+            <div className="flex justify-center items-center mt-2">
+              <Button
+                variant="outline"
+                type="button"
+                disabled={loadingAut}
+                className="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
+                onClick={async () => {
+                  setLoadingAut(true);
+                  try{
+                    await handleRecovery({method:'passkey', chainId: chainId});
+                  } catch (e) {
+                    if(e instanceof MissingRecoveryPasswordError) {
+                      setStatus({
+                        type: 'error',
+                        title: 'Missing recovery password',
+                      });
+                    }
+                    if(e instanceof WrongRecoveryPasswordError) {
+                      setStatus({
+                        type: 'error',
+                        title: 'Wrong recovery password',
+                      });
+                    }
+                  }
+                  setLoadingAut(false);
+                }}
+              >
+                {loadingAut ? <Loading /> : 'Continue with Passkey Recovery'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

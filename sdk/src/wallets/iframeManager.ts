@@ -57,7 +57,8 @@ export interface SignerConfigureRequest {
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
-  }
+  },
+  usePasskey?: boolean;
 }
 
 export interface SignerCreateRequest {
@@ -332,8 +333,10 @@ export class IframeManager {
       encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
+      usePasskey: request?.usePasskey ?? false,
     };
 
+    console.log(`[JS-SDK] Sending configuration ${JSON.stringify(config)}`);
     const response = await remote.configure(config);
 
     if (isErrorResponse(response)) {

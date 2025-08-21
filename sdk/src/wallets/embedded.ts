@@ -25,6 +25,7 @@ export class EmbeddedSigner implements Signer {
   async configure(
     params: SignerConfigureRequest,
   ): Promise<Account> {
+    console.log('SIGNER CONFIGURE!');
     const iframeResponse = await this.iframeManager.configure(params);
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
