@@ -20,7 +20,7 @@ export class ProxyApi {
     optimistic: boolean = false,
   ): Promise<TransactionIntentResponse> {
     await this.ensureInitialized();
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }

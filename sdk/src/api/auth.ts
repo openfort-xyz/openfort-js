@@ -1,20 +1,21 @@
-import { IStorage, StorageKeys } from '../storage/istorage';
+import { debugLog } from 'utils/debug';
 import { AuthManager } from '../auth/authManager';
 import { Authentication } from '../core/configuration/authentication';
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
+import { IStorage } from '../storage/istorage';
 import {
-  AuthResponse,
+  Auth,
   AuthActionRequiredResponse,
   AuthPlayerResponse,
+  AuthResponse,
   InitAuthResponse,
-  SIWEInitResponse,
-  OAuthProvider,
-  ThirdPartyOAuthProvider,
-  TokenType,
   InitializeOAuthOptions,
-  Auth,
+  OAuthProvider,
   OpenfortEventMap,
   OpenfortEvents,
+  SIWEInitResponse,
+  ThirdPartyAuthProvider,
+  TokenType,
 } from '../types/types';
 import TypedEventEmitter from '../utils/typedEventEmitter';
 
@@ -145,7 +146,7 @@ export class AuthApi {
   async linkThirdPartyProvider(
     {
       provider, token, tokenType,
-    }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType },
+    }: { provider: ThirdPartyAuthProvider; token: string; tokenType: TokenType },
   ): Promise<AuthPlayerResponse> {
     await this.validateAndRefreshToken();
     const auth = await Authentication.fromStorage(this.storage);
@@ -169,15 +170,10 @@ export class AuthApi {
     return response;
   }
 
-  async authenticateWithThirdPartyProvider(
-    {
-      provider, token, tokenType, ecosystemGame,
-    }: { provider: ThirdPartyOAuthProvider; token: string; tokenType: TokenType, ecosystemGame?: string },
-  ): Promise<AuthPlayerResponse> {
+  async authenticateWithThirdPartyProvider(): Promise<void> {
+    debugLog('Authenticating with third party provider');
     await this.ensureInitialized();
-    const result = await this.authManager.authenticateThirdParty(provider, token, tokenType, ecosystemGame);
-    new Authentication('third_party', token, result.id, null, provider, tokenType).save(this.storage);
-    return result;
+    await this.validateAndRefreshToken();
   }
 
   async loginWithIdToken(
@@ -246,11 +242,13 @@ export class AuthApi {
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) return;
     try {
-      if (auth.type !== 'third_party') await this.authManager.logout(auth.token, auth?.refreshToken!);
+      if (auth.type !== 'third_party') {
+        await this.authManager.logout(auth.token, auth?.refreshToken!);
+      }
     } catch (error) {
       // Ignoring logout errors as we're clearing local state anyway
     }
-    this.storage.remove(StorageKeys.AUTHENTICATION);
+    Authentication.clear(this.storage);
     this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT);
   }
 }

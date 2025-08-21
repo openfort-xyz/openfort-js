@@ -97,7 +97,7 @@ export enum TokenType {
   CUSTOM_TOKEN = 'customToken',
 }
 
-export enum ThirdPartyOAuthProvider {
+export enum ThirdPartyAuthProvider {
   ACCELBYTE = 'accelbyte',
   FIREBASE = 'firebase',
   LOOTLOCKER = 'lootlocker',

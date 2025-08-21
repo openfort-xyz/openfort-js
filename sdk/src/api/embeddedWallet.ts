@@ -61,7 +61,7 @@ export class EmbeddedWalletApi {
   }
 
   private get backendApiClients(): BackendApiClients {
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -108,7 +108,7 @@ export class EmbeddedWalletApi {
   private async createIframeManager(): Promise<IframeManager> {
     debugLog('[HANDSHAKE DEBUG] createIframeManager starting');
 
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       debugLog('[HANDSHAKE DEBUG] Configuration not found');
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -407,7 +407,7 @@ export class EmbeddedWalletApi {
   }
 
   async list(): Promise<EmbeddedAccount[]> {
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -545,7 +545,7 @@ export class EmbeddedWalletApi {
   }
 
   getURL(): string {
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }

@@ -1,6 +1,6 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
 import { InternalSentry } from './errors/sentry';
-import { IStorage } from '../storage/istorage';
+import { IStorage, StorageKeys } from '../storage/istorage';
 import { LazyStorage } from '../storage/lazyStorage';
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { OpenfortSDKConfiguration, SDKConfiguration } from './config/config';
@@ -197,6 +197,23 @@ export class Openfort {
     return this.iAuthManager;
   }
 
+  public static async isStorageAccessible(storage: IStorage): Promise<boolean> {
+    try {
+      const testKey = StorageKeys.TEST;
+      const testValue = 'openfort_storage_test';
+
+      storage.save(testKey, testValue);
+      const retrieved = await storage.get(testKey);
+      storage.remove(testKey);
+
+      // Verify the value was correctly stored and retrieved
+      return retrieved === testValue;
+    } catch (error) {
+      // Storage accessibility check failed
+      return false;
+    }
+  }
+
   /**
    * Performs async initialization tasks
    * @private
@@ -204,7 +221,7 @@ export class Openfort {
   private async initializeAsync(): Promise<void> {
     try {
       // Validate storage accessibility
-      if (!(await SDKConfiguration.isStorageAccessible(this.storage))) {
+      if (!(await Openfort.isStorageAccessible(this.storage))) {
         throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION);
       }
 

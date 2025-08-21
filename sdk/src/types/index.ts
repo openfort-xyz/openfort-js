@@ -3,7 +3,7 @@ export { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js';
 export {
   InitializeOAuthOptions,
   EmbeddedState,
-  ThirdPartyOAuthProvider,
+  ThirdPartyAuthProvider as ThirdPartyOAuthProvider,
   BasicAuthProvider,
   TokenType,
   OAuthProvider,
