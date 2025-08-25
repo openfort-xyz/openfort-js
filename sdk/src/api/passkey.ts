@@ -10,7 +10,7 @@ export class PasskeyHandler {
   private RP_NAME: string = 'Openfort - Embedded Wallet';
 
   // TODO: The user gets a picker UI if there's more than one
-  async createPasskey(rpId: string, userId: string, username: string): Promise<Credential | null> {
+  async createPasskey(userId: string, username: string): Promise<Credential | null> {
     const userIdBuffer = new TextEncoder().encode(userId);
 
     const publicKey: PublicKeyCredentialCreationOptions = {

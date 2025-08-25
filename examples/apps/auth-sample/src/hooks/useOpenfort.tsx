@@ -219,8 +219,8 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
             await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, state: {name: PasskeyFlowStateEnum.NEEDS_CREATE}}});
           } catch (err) {
             // TODO: PARSE WALLET DATA
-            // TODO: CREATE PASSKEY
-            await openfort.passkeyHandler.createPasskey('localhost', 'test-id-123-456', 'sergio-test-123');
+            // TODO: DETERMINE RELIABLE SOURCE FOR USERID
+            await openfort.passkeyHandler.createPasskey('test-id-123-456', 'sergio-test-123');
             // TODO: SIGN SHARE W/ PASSKEY
             // TODO: PASS ENCRYPTED SHARE IN CONFIGURE SECOND ATTEMPT
             await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, state: {name: PasskeyFlowStateEnum.SIGNED, encryptedContents: "hello!"}}})
