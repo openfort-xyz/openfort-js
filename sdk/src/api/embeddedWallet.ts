@@ -16,6 +16,7 @@ import {
   OpenfortEvents,
   RecoveryMethod,
   RecoveryParams,
+  ListAccountsParams,
 } from '../types/types';
 import { debugLog } from '../utils/debug';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -318,7 +319,8 @@ export class EmbeddedWalletApi {
 
     const signer = await this.ensureSigner();
     const { hashMessage = true, arrayifyMessage = false } = options || {};
-    return await signer.sign(message, arrayifyMessage, hashMessage);
+    const account = await Account.fromStorage(this.storage);
+    return await signer.sign(message, arrayifyMessage, hashMessage, account?.chainType);
   }
 
   async signTypedData(
@@ -420,7 +422,11 @@ export class EmbeddedWalletApi {
     };
   }
 
-  async list(): Promise<EmbeddedAccount[]> {
+  async list(requestParams?: ListAccountsParams): Promise<EmbeddedAccount[]> {
+    const params = {
+      accountType: AccountTypeEnum.SMART_ACCOUNT,
+      ...requestParams,
+    };
     const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -432,9 +438,7 @@ export class EmbeddedWalletApi {
     }
     return withOpenfortError<EmbeddedAccount[]>(async () => {
       const response = await this.backendApiClients.accountsApi.getAccountsV2(
-        {
-          accountType: AccountTypeEnum.SMART_ACCOUNT,
-        },
+        params,
         {
           headers: {
             authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,

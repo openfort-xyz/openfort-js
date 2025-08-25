@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Feat
 - Authenticate third party has moved to callback function in constructor
 
+## [0.9.12] - 2025-08-14
+### Fix
+- Solana sample
+
+### Feat
+- sign method uses chain type from the local storage
+
 ## [0.9.8] - 2025-08-14
 ### Feat
 - Improve logout handling

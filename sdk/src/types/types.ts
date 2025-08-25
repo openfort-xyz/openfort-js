@@ -457,7 +457,7 @@ export type EmbeddedAccountRecoverParams = {
 export type EmbeddedAccountCreateParams = {
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
-  chainId: number;
+  chainId?: number;
   recoveryParams: RecoveryParams;
 };
 
@@ -467,4 +467,19 @@ export type RecoveryParams = {
 } | {
   recoveryMethod: RecoveryMethod.PASSWORD;
   password: string;
+};
+
+export enum SortOrdering {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+export type ListAccountsParams = {
+  address?: string;
+  accountType?: AccountTypeEnum;
+  chainType?: ChainTypeEnum;
+  chainId?: number;
+  order?: SortOrdering;
+  limit?: number;
+  skip?: number;
 };
