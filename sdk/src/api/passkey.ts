@@ -116,7 +116,7 @@ export class PasskeyHandler {
     const key = await crypto.subtle.importKey(
       'raw',
       rawBits,
-      { name: 'AES-GCM' },
+      { name: 'AES-CBC', length: 32 },
       true,
       ['encrypt', 'decrypt'],
     );
