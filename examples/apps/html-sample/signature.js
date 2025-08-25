@@ -13,8 +13,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     shieldConfiguration: {
       shieldPublishableKey: 'a4b75269-65e7-49c4-a600-6b5d9d6eec66',
       shieldEncryptionKey: '/cC/ElEv1bCHxvbE/UUH+bLIf8nSLZOrxj8TkKChiY4=',
-      debug:true
+      debug: true
     },
+    overrides: {
+      thirdPartyAuthProvider: "firebase",
+      getAccessToken: async () => {
+        console.log("----- Getting access token from Firebase auth -----");
+        return (await auth.currentUser?.getIdToken(/* forceRefresh */ false)) ?? null
+      },
+    }
   });
 
   const auth = firebaseApp.auth();
@@ -34,12 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   auth.onIdTokenChanged(async (user) => {
     if (user) {
-      const idToken = await user.getIdToken();
-      const player = await openfort.auth.authenticateWithThirdPartyProvider({
-        provider:'firebase',
-        token:idToken,
-        tokenType:'idToken'
-      });
       const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       console.log(embeddedState);
       if (embeddedState !== 4) {
