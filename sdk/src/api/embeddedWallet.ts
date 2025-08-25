@@ -19,6 +19,7 @@ import {
   OpenfortEvents,
   ChainTypeEnum,
   AccountTypeEnum,
+  PasskeyFlowStateEnum,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { IframeManager } from '../wallets/iframeManager';
@@ -207,7 +208,11 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string; usePasskey?: boolean; } | undefined;
+    let entropy: {
+      recoveryPassword?: string;
+      encryptionSession?: string; usePasskey?: boolean;
+      signedContents?: string
+    } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
       entropy = {
         encryptionSession: params.shieldAuthentication?.encryptionSession,
@@ -216,12 +221,23 @@ export class EmbeddedWalletApi {
           : undefined,
       };
     }
+
+    // OpenfortJS supports two states: NEEDS_CREATE and SIGNED
+    // SIGNED means that passkey authentication has already happened AND
+    // that is has been already used for PRF key derivation + share signing
+    // The iframe will instead use usePasskey & determining whether signed contents are null
+    // to determine if it should fail + return contents to sign OR continue its normal workflow
+    // using the signed contents received from above
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
       entropy = {
         usePasskey: true,
+        signedContents:
+          recoveryParams.state.name === PasskeyFlowStateEnum.SIGNED
+            ? recoveryParams.state.signedContents : undefined,
       };
     }
     const signer = await this.ensureSigner();
+    console.log(`Calling signer.configure() w/ parameters ${JSON.stringify(entropy)}`);
     const account = await signer.configure({
       chainId: params.chainId,
       entropy,
