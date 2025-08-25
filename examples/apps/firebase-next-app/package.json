@@ -1,5 +1,5 @@
 {
-  "name": "firebase-auth-sample",
+  "name": "firebase-next-app",
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
@@ -22,8 +22,8 @@
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "tailwind-merge": "^2.5.2",
-    "viem": "2.29.2",
-    "wagmi": "^2.15.3"
+    "viem": "2.x",
+    "wagmi": "2.15.2"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
