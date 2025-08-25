@@ -85,7 +85,6 @@ export const Content = () => {
       const sig = await openfort.embeddedWallet.signMessage(
         message,
         undefined,
-        "SVM"
       )
       console.log("Message signed:", sig)
       setSignature(sig)

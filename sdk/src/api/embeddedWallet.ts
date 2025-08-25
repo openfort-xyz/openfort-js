@@ -319,13 +319,13 @@ export class EmbeddedWalletApi {
   async signMessage(
     message: string | Uint8Array,
     options?: { hashMessage?: boolean; arrayifyMessage?: boolean },
-    chainType?: string,
   ): Promise<string> {
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
     const { hashMessage = true, arrayifyMessage = false } = options || {};
-    return await signer.sign(message, arrayifyMessage, hashMessage, chainType);
+    const account = await Account.fromStorage(this.storage);
+    return await signer.sign(message, arrayifyMessage, hashMessage, account?.chainType);
   }
 
   async signTypedData(
