@@ -13,42 +13,49 @@ document.addEventListener('DOMContentLoaded', async () => {
     shieldConfiguration: {
       shieldPublishableKey: 'a4b75269-65e7-49c4-a600-6b5d9d6eec66',
       shieldEncryptionKey: '/cC/ElEv1bCHxvbE/UUH+bLIf8nSLZOrxj8TkKChiY4=',
-      debug:true
+      debug: true
     },
+    overrides: {
+      thirdPartyAuthProvider: "firebase",
+      getAccessToken: async () => {
+        console.log("----- Getting access token from Firebase auth -----");
+        return (await auth.currentUser?.getIdToken(/* forceRefresh */ false)) ?? null
+      },
+    }
   });
+
+  const getEncryptionSession = async () => {
+    // This application is using the backend of another sample in this repository.
+    // You can find the source code for the backend in the https://github.com/openfort-xyz/openfort-js/blob/main/examples/apps/auth-sample/src/pages/api/protected-create-encryption-session.ts
+    const response = await fetch('https://openfort-auth-non-custodial.vercel.app/api/protected-create-encryption-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data.session;
+  }
 
   const auth = firebaseApp.auth();
   const chainId = 80002;
   const handleRecovery = async (method, idToken, password = null) => {
     if (method === 'password') {
-      const shieldAuth = {
-        auth: 'openfort',
-        token: idToken,
-        authProvider: 'firebase',
-        tokenType: 'idToken',
-      };
       await openfort.embeddedWallet.configure(
         {
-          chainId:chainId, 
-          shieldAuthentication: shieldAuth, 
+          chainId: chainId,
           recoveryParams: {
             recoveryMethod: "password",
-            password:password
+            password: password
           }
         });
     } else if (method === 'automatic') {
-      const shieldAuth = {
-        auth: 'openfort',
-        token: idToken,
-        authProvider: 'firebase',
-        tokenType: 'idToken',
-      };
       await openfort.embeddedWallet.configure(
         {
-          chainId:chainId, 
-          shieldAuthentication: shieldAuth, 
+          chainId: chainId,
           recoveryParams: {
-            recoveryMethod: "automatic"
+            recoveryMethod: "automatic",
+            encryptionSession: await getEncryptionSession(),
           }
         });
     }
@@ -63,11 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   auth.onIdTokenChanged(async (user) => {
     if (user) {
       const idToken = await user.getIdToken();
-      await openfort.auth.authenticateWithThirdPartyProvider({
-        provider:'firebase',
-        token:idToken,
-        tokenType:'idToken'
-      });
+      await openfort.auth.authenticateWithThirdPartyProvider();
       const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       if (embeddedState === 4) {
         window.location.href = 'signature.html';

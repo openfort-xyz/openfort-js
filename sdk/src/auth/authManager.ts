@@ -15,7 +15,7 @@ import {
   InitializeOAuthOptions,
   OAuthProvider,
   SIWEInitResponse,
-  ThirdPartyOAuthProvider,
+  ThirdPartyAuthProvider,
   TokenType,
   PKCEData,
 } from '../types/types';
@@ -238,7 +238,7 @@ export class AuthManager {
   }
 
   public async authenticateThirdParty(
-    provider: ThirdPartyOAuthProvider,
+    provider: ThirdPartyAuthProvider,
     token: string,
     tokenType: TokenType,
     ecosystemGame?: string,
@@ -590,7 +590,7 @@ export class AuthManager {
 
   public async linkThirdParty(
     auth: Authentication,
-    provider: ThirdPartyOAuthProvider,
+    provider: ThirdPartyAuthProvider,
     playerToken: string,
     tokenType: TokenType,
     ecosystemGame?: string,

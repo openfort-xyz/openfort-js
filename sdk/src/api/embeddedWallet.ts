@@ -1,33 +1,34 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { IStorage } from '../storage/istorage';
+import { SDKConfiguration } from '../core/config/config';
 import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
-import { SDKConfiguration } from '../core/config/config';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError';
-import { signMessage } from '../wallets/evm/walletHelpers';
-import { EvmProvider, Provider } from '../wallets/evm';
-import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
-import TypedEventEmitter from '../utils/typedEventEmitter';
+import { IStorage } from '../storage/istorage';
 import {
-  EmbeddedState,
-  RecoveryMethod,
-  OpenfortEventMap,
+  AccountTypeEnum,
+  ChainTypeEnum,
   EmbeddedAccount,
   EmbeddedAccountConfigureParams,
-  EmbeddedAccountRecoverParams,
   EmbeddedAccountCreateParams,
+  EmbeddedAccountRecoverParams,
+  EmbeddedState,
+  OpenfortEventMap,
   OpenfortEvents,
-  ChainTypeEnum,
-  AccountTypeEnum,
+  RecoveryMethod,
+  RecoveryParams,
   ListAccountsParams,
 } from '../types/types';
-import { TypedDataPayload } from '../wallets/evm/types';
-import { IframeManager } from '../wallets/iframeManager';
-import { EmbeddedSigner } from '../wallets/embedded';
-import { WindowMessenger } from '../wallets/messaging/browserMessenger';
-import { ReactNativeMessenger } from '../wallets/messaging';
-import { MessagePoster } from '../wallets/types';
 import { debugLog } from '../utils/debug';
+import TypedEventEmitter from '../utils/typedEventEmitter';
+import { EmbeddedSigner } from '../wallets/embedded';
+import { EvmProvider, Provider } from '../wallets/evm';
+import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
+import { TypedDataPayload } from '../wallets/evm/types';
+import { signMessage } from '../wallets/evm/walletHelpers';
+import { IframeManager } from '../wallets/iframeManager';
+import { ReactNativeMessenger } from '../wallets/messaging';
+import { WindowMessenger } from '../wallets/messaging/browserMessenger';
+import { MessagePoster } from '../wallets/types';
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null;
@@ -62,7 +63,7 @@ export class EmbeddedWalletApi {
   }
 
   private get backendApiClients(): BackendApiClients {
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -109,7 +110,7 @@ export class EmbeddedWalletApi {
   private async createIframeManager(): Promise<IframeManager> {
     debugLog('[HANDSHAKE DEBUG] createIframeManager starting');
 
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       debugLog('[HANDSHAKE DEBUG] Configuration not found');
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -199,6 +200,21 @@ export class EmbeddedWalletApi {
     return iframe;
   }
 
+  private getEntropy(recoveryParams: RecoveryParams): { recoveryPassword?: string; encryptionSession?: string } {
+    switch (recoveryParams.recoveryMethod) {
+      case RecoveryMethod.PASSWORD:
+        return {
+          recoveryPassword: recoveryParams.password,
+        };
+      case RecoveryMethod.AUTOMATIC:
+        return {
+          encryptionSession: recoveryParams.encryptionSession,
+        };
+      default:
+        throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+  }
+
   async configure(
     params: EmbeddedAccountConfigureParams,
   ): Promise<EmbeddedAccount> {
@@ -208,15 +224,8 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
-    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
-      entropy = {
-        encryptionSession: params.shieldAuthentication?.encryptionSession,
-        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
-          ? recoveryParams.password
-          : undefined,
-      };
-    }
+    const entropy = this.getEntropy(recoveryParams);
+
     const signer = await this.ensureSigner();
     const account = await signer.configure({
       chainId: params.chainId,
@@ -244,15 +253,8 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
-    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
-      entropy = {
-        encryptionSession: params.shieldAuthentication?.encryptionSession,
-        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
-          ? recoveryParams.password
-          : undefined,
-      };
-    }
+    const entropy = this.getEntropy(recoveryParams);
+
     const signer = await this.ensureSigner();
 
     const account = await signer.create({
@@ -283,15 +285,8 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
-    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
-      entropy = {
-        encryptionSession: params.shieldAuthentication?.encryptionSession,
-        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
-          ? recoveryParams.password
-          : undefined,
-      };
-    }
+    const entropy = this.getEntropy(recoveryParams);
+
     const signer = await this.ensureSigner();
     const account = await signer.recover({
       account: params.account,
@@ -366,23 +361,42 @@ export class EmbeddedWalletApi {
     return await signer.export();
   }
 
-  async setEmbeddedRecovery({
-    recoveryMethod,
-    recoveryPassword,
-    encryptionSession,
-  }: {
-    recoveryMethod: RecoveryMethod;
-    recoveryPassword?: string;
-    encryptionSession?: string;
-  }): Promise<void> {
+  async setRecoveryMethod(
+    previousRecovery: RecoveryParams,
+    newRecovery: RecoveryParams,
+  ): Promise<void> {
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
-    if (recoveryMethod === 'password' && !recoveryPassword) {
-      throw new OpenfortError('Recovery password is required', OpenfortErrorType.INVALID_CONFIGURATION);
+
+    let recoveryPassword: string | undefined;
+    let encryptionSession: string | undefined;
+
+    if (previousRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
+      recoveryPassword = previousRecovery.password;
+    } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
+      recoveryPassword = newRecovery.password;
     }
 
-    await signer.setEmbeddedRecovery({ recoveryMethod, recoveryPassword, encryptionSession });
+    if (previousRecovery.recoveryMethod === RecoveryMethod.AUTOMATIC) {
+      encryptionSession = previousRecovery.encryptionSession;
+    } else if (newRecovery.recoveryMethod === RecoveryMethod.AUTOMATIC) {
+      encryptionSession = newRecovery.encryptionSession;
+    }
+
+    if (!recoveryPassword && !encryptionSession) {
+      throw new OpenfortError(
+        'Password or encryption session is not provided',
+        OpenfortErrorType.INVALID_CONFIGURATION,
+      );
+    }
+
+    // Iframe needs to be refactored to support more than just password and automatic
+    await signer.setRecoveryMethod({
+      recoveryMethod: newRecovery.recoveryMethod,
+      recoveryPassword,
+      encryptionSession,
+    });
   }
 
   async get(): Promise<EmbeddedAccount> {
@@ -413,7 +427,7 @@ export class EmbeddedWalletApi {
       accountType: AccountTypeEnum.SMART_ACCOUNT,
       ...requestParams,
     };
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -549,7 +563,7 @@ export class EmbeddedWalletApi {
   }
 
   getURL(): string {
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }

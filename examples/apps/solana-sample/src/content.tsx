@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AccountTypeEnum, AuthPlayerResponse, ChainTypeEnum, EmbeddedAccount, EmbeddedState } from "@openfort/openfort-js"
+import { AccountTypeEnum, AuthPlayerResponse, ChainTypeEnum, EmbeddedAccount, EmbeddedState, RecoveryMethod } from "@openfort/openfort-js"
 import { PublicKey } from "@solana/web3.js"
 import { useEffect, useState } from "react"
 import { Login } from "./Login"
@@ -34,7 +34,7 @@ export const Content = () => {
 
   const listAccounts = async () => {
     try {
-      const accountsList = await openfort.embeddedWallet.list({accountType: AccountTypeEnum.EOA, chainType: ChainTypeEnum.SVM, limit: 100})
+      const accountsList = await openfort.embeddedWallet.list({ accountType: AccountTypeEnum.EOA, chainType: ChainTypeEnum.SVM, limit: 100 })
       console.log("All accounts:", accountsList)
       setAccounts(accountsList)
       setShowAccounts(true)
@@ -43,12 +43,30 @@ export const Content = () => {
     }
   }
 
+  const getEncryptionSession = async () => {
+    // This application is using the backend of another sample in this repository.
+    // You can find the source code for the backend in the https://github.com/openfort-xyz/openfort-js/blob/main/examples/apps/auth-sample/src/pages/api/protected-create-encryption-session.ts
+    const response = await fetch('https://openfort-auth-non-custodial.vercel.app/api/protected-create-encryption-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data.session;
+  }
+
+
   const createAccount = async () => {
     try {
       console.log("Creating new Solana account...")
       const newAccount = await openfort.embeddedWallet.create({
         accountType: AccountTypeEnum.EOA,
         chainType: ChainTypeEnum.SVM,
+        recoveryParams: {
+          recoveryMethod: RecoveryMethod.AUTOMATIC,
+          encryptionSession: await getEncryptionSession(),
+        },
       })
       console.log("New account created:", newAccount)
       setAccount(newAccount)
@@ -66,6 +84,10 @@ export const Content = () => {
       console.log("Recovering account with ID:", accountId)
       const recoveredAccount = await openfort.embeddedWallet.recover({
         account: accountId,
+        recoveryParams: {
+          recoveryMethod: RecoveryMethod.AUTOMATIC,
+          encryptionSession: await getEncryptionSession(),
+        }
       })
       console.log("Account recovered:", recoveredAccount)
       setAccount(recoveredAccount)
@@ -79,7 +101,7 @@ export const Content = () => {
       console.error("Please enter a message to sign")
       return
     }
-    
+
     try {
       console.log("Signing message:", message)
       const sig = await openfort.embeddedWallet.signMessage(
@@ -112,23 +134,30 @@ export const Content = () => {
         try {
           // First, try to list existing wallets
           console.log("checking for existing wallets")
-          const existingWallets = await openfort.embeddedWallet.list({accountType: AccountTypeEnum.EOA, chainType: ChainTypeEnum.SVM, limit: 100})
+          const existingWallets = await openfort.embeddedWallet.list({ accountType: AccountTypeEnum.EOA, chainType: ChainTypeEnum.SVM, limit: 100 })
 
           if (existingWallets.length > 0) {
             // If wallets exist, recover the first one
             console.log("recovering existing embedded signer", existingWallets[0].address)
             await openfort.embeddedWallet.recover({
               account: existingWallets[0].id,
+              recoveryParams: {
+                recoveryMethod: RecoveryMethod.AUTOMATIC,
+                encryptionSession: await getEncryptionSession(),
+              }
               // not defining recoveryParams will default to automatic recovery
             })
           } else {
             // If no wallets exist, create a new one
             console.log("configuring embedded signer")
-            await openfort.embeddedWallet.create(
-              { 
-                accountType: AccountTypeEnum.EOA,
-                chainType: ChainTypeEnum.SVM,
-              }
+            await openfort.embeddedWallet.create({
+              accountType: AccountTypeEnum.EOA,
+              chainType: ChainTypeEnum.SVM,
+              recoveryParams: {
+                recoveryMethod: RecoveryMethod.AUTOMATIC,
+                encryptionSession: await getEncryptionSession(),
+              },
+            }
             )
           }
         } catch (error) {
@@ -136,9 +165,14 @@ export const Content = () => {
           // Fallback to creating a new wallet if recovery fails
           console.log("fallback: creating new embedded signer")
           await openfort.embeddedWallet.create(
-            { 
+            {
               accountType: AccountTypeEnum.EOA,
               chainType: ChainTypeEnum.SVM,
+              recoveryParams: {
+                recoveryMethod: RecoveryMethod.AUTOMATIC,
+                encryptionSession: await getEncryptionSession(),
+              },
+              
             }
           )
         }
@@ -160,7 +194,7 @@ export const Content = () => {
     )
   }
   console.log("Embedded wallet:", account)
-  
+
   return (
     <div className="text-white flex flex-col items-center gap-4">
       <p className="text-lg" onClick={() => getUser()}>Openfort user:
@@ -179,12 +213,12 @@ export const Content = () => {
           Create Account
         </button>
       </div>
-      
+
       {showAccounts && (
         <div className="w-full max-w-4xl mt-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">All Accounts ({accounts.length})</h3>
-            <button 
+            <button
               onClick={() => setShowAccounts(false)}
               className="text-gray-400 hover:text-white"
             >
@@ -208,7 +242,7 @@ export const Content = () => {
                         <div><span className="text-gray-400">Owner:</span> <span className="font-mono">{acc.ownerAddress}</span></div>
                       )}
                     </div>
-                    <button 
+                    <button
                       onClick={() => recoverAccount(acc.id)}
                       className="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm ml-4 flex-shrink-0"
                     >
@@ -221,67 +255,67 @@ export const Content = () => {
           </div>
         </div>
       )}
-        <div className="w-xl">
-          {account && (
-            <SolanaExternalSignerComponent publicKey={new PublicKey(account.address)} />
-          )}
-        </div>
-
+      <div className="w-xl">
         {account && (
-          <div className="w-full max-w-2xl mt-6 p-4 bg-gray-800 rounded-lg border border-gray-600">
-            <h3 className="text-lg font-semibold mb-4 text-white">Sign Message</h3>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                  Message to sign:
-                </label>
-                <input
-                  id="message"
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Enter your message here..."
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={signMessage}
-                  disabled={!message.trim()}
-                  className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed px-4 py-2 rounded text-white font-medium transition-colors"
-                >
-                  Sign
-                </button>
-                <button
-                  onClick={exportPrivateKey}
-                  className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-medium transition-colors"
-                >
-                  Export Private Key
-                </button>
-              </div>
-              {signature && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Signature:
-                  </label>
-                  <div className="p-3 bg-gray-700 rounded-md border border-gray-600">
-                    <code className="text-xs text-green-400 break-all">{signature}</code>
-                  </div>
-                </div>
-              )}
-              {privateKey && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Private Key:
-                  </label>
-                  <div className="p-3 bg-gray-700 rounded-md border border-gray-600">
-                    <code className="text-xs text-red-400 break-all">{privateKey}</code>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          <SolanaExternalSignerComponent publicKey={new PublicKey(account.address)} />
         )}
+      </div>
+
+      {account && (
+        <div className="w-full max-w-2xl mt-6 p-4 bg-gray-800 rounded-lg border border-gray-600">
+          <h3 className="text-lg font-semibold mb-4 text-white">Sign Message</h3>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                Message to sign:
+              </label>
+              <input
+                id="message"
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Enter your message here..."
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={signMessage}
+                disabled={!message.trim()}
+                className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed px-4 py-2 rounded text-white font-medium transition-colors"
+              >
+                Sign
+              </button>
+              <button
+                onClick={exportPrivateKey}
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-medium transition-colors"
+              >
+                Export Private Key
+              </button>
+            </div>
+            {signature && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Signature:
+                </label>
+                <div className="p-3 bg-gray-700 rounded-md border border-gray-600">
+                  <code className="text-xs text-green-400 break-all">{signature}</code>
+                </div>
+              </div>
+            )}
+            {privateKey && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Private Key:
+                </label>
+                <div className="p-3 bg-gray-700 rounded-md border border-gray-600">
+                  <code className="text-xs text-red-400 break-all">{privateKey}</code>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

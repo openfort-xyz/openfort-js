@@ -1,18 +1,15 @@
-import { AccountTypeEnum, ChainTypeEnum, ShieldAuthentication, ShieldAuthType } from "@openfort/openfort-js";
-import { openfortInstance } from "../openfort";
+import { AccountTypeEnum, ChainTypeEnum, RecoveryMethod } from "@openfort/openfort-js";
 import axios from 'axios';
 import { baseSepolia, sepolia } from "viem/chains";
+import { openfortInstance } from "../openfort";
 
 export const recoverEmbeddedSigner = async (account: string, chainId: number) => {
-  const shieldAuth: ShieldAuthentication = {
-    auth: ShieldAuthType.OPENFORT,
-    token: (await openfortInstance.getAccessToken())!,
-    encryptionSession: await getEncryptionSession(),
-  };
   await openfortInstance.embeddedWallet.recover({
     account: account,
-    shieldAuthentication: shieldAuth,
-    // not defining recoveryParams will default to automatic recovery
+    recoveryParams: {
+      recoveryMethod: RecoveryMethod.AUTOMATIC,
+      encryptionSession: await getEncryptionSession(),
+    },
   });
 
   // Announce the provider so wagmi can discover it
@@ -23,17 +20,14 @@ export const recoverEmbeddedSigner = async (account: string, chainId: number) =>
 };
 
 export const createEmbeddedSigner = async (chainId: number) => {
-  const shieldAuth: ShieldAuthentication = {
-    auth: ShieldAuthType.OPENFORT,
-    token: (await openfortInstance.getAccessToken())!,
-    encryptionSession: await getEncryptionSession(),
-  };
   await openfortInstance.embeddedWallet.create({
     chainId: baseSepolia.id,
     accountType: AccountTypeEnum.SMART_ACCOUNT,
     chainType: ChainTypeEnum.EVM,
-    shieldAuthentication: shieldAuth,
-    // not defining recoveryParams will default to automatic recovery
+    recoveryParams: {
+      recoveryMethod: RecoveryMethod.AUTOMATIC,
+      encryptionSession: await getEncryptionSession(),
+    }
   });
 
   // Announce the provider so wagmi can discover it
@@ -44,15 +38,13 @@ export const createEmbeddedSigner = async (chainId: number) => {
 };
 
 export const createEthereumEOA = async () => {
-  const shieldAuth: ShieldAuthentication = {
-    auth: ShieldAuthType.OPENFORT,
-    token: (await openfortInstance.getAccessToken())!,
-    encryptionSession: await getEncryptionSession(),
-  };
   await openfortInstance.embeddedWallet.create({
     accountType: AccountTypeEnum.EOA,
     chainType: ChainTypeEnum.EVM,
-    shieldAuthentication: shieldAuth,
+    recoveryParams: {
+      recoveryMethod: RecoveryMethod.AUTOMATIC,
+      encryptionSession: await getEncryptionSession(),
+    }
   });
 };
 

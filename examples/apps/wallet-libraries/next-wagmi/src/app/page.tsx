@@ -45,7 +45,7 @@ export default function App() {
         const email = localStorage.getItem("email");
         const state = searchParams.get('state');
         if (
-          email && 
+          email &&
           state
         ) {
           await openfortInstance.auth.verifyEmail({
@@ -54,7 +54,7 @@ export default function App() {
           });
           localStorage.removeItem("email");
           setVerificationStatus('Email verified successfully! You can now sign in.');
-          
+
           // Clear the URL parameters
           const url = new URL(window.location.href);
           url.searchParams.delete('state');
@@ -73,7 +73,7 @@ export default function App() {
       {verificationStatus && (
         <div className="verification-banner">
           {verificationStatus}
-          <button 
+          <button
             onClick={() => setVerificationStatus(null)}
             className="verification-close"
           >
@@ -122,15 +122,15 @@ function Account() {
       </div>
 
       {account.status === 'connected' && (
-        <button type="button" onClick={async() => {
+        <button type="button" onClick={async () => {
           if (account.connector && account.connector.name.includes('Openfort')) {
             // without explicit logout, openfort embedded wallet is just disconnected
             // but the user is still authenticated
             await openfortInstance.auth.logout();
           }
           disconnect()
-          }
-          }>
+        }
+        }>
           Disconnect
         </button>
       )}
@@ -139,115 +139,115 @@ function Account() {
 }
 
 function Connect() {
-    const chainId = useChainId();
-    const {connectors, connect, error, status} = useConnect();
-    const [activeConnector, setActiveConnector] = useState<Connector | null>(null);
-    const [showAuthModal, setShowAuthModal] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isInAuthFlow, setIsInAuthFlow] = useState(false);
-  
-    useEffect(() => {
-      // Only show modal if we're not already in an auth flow
-      if (
-        error &&
-        activeConnector?.name === 'Openfort' &&
-        error.message === 'Unauthorized - must be authenticated and configured with a signer.' &&
-        !isInAuthFlow
-      ) {
-        setShowAuthModal(true);
-        setIsInAuthFlow(true);
-      }
-    }, [error, activeConnector, isInAuthFlow]);
+  const chainId = useChainId();
+  const { connectors, connect, error, status } = useConnect();
+  const [activeConnector, setActiveConnector] = useState<Connector | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isInAuthFlow, setIsInAuthFlow] = useState(false);
 
-    useEffect(() => {
-      const checkAuthStatus = async () => {
-        try {
-          const user = await openfortInstance.user.get();
-          setIsAuthenticated(!!user);
-        } catch {
-          setIsAuthenticated(false);
-        }
-      };
-      checkAuthStatus();
-    }, [status]);
-  
-    const handleConnect = (connector: Connector) => {
-      setActiveConnector(connector);
-      setIsInAuthFlow(false); // Reset auth flow state when initiating new connection
-      connect({connector, chainId});
-    };
+  useEffect(() => {
+    // Only show modal if we're not already in an auth flow
+    if (
+      error &&
+      activeConnector?.name === 'Openfort' &&
+      error.message === 'Unauthorized - must be authenticated and configured with a signer.' &&
+      !isInAuthFlow
+    ) {
+      setShowAuthModal(true);
+      setIsInAuthFlow(true);
+    }
+  }, [error, activeConnector, isInAuthFlow]);
 
-    const handleAuthSuccess = () => {
-      setIsAuthenticated(true);
-      setShowAuthModal(false);
-      
-      if(activeConnector) {
-        connect({connector: activeConnector, chainId});
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const user = await openfortInstance.user.get();
+        setIsAuthenticated(!!user);
+      } catch {
+        setIsAuthenticated(false);
       }
     };
+    checkAuthStatus();
+  }, [status]);
 
-    const handleModalClose = () => {
-      setShowAuthModal(false);
-      setIsInAuthFlow(false); // Reset auth flow when user closes modal
-      setActiveConnector(null); // Clear connector since user cancelled
-    };
-  
-    return (
-      <div>
-        <div className="buttons">
-          {connectors
-            .filter((connector) => !connector.name.includes('Injected'))
-            .map((connector) => (
-              <ConnectorButton
-                key={connector.uid}
-                connector={connector}
-                onClick={() => handleConnect(connector)}
-              />
-            ))}
-        </div>
-        {error && <div className="error">Error: {error.message}</div>}
-        <WalletList isVisible={isAuthenticated} />
-        
-        <AuthModal 
-          isOpen={showAuthModal}
-          onClose={handleModalClose}
-          onAuthSuccess={handleAuthSuccess}
-        />
+  const handleConnect = (connector: Connector) => {
+    setActiveConnector(connector);
+    setIsInAuthFlow(false); // Reset auth flow state when initiating new connection
+    connect({ connector, chainId });
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthenticated(true);
+    setShowAuthModal(false);
+
+    if (activeConnector) {
+      connect({ connector: activeConnector, chainId });
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowAuthModal(false);
+    setIsInAuthFlow(false); // Reset auth flow when user closes modal
+    setActiveConnector(null); // Clear connector since user cancelled
+  };
+
+  return (
+    <div>
+      <div className="buttons">
+        {connectors
+          .filter((connector) => !connector.name.includes('Injected'))
+          .map((connector) => (
+            <ConnectorButton
+              key={connector.uid}
+              connector={connector}
+              onClick={() => handleConnect(connector)}
+            />
+          ))}
       </div>
-    );
+      {error && <div className="error">Error: {error.message}</div>}
+      <WalletList isVisible={isAuthenticated} />
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={handleModalClose}
+        onAuthSuccess={handleAuthSuccess}
+      />
+    </div>
+  );
 }
 function ConnectorButton({
-    connector,
-    onClick,
+  connector,
+  onClick,
 }: {
-    connector: Connector;
-    onClick: () => void;
-    }) {
-    const [ready, setReady] = useState(false);
-    
-    useEffect(() => {
-        (async () => {
-        const provider = await connector.getProvider();
-        setReady(!!provider);
-        })();
-    }, [connector, setReady]);
+  connector: Connector;
+  onClick: () => void;
+}) {
+  const [ready, setReady] = useState(false);
 
-    return (
-        <button
-        className="button"
-        disabled={!ready}
-        onClick={onClick}
-        type="button"
-        >
-        {connector.name}
-        </button>
-    );
+  useEffect(() => {
+    (async () => {
+      const provider = await connector.getProvider();
+      setReady(!!provider);
+    })();
+  }, [connector, setReady]);
+
+  return (
+    <button
+      className="button"
+      disabled={!ready}
+      onClick={onClick}
+      type="button"
+    >
+      {connector.name}
+    </button>
+  );
 }
 
 function SwitchAccount() {
   const account = useAccount()
   const { connectors, switchAccount } = useSwitchAccount()
-  
+
 
   return (
     <div>
@@ -303,10 +303,10 @@ function SIWE() {
       <h2>SIWE Message</h2>
 
       <form
-        onSubmit={async(event) => {
+        onSubmit={async (event) => {
           event.preventDefault()
           const nonce = generateSiweNonce()
-          
+
           const message = createSiweMessage({
             address: address!,
             chainId: chainId,
@@ -315,23 +315,23 @@ function SIWE() {
             uri: window.location.origin,
             version: '1',
           })
-          const signature  = await signMessageAsync({message})
+          const signature = await signMessageAsync({ message })
           const publicClient = createPublicClient({
-              chain: chain,
-              transport: http()
+            chain: chain,
+            transport: http()
           })
           const success = await publicClient.verifyMessage({
-              address: address!,
-              message: message,
-              signature: signature,
+            address: address!,
+            message: message,
+            signature: signature,
           });
-          if(!success) {
-              setVerification('Verification failed');
+          if (!success) {
+            setVerification('Verification failed');
           } else {
-              setVerification('Verification successful');
+            setVerification('Verification successful');
           }
-        } 
-      }
+        }
+        }
       >
         <button type="submit">authenticate</button>
         <p>{error?.message}</p>
@@ -352,38 +352,38 @@ function SignTypedData() {
       <h2>Sign Typed Data Message</h2>
 
       <form
-        onSubmit={async(event) => {
+        onSubmit={async (event) => {
           event.preventDefault()
           const signature = await signTypedDataAsync({
-              domain: {
-                  name: "Ether Mail",
-                  version: "1",
-                  chainId: chain?.id,
-                  verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            domain: {
+              name: "Ether Mail",
+              version: "1",
+              chainId: chain?.id,
+              verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            types: {
+              Person: [
+                { name: "name", type: "string" },
+                { name: "wallet", type: "address" }
+              ],
+              Mail: [
+                { name: "from", type: "Person" },
+                { name: "to", type: "Person" },
+                { name: "contents", type: "string" }
+              ]
+            },
+            primaryType: "Mail",
+            message: {
+              from: {
+                name: "Cow",
+                wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
               },
-              types: {
-                  Person: [
-                      { name: "name", type: "string" },
-                      { name: "wallet", type: "address" }
-                  ],
-                  Mail: [
-                      { name: "from", type: "Person" },
-                      { name: "to", type: "Person" },
-                      { name: "contents", type: "string" }
-                  ]
+              to: {
+                name: "Bob",
+                wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
               },
-              primaryType: "Mail",
-              message: {
-                  from: {
-                      name: "Cow",
-                      wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
-                  },
-                  to: {
-                      name: "Bob",
-                      wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
-                  },
-                  contents: "Hello, Bob!"
-              }
+              contents: "Hello, Bob!"
+            }
           })
           const publicClient = createPublicClient({
             chain: chain,
@@ -392,44 +392,44 @@ function SignTypedData() {
           const isVerified = await publicClient.verifyTypedData({
             address: address!,
             domain: {
-                name: "Ether Mail",
-                version: "1",
-                chainId: chain?.id,
-                verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+              name: "Ether Mail",
+              version: "1",
+              chainId: chain?.id,
+              verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
             },
             types: {
-                Person: [
-                    { name: "name", type: "string" },
-                    { name: "wallet", type: "address" }
-                ],
-                Mail: [
-                    { name: "from", type: "Person" },
-                    { name: "to", type: "Person" },
-                    { name: "contents", type: "string" }
-                ]
+              Person: [
+                { name: "name", type: "string" },
+                { name: "wallet", type: "address" }
+              ],
+              Mail: [
+                { name: "from", type: "Person" },
+                { name: "to", type: "Person" },
+                { name: "contents", type: "string" }
+              ]
             },
             primaryType: "Mail",
             message: {
-                from: {
-                    name: "Cow",
-                    wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
-                },
-                to: {
-                    name: "Bob",
-                    wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
-                },
-                contents: "Hello, Bob!"
+              from: {
+                name: "Cow",
+                wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+              },
+              to: {
+                name: "Bob",
+                wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+              },
+              contents: "Hello, Bob!"
             },
             signature
-        })
+          })
 
-        if(!isVerified) {
+          if (!isVerified) {
             setVerification('Verification failed');
-        } else {
+          } else {
             setVerification('Verification successful');
+          }
         }
         }
-      }
       >
         <button type="submit">authenticate</button>
         <p>{error?.message}</p>
@@ -828,22 +828,22 @@ function GrantPermission() {
             </label>
           </div>
           <div className="flex gap-2">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setExpiryMinutes(PRESET_EXPIRY.DAY)}
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
               1 Day
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setExpiryMinutes(PRESET_EXPIRY.WEEK)}
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
               1 Week
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setExpiryMinutes(PRESET_EXPIRY.MONTH)}
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
@@ -889,7 +889,7 @@ function GrantPermission() {
               placeholder="Add contract address (0x...)"
               className="flex-1 rounded border p-2"
             />
-            <button 
+            <button
               type="button"
               onClick={handleAddContract}
               className="px-4 py-2 bg-green-500 text-white rounded"
@@ -899,8 +899,8 @@ function GrantPermission() {
           </div>
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={pending}
           className="w-full px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
         >

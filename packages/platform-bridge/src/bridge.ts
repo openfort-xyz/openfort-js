@@ -2,7 +2,6 @@
 import {
   Openfort,
   OpenfortError,
-  RecoveryMethod,
   SDKConfiguration,
 } from '@openfort/openfort-js';
 import { ethers } from 'ethers';
@@ -217,12 +216,7 @@ window.callFunction = async (jsonData: string) => {
         break;
       }
       case OPENFORT_FUNCTIONS.authenticateWithThirdPartyProvider: {
-        const request = JSON.parse(data);
-        const userProfile = await openfortClient.auth.authenticateWithThirdPartyProvider({
-          provider: request.provider,
-          token: request.token,
-          tokenType: request.tokenType,
-        });
+        const userProfile = await openfortClient.auth.authenticateWithThirdPartyProvider();
 
         callbackToGame({
           ...{
@@ -413,13 +407,7 @@ window.callFunction = async (jsonData: string) => {
         const request = JSON.parse(data);
         await openfortClient.embeddedWallet.configure({
           chainId: request.chainId,
-          shieldAuthentication: request.shieldAuthentication,
-          recoveryParams: request.recoveryPassword
-            ? {
-              recoveryMethod: RecoveryMethod.PASSWORD,
-              password: request.recoveryPassword,
-            }
-            : { recoveryMethod: RecoveryMethod.AUTOMATIC },
+          recoveryParams: request.recoveryParams,
         });
 
         callbackToGame({

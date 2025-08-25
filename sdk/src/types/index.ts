@@ -3,7 +3,7 @@ export { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js';
 export {
   InitializeOAuthOptions,
   EmbeddedState,
-  ThirdPartyOAuthProvider,
+  ThirdPartyAuthProvider as ThirdPartyOAuthProvider,
   BasicAuthProvider,
   TokenType,
   OAuthProvider,
@@ -19,8 +19,8 @@ export {
   EmbeddedAccount,
   AccountTypeEnum,
   ChainTypeEnum,
+  RecoveryParams,
 } from './types';
-export { ShieldAuthentication, ShieldAuthType } from '../wallets/types';
 export { IStorage as Storage } from '../storage/istorage';
 export {
   MissingRecoveryPasswordError, MissingProjectEntropyError, WrongRecoveryPasswordError, NotConfiguredError,
