@@ -30,7 +30,7 @@ NEXT_PUBLIC_OPENFORT_PUBLIC_KEY=
 
 [![Required](https://img.shields.io/badge/REQUIRED-TRUE-ORANGE.svg)](https://shields.io/)
 
-If you want to sponsor transactions, you can add policies to your `.env.local` file. You can create gas sponsorship policies from your [Openfort dashboard](https://dashboard.openfort.xyz/policies).
+If you want to sponsor transactions, you can add policies to your `.env.local` file. You can create gas sponsorship policies from your [Openfort dashboard](https://dashboard.openfort.io/policies).
 
 For this sample, create a policy in `Polygon Amoy` with a `catch all contracts` rule. [Learn more](https://www.openfort.io/docs/development/gas-sponsorship)
 
@@ -59,13 +59,13 @@ Enable email provider in your firebase project.
 
 **4. Set up Firebase Auth in Openfort**
 
-To set up Firebase to authenticate players with Openfort, visit your [dashboard provider settings](https://dashboard.openfort.xyz/players/auth/providers). You can follow a guide on how to set up Firebase Auth in Openfort [here](https://www.openfort.io/docs/configuration/external-auth).
+To set up Firebase to authenticate players with Openfort, visit your [dashboard provider settings](https://dashboard.openfort.io/players/auth/providers). You can follow a guide on how to set up Firebase Auth in Openfort [here](https://www.openfort.io/docs/configuration/external-auth).
 
 <div align="center">
   <img
     width="50%"
     height="50%"
-    src="https://blog-cms.openfort.xyz/uploads/firebase_auth_8ccee72abf.png?updated_at=2023-11-09T19:56:44.398Z"
+    src="https://blog-cms.openfort.io/uploads/firebase_auth_8ccee72abf.png?updated_at=2023-11-09T19:56:44.398Z"
     alt='firebase auth'
   />
 </div>
@@ -85,5 +85,5 @@ In your project directory, run `npm run dev`. You can now visit http://localhost
 ## Get support
 
 If you have questions, comments, or need help with code, we're here to help:
-- on Twitter at [@openfortxyz](https://twitter.com/openfort_hq)
+- on Twitter at [@openfortxyz](https://x.com/openfort_hq)
 - by [email](mailto:support+github@openfort.xyz)
