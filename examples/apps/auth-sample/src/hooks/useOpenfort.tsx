@@ -220,6 +220,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
           } catch (err) {
             // TODO: PARSE WALLET DATA
             // TODO: CREATE PASSKEY
+            await openfort.createPasskey();
             // TODO: SIGN SHARE W/ PASSKEY
             // TODO: PASS ENCRYPTED SHARE IN CONFIGURE SECOND ATTEMPT
             await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, state: {name: PasskeyFlowStateEnum.SIGNED, encryptedContents: "hello!"}}})

@@ -6,6 +6,7 @@ import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { OpenfortSDKConfiguration, SDKConfiguration } from './config/config';
 import { AuthManager } from '../auth/authManager';
 import { AuthApi } from '../api/auth';
+import { PasskeyHandler } from '../api/passkey';
 import { EmbeddedWalletApi } from '../api/embeddedWallet';
 import { UserApi } from '../api/user';
 import { ProxyApi } from '../api/proxy';
@@ -35,6 +36,8 @@ export class Openfort {
   private configuration: SDKConfiguration;
 
   public eventEmitter: TypedEventEmitter<OpenfortEventMap>;
+
+  private passkeyHandler: PasskeyHandler;
 
   public get auth(): AuthApi {
     if (!this.authInstance) {
@@ -144,6 +147,9 @@ export class Openfort {
     // Create the centralized event emitter
     this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>();
 
+    // Instantiate the passkey handler
+    this.passkeyHandler = new PasskeyHandler();
+
     InternalSentry.init({ configuration: this.configuration });
 
     // Only do synchronous initialization - no storage access
@@ -245,5 +251,9 @@ export class Openfort {
   private async ensureInitialized(): Promise<void> {
     await this.initPromise;
     await this.ensureAsyncInitialized();
+  }
+
+  async createPasskey(): Promise<Credential | null> {
+    return await this.passkeyHandler.createPasskey('localhost', 'test-id-123-456', 'sergio-test-123');
   }
 }
