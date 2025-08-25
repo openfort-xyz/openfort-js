@@ -1,3 +1,8 @@
+/**
+ * PasskeyHandler handles operations related to passkeys.
+ * This class is ONLY suitable for key-derivation related use cases.
+ * That is, it's not designed (and must NOT be used) for authentication.
+ */
 export class PasskeyHandler {
   private readonly TIMEOUT = 60_000;
 
@@ -9,10 +14,32 @@ export class PasskeyHandler {
   // TODO: Caller should get values from .env (maybe?)
   private RP_NAME: string = 'Openfort - Embedded Wallet';
 
-  // TODO: The user gets a picker UI if there's more than one
+  private getChallengeBytes(): Uint8Array {
+    // ⚠️ SECURITY WARNING ⚠️
+    // If you're ever thinking on using this class for authentication and not just key
+    // derivation you'll need to change how challenges are created and issued.
+    // Ideally challenges involved in authentication are created by the server and passed by the client
+    // If you allow the client to choose its own challenge then an attacker will be able to permanently prove they're
+    // authenticated with just one valid signature
+    // Challenges are meant to guarantee not only authenticity but "freshness" (that is, that the challengee can prove
+    // their identity when YOU ask them AND in your own terms)
+    // Check how webauthn authentication ceremonies work in this case for further clarification
+    // Key derivation is fine though: attackers still need to authenticate themselves within the passkey's authenticator
+    // to access the passkey's PRF, an old, valid signature won't help much
+    return crypto.getRandomValues(new Uint8Array(32));
+  }
+
+  // TODO: The user gets a picker UI if there's more than one passkey pointing to
+  // the same RPID
+  /**
+   * Prompts the user to create a passkey.
+   * @param userId UserID
+   * @param username User name (will also be used as User Display Name)
+   * @returns Credential object if passkey creation was successful
+   */
   async createPasskey(userId: string, username: string): Promise<Credential | null> {
     const publicKey: PublicKeyCredentialCreationOptions = {
-      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      challenge: this.getChallengeBytes(),
       rp: {
         id: this.RP_ID, // TODO: make it configurable from upper levels so switching between openfort.io/localhost won't be that painful
         name: this.RP_NAME, // TODO: make it configurable from upper levels
@@ -49,6 +76,10 @@ export class PasskeyHandler {
     return credential;
   }
 
+  /**
+   * Derives a key using a locally available passkey (for which the user must be able to auth to)
+   * @returns CryptoKey object
+   */
   async deriveKey() {
     // This assertion is the authentication step in the passkey:
     // it will fail if the user is not able to provide valid
@@ -56,7 +87,9 @@ export class PasskeyHandler {
     const assertion = await navigator.credentials.get(
       {
         publicKey: {
-          challenge: crypto.getRandomValues(new Uint8Array(32)),
+          // Challenge just adds extra noise here, no security concerns for this
+          // particular use case
+          challenge: this.getChallengeBytes(),
           rpId: this.RP_ID,
           userVerification: 'required',
           extensions: {
