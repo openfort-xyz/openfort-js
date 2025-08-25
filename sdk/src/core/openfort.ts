@@ -37,7 +37,7 @@ export class Openfort {
 
   public eventEmitter: TypedEventEmitter<OpenfortEventMap>;
 
-  private passkeyHandler: PasskeyHandler;
+  private iPasskeyHandler: PasskeyHandler;
 
   public get auth(): AuthApi {
     if (!this.authInstance) {
@@ -148,7 +148,7 @@ export class Openfort {
     this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>();
 
     // Instantiate the passkey handler
-    this.passkeyHandler = new PasskeyHandler();
+    this.iPasskeyHandler = new PasskeyHandler();
 
     InternalSentry.init({ configuration: this.configuration });
 
@@ -203,6 +203,10 @@ export class Openfort {
     return this.iAuthManager;
   }
 
+  get passkeyHandler(): PasskeyHandler {
+    return this.iPasskeyHandler;
+  }
+
   /**
    * Performs async initialization tasks
    * @private
@@ -251,9 +255,5 @@ export class Openfort {
   private async ensureInitialized(): Promise<void> {
     await this.initPromise;
     await this.ensureAsyncInitialized();
-  }
-
-  async createPasskey(): Promise<Credential | null> {
-    return await this.passkeyHandler.createPasskey('localhost', 'test-id-123-456', 'sergio-test-123');
   }
 }
