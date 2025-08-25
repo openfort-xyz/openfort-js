@@ -50,7 +50,7 @@ export interface IframeConfiguration {
   recovery: ShieldAuthentication | null;
   chainId: number | null;
   password: string | null;
-  passkeyKey: ArrayBuffer | null;
+  passkeyKey: Uint8Array | null;
 }
 
 export interface SignerConfigureRequest {
@@ -58,7 +58,7 @@ export interface SignerConfigureRequest {
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
-    passkeyKey?: ArrayBuffer;
+    passkeyKey?: Uint8Array;
   }
 }
 
@@ -338,7 +338,6 @@ export class IframeManager {
       shieldURL: this.sdkConfiguration.shieldUrl,
       passkeyKey: iframeConfiguration.passkeyKey,
     };
-
     const response = await remote.configure(config);
 
     if (isErrorResponse(response)) {

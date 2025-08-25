@@ -474,5 +474,5 @@ export type RecoverParams = {
   password: string;
 } | {
   recoveryMethod: RecoveryMethod.PASSKEY;
-  encryptionKey: ArrayBuffer;
+  encryptionKey: Uint8Array;
 };

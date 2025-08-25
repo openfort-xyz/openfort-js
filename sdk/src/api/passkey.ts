@@ -127,8 +127,8 @@ export class PasskeyHandler {
    * Derive and export a key using local passkey
    * @returns ArrayBuffer w/ derived key
    */
-  async deriveAndExportKey(): Promise< ArrayBuffer > {
+  async deriveAndExportKey(): Promise< Uint8Array > {
     const derivedKey = await this.deriveKey();
-    return await crypto.subtle.exportKey('raw', derivedKey);
+    return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey));
   }
 }

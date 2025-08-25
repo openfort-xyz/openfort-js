@@ -210,7 +210,7 @@ export class EmbeddedWalletApi {
     let entropy: {
       recoveryPassword?: string;
       encryptionSession?: string;
-      passkeyKey?: ArrayBuffer;
+      passkeyKey?: Uint8Array;
     } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
       entropy = {
