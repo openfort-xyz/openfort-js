@@ -34,7 +34,7 @@ interface ContextType {
   }) => Promise<void>;
   setWalletRecovery: (
     recoveryMethod: RecoveryMethod,
-    recoveryPassword?: string
+    recoveryPassword: string
   ) => Promise<{ error?: Error }>;
   exportPrivateKey: () => Promise<{ data?: string; error?: Error }>;
   signMessage: (
@@ -153,15 +153,17 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   const setWalletRecovery = useCallback(
     async (
       recoveryMethod: RecoveryMethod,
-      recoveryPassword?: string
+      recoveryPassword: string
     ): Promise<{ error?: Error }> => {
       try {
-        const encryptionSession = await getEncryptionSession();
         switch (recoveryMethod) {
           case RecoveryMethod.AUTOMATIC:
             await openfort.embeddedWallet.setRecoveryMethod({
+              recoveryMethod: RecoveryMethod.PASSWORD,
+              password: recoveryPassword,
+            }, {
               recoveryMethod,
-              encryptionSession
+              encryptionSession: await getEncryptionSession(),
             });
             break;
           case RecoveryMethod.PASSWORD:
@@ -169,6 +171,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
               throw new Error('Password recovery must be at least 4 characters');
             }
             await openfort.embeddedWallet.setRecoveryMethod({
+              recoveryMethod: RecoveryMethod.AUTOMATIC,
+              encryptionSession: await getEncryptionSession(),
+            }, {
               recoveryMethod,
               password: recoveryPassword,
             });

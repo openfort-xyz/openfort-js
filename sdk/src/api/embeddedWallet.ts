@@ -359,27 +359,42 @@ export class EmbeddedWalletApi {
     return await signer.export();
   }
 
-  async setRecoveryMethod(params: RecoveryParams): Promise<void> {
+  async setRecoveryMethod(
+    previousRecovery: RecoveryParams,
+    newRecovery: RecoveryParams,
+  ): Promise<void> {
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
 
-    switch (params.recoveryMethod) {
-      case RecoveryMethod.PASSWORD:
-        await signer.setRecoveryMethod({
-          recoveryMethod: params.recoveryMethod,
-          recoveryPassword: params.password,
-        });
-        return;
-      case RecoveryMethod.AUTOMATIC:
-        await signer.setRecoveryMethod({
-          recoveryMethod: params.recoveryMethod,
-          encryptionSession: params.encryptionSession,
-        });
-        return;
-      default:
-        throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
+    let recoveryPassword: string | undefined;
+    let encryptionSession: string | undefined;
+
+    if (previousRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
+      recoveryPassword = previousRecovery.password;
+    } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
+      recoveryPassword = newRecovery.password;
     }
+
+    if (previousRecovery.recoveryMethod === RecoveryMethod.AUTOMATIC) {
+      encryptionSession = previousRecovery.encryptionSession;
+    } else if (newRecovery.recoveryMethod === RecoveryMethod.AUTOMATIC) {
+      encryptionSession = newRecovery.encryptionSession;
+    }
+
+    if (!recoveryPassword && !encryptionSession) {
+      throw new OpenfortError(
+        'Password or encryption session is not provided',
+        OpenfortErrorType.INVALID_CONFIGURATION,
+      );
+    }
+
+    // Iframe needs to be refactored to support more than just password and automatic
+    await signer.setRecoveryMethod({
+      recoveryMethod: newRecovery.recoveryMethod,
+      recoveryPassword,
+      encryptionSession,
+    });
   }
 
   async get(): Promise<EmbeddedAccount> {
