@@ -49,7 +49,6 @@ export const Content = () => {
       const newAccount = await openfort.embeddedWallet.create({
         accountType: AccountTypeEnum.EOA,
         chainType: ChainTypeEnum.SVM,
-        chainId: 2, // Solana devnet
       })
       console.log("New account created:", newAccount)
       setAccount(newAccount)
@@ -162,7 +161,6 @@ export const Content = () => {
     )
   }
   console.log("Embedded wallet:", account)
-  // const isSolana = account?.chainType === "solana";
   
   return (
     <div className="text-white flex flex-col items-center gap-4">
