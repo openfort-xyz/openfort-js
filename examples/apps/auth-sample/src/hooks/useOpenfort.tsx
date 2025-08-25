@@ -200,7 +200,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   );
 
   const handleRecovery = useCallback(
-    async ({method, password, chainId}:{method: 'password' | 'automatic', password?: string, chainId: number}) => {
+    async ({method, password, chainId}:{method: 'password' | 'automatic' | 'passkey', password?: string, chainId: number}) => {
         const shieldAuth: ShieldAuthentication = {
           auth: ShieldAuthType.OPENFORT,
           token: (await openfort.getAccessToken())!,
@@ -213,6 +213,16 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
             throw new Error('Password recovery must be at least 4 characters');
           }
           await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSWORD, password: password}});
+        } else if (method === 'passkey') {
+          try {
+            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, encryptedShare: undefined}});
+          } catch (err) {
+            // TODO: PARSE SHARE
+            // TODO: CREATE PASSKEY
+            // TODO: SIGN SHARE W/ PASSKEY
+            // TODO: PASS ENCRYPTED SHARE IN CONFIGURE SECOND ATTEMPT
+            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, encryptedShare: "test1234"}})
+          }
         }
     },
     []
