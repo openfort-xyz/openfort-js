@@ -3343,7 +3343,46 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openfort/openfort-js@^0.9.3, @openfort/openfort-js@workspace:sdk":
+"@openfort/openfort-js@npm:^0.8.44":
+  version: 0.8.44
+  resolution: "@openfort/openfort-js@npm:0.8.44"
+  dependencies:
+    "@ethersproject/hash": ^5.8.0
+    "@ethersproject/providers": ^5.8.0
+    "@noble/curves": ^1.1.0
+    "@openfort/shield-js": ^0.1.14
+    "@sentry/browser": ^9.15.0
+    "@sentry/core": ^9.15.0
+    axios: ^1.8.2
+    buffer: ^6.0.3
+    crypto-js: ^4.2.0
+    es6-promise: ^4.2.8
+    jose: ^5.2.2
+    path: ^0.12.7
+  checksum: d89b57318537b5d0f95a0d650713602e38859ebddc2e26efe9c9917bfe9e01e7a5e5a09d9d7cdbbeae67483d1a7de4ce99a8d8af33abee74b2e21c06923cb69b
+  languageName: node
+  linkType: hard
+
+"@openfort/openfort-js@npm:^0.9.3":
+  version: 0.9.11
+  resolution: "@openfort/openfort-js@npm:0.9.11"
+  dependencies:
+    "@ethersproject/abi": ^5.8.0
+    "@ethersproject/bytes": ^5.8.0
+    "@ethersproject/hash": ^5.8.0
+    "@ethersproject/providers": ^5.8.0
+    "@openfort/shield-js": ^0.1.14
+    "@sentry/browser": ^9.15.0
+    "@sentry/core": ^9.15.0
+    axios: ^1.8.2
+    axios-retry: ^4.5.0
+    eventemitter3: 5.0.1
+    jose: ^5.2.2
+  checksum: a621e094003b48af6922394c576713b03e59698ee8b007ae6f7d6a89adc17e43a827f8293d69a0cb244f3acf30e8987208a5875319f2912b0018df271482373e
+  languageName: node
+  linkType: hard
+
+"@openfort/openfort-js@workspace:sdk":
   version: 0.0.0-use.local
   resolution: "@openfort/openfort-js@workspace:sdk"
   dependencies:
@@ -3388,26 +3427,6 @@ __metadata:
     typescript: ^5.0.4
   languageName: unknown
   linkType: soft
-
-"@openfort/openfort-js@npm:^0.8.44":
-  version: 0.8.44
-  resolution: "@openfort/openfort-js@npm:0.8.44"
-  dependencies:
-    "@ethersproject/hash": ^5.8.0
-    "@ethersproject/providers": ^5.8.0
-    "@noble/curves": ^1.1.0
-    "@openfort/shield-js": ^0.1.14
-    "@sentry/browser": ^9.15.0
-    "@sentry/core": ^9.15.0
-    axios: ^1.8.2
-    buffer: ^6.0.3
-    crypto-js: ^4.2.0
-    es6-promise: ^4.2.8
-    jose: ^5.2.2
-    path: ^0.12.7
-  checksum: d89b57318537b5d0f95a0d650713602e38859ebddc2e26efe9c9917bfe9e01e7a5e5a09d9d7cdbbeae67483d1a7de4ce99a8d8af33abee74b2e21c06923cb69b
-  languageName: node
-  linkType: hard
 
 "@openfort/openfort-kit@npm:latest":
   version: 0.0.15
