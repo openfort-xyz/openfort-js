@@ -1,11 +1,10 @@
-import React, {useState, useEffect, useRef} from 'react';
 import {
   EmbeddedState,
-  ShieldAuthentication,
-  ShieldAuthType,
+  RecoveryMethod
 } from '@openfort/openfort-js';
-import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { polygonAmoy } from 'viem/chains';
 import openfortInstance from '../utils/openfortConfig';
 
@@ -61,10 +60,10 @@ function Authenticate() {
     try {
       // This application is using the backend of another sample in this repository.
       // You can find the source code for the backend in the https://github.com/openfort-xyz/openfort-js/blob/main/examples/apps/auth-sample/src/pages/api/protected-create-encryption-session.ts
-      const response = await axios.post<{session: string}>(
+      const response = await axios.post<{ session: string }>(
         'https://openfort-auth-non-custodial.vercel.app/api/protected-create-encryption-session',
         {},
-        {headers: {'Content-Type': 'application/json'}}
+        { headers: { 'Content-Type': 'application/json' } }
       );
       return response.data.session;
     } catch (error) {
@@ -75,10 +74,13 @@ function Authenticate() {
   const configureEmbeddedSigner = async () => {
     try {
       const chainId = polygonAmoy.id;
-      const shieldAuth: ShieldAuthentication = {
-        encryptionSession: await getEncryptionSession(),
-      };
-      await openfortInstance.embeddedWallet.configure({chainId, shieldAuthentication: shieldAuth});
+      await openfortInstance.embeddedWallet.configure({
+        chainId,
+        recoveryParams: {
+          recoveryMethod: RecoveryMethod.AUTOMATIC,
+          encryptionSession: await getEncryptionSession(),
+        }
+      });
     } catch (error) {
       console.error('Error configuring embedded signer:', error);
       setError('Failed to configure embedded signer. Please try again.');
@@ -87,8 +89,8 @@ function Authenticate() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = e.target;
-    setFormData((prev) => ({...prev, [name]: value}));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -24,38 +24,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  const getEncryptionSession = async () => {
+    const response = await fetch('https://openfort-auth-non-custodial.vercel.app/api/protected-create-encryption-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data.session;
+  }
+
   const auth = firebaseApp.auth();
   const chainId = 80002;
   const handleRecovery = async (method, idToken, password = null) => {
     if (method === 'password') {
-      const shieldAuth = {
-        auth: 'openfort',
-        token: idToken,
-        authProvider: 'firebase',
-        tokenType: 'idToken',
-      };
       await openfort.embeddedWallet.configure(
         {
           chainId: chainId,
-          shieldAuthentication: shieldAuth,
           recoveryParams: {
             recoveryMethod: "password",
             password: password
           }
         });
     } else if (method === 'automatic') {
-      const shieldAuth = {
-        auth: 'openfort',
-        token: idToken,
-        authProvider: 'firebase',
-        tokenType: 'idToken',
-      };
       await openfort.embeddedWallet.configure(
         {
           chainId: chainId,
-          shieldAuthentication: shieldAuth,
           recoveryParams: {
-            recoveryMethod: "automatic"
+            recoveryMethod: "automatic",
+            encryptionSession: await getEncryptionSession(),
           }
         });
     }

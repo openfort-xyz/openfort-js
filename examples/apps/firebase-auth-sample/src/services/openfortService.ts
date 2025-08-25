@@ -1,7 +1,6 @@
-import { AuthPlayerResponse, Provider, ShieldAuthentication, TokenType, ShieldAuthType, RecoveryMethod } from '@openfort/openfort-js';
-import openfort from '../utils/openfortConfig';
-import { ThirdPartyOAuthProvider } from '@openfort/openfort-js';
+import { Provider, RecoveryMethod } from '@openfort/openfort-js';
 import { baseSepolia } from 'viem/chains';
+import openfort from '../utils/openfortConfig';
 
 const chainId = baseSepolia.id
 
@@ -41,10 +40,13 @@ class OpenfortService {
 
   async setAutomaticRecoveryMethod() {
     try {
-      const shieldAuth: ShieldAuthentication = {
-        encryptionSession: await this.getEncryptionSession(),
-      };
-      await openfort.embeddedWallet.configure({ chainId, shieldAuthentication: shieldAuth });
+      await openfort.embeddedWallet.configure({
+        chainId,
+        recoveryParams: {
+          recoveryMethod: RecoveryMethod.AUTOMATIC,
+          encryptionSession: await this.getEncryptionSession(),
+        }
+      });
     } catch (error) {
       console.error('Error authenticating with Openfort:', error);
       throw error;
@@ -53,10 +55,13 @@ class OpenfortService {
 
   async setPasswordRecoveryMethod(pin: string) {
     try {
-      const shieldAuth: ShieldAuthentication = {
-        encryptionSession: await this.getEncryptionSession(),
-      };
-      await openfort.embeddedWallet.configure({ chainId, shieldAuthentication: shieldAuth, recoveryParams: { password: pin, recoveryMethod: RecoveryMethod.PASSWORD } });
+      await openfort.embeddedWallet.configure({
+        chainId,
+        recoveryParams: {
+          password: pin,
+          recoveryMethod: RecoveryMethod.PASSWORD
+        }
+      });
     } catch (error) {
       console.error('Error authenticating with Openfort:', error);
       throw error;
