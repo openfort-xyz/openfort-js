@@ -170,6 +170,10 @@ export class AuthApi {
     return response;
   }
 
+  /**
+   * Authenticates the user with a third party provider.
+   * Set up the third party auth provider in the SDK configuration.
+   */
   async authenticateWithThirdPartyProvider(): Promise<void> {
     debugLog('Authenticating with third party provider');
     await this.ensureInitialized();
