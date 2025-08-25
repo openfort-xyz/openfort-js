@@ -34,7 +34,7 @@ export const Content = () => {
 
   const listAccounts = async () => {
     try {
-      const accountsList = await openfort.embeddedWallet.listWithConfig({limit: 100})
+      const accountsList = await openfort.embeddedWallet.list({accountType: AccountTypeEnum.EOA, chainType: ChainTypeEnum.SVM, limit: 100})
       console.log("All accounts:", accountsList)
       setAccounts(accountsList)
       setShowAccounts(true)
@@ -114,20 +114,13 @@ export const Content = () => {
         try {
           // First, try to list existing wallets
           console.log("checking for existing wallets")
-          const existingWallets = await openfort.embeddedWallet.listWithConfig()
-          const solanaWallets = existingWallets.filter(wallet => 
-            wallet.accountType === AccountTypeEnum.EOA && 
-            wallet.chainType === ChainTypeEnum.SVM
-          );
+          const existingWallets = await openfort.embeddedWallet.list({accountType: AccountTypeEnum.EOA, chainType: ChainTypeEnum.SVM, limit: 100})
 
-          console.log("Here is selected existingWallets:", existingWallets);
-          console.log("Here is solanaWallets array:", solanaWallets);
-
-          if (solanaWallets.length > 0) {
+          if (existingWallets.length > 0) {
             // If wallets exist, recover the first one
-            console.log("recovering existing embedded signer", solanaWallets[0].address)
+            console.log("recovering existing embedded signer", existingWallets[0].address)
             await openfort.embeddedWallet.recover({
-              account: solanaWallets[0].id,
+              account: existingWallets[0].id,
               // not defining recoveryParams will default to automatic recovery
             })
           } else {
@@ -137,7 +130,6 @@ export const Content = () => {
               { 
                 accountType: AccountTypeEnum.EOA,
                 chainType: ChainTypeEnum.SVM,
-                chainId: 2, // TODO: drop this hardcode
               }
             )
           }
@@ -149,7 +141,6 @@ export const Content = () => {
             { 
               accountType: AccountTypeEnum.EOA,
               chainType: ChainTypeEnum.SVM,
-              chainId: 2, // TODO: drop this hardcode
             }
           )
         }

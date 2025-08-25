@@ -71,7 +71,7 @@ function WalletList({ isVisible }: WalletListProps) {
     setError(null);
     
     try {
-      const walletsResponse = await openfortInstance.embeddedWallet.listWithConfig({chainType: ChainTypeEnum.EVM});
+      const walletsResponse = await openfortInstance.embeddedWallet.list({accountType: undefined, chainType: ChainTypeEnum.EVM});
       
       const walletMap = new Map<string, WalletWithChainIds>();
       const eoaMap = new Map<string, WalletWithChainIds>();

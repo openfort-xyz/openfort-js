@@ -408,7 +408,11 @@ export class EmbeddedWalletApi {
     };
   }
 
-  async list(): Promise<EmbeddedAccount[]> {
+  async list(requestParams?: ListAccountsParams): Promise<EmbeddedAccount[]> {
+    const params = {
+      accountType: AccountTypeEnum.SMART_ACCOUNT,
+      ...requestParams,
+    };
     const configuration = SDKConfiguration.fromStorage();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -420,49 +424,7 @@ export class EmbeddedWalletApi {
     }
     return withOpenfortError<EmbeddedAccount[]>(async () => {
       const response = await this.backendApiClients.accountsApi.getAccountsV2(
-        {
-          accountType: AccountTypeEnum.SMART_ACCOUNT,
-        },
-        {
-          headers: {
-            authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': auth.token,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-provider': auth.thirdPartyProvider,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-token-type': auth.thirdPartyTokenType,
-          },
-        },
-      );
-
-      return response.data.data.map((account) => ({
-        user: account.user,
-        chainType: account.chainType as ChainTypeEnum,
-        id: account.id,
-        address: account.address,
-        ownerAddress: account.ownerAddress,
-        accountType: account.accountType as AccountTypeEnum,
-        createdAt: account.createdAt,
-        implementationType: account.smartAccount?.implementationType,
-        chainId: account.chainId,
-      }));
-    }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
-  }
-
-  async listWithConfig(requestParams?: ListAccountsParams): Promise<EmbeddedAccount[]> {
-    const configuration = SDKConfiguration.fromStorage();
-    if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
-    await this.validateAndRefreshToken();
-    const auth = await Authentication.fromStorage(this.storage);
-    if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
-    return withOpenfortError<EmbeddedAccount[]>(async () => {
-      const response = await this.backendApiClients.accountsApi.getAccountsV2(
-        requestParams,
+        params,
         {
           headers: {
             authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
