@@ -2,6 +2,7 @@ import {
   EmbeddedState,
   RecoveryMethod,
   ShieldAuthType,
+  PasskeyFlowStateEnum,
   type TypedDataPayload,
   type Provider,
   type ShieldAuthentication,
@@ -215,13 +216,13 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
           await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSWORD, password: password}});
         } else if (method === 'passkey') {
           try {
-            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, encryptedShare: undefined}});
+            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, state: {name: PasskeyFlowStateEnum.NEEDS_CREATE}}});
           } catch (err) {
-            // TODO: PARSE SHARE
+            // TODO: PARSE WALLET DATA
             // TODO: CREATE PASSKEY
             // TODO: SIGN SHARE W/ PASSKEY
             // TODO: PASS ENCRYPTED SHARE IN CONFIGURE SECOND ATTEMPT
-            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, encryptedShare: "test1234"}})
+            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, state: {name: PasskeyFlowStateEnum.SIGNED, signedContents: "hello!"}}})
           }
         }
     },

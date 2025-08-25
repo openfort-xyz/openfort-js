@@ -19,6 +19,8 @@ export {
   EmbeddedAccount,
   AccountTypeEnum,
   ChainTypeEnum,
+  PasskeyFlowStateEnum,
+  PasskeyFlowState,
 } from './types';
 export { ShieldAuthentication, ShieldAuthType } from '../wallets/types';
 export { IStorage as Storage } from '../storage/istorage';

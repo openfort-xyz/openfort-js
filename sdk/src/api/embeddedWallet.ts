@@ -207,13 +207,18 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
+    let entropy: { recoveryPassword?: string; encryptionSession?: string; usePasskey?: boolean; } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
       entropy = {
         encryptionSession: params.shieldAuthentication?.encryptionSession,
         recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
           ? recoveryParams.password
           : undefined,
+      };
+    }
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      entropy = {
+        usePasskey: true,
       };
     }
     const signer = await this.ensureSigner();

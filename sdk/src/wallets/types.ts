@@ -115,6 +115,8 @@ export class ConfigureRequest implements IEventRequest {
 
   playerID: string | null;
 
+  usePasskey: boolean | null;
+
   constructor(
     uuid: string,
     chainId: number,
@@ -130,6 +132,7 @@ export class ConfigureRequest implements IEventRequest {
     thirdPartyTokenType = null,
     encryptionPart = null,
     encryptionSession = null,
+    usePasskey = false,
   ) {
     this.uuid = uuid;
     this.chainId = chainId;
@@ -145,6 +148,7 @@ export class ConfigureRequest implements IEventRequest {
     this.shieldURL = shieldURL;
     this.encryptionPart = encryptionPart;
     this.encryptionSession = encryptionSession;
+    this.usePasskey = usePasskey;
   }
 }
 
