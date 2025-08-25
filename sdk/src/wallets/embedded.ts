@@ -116,8 +116,9 @@ export class EmbeddedSigner implements Signer {
     message: Uint8Array | string,
     requireArrayify?: boolean,
     requireHash?: boolean,
+    chainType?: string,
   ): Promise<string> {
-    return await this.iframeManager.sign(message, requireArrayify, requireHash);
+    return await this.iframeManager.sign(message, requireArrayify, requireHash, chainType);
   }
 
   async export(): Promise<string> {

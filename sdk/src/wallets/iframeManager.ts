@@ -63,7 +63,7 @@ export interface SignerConfigureRequest {
 export interface SignerCreateRequest {
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
-  chainId: number,
+  chainId?: number,
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
@@ -358,7 +358,7 @@ export class IframeManager {
     const remote = await this.ensureConnection();
 
     const iframeConfiguration = await this.buildIFrameRequestConfiguration();
-    iframeConfiguration.chainId = params.chainId;
+    iframeConfiguration.chainId = params.chainId ?? null;
     iframeConfiguration.password = params?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.recovery = {
       ...iframeConfiguration.recovery as ShieldAuthentication,
@@ -379,7 +379,7 @@ export class IframeManager {
       encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
-      chainId: params.chainId,
+      chainId: params.chainId ?? null,
       accountType: params.accountType,
       chainType: params.chainType,
     };
@@ -449,6 +449,7 @@ export class IframeManager {
     message: string | Uint8Array,
     requireArrayify?: boolean,
     requireHash?: boolean,
+    chainType?: string,
   ): Promise<string> {
     debugLog('[iframe] ensureConnection');
     const remote = await this.ensureConnection();
@@ -459,6 +460,7 @@ export class IframeManager {
       requireArrayify,
       requireHash,
       await this.buildRequestConfiguration(),
+      chainType,
     );
     debugLog('[iframe] done ensureConnection');
 
