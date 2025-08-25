@@ -51,6 +51,7 @@ export interface IframeConfiguration {
   chainId: number | null;
   password: string | null;
   usePasskey: boolean | false;
+  encryptedContents: string | null;
 }
 
 export interface SignerConfigureRequest {
@@ -59,6 +60,7 @@ export interface SignerConfigureRequest {
     recoveryPassword?: string;
     encryptionSession?: string;
     usePasskey?: boolean;
+    encryptedContents?: string;
   }
 }
 
@@ -301,6 +303,7 @@ export class IframeManager {
       chainId: null,
       password: null,
       usePasskey: false,
+      encryptedContents: null,
     };
     return iframeConfiguration;
   }
@@ -315,6 +318,7 @@ export class IframeManager {
     iframeConfiguration.chainId = request?.chainId ?? acc?.chainId ?? null;
     iframeConfiguration.password = request?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.usePasskey = request?.entropy?.usePasskey ?? false;
+    iframeConfiguration.encryptedContents = request?.entropy?.encryptedContents ?? null;
     iframeConfiguration.recovery = {
       ...iframeConfiguration.recovery as ShieldAuthentication,
       encryptionSession: request?.entropy?.encryptionSession,
@@ -337,6 +341,7 @@ export class IframeManager {
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
       usePasskey: iframeConfiguration.usePasskey,
+      encryptedContents: iframeConfiguration.encryptedContents,
     };
 
     const response = await remote.configure(config);

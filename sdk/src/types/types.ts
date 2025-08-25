@@ -476,7 +476,7 @@ export type PasskeyFlowState = {
   name: PasskeyFlowStateEnum.NEEDS_CREATE
 } | {
   name: PasskeyFlowStateEnum.SIGNED,
-  signedContents: string
+  encryptedContents: string
 };
 
 export type RecoverParams = {

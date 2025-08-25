@@ -211,7 +211,7 @@ export class EmbeddedWalletApi {
     let entropy: {
       recoveryPassword?: string;
       encryptionSession?: string; usePasskey?: boolean;
-      signedContents?: string
+      encryptedContents?: string
     } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
       entropy = {
@@ -231,13 +231,12 @@ export class EmbeddedWalletApi {
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
       entropy = {
         usePasskey: true,
-        signedContents:
+        encryptedContents:
           recoveryParams.state.name === PasskeyFlowStateEnum.SIGNED
-            ? recoveryParams.state.signedContents : undefined,
+            ? recoveryParams.state.encryptedContents : undefined,
       };
     }
     const signer = await this.ensureSigner();
-    console.log(`Calling signer.configure() w/ parameters ${JSON.stringify(entropy)}`);
     const account = await signer.configure({
       chainId: params.chainId,
       entropy,
