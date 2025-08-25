@@ -11,7 +11,7 @@ export interface Signer {
   disconnect(): Promise<void>;
   configure(params: SignerConfigureRequest): Promise<Account>;
   switchChain({ chainId }: { chainId: number }): Promise<void>;
-  setEmbeddedRecovery(
+  setRecoveryMethod(
     { recoveryMethod, recoveryPassword, encryptionSession }:
     { recoveryMethod: RecoveryMethod; recoveryPassword?: string, encryptionSession?: string }): Promise<void>;
   export(): Promise<string>;

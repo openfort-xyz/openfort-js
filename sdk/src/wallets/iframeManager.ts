@@ -545,7 +545,7 @@ export class IframeManager {
   }
 
   // eslint-disable-next-line consistent-return
-  async setEmbeddedRecovery(
+  async setRecoveryMethod(
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
@@ -573,7 +573,7 @@ export class IframeManager {
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure();
-        return this.setEmbeddedRecovery(recoveryMethod, recoveryPassword, encryptionSession);
+        return this.setRecoveryMethod(recoveryMethod, recoveryPassword, encryptionSession);
       }
       throw e;
     }

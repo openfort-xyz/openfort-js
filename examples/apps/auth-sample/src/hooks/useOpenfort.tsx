@@ -157,11 +157,25 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     ): Promise<{ error?: Error }> => {
       try {
         const encryptionSession = await getEncryptionSession();
-        await openfort.embeddedWallet.setEmbeddedRecovery({
-          recoveryMethod,
-          recoveryPassword,
-          encryptionSession,
-        });
+        switch (recoveryMethod) {
+          case RecoveryMethod.AUTOMATIC:
+            await openfort.embeddedWallet.setRecoveryMethod({
+              recoveryMethod,
+              encryptionSession
+            });
+            break;
+          case RecoveryMethod.PASSWORD:
+            if (!recoveryPassword || recoveryPassword.length < 4) {
+              throw new Error('Password recovery must be at least 4 characters');
+            }
+            await openfort.embeddedWallet.setRecoveryMethod({
+              recoveryMethod,
+              password: recoveryPassword,
+            });
+            break;
+          default:
+            throw new Error('Invalid recovery method');
+        }
         return {};
       } catch (err) {
         console.error('Error setting wallet recovery:', err);

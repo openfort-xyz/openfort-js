@@ -231,7 +231,7 @@ export class EmbeddedSigner implements Signer {
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
-  async setEmbeddedRecovery({
+  async setRecoveryMethod({
     recoveryMethod,
     recoveryPassword,
     encryptionSession,
@@ -240,7 +240,7 @@ export class EmbeddedSigner implements Signer {
     recoveryPassword?: string;
     encryptionSession?: string;
   }): Promise<void> {
-    await this.iframeManager.setEmbeddedRecovery(
+    await this.iframeManager.setRecoveryMethod(
       recoveryMethod,
       recoveryPassword,
       encryptionSession,

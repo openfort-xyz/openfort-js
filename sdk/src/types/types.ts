@@ -463,7 +463,7 @@ export type EmbeddedAccountCreateParams = {
 
 export type RecoveryParams = {
   recoveryMethod: RecoveryMethod.AUTOMATIC;
-  encryptionSession: string
+  encryptionSession: string,
 } | {
   recoveryMethod: RecoveryMethod.PASSWORD;
   password: string;

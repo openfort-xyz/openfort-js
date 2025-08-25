@@ -1,33 +1,33 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
-import { IStorage } from '../storage/istorage';
+import { SDKConfiguration } from '../core/config/config';
 import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
-import { SDKConfiguration } from '../core/config/config';
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError';
-import { signMessage } from '../wallets/evm/walletHelpers';
-import { EvmProvider, Provider } from '../wallets/evm';
-import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
-import TypedEventEmitter from '../utils/typedEventEmitter';
+import { IStorage } from '../storage/istorage';
 import {
-  EmbeddedState,
-  RecoveryMethod,
-  OpenfortEventMap,
+  AccountTypeEnum,
+  ChainTypeEnum,
   EmbeddedAccount,
   EmbeddedAccountConfigureParams,
-  EmbeddedAccountRecoverParams,
   EmbeddedAccountCreateParams,
+  EmbeddedAccountRecoverParams,
+  EmbeddedState,
+  OpenfortEventMap,
   OpenfortEvents,
-  ChainTypeEnum,
-  AccountTypeEnum,
+  RecoveryMethod,
   RecoveryParams,
 } from '../types/types';
-import { TypedDataPayload } from '../wallets/evm/types';
-import { IframeManager } from '../wallets/iframeManager';
-import { EmbeddedSigner } from '../wallets/embedded';
-import { WindowMessenger } from '../wallets/messaging/browserMessenger';
-import { ReactNativeMessenger } from '../wallets/messaging';
-import { MessagePoster } from '../wallets/types';
 import { debugLog } from '../utils/debug';
+import TypedEventEmitter from '../utils/typedEventEmitter';
+import { EmbeddedSigner } from '../wallets/embedded';
+import { EvmProvider, Provider } from '../wallets/evm';
+import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
+import { TypedDataPayload } from '../wallets/evm/types';
+import { signMessage } from '../wallets/evm/walletHelpers';
+import { IframeManager } from '../wallets/iframeManager';
+import { ReactNativeMessenger } from '../wallets/messaging';
+import { WindowMessenger } from '../wallets/messaging/browserMessenger';
+import { MessagePoster } from '../wallets/types';
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null;
@@ -359,23 +359,27 @@ export class EmbeddedWalletApi {
     return await signer.export();
   }
 
-  async setEmbeddedRecovery({
-    recoveryMethod,
-    recoveryPassword,
-    encryptionSession,
-  }: {
-    recoveryMethod: RecoveryMethod;
-    recoveryPassword?: string;
-    encryptionSession?: string;
-  }): Promise<void> {
+  async setRecoveryMethod(params: RecoveryParams): Promise<void> {
     await this.validateAndRefreshToken();
 
     const signer = await this.ensureSigner();
-    if (recoveryMethod === 'password' && !recoveryPassword) {
-      throw new OpenfortError('Recovery password is required', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
 
-    await signer.setEmbeddedRecovery({ recoveryMethod, recoveryPassword, encryptionSession });
+    switch (params.recoveryMethod) {
+      case RecoveryMethod.PASSWORD:
+        await signer.setRecoveryMethod({
+          recoveryMethod: params.recoveryMethod,
+          recoveryPassword: params.password,
+        });
+        return;
+      case RecoveryMethod.AUTOMATIC:
+        await signer.setRecoveryMethod({
+          recoveryMethod: params.recoveryMethod,
+          encryptionSession: params.encryptionSession,
+        });
+        return;
+      default:
+        throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
   }
 
   async get(): Promise<EmbeddedAccount> {
