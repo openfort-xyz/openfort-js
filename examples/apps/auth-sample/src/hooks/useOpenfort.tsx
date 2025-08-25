@@ -215,18 +215,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
           }
           await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSWORD, password: password}});
         } else if (method === 'passkey') {
-          try {
-            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, state: {name: PasskeyFlowStateEnum.NEEDS_CREATE}}});
-          } catch (err) {
-            // TODO: PARSE key DATA
-            // const key = err. ...
-            // TODO: DETERMINE RELIABLE SOURCE FOR USERID
             await openfort.passkeyHandler.createPasskey('test-id-123-456', 'sergio-test-123');
-            const derivedKey = await openfort.passkeyHandler.deriveKey();
-            console.log(`Derived AES key is ${derivedKey}`);
-            // TODO: PASS ENCRYPTED SHARE IN CONFIGURE SECOND ATTEMPT
-            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, state: {name: PasskeyFlowStateEnum.SIGNED, encryptedContents: "hello!"}}})
-          }
+            const derivedKey = await openfort.passkeyHandler.deriveAndExportKey();
+            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, encryptionKey: derivedKey}});
         }
     },
     []

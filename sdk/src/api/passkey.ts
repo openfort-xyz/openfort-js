@@ -41,12 +41,10 @@ export class PasskeyHandler {
     const publicKey: PublicKeyCredentialCreationOptions = {
       challenge: this.getChallengeBytes(),
       rp: {
-        id: this.RP_ID, // TODO: make it configurable from upper levels so switching between openfort.io/localhost won't be that painful
-        name: this.RP_NAME, // TODO: make it configurable from upper levels
+        id: this.RP_ID,
+        name: this.RP_NAME,
       },
       user: {
-        // TODO: Discuss w/ maybe Jaume/Vadim what this should be
-        // This should uniquely identify any recently created custom wallet
         id: new TextEncoder().encode(userId),
         name: username,
         displayName: username,
@@ -63,7 +61,7 @@ export class PasskeyHandler {
         // TODO: Discuss w/ Jaume, intuititely we should always ask the user to authenticate in this context,
         // but maybe other methods (e.g. just checking that the authenticator does contain the passkey) might make
         // it more frictionless?
-        userVerification: 'required',
+        userVerification: 'preferred',
       },
       // Required for key derivation (which is what we need for proper share crypto operations)
       extensions: { prf: {} },
@@ -80,7 +78,7 @@ export class PasskeyHandler {
    * Derives a key using a locally available passkey (for which the user must be able to auth to)
    * @returns CryptoKey object
    */
-  async deriveKey() {
+  async deriveKey(): Promise<CryptoKey> {
     // This assertion is the authentication step in the passkey:
     // it will fail if the user is not able to provide valid
     // credentials (PIN, biometrics, etc)
@@ -111,13 +109,26 @@ export class PasskeyHandler {
       throw new Error('PRF extension not supported or missing results');
     }
     const rawBits = prfResults.results.first;
+    // ⚠️ key has extractable=true ON PURPOSE
+    // so it can be sent to the iframe
+    // as in the previous warning, consider very carefully what is your use case
+    // before imitating that of passkey based wallet recovery
     const key = await crypto.subtle.importKey(
       'raw',
       rawBits,
       { name: 'AES-GCM' },
-      false,
+      true,
       ['encrypt', 'decrypt'],
     );
     return key;
+  }
+
+  /**
+   * Derive and export a key using local passkey
+   * @returns ArrayBuffer w/ derived key
+   */
+  async deriveAndExportKey(): Promise< ArrayBuffer > {
+    const derivedKey = await this.deriveKey();
+    return await crypto.subtle.exportKey('raw', derivedKey);
   }
 }

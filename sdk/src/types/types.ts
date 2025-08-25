@@ -430,11 +430,6 @@ export enum ChainTypeEnum {
   SVM = 'SVM',
 }
 
-export enum PasskeyFlowStateEnum {
-  NEEDS_CREATE = 'NEEDS_CREATE',
-  SIGNED = 'SIGNED',
-}
-
 export type EmbeddedAccount = {
   user: string;
   id: string;
@@ -472,13 +467,6 @@ export type EmbeddedAccountCreateParams = {
   recoveryParams?: RecoverParams;
 };
 
-export type PasskeyFlowState = {
-  name: PasskeyFlowStateEnum.NEEDS_CREATE
-} | {
-  name: PasskeyFlowStateEnum.SIGNED,
-  encryptedContents: string
-};
-
 export type RecoverParams = {
   recoveryMethod: RecoveryMethod.AUTOMATIC;
 } | {
@@ -486,5 +474,5 @@ export type RecoverParams = {
   password: string;
 } | {
   recoveryMethod: RecoveryMethod.PASSKEY;
-  state: PasskeyFlowState;
+  encryptionKey: ArrayBuffer;
 };
