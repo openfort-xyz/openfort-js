@@ -174,10 +174,15 @@ export class AuthApi {
    * Authenticates the user with a third party provider.
    * Set up the third party auth provider in the SDK configuration.
    */
-  async authenticateWithThirdPartyProvider(): Promise<void> {
+  async authenticateWithThirdPartyProvider(): Promise<AuthPlayerResponse> {
     debugLog('Authenticating with third party provider');
     await this.ensureInitialized();
     await this.validateAndRefreshToken();
+    const authentication = await Authentication.fromStorage(this.storage);
+    if (!authentication) {
+      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
+    }
+    return await this.authManager.getUser(authentication);
   }
 
   async loginWithIdToken(
