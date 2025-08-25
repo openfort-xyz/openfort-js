@@ -19,6 +19,7 @@ import {
   OpenfortEvents,
   ChainTypeEnum,
   AccountTypeEnum,
+  RecoveryParams,
 } from '../types/types';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { IframeManager } from '../wallets/iframeManager';
@@ -198,6 +199,21 @@ export class EmbeddedWalletApi {
     return iframe;
   }
 
+  private getEntropy(recoveryParams: RecoveryParams): { recoveryPassword?: string; encryptionSession?: string } {
+    switch (recoveryParams.recoveryMethod) {
+      case RecoveryMethod.PASSWORD:
+        return {
+          recoveryPassword: recoveryParams.password,
+        };
+      case RecoveryMethod.AUTOMATIC:
+        return {
+          encryptionSession: recoveryParams.encryptionSession,
+        };
+      default:
+        throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
+    }
+  }
+
   async configure(
     params: EmbeddedAccountConfigureParams,
   ): Promise<EmbeddedAccount> {
@@ -207,15 +223,8 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
-    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
-      entropy = {
-        encryptionSession: params.shieldAuthentication?.encryptionSession,
-        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
-          ? recoveryParams.password
-          : undefined,
-      };
-    }
+    const entropy = this.getEntropy(recoveryParams);
+
     const signer = await this.ensureSigner();
     const account = await signer.configure({
       chainId: params.chainId,
@@ -243,15 +252,8 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
-    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
-      entropy = {
-        encryptionSession: params.shieldAuthentication?.encryptionSession,
-        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
-          ? recoveryParams.password
-          : undefined,
-      };
-    }
+    const entropy = this.getEntropy(recoveryParams);
+
     const signer = await this.ensureSigner();
 
     const account = await signer.create({
@@ -282,15 +284,8 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
-    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
-      entropy = {
-        encryptionSession: params.shieldAuthentication?.encryptionSession,
-        recoveryPassword: recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD
-          ? recoveryParams.password
-          : undefined,
-      };
-    }
+    const entropy = this.getEntropy(recoveryParams);
+
     const signer = await this.ensureSigner();
     const account = await signer.recover({
       account: params.account,

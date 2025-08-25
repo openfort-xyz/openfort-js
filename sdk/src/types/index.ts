@@ -19,8 +19,8 @@ export {
   EmbeddedAccount,
   AccountTypeEnum,
   ChainTypeEnum,
+  RecoveryParams,
 } from './types';
-export { ShieldAuthentication, ShieldAuthType } from '../wallets/types';
 export { IStorage as Storage } from '../storage/istorage';
 export {
   MissingRecoveryPasswordError, MissingProjectEntropyError, WrongRecoveryPasswordError, NotConfiguredError,

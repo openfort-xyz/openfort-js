@@ -1,5 +1,3 @@
-import { ShieldAuthentication } from '../wallets/types';
-
 export enum EmbeddedState {
   NONE,
   UNAUTHENTICATED,
@@ -448,26 +446,24 @@ export type EmbeddedAccount = {
 
 export type EmbeddedAccountConfigureParams = {
   chainId?: number;
-  shieldAuthentication?: ShieldAuthentication;
-  recoveryParams?: RecoverParams;
+  recoveryParams: RecoveryParams;
 };
 
 export type EmbeddedAccountRecoverParams = {
   account: string;
-  shieldAuthentication?: ShieldAuthentication;
-  recoveryParams?: RecoverParams;
+  recoveryParams: RecoveryParams;
 };
 
 export type EmbeddedAccountCreateParams = {
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
   chainId: number;
-  shieldAuthentication?: ShieldAuthentication;
-  recoveryParams?: RecoverParams;
+  recoveryParams: RecoveryParams;
 };
 
-export type RecoverParams = {
+export type RecoveryParams = {
   recoveryMethod: RecoveryMethod.AUTOMATIC;
+  encryptionSession: string
 } | {
   recoveryMethod: RecoveryMethod.PASSWORD;
   password: string;
