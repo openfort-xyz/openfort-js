@@ -35,6 +35,7 @@ export type CurrentAccount = {
 export enum RecoveryMethod {
   PASSWORD = 'password',
   AUTOMATIC = 'automatic',
+  PASSKEY = 'passkey',
 }
 
 export enum AccountType {
@@ -471,6 +472,9 @@ export type RecoverParams = {
 } | {
   recoveryMethod: RecoveryMethod.PASSWORD;
   password: string;
+} | {
+  recoveryMethod: RecoveryMethod.PASSKEY;
+  encryptionKey: Uint8Array;
 };
 
 export enum SortOrdering {

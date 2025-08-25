@@ -208,7 +208,11 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    let entropy: { recoveryPassword?: string; encryptionSession?: string } | undefined;
+    let entropy: {
+      recoveryPassword?: string;
+      encryptionSession?: string;
+      passkeyKey?: Uint8Array;
+    } | undefined;
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSWORD || params.shieldAuthentication?.encryptionSession) {
       entropy = {
         encryptionSession: params.shieldAuthentication?.encryptionSession,
@@ -217,6 +221,15 @@ export class EmbeddedWalletApi {
           : undefined,
       };
     }
+
+    // If we reached this point we also managed to derive the right encryption key for passkeys
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      entropy = {
+        passkeyKey: params.recoveryParams?.recoveryMethod === RecoveryMethod.PASSKEY
+          ? params.recoveryParams.encryptionKey : undefined,
+      };
+    }
+
     const signer = await this.ensureSigner();
     const account = await signer.configure({
       chainId: params.chainId,

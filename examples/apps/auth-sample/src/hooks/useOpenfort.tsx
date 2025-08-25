@@ -2,6 +2,7 @@ import {
   EmbeddedState,
   RecoveryMethod,
   ShieldAuthType,
+  PasskeyFlowStateEnum,
   type TypedDataPayload,
   type Provider,
   type ShieldAuthentication,
@@ -200,7 +201,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   );
 
   const handleRecovery = useCallback(
-    async ({method, password, chainId}:{method: 'password' | 'automatic', password?: string, chainId: number}) => {
+    async ({method, password, chainId}:{method: 'password' | 'automatic' | 'passkey', password?: string, chainId: number}) => {
         const shieldAuth: ShieldAuthentication = {
           auth: ShieldAuthType.OPENFORT,
           token: (await openfort.getAccessToken())!,
@@ -213,6 +214,10 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
             throw new Error('Password recovery must be at least 4 characters');
           }
           await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSWORD, password: password}});
+        } else if (method === 'passkey') {
+            await openfort.passkeyHandler.createPasskey('test-id-123-456', 'sergio-test-123');
+            const derivedKey = await openfort.passkeyHandler.deriveAndExportKey();
+            await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, encryptionKey: derivedKey}});
         }
     },
     []
