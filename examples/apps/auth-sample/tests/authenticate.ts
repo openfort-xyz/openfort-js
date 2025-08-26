@@ -15,7 +15,6 @@ export async function authenticate(page: Page) {
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.waitForURL('/');
-  
 
   await expect(page.locator('h1')).toContainText('Set up your embedded signer', { timeout: 100000 });
 
@@ -36,7 +35,9 @@ export async function authenticate(page: Page) {
     await expect(page.locator('div.spinner')).toBeInViewport();
     await page.locator("div.spinner").waitFor({ state: 'hidden' });
 
-    await expect(page.locator('h2').getByText('Console')).toBeVisible();
+    await expect(page.locator('h2').getByText('Console'), {
+      message: 'Password recovery failed, maybe someone changed the password?',
+    }).toBeVisible();
 
     const logger = new Logger(page);
     await logger.init();

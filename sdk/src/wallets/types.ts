@@ -311,18 +311,22 @@ export class SignRequest implements IEventRequest {
 
   requestConfiguration?: RequestConfiguration;
 
+  chainType: string;
+
   constructor(
     uuid: string,
     message: string | Uint8Array,
     requireArrayify?: boolean,
     requireHash?: boolean,
     requestConfiguration?: RequestConfiguration,
+    chainType?: string,
   ) {
     this.uuid = uuid;
     this.message = message;
     this.requireArrayify = requireArrayify;
     this.requireHash = requireHash;
     this.requestConfiguration = requestConfiguration;
+    this.chainType = chainType || 'EVM';
   }
 }
 
@@ -684,17 +688,6 @@ export class UpdateAuthenticationRequest implements IEventRequest {
 }
 
 export interface ShieldAuthentication {
-  /**
-   * Whether its using Openfort (either third-party or not) or a custom provider to verify the access token
-   * @deprecated this will be removed in the future, no longer needed
-   */
-  auth?: ShieldAuthType;
-  // The auth token, either idToken or accessToken
-  token: string;
-  // When using a third party auth provider, the provider name
-  authProvider?: string;
-  // When using a third party auth provider, the token type
-  tokenType?: string;
   // When using encryption sessions, the session ID
   encryptionSession?: string
 }

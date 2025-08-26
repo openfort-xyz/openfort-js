@@ -30,7 +30,7 @@ export class EmbeddedSigner implements Signer {
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -116,8 +116,9 @@ export class EmbeddedSigner implements Signer {
     message: Uint8Array | string,
     requireArrayify?: boolean,
     requireHash?: boolean,
+    chainType?: string,
   ): Promise<string> {
-    return await this.iframeManager.sign(message, requireArrayify, requireHash);
+    return await this.iframeManager.sign(message, requireArrayify, requireHash, chainType);
   }
 
   async export(): Promise<string> {
@@ -140,7 +141,7 @@ export class EmbeddedSigner implements Signer {
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -190,7 +191,7 @@ export class EmbeddedSigner implements Signer {
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
-    const configuration = SDKConfiguration.fromStorage();
+    const configuration = SDKConfiguration.getInstance();
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
@@ -231,7 +232,7 @@ export class EmbeddedSigner implements Signer {
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
-  async setEmbeddedRecovery({
+  async setRecoveryMethod({
     recoveryMethod,
     recoveryPassword,
     encryptionSession,
@@ -240,7 +241,7 @@ export class EmbeddedSigner implements Signer {
     recoveryPassword?: string;
     encryptionSession?: string;
   }): Promise<void> {
-    await this.iframeManager.setEmbeddedRecovery(
+    await this.iframeManager.setRecoveryMethod(
       recoveryMethod,
       recoveryPassword,
       encryptionSession,

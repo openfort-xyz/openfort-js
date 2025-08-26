@@ -34,20 +34,29 @@ import {
   MISSING_USER_ENTROPY_ERROR,
   MISSING_PROJECT_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
-  ShieldAuthType,
   type RequestConfiguration,
   UpdateAuthenticationResponse,
   CreateResponse,
   RecoverResponse,
+  ShieldAuthType,
 } from './types';
 import { sentry } from '../core/errors/sentry';
+
+// TODO: Most of these parameters are repeated in the iframe configuration.
+// Consider refactoring to avoid duplication.
+export interface IframeAuthentication extends ShieldAuthentication {
+  auth?: ShieldAuthType;
+  authProvider?: string | null;
+  token?: string | null;
+  tokenType?: string | null;
+}
 
 export interface IframeConfiguration {
   thirdPartyTokenType: string | null;
   thirdPartyProvider: string | null;
   accessToken: string | null;
   playerID: string | null;
-  recovery: ShieldAuthentication | null;
+  recovery: IframeAuthentication | null;
   chainId: number | null;
   password: string | null;
   passkeyKey: Uint8Array | null;
@@ -65,7 +74,7 @@ export interface SignerConfigureRequest {
 export interface SignerCreateRequest {
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
-  chainId: number,
+  chainId?: number,
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
@@ -285,7 +294,7 @@ export class IframeManager {
       throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
-    const shieldAuthentication: ShieldAuthentication = {
+    const shieldAuthentication: IframeAuthentication = {
       auth: ShieldAuthType.OPENFORT,
       authProvider: authentication.thirdPartyProvider,
       token: authentication.token,
@@ -316,7 +325,7 @@ export class IframeManager {
     iframeConfiguration.password = request?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.passkeyKey = request?.entropy?.passkeyKey ?? null;
     iframeConfiguration.recovery = {
-      ...iframeConfiguration.recovery as ShieldAuthentication,
+      ...iframeConfiguration.recovery,
       encryptionSession: request?.entropy?.encryptionSession,
     };
 
@@ -362,10 +371,10 @@ export class IframeManager {
     const remote = await this.ensureConnection();
 
     const iframeConfiguration = await this.buildIFrameRequestConfiguration();
-    iframeConfiguration.chainId = params.chainId;
+    iframeConfiguration.chainId = params.chainId ?? null;
     iframeConfiguration.password = params?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.recovery = {
-      ...iframeConfiguration.recovery as ShieldAuthentication,
+      ...iframeConfiguration.recovery,
       encryptionSession: params?.entropy?.encryptionSession,
     };
     const request: CreateRequest = {
@@ -383,7 +392,7 @@ export class IframeManager {
       encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
-      chainId: params.chainId,
+      chainId: params.chainId ?? null,
       accountType: params.accountType,
       chainType: params.chainType,
     };
@@ -415,7 +424,7 @@ export class IframeManager {
     iframeConfiguration.chainId = acc?.chainId ?? null;
     iframeConfiguration.password = params?.entropy?.recoveryPassword ?? null;
     iframeConfiguration.recovery = {
-      ...iframeConfiguration.recovery as ShieldAuthentication,
+      ...iframeConfiguration.recovery,
       encryptionSession: params?.entropy?.encryptionSession,
     };
 
@@ -453,6 +462,7 @@ export class IframeManager {
     message: string | Uint8Array,
     requireArrayify?: boolean,
     requireHash?: boolean,
+    chainType?: string,
   ): Promise<string> {
     debugLog('[iframe] ensureConnection');
     const remote = await this.ensureConnection();
@@ -463,6 +473,7 @@ export class IframeManager {
       requireArrayify,
       requireHash,
       await this.buildRequestConfiguration(),
+      chainType,
     );
     debugLog('[iframe] done ensureConnection');
 
@@ -540,7 +551,7 @@ export class IframeManager {
   }
 
   // eslint-disable-next-line consistent-return
-  async setEmbeddedRecovery(
+  async setRecoveryMethod(
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
@@ -568,7 +579,7 @@ export class IframeManager {
     } catch (e) {
       if (e instanceof NotConfiguredError) {
         await this.configure();
-        return this.setEmbeddedRecovery(recoveryMethod, recoveryPassword, encryptionSession);
+        return this.setRecoveryMethod(recoveryMethod, recoveryPassword, encryptionSession);
       }
       throw e;
     }
