@@ -11,6 +11,7 @@ const AccountRecovery: React.FC = () => {
   const { handleRecovery } = useOpenfort();
   const [loadingPwd, setLoadingPwd] = useState(false);
   const [loadingAut, setLoadingAut] = useState(false);
+  const [loadingPass, setLoadingPass] = useState(false);
   const [status, setStatus] = useState<StatusType>(null);
 
   return (
@@ -109,30 +110,30 @@ const AccountRecovery: React.FC = () => {
               <Button
                 variant="outline"
                 type="button"
-                disabled={loadingAut}
+                disabled={loadingPass}
                 className="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
                 onClick={async () => {
-                  setLoadingAut(true);
-                  try{
-                    await handleRecovery({method:'passkey', chainId: chainId});
+                  setLoadingPass(true);
+                  try {
+                    await handleRecovery({ method: RecoveryMethod.PASSKEY, chainId: chainId });
                   } catch (e) {
-                    if(e instanceof MissingRecoveryPasswordError) {
+                    if (e instanceof MissingRecoveryPasswordError) {
                       setStatus({
                         type: 'error',
                         title: 'Missing recovery password',
                       });
                     }
-                    if(e instanceof WrongRecoveryPasswordError) {
+                    if (e instanceof WrongRecoveryPasswordError) {
                       setStatus({
                         type: 'error',
                         title: 'Wrong recovery password',
                       });
                     }
                   }
-                  setLoadingAut(false);
+                  setLoadingPass(false);
                 }}
               >
-                {loadingAut ? <Loading /> : 'Continue with Passkey Recovery'}
+                {loadingPass ? <Loading /> : 'Continue with Passkey Recovery'}
               </Button>
             </div>
           </div>
