@@ -124,10 +124,26 @@ export class PasskeyHandler {
 
   /**
    * Derive and export a key using local passkey
-   * @returns ArrayBuffer w/ derived key
+   * @returns Uint8Array w/ derived key
    */
   async deriveAndExportKey(): Promise< Uint8Array > {
     const derivedKey = await this.deriveKey();
     return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey));
+  }
+
+  /**
+   * Tries to derive and export a key with an already
+   * installed passkey. It creates a new one if authentication
+   * was not possible
+   * @param userId Name of the user we want to create a passkey for
+   * @returns Uint8Array w/ derived key
+   */
+  async deriveAndExportKeyForUser(userId: string): Promise< Uint8Array > {
+    try {
+      return await this.deriveAndExportKey();
+    } catch (err) {
+      await this.createPasskey(userId, 'Openfort User');
+      return await this.deriveAndExportKey();
+    }
   }
 }

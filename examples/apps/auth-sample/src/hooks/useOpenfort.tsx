@@ -215,8 +215,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
           }
           await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSWORD, password: password}});
         } else if (method === 'passkey') {
-            await openfort.passkeyHandler.createPasskey('test-id-123-456', 'sergio-test-123');
-            const derivedKey = await openfort.passkeyHandler.deriveAndExportKey();
+            const derivedKey = await openfort.passkeyHandler.deriveAndExportKeyForUser(`sergio-${chainId}`);
             await openfort.embeddedWallet.configure({chainId, shieldAuthentication:shieldAuth, recoveryParams: {recoveryMethod: RecoveryMethod.PASSKEY, encryptionKey: derivedKey}});
         }
     },
