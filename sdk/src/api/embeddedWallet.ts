@@ -202,7 +202,7 @@ export class EmbeddedWalletApi {
     return iframe;
   }
 
-  private async getEntropy(recoveryParams: RecoveryParams):
+  private async getEntropy(recoveryParams: RecoveryParams, player: string):
   Promise<{ recoveryPassword?: string; encryptionSession?: string; passkeyKey?: Uint8Array }> {
     switch (recoveryParams.recoveryMethod) {
       case RecoveryMethod.PASSWORD:
@@ -215,7 +215,7 @@ export class EmbeddedWalletApi {
         };
       case RecoveryMethod.PASSKEY:
         return {
-          passkeyKey: await this.passkeyHandler.deriveAndExportKeyForUser('juanete'),
+          passkeyKey: await this.passkeyHandler.deriveAndExportKeyForUser(player),
         };
       default:
         throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -231,15 +231,13 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    const entropy = await this.getEntropy(recoveryParams);
-
-    const signer = await this.ensureSigner();
+    const auth = await Authentication.fromStorage(this.storage);
+    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams, auth!.player)]);
     const account = await signer.configure({
       chainId: params.chainId,
       entropy,
     });
 
-    const auth = await Authentication.fromStorage(this.storage);
     return {
       id: account.id,
       chainId: account.chainId,
@@ -259,18 +257,14 @@ export class EmbeddedWalletApi {
     const recoveryParams = params.recoveryParams ?? {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
-
-    const entropy = await this.getEntropy(recoveryParams);
-
-    const signer = await this.ensureSigner();
-
+    const auth = await Authentication.fromStorage(this.storage);
+    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams, auth!.player)]);
     const account = await signer.create({
       accountType: params.accountType,
       chainType: params.chainType,
       chainId: params.chainId,
       entropy,
     });
-    const auth = await Authentication.fromStorage(this.storage);
     return {
       id: account.id,
       chainId: account.chainId,
@@ -292,14 +286,12 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    const entropy = await this.getEntropy(recoveryParams);
-
-    const signer = await this.ensureSigner();
+    const auth = await Authentication.fromStorage(this.storage);
+    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams, auth!.player)]);
     const account = await signer.recover({
       account: params.account,
       entropy,
     });
-    const auth = await Authentication.fromStorage(this.storage);
     return {
       id: account.id,
       chainId: account.chainId,
