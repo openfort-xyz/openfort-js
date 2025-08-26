@@ -470,7 +470,6 @@ export type RecoveryParams = {
   password: string;
 } | {
   recoveryMethod: RecoveryMethod.PASSKEY;
-  encryptionKey: Uint8Array;
 };
 
 export enum SortOrdering {

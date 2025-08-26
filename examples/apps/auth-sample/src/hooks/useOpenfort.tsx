@@ -236,10 +236,8 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
         };
         break;
       case 'passkey':
-        const derivedKey = await openfort.passkeyHandler.deriveAndExportKeyForUser('juanete');
         recoveryParams = {
           recoveryMethod: RecoveryMethod.PASSKEY,
-          encryptionKey: derivedKey,
         }
         break;
       default:

@@ -104,6 +104,7 @@ export class Openfort {
         this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
         this.eventEmitter,
+        this.passkeyHandler,
       );
       this.userInstance = new UserApi(
         this.storage,

@@ -4,7 +4,7 @@
  * That is, it's not designed (and must NOT be used) for authentication.
  */
 export class PasskeyHandler {
-  private readonly TIMEOUT = 60_000;
+  private readonly TIMEOUT_MILLIS = 60_000;
 
   private readonly rpId: string;
 
@@ -57,14 +57,11 @@ export class PasskeyHandler {
         // Makes things easier: the SDK doesn't need to fetch/remember any kind of credential ID
         // (that is, rpId + authenticator logic on user's side should be enough for multi-device creds)
         residentKey: 'required',
-        // TODO: Discuss w/ Jaume, intuititely we should always ask the user to authenticate in this context,
-        // but maybe other methods (e.g. just checking that the authenticator does contain the passkey) might make
-        // it more frictionless?
         userVerification: 'preferred',
       },
       // Required for key derivation (which is what we need for proper share crypto operations)
       extensions: { prf: {} },
-      timeout: this.TIMEOUT, // TODO: Make it configurable via dotenv/whatever (or even remove it?)
+      timeout: this.TIMEOUT_MILLIS,
       attestation: 'direct',
     };
 

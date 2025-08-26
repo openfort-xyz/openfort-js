@@ -29,6 +29,7 @@ import { IframeManager } from '../wallets/iframeManager';
 import { ReactNativeMessenger } from '../wallets/messaging';
 import { WindowMessenger } from '../wallets/messaging/browserMessenger';
 import { MessagePoster } from '../wallets/types';
+import { PasskeyHandler } from './passkey';
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null;
@@ -50,6 +51,7 @@ export class EmbeddedWalletApi {
     private readonly validateAndRefreshToken: () => Promise<void>,
     private readonly ensureInitialized: () => Promise<void>,
     private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
+    private readonly passkeyHandler: PasskeyHandler,
   ) {
     this.eventEmitter.on(OpenfortEvents.TOKEN_REFRESHED, () => {
       debugLog('Handling token refresh event in EmbeddedWalletApi');
@@ -200,7 +202,8 @@ export class EmbeddedWalletApi {
     return iframe;
   }
 
-  private getEntropy(recoveryParams: RecoveryParams): { recoveryPassword?: string; encryptionSession?: string } {
+  private async getEntropy(recoveryParams: RecoveryParams):
+  Promise<{ recoveryPassword?: string; encryptionSession?: string; passkeyKey?: Uint8Array }> {
     switch (recoveryParams.recoveryMethod) {
       case RecoveryMethod.PASSWORD:
         return {
@@ -212,7 +215,7 @@ export class EmbeddedWalletApi {
         };
       case RecoveryMethod.PASSKEY:
         return {
-          passkeyKey: recoveryParams.encryptionKey,
+          passkeyKey: await this.passkeyHandler.deriveAndExportKeyForUser('juanete'),
         };
       default:
         throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -228,7 +231,7 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    const entropy = this.getEntropy(recoveryParams);
+    const entropy = await this.getEntropy(recoveryParams);
 
     const signer = await this.ensureSigner();
     const account = await signer.configure({
@@ -257,7 +260,7 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    const entropy = this.getEntropy(recoveryParams);
+    const entropy = await this.getEntropy(recoveryParams);
 
     const signer = await this.ensureSigner();
 
@@ -289,7 +292,7 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    const entropy = this.getEntropy(recoveryParams);
+    const entropy = await this.getEntropy(recoveryParams);
 
     const signer = await this.ensureSigner();
     const account = await signer.recover({
