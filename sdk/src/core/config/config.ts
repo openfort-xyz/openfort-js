@@ -9,6 +9,8 @@ export interface SDKOverrides {
     digest?: (algorithm: string, data: BufferSource) => Promise<ArrayBuffer>;
   };
   storage?: IStorage;
+  passkeyRpId?: string;
+  passkeyRpName?: string;
 }
 
 let CONFIGURATION: SDKConfiguration | null = null;
@@ -59,6 +61,10 @@ export class SDKConfiguration {
 
   readonly storage?: IStorage;
 
+  readonly passkeyRpId?: string;
+
+  readonly passkeyRpName?: string;
+
   constructor({
     baseConfiguration,
     shieldConfiguration,
@@ -74,6 +80,9 @@ export class SDKConfiguration {
     }
     this.shieldUrl = overrides?.shieldUrl || 'https://shield.openfort.io';
     this.storage = overrides?.storage;
+
+    this.passkeyRpId = overrides?.passkeyRpId || 'https://openfort.io';
+    this.passkeyRpName = overrides?.passkeyRpName || 'Openfort - Embedded Wallet';
 
     // Set crypto digest override if provided
     if (overrides?.crypto?.digest) {
@@ -136,6 +145,8 @@ export class SDKConfiguration {
         iframeUrl: parsed.iframeUrl,
         shieldUrl: parsed.shieldUrl,
         storage,
+        passkeyRpId: parsed.passkeyRpId,
+        passkeyRpName: parsed.passkeyRpName,
       };
 
       return new SDKConfiguration({
@@ -160,6 +171,8 @@ export class SDKConfiguration {
         shieldPublishableKey: this.shieldConfiguration?.shieldPublishableKey,
         shieldEncryptionKey: this.shieldConfiguration?.shieldEncryptionKey,
         shieldDebug: this.shieldConfiguration?.debug,
+        passkeyRpId: this.passkeyRpId,
+        passkeyRpName: this.passkeyRpName,
       }));
     }
   }

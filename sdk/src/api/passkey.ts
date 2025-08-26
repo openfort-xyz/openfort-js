@@ -6,13 +6,14 @@
 export class PasskeyHandler {
   private readonly TIMEOUT = 60_000;
 
-  // TODO: Make them configurable via constructor
-  // TODO: Caller should get values from .env (maybe?)
-  private RP_ID: string = 'localhost'; // or openfort.io in prod (?)
+  private readonly rpId: string;
 
-  // TODO: Make them configurable via constructor
-  // TODO: Caller should get values from .env (maybe?)
-  private RP_NAME: string = 'Openfort - Embedded Wallet';
+  private readonly rpName: string;
+
+  constructor(rpId: string, rpName: string) {
+    this.rpId = rpId;
+    this.rpName = rpName;
+  }
 
   private getChallengeBytes(): Uint8Array {
     // ⚠️ SECURITY WARNING ⚠️
@@ -29,8 +30,6 @@ export class PasskeyHandler {
     return crypto.getRandomValues(new Uint8Array(32));
   }
 
-  // TODO: The user gets a picker UI if there's more than one passkey pointing to
-  // the same RPID
   /**
    * Prompts the user to create a passkey.
    * @param userId UserID
@@ -41,8 +40,8 @@ export class PasskeyHandler {
     const publicKey: PublicKeyCredentialCreationOptions = {
       challenge: this.getChallengeBytes(),
       rp: {
-        id: this.RP_ID,
-        name: this.RP_NAME,
+        id: this.rpId,
+        name: this.rpName,
       },
       user: {
         id: new TextEncoder().encode(userId),
@@ -88,7 +87,7 @@ export class PasskeyHandler {
           // Challenge just adds extra noise here, no security concerns for this
           // particular use case
           challenge: this.getChallengeBytes(),
-          rpId: this.RP_ID,
+          rpId: this.rpId,
           userVerification: 'required',
           extensions: {
             prf: {
