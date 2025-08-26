@@ -40,12 +40,17 @@ export class OpenfortInternal {
       throw new OpenfortError('Could not get access token', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
 
-    const result = await this.authManager.authenticateThirdParty(provider, token, TokenType.ID_TOKEN);
+    let player = (await Authentication.fromStorage(this.storage))?.player;
+
+    if (!player) {
+      const result = await this.authManager.authenticateThirdParty(provider, token, TokenType.ID_TOKEN);
+      player = result?.id;
+    }
 
     new Authentication(
       'third_party',
       token,
-      result.id,
+      player,
       null,
       provider,
       TokenType.ID_TOKEN,
