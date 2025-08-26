@@ -115,7 +115,7 @@ export class ConfigureRequest implements IEventRequest {
 
   playerID: string | null;
 
-  passkeyKey: ArrayBuffer | null;
+  passkeyKey: Uint8Array | null;
 
   constructor(
     uuid: string,
