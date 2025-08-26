@@ -27,7 +27,7 @@ export class PasskeyHandler {
     // Check how webauthn authentication ceremonies work in this case for further clarification
     // Key derivation is fine though: attackers still need to authenticate themselves within the passkey's authenticator
     // to access the passkey's PRF, an old, valid signature won't help much
-    return crypto.getRandomValues(new Uint8Array(32));
+    return crypto.getRandomValues(new Uint8Array(32)) as Uint8Array;
   }
 
   /**
@@ -38,7 +38,7 @@ export class PasskeyHandler {
    */
   async createPasskey(userId: string, username: string): Promise<Credential | null> {
     const publicKey: PublicKeyCredentialCreationOptions = {
-      challenge: this.getChallengeBytes(),
+      challenge: this.getChallengeBytes() as BufferSource,
       rp: {
         id: this.rpId,
         name: this.rpName,
@@ -83,7 +83,7 @@ export class PasskeyHandler {
         publicKey: {
           // Challenge just adds extra noise here, no security concerns for this
           // particular use case
-          challenge: this.getChallengeBytes(),
+          challenge: this.getChallengeBytes() as BufferSource,
           rpId: this.rpId,
           userVerification: 'required',
           extensions: {
