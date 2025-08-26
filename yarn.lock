@@ -3439,9 +3439,9 @@ __metadata:
   linkType: hard
 
 "@openfort/shield-js@npm:^0.1.14, @openfort/shield-js@npm:^0.1.7":
-  version: 0.1.17
-  resolution: "@openfort/shield-js@npm:0.1.17"
-  checksum: 8d785e4ad92dc26436590d89f61971e542571c1b5d736448086079d6309384c8fc20748f6e772b38f297c6bbdb861e7cac9565de503f341b39dbff9e7910ed02
+  version: 0.1.19
+  resolution: "@openfort/shield-js@npm:0.1.19"
+  checksum: 1c2fd9affc21ca2a1e123e89aa7f808294cb15fac30c44ed711f15ad08558f6bf030d8b58b72cc92e12a69484d9d62d642db936f987b35094bb090ed5a17b4da
   languageName: node
   linkType: hard
 
@@ -6849,11 +6849,11 @@ __metadata:
   linkType: hard
 
 "@types/react-dom@npm:^19.0.3, @types/react-dom@npm:^19.0.4":
-  version: 19.1.7
-  resolution: "@types/react-dom@npm:19.1.7"
+  version: 19.1.8
+  resolution: "@types/react-dom@npm:19.1.8"
   peerDependencies:
     "@types/react": ^19.0.0
-  checksum: a99465e5a17d40725dedb3708357f8998c57caab768cee0992b4bb7822ce7ed2ec697a5f426cb98d3397b020756a6e4b0986dc5f6f4254e13b3536afb38538e6
+  checksum: 61aa2b9c159deba3787183688d3fe70c9f9196aab464f76bbe0a965cd35c485c7158e903631ff89803b19c707e93f8dd632e63fb9bd1ddd430359bd402a2018e
   languageName: node
   linkType: hard
 
@@ -7359,9 +7359,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/connectors@npm:5.9.5":
-  version: 5.9.5
-  resolution: "@wagmi/connectors@npm:5.9.5"
+"@wagmi/connectors@npm:5.9.6":
+  version: 5.9.6
+  resolution: "@wagmi/connectors@npm:5.9.6"
   dependencies:
     "@base-org/account": 1.1.1
     "@coinbase/wallet-sdk": 4.3.6
@@ -7372,13 +7372,13 @@ __metadata:
     "@walletconnect/ethereum-provider": 2.21.1
     cbw-sdk: "npm:@coinbase/wallet-sdk@3.9.3"
   peerDependencies:
-    "@wagmi/core": 2.20.0
+    "@wagmi/core": 2.20.1
     typescript: ">=5.0.4"
     viem: 2.x
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: ad65c8ad8136c4f0d6923224c465f8b8d1804892ec7f1288a2ae749500d483e050dc3056fa1ae22b47c1543bb889c027f92ddd4e2b80b3595fe98421ee7fa921
+  checksum: ac0fc35346d0e367b450be4d78b5f99d5425b44bb17f85c64dfa76129ac5cc8e97913d485935d40dd79ce67bef4d68d9c96f34a052bfd989eb5704d43f593805
   languageName: node
   linkType: hard
 
@@ -7402,9 +7402,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/core@npm:2.20.0":
-  version: 2.20.0
-  resolution: "@wagmi/core@npm:2.20.0"
+"@wagmi/core@npm:2.20.1":
+  version: 2.20.1
+  resolution: "@wagmi/core@npm:2.20.1"
   dependencies:
     eventemitter3: 5.0.1
     mipd: 0.0.7
@@ -7418,7 +7418,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 5b6159274edff2fcfdb0d36fb1226c35afb9727c1bfb0388eb403c0338c7151c60a8b2968385746b69e9491477f53d0775ceb0bf74c5880a3eb615679489db86
+  checksum: 15bc45ca80100a52f4db9641cf465a837fc3cafe1fa1e86dd6c61b69c0098856d01ac42d9e7742b55abe0600f6653d0b63a7659d68b20cc46c8722bfe7b1d4a9
   languageName: node
   linkType: hard
 
@@ -10579,9 +10579,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.204":
-  version: 1.5.208
-  resolution: "electron-to-chromium@npm:1.5.208"
-  checksum: 3b206597b3f11b9db304ea9fccb7dfc3fac0a078a0b5f294315cdde7b826870639ab48c053b5085f839175a143a7ab73396449cdb797cbb7c265a190f90843fb
+  version: 1.5.209
+  resolution: "electron-to-chromium@npm:1.5.209"
+  checksum: 8c9ae3a019057b8f7c88ec7ac4dfd2fb2fa4b7daf2a788585510fbae5e8f9f6efafd3a57b13215bf65fc6cb0d976ea34f01a03f9f3979c42f16ad991b8f05911
   languageName: node
   linkType: hard
 
@@ -15718,7 +15718,7 @@ __metadata:
     tailwindcss-animate: ^1.0.7
     typescript: 5.4.2
     viem: 2.x
-    wagmi: ^2.15.2
+    wagmi: 2.15.2
   languageName: unknown
   linkType: soft
 
@@ -20463,11 +20463,11 @@ __metadata:
   linkType: hard
 
 "wagmi@npm:^2.15.2, wagmi@npm:latest":
-  version: 2.16.5
-  resolution: "wagmi@npm:2.16.5"
+  version: 2.16.6
+  resolution: "wagmi@npm:2.16.6"
   dependencies:
-    "@wagmi/connectors": 5.9.5
-    "@wagmi/core": 2.20.0
+    "@wagmi/connectors": 5.9.6
+    "@wagmi/core": 2.20.1
     use-sync-external-store: 1.4.0
   peerDependencies:
     "@tanstack/react-query": ">=5.0.0"
@@ -20477,7 +20477,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 6bba45a57bfee9dc5b627bbc1d1302cc3a02742feff1751f3e5b030996c4b0e0a43fec4cec0b164e22052e74e05b88c6c5ba3719ecc45cc4bb703f2fa594ee0c
+  checksum: 7a509cef74467fdb495f56edac967c8b0e8f85265646677aa9d9503607f29ec976a81fb97b1a1554d970595ba873cec6bc5193068f90c0f1aacdc96f2f34c825
   languageName: node
   linkType: hard
 

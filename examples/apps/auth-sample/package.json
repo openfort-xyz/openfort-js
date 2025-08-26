@@ -38,7 +38,7 @@
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",
     "viem": "2.x",
-    "wagmi": "^2.15.2"
+    "wagmi": "2.15.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
