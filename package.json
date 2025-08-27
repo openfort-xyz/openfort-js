@@ -24,6 +24,7 @@
     "build": "NODE_OPTIONS=--max-old-space-size=14366 wsrun -y 4 -p @openfort/openfort-js -e -r --serial build",
     "build:docs": "typedoc --json docs/spec.json",
     "build:nextjs": "yarn build && yarn workspace nextjs build",
+    "build:solana": "yarn build && yarn workspace solana-vite build",
     "build:firebase": "yarn build && yarn workspace firebase-next-app build",
     "build:wagmi": "yarn build && yarn workspace wagmi-next-app build",
     "build:platform-bridge": "yarn build && yarn workspace platform-bridge build"
