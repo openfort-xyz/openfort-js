@@ -347,11 +347,11 @@ export class ExportPrivateKeyRequest implements IEventRequest {
 
   action: Event = Event.EXPORT;
 
-  requestConfiguration?: RequestConfiguration;
+  requestConfiguration: RequestConfiguration;
 
   constructor(
     uuid: string,
-    requestConfiguration?: RequestConfiguration,
+    requestConfiguration: RequestConfiguration,
   ) {
     this.uuid = uuid;
     this.requestConfiguration = requestConfiguration;
