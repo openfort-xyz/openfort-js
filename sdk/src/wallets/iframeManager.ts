@@ -466,9 +466,9 @@ export class IframeManager {
     const request = new SignRequest(
       randomUUID(),
       message,
+      await this.buildRequestConfiguration(),
       requireArrayify,
       requireHash,
-      await this.buildRequestConfiguration(),
       chainType,
     );
     debugLog('[iframe] done ensureConnection');
