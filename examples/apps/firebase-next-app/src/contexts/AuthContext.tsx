@@ -1,13 +1,13 @@
+import openfort from "@/utils/openfortConfig";
+import { User } from "firebase/auth";
 import React, {
   createContext,
-  useState,
   ReactNode,
-  useEffect,
   useContext,
+  useEffect,
+  useState,
 } from "react";
 import { authService } from "../services/authService";
-import { User } from "firebase/auth";
-import { useOpenfort } from "../hooks/useOpenfort";
 
 interface AuthContextType {
   user: User | null;
@@ -23,12 +23,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    return authService.onIdTokenChanged(async (user) => {
+    return authService.onAuthStateChanged(async (user) => {
+      console.log("Auth state changed:", user);
       if (!user) {
         setUser(null);
         return;
       }
-      const token = await user.getIdToken();
+      await user.getIdToken();
+      await openfort.getAccessToken();
       setUser(user);
     });
   }, []);

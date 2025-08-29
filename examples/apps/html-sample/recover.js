@@ -67,10 +67,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  auth.onIdTokenChanged(async (user) => {
+  auth.onAuthStateChanged(async (user) => {
     if (user) {
       const idToken = await user.getIdToken();
-      await openfort.auth.authenticateWithThirdPartyProvider();
+      await openfort.getAccessToken();
       const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       if (embeddedState === 4) {
         window.location.href = 'signature.html';

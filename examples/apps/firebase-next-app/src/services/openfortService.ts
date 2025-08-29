@@ -5,14 +5,6 @@ import openfort from '../utils/openfortConfig';
 const chainId = baseSepolia.id
 
 class OpenfortService {
-  async authenticateWithThirdPartyProvider(): Promise<void> {
-    try {
-      await openfort.auth.authenticateWithThirdPartyProvider();
-    } catch (error) {
-      console.error('Error authenticating with Openfort:', error);
-      throw error;
-    }
-  }
   async getEvmProvider(): Promise<Provider> {
     return openfort.embeddedWallet.getEthereumProvider({ policy: process.env.NEXT_PUBLIC_POLICY_ID });
   }
