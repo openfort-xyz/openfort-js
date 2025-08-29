@@ -26,9 +26,7 @@ export {
   MissingRecoveryPasswordError, MissingProjectEntropyError, WrongRecoveryPasswordError, NotConfiguredError,
 } from '../wallets/iframeManager';
 export { Provider, TypedDataPayload } from '../wallets/evm/types';
-export {
-  SDKConfiguration, OpenfortSDKConfiguration, OpenfortConfiguration, ShieldConfiguration, SDKOverrides,
-} from '../core/config';
+export * from '../core/config';
 export {
   Permission,
   GrantPermissionsReturnType,
