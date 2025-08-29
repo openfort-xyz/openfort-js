@@ -1,3 +1,8 @@
 export {
-  SDKConfiguration, OpenfortSDKConfiguration, OpenfortConfiguration, ShieldConfiguration, SDKOverrides,
+  ThirdPartyAuthConfiguration,
+  SDKConfiguration,
+  OpenfortSDKConfiguration,
+  OpenfortConfiguration,
+  ShieldConfiguration,
+  SDKOverrides,
 } from './config';
