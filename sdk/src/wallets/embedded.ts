@@ -4,8 +4,10 @@ import { OpenfortError, OpenfortErrorType, SDKConfiguration } from 'types';
 import { withOpenfortError } from 'core/errors/openfortError';
 import TypedEventEmitter from 'utils/typedEventEmitter';
 import {
+  AccountTypeEnum,
+  ChainTypeEnum,
   OpenfortEvents,
-  type AccountTypeEnum, type ChainTypeEnum, type OpenfortEventMap, type RecoveryMethod,
+  type OpenfortEventMap, type RecoveryMethod,
 } from '../types/types';
 import { Account } from '../core/configuration/account';
 import type { Signer } from './isigner';
@@ -25,7 +27,6 @@ export class EmbeddedSigner implements Signer {
   async configure(
     params: SignerConfigureRequest,
   ): Promise<Account> {
-    const iframeResponse = await this.iframeManager.configure(params);
     const auth = await Authentication.fromStorage(this.storage);
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
@@ -34,51 +35,84 @@ export class EmbeddedSigner implements Signer {
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION);
     }
-    if (!iframeResponse?.account) {
-      withOpenfortError<Account>(async () => {
-        const response = await this.backendApiClients.accountsApi.getAccountsV2(
-          {
-            chainId: iframeResponse.chainId,
-            address: iframeResponse.address,
-          },
-          {
-            headers: {
-              authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-player-token': auth.token,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-provider': auth.thirdPartyProvider,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-token-type': auth.thirdPartyTokenType,
-            },
-          },
-        );
-        if (response.data.data.length === 0) {
-          throw new OpenfortError('No account found', OpenfortErrorType.MISSING_SIGNER_ERROR);
-        }
 
-        const account = new Account({
-          user: response.data.data[0].user,
-          chainType: response.data.data[0].chainType as ChainTypeEnum,
-          id: response.data.data[0].id,
-          address: response.data.data[0].address,
-          ownerAddress: response.data.data[0].ownerAddress,
-          accountType: response.data.data[0].accountType as AccountTypeEnum,
-          createdAt: response.data.data[0].createdAt,
-          implementationType: response.data.data[0].smartAccount?.implementationType,
-          chainId: response.data.data[0].chainId,
-          factoryAddress: response.data.data[0].smartAccount?.factoryAddress,
-          salt: response.data.data[0].smartAccount?.salt,
-        });
-        account.save(this.storage);
-        this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.data[0].address);
-        return account;
-      }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
+    const acc = await Account.fromStorage(this.storage);
+
+    let accountId: string;
+
+    if (acc) {
+      const recoverParams: SignerRecoverRequest = {
+        account: acc.id,
+        ...(params.entropy && {
+          entropy: {
+            ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
+            ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+          },
+        }),
+      };
+
+      const iframeResponse = await this.iframeManager.recover(recoverParams);
+
+      accountId = iframeResponse.account;
+    } else {
+      const response = await this.backendApiClients.accountsApi.getAccountsV2(
+        {
+          user: auth.player,
+          accountType: AccountTypeEnum.SMART_ACCOUNT,
+          // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
+          chainType: ChainTypeEnum.EVM,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'x-player-token': auth.token,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'x-auth-provider': auth.thirdPartyProvider,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'x-token-type': auth.thirdPartyTokenType,
+          },
+        },
+      );
+
+      if (response.data.data.length === 0) {
+        const createParams: SignerCreateRequest = {
+          accountType: AccountTypeEnum.SMART_ACCOUNT,
+          chainType: ChainTypeEnum.EVM,
+          chainId: params.chainId,
+          ...(params.entropy && {
+            entropy: {
+              ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
+              ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+            },
+          }),
+        };
+
+        const iframeResponse = await this.iframeManager.create(createParams);
+
+        accountId = iframeResponse.account;
+      } else {
+        const recoverParams: SignerRecoverRequest = {
+          // intentionally take first account from the list
+          account: response.data.data[0].id,
+          ...(params.entropy && {
+            entropy: {
+              ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
+              ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+            },
+          }),
+        };
+
+        const iframeResponse = await this.iframeManager.recover(recoverParams);
+
+        accountId = iframeResponse.account;
+      }
     }
+
     return withOpenfortError<Account>(async () => {
       const response = await this.backendApiClients.accountsApi.getAccountV2(
         {
-          id: iframeResponse.account,
+          id: accountId,
         },
         {
           headers: {
