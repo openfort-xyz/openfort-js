@@ -19,8 +19,8 @@ if (!process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY || !process.env.NEXT_PUBLIC_SHI
 const openfort = new Openfort({
   baseConfiguration,
   shieldConfiguration,
-  overrides: {
-    thirdPartyAuthProvider: ThirdPartyOAuthProvider.FIREBASE,
+  thirdPartyAuth: {
+    provider: ThirdPartyOAuthProvider.FIREBASE,
     getAccessToken: async () => {
       console.log("----- Getting access token from Firebase auth -----");
       return (await auth.currentUser?.getIdToken(/* forceRefresh */ false)) ?? null

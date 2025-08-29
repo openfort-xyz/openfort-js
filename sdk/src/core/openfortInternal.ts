@@ -14,18 +14,13 @@ export class OpenfortInternal {
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) { }
 
-  async getAccessToken(): Promise<string | null> {
-    const token = (await Authentication.fromStorage(this.storage))?.token ?? null;
-    return token;
-  }
-
-  async saveThirdPartyAuth() {
+  async getThirdPartyAuthToken() {
     const configuration = SDKConfiguration.getInstance();
-    if (!configuration) {
-      throw new OpenfortError('No SDK configuration', OpenfortErrorType.INTERNAL_ERROR);
+    if (!configuration?.thirdPartyAuth) {
+      throw new OpenfortError('No third party configuration found', OpenfortErrorType.INTERNAL_ERROR);
     }
 
-    const { getAccessToken, thirdPartyAuthProvider: provider } = configuration;
+    const { getAccessToken, provider } = configuration.thirdPartyAuth;
     if (!getAccessToken || !provider) {
       throw new OpenfortError(
         'Third party is not configured. Please configure getAccessToken and '
@@ -57,14 +52,23 @@ export class OpenfortInternal {
     ).save(this.storage);
 
     this.eventEmitter.emit(OpenfortEvents.TOKEN_REFRESHED);
+    return token;
+  }
+
+  async getAccessToken(): Promise<string | null> {
+    if (SDKConfiguration.getInstance()?.thirdPartyAuth) {
+      return this.getThirdPartyAuthToken();
+    }
+    const token = (await Authentication.fromStorage(this.storage))?.token ?? null;
+    return token;
   }
 
   /**
    * Validates and refreshes the access token if needed.
    */
   async validateAndRefreshToken(forceRefresh?: boolean): Promise<void> {
-    if (SDKConfiguration.getInstance()?.thirdPartyAuthProvider) {
-      await this.saveThirdPartyAuth();
+    if (SDKConfiguration.getInstance()?.thirdPartyAuth) {
+      await this.getThirdPartyAuthToken();
       return;
     }
     const auth = await Authentication.fromStorage(this.storage);

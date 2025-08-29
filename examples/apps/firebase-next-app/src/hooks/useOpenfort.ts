@@ -33,18 +33,6 @@ export const useOpenfort = () => {
     };
   }, []);
 
-  const authenticateWithOpenfort = useCallback(async () => {
-    try {
-      setError(null);
-      await openfortService.authenticateWithThirdPartyProvider();
-      setIsInitialized(true);
-    } catch (error) {
-      console.error('Error authenticating with Openfort:', error);
-      setError(error instanceof Error ? error : new Error('An error occurred during Openfort authentication'));
-      throw error;
-    }
-  }, []);
-
   const initializeEvmProvider = useCallback(async (): Promise<Provider | null> => {
     try {
       if (!providerRef.current) {
@@ -106,7 +94,6 @@ export const useOpenfort = () => {
   }, []);
 
   return {
-    authenticateWithOpenfort,
     embeddedState,
     getEvmProvider,
     initializeEvmProvider,
