@@ -301,27 +301,27 @@ export class SignRequest implements IEventRequest {
 
   message: string | Uint8Array;
 
+  requestConfiguration: RequestConfiguration;
+
   requireArrayify?: boolean;
 
   requireHash?: boolean;
-
-  requestConfiguration?: RequestConfiguration;
 
   chainType: string;
 
   constructor(
     uuid: string,
     message: string | Uint8Array,
+    requestConfiguration: RequestConfiguration,
     requireArrayify?: boolean,
     requireHash?: boolean,
-    requestConfiguration?: RequestConfiguration,
     chainType?: string,
   ) {
     this.uuid = uuid;
     this.message = message;
+    this.requestConfiguration = requestConfiguration;
     this.requireArrayify = requireArrayify;
     this.requireHash = requireHash;
-    this.requestConfiguration = requestConfiguration;
     this.chainType = chainType || 'EVM';
   }
 }
@@ -347,11 +347,11 @@ export class ExportPrivateKeyRequest implements IEventRequest {
 
   action: Event = Event.EXPORT;
 
-  requestConfiguration?: RequestConfiguration;
+  requestConfiguration: RequestConfiguration;
 
   constructor(
     uuid: string,
-    requestConfiguration?: RequestConfiguration,
+    requestConfiguration: RequestConfiguration,
   ) {
     this.uuid = uuid;
     this.requestConfiguration = requestConfiguration;
