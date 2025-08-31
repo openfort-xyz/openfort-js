@@ -22,23 +22,18 @@
 <body>
   <main>
     <h1>Login & Signup</h1>
-    <div class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
-      <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+    <div>
+      <div>
         <p>Enter an email and password below and either sign in to an existing account or sign up</p>
-        <input class="mdl-textfield__input" style="display: inline; width: auto" type="text" id="email" name="email"
-          placeholder="Email" />
-        &nbsp;&nbsp;&nbsp;
-        <input class="mdl-textfield__input" style="display: inline; width: auto" type="password" id="password"
-          name="password" placeholder="Password" />
-        <br /><br />
-        <button class="mdl-button mdl-js-button mdl-button--raised" id="quickstart-sign-in" name="signin">Sign
-          In</button>
-        &nbsp;&nbsp;&nbsp;
-        <button class="mdl-button mdl-js-button mdl-button--raised" id="quickstart-sign-up" name="signup">Sign
-          Up</button>
+        <input type="text" id="email" name="email" placeholder="Email" />
+        <input type="password" id="password" name="password" placeholder="Password" />
+        <br />
+        <button id="quickstart-sign-in" name="signin">Sign In</button>
+        <br />
+        <button id="quickstart-sign-up" name="signup">Sign Up</button>
       </div>
     </div>
-    <div id="messages" role="alert" style="display: none;"></div>
+    <div id="messages" role="alert"></div>
   </main>
 </body>
 
