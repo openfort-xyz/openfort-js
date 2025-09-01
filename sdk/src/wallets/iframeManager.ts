@@ -11,8 +11,6 @@ import { Authentication } from '../core/configuration/authentication';
 import type { AccountTypeEnum, ChainTypeEnum, RecoveryMethod } from '../types/types';
 import { ReactNativeMessenger } from './messaging';
 import {
-  ConfigureRequest,
-  ConfigureResponse,
   CreateRequest,
   RecoverRequest,
   GetCurrentDeviceRequest,
@@ -66,7 +64,9 @@ export interface SignerConfigureRequest {
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
-  }
+  };
+  accountType: AccountTypeEnum;
+  chainType: ChainTypeEnum;
 }
 
 export interface SignerCreateRequest {
@@ -88,7 +88,6 @@ export interface SignerRecoverRequest {
 }
 
 interface IframeAPI {
-  configure(request: ConfigureRequest): Promise<ConfigureResponse>;
   create(request: CreateRequest): Promise<CreateResponse>;
   recover(request: RecoverRequest): Promise<RecoverResponse>;
   sign(request: SignRequest): Promise<SignResponse>;
@@ -256,6 +255,7 @@ export class IframeManager {
   private handleError(error: any): never {
     if (isErrorResponse(error)) {
       if (error.error === NOT_CONFIGURED_ERROR) {
+        this.storage.remove(StorageKeys.ACCOUNT);
         throw new NotConfiguredError();
       } else if (error.error === MISSING_USER_ENTROPY_ERROR) {
         this.storage.remove(StorageKeys.ACCOUNT);
@@ -309,52 +309,6 @@ export class IframeManager {
       password: null,
     };
     return iframeConfiguration;
-  }
-
-  async configure(request?: SignerConfigureRequest): Promise<ConfigureResponse> {
-    if (!this.sdkConfiguration.shieldConfiguration) {
-      throw new OpenfortError('shieldConfiguration is required', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
-    const acc = await Account.fromStorage(this.storage);
-    const remote = await this.ensureConnection();
-    const iframeConfiguration = await this.buildIFrameRequestConfiguration();
-    iframeConfiguration.chainId = request?.chainId ?? acc?.chainId ?? null;
-    iframeConfiguration.password = request?.entropy?.recoveryPassword ?? null;
-    iframeConfiguration.recovery = {
-      ...iframeConfiguration.recovery,
-      encryptionSession: request?.entropy?.encryptionSession,
-    };
-
-    const config: ConfigureRequest = {
-      uuid: randomUUID(),
-      action: Event.CONFIGURE,
-      chainId: iframeConfiguration.chainId,
-      recovery: iframeConfiguration.recovery,
-      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
-      shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
-      accessToken: iframeConfiguration.accessToken,
-      playerID: iframeConfiguration.playerID,
-      thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
-      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
-      encryptionKey: iframeConfiguration.password,
-      encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
-      encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
-      openfortURL: this.sdkConfiguration.backendUrl,
-      shieldURL: this.sdkConfiguration.shieldUrl,
-    };
-
-    const response = await remote.configure(config);
-
-    if (isErrorResponse(response)) {
-      this.handleError(response);
-    }
-
-    // Store version if available
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-    }
-
-    return response;
   }
 
   async create(
@@ -473,24 +427,16 @@ export class IframeManager {
     );
     debugLog('[iframe] done ensureConnection');
 
-    try {
-      const response = await remote.sign(request);
-      debugLog('[iframe] response', response);
-      if (isErrorResponse(response)) {
-        this.handleError(response);
-      }
-
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-      }
-      return response.signature;
-    } catch (e) {
-      if (e instanceof NotConfiguredError) {
-        await this.configure();
-        return this.sign(message, requireArrayify, requireHash);
-      }
-      throw e;
+    const response = await remote.sign(request);
+    debugLog('[iframe] response', response);
+    if (isErrorResponse(response)) {
+      this.handleError(response);
     }
+
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
+    }
+    return response.signature;
   }
 
   async switchChain(chainId: number): Promise<SwitchChainResponse> {
@@ -502,20 +448,12 @@ export class IframeManager {
       await this.buildRequestConfiguration(),
     );
 
-    try {
-      const response = await remote.switchChain(request);
+    const response = await remote.switchChain(request);
 
-      if (isErrorResponse(response)) {
-        this.handleError(response);
-      }
-      return response;
-    } catch (e) {
-      if (e instanceof NotConfiguredError) {
-        await this.configure();
-        return this.switchChain(chainId);
-      }
-      throw e;
+    if (isErrorResponse(response)) {
+      this.handleError(response);
     }
+    return response;
   }
 
   async export(): Promise<string> {
@@ -526,24 +464,16 @@ export class IframeManager {
       await this.buildRequestConfiguration(),
     );
 
-    try {
-      const response = await remote.export(request);
+    const response = await remote.export(request);
 
-      if (isErrorResponse(response)) {
-        this.handleError(response);
-      }
-
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('iframe-version', (response as ExportPrivateKeyResponse).version ?? 'undefined');
-      }
-      return response.key;
-    } catch (e) {
-      if (e instanceof NotConfiguredError) {
-        await this.configure();
-        return this.export();
-      }
-      throw e;
+    if (isErrorResponse(response)) {
+      this.handleError(response);
     }
+
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('iframe-version', (response as ExportPrivateKeyResponse).version ?? 'undefined');
+    }
+    return response.key;
   }
 
   // eslint-disable-next-line consistent-return
@@ -562,22 +492,14 @@ export class IframeManager {
       await this.buildRequestConfiguration(),
     );
 
-    try {
-      const response = await remote.setRecoveryMethod(request);
+    const response = await remote.setRecoveryMethod(request);
 
-      if (isErrorResponse(response)) {
-        this.handleError(response);
-      }
+    if (isErrorResponse(response)) {
+      this.handleError(response);
+    }
 
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('iframe-version', (response as SetRecoveryMethodResponse).version ?? 'undefined');
-      }
-    } catch (e) {
-      if (e instanceof NotConfiguredError) {
-        await this.configure();
-        return this.setRecoveryMethod(recoveryMethod, recoveryPassword, encryptionSession);
-      }
-      throw e;
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('iframe-version', (response as SetRecoveryMethodResponse).version ?? 'undefined');
     }
   }
 
@@ -618,19 +540,10 @@ export class IframeManager {
 
     const request = new UpdateAuthenticationRequest(randomUUID(), authentication.token);
 
-    try {
-      debugLog('Updating authentication in iframe with token:', authentication.token);
-      const response = await this.remote.updateAuthentication(request);
-      if (isErrorResponse(response)) {
-        this.handleError(response);
-      }
-    } catch (e) {
-      if (e instanceof NotConfiguredError) {
-        await this.configure();
-        await this.updateAuthentication();
-        return;
-      }
-      throw e;
+    debugLog('Updating authentication in iframe with token:', authentication.token);
+    const response = await this.remote.updateAuthentication(request);
+    if (isErrorResponse(response)) {
+      this.handleError(response);
     }
   }
 
