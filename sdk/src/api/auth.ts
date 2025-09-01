@@ -1,4 +1,3 @@
-import { debugLog } from 'utils/debug';
 import { AuthManager } from '../auth/authManager';
 import { Authentication } from '../core/configuration/authentication';
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError';
@@ -14,8 +13,6 @@ import {
   OpenfortEventMap,
   OpenfortEvents,
   SIWEInitResponse,
-  ThirdPartyAuthProvider,
-  TokenType,
 } from '../types/types';
 import TypedEventEmitter from '../utils/typedEventEmitter';
 
@@ -143,19 +140,6 @@ export class AuthApi {
     return await this.authManager.linkOAuth(auth, provider, options, ecosystemGame);
   }
 
-  async linkThirdPartyProvider(
-    {
-      provider, token, tokenType,
-    }: { provider: ThirdPartyAuthProvider; token: string; tokenType: TokenType },
-  ): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken();
-    const auth = await Authentication.fromStorage(this.storage);
-    if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
-    return await this.authManager.linkThirdParty(auth, provider, token, tokenType);
-  }
-
   async unlinkOAuth(
     { provider, authToken }: { provider: OAuthProvider; authToken: string },
   ): Promise<AuthPlayerResponse> {
@@ -168,21 +152,6 @@ export class AuthApi {
     const response = await this.authManager.poolOAuth(key);
     new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage);
     return response;
-  }
-
-  /**
-   * Authenticates the user with a third party provider.
-   * Set up the third party auth provider in the SDK configuration.
-   */
-  async authenticateWithThirdPartyProvider(): Promise<AuthPlayerResponse> {
-    debugLog('Authenticating with third party provider');
-    await this.ensureInitialized();
-    await this.validateAndRefreshToken();
-    const authentication = await Authentication.fromStorage(this.storage);
-    if (!authentication) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
-    }
-    return await this.authManager.getUser(authentication);
   }
 
   async loginWithIdToken(

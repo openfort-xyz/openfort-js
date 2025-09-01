@@ -55,10 +55,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  auth.onIdTokenChanged(async (user) => {
+  auth.onAuthStateChanged(async (user) => {
     if (user) {
       addMessage('Signed in');
-      const player = await openfort.auth.authenticateWithThirdPartyProvider();
+      const player = await openfort.user.get();
       const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       addMessage(`Openfort: ${player.id}`);
 

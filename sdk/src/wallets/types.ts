@@ -84,74 +84,6 @@ export class GetCurrentDeviceResponse implements IEventResponse {
   }
 }
 
-export class ConfigureRequest implements IEventRequest {
-  uuid: string;
-
-  action: Event = Event.CONFIGURE;
-
-  chainId: number | null;
-
-  recovery: ShieldAuthentication | null;
-
-  publishableKey: string;
-
-  shieldAPIKey: string;
-
-  accessToken: string | null;
-
-  encryptionKey: string | null;
-
-  encryptionPart: string | null;
-
-  encryptionSession: string | null;
-
-  openfortURL: string;
-
-  shieldURL: string;
-
-  thirdPartyProvider: string | null;
-
-  thirdPartyTokenType: string | null;
-
-  playerID: string | null;
-
-  passkeyKey: Uint8Array | null;
-
-  constructor(
-    uuid: string,
-    chainId: number,
-    recovery: ShieldAuthentication,
-    publishableKey: string,
-    shieldAPIKey: string,
-    accessToken: string,
-    playerID: string,
-    openfortURL: string,
-    shieldURL: string,
-    encryptionKey = null,
-    thirdPartyProvider = null,
-    thirdPartyTokenType = null,
-    encryptionPart = null,
-    encryptionSession = null,
-    passkeyKey = null,
-  ) {
-    this.uuid = uuid;
-    this.chainId = chainId;
-    this.recovery = recovery;
-    this.publishableKey = publishableKey;
-    this.shieldAPIKey = shieldAPIKey;
-    this.accessToken = accessToken;
-    this.playerID = playerID;
-    this.thirdPartyProvider = thirdPartyProvider;
-    this.thirdPartyTokenType = thirdPartyTokenType;
-    this.encryptionKey = encryptionKey;
-    this.openfortURL = openfortURL;
-    this.shieldURL = shieldURL;
-    this.encryptionPart = encryptionPart;
-    this.encryptionSession = encryptionSession;
-    this.passkeyKey = passkeyKey;
-  }
-}
-
 export class CreateRequest implements IEventRequest {
   uuid: string;
 
@@ -305,27 +237,27 @@ export class SignRequest implements IEventRequest {
 
   message: string | Uint8Array;
 
+  requestConfiguration: RequestConfiguration;
+
   requireArrayify?: boolean;
 
   requireHash?: boolean;
-
-  requestConfiguration?: RequestConfiguration;
 
   chainType: string;
 
   constructor(
     uuid: string,
     message: string | Uint8Array,
+    requestConfiguration: RequestConfiguration,
     requireArrayify?: boolean,
     requireHash?: boolean,
-    requestConfiguration?: RequestConfiguration,
     chainType?: string,
   ) {
     this.uuid = uuid;
     this.message = message;
+    this.requestConfiguration = requestConfiguration;
     this.requireArrayify = requireArrayify;
     this.requireHash = requireHash;
-    this.requestConfiguration = requestConfiguration;
     this.chainType = chainType || 'EVM';
   }
 }
@@ -351,11 +283,11 @@ export class ExportPrivateKeyRequest implements IEventRequest {
 
   action: Event = Event.EXPORT;
 
-  requestConfiguration?: RequestConfiguration;
+  requestConfiguration: RequestConfiguration;
 
   constructor(
     uuid: string,
-    requestConfiguration?: RequestConfiguration,
+    requestConfiguration: RequestConfiguration,
   ) {
     this.uuid = uuid;
     this.requestConfiguration = requestConfiguration;
@@ -480,40 +412,6 @@ export class ErrorResponse implements IErrorResponse {
     this.success = false;
     this.error = error;
     this.uuid = uuid;
-    this.version = null;
-  }
-}
-
-export class ConfigureResponse implements IConfigureResponse {
-  uuid: string;
-
-  success: boolean;
-
-  account: string;
-
-  deviceID: string;
-
-  address: string;
-
-  chainId: number;
-
-  action: Event = Event.CONFIGURED;
-
-  version: string | null;
-
-  constructor(
-    uuid: string,
-    deviceID: string,
-    chainId: number,
-    address: string,
-    account: string,
-  ) {
-    this.success = true;
-    this.deviceID = deviceID;
-    this.uuid = uuid;
-    this.chainId = chainId;
-    this.address = address;
-    this.account = account;
     this.version = null;
   }
 }

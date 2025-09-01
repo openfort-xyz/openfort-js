@@ -28,7 +28,6 @@ const OPENFORT_FUNCTIONS = {
   initLinkOAuth: 'initLinkOAuth',
   unlinkOAuth: 'unlinkOAuth',
   poolOAuth: 'poolOAuth',
-  authenticateWithThirdPartyProvider: 'authenticateWithThirdPartyProvider',
   initSIWE: 'initSIWE',
   authenticateWithSIWE: 'authenticateWithSIWE',
   linkWallet: 'linkWallet',
@@ -212,19 +211,6 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...authResponse,
-        });
-        break;
-      }
-      case OPENFORT_FUNCTIONS.authenticateWithThirdPartyProvider: {
-        const userProfile = await openfortClient.auth.authenticateWithThirdPartyProvider();
-
-        callbackToGame({
-          ...{
-            responseFor: fxName,
-            requestId,
-            success: true,
-          },
-          ...userProfile,
         });
         break;
       }

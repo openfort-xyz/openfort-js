@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await auth.signOut();
   };
 
-  auth.onIdTokenChanged(async (user) => {
+  auth.onAuthStateChanged(async (user) => {
     if (user) {
       const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       console.log(embeddedState);

@@ -11,7 +11,6 @@ const LoginSignupForm: React.FC = () => {
   const { signIn, signUp } = useAuthentication();
   const [loading, setLoading] = useState(false);
   const handleToggle = () => setIsLogin(!isLogin);
-  const { authenticateWithOpenfort } = useOpenfort();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
@@ -30,7 +29,6 @@ const LoginSignupForm: React.FC = () => {
         alert("Failed to sign up. Please try again.");
       });
     }
-    await authenticateWithOpenfort();
     setLoading(false);
   };
 

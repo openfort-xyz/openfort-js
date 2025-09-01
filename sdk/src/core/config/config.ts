@@ -12,8 +12,11 @@ export interface SDKOverrides {
   storage?: IStorage;
   passkeyRpId?: string;
   passkeyRpName?: string;
-  getAccessToken?: () => Promise<string | null>;
-  thirdPartyAuthProvider?: ThirdPartyOAuthProvider;
+}
+
+export interface ThirdPartyAuthConfiguration {
+  provider: ThirdPartyOAuthProvider;
+  getAccessToken: () => Promise<string | null>;
 }
 
 export class OpenfortConfiguration {
@@ -44,15 +47,18 @@ export class ShieldConfiguration {
 }
 
 export type OpenfortSDKConfiguration = {
-  baseConfiguration: OpenfortConfiguration,
-  shieldConfiguration?: ShieldConfiguration,
-  overrides?: SDKOverrides
+  baseConfiguration: OpenfortConfiguration;
+  shieldConfiguration?: ShieldConfiguration;
+  overrides?: SDKOverrides;
+  thirdPartyAuth?: ThirdPartyAuthConfiguration;
 };
 
 export class SDKConfiguration {
   readonly baseConfiguration: OpenfortConfiguration;
 
   readonly shieldConfiguration?: ShieldConfiguration;
+
+  readonly thirdPartyAuth?: ThirdPartyAuthConfiguration;
 
   readonly shieldUrl: string;
 
@@ -66,16 +72,13 @@ export class SDKConfiguration {
 
   readonly passkeyRpName: string;
 
-  readonly getAccessToken?: () => Promise<string | null>;
-
-  readonly thirdPartyAuthProvider?: ThirdPartyOAuthProvider;
-
   static instance: SDKConfiguration | null = null;
 
   constructor({
     baseConfiguration,
     shieldConfiguration,
     overrides,
+    thirdPartyAuth,
   }: OpenfortSDKConfiguration) {
     this.shieldConfiguration = shieldConfiguration;
     this.baseConfiguration = baseConfiguration;
@@ -87,8 +90,7 @@ export class SDKConfiguration {
     }
     this.shieldUrl = overrides?.shieldUrl || 'https://shield.openfort.io';
     this.storage = overrides?.storage;
-    this.getAccessToken = overrides?.getAccessToken;
-    this.thirdPartyAuthProvider = overrides?.thirdPartyAuthProvider;
+    this.thirdPartyAuth = thirdPartyAuth;
 
     this.passkeyRpId = overrides?.passkeyRpId || 'https://openfort.io';
     this.passkeyRpName = overrides?.passkeyRpName || 'Openfort - Embedded Wallet';
