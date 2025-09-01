@@ -11,8 +11,6 @@ import { Authentication } from '../core/configuration/authentication';
 import type { AccountTypeEnum, ChainTypeEnum, RecoveryMethod } from '../types/types';
 import { ReactNativeMessenger } from './messaging';
 import {
-  ConfigureRequest,
-  ConfigureResponse,
   CreateRequest,
   RecoverRequest,
   GetCurrentDeviceRequest,
@@ -88,7 +86,6 @@ export interface SignerRecoverRequest {
 }
 
 interface IframeAPI {
-  configure(request: ConfigureRequest): Promise<ConfigureResponse>;
   create(request: CreateRequest): Promise<CreateResponse>;
   recover(request: RecoverRequest): Promise<RecoverResponse>;
   sign(request: SignRequest): Promise<SignResponse>;
@@ -310,52 +307,6 @@ export class IframeManager {
       password: null,
     };
     return iframeConfiguration;
-  }
-
-  async configure(request?: SignerConfigureRequest): Promise<ConfigureResponse> {
-    if (!this.sdkConfiguration.shieldConfiguration) {
-      throw new OpenfortError('shieldConfiguration is required', OpenfortErrorType.INVALID_CONFIGURATION);
-    }
-    const acc = await Account.fromStorage(this.storage);
-    const remote = await this.ensureConnection();
-    const iframeConfiguration = await this.buildIFrameRequestConfiguration();
-    iframeConfiguration.chainId = request?.chainId ?? acc?.chainId ?? null;
-    iframeConfiguration.password = request?.entropy?.recoveryPassword ?? null;
-    iframeConfiguration.recovery = {
-      ...iframeConfiguration.recovery,
-      encryptionSession: request?.entropy?.encryptionSession,
-    };
-
-    const config: ConfigureRequest = {
-      uuid: randomUUID(),
-      action: Event.CONFIGURE,
-      chainId: iframeConfiguration.chainId,
-      recovery: iframeConfiguration.recovery,
-      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
-      shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
-      accessToken: iframeConfiguration.accessToken,
-      playerID: iframeConfiguration.playerID,
-      thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
-      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
-      encryptionKey: iframeConfiguration.password,
-      encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
-      encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
-      openfortURL: this.sdkConfiguration.backendUrl,
-      shieldURL: this.sdkConfiguration.shieldUrl,
-    };
-
-    const response = await remote.configure(config);
-
-    if (isErrorResponse(response)) {
-      this.handleError(response);
-    }
-
-    // Store version if available
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('iframe-version', response.version ?? 'undefined');
-    }
-
-    return response;
   }
 
   async create(
