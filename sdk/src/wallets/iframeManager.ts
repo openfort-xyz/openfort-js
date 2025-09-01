@@ -64,7 +64,9 @@ export interface SignerConfigureRequest {
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
-  }
+  };
+  accountType: AccountTypeEnum;
+  chainType: ChainTypeEnum;
 }
 
 export interface SignerCreateRequest {

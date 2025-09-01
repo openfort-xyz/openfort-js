@@ -25,7 +25,7 @@ import { EvmProvider, Provider } from '../wallets/evm';
 import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { signMessage } from '../wallets/evm/walletHelpers';
-import { IframeManager } from '../wallets/iframeManager';
+import { IframeManager, SignerConfigureRequest } from '../wallets/iframeManager';
 import { ReactNativeMessenger } from '../wallets/messaging';
 import { WindowMessenger } from '../wallets/messaging/browserMessenger';
 import { MessagePoster } from '../wallets/types';
@@ -226,11 +226,15 @@ export class EmbeddedWalletApi {
 
     const entropy = this.getEntropy(recoveryParams);
 
-    const signer = await this.ensureSigner();
-    const account = await signer.configure({
+    const configureParams: SignerConfigureRequest = {
       chainId: params.chainId,
       entropy,
-    });
+      accountType: params.accountType ?? AccountTypeEnum.SMART_ACCOUNT,
+      chainType: params.chainType ?? ChainTypeEnum.EVM,
+    };
+
+    const signer = await this.ensureSigner();
+    const account = await signer.configure(configureParams);
 
     const auth = await Authentication.fromStorage(this.storage);
     return {

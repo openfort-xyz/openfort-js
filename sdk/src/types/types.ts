@@ -447,6 +447,8 @@ export type EmbeddedAccount = {
 export type EmbeddedAccountConfigureParams = {
   chainId?: number;
   recoveryParams: RecoveryParams;
+  chainType?: ChainTypeEnum;
+  accountType?: AccountTypeEnum;
 };
 
 export type EmbeddedAccountRecoverParams = {

@@ -58,9 +58,9 @@ export class EmbeddedSigner implements Signer {
       const response = await this.backendApiClients.accountsApi.getAccountsV2(
         {
           user: auth.player,
-          accountType: AccountTypeEnum.SMART_ACCOUNT,
+          accountType: params.accountType,
           // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
-          chainType: ChainTypeEnum.EVM,
+          chainType: params.chainType,
         },
         {
           headers: {
@@ -77,8 +77,8 @@ export class EmbeddedSigner implements Signer {
 
       if (response.data.data.length === 0) {
         const createParams: SignerCreateRequest = {
-          accountType: AccountTypeEnum.SMART_ACCOUNT,
-          chainType: ChainTypeEnum.EVM,
+          accountType: params.accountType,
+          chainType: params.chainType,
           chainId: params.chainId,
           ...(params.entropy && {
             entropy: {
