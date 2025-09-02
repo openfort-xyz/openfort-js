@@ -4,15 +4,55 @@
  * That is, it's not designed (and must NOT be used) for authentication.
  */
 export class PasskeyHandler {
-  private readonly TIMEOUT_MILLIS = 60_000;
+  // Valid byte length for target key derivation
+  private readonly iValidByteLengths: number[] = [16, 24, 32];
 
+  // The issuer's domain name
   private readonly rpId: string;
 
+  // The issuer's display name
   private readonly rpName: string;
 
-  constructor(rpId: string, rpName: string) {
+  // Timeout (in milliseconds) before a passkey dialog expires (default = 60_000)
+  private readonly timeoutMillis: number;
+
+  // Derived key length (in bytes)
+  private readonly derivedKeyLengthBytes: number;
+
+  // Determine whether the derived keys are extractable
+  private readonly extractableKey: boolean;
+
+  /**
+   * Creates a new passkey handler
+   * The only fixed values from an issuer's point of view are rpId + rpName
+   * @param rpId The issuer's domain name
+   * @param rpName The issuer's display name
+   * @param timeoutMillis Timeout (in milliseconds) before a passkey dialog expires
+   * @param derivedKeyLengthBytes Byte length for target keys
+   * @param extractableKey Whether keys are extractable
+   */
+  constructor(
+    {
+      rpId,
+      rpName,
+      timeoutMillis,
+      derivedKeyLengthBytes,
+      extractableKey,
+    }: Passkeys.Configuration,
+  ) {
     this.rpId = rpId;
     this.rpName = rpName;
+    this.timeoutMillis = timeoutMillis ?? 60_000;
+    this.derivedKeyLengthBytes = derivedKeyLengthBytes ?? 32;
+    // ⚠️ key has default extractable=true ON PURPOSE
+    // so it can be sent to the iframe
+    // as in the previous warning, consider very carefully what is your use case
+    // before imitating this workflow, which is ONLY meant for passkey based wallet recovery
+    this.extractableKey = extractableKey ?? true;
+
+    if (!this.iValidByteLengths.includes(this.derivedKeyLengthBytes)) {
+      throw new Error(`Invalid key byte length ${this.derivedKeyLengthBytes}`);
+    }
   }
 
   private getChallengeBytes(): Uint8Array {
@@ -32,11 +72,13 @@ export class PasskeyHandler {
 
   /**
    * Prompts the user to create a passkey.
-   * @param userId UserID
-   * @param username User name (will also be used as User Display Name)
-   * @returns Credential object if passkey creation was successful
+   * @param name User name
+   * @param displayName Display name (ideally it should hint about environment, chain id, etc)
+   * @returns PasskeyDetails with passkey details if passkey creation was successful
    */
-  async createPasskey(userId: string, username: string): Promise<Credential | null> {
+  async createPasskey({ displayName }: Passkeys.UserConfig): Promise<Passkeys.Details> {
+    // const id = uuid4();
+    const id = 'MOCK-UUID'; // TODO: USE REAL UUIDS AS SOON AS WE HAVE STORAGE
     const publicKey: PublicKeyCredentialCreationOptions = {
       challenge: this.getChallengeBytes() as BufferSource,
       rp: {
@@ -44,9 +86,9 @@ export class PasskeyHandler {
         name: this.rpName,
       },
       user: {
-        id: new TextEncoder().encode(userId),
-        name: username,
-        displayName: username,
+        id: new TextEncoder().encode(id),
+        name: id,
+        displayName,
       },
       pubKeyCredParams: [
         { type: 'public-key', alg: -7 }, // ES256
@@ -61,20 +103,28 @@ export class PasskeyHandler {
       },
       // Required for key derivation (which is what we need for proper share crypto operations)
       extensions: { prf: {} },
-      timeout: this.TIMEOUT_MILLIS,
+      timeout: this.timeoutMillis,
       attestation: 'direct',
     };
 
     const credential = await navigator.credentials.create({ publicKey });
 
-    return credential;
+    if (credential) {
+      return {
+        id,
+        displayName,
+      };
+    }
+    throw new Error('could not create passkey');
   }
 
   /**
    * Derives a key using a locally available passkey (for which the user must be able to auth to)
+   * @param id: Internal ID of the passkey
+   * @param seed: Seed phrase to derive passkey ID
    * @returns CryptoKey object
    */
-  async deriveKey(): Promise<CryptoKey> {
+  async deriveKey({ id, seed }: Passkeys.DerivationDetails): Promise<CryptoKey> {
     // This assertion is the authentication step in the passkey:
     // it will fail if the user is not able to provide valid
     // credentials (PIN, biometrics, etc)
@@ -85,11 +135,17 @@ export class PasskeyHandler {
           // particular use case
           challenge: this.getChallengeBytes() as BufferSource,
           rpId: this.rpId,
-          userVerification: 'required',
+          allowCredentials: [
+            {
+              id: new TextEncoder().encode(id),
+              type: 'public-key',
+            },
+          ],
+          userVerification: 'preferred',
           extensions: {
             prf: {
               eval: {
-                first: new TextEncoder().encode('test-string-123'),
+                first: new TextEncoder().encode(seed),
               },
             },
           },
@@ -105,15 +161,11 @@ export class PasskeyHandler {
       throw new Error('PRF extension not supported or missing results');
     }
     const rawBits = prfResults.results.first;
-    // ⚠️ key has extractable=true ON PURPOSE
-    // so it can be sent to the iframe
-    // as in the previous warning, consider very carefully what is your use case
-    // before imitating that of passkey based wallet recovery
     const key = await crypto.subtle.importKey(
       'raw',
       rawBits,
-      { name: 'AES-CBC', length: 32 },
-      true,
+      { name: 'AES-CBC', length: this.derivedKeyLengthBytes },
+      this.extractableKey,
       ['encrypt', 'decrypt'],
     );
     return key;
@@ -123,24 +175,36 @@ export class PasskeyHandler {
    * Derive and export a key using local passkey
    * @returns Uint8Array w/ derived key
    */
-  async deriveAndExportKey(): Promise< Uint8Array > {
-    const derivedKey = await this.deriveKey();
+  async deriveAndExportKey({ id, seed }: Passkeys.DerivationDetails): Promise< Uint8Array > {
+    if (!this.extractableKey) {
+      throw new Error('Derived keys cannot be exported if extractableKey is not set to true');
+    }
+
+    const derivedKey = await this.deriveKey({ id, seed });
     return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey));
   }
+}
 
-  /**
-   * Tries to derive and export a key with an already
-   * installed passkey. It creates a new one if authentication
-   * was not possible
-   * @param userId Name of the user we want to create a passkey for
-   * @returns Uint8Array w/ derived key
-   */
-  async deriveAndExportKeyForUser(userId: string): Promise< Uint8Array > {
-    try {
-      return await this.deriveAndExportKey();
-    } catch (err) {
-      await this.createPasskey(userId, 'Openfort User');
-      return await this.deriveAndExportKey();
-    }
-  }
+namespace Passkeys {
+  export type Configuration = {
+    rpId: string,
+    rpName: string,
+    timeoutMillis?: number,
+    derivedKeyLengthBytes?: number,
+    extractableKey?: boolean,
+  };
+
+  export type UserConfig = {
+    displayName: string,
+  };
+
+  export type Details = {
+    id: string,
+    displayName?: string,
+  };
+
+  export type DerivationDetails = {
+    id: string,
+    seed: string,
+  };
 }

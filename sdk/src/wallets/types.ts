@@ -109,6 +109,8 @@ export class CreateRequest implements IEventRequest {
 
   encryptionSession: string | null;
 
+  passkey: PasskeyDetails | null;
+
   openfortURL: string;
 
   shieldURL: string;
@@ -136,6 +138,7 @@ export class CreateRequest implements IEventRequest {
     thirdPartyTokenType: string | null = null,
     encryptionPart: string | null = null,
     encryptionSession: string | null = null,
+    passkey: PasskeyDetails | null = null,
   ) {
     this.uuid = uuid;
     this.accountType = accountType;
@@ -153,6 +156,7 @@ export class CreateRequest implements IEventRequest {
     this.shieldURL = shieldURL;
     this.encryptionPart = encryptionPart;
     this.encryptionSession = encryptionSession;
+    this.passkey = passkey;
   }
 }
 
@@ -174,6 +178,8 @@ export class RecoverRequest implements IEventRequest {
   encryptionPart: string | null;
 
   encryptionSession: string | null;
+
+  passkey: PasskeyDetails | null;
 
   openfortURL: string;
 
@@ -202,6 +208,7 @@ export class RecoverRequest implements IEventRequest {
     thirdPartyTokenType: string | null = null,
     encryptionPart: string | null = null,
     encryptionSession: string | null = null,
+    passkey: PasskeyDetails | null = null,
   ) {
     this.uuid = uuid;
     this.recovery = recovery;
@@ -217,6 +224,7 @@ export class RecoverRequest implements IEventRequest {
     this.shieldURL = shieldURL;
     this.encryptionPart = encryptionPart;
     this.encryptionSession = encryptionSession;
+    this.passkey = passkey;
   }
 }
 
@@ -305,6 +313,8 @@ export class SetRecoveryMethodRequest implements IEventRequest {
 
   encryptionSession?: string;
 
+  passkeyKey?: Uint8Array;
+
   requestConfiguration?: RequestConfiguration;
 
   constructor(
@@ -312,6 +322,7 @@ export class SetRecoveryMethodRequest implements IEventRequest {
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
+    passkeyKey?: Uint8Array,
     requestConfiguration?: RequestConfiguration,
   ) {
     this.uuid = uuid;
@@ -319,6 +330,7 @@ export class SetRecoveryMethodRequest implements IEventRequest {
     this.recoveryPassword = recoveryPassword;
     this.encryptionSession = encryptionSession;
     this.requestConfiguration = requestConfiguration;
+    this.passkeyKey = passkeyKey;
   }
 }
 
@@ -604,4 +616,10 @@ export interface RequestConfiguration {
 
 export interface MessagePoster {
   postMessage(message: string): void;
+}
+
+export interface PasskeyDetails {
+  id: string;
+  env: string;
+  key: Uint8Array;
 }

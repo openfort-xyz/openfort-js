@@ -25,7 +25,7 @@ import { EvmProvider, Provider } from '../wallets/evm';
 import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { signMessage } from '../wallets/evm/walletHelpers';
-import { IframeManager, SignerConfigureRequest } from '../wallets/iframeManager';
+import { IframeManager, PasskeyDetails, SignerConfigureRequest } from '../wallets/iframeManager';
 import { ReactNativeMessenger } from '../wallets/messaging';
 import { WindowMessenger } from '../wallets/messaging/browserMessenger';
 import { MessagePoster } from '../wallets/types';
@@ -202,8 +202,20 @@ export class EmbeddedWalletApi {
     return iframe;
   }
 
-  private async getEntropy(recoveryParams: RecoveryParams, player: string):
-  Promise<{ recoveryPassword?: string; encryptionSession?: string; passkeyKey?: Uint8Array }> {
+  private async getPasskeyKey(id: string): Promise<Uint8Array> {
+    const auth = await Authentication.fromStorage(this.storage);
+    const derivedKey = await this.passkeyHandler.deriveAndExportKey(
+      {
+        id,
+        seed: auth!.player,
+      },
+    );
+    console.log(`Derived and exported key for passkey id: ${id}: ${JSON.stringify(derivedKey)}`);
+    return derivedKey;
+  }
+
+  private async getEntropy(recoveryParams: RecoveryParams):
+  Promise<{ recoveryPassword?: string; encryptionSession?: string; passkey?: PasskeyDetails }> {
     switch (recoveryParams.recoveryMethod) {
       case RecoveryMethod.PASSWORD:
         return {
@@ -215,7 +227,11 @@ export class EmbeddedWalletApi {
         };
       case RecoveryMethod.PASSKEY:
         return {
-          passkeyKey: await this.passkeyHandler.deriveAndExportKeyForUser(player),
+          passkey: {
+            id: recoveryParams.passkeyInfo?.passkeyId!!,
+            env: recoveryParams.passkeyInfo?.passkeyEnv!!,
+            key: await this.getPasskeyKey(recoveryParams.passkeyInfo?.passkeyId!!),
+          },
         };
       default:
         throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -231,8 +247,35 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    const auth = await Authentication.fromStorage(this.storage);
-    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams, auth!.player)]);
+    // TODO: CHECK IF ACCOUNT EXISTS
+    const accountExists = true;
+    // If we're here it's guaranteed we need to create a passkey for this particular user
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      if (!accountExists) {
+        const passkeyDetails = await this.passkeyHandler.createPasskey(
+          {
+            displayName: 'MOCK-DISPLAY', // possibly environment info + chain Id
+          },
+        );
+        recoveryParams.passkeyInfo = {
+          passkeyId: passkeyDetails.id,
+          passkeyEnv: 'MOCK-ENV',
+        };
+      } else {
+        recoveryParams.passkeyInfo = {
+          passkeyId: 'MOCK-UUID',
+          passkeyEnv: 'MOCK-ENV',
+        };
+      }
+    }
+
+    const [signer, entropy, auth] = await Promise.all(
+      [
+        this.ensureSigner(),
+        this.getEntropy(recoveryParams),
+        Authentication.fromStorage(this.storage),
+      ],
+    );
 
     const configureParams: SignerConfigureRequest = {
       chainId: params.chainId,
@@ -262,8 +305,28 @@ export class EmbeddedWalletApi {
     const recoveryParams = params.recoveryParams ?? {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
-    const auth = await Authentication.fromStorage(this.storage);
-    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams, auth!.player)]);
+
+    console.log(`Calling embeddedWallet.create with params ${JSON.stringify(params)}`);
+    // If we're here it's guaranteed we need to create a passkey for this particular user
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      const passkeyDetails = await this.passkeyHandler.createPasskey(
+        {
+          displayName: 'MOCK-DISPLAY', // possibly environment info + chain Id
+        },
+      );
+      recoveryParams.passkeyInfo = {
+        passkeyId: passkeyDetails.id,
+        passkeyEnv: 'MOCK-ENV',
+      };
+    }
+
+    const [signer, entropy, auth] = await Promise.all(
+      [
+        this.ensureSigner(),
+        this.getEntropy(recoveryParams),
+        Authentication.fromStorage(this.storage),
+      ],
+    );
     const account = await signer.create({
       accountType: params.accountType,
       chainType: params.chainType,
@@ -291,8 +354,20 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    const auth = await Authentication.fromStorage(this.storage);
-    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams, auth!.player)]);
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      recoveryParams.passkeyInfo = {
+        passkeyId: 'MOCK-UUID',
+        passkeyEnv: 'MOCK-ENV',
+      };
+    }
+
+    const [signer, entropy, auth] = await Promise.all(
+      [
+        this.ensureSigner(),
+        this.getEntropy(recoveryParams),
+        Authentication.fromStorage(this.storage),
+      ],
+    );
     const account = await signer.recover({
       account: params.account,
       entropy,

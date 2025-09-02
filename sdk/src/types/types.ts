@@ -464,6 +464,11 @@ export type EmbeddedAccountCreateParams = {
   recoveryParams: RecoveryParams;
 };
 
+export type PasskeyInfo = {
+  passkeyId: string;
+  passkeyEnv: string;
+};
+
 export type RecoveryParams = {
   recoveryMethod: RecoveryMethod.AUTOMATIC;
   encryptionSession: string,
@@ -472,6 +477,7 @@ export type RecoveryParams = {
   password: string;
 } | {
   recoveryMethod: RecoveryMethod.PASSKEY;
+  passkeyInfo?: PasskeyInfo;
 };
 
 export enum SortOrdering {

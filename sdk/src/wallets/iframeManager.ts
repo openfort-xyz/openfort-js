@@ -49,6 +49,12 @@ export interface IframeAuthentication extends ShieldAuthentication {
   tokenType?: string | null;
 }
 
+export interface PasskeyDetails {
+  id: string;
+  env: string;
+  key: Uint8Array;
+}
+
 export interface IframeConfiguration {
   thirdPartyTokenType: string | null;
   thirdPartyProvider: string | null;
@@ -57,7 +63,7 @@ export interface IframeConfiguration {
   recovery: IframeAuthentication | null;
   chainId: number | null;
   password: string | null;
-  passkeyKey: Uint8Array | null;
+  passkey: PasskeyDetails | null;
 }
 
 export interface SignerConfigureRequest {
@@ -65,8 +71,7 @@ export interface SignerConfigureRequest {
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
-    passkeyKey?: Uint8Array;
-
+    passkey?: PasskeyDetails;
   };
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
@@ -79,6 +84,7 @@ export interface SignerCreateRequest {
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
+    passkey?: PasskeyDetails;
   }
 }
 
@@ -87,6 +93,7 @@ export interface SignerRecoverRequest {
   entropy?: {
     recoveryPassword?: string;
     encryptionSession?: string;
+    passkey?: PasskeyDetails;
   }
 }
 
@@ -310,7 +317,7 @@ export class IframeManager {
       recovery: shieldAuthentication,
       chainId: null,
       password: null,
-      passkeyKey: null,
+      passkey: null,
     };
     return iframeConfiguration;
   }
@@ -331,6 +338,7 @@ export class IframeManager {
       ...iframeConfiguration.recovery,
       encryptionSession: params?.entropy?.encryptionSession,
     };
+    iframeConfiguration.passkey = params?.entropy?.passkey ?? null;
     const request: CreateRequest = {
       uuid: randomUUID(),
       action: Event.CREATE,
@@ -344,6 +352,7 @@ export class IframeManager {
       encryptionKey: iframeConfiguration.password,
       encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
       encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
+      passkey: iframeConfiguration.passkey ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
       chainId: params.chainId ?? null,
@@ -381,6 +390,7 @@ export class IframeManager {
       ...iframeConfiguration.recovery,
       encryptionSession: params?.entropy?.encryptionSession,
     };
+    iframeConfiguration.passkey = params?.entropy?.passkey ?? null;
 
     const request: RecoverRequest = {
       uuid: randomUUID(),
@@ -395,6 +405,7 @@ export class IframeManager {
       encryptionKey: iframeConfiguration.password,
       encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
       encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
+      passkey: iframeConfiguration.passkey ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
       account: params.account,
@@ -485,6 +496,7 @@ export class IframeManager {
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
+    passkeyKey?: Uint8Array,
   ): Promise<void> {
     const remote = await this.ensureConnection();
 
@@ -493,6 +505,7 @@ export class IframeManager {
       recoveryMethod,
       recoveryPassword,
       encryptionSession,
+      passkeyKey,
       await this.buildRequestConfiguration(),
     );
 

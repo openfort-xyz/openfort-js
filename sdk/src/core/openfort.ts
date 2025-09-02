@@ -149,7 +149,13 @@ export class Openfort {
     this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>();
 
     // Instantiate the passkey handler
-    this.iPasskeyHandler = new PasskeyHandler(this.configuration.passkeyRpId, this.configuration.passkeyRpName);
+    this.iPasskeyHandler = new PasskeyHandler(
+      {
+        rpId: this.configuration.passkeyRpId,
+        rpName: this.configuration.passkeyRpName,
+        extractableKey: true,
+      },
+    );
 
     InternalSentry.init({ configuration: this.configuration });
 
