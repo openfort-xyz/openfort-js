@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Openfort API
- * Complete Openfort API references and guides can be found at: https://openfort.xyz/docs
+ * Complete Openfort API references and guides can be found at: https://www.openfort.io/docs
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: founders@openfort.xyz
@@ -83,5 +83,11 @@ export interface AccountV2Response {
      * @memberof AccountV2Response
      */
     'smartAccount'?: SmartAccountData;
+    /**
+     * 
+     * @type {string}
+     * @memberof AccountV2Response
+     */
+    'recoveryMethod'?: string;
 }
 

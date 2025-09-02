@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Openfort API
- * Complete Openfort API references and guides can be found at: https://openfort.xyz/docs
+ * Complete Openfort API references and guides can be found at: https://www.openfort.io/docs
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: founders@openfort.xyz
@@ -79,7 +79,7 @@ export interface EmbeddedV2Response {
      * @type {number}
      * @memberof EmbeddedV2Response
      */
-    'chainId': number;
+    'chainId'?: number;
     /**
      * 
      * @type {string}
