@@ -1,0 +1,156 @@
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { useOpenfort } from '../../hooks/useOpenfort';
+import { EmbeddedAccount, EmbeddedState, RecoveryMethod, RecoveryParams } from '@openfort/openfort-js';
+import Loading from '../Loading';
+import { Button } from '../ui/button';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Hex } from 'viem';
+import { CheckIcon, ChevronLeft } from 'lucide-react';
+import openfort from '@/utils/openfortConfig';
+import { cn } from '@/lib/utils';
+
+const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuccess }: { isCurrentAccount: boolean, account: EmbeddedAccount, handleSetMessage: (msg: string) => void, onSuccess: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  const { getEncryptionSession } = useOpenfort();
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
+
+  const handleRecoverWallet = async (accountId: string, recoveryParams: RecoveryParams) => {
+    setLoading(true);
+    try {
+      await openfort.embeddedWallet.recover({
+        account: accountId,
+        recoveryParams,
+      });
+      handleSetMessage(`Switched to wallet: ${accountId}`);
+      onSuccess();
+    } catch (error) {
+      console.error('Error switching wallet:', error);
+      handleSetMessage(`Failed to switch wallet. Check console log for more details.`);
+    }
+    setLoading(false);
+  }
+
+  return (
+    <form
+      key={account.id}
+      className={cn('p-4 border border-gray-200 rounded-lg', isCurrentAccount && 'bg-gray-100')}
+      onSubmit={async (e) => {
+        e.preventDefault();
+        switch (account.recoveryMethod) {
+          case RecoveryMethod.PASSWORD:
+            if (showPasswordInput) {
+              const formData = new FormData(e.currentTarget);
+              const password = formData.get('password-recovery') as string;
+              if (!password || password.length === 0) {
+                alert('Please enter a valid password');
+                return;
+              }
+              setLoading(true);
+              handleRecoverWallet(account.id as Hex, {
+                recoveryMethod: RecoveryMethod.PASSWORD,
+                password,
+              });
+              setLoading(false);
+            } else {
+              setShowPasswordInput(true);
+            }
+            return;
+          case RecoveryMethod.AUTOMATIC:
+            setLoading(true);
+            handleRecoverWallet(account.id as Hex, {
+              recoveryMethod: RecoveryMethod.AUTOMATIC,
+              encryptionSession: await getEncryptionSession()
+            });
+            setLoading(false);
+            break;
+          default:
+            alert(`Recovery method ${account.recoveryMethod} not supported yet.`);
+            return;
+        }
+      }}
+    >
+      <p><strong>Wallet ID:</strong> {account.id}</p>
+      <p className='break-all'><strong>Address:</strong> {account.address}</p>
+      <p><strong>Recovery Method:</strong> {account.recoveryMethod}</p>
+      {
+        showPasswordInput && (
+          <input
+            name='password-recovery'
+            type="text"
+            placeholder="Enter wallet password recovery"
+            className="mt-2 w-full border border-gray-300 rounded-md p-2"
+          />
+        )
+      }
+      <Button
+        className='mt-2 w-full'
+        disabled={loading || isCurrentAccount}
+        variant={"outline"}
+        type="submit"
+        loading={loading}
+      >
+        {
+          isCurrentAccount ? (
+            <>
+              <CheckIcon className='mr-2 h-4 w-4' />
+              Current wallet
+            </>
+          ) : 'Use this wallet'
+        }
+      </Button>
+    </form>
+  );
+};
+
+const Content = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handleSetMessage: (message: string) => void }) => {
+  const { account: currentAccount, accounts } = useOpenfort();
+
+  if (!accounts) {
+    return <Loading />;
+  }
+
+  return (
+    <div className='space-y-4'>
+      {accounts.length === 0 ? (
+        <p>No wallets found for this user.</p>
+      ) : (
+        accounts.map((account) => (
+          <ChangeWalletButton
+            key={account.id}
+            account={account}
+            isCurrentAccount={currentAccount?.id === account.id}
+            handleSetMessage={handleSetMessage}
+            onSuccess={onSuccess}
+          />
+        ))
+      )}
+    </div>
+  );
+};
+
+const ChangeWallet = ({ handleSetMessage }: { handleSetMessage: (message: string) => void }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button
+            className='w-full'
+            variant="outline"
+          >
+            Change wallet
+          </Button>
+        </SheetTrigger>
+        <SheetContent>
+          <SheetTitle className="mb-4">
+            Select a wallet to use
+          </SheetTitle>
+          <Content onSuccess={() => setOpen(false)} handleSetMessage={handleSetMessage} />
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+}
+
+export default ChangeWallet;

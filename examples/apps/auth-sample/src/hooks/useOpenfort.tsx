@@ -3,7 +3,10 @@ import {
   RecoveryParams,
   RecoveryMethod,
   type Provider,
-  type TypedDataPayload
+  type TypedDataPayload,
+  EmbeddedAccount,
+  AccountTypeEnum,
+  ChainTypeEnum
 } from '@openfort/openfort-js';
 import axios from 'axios';
 import type React from 'react';
@@ -20,6 +23,8 @@ import { Address } from 'viem/accounts';
 import { polygonAmoy } from 'viem/chains';
 import openfort from '../utils/openfortConfig';
 
+const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
+
 interface ContextType {
   state: EmbeddedState;
   getEvmProvider: () => Promise<Provider>;
@@ -32,10 +37,6 @@ interface ContextType {
     chainId: number
     password?: string,
   }) => Promise<void>;
-  setWalletRecovery: (
-    recoveryMethod: RecoveryMethod,
-    recoveryPassword: string
-  ) => Promise<{ error?: Error }>;
   exportPrivateKey: () => Promise<{ data?: string; error?: Error }>;
   signMessage: (
     message: string,
@@ -49,6 +50,13 @@ interface ContextType {
   logout: () => Promise<void>;
   getEOAAddress: () => Promise<string>;
   getBalance: (address: Address, chain: Chain, provider: Provider) => Promise<bigint>;
+  account: EmbeddedAccount | null;
+  getEncryptionSession: () => Promise<string>;
+  accounts: EmbeddedAccount[];
+  isLoadingAccounts: boolean;
+  refetchAccounts: () => Promise<void>;
+  refetchAccount: () => Promise<void>;
+  createWallet: ({ recoveryParams }: { recoveryParams: RecoveryParams }) => Promise<EmbeddedAccount>;
 }
 
 const OpenfortContext = createContext<ContextType | null>(null);
@@ -97,6 +105,37 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
       if (poller.current) clearInterval(poller.current);
     };
   }, []);
+
+  // Account
+  const [account, setAccount] = useState<EmbeddedAccount | null>(null);
+  const [accounts, setAccounts] = useState<EmbeddedAccount[]>([]);
+  const [isLoadingAccounts, setIsLoadingAccounts] = useState(false);
+
+  const refetchAccount = useCallback(async () => {
+    const account = await openfort.embeddedWallet.get();
+    setAccount(account);
+  }, []);
+
+  const refetchAccounts = useCallback(async () => {
+    setIsLoadingAccounts(true);
+    const accounts = await openfort.embeddedWallet.list();
+    setAccounts(accounts);
+    setIsLoadingAccounts(false);
+  }, []);
+
+  useEffect(() => {
+    if (state === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
+      setAccount(null);
+      refetchAccounts();
+    } else if (state === EmbeddedState.READY) {
+      refetchAccount();
+      refetchAccounts();
+    } else if (state === EmbeddedState.UNAUTHENTICATED) {
+      setAccount(null);
+      setAccounts([]);
+    }
+  }, [state]);
+
 
   const getEvmProvider = useCallback(async (): Promise<Provider> => {
     const externalProvider = await openfort.embeddedWallet.getEthereumProvider({
@@ -149,51 +188,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
       };
     }
   }, []);
-
-  const setWalletRecovery = useCallback(
-    async (
-      recoveryMethod: RecoveryMethod,
-      recoveryPassword: string
-    ): Promise<{ error?: Error }> => {
-      try {
-        switch (recoveryMethod) {
-          case RecoveryMethod.AUTOMATIC:
-            await openfort.embeddedWallet.setRecoveryMethod({
-              recoveryMethod: RecoveryMethod.PASSWORD,
-              password: recoveryPassword,
-            }, {
-              recoveryMethod,
-              encryptionSession: await getEncryptionSession(),
-            });
-            break;
-          case RecoveryMethod.PASSWORD:
-            if (!recoveryPassword || recoveryPassword.length < 4) {
-              throw new Error('Password recovery must be at least 4 characters');
-            }
-            await openfort.embeddedWallet.setRecoveryMethod({
-              recoveryMethod: RecoveryMethod.AUTOMATIC,
-              encryptionSession: await getEncryptionSession(),
-            }, {
-              recoveryMethod,
-              password: recoveryPassword,
-            });
-            break;
-          default:
-            throw new Error('Invalid recovery method');
-        }
-        return {};
-      } catch (err) {
-        console.error('Error setting wallet recovery:', err);
-        return {
-          error:
-            err instanceof Error
-              ? err
-              : new Error('An error occurred setting wallet recovery'),
-        };
-      }
-    },
-    []
-  );
 
   const signTypedData = useCallback(
     async (
@@ -283,17 +277,35 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     }
   }, []);
 
+  const createWallet = useCallback(async ({ recoveryParams }: { recoveryParams: RecoveryParams }) => {
+    const response =  await openfort.embeddedWallet.create({
+      accountType: AccountTypeEnum.SMART_ACCOUNT,
+      chainType: ChainTypeEnum.EVM,
+      recoveryParams,
+      chainId,
+    })
+    setAccount(response);
+    await refetchAccounts();
+    return response;
+  }, []);
+
   const contextValue: ContextType = {
     state,
+    getEncryptionSession,
     getEvmProvider,
     handleRecovery,
     signMessage,
-    setWalletRecovery,
     exportPrivateKey,
     signTypedData,
     logout,
     getEOAAddress,
     getBalance,
+    account,
+    refetchAccount,
+    accounts,
+    isLoadingAccounts,
+    refetchAccounts,
+    createWallet,
   };
 
   return (
