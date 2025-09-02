@@ -246,6 +246,8 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      createdAt: account.createdAt,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
     };
   }
 
@@ -277,6 +279,8 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      createdAt: account.createdAt,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
     };
   }
 
@@ -306,6 +310,8 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      createdAt: account.createdAt,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
     };
   }
 
@@ -401,6 +407,14 @@ export class EmbeddedWalletApi {
       recoveryPassword,
       encryptionSession,
     });
+
+    const account = await Account.fromStorage(this.storage);
+    if (account) {
+      new Account({
+        ...account,
+        recoveryMethod: newRecovery.recoveryMethod,
+      }).save(this.storage);
+    }
   }
 
   async get(): Promise<EmbeddedAccount> {
@@ -423,6 +437,8 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      createdAt: account.createdAt,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
     };
   }
 
@@ -466,6 +482,7 @@ export class EmbeddedWalletApi {
         createdAt: account.createdAt,
         implementationType: account.smartAccount?.implementationType,
         chainId: account.chainId,
+        recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
       }));
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }

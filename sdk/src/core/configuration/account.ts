@@ -1,7 +1,12 @@
-import { AccountTypeEnum, ChainTypeEnum, EmbeddedAccount } from 'types';
+import {
+  AccountTypeEnum,
+  ChainTypeEnum,
+  EmbeddedAccount,
+  RecoveryMethod,
+} from 'types';
 import { IStorage, StorageKeys } from '../../storage/istorage';
 
-export class Account {
+export class Account implements EmbeddedAccount {
   constructor(account: EmbeddedAccount) {
     this.user = account.user;
     this.id = account.id;
@@ -12,6 +17,7 @@ export class Account {
     this.createdAt = account.createdAt;
     this.implementationType = account.implementationType;
     this.factoryAddress = account.factoryAddress;
+    this.recoveryMethod = account.recoveryMethod;
     this.salt = account.salt;
     this.ownerAddress = account.ownerAddress;
     this.type = account.type;
@@ -39,6 +45,8 @@ export class Account {
 
   public readonly implementationType?: string;
 
+  public readonly recoveryMethod?: RecoveryMethod;
+
   // legacy field for backward compatibility
   public readonly type?: string;
 
@@ -55,8 +63,22 @@ export class Account {
       implementationType: this.implementationType,
       factoryAddress: this.factoryAddress,
       salt: this.salt,
+      recoveryMethod: this.recoveryMethod,
     }));
   }
+
+  static parseRecoveryMethod = (responseRecoveryMethod: string | undefined): RecoveryMethod | undefined => {
+    switch (responseRecoveryMethod) {
+      case 'user':
+      case RecoveryMethod.PASSWORD:
+        return RecoveryMethod.PASSWORD;
+      case 'project':
+      case RecoveryMethod.AUTOMATIC:
+        return RecoveryMethod.AUTOMATIC;
+      default:
+        return undefined;
+    }
+  };
 
   static async fromStorage(storage: IStorage): Promise<Account | null> {
     const data = await storage.get(StorageKeys.ACCOUNT);
