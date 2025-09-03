@@ -32,8 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const passwordInput = document.getElementById('password');
 
   signInButton.addEventListener('click', async () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const { email, password } = getCredentials();
     try {
       await auth.signInWithEmailAndPassword(email, password);
       addMessage('Signed in');
@@ -44,8 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   signUpButton.addEventListener('click', async () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const { email, password } = getCredentials();
     try {
       await auth.createUserWithEmailAndPassword(email, password);
       addMessage('Signed up and signed in');
@@ -68,4 +66,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       addMessage('Signed out');
     }
   });
+
+  function getCredentials() {
+    return {
+      email: emailInput.value,
+      password: passwordInput.value
+    };
+  }
 });
