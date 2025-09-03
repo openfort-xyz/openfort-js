@@ -173,7 +173,10 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
         return <ChangeToAutomaticRecovery previousRecovery={previousRecovery} onSuccess={handleRecoveryChangeSuccess} />;
       case RecoveryMethod.PASSWORD:
         return <ChangeToPasswordRecovery previousRecovery={previousRecovery} onSuccess={handleRecoveryChangeSuccess} />;
-      default: return null;
+      case null:
+      case undefined:
+        return <div>Current recovery method not found</div>
+      default: return <div>Recovery method not supported: "{changingTo}"</div>;
     }
   }
 
