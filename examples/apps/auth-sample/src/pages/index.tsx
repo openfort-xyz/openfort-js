@@ -13,8 +13,8 @@ import { Layout } from "../components/Layouts/Layout";
 import LogoutButton from "../components/Logout";
 import GetUserButton from "../components/User/GetUserButton";
 import LinkOAuthButton from "../components/OAuth/LinkOAuthButton";
-import ExportPrivateKey from "../components/Export/ExportPrivateKeyButton";
-import SetWalletRecovery from "../components/SetWalletRecovery/SetWalletRecoveryButton";
+import ExportPrivateKey from "../components/Wallet/ExportPrivateKeyButton";
+import SetWalletRecovery from "../components/Wallet/SetWalletRecoveryButton";
 import { SetPairingCodeWithWagmi } from "../components/WalletConnect/SetPairingCode";
 import AddFunds from "../components/Funding/AddFunds";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import { Wallet } from "lucide-react";
 import AccountActions from "@/components/AccountActions/AccountActions";
 import Link from "next/link";
 import { StatusType, Toast } from "@/components/Toasts";
+import Wallets from "@/components/Wallet/Wallet";
 
 const HomePage: NextPage = () => {
   const { state } = useOpenfort();
@@ -95,9 +96,6 @@ const HomePage: NextPage = () => {
               <p className="text-gray-400 mb-4">
                 Welcome, {user?.player?.name ?? user?.id}!
               </p>
-              <div className="absolute top-2 right-2">
-                <LogoutButton />
-              </div>
               <div className="mt-8">
                 <AccountRecovery />
               </div>
@@ -146,9 +144,24 @@ const HomePage: NextPage = () => {
     <Layout
       sidebar={
         <>
-          <div className="flex items-center space-x-2 p-4">
-            <Wallet className="h-5 w-5" />
-            <h2 className="font-semibold">Console</h2>
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center space-x-2">
+              <Wallet className="h-5 w-5" />
+              <h2 className="font-semibold">Console</h2>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 text-muted-foreground"
+              onClick={() => {
+                setMessage("");
+                if (textareaRef.current) {
+                  textareaRef.current.scrollTop = 0;
+                }
+              }}
+            >
+              Clear
+            </Button>
           </div>
           <div className="flex-1 w-full">
             <textarea
@@ -232,18 +245,8 @@ const HomePage: NextPage = () => {
             <h2 className="flex justify-left font-medium text-xl pb-4">
               Embedded wallet
             </h2>
-            <div>
-              <span className="font-medium text-black">
-                Export wallet private key:
-              </span>
-              <ExportPrivateKey handleSetMessage={handleSetMessage} />
-            </div>
-            <div>
-              <p className="font-medium text-black mb-4">
-                Change wallet recovery:
-              </p>
-              <SetWalletRecovery handleSetMessage={handleSetMessage} />
-            </div>
+
+            <Wallets handleSetMessage={handleSetMessage} />
           </div>
 
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">

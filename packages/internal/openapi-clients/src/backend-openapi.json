@@ -2318,7 +2318,7 @@
           "redirectUrl": {
             "type": "string",
             "description": "The URL sent to the user by email to reset the password. At the end of the URL, we will add the token in the format `?token=token`.",
-            "example": "https://openfort.xyz/reset-password"
+            "example": "https://openfort.io/reset-password"
           },
           "challenge": {
             "$ref": "#/components/schemas/CodeChallenge",
@@ -2380,7 +2380,7 @@
           "redirectUrl": {
             "type": "string",
             "description": "The URL sent to the user by email to reset the password. At the end of the URL, we will add the token in the format `?token=token`.",
-            "example": "https://openfort.xyz/reset-password"
+            "example": "https://openfort.io/reset-password"
           },
           "challenge": {
             "$ref": "#/components/schemas/CodeChallenge",
@@ -2514,7 +2514,7 @@
           "message": {
             "type": "string",
             "description": "The EIP-712 message to sign.",
-            "example": "demo.openfort.xyz wants you to sign in with your Ethereum account:"
+            "example": "demo.openfort.io wants you to sign in with your Ethereum account:"
           },
           "walletClientType": {
             "type": "string",
@@ -5094,7 +5094,6 @@
           "address",
           "ownerAddress",
           "chainType",
-          "chainId",
           "account",
           "signer"
         ],
@@ -8686,6 +8685,9 @@
           },
           "smartAccount": {
             "$ref": "#/components/schemas/SmartAccountData"
+          },
+          "recoveryMethod": {
+            "type": "string"
           }
         },
         "required": [
@@ -8898,12 +8900,12 @@
           "chainType": {
             "type": "string"
           },
+          "address": {
+            "type": "string"
+          },
           "chainId": {
             "type": "number",
             "format": "double"
-          },
-          "address": {
-            "type": "string"
           },
           "privateKey": {
             "type": "string"
@@ -8918,7 +8920,6 @@
         "required": [
           "accountType",
           "chainType",
-          "chainId",
           "address"
         ],
         "type": "object",
@@ -9039,12 +9040,12 @@
   "info": {
     "title": "Openfort API",
     "version": "1.0.0",
-    "description": "Complete Openfort API references and guides can be found at: https://openfort.xyz/docs",
-    "termsOfService": "https://openfort.xyz",
+    "description": "Complete Openfort API references and guides can be found at: https://www.openfort.io/docs",
+    "termsOfService": "https://www.openfort.io",
     "contact": {
       "name": "Openfort Team",
       "email": "founders@openfort.xyz",
-      "url": "https://openfort.xyz"
+      "url": "https://www.openfort.io"
     }
   },
   "openapi": "3.0.0",
@@ -19373,7 +19374,7 @@
   },
   "servers": [
     {
-      "url": "https://api.openfort.xyz",
+      "url": "https://api.openfort.io",
       "description": "Openfort API Server"
     }
   ]

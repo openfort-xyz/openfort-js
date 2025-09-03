@@ -425,7 +425,7 @@ export enum ChainTypeEnum {
   SVM = 'SVM',
 }
 
-export type EmbeddedAccount = {
+export interface EmbeddedAccount {
   user: string;
   id: string;
   chainType: ChainTypeEnum;
@@ -435,12 +435,13 @@ export type EmbeddedAccount = {
   factoryAddress?: string;
   salt?: string;
   accountType: AccountTypeEnum;
+  recoveryMethod?: RecoveryMethod;
   chainId?: number;
   /** @deprecated  */
   ownerAddress?: string;
   /** @deprecated  */
   type?: string;
-};
+}
 
 export type EmbeddedAccountConfigureParams = {
   chainId?: number;

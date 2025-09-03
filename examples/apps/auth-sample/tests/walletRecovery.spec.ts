@@ -1,65 +1,101 @@
-import test, { expect } from '@playwright/test';
+import test, { expect, Page } from '@playwright/test';
 import { Logger } from './Logger';
-import { authenticate } from './authenticate';
+import { authenticate, authenticateAndRecover, RecoveryMethod } from './authenticate';
+import { changeToAutomaticRecovery, changeToPasswordRecovery } from './changeRecovery';
+
 
 test.use({
   storageState: [async ({ }, use) => use(undefined), { scope: 'test' }],
 });
 
-test('Login with password recovery', async ({ page }) => {
-  await authenticate(page);
 
-  await page.goto('/')
+const logout = async (page: Page) => {
+  const logoutButton = page.getByRole('button', { name: 'Logout' }).first()
+  logoutButton.click()
+
+  await page.waitForURL('/login')
+}
+
+test('Password recovery', async ({ page }) => {
+  test.setTimeout(60000); // this is a long test, so we need a bit more time. 60 seconds
+
+  await test.step("Authenticate and recover", async () => {
+    // Clean authenticate so we don't invalidate the session
+    await authenticateAndRecover(page);
+  });
+
+  // Refresh the page
+  await page.reload();
 
   let logger = new Logger(page)
   await logger.init()
 
-  const passwordRecoveryButton = page.getByRole('button', { name: 'Set Password Recovery' }).first()
-  const passwordRecoveryInput = page.locator('input[name="password-passwordRecovery"]')
+  await test.step("Verify its in automatic recovery", async () => {
+    const getWalletButton = page.getByRole('button', { name: 'Get wallet' }).first()
+    getWalletButton.click()
 
-  await passwordRecoveryInput.fill('password')
-  passwordRecoveryButton.click()
+    await logger.waitForNewLogs()
+    const lastLog = logger.getLastLog()
 
-  await logger.waitForNewLogs()
-  var lastLog = logger.getLastLog()
+    // Verify that we are in automatic recovery
+    expect(lastLog).toContain("automatic")
+  });
 
-  expect(lastLog).toContain("success")
+  await test.step("Verify user has only one wallet (for test to work properly)", async () => {
+    page.getByRole('button', { name: 'List wallets' }).first().click()
 
-  const logutButton = page.getByRole('button', { name: 'Logout' }).first()
-  logutButton.click()
+    await logger.waitForNewLogs()
+    const lastLog = logger.getLastLog()
 
-  await page.waitForURL('/login')
+    // Verify that user has only one wallet
+    expect(lastLog).toContain("wallet list (length: 1):")
+  });
 
-  // The new page should contain an h1 with "Sign in to account"
-  await expect(page.locator('h1')).toContainText('Sign in to account')
+  await test.step("Change to automatic recovery", async () => {
+    await changeToPasswordRecovery({ page, logger })
 
-  await page.getByLabel('Email address').fill(process.env.E2E_TESTS_USER || "");
-  await page.getByLabel('Password').fill(process.env.E2E_TESTS_PASSWORD || "");
+    await logout(page)
+  });
 
-  await page.getByRole('button', { name: 'Sign in' }).click();
+  await test.step("Authenticate", async () => {
+    await authenticate(page)
+  });
 
-  await expect(page.locator('h1')).toContainText('Set up your embedded signer', { timeout: 10000 })
+  await test.step("Recover with password recovery", async () => {
+    const passwordRecoveryButtonLogin = page.getByRole('button', { name: 'Use this wallet' }).first()
+    passwordRecoveryButtonLogin.click()
 
-  const passwordRecoveryInputLogin = page.locator('input[name="passwordRecovery"]')
-  const passwordRecoveryButtonLogin = page.getByRole('button', { name: 'Continue with Password Recovery' }).first()
+    // First try with incorrect password
+    const passwordRecoveryInput = page.locator('input[name="password-recovery"]')
+    await passwordRecoveryInput.fill('incorrect password')
+    passwordRecoveryButtonLogin.click()
 
-  await passwordRecoveryInputLogin.fill('password')
-  passwordRecoveryButtonLogin.click()
+    await page.waitForSelector('#wallet-recovery-error', { timeout: 5000 });
 
-  await expect(page.locator('div.spinner')).toBeInViewport();
-  await page.locator("div.spinner").waitFor({ state: 'hidden' });
+    await passwordRecoveryInput.fill('password')
+    passwordRecoveryButtonLogin.click()
 
-  logger = new Logger(page)
-  await logger.init()
+    await expect(page.locator('div.spinner')).toBeInViewport();
+    await page.locator("div.spinner").waitFor({ state: 'hidden' });
 
-  const automaticRecoveryButton = page.getByRole('button', { name: 'Set Automatic Recovery' }).first()
-  const oldPasswordInput = page.locator('input[name="automatic-passwordRecovery"]')
+    const logger = new Logger(page)
+    await logger.init()
 
-  await oldPasswordInput.fill('password')
-  automaticRecoveryButton.click()
+    const getWalletButton = page.getByRole('button', { name: 'Get wallet' }).first()
+    getWalletButton.click()
+    await logger.waitForNewLogs()
+    const lastLog = logger.getLastLog()
+    expect(lastLog).toContain("password")
+  });
 
-  await logger.waitForNewLogs()
-  lastLog = logger.getLastLog()
+  await test.step("Change to automatic recovery", async () => {
+    await changeToAutomaticRecovery({ page, logger })
 
-  expect(lastLog).toContain("success")
+    await logout(page)
+  });
+
+  await test.step("Authenticate with automatic recovery", async () => {
+    const recoveryMethodUsed = await authenticateAndRecover(page)
+    expect(recoveryMethodUsed).toBe(RecoveryMethod.AUTOMATIC)
+  });
 });
