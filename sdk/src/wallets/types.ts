@@ -297,14 +297,14 @@ export class SetRecoveryMethodRequest implements IEventRequest {
 
   encryptionSession?: string;
 
-  requestConfiguration?: RequestConfiguration;
+  requestConfiguration: RequestConfiguration;
 
   constructor(
     uuid: string,
     recoveryMethod: RecoveryMethod,
+    requestConfiguration: RequestConfiguration,
     recoveryPassword?: string,
     encryptionSession?: string,
-    requestConfiguration?: RequestConfiguration,
   ) {
     this.uuid = uuid;
     this.recoveryMethod = recoveryMethod;
@@ -586,12 +586,25 @@ export enum ShieldAuthType {
   OPENFORT = 'openfort',
 }
 
+// TODO: Most of these parameters are repeated in the iframe configuration.
+// Consider refactoring to avoid duplication.
+export interface IframeAuthentication extends ShieldAuthentication {
+  auth?: ShieldAuthType;
+  authProvider?: string | null;
+  token?: string | null;
+  tokenType?: string | null;
+}
+
 export interface RequestConfiguration {
   token?: string;
   thirdPartyProvider?: string;
   thirdPartyTokenType?: string;
   publishableKey: string;
   openfortURL?: string;
+  shieldAuthentication: IframeAuthentication;
+  shieldAPIKey: string;
+  shieldURL: string;
+  encryptionKey?: string;
 }
 
 export interface MessagePoster {
