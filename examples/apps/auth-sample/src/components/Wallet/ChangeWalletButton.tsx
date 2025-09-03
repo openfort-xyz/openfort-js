@@ -12,16 +12,16 @@ import { cn } from '@/lib/utils';
 
 const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuccess }: { isCurrentAccount: boolean, account: EmbeddedAccount, handleSetMessage: (msg: string) => void, onSuccess: () => void }) => {
   const [loading, setLoading] = useState(false);
-  const { getEncryptionSession } = useOpenfort();
+  const { getEncryptionSession, handleRecovery } = useOpenfort();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
 
-  const handleRecoverWallet = async (accountId: string, recoveryParams: RecoveryParams) => {
+  const handleRecoverWallet = async ({ accountId, recoveryParams }: { accountId: string, recoveryParams: RecoveryParams }) => {
     setLoading(true);
     try {
-      await openfort.embeddedWallet.recover({
+      await handleRecovery({
         account: accountId,
         recoveryParams,
-      });
+      })
       handleSetMessage(`Switched to wallet: ${accountId}`);
       onSuccess();
     } catch (error) {
@@ -47,9 +47,12 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
                 return;
               }
               setLoading(true);
-              handleRecoverWallet(account.id as Hex, {
-                recoveryMethod: RecoveryMethod.PASSWORD,
-                password,
+              await handleRecoverWallet({
+                accountId: account.id as Hex,
+                recoveryParams: {
+                  recoveryMethod: RecoveryMethod.PASSWORD,
+                  password,
+                },
               });
               setLoading(false);
             } else {
@@ -58,9 +61,12 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
             return;
           case RecoveryMethod.AUTOMATIC:
             setLoading(true);
-            handleRecoverWallet(account.id as Hex, {
-              recoveryMethod: RecoveryMethod.AUTOMATIC,
-              encryptionSession: await getEncryptionSession()
+            await handleRecoverWallet({
+              accountId: account.id as Hex,
+              recoveryParams: {
+                recoveryMethod: RecoveryMethod.AUTOMATIC,
+                encryptionSession: await getEncryptionSession()
+              }
             });
             setLoading(false);
             break;

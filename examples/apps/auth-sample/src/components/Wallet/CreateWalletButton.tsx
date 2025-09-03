@@ -54,7 +54,7 @@ const PasswordRecoveryForm = ({ onSuccess, handleSetMessage }: { onSuccess: () =
         variant="outline"
         loading={isLoading}
       >
-        Set Password Recovery
+        Create with Password Recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
@@ -100,7 +100,7 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
         variant="outline"
         loading={isLoading}
       >
-        Set Automatic Recovery
+        Create with Automatic Recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>

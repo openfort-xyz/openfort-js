@@ -14,6 +14,7 @@ function LoginPage() {
   const router = useRouter();
   const [status, setStatus] = useState<StatusType>(null);
   const [user, setUser] = useState<AuthPlayerResponse | null>(null);
+  const [guestLoading, setGuestLoading] = useState(false);
 
   // check if "state" exists in url query param and if it does make an api call:
   useEffect(() => {
@@ -21,7 +22,7 @@ function LoginPage() {
       try {
         const email = localStorage.getItem("email");
         if (
-          email && 
+          email &&
           router.query.state
         ) {
           await openfort.auth.verifyEmail({
@@ -89,6 +90,7 @@ function LoginPage() {
   }, [user]);
 
   const handleGuest = async () => {
+    setGuestLoading(true);
     setStatus({
       type: "loading",
       title: "Signing in...",
@@ -102,6 +104,7 @@ function LoginPage() {
           type: "error",
           title: "Error signing in",
         });
+        setGuestLoading(false);
       });
     if (data) {
       setStatus({
@@ -151,7 +154,7 @@ function LoginPage() {
             Explore Openfort
           </p>
           <p className='text-gray-500'>
-          Sign in to the demo to access the dev tools.
+            Sign in to the demo to access the dev tools.
           </p>
           <Button variant={'outline'} size={'sm'} className="mt-2">
             <Link href='https://www.openfort.io/docs' target="_blank">
@@ -208,7 +211,7 @@ function LoginPage() {
                 type="submit"
                 className="w-full"
               >
-                {status?.type === "loading" ? (
+                {status?.type === "loading" && !guestLoading ? (
                   <Loading />
                 ) : (
                   "Sign in to account"
@@ -221,7 +224,11 @@ function LoginPage() {
                 variant="outline"
                 className="w-full"
               >
-                <span>Continue as Guest</span>
+                {status?.type === "loading" && guestLoading ? (
+                  <Loading />
+                ) : (
+                  "Continue as Guest"
+                )}
               </Button>
             </div>
             <div className="mt-6">
@@ -240,7 +247,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.auth.initOAuth({
+                      const { url } = await openfort.auth.initOAuth({
                         provider: OAuthProvider.GOOGLE,
                         options: {
                           redirectTo: getURL() + "/login",
@@ -257,7 +264,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.auth.initOAuth({
+                      const { url } = await openfort.auth.initOAuth({
                         provider: OAuthProvider.TWITTER,
                         options: {
                           redirectTo: getURL() + "/login",
@@ -274,7 +281,7 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const {url} = await openfort.auth.initOAuth({
+                      const { url } = await openfort.auth.initOAuth({
                         provider: OAuthProvider.FACEBOOK,
                         options: {
                           redirectTo: getURL() + "/login",

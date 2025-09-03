@@ -10,7 +10,7 @@ import { ChevronLeft } from 'lucide-react';
 import openfort from '@/utils/openfortConfig';
 
 const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRecovery: RecoveryParams, onSuccess: () => void }) => {
-  const { getEncryptionSession } = useOpenfort();
+  const { getEncryptionSession, setRecoveryMethod } = useOpenfort();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +20,7 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
         e.preventDefault();
         setIsLoading(true);
         try {
-          await openfort.embeddedWallet.setRecoveryMethod(previousRecovery, {
+          await setRecoveryMethod(previousRecovery, {
             recoveryMethod: RecoveryMethod.AUTOMATIC,
             encryptionSession: await getEncryptionSession()
           })
@@ -58,6 +58,7 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
 const ChangeToPasswordRecovery = ({ previousRecovery, onSuccess }: { previousRecovery: RecoveryParams, onSuccess: () => void }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { setRecoveryMethod } = useOpenfort();
 
   return (
     <form
@@ -73,7 +74,7 @@ const ChangeToPasswordRecovery = ({ previousRecovery, onSuccess }: { previousRec
         }
         try {
 
-          await openfort.embeddedWallet.setRecoveryMethod(previousRecovery, {
+          await setRecoveryMethod(previousRecovery, {
             recoveryMethod: RecoveryMethod.PASSWORD,
             password
           })
@@ -130,7 +131,7 @@ const VerifyPasswordRecovery = ({ onVerified }: { onVerified: (password: string)
         To proceed with changing your recovery method, please verify your current Password Recovery by entering your existing password.
       </p>
       <label className="block mb-1 font-medium text-sm" htmlFor="password-verifyRecovery">
-        Current Password Recovery
+        Verify your current password
       </label>
       <input
         name={`password-verifyRecovery`}

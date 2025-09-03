@@ -28,15 +28,7 @@ const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 interface ContextType {
   state: EmbeddedState;
   getEvmProvider: () => Promise<Provider>;
-  handleRecovery: ({
-    method,
-    password,
-    chainId
-  }: {
-    method: RecoveryMethod,
-    chainId: number
-    password?: string,
-  }) => Promise<void>;
+  handleRecovery: ({ account, recoveryParams }: { account: string, recoveryParams: RecoveryParams }) => Promise<EmbeddedAccount>;
   exportPrivateKey: () => Promise<{ data?: string; error?: Error }>;
   signMessage: (
     message: string,
@@ -57,6 +49,7 @@ interface ContextType {
   refetchAccounts: () => Promise<void>;
   refetchAccount: () => Promise<void>;
   createWallet: ({ recoveryParams }: { recoveryParams: RecoveryParams }) => Promise<EmbeddedAccount>;
+  setRecoveryMethod: (previousRecovery: RecoveryParams, newRecovery: RecoveryParams) => Promise<void>;
 }
 
 const OpenfortContext = createContext<ContextType | null>(null);
@@ -118,7 +111,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
   const refetchAccounts = useCallback(async () => {
     setIsLoadingAccounts(true);
-    const accounts = await openfort.embeddedWallet.list();
+    const accounts = await openfort.embeddedWallet.list({
+      chainId: chainId
+    });
     setAccounts(accounts);
     setIsLoadingAccounts(false);
   }, []);
@@ -211,32 +206,14 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     []
   );
 
-  const handleRecovery = useCallback(async ({ method, password, chainId }: { method: RecoveryMethod, password?: string, chainId: number }) => {
-    let recoveryParams: RecoveryParams;
-    switch (method) {
-      case 'automatic':
-        recoveryParams = {
-          recoveryMethod: RecoveryMethod.AUTOMATIC,
-          encryptionSession: await getEncryptionSession()
-        };
-        break;
-      case 'password':
-        if (!password || password.length < 4) {
-          throw new Error('Password recovery must be at least 4 characters');
-        }
-        recoveryParams = {
-          recoveryMethod: RecoveryMethod.PASSWORD,
-          password,
-        };
-        break;
-      default:
-        throw new Error('Invalid recovery method');
-    }
-
-    await openfort.embeddedWallet.configure({
-      chainId,
-      recoveryParams
+  const handleRecovery = useCallback(async ({ account, recoveryParams }: { account: string, recoveryParams: RecoveryParams }) => {
+    const response = await openfort.embeddedWallet.recover({
+      recoveryParams,
+      account,
     });
+    refetchAccounts();
+    setAccount(response);
+    return response;
   }, []);
 
   const logout = useCallback(async () => {
@@ -278,7 +255,14 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   }, []);
 
   const createWallet = useCallback(async ({ recoveryParams }: { recoveryParams: RecoveryParams }) => {
-    const response =  await openfort.embeddedWallet.create({
+    const user = await openfort.user.get()
+    if (!user) throw new Error('User not found');
+
+    if (!!user.linkedAccounts.some(la => la.email === "testing@fort.dev")) {
+      throw new Error('Test user should not create wallets.');
+    }
+
+    const response = await openfort.embeddedWallet.create({
       accountType: AccountTypeEnum.SMART_ACCOUNT,
       chainType: ChainTypeEnum.EVM,
       recoveryParams,
@@ -287,7 +271,13 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     setAccount(response);
     await refetchAccounts();
     return response;
-  }, []);
+  }, [refetchAccounts]);
+
+  const setRecoveryMethod = useCallback(async (previousRecovery: RecoveryParams, newRecovery: RecoveryParams) => {
+    await openfort.embeddedWallet.setRecoveryMethod(previousRecovery, newRecovery);
+    await refetchAccount();
+    await refetchAccounts();
+  }, [refetchAccount, refetchAccounts]);
 
   const contextValue: ContextType = {
     state,
@@ -306,6 +296,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     isLoadingAccounts,
     refetchAccounts,
     createWallet,
+    setRecoveryMethod,
   };
 
   return (

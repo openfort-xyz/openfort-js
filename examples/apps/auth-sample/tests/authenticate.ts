@@ -1,5 +1,12 @@
-import { expect, Page } from '@playwright/test';
+import test, { expect, Page } from '@playwright/test';
 import { Logger } from './Logger';
+import { changeToAutomaticRecovery } from './changeRecovery';
+
+// Cannot import from sdk directly due to ESM/CJS issues
+export enum RecoveryMethod {
+  PASSWORD = "password",
+  AUTOMATIC = "automatic"
+}
 
 export async function authenticate(page: Page) {
   await page.goto('/login');
@@ -13,44 +20,60 @@ export async function authenticate(page: Page) {
 
   await page.getByLabel('Email address').fill(email);
   await page.getByLabel('Password').fill(password);
-  await page.getByRole('button', { name: 'Sign in' }).click();
+  page.getByRole('button', { name: 'Sign in' }).click();
   await page.waitForURL('/');
 
   await expect(page.locator('h1')).toContainText('Set up your embedded signer', { timeout: 100000 });
+}
 
-  await page.getByRole('button', { name: 'Continue with Automatic Recovery' }).click();
-  await expect(page.locator('div.spinner')).toBeInViewport();
-  await page.locator("div.spinner").waitFor({ state: 'hidden' });
-  await page.waitForTimeout(500);
+const parseRecoveryMethod = (text: string | null): RecoveryMethod => {
+  if (!text) throw new Error('No recovery method text found');
+  if (text.includes('automatic')) return RecoveryMethod.AUTOMATIC;
+  if (text.includes('password')) return RecoveryMethod.PASSWORD;
+  throw new Error(`Unknown recovery method: ${text}`);
+}
 
-  const consoleExists = await page.locator('h2').getByText('Console').count() > 0;
-  if (!consoleExists) {
-    await expect(page.locator('h1')).toContainText('Set up your embedded signer');
-    const passwordRecoveryInputLogin = page.locator('input[name="passwordRecovery"]');
-    const passwordRecoveryButtonLogin = page.getByRole('button', { name: 'Continue with Password Recovery' }).first();
+export async function authenticateAndRecover(page: Page) {
+  await authenticate(page);
 
-    await passwordRecoveryInputLogin.fill('password');
-    passwordRecoveryButtonLogin.click();
+  const recoveryMethodText = await page.locator('#recovery-method-badge').textContent();
+  expect(recoveryMethodText).toBeDefined();
 
-    await expect(page.locator('div.spinner')).toBeInViewport();
-    await page.locator("div.spinner").waitFor({ state: 'hidden' });
+  page.getByRole('button', { name: 'Use this wallet' }).click();
 
-    await expect(page.locator('h2').getByText('Console'), {
-      message: 'Password recovery failed, maybe someone changed the password?',
-    }).toBeVisible();
+  const recoveryMethod: RecoveryMethod = parseRecoveryMethod(recoveryMethodText);
+  switch (recoveryMethod) {
+    case RecoveryMethod.AUTOMATIC:
+      await expect(page.locator('div.spinner')).toBeInViewport();
+      await page.locator("div.spinner").waitFor({ state: 'hidden' });
+      await page.waitForTimeout(500);
+      const consoleExists = await page.locator('h2').getByText('Console').count() > 0;
+      expect(consoleExists).toBe(true);
+      break;
+    case RecoveryMethod.PASSWORD:
+      await expect(page.locator('h1')).toContainText('Set up your embedded signer');
+      const passwordRecoveryInputLogin = page.locator('input[name="password-recovery"]');
 
-    const logger = new Logger(page);
-    await logger.init();
+      await passwordRecoveryInputLogin.fill('password');
+      page.getByRole('button', { name: 'Use this wallet' }).click();
 
-    const automaticRecoveryButton = page.getByRole('button', { name: 'Set Automatic Recovery' }).first();
-    const oldPasswordInput = page.locator('input[name="automatic-passwordRecovery"]');
+      await expect(page.locator('div.spinner')).toBeInViewport();
+      await page.locator("div.spinner").waitFor({ state: 'hidden' });
 
-    await oldPasswordInput.fill('password');
-    automaticRecoveryButton.click();
+      await expect(page.locator('h2').getByText('Console'), {
+        // error message in case it fails:
+        message: 'Password recovery failed, maybe someone changed the recovery password? It should be "password"',
+      }).toBeVisible();
 
-    await logger.waitForNewLogs();
-    const lastLog = logger.getLastLog();
-    expect(lastLog).toContain("success");
+      const logger = new Logger(page);
+      await logger.init();
+
+      // CHANGE TO AUTOMATIC RECOVERY AS TESTS EXPECT IT
+      await changeToAutomaticRecovery({ page, logger });
+      break;
+    default:
+      throw new Error(`Recovery method ${recoveryMethod} not supported yet in tests.`);
   }
 
+  return recoveryMethod;
 }

@@ -13,14 +13,10 @@ const Wallets: React.FC<{
   handleSetMessage: (message: string) => void;
 }> = ({ handleSetMessage }) => {
 
-  const [loading, setLoading] = useState(false);
-
-  const { state, account } = useOpenfort();
+  const { state, account, accounts, isLoadingAccounts } = useOpenfort();
 
   const handleListWallets = async () => {
-    setLoading(true);
-    handleSetMessage("wallet list: " + JSON.stringify(await openfort.embeddedWallet.list(), null, 2));
-    setLoading(false);
+    handleSetMessage(`wallet list (length: ${accounts.length}): ${JSON.stringify(accounts, null, 2)}`);
   }
 
   if (!account) {
@@ -28,7 +24,6 @@ const Wallets: React.FC<{
   }
 
   const handleGetWallet = async () => {
-    const account = await openfort.embeddedWallet.get();
     handleSetMessage("Current wallet: " + JSON.stringify(account, null, 2));
   }
 
@@ -58,10 +53,10 @@ const Wallets: React.FC<{
         <Button
           className='w-full'
           onClick={handleListWallets}
-          disabled={state !== EmbeddedState.READY}
+          disabled={state !== EmbeddedState.READY || isLoadingAccounts}
           variant="outline"
         >
-          {loading ? <Loading /> : 'List wallets'}
+          List wallets
         </Button>
         <ChangeWallet
           handleSetMessage={handleSetMessage}

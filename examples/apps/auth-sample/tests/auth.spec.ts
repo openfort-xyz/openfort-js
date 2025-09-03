@@ -10,7 +10,7 @@ test.skip('Login page', async ({ page }) => {
   await expect(page.locator('h1')).toContainText('Sign in to account')
 
   const button = page.locator('span').getByText('Continue with Google').first()
-  await button.click()
+  button.click()
 
   // ...
 })

@@ -11,10 +11,11 @@ import { cn } from '@/lib/utils';
 
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
 
-const PasswordRecoveryForm = () => {
+const CreateWalletPasswordForm = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { createWallet } = useOpenfort();
 
   return (
     <form
@@ -22,14 +23,11 @@ const PasswordRecoveryForm = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-          const response = await openfort.embeddedWallet.create({
-            accountType: AccountTypeEnum.SMART_ACCOUNT,
-            chainType: ChainTypeEnum.EVM,
+          await createWallet({
             recoveryParams: {
               recoveryMethod: RecoveryMethod.PASSWORD,
               password,
             },
-            chainId,
           })
         } catch (error) {
           console.error('Error setting password recovery:', error);
@@ -58,10 +56,10 @@ const PasswordRecoveryForm = () => {
   );
 };
 
-const AutomaticRecovery = () => {
+const CreateWalletAutomaticForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { getEncryptionSession } = useOpenfort();
+  const { getEncryptionSession, createWallet } = useOpenfort();
 
   return (
     <form
@@ -69,14 +67,11 @@ const AutomaticRecovery = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-          await openfort.embeddedWallet.create({
-            accountType: AccountTypeEnum.SMART_ACCOUNT,
-            chainType: ChainTypeEnum.EVM,
+          await createWallet({
             recoveryParams: {
               recoveryMethod: RecoveryMethod.AUTOMATIC,
               encryptionSession: await getEncryptionSession(),
             },
-            chainId,
           })
         } catch (error) {
           console.error('Error setting automatic recovery:', error);
@@ -101,9 +96,9 @@ const AutomaticRecovery = () => {
 
 
 
-const ChangeWalletButton = ({ account }: { account: EmbeddedAccount }) => {
+const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
   const [loading, setLoading] = useState(false);
-  const { getEncryptionSession } = useOpenfort();
+  const { getEncryptionSession, handleRecovery } = useOpenfort();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -111,13 +106,13 @@ const ChangeWalletButton = ({ account }: { account: EmbeddedAccount }) => {
   const handleRecoverWallet = async (accountId: string, recoveryParams: RecoveryParams) => {
     setLoading(true);
     try {
-      await openfort.embeddedWallet.recover({
+      await handleRecovery({
         account: accountId,
         recoveryParams,
       });
     } catch (error) {
-      console.error('Error switching wallet:', error);
-      setError(`Failed to switch wallet. Check console log for more details.`);
+      console.error('Error recovering wallet:', error);
+      setError(`Failed to recover wallet. Check console log for more details.`);
     }
     setLoading(false);
   }
@@ -138,7 +133,7 @@ const ChangeWalletButton = ({ account }: { account: EmbeddedAccount }) => {
                 return;
               }
               setLoading(true);
-              handleRecoverWallet(account.id as Hex, {
+              await handleRecoverWallet(account.id as Hex, {
                 recoveryMethod: RecoveryMethod.PASSWORD,
                 password,
               });
@@ -149,7 +144,7 @@ const ChangeWalletButton = ({ account }: { account: EmbeddedAccount }) => {
             return;
           case RecoveryMethod.AUTOMATIC:
             setLoading(true);
-            handleRecoverWallet(account.id as Hex, {
+            await handleRecoverWallet(account.id as Hex, {
               recoveryMethod: RecoveryMethod.AUTOMATIC,
               encryptionSession: await getEncryptionSession()
             });
@@ -178,18 +173,20 @@ const ChangeWalletButton = ({ account }: { account: EmbeddedAccount }) => {
           </p>
         </button>
         <span
-          className={cn('text-xs px-2 py-1 rounded-full border border-gray-300 capitalize',)}
+          className={cn('text-xs px-2 py-1 rounded-full border border-gray-300 capitalize')}
+          id='recovery-method-badge'
         >
-          {account.recoveryMethod} recovery
+          {`${account.recoveryMethod} recovery`}
         </span>
       </div>
       {
         expanded && (
-          <>
+          <div className='mb-2 text-sm'>
             <p><strong>Wallet ID:</strong> {account.id}</p>
             <p className='break-all'><strong>Address:</strong> {account.address}</p>
             <p><strong>Recovery Method:</strong> {account.recoveryMethod}</p>
-          </>
+            <p><strong>Chain ID:</strong> {account.chainId}</p>
+          </div>
         )
       }
       {
@@ -211,7 +208,7 @@ const ChangeWalletButton = ({ account }: { account: EmbeddedAccount }) => {
       >
         Use this wallet
       </Button>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-600" id="wallet-recovery-error">{error}</p>}
     </form>
   );
 };
@@ -231,7 +228,7 @@ const AccountRecovery: React.FC = () => {
           You don't have any accounts yet. Please create a new account to get started with the embedded signer.
         </p>
         <div className='mt-10 space-y-6'>
-          <PasswordRecoveryForm />
+          <CreateWalletPasswordForm />
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
@@ -240,7 +237,7 @@ const AccountRecovery: React.FC = () => {
               <span className="bg-white px-2 text-gray-500">Or</span>
             </div>
           </div>
-          <AutomaticRecovery />
+          <CreateWalletAutomaticForm />
         </div>
       </>
     )
@@ -250,7 +247,7 @@ const AccountRecovery: React.FC = () => {
     <div className='space-y-4'>
       {
         accounts.map((account) => (
-          <ChangeWalletButton
+          <RecoverWalletButton
             key={account.id}
             account={account}
           />
