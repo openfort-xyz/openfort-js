@@ -466,7 +466,7 @@ export type EmbeddedAccountCreateParams = {
 
 export type PasskeyInfo = {
   passkeyId: string;
-  passkeyEnv: string;
+  passkeyEnv?: string;
 };
 
 export type RecoveryParams = {

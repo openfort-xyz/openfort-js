@@ -204,6 +204,7 @@ export class EmbeddedWalletApi {
 
   private async getPasskeyKey(id: string): Promise<Uint8Array> {
     const auth = await Authentication.fromStorage(this.storage);
+    console.log(`Deriving passkey key for passkey id ${id} & player ${auth!.player}`);
     const derivedKey = await this.passkeyHandler.deriveAndExportKey(
       {
         id,
@@ -248,10 +249,13 @@ export class EmbeddedWalletApi {
     };
 
     // TODO: CHECK IF ACCOUNT EXISTS
-    const accountExists = true;
+    const acc = Account.fromStorage(this.storage);
+    console.log(`Retrieved account is ${JSON.stringify(acc)}`);
+    const accountExists = localStorage.getItem('passkeyId') != null;
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
       if (!accountExists) {
+        console.log('Passkey does not exist');
         const passkeyDetails = await this.passkeyHandler.createPasskey(
           {
             displayName: 'MOCK-DISPLAY', // possibly environment info + chain Id
@@ -259,12 +263,11 @@ export class EmbeddedWalletApi {
         );
         recoveryParams.passkeyInfo = {
           passkeyId: passkeyDetails.id,
-          passkeyEnv: 'MOCK-ENV',
         };
       } else {
+        console.log('Passkey exists');
         recoveryParams.passkeyInfo = {
-          passkeyId: 'MOCK-UUID',
-          passkeyEnv: 'MOCK-ENV',
+          passkeyId: localStorage.getItem('passkeyId')!!,
         };
       }
     }
@@ -356,8 +359,8 @@ export class EmbeddedWalletApi {
 
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
       recoveryParams.passkeyInfo = {
-        passkeyId: 'MOCK-UUID',
-        passkeyEnv: 'MOCK-ENV',
+        passkeyId: recoveryParams.passkeyInfo.passkeyId,
+        passkeyEnv: recoveryParams.passkeyInfo.passkeyEnv,
       };
     }
 

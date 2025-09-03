@@ -1,3 +1,4 @@
+import { uuid4 } from '@sentry/core';
 /**
  * PasskeyHandler handles operations related to passkeys.
  * This class is ONLY suitable for key-derivation related use cases.
@@ -77,8 +78,8 @@ export class PasskeyHandler {
    * @returns PasskeyDetails with passkey details if passkey creation was successful
    */
   async createPasskey({ displayName }: Passkeys.UserConfig): Promise<Passkeys.Details> {
-    // const id = uuid4();
-    const id = 'MOCK-UUID'; // TODO: USE REAL UUIDS AS SOON AS WE HAVE STORAGE
+    console.log('calling create passkey...');
+    const id = uuid4();
     const publicKey: PublicKeyCredentialCreationOptions = {
       challenge: this.getChallengeBytes() as BufferSource,
       rp: {
@@ -99,7 +100,7 @@ export class PasskeyHandler {
         // Makes things easier: the SDK doesn't need to fetch/remember any kind of credential ID
         // (that is, rpId + authenticator logic on user's side should be enough for multi-device creds)
         residentKey: 'required',
-        userVerification: 'preferred',
+        userVerification: 'required',
       },
       // Required for key derivation (which is what we need for proper share crypto operations)
       extensions: { prf: {} },
@@ -107,15 +108,27 @@ export class PasskeyHandler {
       attestation: 'direct',
     };
 
-    const credential = await navigator.credentials.create({ publicKey });
+    const credential = await navigator.credentials.create({ publicKey }) as PublicKeyCredential;
 
     if (credential) {
+      const keyToStore = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+      console.log(`Created a passkey with id ${keyToStore} and display name ${displayName}`);
+      localStorage.setItem('passkeyId', keyToStore);
       return {
-        id,
+        id: keyToStore,
         displayName,
       };
     }
     throw new Error('could not create passkey');
+  }
+
+  base64ToArrayBuffer(base64: string): ArrayBuffer {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes.buffer;
   }
 
   /**
@@ -124,10 +137,11 @@ export class PasskeyHandler {
    * @param seed: Seed phrase to derive passkey ID
    * @returns CryptoKey object
    */
-  async deriveKey({ id, seed }: Passkeys.DerivationDetails): Promise<CryptoKey> {
+  async deriveKey({ seed }: Passkeys.DerivationDetails): Promise<CryptoKey> {
     // This assertion is the authentication step in the passkey:
     // it will fail if the user is not able to provide valid
     // credentials (PIN, biometrics, etc)
+    const passkeyId = localStorage.getItem('passkeyId')!!;
     const assertion = await navigator.credentials.get(
       {
         publicKey: {
@@ -137,11 +151,11 @@ export class PasskeyHandler {
           rpId: this.rpId,
           allowCredentials: [
             {
-              id: new TextEncoder().encode(id),
+              id: this.base64ToArrayBuffer(passkeyId),
               type: 'public-key',
             },
           ],
-          userVerification: 'preferred',
+          userVerification: 'required',
           extensions: {
             prf: {
               eval: {
@@ -153,7 +167,14 @@ export class PasskeyHandler {
       },
     ) as PublicKeyCredential;
 
+    console.log('Post assertion zone');
+
     const clientExtResults = assertion.getClientExtensionResults();
+
+    if (!clientExtResults) {
+      throw new Error('Passkey fetch failed');
+    }
+
     const prfResults = clientExtResults.prf;
 
     // Shouldn't happen if passkeys are created by "createPasskey" right above
@@ -179,9 +200,13 @@ export class PasskeyHandler {
     if (!this.extractableKey) {
       throw new Error('Derived keys cannot be exported if extractableKey is not set to true');
     }
-
-    const derivedKey = await this.deriveKey({ id, seed });
-    return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey));
+    try {
+      const derivedKey = await this.deriveKey({ id, seed });
+      return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey));
+    } catch (error) {
+      console.log(`DeriveKey failed: ${error}`);
+      throw error;
+    }
   }
 }
 
