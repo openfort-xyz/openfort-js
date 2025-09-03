@@ -1,7 +1,6 @@
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { type BackendApiClients } from '@openfort/openapi-clients';
 import { GrantPermissionsParameters } from 'types';
-import { debugLog } from 'utils/debug';
 import { EmbeddedSigner } from 'wallets/embedded';
 import { Authentication } from '../../core/configuration/authentication';
 import {
@@ -207,7 +206,6 @@ export class EvmProvider implements Provider {
         }
         const signer = await this.#ensureSigner();
         await this.#validateAndRefreshSession();
-        debugLog('[personal_sign] validateAndRefreshSession:');
 
         return await personalSign(
           {

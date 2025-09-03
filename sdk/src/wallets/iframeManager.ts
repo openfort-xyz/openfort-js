@@ -540,7 +540,7 @@ export class IframeManager {
 
     const request = new UpdateAuthenticationRequest(randomUUID(), authentication.token);
 
-    debugLog('Updating authentication in iframe with token:', authentication.token);
+    debugLog('Updating authentication in iframe with token');
     const response = await this.remote.updateAuthentication(request);
     if (isErrorResponse(response)) {
       this.handleError(response);
