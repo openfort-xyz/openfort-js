@@ -51,11 +51,6 @@ export class EmbeddedWalletApi {
     private readonly ensureInitialized: () => Promise<void>,
     private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) {
-    this.eventEmitter.on(OpenfortEvents.TOKEN_REFRESHED, () => {
-      debugLog('Handling token refresh event in EmbeddedWalletApi');
-      this.handleTokenRefreshed();
-    });
-
     this.eventEmitter.on(OpenfortEvents.LOGGED_OUT, () => {
       debugLog('Handling logout event in EmbeddedWalletApi');
       this.handleLogout();

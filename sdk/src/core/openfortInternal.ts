@@ -51,7 +51,6 @@ export class OpenfortInternal {
       TokenType.ID_TOKEN,
     ).save(this.storage);
 
-    this.eventEmitter.emit(OpenfortEvents.TOKEN_REFRESHED);
     return token;
   }
 
@@ -96,7 +95,5 @@ export class OpenfortInternal {
       credentials.player,
       credentials.refreshToken,
     ).save(this.storage);
-
-    this.eventEmitter.emit(OpenfortEvents.TOKEN_REFRESHED);
   }
 }

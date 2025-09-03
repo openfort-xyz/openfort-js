@@ -61,6 +61,7 @@ export class EmbeddedSigner implements Signer {
           accountType: params.accountType,
           // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
           chainType: params.chainType,
+          chainId: params.chainId,
         },
         {
           headers: {

@@ -1,7 +1,7 @@
 import { auth } from '@/utils/firebaseConfig';
 import { Openfort, OpenfortConfiguration, ShieldConfiguration, ThirdPartyOAuthProvider } from '@openfort/openfort-js';
 
-export const shieldUrl = process.env.NEXT_PUBLIC_SHIELD_URL ?? 'https://shield.openfort.xyz';
+export const shieldUrl = process.env.NEXT_PUBLIC_SHIELD_URL ?? 'https://shield.openfort.io';
 
 const baseConfiguration: OpenfortConfiguration = {
   publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY!,

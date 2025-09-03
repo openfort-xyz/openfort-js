@@ -9,12 +9,10 @@ export enum EmbeddedState {
 export enum OpenfortEvents {
   LOGGED_OUT = 'loggedOut',
   SWITCH_ACCOUNT = 'switchAccount',
-  TOKEN_REFRESHED = 'tokenRefreshed',
 }
 
 export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.LOGGED_OUT]: [];
-  [OpenfortEvents.TOKEN_REFRESHED]: [];
   [OpenfortEvents.SWITCH_ACCOUNT]: [string];
 }
 
