@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { email, password } = getCredentials();
     try {
       await auth.signInWithEmailAndPassword(email, password);
-      addMessage('Signed in');
     } catch (error) {
       console.error('Error signing in:', error);
       addMessage(`Error: ${error.message}`);
