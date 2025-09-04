@@ -63,6 +63,7 @@ export class EmbeddedSigner implements Signer {
           accountType: params.accountType,
           // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
           chainType: params.chainType,
+          chainId: params.chainId,
         },
         {
           headers: {
@@ -144,6 +145,7 @@ export class EmbeddedSigner implements Signer {
         chainId: response.data.chainId,
         salt: response.data.smartAccount?.salt,
         factoryAddress: response.data.smartAccount?.factoryAddress,
+        recoveryMethod: Account.parseRecoveryMethod(response.data.recoveryMethod),
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
@@ -214,6 +216,7 @@ export class EmbeddedSigner implements Signer {
         chainId: response.data.chainId,
         salt: response.data.smartAccount?.salt,
         factoryAddress: response.data.smartAccount?.factoryAddress,
+        recoveryMethod: Account.parseRecoveryMethod(response.data.recoveryMethod),
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
@@ -264,6 +267,7 @@ export class EmbeddedSigner implements Signer {
         chainId: response.data.chainId,
         salt: response.data.smartAccount?.salt,
         factoryAddress: response.data.smartAccount?.factoryAddress,
+        recoveryMethod: Account.parseRecoveryMethod(response.data.recoveryMethod),
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);

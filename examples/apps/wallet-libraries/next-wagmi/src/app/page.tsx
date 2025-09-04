@@ -310,7 +310,7 @@ function SIWE() {
           const message = createSiweMessage({
             address: address!,
             chainId: chainId,
-            domain: 'example.com',
+            domain: window.location.host,
             nonce: nonce,
             uri: window.location.origin,
             version: '1',

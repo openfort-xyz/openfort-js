@@ -30,18 +30,18 @@ export class OpenfortConfiguration {
 export class ShieldConfiguration {
   readonly shieldPublishableKey: string;
 
+  /**
+   * @deprecated This option is no longer used and will be removed in future versions.
+   */
   readonly shieldEncryptionKey?: string;
 
   readonly debug?: boolean = false;
 
   constructor(options: {
     shieldPublishableKey: string
-    shieldEncryptionKey?: string
-    shieldEncryptionSession?: string
     shieldDebug?: boolean
   }) {
     this.shieldPublishableKey = options.shieldPublishableKey;
-    this.shieldEncryptionKey = options.shieldEncryptionKey;
     this.debug = options.shieldDebug || false;
   }
 }

@@ -9,12 +9,10 @@ export enum EmbeddedState {
 export enum OpenfortEvents {
   LOGGED_OUT = 'loggedOut',
   SWITCH_ACCOUNT = 'switchAccount',
-  TOKEN_REFRESHED = 'tokenRefreshed',
 }
 
 export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.LOGGED_OUT]: [];
-  [OpenfortEvents.TOKEN_REFRESHED]: [];
   [OpenfortEvents.SWITCH_ACCOUNT]: [string];
 }
 
@@ -428,7 +426,7 @@ export enum ChainTypeEnum {
   SVM = 'SVM',
 }
 
-export type EmbeddedAccount = {
+export interface EmbeddedAccount {
   user: string;
   id: string;
   chainType: ChainTypeEnum;
@@ -438,12 +436,13 @@ export type EmbeddedAccount = {
   factoryAddress?: string;
   salt?: string;
   accountType: AccountTypeEnum;
+  recoveryMethod?: RecoveryMethod;
   chainId?: number;
   /** @deprecated  */
   ownerAddress?: string;
   /** @deprecated  */
   type?: string;
-};
+}
 
 export type EmbeddedAccountConfigureParams = {
   chainId?: number;

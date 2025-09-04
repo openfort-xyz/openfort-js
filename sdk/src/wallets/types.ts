@@ -105,8 +105,6 @@ export class CreateRequest implements IEventRequest {
 
   encryptionKey: string | null;
 
-  encryptionPart: string | null;
-
   encryptionSession: string | null;
 
   passkey: PasskeyDetails | null;
@@ -136,7 +134,6 @@ export class CreateRequest implements IEventRequest {
     encryptionKey: string | null = null,
     thirdPartyProvider: string | null = null,
     thirdPartyTokenType: string | null = null,
-    encryptionPart: string | null = null,
     encryptionSession: string | null = null,
     passkey: PasskeyDetails | null = null,
   ) {
@@ -154,7 +151,6 @@ export class CreateRequest implements IEventRequest {
     this.encryptionKey = encryptionKey;
     this.openfortURL = openfortURL;
     this.shieldURL = shieldURL;
-    this.encryptionPart = encryptionPart;
     this.encryptionSession = encryptionSession;
     this.passkey = passkey;
   }
@@ -174,8 +170,6 @@ export class RecoverRequest implements IEventRequest {
   accessToken: string | null;
 
   encryptionKey: string | null;
-
-  encryptionPart: string | null;
 
   encryptionSession: string | null;
 
@@ -206,7 +200,6 @@ export class RecoverRequest implements IEventRequest {
     encryptionKey: string | null = null,
     thirdPartyProvider: string | null = null,
     thirdPartyTokenType: string | null = null,
-    encryptionPart: string | null = null,
     encryptionSession: string | null = null,
     passkey: PasskeyDetails | null = null,
   ) {
@@ -222,7 +215,6 @@ export class RecoverRequest implements IEventRequest {
     this.encryptionKey = encryptionKey;
     this.openfortURL = openfortURL;
     this.shieldURL = shieldURL;
-    this.encryptionPart = encryptionPart;
     this.encryptionSession = encryptionSession;
     this.passkey = passkey;
   }

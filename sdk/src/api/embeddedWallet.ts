@@ -53,11 +53,6 @@ export class EmbeddedWalletApi {
     private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
     private readonly passkeyHandler: PasskeyHandler,
   ) {
-    this.eventEmitter.on(OpenfortEvents.TOKEN_REFRESHED, () => {
-      debugLog('Handling token refresh event in EmbeddedWalletApi');
-      this.handleTokenRefreshed();
-    });
-
     this.eventEmitter.on(OpenfortEvents.LOGGED_OUT, () => {
       debugLog('Handling logout event in EmbeddedWalletApi');
       this.handleLogout();
@@ -298,6 +293,8 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      createdAt: account.createdAt,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
     };
   }
 
@@ -345,6 +342,8 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      createdAt: account.createdAt,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
     };
   }
 
@@ -359,8 +358,8 @@ export class EmbeddedWalletApi {
 
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
       recoveryParams.passkeyInfo = {
-        passkeyId: recoveryParams.passkeyInfo.passkeyId,
-        passkeyEnv: recoveryParams.passkeyInfo.passkeyEnv,
+        passkeyId: recoveryParams.passkeyInfo!!.passkeyId,
+        passkeyEnv: recoveryParams.passkeyInfo!!.passkeyEnv,
       };
     }
 
@@ -384,6 +383,8 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      createdAt: account.createdAt,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
     };
   }
 
@@ -479,6 +480,14 @@ export class EmbeddedWalletApi {
       recoveryPassword,
       encryptionSession,
     });
+
+    const account = await Account.fromStorage(this.storage);
+    if (account) {
+      new Account({
+        ...account,
+        recoveryMethod: newRecovery.recoveryMethod,
+      }).save(this.storage);
+    }
   }
 
   async get(): Promise<EmbeddedAccount> {
@@ -501,6 +510,8 @@ export class EmbeddedWalletApi {
       chainType: account.chainType,
       accountType: account.accountType,
       implementationType: account.implementationType,
+      createdAt: account.createdAt,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
     };
   }
 
@@ -544,6 +555,7 @@ export class EmbeddedWalletApi {
         createdAt: account.createdAt,
         implementationType: account.smartAccount?.implementationType,
         chainId: account.chainId,
+        recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
       }));
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }

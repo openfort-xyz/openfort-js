@@ -350,7 +350,6 @@ export class IframeManager {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
       encryptionKey: iframeConfiguration.password,
-      encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
       encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
       passkey: iframeConfiguration.passkey ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
@@ -403,7 +402,6 @@ export class IframeManager {
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
       encryptionKey: iframeConfiguration.password,
-      encryptionPart: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? null,
       encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
       passkey: iframeConfiguration.passkey ?? null,
       openfortURL: this.sdkConfiguration.backendUrl,
@@ -557,7 +555,7 @@ export class IframeManager {
 
     const request = new UpdateAuthenticationRequest(randomUUID(), authentication.token);
 
-    debugLog('Updating authentication in iframe with token:', authentication.token);
+    debugLog('Updating authentication in iframe with token');
     const response = await this.remote.updateAuthentication(request);
     if (isErrorResponse(response)) {
       this.handleError(response);
