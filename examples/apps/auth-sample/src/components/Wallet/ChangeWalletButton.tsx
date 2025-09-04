@@ -70,6 +70,19 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
             });
             setLoading(false);
             break;
+          case RecoveryMethod.PASSKEY:
+            setLoading(true);
+            await handleRecoverWallet({
+              accountId: account.id as Hex,
+              recoveryParams: {
+                recoveryMethod: RecoveryMethod.PASSKEY,
+                passkeyInfo: {
+                  passkeyId: account.recoveryMethodDetails?.passkeyId!
+                }
+              }
+            });
+            setLoading(false);
+            break;
           default:
             alert(`Recovery method ${account.recoveryMethod} not supported yet.`);
             return;

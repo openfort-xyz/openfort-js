@@ -150,6 +150,16 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
             });
             setLoading(false);
             break;
+          case RecoveryMethod.PASSKEY:
+            setLoading(true)
+            await handleRecoverWallet(account.id as Hex, {
+              recoveryMethod: RecoveryMethod.PASSKEY,
+              passkeyInfo: {
+                passkeyId: account.recoveryMethodDetails?.passkeyId!
+              }
+            })
+            setLoading(false)
+            break;
           default:
             alert(`Recovery method ${account.recoveryMethod} not supported yet.`);
             return;

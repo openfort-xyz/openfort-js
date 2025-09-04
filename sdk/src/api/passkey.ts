@@ -112,8 +112,6 @@ export class PasskeyHandler {
 
     if (credential) {
       const keyToStore = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
-      console.log(`Created a passkey with id ${keyToStore} and display name ${displayName}`);
-      localStorage.setItem('passkeyId', keyToStore);
       return {
         id: keyToStore,
         displayName,
@@ -137,11 +135,11 @@ export class PasskeyHandler {
    * @param seed: Seed phrase to derive passkey ID
    * @returns CryptoKey object
    */
-  async deriveKey({ seed }: Passkeys.DerivationDetails): Promise<CryptoKey> {
+  async deriveKey({ id, seed }: Passkeys.DerivationDetails): Promise<CryptoKey> {
     // This assertion is the authentication step in the passkey:
     // it will fail if the user is not able to provide valid
     // credentials (PIN, biometrics, etc)
-    const passkeyId = localStorage.getItem('passkeyId')!!;
+    const passkeyId = id;
     const assertion = await navigator.credentials.get(
       {
         publicKey: {
