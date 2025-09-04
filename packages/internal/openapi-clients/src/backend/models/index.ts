@@ -271,6 +271,7 @@ export * from './project-stats-response';
 export * from './quote-exchange-result';
 export * from './recover-v2-embedded-request';
 export * from './recover-v2-response';
+export * from './recovery-method-details';
 export * from './refresh-token-request';
 export * from './register-embedded-request';
 export * from './register-embedded-v2-request';

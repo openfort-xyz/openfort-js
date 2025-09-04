@@ -295,6 +295,7 @@ export class EmbeddedWalletApi {
       implementationType: account.implementationType,
       createdAt: account.createdAt,
       recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
+      recoveryMethodDetails: account.recoveryMethodDetails,
     };
   }
 
@@ -316,7 +317,6 @@ export class EmbeddedWalletApi {
       );
       recoveryParams.passkeyInfo = {
         passkeyId: passkeyDetails.id,
-        passkeyEnv: 'MOCK-ENV',
       };
     }
 
@@ -344,6 +344,7 @@ export class EmbeddedWalletApi {
       implementationType: account.implementationType,
       createdAt: account.createdAt,
       recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
+      recoveryMethodDetails: account.recoveryMethodDetails,
     };
   }
 
@@ -385,6 +386,7 @@ export class EmbeddedWalletApi {
       implementationType: account.implementationType,
       createdAt: account.createdAt,
       recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
+      recoveryMethodDetails: account.recoveryMethodDetails,
     };
   }
 
@@ -512,6 +514,7 @@ export class EmbeddedWalletApi {
       implementationType: account.implementationType,
       createdAt: account.createdAt,
       recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
+      recoveryMethodDetails: account.recoveryMethodDetails,
     };
   }
 
@@ -556,6 +559,7 @@ export class EmbeddedWalletApi {
         implementationType: account.smartAccount?.implementationType,
         chainId: account.chainId,
         recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
+        recoveryMethodDetails: account.recoveryMethodDetails,
       }));
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }

@@ -34,6 +34,11 @@ export enum RecoveryMethod {
   PASSKEY = 'passkey',
 }
 
+export type RecoveryMethodDetails = {
+  passkeyId?: string;
+  passkeyEnv?: string;
+};
+
 export enum AccountType {
   UPGRADEABLE_V4 = 'Upgradeable_v04',
   MANAGED_V4 = 'Managed_v04',
@@ -437,6 +442,7 @@ export interface EmbeddedAccount {
   salt?: string;
   accountType: AccountTypeEnum;
   recoveryMethod?: RecoveryMethod;
+  recoveryMethodDetails?: RecoveryMethodDetails;
   chainId?: number;
   /** @deprecated  */
   ownerAddress?: string;

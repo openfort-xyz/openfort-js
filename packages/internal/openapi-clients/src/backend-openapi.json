@@ -8651,6 +8651,18 @@
         "type": "object",
         "additionalProperties": false
       },
+      "RecoveryMethodDetails": {
+        "properties": {
+          "passkeyId": {
+            "type": "string"
+          },
+          "passkeyEnv": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
       "AccountV2Response": {
         "properties": {
           "id": {
@@ -8688,6 +8700,9 @@
           },
           "recoveryMethod": {
             "type": "string"
+          },
+          "recoveryMethodDetails": {
+            "$ref": "#/components/schemas/RecoveryMethodDetails"
           }
         },
         "required": [
