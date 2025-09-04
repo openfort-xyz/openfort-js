@@ -22,17 +22,13 @@
 <body>
   <main>
     <h1>Login & Signup</h1>
-    <div>
-      <div>
-        <p>Enter an email and password below and either sign in to an existing account or sign up</p>
-        <input type="text" id="email" name="email" placeholder="Email" />
-        <input type="password" id="password" name="password" placeholder="Password" />
-        <br />
-        <button id="quickstart-sign-in" name="signin">Sign In</button>
-        <br />
-        <button id="quickstart-sign-up" name="signup">Sign Up</button>
-      </div>
-    </div>
+    <p>Enter an email and password below and either sign in to an existing account or sign up</p>
+    <form>
+      <input type="text" id="email" name="email" placeholder="Email" />
+      <input type="password" id="password" name="password" placeholder="Password" />
+      <button id="quickstart-sign-in" type="button">Sign In</button>
+      <button id="quickstart-sign-up" type="button">Sign Up</button>
+    </form>
     <div id="messages" role="alert"></div>
   </main>
 </body>
