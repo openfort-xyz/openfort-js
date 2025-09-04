@@ -113,6 +113,46 @@ const ChangeToPasswordRecovery = ({ previousRecovery, onSuccess }: { previousRec
   );
 }
 
+const ChangeToPasskeyRecovery = ({ previousRecovery, onSuccess }: { previousRecovery: RecoveryParams, onSuccess: () => void }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { setRecoveryMethod } = useOpenfort();
+
+  return (
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+          await setRecoveryMethod(previousRecovery, {
+            recoveryMethod: RecoveryMethod.PASSKEY,
+          })
+
+          onSuccess();
+        } catch (error) {
+          console.error('Error setting password recovery:', error);
+          setError("Failed to set password recovery.  Check console log for more details.");
+        }
+
+        setIsLoading(false);
+      }}
+    >
+      <p className="mb-4 text-sm text-gray-600">
+        Passkey recovery allows you to recover your wallet using a registered passkey. Ensure that you have a passkey set up for this recovery method to work effectively.
+      </p>
+      <Button
+        loading={isLoading}
+        className='w-full'
+        type="submit"
+        variant="outline"
+      >
+        Set Passkey Recovery
+      </Button>
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+    </form>
+  );
+}
+
 const VerifyPasswordRecovery = ({ onVerified }: { onVerified: (password: string) => void }) => {
   return (
     <form
@@ -173,9 +213,11 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
         return <ChangeToAutomaticRecovery previousRecovery={previousRecovery} onSuccess={handleRecoveryChangeSuccess} />;
       case RecoveryMethod.PASSWORD:
         return <ChangeToPasswordRecovery previousRecovery={previousRecovery} onSuccess={handleRecoveryChangeSuccess} />;
+      case RecoveryMethod.PASSKEY:
+        return <ChangeToPasskeyRecovery previousRecovery={previousRecovery} onSuccess={handleRecoveryChangeSuccess} />;
       case null:
       case undefined:
-        return <div>Current recovery method not found</div>
+        return null;
       default: return <div>Recovery method not supported: "{changingTo}"</div>;
     }
   }
@@ -219,7 +261,7 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
               <div className="mb-4 text-sm">
                 Current recovery method: {account?.recoveryMethod || 'Not set'}
               </div>
-              {[RecoveryMethod.AUTOMATIC, RecoveryMethod.PASSWORD].map((method) => (
+              {[RecoveryMethod.AUTOMATIC, RecoveryMethod.PASSWORD, RecoveryMethod.PASSKEY].map((method) => (
                 <Button
                   key={method}
                   className='w-full mb-2'

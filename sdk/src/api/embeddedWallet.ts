@@ -17,6 +17,7 @@ import {
   RecoveryMethod,
   RecoveryParams,
   ListAccountsParams,
+  PasskeyInfo,
 } from '../types/types';
 import { debugLog } from '../utils/debug';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -210,8 +211,9 @@ export class EmbeddedWalletApi {
     return derivedKey;
   }
 
-  private async getEntropy(recoveryParams: RecoveryParams):
-  Promise<{ recoveryPassword?: string; encryptionSession?: string; passkey?: PasskeyDetails }> {
+  private async getEntropy(recoveryParams: RecoveryParams): Promise<{
+    recoveryPassword?: string; encryptionSession?: string; passkey?: PasskeyDetails
+  }> {
     switch (recoveryParams.recoveryMethod) {
       case RecoveryMethod.PASSWORD:
         return {
@@ -457,6 +459,15 @@ export class EmbeddedWalletApi {
     let recoveryPassword: string | undefined;
     let encryptionSession: string | undefined;
 
+    let passkeyInfo: PasskeyInfo | undefined;
+
+    if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+      passkeyInfo = previousRecovery.passkeyInfo;
+    } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+      passkeyInfo = newRecovery.passkeyInfo;
+    }
+    console.log(`Passkey info is ${JSON.stringify(passkeyInfo)}`);
+
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
       recoveryPassword = previousRecovery.password;
     } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
@@ -481,6 +492,7 @@ export class EmbeddedWalletApi {
       recoveryMethod: newRecovery.recoveryMethod,
       recoveryPassword,
       encryptionSession,
+      // TODO passkey: add passkey params
     });
 
     const account = await Account.fromStorage(this.storage);

@@ -494,7 +494,7 @@ export class IframeManager {
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
-    passkeyKey?: Uint8Array,
+    passkeyKey?: Uint8Array, // TODO passkey: change passkey
   ): Promise<void> {
     const remote = await this.ensureConnection();
 
