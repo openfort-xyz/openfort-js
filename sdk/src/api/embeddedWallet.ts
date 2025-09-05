@@ -193,7 +193,6 @@ export class EmbeddedWalletApi {
     iframe.src = url;
 
     document.body.appendChild(iframe);
-    debugLog('Iframe created and appended to document');
 
     return iframe;
   }

@@ -1,5 +1,4 @@
-import { faker } from '@faker-js/faker';
-import { upperFirst } from 'lodash';
+import humanId from 'human-id';
 /**
  * PasskeyHandler handles operations related to passkeys.
  * This class is ONLY suitable for key-derivation related use cases.
@@ -58,10 +57,8 @@ export class PasskeyHandler {
   }
 
   static randomPasskeyName() {
-    const adj = upperFirst(faker.word.adjective());
-    const noun = upperFirst(faker.word.noun());
-    const verb = upperFirst(faker.word.verb());
-    return `${adj} ${noun} ${verb}`;
+    const id = () => humanId({ capitalize: true, separator: ' ' });
+    return id();
   }
 
   private getChallengeBytes(): Uint8Array {
@@ -208,7 +205,7 @@ export class PasskeyHandler {
    * Derive and export a key using local passkey
    * @returns Uint8Array w/ derived key
    */
-  async deriveAndExportKey({ id, seed }: Passkeys.DerivationDetails): Promise< Uint8Array > {
+  async deriveAndExportKey({ id, seed }: Passkeys.DerivationDetails): Promise<Uint8Array> {
     if (!this.extractableKey) {
       throw new Error('Derived keys cannot be exported if extractableKey is not set to true');
     }
