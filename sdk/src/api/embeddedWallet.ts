@@ -1,4 +1,5 @@
 import { BackendApiClients } from '@openfort/openapi-clients';
+import { PasskeyHandler } from 'core/configuration/passkey';
 import { SDKConfiguration } from '../core/config/config';
 import { Account } from '../core/configuration/account';
 import { Authentication } from '../core/configuration/authentication';
@@ -30,7 +31,6 @@ import { IframeManager, SignerConfigureRequest } from '../wallets/iframeManager'
 import { ReactNativeMessenger } from '../wallets/messaging';
 import { WindowMessenger } from '../wallets/messaging/browserMessenger';
 import { MessagePoster, PasskeyDetails } from '../wallets/types';
-import { PasskeyHandler } from './passkey';
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null;

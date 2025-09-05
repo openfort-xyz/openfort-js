@@ -6,7 +6,7 @@ import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { OpenfortSDKConfiguration, SDKConfiguration } from './config/config';
 import { AuthManager } from '../auth/authManager';
 import { AuthApi } from '../api/auth';
-import { PasskeyHandler } from '../api/passkey';
+import { PasskeyHandler } from './configuration/passkey';
 import { EmbeddedWalletApi } from '../api/embeddedWallet';
 import { UserApi } from '../api/user';
 import { ProxyApi } from '../api/proxy';

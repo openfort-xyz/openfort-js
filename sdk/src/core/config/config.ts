@@ -92,8 +92,8 @@ export class SDKConfiguration {
     this.storage = overrides?.storage;
     this.thirdPartyAuth = thirdPartyAuth;
 
-    this.passkeyRpId = overrides?.passkeyRpId || 'https://openfort.io';
-    this.passkeyRpName = overrides?.passkeyRpName || 'Openfort - Embedded Wallet';
+    this.passkeyRpId = overrides?.passkeyRpId || window?.location?.hostname;
+    this.passkeyRpName = overrides?.passkeyRpName || document?.title;
 
     // Set crypto digest override if provided
     if (overrides?.crypto?.digest) {
