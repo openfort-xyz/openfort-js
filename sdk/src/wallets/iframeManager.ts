@@ -18,7 +18,6 @@ import {
   LogoutResponse,
   NOT_CONFIGURED_ERROR,
   SetRecoveryMethodResponse,
-  type ShieldAuthentication,
   SignRequest,
   SignResponse,
   SwitchChainRequest,
@@ -37,23 +36,10 @@ import {
   CreateResponse,
   RecoverResponse,
   ShieldAuthType,
+  IframeAuthentication,
+  PasskeyDetails,
 } from './types';
 import { sentry } from '../core/errors/sentry';
-
-// TODO: Most of these parameters are repeated in the iframe configuration.
-// Consider refactoring to avoid duplication.
-export interface IframeAuthentication extends ShieldAuthentication {
-  auth?: ShieldAuthType;
-  authProvider?: string | null;
-  token?: string | null;
-  tokenType?: string | null;
-}
-
-export interface PasskeyDetails {
-  id: string;
-  env: string;
-  key: Uint8Array;
-}
 
 export interface IframeConfiguration {
   thirdPartyTokenType: string | null;
@@ -287,12 +273,23 @@ export class IframeManager {
       throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR);
     }
 
+    const shieldAuthentication: IframeAuthentication = {
+      auth: ShieldAuthType.OPENFORT,
+      authProvider: authentication.thirdPartyProvider,
+      token: authentication.token,
+      tokenType: authentication.thirdPartyTokenType,
+    };
+
     return {
       thirdPartyProvider: authentication.thirdPartyProvider,
       thirdPartyTokenType: authentication.thirdPartyTokenType,
       token: authentication.token,
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       openfortURL: this.sdkConfiguration.backendUrl,
+      shieldAuthentication,
+      shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
+      shieldURL: this.sdkConfiguration.shieldUrl,
+      encryptionKey: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? undefined,
     };
   }
 
@@ -501,10 +498,10 @@ export class IframeManager {
     const request = new SetRecoveryMethodRequest(
       randomUUID(),
       recoveryMethod,
+      await this.buildRequestConfiguration(),
       recoveryPassword,
       encryptionSession,
       passkeyKey,
-      await this.buildRequestConfiguration(),
     );
 
     const response = await remote.setRecoveryMethod(request);

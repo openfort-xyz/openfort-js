@@ -26,10 +26,10 @@ import { EvmProvider, Provider } from '../wallets/evm';
 import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963';
 import { TypedDataPayload } from '../wallets/evm/types';
 import { signMessage } from '../wallets/evm/walletHelpers';
-import { IframeManager, PasskeyDetails, SignerConfigureRequest } from '../wallets/iframeManager';
+import { IframeManager, SignerConfigureRequest } from '../wallets/iframeManager';
 import { ReactNativeMessenger } from '../wallets/messaging';
 import { WindowMessenger } from '../wallets/messaging/browserMessenger';
-import { MessagePoster } from '../wallets/types';
+import { MessagePoster, PasskeyDetails } from '../wallets/types';
 import { PasskeyHandler } from './passkey';
 
 export class EmbeddedWalletApi {
