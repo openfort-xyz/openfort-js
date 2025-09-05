@@ -35,9 +35,6 @@
   "packageManager": "yarn@3.6.1",
   "private": true,
   "dependencies": {
-    "@faker-js/faker": "^10.0.0",
-    "@types/lodash": "^4.17.20",
-    "lodash": "^4.17.21",
     "tslib": "^2.6.2"
   },
   "devDependencies": {
