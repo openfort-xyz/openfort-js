@@ -9,10 +9,10 @@ export class PasskeyHandler {
   private readonly iValidByteLengths: number[] = [16, 24, 32];
 
   // The issuer's domain name
-  private readonly rpId: string;
+  private readonly rpId?: string;
 
   // The issuer's display name
-  private readonly rpName: string;
+  private readonly rpName?: string;
 
   // Timeout (in milliseconds) before a passkey dialog expires (default = 60_000)
   private readonly timeoutMillis: number;
@@ -110,7 +110,7 @@ export class PasskeyHandler {
       challenge: this.getChallengeBytes() as BufferSource,
       rp: {
         id: this.rpId,
-        name: this.rpName,
+        name: this.rpName!,
       },
       user: {
         id: new TextEncoder().encode(id),
@@ -216,8 +216,8 @@ export class PasskeyHandler {
 
 namespace Passkeys {
   export type Configuration = {
-    rpId: string,
-    rpName: string,
+    rpId?: string,
+    rpName?: string,
     timeoutMillis?: number,
     derivedKeyLengthBytes?: number,
     extractableKey?: boolean,

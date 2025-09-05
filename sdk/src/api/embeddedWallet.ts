@@ -249,6 +249,12 @@ export class EmbeddedWalletApi {
     const acc = await Account.fromStorage(this.storage);
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      if (!recoveryParams.passkeyInfo?.passkeyId || !recoveryParams.passkeyInfo?.passkeyEnv) {
+        throw new OpenfortError(
+          'Passkey ID and Name must be provided for passkey recovery',
+          OpenfortErrorType.INVALID_CONFIGURATION,
+        );
+      }
       if (!acc) {
         const passkeyDetails = await this.passkeyHandler.createPasskey(
           {
@@ -309,6 +315,12 @@ export class EmbeddedWalletApi {
     const auth = await Authentication.fromStorage(this.storage);
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      if (!recoveryParams.passkeyInfo?.passkeyId || !recoveryParams.passkeyInfo?.passkeyEnv) {
+        throw new OpenfortError(
+          'Passkey ID and Name must be provided for passkey recovery',
+          OpenfortErrorType.INVALID_CONFIGURATION,
+        );
+      }
       const passkeyDetails = await this.passkeyHandler.createPasskey(
         {
           id: PasskeyHandler.randomPasskeyName(),
@@ -359,9 +371,15 @@ export class EmbeddedWalletApi {
     };
 
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      if (!recoveryParams.passkeyInfo?.passkeyId || !recoveryParams.passkeyInfo?.passkeyEnv) {
+        throw new OpenfortError(
+          'Passkey ID and Name must be provided for passkey recovery',
+          OpenfortErrorType.INVALID_CONFIGURATION,
+        );
+      }
       recoveryParams.passkeyInfo = {
-        passkeyId: recoveryParams.passkeyInfo!!.passkeyId,
-        passkeyEnv: recoveryParams.passkeyInfo!!.passkeyEnv,
+        passkeyId: recoveryParams.passkeyInfo.passkeyId,
+        passkeyEnv: recoveryParams.passkeyInfo.passkeyEnv,
       };
     }
 

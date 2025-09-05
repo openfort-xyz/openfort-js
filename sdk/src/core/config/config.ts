@@ -10,8 +10,6 @@ export interface SDKOverrides {
     digest?: (algorithm: string, data: BufferSource) => Promise<ArrayBuffer>;
   };
   storage?: IStorage;
-  passkeyRpId?: string;
-  passkeyRpName?: string;
 }
 
 export interface ThirdPartyAuthConfiguration {
@@ -37,12 +35,20 @@ export class ShieldConfiguration {
 
   readonly debug?: boolean = false;
 
+  readonly passkeyRpId?: string;
+
+  readonly passkeyRpName?: string;
+
   constructor(options: {
     shieldPublishableKey: string
     shieldDebug?: boolean
+    passkeyRpId?: string
+    passkeyRpName?: string
   }) {
     this.shieldPublishableKey = options.shieldPublishableKey;
     this.debug = options.shieldDebug || false;
+    this.passkeyRpId = options.passkeyRpId;
+    this.passkeyRpName = options.passkeyRpName;
   }
 }
 
@@ -68,9 +74,9 @@ export class SDKConfiguration {
 
   readonly storage?: IStorage;
 
-  readonly passkeyRpId: string;
+  readonly passkeyRpId?: string;
 
-  readonly passkeyRpName: string;
+  readonly passkeyRpName?: string;
 
   static instance: SDKConfiguration | null = null;
 
@@ -92,8 +98,8 @@ export class SDKConfiguration {
     this.storage = overrides?.storage;
     this.thirdPartyAuth = thirdPartyAuth;
 
-    this.passkeyRpId = overrides?.passkeyRpId || window?.location?.hostname;
-    this.passkeyRpName = overrides?.passkeyRpName || document?.title;
+    this.passkeyRpId = shieldConfiguration?.passkeyRpId;
+    this.passkeyRpName = shieldConfiguration?.passkeyRpName;
 
     // Set crypto digest override if provided
     if (overrides?.crypto?.digest) {
