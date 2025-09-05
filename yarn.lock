@@ -1336,6 +1336,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@faker-js/faker@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "@faker-js/faker@npm:10.0.0"
+  checksum: a3bcb92091086d8c3fe9b9de6658761415c1a96c90b1f62da9ad82f5f733f67b46441a2ac7df945d3d319da043a34563fd91ca74c0ffc04aaf319c319ef0aaa8
+  languageName: node
+  linkType: hard
+
 "@fastify/busboy@npm:^3.0.0":
   version: 3.2.0
   resolution: "@fastify/busboy@npm:3.2.0"
@@ -6759,6 +6766,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e009a2bfb50e90ca9b7c6e8f648f8464067271fd99116f881073fa6fa76dc8d0133181dd65e6614d5fb1220d671d67b0124aef7d97dc02d7e342ab143a47779d
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.17.20":
+  version: 4.17.20
+  resolution: "@types/lodash@npm:4.17.20"
+  checksum: dc7bb4653514dd91117a4c4cec2c37e2b5a163d7643445e4757d76a360fabe064422ec7a42dde7450c5e7e0e7e678d5e6eae6d2a919abcddf581d81e63e63839
   languageName: node
   linkType: hard
 
@@ -14221,6 +14235,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "js-openfort-sdk@workspace:."
   dependencies:
+    "@faker-js/faker": ^10.0.0
+    "@types/lodash": ^4.17.20
     "@typescript-eslint/eslint-plugin": ^5.57.1
     "@typescript-eslint/parser": ^5.57.1
     crypto-browserify: ^3.12.0
@@ -14234,6 +14250,7 @@ __metadata:
     events: ^3.1.0
     husky: ^8.0.3
     lint-staged: ^13.2.0
+    lodash: ^4.17.21
     stream-browserify: ^3.0.0
     tslib: ^2.6.2
     typedoc: ^0.24.8

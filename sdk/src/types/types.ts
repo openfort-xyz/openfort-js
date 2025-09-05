@@ -472,6 +472,7 @@ export type EmbeddedAccountCreateParams = {
 export type PasskeyInfo = {
   passkeyId: string;
   passkeyEnv?: string;
+  passkeyKey?: Uint8Array;
 };
 
 export type RecoveryParams = {

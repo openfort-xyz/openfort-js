@@ -51,8 +51,6 @@ export class EmbeddedSigner implements Signer {
           },
         }),
       };
-
-      console.log(`Calling recover w/ account and with params ${JSON.stringify(recoverParams)}`);
       const iframeResponse = await this.iframeManager.recover(recoverParams);
 
       accountId = iframeResponse.account;
@@ -91,7 +89,6 @@ export class EmbeddedSigner implements Signer {
             },
           }),
         };
-        console.log(`Calling create with params ${JSON.stringify(createParams)}`);
         const iframeResponse = await this.iframeManager.create(createParams);
 
         accountId = iframeResponse.account;
@@ -107,8 +104,6 @@ export class EmbeddedSigner implements Signer {
             },
           }),
         };
-
-        console.log(`Calling recover w/o account with params ${JSON.stringify(recoverParams)}`);
         const iframeResponse = await this.iframeManager.recover(recoverParams);
 
         accountId = iframeResponse.account;

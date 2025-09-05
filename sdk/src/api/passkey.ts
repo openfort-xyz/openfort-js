@@ -1,4 +1,5 @@
-import { uuid4 } from '@sentry/core';
+import { faker } from '@faker-js/faker';
+import { upperFirst } from 'lodash';
 /**
  * PasskeyHandler handles operations related to passkeys.
  * This class is ONLY suitable for key-derivation related use cases.
@@ -56,6 +57,13 @@ export class PasskeyHandler {
     }
   }
 
+  static randomPasskeyName() {
+    const adj = upperFirst(faker.word.adjective());
+    const noun = upperFirst(faker.word.noun());
+    const verb = upperFirst(faker.word.verb());
+    return `${adj} ${noun} ${verb}`;
+  }
+
   private getChallengeBytes(): Uint8Array {
     // ⚠️ SECURITY WARNING ⚠️
     // If you're ever thinking on using this class for authentication and not just key
@@ -71,15 +79,36 @@ export class PasskeyHandler {
     return crypto.getRandomValues(new Uint8Array(32)) as Uint8Array;
   }
 
+  private async deriveFromAssertion(assertion: PublicKeyCredential): Promise<CryptoKey> {
+    const clientExtResults = assertion.getClientExtensionResults();
+
+    if (!clientExtResults) {
+      throw new Error('Passkey fetch failed');
+    }
+
+    const prfResults = clientExtResults.prf;
+
+    if (!prfResults || !prfResults.results) {
+      throw new Error('PRF extension not supported or missing results');
+    }
+    const rawBits = prfResults.results.first;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      rawBits,
+      { name: 'AES-CBC', length: this.derivedKeyLengthBytes },
+      this.extractableKey,
+      ['encrypt', 'decrypt'],
+    );
+    return key;
+  }
+
   /**
    * Prompts the user to create a passkey.
    * @param name User name
    * @param displayName Display name (ideally it should hint about environment, chain id, etc)
    * @returns PasskeyDetails with passkey details if passkey creation was successful
    */
-  async createPasskey({ displayName }: Passkeys.UserConfig): Promise<Passkeys.Details> {
-    console.log('calling create passkey...');
-    const id = uuid4();
+  async createPasskey({ id, displayName, seed }: Passkeys.UserConfig): Promise<Passkeys.Details> {
     const publicKey: PublicKeyCredentialCreationOptions = {
       challenge: this.getChallengeBytes() as BufferSource,
       rp: {
@@ -103,7 +132,13 @@ export class PasskeyHandler {
         userVerification: 'required',
       },
       // Required for key derivation (which is what we need for proper share crypto operations)
-      extensions: { prf: {} },
+      extensions: {
+        prf: {
+          eval: {
+            first: new TextEncoder().encode(seed),
+          },
+        },
+      },
       timeout: this.timeoutMillis,
       attestation: 'direct',
     };
@@ -111,16 +146,17 @@ export class PasskeyHandler {
     const credential = await navigator.credentials.create({ publicKey }) as PublicKeyCredential;
 
     if (credential) {
-      const keyToStore = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+      const passkeyId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
       return {
-        id: keyToStore,
+        id: passkeyId,
         displayName,
+        key: new Uint8Array(await crypto.subtle.exportKey('raw', await this.deriveFromAssertion(credential))),
       };
     }
     throw new Error('could not create passkey');
   }
 
-  base64ToArrayBuffer(base64: string): ArrayBuffer {
+  private base64ToArrayBuffer(base64: string): ArrayBuffer {
     const binary = atob(base64);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
@@ -165,29 +201,7 @@ export class PasskeyHandler {
       },
     ) as PublicKeyCredential;
 
-    console.log('Post assertion zone');
-
-    const clientExtResults = assertion.getClientExtensionResults();
-
-    if (!clientExtResults) {
-      throw new Error('Passkey fetch failed');
-    }
-
-    const prfResults = clientExtResults.prf;
-
-    // Shouldn't happen if passkeys are created by "createPasskey" right above
-    if (!prfResults || !prfResults.results) {
-      throw new Error('PRF extension not supported or missing results');
-    }
-    const rawBits = prfResults.results.first;
-    const key = await crypto.subtle.importKey(
-      'raw',
-      rawBits,
-      { name: 'AES-CBC', length: this.derivedKeyLengthBytes },
-      this.extractableKey,
-      ['encrypt', 'decrypt'],
-    );
-    return key;
+    return this.deriveFromAssertion(assertion);
   }
 
   /**
@@ -198,13 +212,8 @@ export class PasskeyHandler {
     if (!this.extractableKey) {
       throw new Error('Derived keys cannot be exported if extractableKey is not set to true');
     }
-    try {
-      const derivedKey = await this.deriveKey({ id, seed });
-      return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey));
-    } catch (error) {
-      console.log(`DeriveKey failed: ${error}`);
-      throw error;
-    }
+    const derivedKey = await this.deriveKey({ id, seed });
+    return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey));
   }
 }
 
@@ -218,12 +227,15 @@ namespace Passkeys {
   };
 
   export type UserConfig = {
+    id: string,
     displayName: string,
+    seed: string,
   };
 
   export type Details = {
     id: string,
     displayName?: string,
+    key?: Uint8Array,
   };
 
   export type DerivationDetails = {

@@ -200,14 +200,12 @@ export class EmbeddedWalletApi {
 
   private async getPasskeyKey(id: string): Promise<Uint8Array> {
     const auth = await Authentication.fromStorage(this.storage);
-    console.log(`Deriving passkey key for passkey id ${id} & player ${auth!.player}`);
     const derivedKey = await this.passkeyHandler.deriveAndExportKey(
       {
         id,
         seed: auth!.player,
       },
     );
-    console.log(`Derived and exported key for passkey id: ${id}: ${JSON.stringify(derivedKey)}`);
     return derivedKey;
   }
 
@@ -226,9 +224,11 @@ export class EmbeddedWalletApi {
       case RecoveryMethod.PASSKEY:
         return {
           passkey: {
-            id: recoveryParams.passkeyInfo?.passkeyId!!,
-            env: recoveryParams.passkeyInfo?.passkeyEnv!!,
-            key: await this.getPasskeyKey(recoveryParams.passkeyInfo?.passkeyId!!),
+            id: recoveryParams.passkeyInfo?.passkeyId!,
+            env: recoveryParams.passkeyInfo?.passkeyEnv!,
+            // if passkey was just created don't re-derive key to avoid double popup
+            key: recoveryParams.passkeyInfo?.passkeyKey!
+              || await this.getPasskeyKey(recoveryParams.passkeyInfo?.passkeyId!),
           },
         };
       default:
@@ -245,35 +245,34 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    // TODO: CHECK IF ACCOUNT EXISTS
-    const acc = Account.fromStorage(this.storage);
-    console.log(`Retrieved account is ${JSON.stringify(acc)}`);
-    const accountExists = localStorage.getItem('passkeyId') != null;
+    const auth = await Authentication.fromStorage(this.storage);
+
+    const acc = await Account.fromStorage(this.storage);
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
-      if (!accountExists) {
-        console.log('Passkey does not exist');
+      if (!acc) {
         const passkeyDetails = await this.passkeyHandler.createPasskey(
           {
-            displayName: 'MOCK-DISPLAY', // possibly environment info + chain Id
+            id: PasskeyHandler.randomPasskeyName(),
+            displayName: 'Openfort - Embedded Wallet',
+            seed: auth?.player!,
           },
         );
         recoveryParams.passkeyInfo = {
           passkeyId: passkeyDetails.id,
+          passkeyKey: passkeyDetails.key,
         };
       } else {
-        console.log('Passkey exists');
         recoveryParams.passkeyInfo = {
-          passkeyId: localStorage.getItem('passkeyId')!!,
+          passkeyId: acc.recoveryMethodDetails?.passkeyId!,
         };
       }
     }
 
-    const [signer, entropy, auth] = await Promise.all(
+    const [signer, entropy] = await Promise.all(
       [
         this.ensureSigner(),
         this.getEntropy(recoveryParams),
-        Authentication.fromStorage(this.storage),
       ],
     );
 
@@ -308,25 +307,26 @@ export class EmbeddedWalletApi {
     const recoveryParams = params.recoveryParams ?? {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
-
-    console.log(`Calling embeddedWallet.create with params ${JSON.stringify(params)}`);
+    const auth = await Authentication.fromStorage(this.storage);
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
       const passkeyDetails = await this.passkeyHandler.createPasskey(
         {
-          displayName: 'MOCK-DISPLAY', // possibly environment info + chain Id
+          id: PasskeyHandler.randomPasskeyName(),
+          displayName: 'Openfort - Embedded Wallet',
+          seed: auth?.player!,
         },
       );
       recoveryParams.passkeyInfo = {
         passkeyId: passkeyDetails.id,
+        passkeyKey: passkeyDetails.key,
       };
     }
 
-    const [signer, entropy, auth] = await Promise.all(
+    const [signer, entropy] = await Promise.all(
       [
         this.ensureSigner(),
         this.getEntropy(recoveryParams),
-        Authentication.fromStorage(this.storage),
       ],
     );
     const account = await signer.create({
