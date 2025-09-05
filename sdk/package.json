@@ -1,6 +1,6 @@
 {
   "name": "@openfort/openfort-js",
-  "version": "0.10.9",
+  "version": "0.10.10",
   "author": "Openfort (https://www.openfort.io)",
   "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
   "repository": "openfort-xyz/openfort-js.git",
@@ -43,6 +43,7 @@
     "axios": "^1.8.2",
     "axios-retry": "^4.5.0",
     "eventemitter3": "5.0.1",
+    "human-id": "^4.1.1",
     "jose": "^5.2.2"
   },
   "exports": {

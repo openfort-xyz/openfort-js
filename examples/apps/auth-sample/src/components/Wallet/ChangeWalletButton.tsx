@@ -1,14 +1,12 @@
-import type React from 'react';
-import { useEffect, useState } from 'react';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import { EmbeddedAccount, RecoveryMethod, RecoveryParams } from '@openfort/openfort-js';
+import { CheckIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Hex } from 'viem';
 import { useOpenfort } from '../../hooks/useOpenfort';
-import { EmbeddedAccount, EmbeddedState, RecoveryMethod, RecoveryParams } from '@openfort/openfort-js';
 import Loading from '../Loading';
 import { Button } from '../ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Hex } from 'viem';
-import { CheckIcon, ChevronLeft } from 'lucide-react';
-import openfort from '@/utils/openfortConfig';
-import { cn } from '@/lib/utils';
 
 const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuccess }: { isCurrentAccount: boolean, account: EmbeddedAccount, handleSetMessage: (msg: string) => void, onSuccess: () => void }) => {
   const [loading, setLoading] = useState(false);
@@ -66,6 +64,24 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
               recoveryParams: {
                 recoveryMethod: RecoveryMethod.AUTOMATIC,
                 encryptionSession: await getEncryptionSession()
+              }
+            });
+            setLoading(false);
+            break;
+          case RecoveryMethod.PASSKEY:
+            setLoading(true);
+            if (!account.recoveryMethodDetails?.passkeyId) {
+              alert('No passkey ID found for this account.');
+              setLoading(false);
+              return;
+            }
+            await handleRecoverWallet({
+              accountId: account.id as Hex,
+              recoveryParams: {
+                recoveryMethod: RecoveryMethod.PASSKEY,
+                passkeyInfo: {
+                  passkeyId: account.recoveryMethodDetails.passkeyId
+                }
               }
             });
             setLoading(false);

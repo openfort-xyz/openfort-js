@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { RecoveryMethodDetails } from './recovery-method-details';
+// May contain unused imports in some cases
+// @ts-ignore
 import { SmartAccountData } from './smart-account-data';
 
 /**
@@ -89,5 +92,11 @@ export interface AccountV2Response {
      * @memberof AccountV2Response
      */
     'recoveryMethod'?: string;
+    /**
+     * 
+     * @type {RecoveryMethodDetails}
+     * @memberof AccountV2Response
+     */
+    'recoveryMethodDetails'?: RecoveryMethodDetails;
 }
 

@@ -5,7 +5,8 @@ import { changeToAutomaticRecovery } from './changeRecovery';
 // Cannot import from sdk directly due to ESM/CJS issues
 export enum RecoveryMethod {
   PASSWORD = "password",
-  AUTOMATIC = "automatic"
+  AUTOMATIC = "automatic",
+  PASSKEY = "passkey",
 }
 
 export async function authenticate(page: Page) {
@@ -30,6 +31,7 @@ const parseRecoveryMethod = (text: string | null): RecoveryMethod => {
   if (!text) throw new Error('No recovery method text found');
   if (text.includes('automatic')) return RecoveryMethod.AUTOMATIC;
   if (text.includes('password')) return RecoveryMethod.PASSWORD;
+  if (text.includes('passkey')) return RecoveryMethod.PASSKEY;
   throw new Error(`Unknown recovery method: ${text}`);
 }
 

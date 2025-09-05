@@ -108,6 +108,51 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
 };
 
 
+const PasskeyRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handleSetMessage: (message: string) => void }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { getEncryptionSession, createWallet } = useOpenfort();
+
+  return (
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+          const response = await createWallet({
+            recoveryParams: {
+              recoveryMethod: RecoveryMethod.PASSKEY,
+            },
+          })
+          handleSetMessage(`Created a new wallet with passkey recovery.\nwallet: ${JSON.stringify(response, null, 2)}`);
+          onSuccess();
+        } catch (error) {
+          console.error('Error setting passkey recovery:', error);
+          setError('Failed to set passkey recovery. Check console log for more details.');
+        }
+        setIsLoading(false);
+      }}
+      className='p-4 border border-gray-200 rounded-lg'
+    >
+      <h3 className="font-medium text-black text-sm mb-2">
+        Passkey Recovery
+      </h3>
+      <p className="mb-2 text-sm text-gray-600">
+        Your wallet will be recovered using hosted passkey.
+      </p>
+      <Button
+        className='w-full'
+        type="submit"
+        variant="outline"
+        loading={isLoading}
+      >
+        Create with Passkey Recovery
+      </Button>
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+    </form>
+  );
+};
+
 const Content = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handleSetMessage: (message: string) => void }) => {
 
   return (
@@ -117,6 +162,7 @@ const Content = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handl
       </p>
       <AutomaticRecovery onSuccess={onSuccess} handleSetMessage={handleSetMessage} />
       <PasswordRecoveryForm onSuccess={onSuccess} handleSetMessage={handleSetMessage} />
+      <PasskeyRecovery onSuccess={onSuccess} handleSetMessage={handleSetMessage} />
     </div >
 
   );

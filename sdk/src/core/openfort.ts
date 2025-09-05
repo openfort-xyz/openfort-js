@@ -6,6 +6,7 @@ import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
 import { OpenfortSDKConfiguration, SDKConfiguration } from './config/config';
 import { AuthManager } from '../auth/authManager';
 import { AuthApi } from '../api/auth';
+import { PasskeyHandler } from '../api/passkey';
 import { EmbeddedWalletApi } from '../api/embeddedWallet';
 import { UserApi } from '../api/user';
 import { ProxyApi } from '../api/proxy';
@@ -35,6 +36,8 @@ export class Openfort {
   private configuration: SDKConfiguration;
 
   public eventEmitter: TypedEventEmitter<OpenfortEventMap>;
+
+  private iPasskeyHandler: PasskeyHandler;
 
   public get auth(): AuthApi {
     if (!this.authInstance) {
@@ -101,6 +104,7 @@ export class Openfort {
         this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
         this.eventEmitter,
+        this.passkeyHandler,
       );
       this.userInstance = new UserApi(
         this.storage,
@@ -143,6 +147,15 @@ export class Openfort {
 
     // Create the centralized event emitter
     this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>();
+
+    // Instantiate the passkey handler
+    this.iPasskeyHandler = new PasskeyHandler(
+      {
+        rpId: this.configuration.passkeyRpId,
+        rpName: this.configuration.passkeyRpName,
+        extractableKey: true,
+      },
+    );
 
     InternalSentry.init({ configuration: this.configuration });
 
@@ -195,6 +208,10 @@ export class Openfort {
       );
     }
     return this.iAuthManager;
+  }
+
+  get passkeyHandler(): PasskeyHandler {
+    return this.iPasskeyHandler;
   }
 
   public static async isStorageAccessible(storage: IStorage): Promise<boolean> {

@@ -4,6 +4,7 @@ import {
   EmbeddedAccount,
   RecoveryMethod,
 } from 'types';
+import { RecoveryMethodDetails } from 'types/types';
 import { IStorage, StorageKeys } from '../../storage/istorage';
 
 export class Account implements EmbeddedAccount {
@@ -18,6 +19,7 @@ export class Account implements EmbeddedAccount {
     this.implementationType = account.implementationType;
     this.factoryAddress = account.factoryAddress;
     this.recoveryMethod = account.recoveryMethod;
+    this.recoveryMethodDetails = account.recoveryMethodDetails;
     this.salt = account.salt;
     this.ownerAddress = account.ownerAddress;
     this.type = account.type;
@@ -47,6 +49,8 @@ export class Account implements EmbeddedAccount {
 
   public readonly recoveryMethod?: RecoveryMethod;
 
+  public readonly recoveryMethodDetails?: RecoveryMethodDetails;
+
   // legacy field for backward compatibility
   public readonly type?: string;
 
@@ -64,6 +68,7 @@ export class Account implements EmbeddedAccount {
       factoryAddress: this.factoryAddress,
       salt: this.salt,
       recoveryMethod: this.recoveryMethod,
+      recoveryMethodDetails: this.recoveryMethodDetails,
     }));
   }
 
@@ -75,6 +80,9 @@ export class Account implements EmbeddedAccount {
       case 'project':
       case RecoveryMethod.AUTOMATIC:
         return RecoveryMethod.AUTOMATIC;
+      case 'passkey':
+      case RecoveryMethod.PASSKEY:
+        return RecoveryMethod.PASSKEY;
       default:
         return undefined;
     }

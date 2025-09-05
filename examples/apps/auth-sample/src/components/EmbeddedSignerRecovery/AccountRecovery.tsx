@@ -150,6 +150,16 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
             });
             setLoading(false);
             break;
+          case RecoveryMethod.PASSKEY:
+            setLoading(true)
+            await handleRecoverWallet(account.id as Hex, {
+              recoveryMethod: RecoveryMethod.PASSKEY,
+              passkeyInfo: {
+                passkeyId: account.recoveryMethodDetails?.passkeyId!
+              }
+            })
+            setLoading(false)
+            break;
           default:
             alert(`Recovery method ${account.recoveryMethod} not supported yet.`);
             return;
@@ -215,9 +225,20 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
 
 const AccountRecovery: React.FC = () => {
   const { accounts, isLoadingAccounts } = useOpenfort();
+  const [loadingPasskey, setLoadingPasskey] = useState(false);
+  const { createWallet } = useOpenfort();
 
   if (isLoadingAccounts) {
     return <Loading />;
+  }
+
+  async function handleRecovery( {method, chainId}: {method:RecoveryMethod, chainId: number} ) {
+    await createWallet({
+      recoveryParams: {
+        recoveryMethod: RecoveryMethod.PASSKEY,
+      },
+    }
+    );
   }
 
   if (accounts.length === 0) {
@@ -235,6 +256,27 @@ const AccountRecovery: React.FC = () => {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-white px-2 text-gray-500">Or</span>
+            </div>
+            
+            <div className="flex justify-center items-center mt-2 relative z-10">
+              <Button
+                variant="outline"
+                type="button"
+                disabled={loadingPasskey}
+                className="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
+                onClick={async () => {
+                  setLoadingPasskey(true);
+                  try {
+                    await handleRecovery({ method: RecoveryMethod.PASSKEY, chainId: chainId });
+                  } catch (e) {
+                      console.log(e);
+                  } finally {
+                    setLoadingPasskey(false);
+                  }
+                }}
+              >
+                {loadingPasskey ? <Loading /> : 'Continue with Passkey Recovery'}
+              </Button>
             </div>
           </div>
           <CreateWalletAutomaticForm />

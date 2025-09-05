@@ -47,10 +47,10 @@ export class EmbeddedSigner implements Signer {
           entropy: {
             ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
             ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+            ...(params.entropy.passkey && { passkey: params.entropy.passkey }),
           },
         }),
       };
-
       const iframeResponse = await this.iframeManager.recover(recoverParams);
 
       accountId = iframeResponse.account;
@@ -85,10 +85,10 @@ export class EmbeddedSigner implements Signer {
             entropy: {
               ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
               ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+              ...(params.entropy.passkey && { passkey: params.entropy.passkey }),
             },
           }),
         };
-
         const iframeResponse = await this.iframeManager.create(createParams);
 
         accountId = iframeResponse.account;
@@ -100,10 +100,10 @@ export class EmbeddedSigner implements Signer {
             entropy: {
               ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
               ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+              ...(params.entropy.passkey && { passkey: params.entropy.passkey }),
             },
           }),
         };
-
         const iframeResponse = await this.iframeManager.recover(recoverParams);
 
         accountId = iframeResponse.account;
@@ -212,6 +212,7 @@ export class EmbeddedSigner implements Signer {
         salt: response.data.smartAccount?.salt,
         factoryAddress: response.data.smartAccount?.factoryAddress,
         recoveryMethod: Account.parseRecoveryMethod(response.data.recoveryMethod),
+        recoveryMethodDetails: response.data.recoveryMethodDetails,
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
@@ -270,6 +271,7 @@ export class EmbeddedSigner implements Signer {
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
+  // TODO passkey: add passkey params
   async setRecoveryMethod({
     recoveryMethod,
     recoveryPassword,
