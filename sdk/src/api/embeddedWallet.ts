@@ -18,7 +18,6 @@ import {
   RecoveryMethod,
   RecoveryParams,
   ListAccountsParams,
-  PasskeyInfo,
 } from '../types/types';
 import { debugLog } from '../utils/debug';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -169,7 +168,13 @@ export class EmbeddedWalletApi {
 
   private async createSigner(): Promise<EmbeddedSigner> {
     const iframeManager = await this.getIframeManager();
-    const signer = new EmbeddedSigner(iframeManager, this.storage, this.backendApiClients, this.eventEmitter);
+    const signer = new EmbeddedSigner(
+      iframeManager,
+      this.storage,
+      this.backendApiClients,
+      this.passkeyHandler,
+      this.eventEmitter,
+    );
     return signer;
   }
 
@@ -208,7 +213,7 @@ export class EmbeddedWalletApi {
     return derivedKey;
   }
 
-  private async getEntropy(recoveryParams: RecoveryParams): Promise<{
+  private async getEntropy(recoveryParams: RecoveryParams, processPasskey: boolean = true): Promise<{
     recoveryPassword?: string; encryptionSession?: string; passkey?: PasskeyDetails
   }> {
     switch (recoveryParams.recoveryMethod) {
@@ -221,14 +226,19 @@ export class EmbeddedWalletApi {
           encryptionSession: recoveryParams.encryptionSession,
         };
       case RecoveryMethod.PASSKEY:
+        if (processPasskey) {
+          return {
+            passkey: {
+              id: recoveryParams.passkeyInfo?.passkeyId!,
+              env: recoveryParams.passkeyInfo?.passkeyEnv!,
+              // if passkey was just created don't re-derive key to avoid double popup
+              key: recoveryParams.passkeyInfo?.passkeyKey!
+                || await this.getPasskeyKey(recoveryParams.passkeyInfo?.passkeyId!),
+            },
+          };
+        }
         return {
-          passkey: {
-            id: recoveryParams.passkeyInfo?.passkeyId!,
-            env: recoveryParams.passkeyInfo?.passkeyEnv!,
-            // if passkey was just created don't re-derive key to avoid double popup
-            key: recoveryParams.passkeyInfo?.passkeyKey!
-              || await this.getPasskeyKey(recoveryParams.passkeyInfo?.passkeyId!),
-          },
+          passkey: {},
         };
       default:
         throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -244,40 +254,11 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
 
-    const auth = await Authentication.fromStorage(this.storage);
-
-    const acc = await Account.fromStorage(this.storage);
-    // If we're here it's guaranteed we need to create a passkey for this particular user
-    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
-      if (!recoveryParams.passkeyInfo?.passkeyId || !recoveryParams.passkeyInfo?.passkeyEnv) {
-        throw new OpenfortError(
-          'Passkey ID and Name must be provided for passkey recovery',
-          OpenfortErrorType.INVALID_CONFIGURATION,
-        );
-      }
-      if (!acc) {
-        const passkeyDetails = await this.passkeyHandler.createPasskey(
-          {
-            id: PasskeyHandler.randomPasskeyName(),
-            displayName: 'Openfort - Embedded Wallet',
-            seed: auth?.player!,
-          },
-        );
-        recoveryParams.passkeyInfo = {
-          passkeyId: passkeyDetails.id,
-          passkeyKey: passkeyDetails.key,
-        };
-      } else {
-        recoveryParams.passkeyInfo = {
-          passkeyId: acc.recoveryMethodDetails?.passkeyId!,
-        };
-      }
-    }
-
-    const [signer, entropy] = await Promise.all(
+    const [auth, signer, entropy] = await Promise.all(
       [
+        Authentication.fromStorage(this.storage),
         this.ensureSigner(),
-        this.getEntropy(recoveryParams),
+        this.getEntropy(recoveryParams, false),
       ],
     );
 
@@ -315,12 +296,6 @@ export class EmbeddedWalletApi {
     const auth = await Authentication.fromStorage(this.storage);
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
-      if (!recoveryParams.passkeyInfo?.passkeyId || !recoveryParams.passkeyInfo?.passkeyEnv) {
-        throw new OpenfortError(
-          'Passkey ID and Name must be provided for passkey recovery',
-          OpenfortErrorType.INVALID_CONFIGURATION,
-        );
-      }
       const passkeyDetails = await this.passkeyHandler.createPasskey(
         {
           id: PasskeyHandler.randomPasskeyName(),
@@ -371,9 +346,9 @@ export class EmbeddedWalletApi {
     };
 
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
-      if (!recoveryParams.passkeyInfo?.passkeyId || !recoveryParams.passkeyInfo?.passkeyEnv) {
+      if (!recoveryParams.passkeyInfo?.passkeyId) {
         throw new OpenfortError(
-          'Passkey ID and Name must be provided for passkey recovery',
+          'Passkey ID must be provided for passkey recovery',
           OpenfortErrorType.INVALID_CONFIGURATION,
         );
       }
@@ -476,14 +451,13 @@ export class EmbeddedWalletApi {
     let recoveryPassword: string | undefined;
     let encryptionSession: string | undefined;
 
-    let passkeyInfo: PasskeyInfo | undefined;
+    // let passkeyInfo: PasskeyInfo | undefined;
 
-    if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-      passkeyInfo = previousRecovery.passkeyInfo;
-    } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-      passkeyInfo = newRecovery.passkeyInfo;
-    }
-    console.log(`Passkey info is ${JSON.stringify(passkeyInfo)}`);
+    // if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+    //   passkeyInfo = previousRecovery.passkeyInfo;
+    // } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+    //   passkeyInfo = newRecovery.passkeyInfo;
+    // }
 
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
       recoveryPassword = previousRecovery.password;
