@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useOpenfort } from '../../hooks/useOpenfort';
 import Loading from '../Loading';
 import { Button } from '../ui/button';
-import { StatusType, Toast } from '../Toasts';
-import { AccountTypeEnum, ChainTypeEnum, EmbeddedAccount, MissingRecoveryPasswordError, RecoveryMethod, RecoveryParams, WrongRecoveryPasswordError } from '@openfort/openfort-js';
-import openfort from '@/utils/openfortConfig';
-import { Hex } from 'viem';
-import { ChevronLeft, ChevronRight, ExpandIcon } from 'lucide-react';
+import { EmbeddedAccount, RecoveryMethod, RecoveryParams } from '@openfort/openfort-js';
+import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
@@ -133,7 +130,7 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
                 return;
               }
               setLoading(true);
-              await handleRecoverWallet(account.id as Hex, {
+              await handleRecoverWallet(account.id, {
                 recoveryMethod: RecoveryMethod.PASSWORD,
                 password,
               });
@@ -144,7 +141,7 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
             return;
           case RecoveryMethod.AUTOMATIC:
             setLoading(true);
-            await handleRecoverWallet(account.id as Hex, {
+            await handleRecoverWallet(account.id, {
               recoveryMethod: RecoveryMethod.AUTOMATIC,
               encryptionSession: await getEncryptionSession()
             });
@@ -152,7 +149,7 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
             break;
           case RecoveryMethod.PASSKEY:
             setLoading(true)
-            await handleRecoverWallet(account.id as Hex, {
+            await handleRecoverWallet(account.id, {
               recoveryMethod: RecoveryMethod.PASSKEY,
               passkeyInfo: {
                 passkeyId: account.recoveryMethodDetails?.passkeyId!

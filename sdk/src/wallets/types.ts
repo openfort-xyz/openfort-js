@@ -624,7 +624,7 @@ export interface MessagePoster {
 }
 
 export interface PasskeyDetails {
-  id: string;
-  env: string;
-  key: Uint8Array;
+  id?: string;
+  env?: string;
+  key?: Uint8Array;
 }

@@ -3,6 +3,7 @@ import { Authentication } from 'core/configuration/authentication';
 import { OpenfortError, OpenfortErrorType, SDKConfiguration } from 'types';
 import { withOpenfortError } from 'core/errors/openfortError';
 import TypedEventEmitter from 'utils/typedEventEmitter';
+import { PasskeyHandler } from 'core/configuration/passkey';
 import {
   AccountTypeEnum,
   ChainTypeEnum,
@@ -15,14 +16,30 @@ import type {
   SignerConfigureRequest, IframeManager, SignerRecoverRequest, SignerCreateRequest,
 } from './iframeManager';
 import { StorageKeys, type IStorage } from '../storage/istorage';
+import { PasskeyDetails } from './types';
 
 export class EmbeddedSigner implements Signer {
   constructor(
     private readonly iframeManager: IframeManager,
     private readonly storage: IStorage,
     private readonly backendApiClients: BackendApiClients,
+    private readonly passkeyHandler: PasskeyHandler,
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>,
   ) { }
+
+  private async createPasskey(player: string): Promise<PasskeyDetails> {
+    const passkey = await this.passkeyHandler.createPasskey(
+      {
+        id: PasskeyHandler.randomPasskeyName(),
+        displayName: 'Openfort - Embedded Wallet',
+        seed: player,
+      },
+    );
+    return {
+      id: passkey.id,
+      key: passkey.key,
+    };
+  }
 
   async configure(
     params: SignerConfigureRequest,
@@ -77,6 +94,8 @@ export class EmbeddedSigner implements Signer {
       );
 
       if (response.data.data.length === 0) {
+        const passkeyDetails = params.entropy?.passkey ? await this.createPasskey(auth.player) : undefined;
+
         const createParams: SignerCreateRequest = {
           accountType: params.accountType,
           chainType: params.chainType,
@@ -85,7 +104,7 @@ export class EmbeddedSigner implements Signer {
             entropy: {
               ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
               ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
-              ...(params.entropy.passkey && { passkey: params.entropy.passkey }),
+              ...(params.entropy.passkey && { passkey: passkeyDetails }),
             },
           }),
         };
