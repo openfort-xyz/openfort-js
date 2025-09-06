@@ -18,7 +18,6 @@ import {
   RecoveryMethod,
   RecoveryParams,
   ListAccountsParams,
-  PasskeyInfo,
 } from '../types/types';
 import { debugLog } from '../utils/debug';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -452,14 +451,13 @@ export class EmbeddedWalletApi {
     let recoveryPassword: string | undefined;
     let encryptionSession: string | undefined;
 
-    let passkeyInfo: PasskeyInfo | undefined;
+    // let passkeyInfo: PasskeyInfo | undefined;
 
-    if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-      passkeyInfo = previousRecovery.passkeyInfo;
-    } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-      passkeyInfo = newRecovery.passkeyInfo;
-    }
-    console.log(`Passkey info is ${JSON.stringify(passkeyInfo)}`);
+    // if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+    //   passkeyInfo = previousRecovery.passkeyInfo;
+    // } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+    //   passkeyInfo = newRecovery.passkeyInfo;
+    // }
 
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
       recoveryPassword = previousRecovery.password;
