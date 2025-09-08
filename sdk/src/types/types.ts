@@ -1,3 +1,5 @@
+import { PasskeyDetails } from 'wallets/types';
+
 export enum EmbeddedState {
   NONE,
   UNAUTHENTICATED,
@@ -484,6 +486,12 @@ export type RecoveryParams = {
 } | {
   recoveryMethod: RecoveryMethod.PASSKEY;
   passkeyInfo?: PasskeyInfo;
+};
+
+export type EntropyResponse = {
+  recoveryPassword?: string;
+  encryptionSession?: string;
+  passkey?: PasskeyDetails
 };
 
 export enum SortOrdering {

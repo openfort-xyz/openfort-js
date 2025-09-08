@@ -64,7 +64,13 @@ export class EmbeddedSigner implements Signer {
           entropy: {
             ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
             ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
-            ...(params.entropy.passkey && { passkey: params.entropy.passkey }),
+            ...(acc.recoveryMethod === 'passkey' && {
+              passkey: {
+                id: acc.recoveryMethodDetails?.passkeyId,
+                env: acc.recoveryMethodDetails?.passkeyEnv,
+                key: await params.getPasskeyKeyFn(acc.recoveryMethodDetails?.passkeyId!),
+              },
+            }),
           },
         }),
       };
@@ -119,7 +125,13 @@ export class EmbeddedSigner implements Signer {
             entropy: {
               ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
               ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
-              ...(params.entropy.passkey && { passkey: params.entropy.passkey }),
+              ...(response.data.data[0].recoveryMethod === 'passkey' && {
+                passkey: {
+                  id: response.data.data[0].recoveryMethodDetails?.passkeyId,
+                  env: response.data.data[0].recoveryMethodDetails?.passkeyEnv,
+                  key: await params.getPasskeyKeyFn(response.data.data[0].recoveryMethodDetails?.passkeyId!),
+                },
+              }),
             },
           }),
         };

@@ -231,7 +231,7 @@ function RegisterPage() {
                     className="w-full"
                     variant="outline"
                   >
-                    <p>Continue with Twitter</p>
+                    <p>Continue with X (Twitter)</p>
                   </Button>
                 </div>
                 <div>
