@@ -1,4 +1,4 @@
-import humanId from 'human-id';
+import { humanId } from 'human-id';
 /**
  * PasskeyHandler handles operations related to passkeys.
  * This class is ONLY suitable for key-derivation related use cases.
