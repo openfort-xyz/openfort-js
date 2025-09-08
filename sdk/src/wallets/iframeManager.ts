@@ -66,20 +66,12 @@ export interface SignerCreateRequest {
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
   chainId?: number,
-  entropy?: {
-    recoveryPassword?: string;
-    encryptionSession?: string;
-    passkey?: PasskeyDetails;
-  }
+  entropy?: EntropyResponse;
 }
 
 export interface SignerRecoverRequest {
   account: string,
-  entropy?: {
-    recoveryPassword?: string;
-    encryptionSession?: string;
-    passkey?: PasskeyDetails;
-  }
+  entropy?: EntropyResponse;
 }
 
 interface IframeAPI {
