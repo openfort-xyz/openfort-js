@@ -81,7 +81,7 @@ const CreateWalletAutomaticForm = () => {
         variant="outline"
         loading={isLoading}
       >
-        Continue with Automatic Recovery
+        Set Automatic Recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
