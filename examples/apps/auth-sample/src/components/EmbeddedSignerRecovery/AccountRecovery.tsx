@@ -6,8 +6,6 @@ import { EmbeddedAccount, RecoveryMethod, RecoveryParams } from '@openfort/openf
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID);
-
 const CreateWalletPasswordForm = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -83,7 +81,43 @@ const CreateWalletAutomaticForm = () => {
         variant="outline"
         loading={isLoading}
       >
-        Set Automatic Recovery
+        Continue with Automatic Recovery
+      </Button>
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+    </form>
+  );
+};
+
+const CreateWalletPasskeyForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { createWallet } = useOpenfort();
+
+  return (
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+          await createWallet({
+            recoveryParams: {
+              recoveryMethod: RecoveryMethod.PASSKEY,
+            },
+          });
+        } catch (error) {
+          console.error('Error setting passkey recovery:', error);
+          setError('Failed to set passkey recovery. Check console log for more details.');
+        }
+        setIsLoading(false);
+      }}
+    >
+      <Button
+        className='w-full'
+        type="submit"
+        variant="outline"
+        loading={isLoading}
+      >
+        Continue with Passkey Recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
@@ -222,20 +256,9 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
 
 const AccountRecovery: React.FC = () => {
   const { accounts, isLoadingAccounts } = useOpenfort();
-  const [loadingPasskey, setLoadingPasskey] = useState(false);
-  const { createWallet } = useOpenfort();
 
   if (isLoadingAccounts) {
     return <Loading />;
-  }
-
-  async function handleRecovery( {method, chainId}: {method:RecoveryMethod, chainId: number} ) {
-    await createWallet({
-      recoveryParams: {
-        recoveryMethod: RecoveryMethod.PASSKEY,
-      },
-    }
-    );
   }
 
   if (accounts.length === 0) {
@@ -254,28 +277,8 @@ const AccountRecovery: React.FC = () => {
             <div className="relative flex justify-center text-sm">
               <span className="bg-white px-2 text-gray-500">Or</span>
             </div>
-            
-            <div className="flex justify-center items-center mt-2 relative z-10">
-              <Button
-                variant="outline"
-                type="button"
-                disabled={loadingPasskey}
-                className="bg-white text-black p-2.5 border border-gray-200 rounded-lg w-full hover:bg-gray-100"
-                onClick={async () => {
-                  setLoadingPasskey(true);
-                  try {
-                    await handleRecovery({ method: RecoveryMethod.PASSKEY, chainId: chainId });
-                  } catch (e) {
-                      console.log(e);
-                  } finally {
-                    setLoadingPasskey(false);
-                  }
-                }}
-              >
-                {loadingPasskey ? <Loading /> : 'Continue with Passkey Recovery'}
-              </Button>
-            </div>
           </div>
+          <CreateWalletPasskeyForm />
           <CreateWalletAutomaticForm />
         </div>
       </>

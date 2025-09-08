@@ -8,7 +8,9 @@ import { Data, OpenfortError, OpenfortErrorType } from '../core/errors/openfortE
 import { debugLog } from '../utils/debug';
 import { randomUUID } from '../utils/crypto';
 import { Authentication } from '../core/configuration/authentication';
-import type { AccountTypeEnum, ChainTypeEnum, RecoveryMethod } from '../types/types';
+import type {
+  AccountTypeEnum, ChainTypeEnum, EntropyResponse, RecoveryMethod,
+} from '../types/types';
 import { ReactNativeMessenger } from './messaging';
 import {
   CreateRequest,
@@ -54,13 +56,10 @@ export interface IframeConfiguration {
 
 export interface SignerConfigureRequest {
   chainId?: number,
-  entropy?: {
-    recoveryPassword?: string;
-    encryptionSession?: string;
-    passkey?: PasskeyDetails;
-  };
+  entropy?: EntropyResponse;
   accountType: AccountTypeEnum;
   chainType: ChainTypeEnum;
+  getPasskeyKeyFn: (id: string) => Promise<Uint8Array>;
 }
 
 export interface SignerCreateRequest {

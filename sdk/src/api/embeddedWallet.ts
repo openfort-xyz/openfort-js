@@ -18,6 +18,7 @@ import {
   RecoveryMethod,
   RecoveryParams,
   ListAccountsParams,
+  EntropyResponse,
 } from '../types/types';
 import { debugLog } from '../utils/debug';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -29,7 +30,7 @@ import { signMessage } from '../wallets/evm/walletHelpers';
 import { IframeManager, SignerConfigureRequest } from '../wallets/iframeManager';
 import { ReactNativeMessenger } from '../wallets/messaging';
 import { WindowMessenger } from '../wallets/messaging/browserMessenger';
-import { MessagePoster, PasskeyDetails } from '../wallets/types';
+import { MessagePoster } from '../wallets/types';
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null;
@@ -213,9 +214,7 @@ export class EmbeddedWalletApi {
     return derivedKey;
   }
 
-  private async getEntropy(recoveryParams: RecoveryParams, processPasskey: boolean = true): Promise<{
-    recoveryPassword?: string; encryptionSession?: string; passkey?: PasskeyDetails
-  }> {
+  private async getEntropy(recoveryParams: RecoveryParams): Promise<EntropyResponse> {
     switch (recoveryParams.recoveryMethod) {
       case RecoveryMethod.PASSWORD:
         return {
@@ -226,19 +225,14 @@ export class EmbeddedWalletApi {
           encryptionSession: recoveryParams.encryptionSession,
         };
       case RecoveryMethod.PASSKEY:
-        if (processPasskey) {
-          return {
-            passkey: {
-              id: recoveryParams.passkeyInfo?.passkeyId!,
-              env: recoveryParams.passkeyInfo?.passkeyEnv!,
-              // if passkey was just created don't re-derive key to avoid double popup
-              key: recoveryParams.passkeyInfo?.passkeyKey!
-                || await this.getPasskeyKey(recoveryParams.passkeyInfo?.passkeyId!),
-            },
-          };
-        }
         return {
-          passkey: {},
+          passkey: recoveryParams.passkeyInfo ? {
+            id: recoveryParams.passkeyInfo.passkeyId,
+            env: recoveryParams.passkeyInfo.passkeyEnv,
+            // if passkey was just created don't re-derive key to avoid double popup
+            key: recoveryParams.passkeyInfo.passkeyKey
+              || await this.getPasskeyKey(recoveryParams.passkeyInfo.passkeyId),
+          } : {},
         };
       default:
         throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION);
@@ -258,7 +252,7 @@ export class EmbeddedWalletApi {
       [
         Authentication.fromStorage(this.storage),
         this.ensureSigner(),
-        this.getEntropy(recoveryParams, false),
+        this.getEntropy(recoveryParams),
       ],
     );
 
@@ -267,6 +261,7 @@ export class EmbeddedWalletApi {
       entropy,
       accountType: params.accountType ?? AccountTypeEnum.SMART_ACCOUNT,
       chainType: params.chainType ?? ChainTypeEnum.EVM,
+      getPasskeyKeyFn: async (id: string) => this.getPasskeyKey(id),
     };
 
     const account = await signer.configure(configureParams);
@@ -686,19 +681,6 @@ export class EmbeddedWalletApi {
     this.iframeManager = null;
     this.iframeManagerPromise = null;
     this.messenger = null;
-  }
-
-  private async handleTokenRefreshed(): Promise<void> {
-    if (this.iframeManager) {
-      try {
-        await this.iframeManager.updateAuthentication();
-        debugLog('Updated IframeManager authentication after token refresh');
-      } catch (error) {
-        debugLog('Failed to update IframeManager authentication:', error);
-      }
-    } else {
-      debugLog('IframeManager not initialized, skipping authentication update');
-    }
   }
 
   private async handleLogout(): Promise<void> {
