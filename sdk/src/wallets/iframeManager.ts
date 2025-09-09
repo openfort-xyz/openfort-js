@@ -33,6 +33,8 @@ import {
   MISSING_USER_ENTROPY_ERROR,
   MISSING_PROJECT_ENTROPY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
+  INCORRECT_PASSKEY_ERROR,
+  MISSING_PASSKEY_ERROR,
   type RequestConfiguration,
   UpdateAuthenticationResponse,
   CreateResponse,
@@ -91,6 +93,18 @@ interface IframeAPI {
 export class MissingRecoveryPasswordError extends Error {
   constructor() {
     super('This embedded signer requires a password to be recovered');
+  }
+}
+
+export class MissingPasskeyError extends Error {
+  constructor() {
+    super('MissingPasskeyError');
+  }
+}
+
+export class WrongPasskeyError extends Error {
+  constructor() {
+    super('Wrong recovery passkey for this embedded signer');
   }
 }
 
@@ -252,7 +266,13 @@ export class IframeManager {
         throw new MissingProjectEntropyError();
       } else if (error.error === INCORRECT_USER_ENTROPY_ERROR) {
         throw new WrongRecoveryPasswordError();
+      } else if (error.error === MISSING_PASSKEY_ERROR) {
+        this.storage.remove(StorageKeys.ACCOUNT);
+        throw new MissingRecoveryPasswordError();
+      } else if (error.error === INCORRECT_PASSKEY_ERROR) {
+        throw new WrongPasskeyError();
       }
+      this.storage.remove(StorageKeys.ACCOUNT);
       throw new OpenfortError(`Unknown error: ${error.error}`, OpenfortErrorType.INTERNAL_ERROR);
     }
     throw error;
