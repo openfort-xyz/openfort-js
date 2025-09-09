@@ -19,6 +19,7 @@ import {
   PasskeyInfo,
   RecoveryParams,
   ListAccountsParams,
+  RecoveryMethodDetails,
 } from '../types/types';
 import { debugLog } from '../utils/debug';
 import TypedEventEmitter from '../utils/typedEventEmitter';
@@ -458,13 +459,15 @@ export class EmbeddedWalletApi {
     let recoveryPassword: string | undefined;
     let encryptionSession: string | undefined;
     let passkeyInfo: PasskeyInfo | undefined;
+    let recoveryMethodDetails: RecoveryMethodDetails | undefined;
 
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+      const passkeyId = (await Account.fromStorage(this.storage))?.recoveryMethodDetails?.passkeyId!;
       passkeyInfo = {
-        passkeyId: previousRecovery.passkeyInfo?.passkeyId!,
+        passkeyId,
         passkeyKey: await this.passkeyHandler.deriveAndExportKey(
           {
-            id: previousRecovery.passkeyInfo?.passkeyId!,
+            id: passkeyId,
             seed: auth.player,
           },
         ),
@@ -480,6 +483,9 @@ export class EmbeddedWalletApi {
       passkeyInfo = {
         passkeyId: newPasskeyDetails.id,
         passkeyKey: newPasskeyDetails.key,
+      };
+      recoveryMethodDetails = {
+        passkeyId: newPasskeyDetails.id,
       };
     }
 
@@ -514,6 +520,7 @@ export class EmbeddedWalletApi {
       new Account({
         ...account,
         recoveryMethod: newRecovery.recoveryMethod,
+        recoveryMethodDetails,
       }).save(this.storage);
     }
   }
