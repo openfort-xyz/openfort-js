@@ -8,6 +8,7 @@ import {
   AccountTypeEnum,
   ChainTypeEnum,
   OpenfortEvents,
+  PasskeyInfo,
   type OpenfortEventMap, type RecoveryMethod,
 } from '../types/types';
 import { Account } from '../core/configuration/account';
@@ -295,15 +296,18 @@ export class EmbeddedSigner implements Signer {
     recoveryMethod,
     recoveryPassword,
     encryptionSession,
+    passkeyInfo,
   }: {
     recoveryMethod: RecoveryMethod;
     recoveryPassword?: string;
     encryptionSession?: string;
+    passkeyInfo?: PasskeyInfo;
   }): Promise<void> {
     await this.iframeManager.setRecoveryMethod(
       recoveryMethod,
       recoveryPassword,
       encryptionSession,
+      passkeyInfo,
     );
   }
 

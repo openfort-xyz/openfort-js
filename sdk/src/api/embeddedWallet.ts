@@ -16,6 +16,7 @@ import {
   OpenfortEventMap,
   OpenfortEvents,
   RecoveryMethod,
+  PasskeyInfo,
   RecoveryParams,
   ListAccountsParams,
 } from '../types/types';
@@ -448,16 +449,21 @@ export class EmbeddedWalletApi {
 
     const signer = await this.ensureSigner();
 
+    const auth = await Authentication.fromStorage(this.storage);
+
+    if (!auth) {
+      throw new Error('missing authentication');
+    }
+
     let recoveryPassword: string | undefined;
     let encryptionSession: string | undefined;
+    let passkeyInfo: PasskeyInfo | undefined;
 
-    // let passkeyInfo: PasskeyInfo | undefined;
-
-    // if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-    //   passkeyInfo = previousRecovery.passkeyInfo;
-    // } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-    //   passkeyInfo = newRecovery.passkeyInfo;
-    // }
+    if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+      passkeyInfo = previousRecovery.passkeyInfo;
+    } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+      passkeyInfo = newRecovery.passkeyInfo;
+    }
 
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
       recoveryPassword = previousRecovery.password;
@@ -483,7 +489,7 @@ export class EmbeddedWalletApi {
       recoveryMethod: newRecovery.recoveryMethod,
       recoveryPassword,
       encryptionSession,
-      // TODO passkey: add passkey params
+      passkeyInfo,
     });
 
     const account = await Account.fromStorage(this.storage);
