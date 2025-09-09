@@ -460,9 +460,27 @@ export class EmbeddedWalletApi {
     let passkeyInfo: PasskeyInfo | undefined;
 
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-      passkeyInfo = previousRecovery.passkeyInfo;
+      passkeyInfo = {
+        passkeyId: previousRecovery.passkeyInfo?.passkeyId!,
+        passkeyKey: await this.passkeyHandler.deriveAndExportKey(
+          {
+            id: previousRecovery.passkeyInfo?.passkeyId!,
+            seed: auth.player,
+          },
+        ),
+      };
     } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-      passkeyInfo = newRecovery.passkeyInfo;
+      const newPasskeyDetails = await this.passkeyHandler.createPasskey(
+        {
+          id: PasskeyHandler.randomPasskeyName(),
+          displayName: 'Openfort - Embedded Wallet',
+          seed: auth?.player!,
+        },
+      );
+      passkeyInfo = {
+        passkeyId: newPasskeyDetails.id,
+        passkeyKey: newPasskeyDetails.key,
+      };
     }
 
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSWORD) {
@@ -484,7 +502,6 @@ export class EmbeddedWalletApi {
       );
     }
 
-    // Iframe needs to be refactored to support more than just password and automatic
     await signer.setRecoveryMethod({
       recoveryMethod: newRecovery.recoveryMethod,
       recoveryPassword,

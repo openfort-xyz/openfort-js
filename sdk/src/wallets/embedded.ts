@@ -291,7 +291,6 @@ export class EmbeddedSigner implements Signer {
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
-  // TODO passkey: add passkey params
   async setRecoveryMethod({
     recoveryMethod,
     recoveryPassword,
@@ -307,7 +306,8 @@ export class EmbeddedSigner implements Signer {
       recoveryMethod,
       recoveryPassword,
       encryptionSession,
-      passkeyInfo,
+      passkeyInfo?.passkeyKey,
+      passkeyInfo?.passkeyId,
     );
   }
 
