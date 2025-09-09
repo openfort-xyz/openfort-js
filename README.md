@@ -11,10 +11,6 @@
       Documentation
     </a>
     <span> | </span>
-    <a href="https://www.openfort.io/docs/reference/api/authentication">
-      API Docs
-    </a>
-    <span> | </span>
     <a href="https://x.com/openfort_hq">
       X
     </a>
@@ -34,20 +30,20 @@
 [![Documentation](https://img.shields.io/badge/docs-openfort.io-blue)](https://www.openfort.io/docs/products/embedded-wallet/javascript)
 [![Version](https://img.shields.io/npm/v/@openfort/openfort-js.svg)](https://www.npmjs.org/package/@openfort/openfort-js)
 
-**Build invisible wallets in minutes, not months.** JavaScript SDK for embedded wallets, session keys, and gasless transactions.
+**Build wallets in minutes, not months.** JavaScript SDK for embedded wallets, session keys, and gasless transactions.
 
 ## Features
 - 🔐 **Session Keys** for gasless gaming experiences  
 - 💼 **Embedded Wallets** for mainstream user onboarding
 - ⚡ **Account Abstraction** for sponsored transactions
 - 🔒 **Non-custodial** wallet infrastructure with Shield encryption
-- 🌐 **Multi-chain** support (EVm and Solana)
+- 🌐 **Multi-chain** support (EVM and Solana)
 - 📱 **Social Auth** with Google, Discord, Twitter integration
 - 💸 **Gasless Transactions** with configurable gas policies
 - 🔧 **Developer-friendly** with TypeScript support
 - 📊 **Analytics** and monitoring dashboard
 
-## ⚡ Quick Start
+## Quick Start
 
 ### 1. Install
 ```bash
