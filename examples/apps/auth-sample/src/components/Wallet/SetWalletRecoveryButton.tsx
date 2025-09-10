@@ -48,7 +48,7 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
         variant="outline"
         loading={isLoading}
       >
-        Continue with Automatic Recovery
+        Set Automatic Recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
@@ -106,7 +106,7 @@ const ChangeToPasswordRecovery = ({ previousRecovery, onSuccess }: { previousRec
         type="submit"
         variant="outline"
       >
-        Continue with Password Recovery
+        Set password recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
@@ -146,7 +146,7 @@ const ChangeToPasskeyRecovery = ({ previousRecovery, onSuccess }: { previousReco
         type="submit"
         variant="outline"
       >
-        Continue with Passkey Recovery
+        Set passkey recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
