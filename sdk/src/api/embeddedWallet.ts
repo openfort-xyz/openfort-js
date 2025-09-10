@@ -291,6 +291,9 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     };
     const auth = await Authentication.fromStorage(this.storage);
+    if (!auth) {
+      throw new OpenfortError('missing authentication', OpenfortErrorType.AUTHENTICATION_ERROR);
+    }
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
       const passkeyDetails = await this.passkeyHandler.createPasskey(
@@ -448,7 +451,7 @@ export class EmbeddedWalletApi {
     const auth = await Authentication.fromStorage(this.storage);
 
     if (!auth) {
-      throw new Error('missing authentication');
+      throw new OpenfortError('missing authentication', OpenfortErrorType.AUTHENTICATION_ERROR);
     }
 
     let recoveryPassword: string | undefined;
@@ -459,11 +462,11 @@ export class EmbeddedWalletApi {
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
       const acc = await Account.fromStorage(this.storage);
       if (!acc) {
-        throw new Error('missing account');
+        throw new OpenfortError('missing account', OpenfortErrorType.INVALID_CONFIGURATION);
       }
       const passkeyId = acc?.recoveryMethodDetails?.passkeyId;
       if (!passkeyId) {
-        throw new Error('missing passkey id for account');
+        throw new OpenfortError('missing passkey id for account', OpenfortErrorType.INVALID_CONFIGURATION);
       }
       passkeyInfo = {
         passkeyId,
@@ -479,7 +482,7 @@ export class EmbeddedWalletApi {
         {
           id: PasskeyHandler.randomPasskeyName(),
           displayName: 'Openfort - Embedded Wallet',
-          seed: auth?.player!,
+          seed: auth.player!,
         },
       );
       passkeyInfo = {
