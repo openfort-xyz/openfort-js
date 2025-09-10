@@ -25,29 +25,56 @@ export type WalletRequestPermissionsParams = {
 function formatPolicyData(policy: Policy) {
   const data = (() => {
     if (policy.type === 'token-allowance') {
-      return {
-        allowance: (policy.data.allowance.toString()),
-      };
+      throw new JsonRpcError(
+        RpcErrorCode.INVALID_PARAMS,
+        'token-allowance policy is not supported with this account implementation.',
+      );
     }
     if (policy.type === 'gas-limit') {
-      return {
-        limit: policy.data.limit.toString(),
-      };
+      throw new JsonRpcError(
+        RpcErrorCode.INVALID_PARAMS,
+        'gas-limit policy is not supported with this account implementation.',
+      );
+    }
+    if (policy.type === 'rate-limit') {
+      throw new JsonRpcError(
+        RpcErrorCode.INVALID_PARAMS,
+        'rate-limit policy is not supported with this account implementation.',
+      );
     }
     return policy.data;
   })();
 
   return {
     data,
-    type:
-      typeof policy.type === 'string' ? policy.type : policy.type.custom,
+    type: policy.type.custom,
   };
 }
 
 function formatPermissionRequest(permission: Permission) {
+  if (permission.type === 'native-token-transfer') {
+    throw new JsonRpcError(
+      RpcErrorCode.INVALID_PARAMS,
+      'native-token-transfer permission is not supported with this account implementation.',
+    );
+  }
+  if (permission.type === 'rate-limit') {
+    throw new JsonRpcError(
+      RpcErrorCode.INVALID_PARAMS,
+      'rate-limit permission is not supported with this account implementation.',
+    );
+  }
+
+  if (permission.type === 'gas-limit') {
+    throw new JsonRpcError(
+      RpcErrorCode.INVALID_PARAMS,
+      'gas-limit permission is not supported with this account implementation.',
+    );
+  }
+
   return {
     ...permission,
-    policies: permission.policies.map(formatPolicyData),
+    policies: permission?.policies?.map(formatPolicyData),
     required: permission.required ?? false,
     type: typeof permission.type === 'string'
       ? permission.type
@@ -97,10 +124,16 @@ const buildOpenfortTransactions = async (
   const formattedPermissions = param.permissions.map(formatPermissionRequest);
   const whitelist = formattedPermissions.filter(
     (p) => p.type === 'contract-call'
-      || p.type === 'erc20-token-transfer',
+      || p.type === 'erc20-token-transfer'
+      || p.type === 'erc721-token-transfer'
+      || p.type === 'erc1155-token-transfer',
   ).map((p) => (p.data as { address: `0x${string}` }).address);
-  const limit = (formattedPermissions[0].policies.find(
-    (p) => p.type === 'usage-limit',
+
+  let limit = formattedPermissions.find(
+    (p) => p.type === 'call-limit',
+  )?.data as number | undefined;
+  limit = (formattedPermissions[0]?.policies?.find(
+    (p) => p.type === 'call-limit',
   )?.data as { limit: number } | undefined)?.limit;
 
   let sessionAddress: string | undefined;
