@@ -757,16 +757,7 @@ function GrantPermission() {
           address: contract,
           calls: []
         },
-        policies: [
-          {
-            type: {
-              custom: "usage-limit"
-            },
-            data: {
-              limit
-            }
-          }
-        ]
+        policies: []
       }))
     });
 
