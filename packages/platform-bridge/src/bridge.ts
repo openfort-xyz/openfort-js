@@ -14,7 +14,11 @@ const OPENFORT_FUNCTIONS = {
   init: 'init',
   logout: 'logout',
   getEthereumProvider: 'getEthereumProvider',
-  configureEmbeddedSigner: 'configureEmbeddedSigner',
+  configureEmbeddedWallet: 'configureEmbeddedWallet',
+  createEmbeddedWallet: 'createEmbeddedWallet',
+  recoverEmbeddedWallet: 'recoverEmbeddedWallet',
+  listWallets: 'listWallets',
+  getWallet: 'getWallet',
   logInWithEmailPassword: 'logInWithEmailPassword',
   signUpWithEmailPassword: 'signUpWithEmailPassword',
   signUpGuest: 'signUpGuest',
@@ -36,7 +40,6 @@ const OPENFORT_FUNCTIONS = {
   sendSignatureTransactionIntentRequest: 'sendSignatureTransactionIntentRequest',
   signMessage: 'signMessage',
   signTypedData: 'signTypedData',
-  sendSignatureSessionRequest: 'sendSignatureSessionRequest',
   getEmbeddedState: 'getEmbeddedState',
   getAccessToken: 'getAccessToken',
   getUser: 'getUser',
@@ -110,10 +113,15 @@ window.callFunction = async (jsonData: string) => {
             baseConfiguration: {
               publishableKey: request.publishableKey,
             },
-            shieldConfiguration: request.shieldPublishableKey && request.shieldEncryptionKey ? {
+            shieldConfiguration: request.shieldPublishableKey ? {
               shieldPublishableKey: request.shieldPublishableKey,
-              shieldEncryptionKey: request.shieldEncryptionKey,
               shieldDebug: request.shieldDebug ?? false,
+            } : undefined,
+            thirdPartyAuth: request.thirdPartyAuth ? {
+              provider: request.thirdPartyAuth.provider,
+              getAccessToken: async () => {
+                // access token of the third party auth provider
+              },
             } : undefined,
             overrides: {
               backendUrl: request?.backendUrl ?? 'https://api.openfort.io',
@@ -351,24 +359,6 @@ window.callFunction = async (jsonData: string) => {
         });
         break;
       }
-      case OPENFORT_FUNCTIONS.sendSignatureSessionRequest: {
-        const request = JSON.parse(data);
-        const sessionResponse = await openfortClient.proxy.sendSignatureSessionRequest(
-          request.sessionId,
-          request.signature,
-          request.optimistic,
-        );
-
-        callbackToGame({
-          ...{
-            responseFor: fxName,
-            requestId,
-            success: true,
-          },
-          ...sessionResponse,
-        });
-        break;
-      }
       case OPENFORT_FUNCTIONS.getEmbeddedState: {
         const embeddedState = await openfortClient.embeddedWallet.getEmbeddedState();
         callbackToGame({
@@ -389,7 +379,65 @@ window.callFunction = async (jsonData: string) => {
         });
         break;
       }
-      case OPENFORT_FUNCTIONS.configureEmbeddedSigner: {
+      case OPENFORT_FUNCTIONS.createEmbeddedWallet: {
+        const request = JSON.parse(data);
+        await openfortClient.embeddedWallet.create({
+          chainType: request.chainType,
+          accountType: request.accountType,
+          recoveryParams: request.recoveryParams,
+        });
+
+        callbackToGame({
+          responseFor: fxName,
+          requestId,
+          success: true,
+        });
+        break;
+      }
+      case OPENFORT_FUNCTIONS.recoverEmbeddedWallet: {
+        const request = JSON.parse(data);
+        await openfortClient.embeddedWallet.recover({
+          account: request.accountAddress,
+          recoveryParams: request.recoveryParams,
+        });
+
+        callbackToGame({
+          responseFor: fxName,
+          requestId,
+          success: true,
+        });
+        break;
+      }
+      case OPENFORT_FUNCTIONS.getWallet: {
+        const wallet = await openfortClient.embeddedWallet.get();
+
+        callbackToGame({
+          ...{
+            responseFor: fxName,
+            requestId,
+            success: true,
+          },
+          ...wallet,
+        });
+        break;
+      }
+      case OPENFORT_FUNCTIONS.listWallets: {
+        const request = JSON.parse(data);
+        const wallets = await openfortClient.embeddedWallet.list({
+          ...request,
+        });
+
+        callbackToGame({
+          ...{
+            responseFor: fxName,
+            requestId,
+            success: true,
+          },
+          ...wallets,
+        });
+        break;
+      }
+      case OPENFORT_FUNCTIONS.configureEmbeddedWallet: {
         const request = JSON.parse(data);
         await openfortClient.embeddedWallet.configure({
           chainId: request.chainId,

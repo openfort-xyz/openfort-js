@@ -1,7 +1,6 @@
 import {
   EmbeddedState,
   RecoveryParams,
-  RecoveryMethod,
   type Provider,
   type TypedDataPayload,
   EmbeddedAccount,

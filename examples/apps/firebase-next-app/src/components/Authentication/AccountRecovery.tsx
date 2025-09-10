@@ -57,7 +57,7 @@ const AccountRecovery: React.FC = () => {
                   setLoadingAut(false);
                 }}
               >
-                {loadingAut ? <Spinner /> : "Continue with Automatic Recovery"}
+                {loadingAut ? <Spinner /> : "Set Automatic Recovery"}
               </button>
             </div>
           </div>
