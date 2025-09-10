@@ -106,7 +106,7 @@ const ChangeToPasswordRecovery = ({ previousRecovery, onSuccess }: { previousRec
         type="submit"
         variant="outline"
       >
-        Set Password Recovery
+        Set password recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
@@ -146,7 +146,7 @@ const ChangeToPasskeyRecovery = ({ previousRecovery, onSuccess }: { previousReco
         type="submit"
         variant="outline"
       >
-        Set Passkey Recovery
+        Set passkey recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
@@ -223,15 +223,24 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
   }
 
   useEffect(() => {
-    if (!previousRecovery && account?.recoveryMethod === RecoveryMethod.AUTOMATIC) {
-      (async () => {
-        const encryptionSession = await getEncryptionSession();
-        setPreviousRecovery({
-          recoveryMethod: RecoveryMethod.AUTOMATIC,
-          encryptionSession
-        });
-      })();
-    }
+    (async () => {
+      if (!previousRecovery)
+        switch (account?.recoveryMethod) {
+          case RecoveryMethod.AUTOMATIC: {
+            const encryptionSession = await getEncryptionSession();
+            setPreviousRecovery({
+              recoveryMethod: RecoveryMethod.AUTOMATIC,
+              encryptionSession
+            });
+            break;
+          }
+          case RecoveryMethod.PASSKEY:
+            setPreviousRecovery({
+              recoveryMethod: RecoveryMethod.PASSKEY,
+            });
+            break;
+        }
+    })();
   }, [previousRecovery]);
 
   const renderVerifyPreviousRecovery = () => {
@@ -247,6 +256,8 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
             password
           });
         }} />;
+      case RecoveryMethod.PASSKEY:
+        return <Loading />;
       default: return null;
     }
   }

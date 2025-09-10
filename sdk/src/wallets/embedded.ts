@@ -8,6 +8,7 @@ import {
   AccountTypeEnum,
   ChainTypeEnum,
   OpenfortEvents,
+  PasskeyInfo,
   type OpenfortEventMap, type RecoveryMethod,
 } from '../types/types';
 import { Account } from '../core/configuration/account';
@@ -172,6 +173,7 @@ export class EmbeddedSigner implements Signer {
         salt: response.data.smartAccount?.salt,
         factoryAddress: response.data.smartAccount?.factoryAddress,
         recoveryMethod: Account.parseRecoveryMethod(response.data.recoveryMethod),
+        recoveryMethodDetails: response.data.recoveryMethodDetails,
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
@@ -295,6 +297,7 @@ export class EmbeddedSigner implements Signer {
         salt: response.data.smartAccount?.salt,
         factoryAddress: response.data.smartAccount?.factoryAddress,
         recoveryMethod: Account.parseRecoveryMethod(response.data.recoveryMethod),
+        recoveryMethodDetails: response.data.recoveryMethodDetails,
       });
       account.save(this.storage);
       this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address);
@@ -302,20 +305,23 @@ export class EmbeddedSigner implements Signer {
     }, { default: OpenfortErrorType.AUTHENTICATION_ERROR });
   }
 
-  // TODO passkey: add passkey params
   async setRecoveryMethod({
     recoveryMethod,
     recoveryPassword,
     encryptionSession,
+    passkeyInfo,
   }: {
     recoveryMethod: RecoveryMethod;
     recoveryPassword?: string;
     encryptionSession?: string;
+    passkeyInfo?: PasskeyInfo;
   }): Promise<void> {
     await this.iframeManager.setRecoveryMethod(
       recoveryMethod,
       recoveryPassword,
       encryptionSession,
+      passkeyInfo?.passkeyKey,
+      passkeyInfo?.passkeyId,
     );
   }
 
