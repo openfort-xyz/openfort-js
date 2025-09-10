@@ -462,7 +462,14 @@ export class EmbeddedWalletApi {
     let recoveryMethodDetails: RecoveryMethodDetails | undefined;
 
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-      const passkeyId = (await Account.fromStorage(this.storage))?.recoveryMethodDetails?.passkeyId!;
+      const acc = await Account.fromStorage(this.storage);
+      if (!acc) {
+        throw new Error('missing account');
+      }
+      const passkeyId = acc?.recoveryMethodDetails?.passkeyId;
+      if (!passkeyId) {
+        throw new Error('missing passkey id for account');
+      }
       passkeyInfo = {
         passkeyId,
         passkeyKey: await this.passkeyHandler.deriveAndExportKey(
