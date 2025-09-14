@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.17] - 2025-09-10
+### Feat
+- improve session key validation
+
 ## [0.10.16] - 2025-09-09
 ### Feat
-- now iframe error handling
+- new iframe error handling
 
 ## [0.10.15] - 2025-09-08
 ### Fix

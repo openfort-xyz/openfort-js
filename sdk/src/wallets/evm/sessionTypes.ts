@@ -87,11 +87,55 @@ export type CustomPermission<data = unknown, type = { custom: string }> = {
 };
 
 /** @internal */
+export type GasLimitPermission = {
+  type: 'gas-limit';
+  data: {
+    limit: `0x${string}`; // hex value
+  };
+};
+
+/** @internal */
+export type CallLimitPermission = {
+  type: 'call-limit';
+  data: {
+    count: number;
+  };
+};
+
+export type RateLimitPermission = {
+  type: 'rate-limit';
+  data: {
+    count: number; // the number of times during each interval
+    interval: number; // in seconds
+  };
+};
+
+/** @internal */
 export type NativeTokenTransferPermission = {
   type: 'native-token-transfer';
   data: {
     /** Native token ticker (e.g. ETH). */
     ticker: string;
+  };
+};
+
+/** @internal */
+export type ERC721TokenTransferPermission = {
+  type: 'erc721-token-transfer';
+  data: {
+    address: `0x${string}`; // erc721 contract
+    tokenIds: `0x${string}`[]; // hex value array
+  };
+};
+
+/** @internal */
+export type ERC1155TokenTransferPermission = {
+  type: 'erc1155-token-transfer';
+  data: {
+    address: `0x${string}`; // erc1155 contract
+    allowances: {
+      [tokenId: string]: `0x${string}`; // hex value
+    };
   };
 };
 
@@ -121,11 +165,16 @@ export type ContractCallPermission = {
 export type Permission<uint256 = bigint> = OneOf<
 | NativeTokenTransferPermission
 | Erc20TokenTransferPermission
+| ERC721TokenTransferPermission
+| ERC1155TokenTransferPermission
+| GasLimitPermission
+| CallLimitPermission
+| RateLimitPermission
 | ContractCallPermission
 | CustomPermission
 > & {
-  /** Set of policies for the permission. */
-  policies: readonly Policy<uint256>[];
+  /** Set of policies for the permission. No longer in the 7715 spec but required by viem */
+  policies?: readonly Policy<uint256>[];
   /** Whether or not the wallet must grant the permission. */
   required?: boolean | undefined;
 };

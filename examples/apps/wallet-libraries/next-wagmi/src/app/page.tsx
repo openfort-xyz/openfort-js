@@ -760,7 +760,7 @@ function GrantPermission() {
         policies: [
           {
             type: {
-              custom: "usage-limit"
+              custom: "call-limit"
             },
             data: {
               limit
