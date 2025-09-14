@@ -502,7 +502,8 @@ export class IframeManager {
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
-    passkeyKey?: Uint8Array, // TODO passkey: change passkey
+    passkeyKey?: Uint8Array,
+    passkeyId?: string,
   ): Promise<void> {
     const remote = await this.ensureConnection();
 
@@ -513,6 +514,7 @@ export class IframeManager {
       recoveryPassword,
       encryptionSession,
       passkeyKey,
+      passkeyId,
     );
 
     const response = await remote.setRecoveryMethod(request);
