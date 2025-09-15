@@ -8,30 +8,84 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/s
 import { Hex } from 'viem';
 import { ChevronLeft } from 'lucide-react';
 import openfort from '@/utils/openfortConfig';
+import { OTPRequestModal } from '../OTPRequestModal';
+import { OTPVerificationModal } from '../OTPVerificationModal';
 
 const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRecovery: RecoveryParams, onSuccess: () => void }) => {
-  const { getEncryptionSession, setRecoveryMethod } = useOpenfort();
+  const { getEncryptionSession, setRecoveryMethod, requestOTP } = useOpenfort();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showOTPRequest, setShowOTPRequest] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [otpRequestLoading, setOtpRequestLoading] = useState(false);
+  const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
+
+  const changeRecoveryWithSession = async (otpCode?: string) => {
+    try {
+      const encSessionResponse = await getEncryptionSession(otpCode);
+      await setRecoveryMethod(previousRecovery, {
+        recoveryMethod: RecoveryMethod.AUTOMATIC,
+        encryptionSession: encSessionResponse,
+      });
+      onSuccess();
+    } catch (error) {
+      if (error.message === 'OTP_REQUIRED') {
+        setShowOTPRequest(true);
+      } else {
+        console.error('Error setting automatic recovery:', error);
+        setError(`Failed to set automatic recovery. Was ${previousRecovery.recoveryMethod} recovery correct? Check console log for more details.`);
+      }
+    }
+  };
+
+  const handleOTPRequest = async (contact: { email?: string; phone?: string }) => {
+    const contactValue = contact.email || contact.phone || '';
+    setOtpRequestLoading(true);
+    try {
+      await requestOTP(contact);
+      setUserEmail(contactValue);
+      setShowOTPRequest(false);
+      setShowOTPVerification(true);
+    } catch (error) {
+      console.error('Error requesting OTP:', error);
+      throw new Error('Failed to send verification code. Please try again.');
+    } finally {
+      setOtpRequestLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (otpCode: string) => {
+    setOtpVerifyLoading(true);
+    try {
+      await changeRecoveryWithSession(otpCode);
+      setShowOTPVerification(false);
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      throw new Error('Invalid verification code. Please try again.');
+    } finally {
+      setOtpVerifyLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    await requestOTP({ email: userEmail });
+  };
 
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        try {
-          await setRecoveryMethod(previousRecovery, {
-            recoveryMethod: RecoveryMethod.AUTOMATIC,
-            encryptionSession: await getEncryptionSession()
-          })
-          onSuccess();
-        } catch (error) {
-          console.error('Error setting automatic recovery:', error);
-          setError(`Failed to set automatic recovery. Was ${previousRecovery.recoveryMethod} recovery correct? Check console log for more details.`);
-        }
-        setIsLoading(false);
-      }}
-    >
+    <>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setIsLoading(true);
+          setError(null);
+          try {
+            await changeRecoveryWithSession();
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+      >
       <p className="mb-2 text-sm text-gray-600">
         By setting Automatic Recovery, your wallet can be recovered using Openfort's secure recovery process. Learn more about how Automatic Recovery works in our
         <a
@@ -50,8 +104,25 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
       >
         Set Automatic Recovery
       </Button>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-    </form>
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      </form>
+
+      <OTPRequestModal
+        isOpen={showOTPRequest}
+        onClose={() => setShowOTPRequest(false)}
+        onSubmit={handleOTPRequest}
+        isLoading={otpRequestLoading}
+      />
+
+      <OTPVerificationModal
+        isOpen={showOTPVerification}
+        onClose={() => setShowOTPVerification(false)}
+        onSubmit={handleOTPVerification}
+        onResendOTP={handleResendOTP}
+        email={userEmail}
+        isLoading={otpVerifyLoading}
+      />
+    </>
   );
 }
 
@@ -191,11 +262,54 @@ const VerifyPasswordRecovery = ({ onVerified }: { onVerified: (password: string)
 }
 
 const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handleSetMessage: (message: string) => void }) => {
-  const { refetchAccount, account, state, getEncryptionSession } = useOpenfort();
+  const { refetchAccount, account, state, getEncryptionSession, requestOTP } = useOpenfort();
 
   const [previousRecovery, setPreviousRecovery] = useState<RecoveryParams>();
-
   const [changingTo, setChangingTo] = useState<RecoveryMethod | null>(null);
+  
+  // OTP state
+  const [showOTPRequest, setShowOTPRequest] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [otpRequestLoading, setOtpRequestLoading] = useState(false);
+  const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
+
+  const handleOTPRequest = async (contact: { email?: string; phone?: string }) => {
+    const contactValue = contact.email || contact.phone || '';
+    setOtpRequestLoading(true);
+    try {
+      await requestOTP(contact);
+      setUserEmail(contactValue);
+      setShowOTPRequest(false);
+      setShowOTPVerification(true);
+    } catch (error) {
+      console.error('Error requesting OTP:', error);
+      throw new Error('Failed to send verification code. Please try again.');
+    } finally {
+      setOtpRequestLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (otpCode: string) => {
+    setOtpVerifyLoading(true);
+    try {
+      const encryptionSession = await getEncryptionSession(otpCode);
+      setPreviousRecovery({
+        recoveryMethod: RecoveryMethod.AUTOMATIC,
+        encryptionSession
+      });
+      setShowOTPVerification(false);
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      throw new Error('Invalid verification code. Please try again.');
+    } finally {
+      setOtpVerifyLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    await requestOTP({ email: userEmail });
+  };
 
   const handleRecoveryChangeSuccess = async () => {
     await refetchAccount();
@@ -225,11 +339,19 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
   useEffect(() => {
     if (!previousRecovery && account?.recoveryMethod === RecoveryMethod.AUTOMATIC) {
       (async () => {
-        const encryptionSession = await getEncryptionSession();
-        setPreviousRecovery({
-          recoveryMethod: RecoveryMethod.AUTOMATIC,
-          encryptionSession
-        });
+        try {
+          const encryptionSession = await getEncryptionSession();
+          setPreviousRecovery({
+            recoveryMethod: RecoveryMethod.AUTOMATIC,
+            encryptionSession
+          });
+        } catch (error) {
+          if (error.message === 'OTP_REQUIRED') {
+            setShowOTPRequest(true);
+          } else {
+            console.error('Error getting encryption session:', error);
+          }
+        }
       })();
     }
   }, [previousRecovery]);
@@ -290,6 +412,22 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
       }
       {renderChangingTo()}
       {renderVerifyPreviousRecovery()}
+
+      <OTPRequestModal
+        isOpen={showOTPRequest}
+        onClose={() => setShowOTPRequest(false)}
+        onSubmit={handleOTPRequest}
+        isLoading={otpRequestLoading}
+      />
+
+      <OTPVerificationModal
+        isOpen={showOTPVerification}
+        onClose={() => setShowOTPVerification(false)}
+        onSubmit={handleOTPVerification}
+        onResendOTP={handleResendOTP}
+        email={userEmail}
+        isLoading={otpVerifyLoading}
+      />
     </>
   );
 };

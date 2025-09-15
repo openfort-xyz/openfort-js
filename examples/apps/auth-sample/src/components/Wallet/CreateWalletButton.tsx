@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { polygonAmoy } from 'viem/chains';
 import { useOpenfort } from '../../hooks/useOpenfort';
 import { Button } from '../ui/button';
+import { OTPRequestModal } from '../OTPRequestModal';
+import { OTPVerificationModal } from '../OTPVerificationModal';
 
 const PasswordRecoveryForm = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handleSetMessage: (message: string) => void }) => {
   const [password, setPassword] = useState('');
@@ -64,46 +66,122 @@ const PasswordRecoveryForm = ({ onSuccess, handleSetMessage }: { onSuccess: () =
 const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handleSetMessage: (message: string) => void }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { getEncryptionSession, createWallet } = useOpenfort();
+  const [showOTPRequest, setShowOTPRequest] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [otpRequestLoading, setOtpRequestLoading] = useState(false);
+  const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
+  const { getEncryptionSession, createWallet, requestOTP } = useOpenfort();
+
+  const createWalletWithSession = async (otpCode?: string) => {
+    try {
+      const encSessionResponse = await getEncryptionSession(otpCode);
+      const response = await createWallet({
+        recoveryParams: {
+          recoveryMethod: RecoveryMethod.AUTOMATIC,
+          encryptionSession: encSessionResponse,
+        },
+      });
+      handleSetMessage(`Created a new wallet with automatic recovery.\nwallet: ${JSON.stringify(response, null, 2)}`);
+      onSuccess();
+    } catch (error) {
+      console.log(`Here is error message in 'createWalletWithSession': ${JSON.stringify(error)}`);
+      if (error.message === 'OTP_REQUIRED') {
+        setShowOTPRequest(true);
+      } else {
+        console.error('Error creating wallet:', error);
+        setError('Failed to create wallet. Check console log for more details.');
+      }
+    }
+  };
+
+  const handleOTPRequest = async (contact: { email?: string; phone?: string }) => {
+    const contactValue = contact.email || contact.phone || '';
+    console.log('handleOTPRequest called with contact:', contact);
+    setOtpRequestLoading(true);
+    try {
+      console.log('About to call requestOTP...');
+      await requestOTP(contact);
+      console.log('requestOTP completed successfully');
+      setUserEmail(contactValue);
+      setShowOTPRequest(false);
+      setShowOTPVerification(true);
+      console.log('Modal states updated - should show verification modal');
+    } catch (error) {
+      console.error('Error requesting OTP in handleOTPRequest:', error);
+      throw error; // Re-throw the original error instead of wrapping it
+    } finally {
+      console.log('Setting otpRequestLoading to false');
+      setOtpRequestLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (otpCode: string) => {
+    setOtpVerifyLoading(true);
+    try {
+      // Pass the OTP code to getEncryptionSession
+      await createWalletWithSession(otpCode);
+      setShowOTPVerification(false);
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      throw new Error('Invalid verification code. Please try again.');
+    } finally {
+      setOtpVerifyLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    await requestOTP({ email: userEmail });
+  };
 
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        try {
-          const response = await createWallet({
-            recoveryParams: {
-              recoveryMethod: RecoveryMethod.AUTOMATIC,
-              encryptionSession: await getEncryptionSession(),
-            },
-          })
-          handleSetMessage(`Created a new wallet with automatic recovery.\nwallet: ${JSON.stringify(response, null, 2)}`);
-          onSuccess();
-        } catch (error) {
-          console.error('Error setting automatic recovery:', error);
-          setError('Failed to set automatic recovery. Check console log for more details.');
-        }
-        setIsLoading(false);
-      }}
-      className='p-4 border border-gray-200 rounded-lg'
-    >
-      <h3 className="font-medium text-black text-sm mb-2">
-        Automatic Recovery
-      </h3>
-      <p className="mb-2 text-sm text-gray-600">
-        Your wallet will be automatically recovered using the encryption session.
-      </p>
-      <Button
-        className='w-full'
-        type="submit"
-        variant="outline"
-        loading={isLoading}
+    <>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setIsLoading(true);
+          setError(null);
+          try {
+            await createWalletWithSession();
+          } finally {
+            setIsLoading(false);
+          }
+        }}
+        className='p-4 border border-gray-200 rounded-lg'
       >
-        Create with Automatic Recovery
-      </Button>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-    </form>
+        <h3 className="font-medium text-black text-sm mb-2">
+          Automatic Recovery
+        </h3>
+        <p className="mb-2 text-sm text-gray-600">
+          Your wallet will be automatically recovered using the encryption session.
+        </p>
+        <Button
+          className='w-full'
+          type="submit"
+          variant="outline"
+          loading={isLoading}
+        >
+          Create with Automatic Recovery
+        </Button>
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      </form>
+
+      <OTPRequestModal
+        isOpen={showOTPRequest}
+        onClose={() => setShowOTPRequest(false)}
+        onSubmit={handleOTPRequest}
+        isLoading={otpRequestLoading}
+      />
+
+      <OTPVerificationModal
+        isOpen={showOTPVerification}
+        onClose={() => setShowOTPVerification(false)}
+        onSubmit={handleOTPVerification}
+        onResendOTP={handleResendOTP}
+        email={userEmail}
+        isLoading={otpVerifyLoading}
+      />
+    </>
   );
 };
 
