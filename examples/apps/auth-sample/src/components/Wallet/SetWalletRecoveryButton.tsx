@@ -177,7 +177,7 @@ const ChangeToPasswordRecovery = ({ previousRecovery, onSuccess }: { previousRec
         type="submit"
         variant="outline"
       >
-        Set Password Recovery
+        Set password recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
@@ -217,7 +217,7 @@ const ChangeToPasskeyRecovery = ({ previousRecovery, onSuccess }: { previousReco
         type="submit"
         variant="outline"
       >
-        Set Passkey Recovery
+        Set passkey recovery
       </Button>
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </form>
@@ -337,23 +337,32 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
   }
 
   useEffect(() => {
-    if (!previousRecovery && account?.recoveryMethod === RecoveryMethod.AUTOMATIC) {
-      (async () => {
-        try {
-          const encryptionSession = await getEncryptionSession();
-          setPreviousRecovery({
-            recoveryMethod: RecoveryMethod.AUTOMATIC,
-            encryptionSession
-          });
-        } catch (error) {
-          if (error.message === 'OTP_REQUIRED') {
-            setShowOTPRequest(true);
-          } else {
-            console.error('Error getting encryption session:', error);
+    (async () => {
+      if (!previousRecovery)
+        switch (account?.recoveryMethod) {
+          case RecoveryMethod.AUTOMATIC: {
+            try {
+              const encryptionSession = await getEncryptionSession();
+              setPreviousRecovery({
+                recoveryMethod: RecoveryMethod.AUTOMATIC,
+                encryptionSession
+              });
+              break;
+            } catch (error) {
+              if (error.message === 'OTP_REQUIRED') {
+                setShowOTPRequest(true);
+              } else {
+                console.error('Error getting encryption session:', error);
+              }
+            }
           }
+          case RecoveryMethod.PASSKEY:
+            setPreviousRecovery({
+              recoveryMethod: RecoveryMethod.PASSKEY,
+            });
+            break;
         }
-      })();
-    }
+    })();
   }, [previousRecovery]);
 
   const renderVerifyPreviousRecovery = () => {
@@ -369,6 +378,8 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
             password
           });
         }} />;
+      case RecoveryMethod.PASSKEY:
+        return <Loading />;
       default: return null;
     }
   }
