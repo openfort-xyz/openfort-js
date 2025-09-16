@@ -30,7 +30,7 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
       });
       onSuccess();
     } catch (error) {
-      if (error.message === 'OTP_REQUIRED') {
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
         setShowOTPRequest(true);
       } else {
         console.error('Error setting automatic recovery:', error);
@@ -349,7 +349,7 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
               });
               break;
             } catch (error) {
-              if (error.message === 'OTP_REQUIRED') {
+              if (error instanceof Error && error.message === 'OTP_REQUIRED') {
                 setShowOTPRequest(true);
               } else {
                 console.error('Error getting encryption session:', error);

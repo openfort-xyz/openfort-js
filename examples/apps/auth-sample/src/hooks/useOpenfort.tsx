@@ -96,7 +96,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   };
 
   const requestOTP = async (contact: { email?: string, phone?: string }): Promise<void> => {
-    console.log('requestOTP function called with contant:', contact);
+    console.log('requestOTP function called with contact:', contact);
     try {
       const user = await openfort.user.get();
       

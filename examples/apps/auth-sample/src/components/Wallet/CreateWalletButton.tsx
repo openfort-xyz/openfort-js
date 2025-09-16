@@ -86,7 +86,7 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
       onSuccess();
     } catch (error) {
       console.log(`Here is error message in 'createWalletWithSession': ${JSON.stringify(error)}`);
-      if (error.message === 'OTP_REQUIRED') {
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
         setShowOTPRequest(true);
       } else {
         console.error('Error creating wallet:', error);
