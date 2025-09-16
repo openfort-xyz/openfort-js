@@ -7,11 +7,70 @@ import { Hex } from 'viem';
 import { useOpenfort } from '../../hooks/useOpenfort';
 import Loading from '../Loading';
 import { Button } from '../ui/button';
+import { OTPRequestModal } from '../OTPRequestModal';
+import { OTPVerificationModal } from '../OTPVerificationModal';
 
 const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuccess }: { isCurrentAccount: boolean, account: EmbeddedAccount, handleSetMessage: (msg: string) => void, onSuccess: () => void }) => {
   const [loading, setLoading] = useState(false);
-  const { getEncryptionSession, handleRecovery } = useOpenfort();
+  const { getEncryptionSession, handleRecovery, requestOTP } = useOpenfort();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const [showOTPRequest, setShowOTPRequest] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [otpRequestLoading, setOtpRequestLoading] = useState(false);
+  const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
+
+  const handleAutomaticRecoveryWithOTP = async (accountId: string, otpCode?: string) => {
+    try {
+      const encSessionResponse = await getEncryptionSession(otpCode);
+      await handleRecoverWallet({
+        accountId: accountId as Hex,
+        recoveryParams: {
+          recoveryMethod: RecoveryMethod.AUTOMATIC,
+          encryptionSession: encSessionResponse
+        }
+      });
+    } catch (error) {
+      if (error.message === 'OTP_REQUIRED') {
+        setShowOTPRequest(true);
+      } else {
+        throw error; // Re-throw other errors to be handled by the calling function
+      }
+    }
+  };
+
+  const handleOTPRequest = async (contact: { email?: string; phone?: string }) => {
+    const contactValue = contact.email || contact.phone || '';
+    setOtpRequestLoading(true);
+    try {
+      await requestOTP(contact);
+      setUserEmail(contactValue);
+      setShowOTPRequest(false);
+      setShowOTPVerification(true);
+    } catch (error) {
+      console.error('Error requesting OTP:', error);
+      throw new Error('Failed to send verification code. Please try again.');
+    } finally {
+      setOtpRequestLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (otpCode: string) => {
+    setOtpVerifyLoading(true);
+    try {
+      await handleAutomaticRecoveryWithOTP(account.id, otpCode);
+      setShowOTPVerification(false);
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      throw new Error('Invalid verification code. Please try again.');
+    } finally {
+      setOtpVerifyLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    await requestOTP({ email: userEmail });
+  };
 
   const handleRecoverWallet = async ({ accountId, recoveryParams }: { accountId: string, recoveryParams: RecoveryParams }) => {
     setLoading(true);
@@ -30,9 +89,10 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
   }
 
   return (
-    <form
-      key={account.id}
-      className={cn('p-4 border border-gray-200 rounded-lg', isCurrentAccount && 'bg-gray-100')}
+    <>
+      <form
+        key={account.id}
+        className={cn('p-4 border border-gray-200 rounded-lg', isCurrentAccount && 'bg-gray-100')}
       onSubmit={async (e) => {
         e.preventDefault();
         switch (account.recoveryMethod) {
@@ -59,14 +119,11 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
             return;
           case RecoveryMethod.AUTOMATIC:
             setLoading(true);
-            await handleRecoverWallet({
-              accountId: account.id as Hex,
-              recoveryParams: {
-                recoveryMethod: RecoveryMethod.AUTOMATIC,
-                encryptionSession: await getEncryptionSession()
-              }
-            });
-            setLoading(false);
+            try {
+              await handleAutomaticRecoveryWithOTP(account.id);
+            } finally {
+              setLoading(false);
+            }
             break;
           case RecoveryMethod.PASSKEY:
             setLoading(true);
@@ -121,7 +178,24 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
           ) : 'Use this wallet'
         }
       </Button>
-    </form>
+      </form>
+
+      <OTPRequestModal
+        isOpen={showOTPRequest}
+        onClose={() => setShowOTPRequest(false)}
+        onSubmit={handleOTPRequest}
+        isLoading={otpRequestLoading}
+      />
+
+      <OTPVerificationModal
+        isOpen={showOTPVerification}
+        onClose={() => setShowOTPVerification(false)}
+        onSubmit={handleOTPVerification}
+        onResendOTP={handleResendOTP}
+        email={userEmail}
+        isLoading={otpVerifyLoading}
+      />
+    </>
   );
 };
 
