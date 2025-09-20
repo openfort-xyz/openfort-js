@@ -31,12 +31,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
 
+  const EMBEDDED_STATE_SIGNER_NOT_CONFIGURED = 2;
+  const EMBEDDED_STATE_READY_FOR_SIGNATURE = 4;
+
   signInButton.addEventListener('click', async () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const { email, password } = getCredentials();
     try {
       await auth.signInWithEmailAndPassword(email, password);
-      addMessage('Signed in');
     } catch (error) {
       console.error('Error signing in:', error);
       addMessage(`Error: ${error.message}`);
@@ -44,8 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   signUpButton.addEventListener('click', async () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const { email, password } = getCredentials();
     try {
       await auth.createUserWithEmailAndPassword(email, password);
       addMessage('Signed up and signed in');
@@ -62,10 +62,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const embeddedState = await openfort.embeddedWallet.getEmbeddedState();
       addMessage(`Openfort: ${player.id}`);
 
-      if (embeddedState === 2) window.location.href = 'recover.html';
-      if (embeddedState === 4) window.location.href = 'signature.html';
+      if (embeddedState === EMBEDDED_STATE_SIGNER_NOT_CONFIGURED) window.location.href = 'recover.html';
+      if (embeddedState === EMBEDDED_STATE_READY_FOR_SIGNATURE) window.location.href = 'signature.html';
     } else {
       addMessage('Signed out');
     }
   });
+
+  function getCredentials() {
+    return {
+      email: emailInput.value,
+      password: passwordInput.value
+    };
+  }
 });
