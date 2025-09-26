@@ -92,7 +92,7 @@ export function OTPVerificationModal({
   };
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 9); // Only numbers, max 6 digits
+    const value = e.target.value.replace(/\D/g, '').slice(0, 9); // Only numbers, max 9 digits
     setOtpCode(value);
   };
 
