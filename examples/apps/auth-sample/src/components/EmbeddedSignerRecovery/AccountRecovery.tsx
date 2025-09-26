@@ -91,7 +91,7 @@ const CreateWalletAutomaticForm = () => {
       setShowOTPRequest(false);
       handleOTPVerification("");
     } catch (error) {
-      console.error('Error requesting OTP:', error);
+      console.error('Error requesting OTP at CreateWalletAutomaticForm:', error);
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
       }
@@ -259,11 +259,11 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
       setShowOTPRequest(false);
       setShowOTPVerification(true);
     } catch (error) {
-      console.error('Error requesting OTP:', error);
+      console.error('Error requesting OTP at RecoverWalletButton:', error);
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
-        setError('Rate limit exceeded. Please wait before requesting another code.');
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
       } else {
-        setError('Failed to send verification code. Please try again.');
+        throw new Error('Failed to send verification code. Please try again.');
       }
     } finally {
       setOtpRequestLoading(false);

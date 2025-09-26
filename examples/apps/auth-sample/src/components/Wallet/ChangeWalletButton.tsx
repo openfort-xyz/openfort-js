@@ -48,7 +48,7 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
       setShowOTPRequest(false);
       setShowOTPVerification(true);
     } catch (error) {
-      console.error('Error requesting OTP:', error);
+      console.error('Error requesting OTP at ChangeWalletButton:', error);
       throw new Error('Failed to send verification code. Please try again.');
     } finally {
       setOtpRequestLoading(false);

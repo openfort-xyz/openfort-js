@@ -291,7 +291,7 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
       setShowOTPRequest(false);
       setShowOTPVerification(true);
     } catch (error) {
-      console.error('Error requesting OTP:', error);
+      console.error('Error requesting OTP at SetWalletRecoveryContent:', error);
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
       }
