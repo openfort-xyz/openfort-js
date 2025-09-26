@@ -43,12 +43,14 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
     const contactValue = contact.email || contact.phone || '';
     setOtpRequestLoading(true);
     try {
-      await requestOTP(contact);
+      await requestOTP(contact, false);
       setUserEmail(contactValue);
       setShowOTPRequest(false);
       setShowOTPVerification(true);
     } catch (error) {
-      console.error('Error requesting OTP:', error);
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      }
       throw new Error('Failed to send verification code. Please try again.');
     } finally {
       setOtpRequestLoading(false);
@@ -61,7 +63,6 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
       await changeRecoveryWithSession(otpCode);
       setShowOTPVerification(false);
     } catch (error) {
-      console.error('Error verifying OTP:', error);
       throw new Error('Invalid verification code. Please try again.');
     } finally {
       setOtpVerifyLoading(false);
@@ -69,7 +70,14 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
   };
 
   const handleResendOTP = async () => {
-    await requestOTP({ email: userEmail });
+    try {
+      await requestOTP({ email: userEmail }, false);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      }
+      throw error;
+    }
   };
 
   return (
@@ -278,12 +286,15 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
     const contactValue = contact.email || contact.phone || '';
     setOtpRequestLoading(true);
     try {
-      await requestOTP(contact);
+      await requestOTP(contact, false);
       setUserEmail(contactValue);
       setShowOTPRequest(false);
       setShowOTPVerification(true);
     } catch (error) {
       console.error('Error requesting OTP:', error);
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      }
       throw new Error('Failed to send verification code. Please try again.');
     } finally {
       setOtpRequestLoading(false);
@@ -300,7 +311,6 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
       });
       setShowOTPVerification(false);
     } catch (error) {
-      console.error('Error verifying OTP:', error);
       throw new Error('Invalid verification code. Please try again.');
     } finally {
       setOtpVerifyLoading(false);
@@ -308,7 +318,14 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
   };
 
   const handleResendOTP = async () => {
-    await requestOTP({ email: userEmail });
+    try {
+      await requestOTP({ email: userEmail }, false);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      }
+      throw error;
+    }
   };
 
   const handleRecoveryChangeSuccess = async () => {

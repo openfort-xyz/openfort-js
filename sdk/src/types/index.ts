@@ -24,6 +24,7 @@ export {
 export { IStorage as Storage } from '../storage/istorage';
 export {
   MissingRecoveryPasswordError, MissingProjectEntropyError, WrongRecoveryPasswordError, NotConfiguredError,
+  OTPRequiredError,
 } from '../wallets/iframeManager';
 export { Provider, TypedDataPayload } from '../wallets/evm/types';
 export * from '../core/config';

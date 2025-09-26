@@ -43,7 +43,7 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
     const contactValue = contact.email || contact.phone || '';
     setOtpRequestLoading(true);
     try {
-      await requestOTP(contact);
+      await requestOTP(contact, false);
       setUserEmail(contactValue);
       setShowOTPRequest(false);
       setShowOTPVerification(true);
@@ -69,7 +69,7 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
   };
 
   const handleResendOTP = async () => {
-    await requestOTP({ email: userEmail });
+    await requestOTP({ email: userEmail }, false);
   };
 
   const handleRecoverWallet = async ({ accountId, recoveryParams }: { accountId: string, recoveryParams: RecoveryParams }) => {

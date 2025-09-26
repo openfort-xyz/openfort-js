@@ -102,7 +102,7 @@ export function OTPVerificationModal({
         <DialogHeader>
           <DialogTitle>Enter Verification Code</DialogTitle>
           <DialogDescription>
-            We've sent a 6-digit verification code to <strong>{email}</strong>
+            We've sent a 9-digit verification code to <strong>{email}</strong>
           </DialogDescription>
         </DialogHeader>
         

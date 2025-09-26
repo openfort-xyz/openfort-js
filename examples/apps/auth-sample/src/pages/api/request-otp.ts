@@ -17,16 +17,19 @@ export default async function handler(
       method: "POST",
       body: JSON.stringify({
         user_id: req.body.user_id,
+        dangerously_skip_verification: req.body.dangerously_skip_verification || false,
         email: req.body.email || null,
         phone: req.body.phone || null,
       }),
     });
 
-    if (!response.ok) {
+    if (response.status === 429) {
+      res.status(429).send({error: "OTP_RATE_LIMIT"});
+    } else if (!response.ok) {
       throw new Error("Failed to authorize user");
+    } else {
+      res.status(200).send({ success: true });
     }
-
-    res.status(200).send({ success: true });
   } catch (e) {
     console.error(e);
     res.status(500).send({

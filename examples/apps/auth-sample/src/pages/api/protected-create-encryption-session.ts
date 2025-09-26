@@ -22,7 +22,9 @@ export default async function handler(
       }),
     });
 
-    if (response.status === 428) {
+    // 404 may be thrown if there is no OTP found for user,
+    // that's why we throw 428 to client understand that he needs to request an OTP
+    if (response.status === 404) {
       res.status(428).send({error: "OTP_REQUIRED"});
     } else {
       if (!response.ok) {

@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import openfort from '@/utils/openfortConfig';
-import { AccountTypeEnum, ChainTypeEnum, RecoveryMethod } from '@openfort/openfort-js';
+import { AccountTypeEnum, ChainTypeEnum, OTPRequiredError, RecoveryMethod } from '@openfort/openfort-js';
 import { useState } from 'react';
 import { polygonAmoy } from 'viem/chains';
 import { useOpenfort } from '../../hooks/useOpenfort';
@@ -85,8 +85,7 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
       handleSetMessage(`Created a new wallet with automatic recovery.\nwallet: ${JSON.stringify(response, null, 2)}`);
       onSuccess();
     } catch (error) {
-      console.log(`Here is error message in 'createWalletWithSession': ${JSON.stringify(error)}`);
-      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
+      if (error instanceof OTPRequiredError) {
         setShowOTPRequest(true);
       } else {
         console.error('Error creating wallet:', error);
@@ -97,18 +96,16 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
 
   const handleOTPRequest = async (contact: { email?: string; phone?: string }) => {
     const contactValue = contact.email || contact.phone || '';
-    console.log('handleOTPRequest called with contact:', contact);
     setOtpRequestLoading(true);
     try {
-      console.log('About to call requestOTP...');
-      await requestOTP(contact);
-      console.log('requestOTP completed successfully');
+      await requestOTP(contact, true);
       setUserEmail(contactValue);
       setShowOTPRequest(false);
-      setShowOTPVerification(true);
-      console.log('Modal states updated - should show verification modal');
+      handleOTPVerification("");
     } catch (error) {
-      console.error('Error requesting OTP in handleOTPRequest:', error);
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      }
       throw error; // Re-throw the original error instead of wrapping it
     } finally {
       console.log('Setting otpRequestLoading to false');
@@ -121,7 +118,6 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
     try {
       // Pass the OTP code to getEncryptionSession
       await createWalletWithSession(otpCode);
-      setShowOTPVerification(false);
     } catch (error) {
       console.error('Error verifying OTP:', error);
       throw new Error('Invalid verification code. Please try again.');
@@ -131,7 +127,14 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
   };
 
   const handleResendOTP = async () => {
-    await requestOTP({ email: userEmail });
+    try {
+      await requestOTP({ email: userEmail }, true);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      }
+      throw error;
+    }
   };
 
   return (

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useOpenfort } from '../../hooks/useOpenfort';
 import Loading from '../Loading';
 import { Button } from '../ui/button';
-import { EmbeddedAccount, RecoveryMethod, RecoveryParams } from '@openfort/openfort-js';
+import { EmbeddedAccount, RecoveryMethod, RecoveryParams, OTPRequiredError } from '@openfort/openfort-js';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { OTPRequestModal } from '../OTPRequestModal';
@@ -73,7 +73,7 @@ const CreateWalletAutomaticForm = () => {
         },
       });
     } catch (error) {
-      if (error.message === 'OTP_REQUIRED') {
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
         setShowOTPRequest(true);
       } else {
         console.error('Error creating wallet:', error);
@@ -86,12 +86,15 @@ const CreateWalletAutomaticForm = () => {
     const contactValue = contact.email || contact.phone || '';
     setOtpRequestLoading(true);
     try {
-      await requestOTP(contact);
+      await requestOTP(contact, true);
       setUserEmail(contactValue);
       setShowOTPRequest(false);
-      setShowOTPVerification(true);
+      handleOTPVerification("");
     } catch (error) {
       console.error('Error requesting OTP:', error);
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      }
       throw new Error('Failed to send verification code. Please try again.');
     } finally {
       setOtpRequestLoading(false);
@@ -112,7 +115,14 @@ const CreateWalletAutomaticForm = () => {
   };
 
   const handleResendOTP = async () => {
-    await requestOTP({ email: userEmail });
+    try {
+      await requestOTP({ email: userEmail }, true);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      }
+      throw error;
+    }
   };
 
   return (
@@ -232,25 +242,29 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
         encryptionSession: encSessionResponse,
       });
     } catch (error) {
-      if (error.message === 'OTP_REQUIRED') {
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
         setShowOTPRequest(true);
       } else {
-        console.error('Error recovering wallet:', error);
-        setError('Failed to recover wallet. Check console log for more details.');
+        setError(`Failed to recover wallet. Check console log for more details.`);
       }
     }
   };
 
-  const handleOTPRequest = async (email: string) => {
+  const handleOTPRequest = async (contact: { email?: string; phone?: string }) => {
+    const contactValue = contact.email || contact.phone || '';
     setOtpRequestLoading(true);
     try {
-      await requestOTP({ email });
-      setUserEmail(email);
+      await requestOTP(contact, false);
+      setUserEmail(contactValue);
       setShowOTPRequest(false);
       setShowOTPVerification(true);
     } catch (error) {
       console.error('Error requesting OTP:', error);
-      setError('Failed to send verification code. Please try again.');
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        setError('Rate limit exceeded. Please wait before requesting another code.');
+      } else {
+        setError('Failed to send verification code. Please try again.');
+      }
     } finally {
       setOtpRequestLoading(false);
     }
@@ -271,9 +285,13 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
 
   const handleResendOTP = async () => {
     try {
-      await requestOTP({ email: userEmail });
+      await requestOTP({ email: userEmail }, false);
     } catch (error) {
-      setError('Failed to resend verification code. Please try again.');
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        setError('Rate limit exceeded. Please wait before requesting another code.');
+      } else {
+        setError('Failed to resend verification code. Please try again.');
+      }
     }
   };
 
