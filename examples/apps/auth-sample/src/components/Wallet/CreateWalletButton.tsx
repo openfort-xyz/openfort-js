@@ -85,7 +85,7 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
       handleSetMessage(`Created a new wallet with automatic recovery.\nwallet: ${JSON.stringify(response, null, 2)}`);
       onSuccess();
     } catch (error) {
-      if (error instanceof OTPRequiredError) {
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
         setShowOTPRequest(true);
       } else {
         console.error('Error creating wallet:', error);
@@ -105,8 +105,11 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw error; // Re-throw the original error instead of wrapping it
       }
-      throw error; // Re-throw the original error instead of wrapping it
     } finally {
       console.log('Setting otpRequestLoading to false');
       setOtpRequestLoading(false);
@@ -132,8 +135,11 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw error;
       }
-      throw error;
     }
   };
 
@@ -174,6 +180,8 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
         onClose={() => setShowOTPRequest(false)}
         onSubmit={handleOTPRequest}
         isLoading={otpRequestLoading}
+        title="Setup 2FA for Recovery"
+        description="Put your 2FA information here for future key recovery"
       />
 
       <OTPVerificationModal

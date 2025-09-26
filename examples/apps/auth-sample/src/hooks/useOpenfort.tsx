@@ -121,9 +121,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
 
       if (response.data.error === "OTP_RATE_LIMIT") {
         throw new Error(response.data.error);
-      }
-
-      if (response.status !== 200) {
+      } else if (response.data.error === "USER_CONTACTS_MISMATCH") {
+        throw new Error(response.data.error);
+      } else if (response.status !== 200) {
         throw new Error(`OTP request failed with status: ${response.status}`);
       }
 

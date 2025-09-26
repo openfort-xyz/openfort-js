@@ -31,7 +31,7 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
         }
       });
     } catch (error) {
-      if (error.message === 'OTP_REQUIRED') {
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
         setShowOTPRequest(true);
       } else {
         throw error; // Re-throw other errors to be handled by the calling function
@@ -49,7 +49,13 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
       setShowOTPVerification(true);
     } catch (error) {
       console.error('Error requesting OTP at ChangeWalletButton:', error);
-      throw new Error('Failed to send verification code. Please try again.');
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw new Error('Failed to send verification code. Please try again.');
+      }
     } finally {
       setOtpRequestLoading(false);
     }
@@ -69,7 +75,17 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
   };
 
   const handleResendOTP = async () => {
-    await requestOTP({ email: userEmail }, false);
+    try {
+      await requestOTP({ email: userEmail }, false);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw new Error('Failed to resend verification code. Please try again.');
+      }
+    }
   };
 
   const handleRecoverWallet = async ({ accountId, recoveryParams }: { accountId: string, recoveryParams: RecoveryParams }) => {

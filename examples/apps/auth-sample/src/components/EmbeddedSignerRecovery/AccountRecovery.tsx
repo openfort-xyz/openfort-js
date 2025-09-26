@@ -25,7 +25,7 @@ const CreateWalletPasswordForm = () => {
               recoveryMethod: RecoveryMethod.PASSWORD,
               password,
             },
-          })
+          });
         } catch (error) {
           console.error('Error setting password recovery:', error);
           setError('Failed to set password recovery. Check console log for more details.');
@@ -92,10 +92,13 @@ const CreateWalletAutomaticForm = () => {
       handleOTPVerification("");
     } catch (error) {
       console.error('Error requesting OTP at CreateWalletAutomaticForm:', error);
-      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') { 
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw new Error('Failed to send verification code. Please try again.');
       }
-      throw new Error('Failed to send verification code. Please try again.');
     } finally {
       setOtpRequestLoading(false);
     }
@@ -120,8 +123,11 @@ const CreateWalletAutomaticForm = () => {
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw error;
       }
-      throw error;
     }
   };
 
@@ -155,6 +161,8 @@ const CreateWalletAutomaticForm = () => {
         onClose={() => setShowOTPRequest(false)}
         onSubmit={handleOTPRequest}
         isLoading={otpRequestLoading}
+        title="Setup 2FA for Recovery"
+        description="Put your 2FA information here for future key recovery"
       />
 
       <OTPVerificationModal
@@ -262,6 +270,8 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
       console.error('Error requesting OTP at RecoverWalletButton:', error);
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
       } else {
         throw new Error('Failed to send verification code. Please try again.');
       }
@@ -289,6 +299,8 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         setError('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
       } else {
         setError('Failed to resend verification code. Please try again.');
       }

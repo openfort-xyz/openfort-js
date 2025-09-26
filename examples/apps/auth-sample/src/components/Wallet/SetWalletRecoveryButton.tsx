@@ -50,8 +50,11 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw new Error('Failed to send verification code. Please try again.');
       }
-      throw new Error('Failed to send verification code. Please try again.');
     } finally {
       setOtpRequestLoading(false);
     }
@@ -75,8 +78,11 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw error;
       }
-      throw error;
     }
   };
 
@@ -294,8 +300,11 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
       console.error('Error requesting OTP at SetWalletRecoveryContent:', error);
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw new Error('Failed to send verification code. Please try again.');
       }
-      throw new Error('Failed to send verification code. Please try again.');
     } finally {
       setOtpRequestLoading(false);
     }
@@ -323,8 +332,11 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
         throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw error;
       }
-      throw error;
     }
   };
 

@@ -17,9 +17,18 @@ interface OTPRequestModalProps {
   onClose: () => void;
   onSubmit: (contact: { email?: string; phone?: string }) => Promise<void>;
   isLoading?: boolean;
+  title?: string;
+  description?: string;
 }
 
-export function OTPRequestModal({ isOpen, onClose, onSubmit, isLoading = false }: OTPRequestModalProps) {
+export function OTPRequestModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  isLoading = false,
+  title = "Verification Required",
+  description = "Please choose how you'd like to receive your verification code."
+}: OTPRequestModalProps) {
   const [contactMethod, setContactMethod] = useState<ContactMethod>('email');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -71,9 +80,9 @@ export function OTPRequestModal({ isOpen, onClose, onSubmit, isLoading = false }
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Verification Required</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Please choose how you'd like to receive your verification code.
+            {description}
           </DialogDescription>
         </DialogHeader>
         

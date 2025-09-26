@@ -26,7 +26,12 @@ export default async function handler(
     if (response.status === 429) {
       res.status(429).send({error: "OTP_RATE_LIMIT"});
     } else if (!response.ok) {
-      throw new Error("Failed to authorize user");
+      const errorData = await response.json();
+      if (errorData.code === "USER_CONTACTS_MISMATCH") {
+        res.status(400).send({error: "USER_CONTACTS_MISMATCH"});
+      } else {
+        throw new Error("Failed to authorize user");
+      }
     } else {
       res.status(200).send({ success: true });
     }
