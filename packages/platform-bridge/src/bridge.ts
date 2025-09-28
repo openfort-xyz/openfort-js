@@ -44,17 +44,23 @@ const OPENFORT_FUNCTIONS = {
   getAccessToken: 'getAccessToken',
   getUser: 'getUser',
   validateAndRefreshToken: 'validateAndRefreshToken',
+  setThirdPartyToken: 'setThirdPartyToken'
 };
 
 // To notify game engine that this file is loaded
 const initRequest = 'init';
 const initRequestId = '1';
 
+// Used for pending setThirdPartyToken requests
+const pending = {};
+
 let openfortClient: Openfort;
 
 declare global {
   interface Window {
     callFunction: (jsonData: string) => void;
+    requestAccessToken: () => Promise<string>;
+    onAccessTokenReceived: (requestId: string, token: string) => void;
     ue: any;
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Unity: any;
@@ -92,6 +98,26 @@ const callbackToGame = (data: object) => {
   }
 };
 
+window.requestAccessToken = () => {
+  return new Promise((resolve, reject) => {
+    const requestId = Date.now() + Math.random();
+    pending[requestId] = { resolve, reject };
+
+    callbackToGame({
+      responseFor: OPENFORT_FUNCTIONS.setThirdPartyToken,
+      requestId,
+      success: true,
+    });
+  });
+}
+
+window.onAccessTokenReceived = (requestId, token) => {
+  if (pending[requestId]) {
+    pending[requestId].resolve(token);
+    delete pending[requestId];
+  }
+}
+
 window.callFunction = async (jsonData: string) => {
   // eslint-disable-line no-unused-vars
   console.log(`Call function ${jsonData}`);
@@ -120,7 +146,7 @@ window.callFunction = async (jsonData: string) => {
             thirdPartyAuth: request.thirdPartyAuth ? {
               provider: request.thirdPartyAuth.provider,
               getAccessToken: async () => {
-                // access token of the third party auth provider
+                return await window.requestAccessToken();
               },
             } : undefined,
             overrides: {
@@ -628,6 +654,12 @@ window.callFunction = async (jsonData: string) => {
           },
           ...evmProvider,
         });
+        break;
+      }
+      case OPENFORT_FUNCTIONS.setThirdPartyToken: {
+        const request = JSON.parse(data);
+
+        window.onAccessTokenReceived(requestId, request.token);
         break;
       }
       default:
