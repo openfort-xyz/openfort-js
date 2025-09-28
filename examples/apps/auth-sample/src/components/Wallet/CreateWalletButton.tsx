@@ -66,12 +66,13 @@ const PasswordRecoveryForm = ({ onSuccess, handleSetMessage }: { onSuccess: () =
 const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handleSetMessage: (message: string) => void }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorModal, setErrorModal] = useState<string | null>(null);
   const [showOTPRequest, setShowOTPRequest] = useState(false);
   const [showOTPVerification, setShowOTPVerification] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [otpRequestLoading, setOtpRequestLoading] = useState(false);
   const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
-  const { getEncryptionSession, createWallet, requestOTP } = useOpenfort();
+  const { getEncryptionSession, createWallet, requestOTP, getUserEmail } = useOpenfort();
 
   const createWalletWithSession = async (otpCode?: string) => {
     try {
@@ -86,7 +87,23 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
       onSuccess();
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_REQUIRED') {
-        setShowOTPRequest(true);
+        const storedEmail = getUserEmail();
+        if (storedEmail) {
+          setUserEmail(storedEmail);
+          try {
+            await requestOTP({ email: storedEmail }, true);
+            createWalletWithSession("");
+          } catch (otpError) {
+            if (otpError instanceof Error && otpError.message === 'OTP_RATE_LIMIT') {
+              setErrorModal('OTP generation rate limit exceeded. Please wait 1 minute before requesting another code.');
+            } else {
+              console.error('Error requesting OTP with stored email:', otpError);
+              setShowOTPRequest(true);
+            }
+          }
+        } else {
+          setShowOTPRequest(true);
+        }
       } else {
         console.error('Error creating wallet:', error);
         setError('Failed to create wallet. Check console log for more details.');
@@ -192,6 +209,32 @@ const AutomaticRecovery = ({ onSuccess, handleSetMessage }: { onSuccess: () => v
         email={userEmail}
         isLoading={otpVerifyLoading}
       />
+
+      {/* Error Modal */}
+      {errorModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-red-600">Error</h3>
+              <button
+                type="button"
+                onClick={() => setErrorModal(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-gray-700 mb-4">{errorModal}</p>
+            <button
+              type="button"
+              onClick={() => setErrorModal(null)}
+              className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

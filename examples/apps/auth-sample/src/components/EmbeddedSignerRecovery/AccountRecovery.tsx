@@ -61,7 +61,7 @@ const CreateWalletAutomaticForm = () => {
   const [userEmail, setUserEmail] = useState('');
   const [otpRequestLoading, setOtpRequestLoading] = useState(false);
   const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
-  const { getEncryptionSession, createWallet, requestOTP } = useOpenfort();
+  const { getEncryptionSession, createWallet, requestOTP, getUserEmail } = useOpenfort();
 
   const createWalletWithSession = async (otpCode?: string) => {
     try {
@@ -74,7 +74,19 @@ const CreateWalletAutomaticForm = () => {
       });
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_REQUIRED') {
-        setShowOTPRequest(true);
+        const storedEmail = getUserEmail();
+        if (storedEmail) {
+          setUserEmail(storedEmail);
+          try {
+            await requestOTP({ email: storedEmail }, true);
+            createWalletWithSession("");
+          } catch (otpError) {
+            console.error('Error requesting OTP with stored email:', otpError);
+            setShowOTPRequest(true);
+          }
+        } else {
+          setShowOTPRequest(true);
+        }
       } else {
         console.error('Error creating wallet:', error);
         setError('Failed to create wallet. Check console log for more details.');
@@ -218,7 +230,7 @@ const CreateWalletPasskeyForm = () => {
 
 const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
   const [loading, setLoading] = useState(false);
-  const { getEncryptionSession, handleRecovery, requestOTP } = useOpenfort();
+  const { getEncryptionSession, handleRecovery, requestOTP, getUserEmail } = useOpenfort();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -251,7 +263,19 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
       });
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_REQUIRED') {
-        setShowOTPRequest(true);
+        const storedEmail = getUserEmail();
+        if (storedEmail) {
+          setUserEmail(storedEmail);
+          try {
+            await requestOTP({ email: storedEmail }, false);
+            setShowOTPVerification(true);
+          } catch (otpError) {
+            console.error('Error requesting OTP with stored email:', otpError);
+            setShowOTPRequest(true);
+          }
+        } else {
+          setShowOTPRequest(true);
+        }
       } else {
         setError(`Failed to recover wallet. Check console log for more details.`);
       }

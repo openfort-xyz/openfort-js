@@ -50,6 +50,7 @@ interface ContextType {
   refetchAccount: () => Promise<void>;
   createWallet: ({ recoveryParams }: { recoveryParams: RecoveryParams }) => Promise<EmbeddedAccount>;
   setRecoveryMethod: (previousRecovery: RecoveryParams, newRecovery: RecoveryParams) => Promise<void>;
+  getUserEmail: () => string | null;
 }
 
 const OpenfortContext = createContext<ContextType | null>(null);
@@ -96,7 +97,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   };
 
   const requestOTP = async (contact: { email?: string, phone?: string }, dangerouslySkipVerification: boolean): Promise<void> => {
-    console.log('requestOTP function called with contact:', contact);
+    console.log('requestOTP function called with contact:', contact, 'dangerouslySkipVerification:', dangerouslySkipVerification);
     try {
       const user = await openfort.user.get();
 
@@ -272,6 +273,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   const logout = useCallback(async () => {
     try {
       await openfort.auth.logout();
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem("userEmail");
+      }
     } catch (err) {
       console.error('Error logging out with Openfort:', err);
       throw err instanceof Error
@@ -332,6 +336,13 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     await refetchAccounts();
   }, [refetchAccount, refetchAccounts]);
 
+  const getUserEmail = useCallback((): string | null => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("userEmail");
+    }
+    return null;
+  }, []);
+
   const contextValue: ContextType = {
     state,
     getEncryptionSession,
@@ -351,6 +362,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     refetchAccounts,
     createWallet,
     setRecoveryMethod,
+    getUserEmail,
   };
 
   return (

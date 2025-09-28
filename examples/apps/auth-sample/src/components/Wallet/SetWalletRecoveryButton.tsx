@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useOpenfort } from '../../hooks/useOpenfort';
 import { EmbeddedAccount, EmbeddedState, RecoveryMethod, RecoveryParams } from '@openfort/openfort-js';
 import Loading from '../Loading';
@@ -11,8 +11,8 @@ import openfort from '@/utils/openfortConfig';
 import { OTPRequestModal } from '../OTPRequestModal';
 import { OTPVerificationModal } from '../OTPVerificationModal';
 
-const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRecovery: RecoveryParams, onSuccess: () => void }) => {
-  const { getEncryptionSession, setRecoveryMethod, requestOTP } = useOpenfort();
+const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess, onError, skipOTPIfAlreadyRequested }: { previousRecovery: RecoveryParams, onSuccess: () => void, onError?: (error: string) => void, skipOTPIfAlreadyRequested?: boolean }) => {
+  const { getEncryptionSession, setRecoveryMethod, requestOTP, getUserEmail } = useOpenfort();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showOTPRequest, setShowOTPRequest] = useState(false);
@@ -31,7 +31,37 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess }: { previousRe
       onSuccess();
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_REQUIRED') {
-        setShowOTPRequest(true);
+        if (skipOTPIfAlreadyRequested) {
+          const storedEmail = getUserEmail();
+          if (storedEmail) {
+            setUserEmail(storedEmail);
+            setShowOTPVerification(true);
+          } else {
+            setShowOTPRequest(true);
+          }
+        } else {
+          const storedEmail = getUserEmail();
+          if (storedEmail) {
+            setUserEmail(storedEmail);
+            try {
+              await requestOTP({ email: storedEmail }, false);
+              setShowOTPVerification(true);
+            } catch (otpError) {
+              if (otpError instanceof Error && otpError.message === 'OTP_RATE_LIMIT') {
+                if (onError) {
+                  onError('OTP generation rate limit exceeded. Please wait 1 minute before requesting another code.');
+                } else {
+                  setError(`Error during OTP request: ${JSON.stringify(otpError)}`);
+                }
+              } else {
+                console.error('Error requesting OTP with stored email:', otpError);
+                setShowOTPRequest(true);
+              }
+            }
+          } else {
+            setShowOTPRequest(true);
+          }
+        }
       } else {
         console.error('Error setting automatic recovery:', error);
         setError(`Failed to set automatic recovery. Was ${previousRecovery.recoveryMethod} recovery correct? Check console log for more details.`);
@@ -275,12 +305,14 @@ const VerifyPasswordRecovery = ({ onVerified }: { onVerified: (password: string)
   );
 }
 
-const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: () => void, handleSetMessage: (message: string) => void }) => {
-  const { refetchAccount, account, state, getEncryptionSession, requestOTP } = useOpenfort();
+const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage, onError }: { onSuccess: () => void, handleSetMessage: (message: string) => void, onError: (error: string) => void }) => {
+  const { refetchAccount, account, state, getEncryptionSession, requestOTP, getUserEmail } = useOpenfort();
 
   const [previousRecovery, setPreviousRecovery] = useState<RecoveryParams>();
   const [changingTo, setChangingTo] = useState<RecoveryMethod | null>(null);
-  
+  const [otpAlreadyRequested, setOtpAlreadyRequested] = useState(false);
+  const otpRequestedRef = useRef(false);
+
   // OTP state
   const [showOTPRequest, setShowOTPRequest] = useState(false);
   const [showOTPVerification, setShowOTPVerification] = useState(false);
@@ -353,7 +385,7 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
 
     switch (changingTo) {
       case RecoveryMethod.AUTOMATIC:
-        return <ChangeToAutomaticRecovery previousRecovery={previousRecovery} onSuccess={handleRecoveryChangeSuccess} />;
+        return <ChangeToAutomaticRecovery previousRecovery={previousRecovery} onSuccess={handleRecoveryChangeSuccess} onError={onError} skipOTPIfAlreadyRequested={otpAlreadyRequested} />;
       case RecoveryMethod.PASSWORD:
         return <ChangeToPasswordRecovery previousRecovery={previousRecovery} onSuccess={handleRecoveryChangeSuccess} />;
       case RecoveryMethod.PASSKEY:
@@ -379,7 +411,25 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
               break;
             } catch (error) {
               if (error instanceof Error && error.message === 'OTP_REQUIRED') {
-                setShowOTPRequest(true);
+                const storedEmail = getUserEmail();
+                if (storedEmail && !otpRequestedRef.current) {
+                  otpRequestedRef.current = true;
+                  setUserEmail(storedEmail);
+                  try {
+                    await requestOTP({ email: storedEmail }, false);
+                    setOtpAlreadyRequested(true);
+                    setShowOTPVerification(true);
+                  } catch (otpError) {
+                    if (otpError instanceof Error && otpError.message === 'OTP_RATE_LIMIT') {
+                      onError('OTP generation rate limit exceeded. Please wait 1 minute before requesting another code.');
+                      onSuccess(); // Close the sheet
+                    } else {
+                      setShowOTPRequest(true);
+                    }
+                  }
+                } else if (!storedEmail) {
+                  setShowOTPRequest(true);
+                }
               } else {
                 console.error('Error getting encryption session:', error);
               }
@@ -474,6 +524,8 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage }: { onSuccess: 
 
 const SetWalletRecovery = ({ handleSetMessage }: { handleSetMessage: (message: string) => void }) => {
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   return (
     <>
       <Sheet open={open} onOpenChange={setOpen}>
@@ -489,9 +541,42 @@ const SetWalletRecovery = ({ handleSetMessage }: { handleSetMessage: (message: s
           <SheetTitle className="mb-4">
             Change Wallet Recovery Method
           </SheetTitle>
-          <SetWalletRecoveryContent onSuccess={() => setOpen(false)} handleSetMessage={handleSetMessage} />
+          <SetWalletRecoveryContent
+            onSuccess={() => setOpen(false)}
+            handleSetMessage={handleSetMessage}
+            onError={(errorMessage) => {
+              setOpen(false);
+              setError(errorMessage);
+            }}
+          />
         </SheetContent>
       </Sheet>
+
+      {/* Error Modal */}
+      {error && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-red-600">Error</h3>
+              <button
+                type="button"
+                onClick={() => setError(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-gray-700 mb-4">{error}</p>
+            <button
+              type="button"
+              onClick={() => setError(null)}
+              className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
