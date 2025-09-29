@@ -44,7 +44,7 @@ const OPENFORT_FUNCTIONS = {
   getAccessToken: 'getAccessToken',
   getUser: 'getUser',
   validateAndRefreshToken: 'validateAndRefreshToken',
-  setThirdPartyToken: 'setThirdPartyToken'
+  setThirdPartyToken: 'setThirdPartyToken',
 };
 
 // To notify game engine that this file is loaded
@@ -52,7 +52,7 @@ const initRequest = 'init';
 const initRequestId = '1';
 
 // Used for pending setThirdPartyToken requests
-const pending = {};
+const pending: Record<string, { resolve: (token: string) => void; reject: (error: any) => void }> = {};
 
 let openfortClient: Openfort;
 
@@ -98,25 +98,23 @@ const callbackToGame = (data: object) => {
   }
 };
 
-window.requestAccessToken = () => {
-  return new Promise((resolve, reject) => {
-    const requestId = Date.now() + Math.random();
-    pending[requestId] = { resolve, reject };
+window.requestAccessToken = () => new Promise((resolve, reject) => {
+  const requestId = Date.now() + Math.random();
+  pending[requestId] = { resolve, reject };
 
-    callbackToGame({
-      responseFor: OPENFORT_FUNCTIONS.setThirdPartyToken,
-      requestId,
-      success: true,
-    });
+  callbackToGame({
+    responseFor: OPENFORT_FUNCTIONS.setThirdPartyToken,
+    requestId,
+    success: true,
   });
-}
+});
 
 window.onAccessTokenReceived = (requestId, token) => {
   if (pending[requestId]) {
     pending[requestId].resolve(token);
     delete pending[requestId];
   }
-}
+};
 
 window.callFunction = async (jsonData: string) => {
   // eslint-disable-line no-unused-vars
@@ -143,11 +141,9 @@ window.callFunction = async (jsonData: string) => {
               shieldPublishableKey: request.shieldPublishableKey,
               shieldDebug: request.shieldDebug ?? false,
             } : undefined,
-            thirdPartyAuth: request.thirdPartyAuth ? {
+            thirdPartyAuth: request.thirdPartyAuth?.provider ? {
               provider: request.thirdPartyAuth.provider,
-              getAccessToken: async () => {
-                return await window.requestAccessToken();
-              },
+              getAccessToken: async () => await window.requestAccessToken(),
             } : undefined,
             overrides: {
               backendUrl: request?.backendUrl ?? 'https://api.openfort.io',
