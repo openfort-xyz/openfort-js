@@ -41,7 +41,7 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
             setShowOTPVerification(true);
           } catch (otpError) {
             if (otpError instanceof Error && otpError.message === 'OTP_RATE_LIMIT') {
-              setErrorModal('OTP generation rate limit exceeded. Please wait 1 minute before requesting another code.');
+              setErrorModal('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
             } else {
               console.error('Error requesting OTP with stored email:', otpError);
               setShowOTPRequest(true);
@@ -67,7 +67,7 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
     } catch (error) {
       console.error('Error requesting OTP at ChangeWalletButton:', error);
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
-        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+        throw new Error('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
       } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
         throw new Error('User contact information doesnt match with saved one');
       } else {
@@ -96,7 +96,7 @@ const ChangeWalletButton = ({ isCurrentAccount, account, handleSetMessage, onSuc
       await requestOTP({ email: userEmail }, false);
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
-        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+        throw new Error('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
       } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
         throw new Error('User contact information doesnt match with saved one');
       } else {
