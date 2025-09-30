@@ -85,7 +85,6 @@ export class EmbeddedSigner implements Signer {
           accountType: params.accountType,
           // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
           chainType: params.chainType,
-          chainId: params.chainId,
         },
         {
           headers: {
@@ -119,26 +118,34 @@ export class EmbeddedSigner implements Signer {
 
         accountId = iframeResponse.account;
       } else {
+        const accounts = response.data.data;
+        // find if there exists an account with the requested chainId
+        const accountExistsInChainId = accounts.find((ac) => ac.chainId === params.chainId);
+        // intentionally take first account from the list, as they all should have the same owner EOA
+        const account = accountExistsInChainId || accounts[0];
         const recoverParams: SignerRecoverRequest = {
-          // intentionally take first account from the list
-          account: response.data.data[0].id,
+          account: account.id,
           ...(params.entropy && {
             entropy: {
               ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
               ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
-              ...(response.data.data[0].recoveryMethod === 'passkey' && {
+              ...(account.recoveryMethod === 'passkey' && {
                 passkey: {
-                  id: response.data.data[0].recoveryMethodDetails?.passkeyId,
-                  env: response.data.data[0].recoveryMethodDetails?.passkeyEnv,
-                  key: await params.getPasskeyKeyFn(response.data.data[0].recoveryMethodDetails?.passkeyId!),
+                  id: account.recoveryMethodDetails?.passkeyId,
+                  env: account.recoveryMethodDetails?.passkeyEnv,
+                  key: await params.getPasskeyKeyFn(account.recoveryMethodDetails?.passkeyId!),
                 },
               }),
             },
           }),
         };
         const iframeResponse = await this.iframeManager.recover(recoverParams);
-
         accountId = iframeResponse.account;
+        // if no account exists with the requested chainId, we need to switch
+        if (!accountExistsInChainId) {
+          const iframeResponseSwitchChain = await this.iframeManager.switchChain(params.chainId!);
+          accountId = iframeResponseSwitchChain.account!;
+        }
       }
     }
 
