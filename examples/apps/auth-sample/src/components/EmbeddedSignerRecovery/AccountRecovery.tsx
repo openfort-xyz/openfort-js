@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useOpenfort } from '../../hooks/useOpenfort';
 import Loading from '../Loading';
 import { Button } from '../ui/button';
-import { EmbeddedAccount, RecoveryMethod, RecoveryParams } from '@openfort/openfort-js';
+import { EmbeddedAccount, RecoveryMethod, RecoveryParams, OTPRequiredError } from '@openfort/openfort-js';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { OTPRequestModal } from '../OTPRequestModal';
+import { OTPVerificationModal } from '../OTPVerificationModal';
 
 const CreateWalletPasswordForm = () => {
   const [password, setPassword] = useState('');
@@ -23,7 +25,7 @@ const CreateWalletPasswordForm = () => {
               recoveryMethod: RecoveryMethod.PASSWORD,
               password,
             },
-          })
+          });
         } catch (error) {
           console.error('Error setting password recovery:', error);
           setError('Failed to set password recovery. Check console log for more details.');
@@ -54,37 +56,136 @@ const CreateWalletPasswordForm = () => {
 const CreateWalletAutomaticForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { getEncryptionSession, createWallet } = useOpenfort();
+  const [showOTPRequest, setShowOTPRequest] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [otpRequestLoading, setOtpRequestLoading] = useState(false);
+  const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
+  const { getEncryptionSession, createWallet, requestOTP, getUserEmail } = useOpenfort();
+
+  const createWalletWithSession = async (otpCode?: string) => {
+    try {
+      const encSessionResponse = await getEncryptionSession(otpCode);
+      await createWallet({
+        recoveryParams: {
+          recoveryMethod: RecoveryMethod.AUTOMATIC,
+          encryptionSession: encSessionResponse,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
+        const storedEmail = getUserEmail();
+        if (storedEmail) {
+          setUserEmail(storedEmail);
+          try {
+            await requestOTP({ email: storedEmail }, true);
+            createWalletWithSession("");
+          } catch (otpError) {
+            console.error('Error requesting OTP with stored email:', otpError);
+            setShowOTPRequest(true);
+          }
+        } else {
+          setShowOTPRequest(true);
+        }
+      } else {
+        console.error('Error creating wallet:', error);
+        setError('Failed to create wallet. Check console log for more details.');
+      }
+    }
+  };
+
+  const handleOTPRequest = async (contact: { email?: string; phone?: string }) => {
+    const contactValue = contact.email || contact.phone || '';
+    setOtpRequestLoading(true);
+    try {
+      await requestOTP(contact, true);
+      setUserEmail(contactValue);
+      setShowOTPRequest(false);
+      handleOTPVerification("");
+    } catch (error) {
+      console.error('Error requesting OTP at CreateWalletAutomaticForm:', error);
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') { 
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw new Error('Failed to send verification code. Please try again.');
+      }
+    } finally {
+      setOtpRequestLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (otpCode: string) => {
+    setOtpVerifyLoading(true);
+    try {
+      await createWalletWithSession(otpCode);
+      setShowOTPVerification(false);
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      throw new Error('Invalid verification code. Please try again.');
+    } finally {
+      setOtpVerifyLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      await requestOTP({ email: userEmail }, true);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw error;
+      }
+    }
+  };
 
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        try {
-          await createWallet({
-            recoveryParams: {
-              recoveryMethod: RecoveryMethod.AUTOMATIC,
-              encryptionSession: await getEncryptionSession(),
-            },
-          })
-        } catch (error) {
-          console.error('Error setting automatic recovery:', error);
-          setError('Failed to set automatic recovery. Check console log for more details.');
-        }
-        setIsLoading(false);
-      }}
-    >
-      <Button
-        className='w-full'
-        type="submit"
-        variant="outline"
-        loading={isLoading}
+    <>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setIsLoading(true);
+          setError(null);
+          try {
+            await createWalletWithSession();
+          } finally {
+            setIsLoading(false);
+          }
+        }}
       >
-        Set Automatic Recovery
-      </Button>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-    </form>
+        <Button
+          className='w-full'
+          type="submit"
+          variant="outline"
+          loading={isLoading}
+        >
+          Set Automatic Recovery
+        </Button>
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      </form>
+
+      <OTPRequestModal
+        isOpen={showOTPRequest}
+        onClose={() => setShowOTPRequest(false)}
+        onSubmit={handleOTPRequest}
+        isLoading={otpRequestLoading}
+        title="Setup 2FA for Recovery"
+        description="Put your 2FA information here for future key recovery"
+      />
+
+      <OTPVerificationModal
+        isOpen={showOTPVerification}
+        onClose={() => setShowOTPVerification(false)}
+        onSubmit={handleOTPVerification}
+        onResendOTP={handleResendOTP}
+        email={userEmail}
+        isLoading={otpVerifyLoading}
+      />
+    </>
   );
 };
 
@@ -129,10 +230,15 @@ const CreateWalletPasskeyForm = () => {
 
 const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
   const [loading, setLoading] = useState(false);
-  const { getEncryptionSession, handleRecovery } = useOpenfort();
+  const { getEncryptionSession, handleRecovery, requestOTP, getUserEmail } = useOpenfort();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [showOTPRequest, setShowOTPRequest] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [otpRequestLoading, setOtpRequestLoading] = useState(false);
+  const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
 
   const handleRecoverWallet = async (accountId: string, recoveryParams: RecoveryParams) => {
     setLoading(true);
@@ -148,11 +254,89 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
     setLoading(false);
   }
 
+  const handleAutomaticRecoveryWithOTP = async (accountId: string, otpCode?: string) => {
+    try {
+      const encSessionResponse = await getEncryptionSession(otpCode);
+      await handleRecoverWallet(accountId, {
+        recoveryMethod: RecoveryMethod.AUTOMATIC,
+        encryptionSession: encSessionResponse,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
+        const storedEmail = getUserEmail();
+        if (storedEmail) {
+          setUserEmail(storedEmail);
+          try {
+            await requestOTP({ email: storedEmail }, false);
+            setShowOTPVerification(true);
+          } catch (otpError) {
+            console.error('Error requesting OTP with stored email:', otpError);
+            setShowOTPRequest(true);
+          }
+        } else {
+          setShowOTPRequest(true);
+        }
+      } else {
+        setError(`Failed to recover wallet. Check console log for more details.`);
+      }
+    }
+  };
+
+  const handleOTPRequest = async (contact: { email?: string; phone?: string }) => {
+    const contactValue = contact.email || contact.phone || '';
+    setOtpRequestLoading(true);
+    try {
+      await requestOTP(contact, false);
+      setUserEmail(contactValue);
+      setShowOTPRequest(false);
+      setShowOTPVerification(true);
+    } catch (error) {
+      console.error('Error requesting OTP at RecoverWalletButton:', error);
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        throw new Error('Failed to send verification code. Please try again.');
+      }
+    } finally {
+      setOtpRequestLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (otpCode: string) => {
+    setOtpVerifyLoading(true);
+    try {
+      await handleAutomaticRecoveryWithOTP(account.id, otpCode);
+      setShowOTPVerification(false);
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setError('Invalid verification code. Please try again.');
+    } finally {
+      setOtpVerifyLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      await requestOTP({ email: userEmail }, false);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
+        setError('Rate limit exceeded. Please wait before requesting another code.');
+      } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
+        throw new Error('User contact information doesnt match with saved one');
+      } else {
+        setError('Failed to resend verification code. Please try again.');
+      }
+    }
+  };
+
   return (
-    <form
-      key={account.id}
-      className='p-4 border border-gray-200 rounded-lg relative'
-      onSubmit={async (e) => {
+    <>
+      <form
+        key={account.id}
+        className='p-4 border border-gray-200 rounded-lg relative'
+        onSubmit={async (e) => {
         e.preventDefault();
         switch (account.recoveryMethod) {
           case RecoveryMethod.PASSWORD:
@@ -175,11 +359,12 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
             return;
           case RecoveryMethod.AUTOMATIC:
             setLoading(true);
-            await handleRecoverWallet(account.id, {
-              recoveryMethod: RecoveryMethod.AUTOMATIC,
-              encryptionSession: await getEncryptionSession()
-            });
-            setLoading(false);
+            setError(null);
+            try {
+              await handleAutomaticRecoveryWithOTP(account.id);
+            } finally {
+              setLoading(false);
+            }
             break;
           case RecoveryMethod.PASSKEY:
             setLoading(true)
@@ -249,8 +434,25 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
       >
         Use this wallet
       </Button>
-      {error && <p className="mt-2 text-sm text-red-600" id="wallet-recovery-error">{error}</p>}
-    </form>
+        {error && <p className="mt-2 text-sm text-red-600" id="wallet-recovery-error">{error}</p>}
+      </form>
+      
+      <OTPRequestModal
+        isOpen={showOTPRequest}
+        onClose={() => setShowOTPRequest(false)}
+        onSubmit={handleOTPRequest}
+        isLoading={otpRequestLoading}
+      />
+
+      <OTPVerificationModal
+        isOpen={showOTPVerification}
+        onClose={() => setShowOTPVerification(false)}
+        onSubmit={handleOTPVerification}
+        onResendOTP={handleResendOTP}
+        email={userEmail}
+        isLoading={otpVerifyLoading}
+      />
+    </>
   );
 };
 

@@ -42,13 +42,15 @@ interface ContextType {
   getEOAAddress: () => Promise<string>;
   getBalance: (address: Address, chain: Chain, provider: Provider) => Promise<bigint>;
   account: EmbeddedAccount | null;
-  getEncryptionSession: () => Promise<string>;
+  getEncryptionSession: (otpCode?: string) => Promise<string>;
+  requestOTP: (contact: { email?: string, phone?: string }, dangerouslySkipVerification: boolean) => Promise<void>;
   accounts: EmbeddedAccount[];
   isLoadingAccounts: boolean;
   refetchAccounts: () => Promise<void>;
   refetchAccount: () => Promise<void>;
   createWallet: ({ recoveryParams }: { recoveryParams: RecoveryParams }) => Promise<EmbeddedAccount>;
   setRecoveryMethod: (previousRecovery: RecoveryParams, newRecovery: RecoveryParams) => Promise<void>;
+  getUserEmail: () => string | null;
 }
 
 const OpenfortContext = createContext<ContextType | null>(null);
@@ -67,16 +69,69 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   const [state, setState] = useState<EmbeddedState>(EmbeddedState.NONE);
   const poller = useRef<NodeJS.Timeout | null>(null);
 
-  const getEncryptionSession = async (): Promise<string> => {
+  const getEncryptionSession = async (otpCode?: string): Promise<string> => {
     try {
+      let requestBody: { otp_code?: string; user_id?: any } = otpCode ? { otp_code: otpCode } : {};
+      const user = await openfort.user.get();
+      requestBody.user_id = user.id;
       const response = await axios.post<{ session: string }>(
         '/api/protected-create-encryption-session',
-        {},
-        { headers: { 'Content-Type': 'application/json' } }
+        requestBody,
+        {
+          headers: { 'Content-Type': 'application/json' },
+          validateStatus: (status) => status < 500 // Don't throw for 4xx codes
+        }
       );
+
+      if (response.status === 428) {
+        throw new Error('OTP_REQUIRED');
+      }
+
       return response.data.session;
     } catch (error) {
-      throw new Error('Failed to create encryption session');
+      if (error instanceof Error && error.message === 'OTP_REQUIRED') {
+        throw error;
+      }
+      throw new Error(`Failed to create encryption session: ${error}`);
+    }
+  };
+
+  const requestOTP = async (contact: { email?: string, phone?: string }, dangerouslySkipVerification: boolean): Promise<void> => {
+    console.log('requestOTP function called with contact:', contact, 'dangerouslySkipVerification:', dangerouslySkipVerification);
+    try {
+      const user = await openfort.user.get();
+
+      if (!user) throw new Error('User not found');
+
+      if ((!contact.email && !contact.phone) || (contact.email && contact.phone)) {
+        throw new Error('Please provide either email or phone number, not both');
+      }
+
+      const response = await axios.post(
+        '/api/request-otp',
+        { user_id: user.id,
+          email: contact.email || null,
+          phone: contact.phone || null,
+          dangerously_skip_verification: dangerouslySkipVerification,
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          validateStatus: (status) => status < 500 // Don't throw for 4xx codes
+        }
+      );
+
+      if (response.data.error === "OTP_RATE_LIMIT") {
+        throw new Error(response.data.error);
+      } else if (response.data.error === "USER_CONTACTS_MISMATCH") {
+        throw new Error(response.data.error);
+      } else if (response.status !== 200) {
+        throw new Error(`OTP request failed with status: ${response.status}`);
+      }
+
+      // Success - API returns 200 with empty body
+    } catch (error) {
+      console.error('Error in requestOTP:', error);
+      throw error;
     }
   };
 
@@ -218,6 +273,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
   const logout = useCallback(async () => {
     try {
       await openfort.auth.logout();
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem("userEmail");
+      }
     } catch (err) {
       console.error('Error logging out with Openfort:', err);
       throw err instanceof Error
@@ -278,9 +336,17 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     await refetchAccounts();
   }, [refetchAccount, refetchAccounts]);
 
+  const getUserEmail = useCallback((): string | null => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem("userEmail");
+    }
+    return null;
+  }, []);
+
   const contextValue: ContextType = {
     state,
     getEncryptionSession,
+    requestOTP,
     getEvmProvider,
     handleRecovery,
     signMessage,
@@ -296,6 +362,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({
     refetchAccounts,
     createWallet,
     setRecoveryMethod,
+    getUserEmail,
   };
 
   return (

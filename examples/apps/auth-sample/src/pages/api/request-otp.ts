@@ -8,7 +8,7 @@ export default async function handler(
 ) {
   try {
     await runMiddleware(req, res, cors);
-    const response = await fetch(`${shieldUrl}/project/encryption-session`, {
+    const response = await fetch(`${shieldUrl}/project/otp`, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
@@ -16,29 +16,27 @@ export default async function handler(
       },
       method: "POST",
       body: JSON.stringify({
-        encryption_part: process.env.NEXTAUTH_SHIELD_ENCRYPTION_SHARE!,
         user_id: req.body.user_id,
-        otp_code: req.body.otp_code,
+        dangerously_skip_verification: req.body.dangerously_skip_verification || false,
+        email: req.body.email || null,
+        phone: req.body.phone || null,
       }),
     });
 
-    // 404 may be thrown if there is no OTP found for user,
-    // that's why we throw 428 to client understand that he needs to request an OTP
-    if (response.status === 404) {
-      res.status(428).send({error: "OTP_REQUIRED"});
-    } else {
-      if (!response.ok) {
+    if (response.status === 429) {
+      res.status(429).send({error: "OTP_RATE_LIMIT"});
+    } else if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.code === "USER_CONTACTS_MISMATCH") {
+        res.status(400).send({error: "USER_CONTACTS_MISMATCH"});
+      } else {
         throw new Error("Failed to authorize user");
       }
-
-      const jsonResponse = await response.json();
-
-      res.status(200).send({
-        session: jsonResponse.session_id,
-      });
+    } else {
+      res.status(200).send({ success: true });
     }
   } catch (e) {
-    console.error(`Internal Next.js API server error: ${e}`);
+    console.error(e);
     res.status(500).send({
       error: 'Internal server error',
     });

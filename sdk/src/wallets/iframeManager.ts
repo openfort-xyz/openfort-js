@@ -35,6 +35,7 @@ import {
   INCORRECT_USER_ENTROPY_ERROR,
   INCORRECT_PASSKEY_ERROR,
   MISSING_PASSKEY_ERROR,
+  OTP_REQUIRED_ERROR,
   type RequestConfiguration,
   UpdateAuthenticationResponse,
   CreateResponse,
@@ -144,6 +145,12 @@ export class InvalidResponseError extends Error {
 export class NotConfiguredError extends Error {
   constructor() {
     super('Not configured');
+  }
+}
+
+export class OTPRequiredError extends Error {
+  constructor() {
+    super('OTP required');
   }
 }
 
@@ -271,6 +278,8 @@ export class IframeManager {
         throw new MissingRecoveryPasswordError();
       } else if (error.error === INCORRECT_PASSKEY_ERROR) {
         throw new WrongPasskeyError();
+      } else if (error.error === OTP_REQUIRED_ERROR) {
+        throw new OTPRequiredError();
       }
       this.storage.remove(StorageKeys.ACCOUNT);
       throw new OpenfortError(`Unknown error: ${error.error}`, OpenfortErrorType.INTERNAL_ERROR);

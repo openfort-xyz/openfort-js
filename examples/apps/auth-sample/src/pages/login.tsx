@@ -138,6 +138,7 @@ function LoginPage() {
         });
       });
     if (data) {
+      localStorage.setItem("userEmail", email);
       setStatus({
         type: "success",
         title: "Successfully signed in",
