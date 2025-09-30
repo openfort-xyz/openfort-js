@@ -49,7 +49,7 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess, onError, skipO
             } catch (otpError) {
               if (otpError instanceof Error && otpError.message === 'OTP_RATE_LIMIT') {
                 if (onError) {
-                  onError('OTP generation rate limit exceeded. Please wait 1 minute before requesting another code.');
+                  onError('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
                 } else {
                   setError(`Error during OTP request: ${JSON.stringify(otpError)}`);
                 }
@@ -79,7 +79,7 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess, onError, skipO
       setShowOTPVerification(true);
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
-        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+        throw new Error('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
       } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
         throw new Error('User contact information doesnt match with saved one');
       } else {
@@ -107,7 +107,7 @@ const ChangeToAutomaticRecovery = ({ previousRecovery, onSuccess, onError, skipO
       await requestOTP({ email: userEmail }, false);
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
-        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+        throw new Error('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
       } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
         throw new Error('User contact information doesnt match with saved one');
       } else {
@@ -331,7 +331,7 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage, onError }: { on
     } catch (error) {
       console.error('Error requesting OTP at SetWalletRecoveryContent:', error);
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
-        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+        throw new Error('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
       } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
         throw new Error('User contact information doesnt match with saved one');
       } else {
@@ -363,7 +363,7 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage, onError }: { on
       await requestOTP({ email: userEmail }, false);
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_RATE_LIMIT') {
-        throw new Error('Rate limit exceeded. Please wait before requesting another code.');
+        throw new Error('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
       } else if (error instanceof Error && error.message === 'USER_CONTACTS_MISMATCH') {
         throw new Error('User contact information doesnt match with saved one');
       } else {
@@ -421,7 +421,7 @@ const SetWalletRecoveryContent = ({ onSuccess, handleSetMessage, onError }: { on
                     setShowOTPVerification(true);
                   } catch (otpError) {
                     if (otpError instanceof Error && otpError.message === 'OTP_RATE_LIMIT') {
-                      onError('OTP generation rate limit exceeded. Please wait 1 minute before requesting another code.');
+                      onError('OTP generation rate limit exceeded. Please contact an admin to resolve it.');
                       onSuccess(); // Close the sheet
                     } else {
                       setShowOTPRequest(true);
