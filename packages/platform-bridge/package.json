@@ -7,7 +7,7 @@
     "@ethersproject/hash": "^5.8.0",
     "@ethersproject/providers": "^5.8.0",
     "@openfort/openfort-js": "workspace:sdk",
-    "@openfort/shield-js": "^0.1.14",
+    "@openfort/shield-js": "^0.1.27",
     "@sentry/browser": "^9.15.0",
     "@sentry/core": "^9.15.0",
     "axios": "^1.8.2",
