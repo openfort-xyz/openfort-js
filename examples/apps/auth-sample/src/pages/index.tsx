@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 import { useOpenfort } from "../hooks/useOpenfort";
 import { EmbeddedState, OAuthProvider } from "@openfort/openfort-js";
@@ -18,6 +18,7 @@ import AddFunds from "../components/Funding/AddFunds";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
 import AccountActions from "@/components/AccountActions/AccountActions";
+import Authorizations7702 from "@/components/Authorizations7702/Authorizations7702";
 import Link from "next/link";
 import { StatusType, Toast } from "@/components/Toasts";
 import Wallets from "@/components/Wallet/Wallet";
@@ -268,6 +269,14 @@ const HomePage: NextPage = () => {
                 Add funds is on-ramp or transfer funds from another wallet.
               </p>
               <AddFunds handleSetMessage={handleSetMessage} />
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
+            <h2 className="flex justify-left font-medium text-xl pb-4">
+              7702 Authorizations
+            </h2>
+            <div>
+              <Authorizations7702 handleSetMessage={handleSetMessage} />
             </div>
           </div>
         </div>

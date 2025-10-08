@@ -5,18 +5,18 @@ import Loading from '../Loading';
 import { Button } from '../ui/button';
 
 import { Address, createPublicClient, createWalletClient, Hex, http, parseSignature } from "viem";
-import { toAccount } from "viem/accounts";
+import { privateKeyToAccount, toAccount } from "viem/accounts";
 import { to7702SimpleSmartAccount } from "permissionless/accounts";
-import { polygonAmoy, sepolia } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { createSmartAccountClient } from "permissionless";
 import { zeroAddress } from "viem";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
-import { hashAuthorization } from "viem/utils";
+import { hashAuthorization, hashTypedData } from "viem/utils";
 
-const SignMessageButton: React.FC<{
+const Authorizations7702: React.FC<{
   handleSetMessage: (message: string) => void;
 }> = ({handleSetMessage}) => {
-  const {signMessage, state, account} = useOpenfort();
+  const {signMessage, state, account, exportPrivateKey} = useOpenfort();
   const [loading, setLoading] = useState(false);
 
   const handleSignAuthorization = async () => {
@@ -27,28 +27,36 @@ const SignMessageButton: React.FC<{
       const pimlicoClient = createPimlicoClient({
           chain: sepolia,
           transport: http(
-              `https://api.pimlico.io/v2/80002/rpc?apikey=${pimlicoAPIKey}`,
+              `https://api.pimlico.io/v2/11155111/rpc?apikey=${pimlicoAPIKey}`,
           ),
       });
       const eoa7702 = toAccount({
         address: (account?.ownerAddress ?? account?.address) as Address,
         async signMessage({ message }) {
+          console.log("Signing message:", message);
           return '0x'
         },
         async signTransaction(transaction, { serializer } = {}) {
+          console.log("Signing transaction:", transaction);
           return '0x'
         },
         async signTypedData(typedData) {
-          return '0x'
+          console.log("Signing typed data:", typedData);
+          return (await signMessage(
+            hashTypedData(typedData),
+            {
+              arrayifyMessage: true,
+              hashMessage: false,
+            }
+          )).data as `0x${string}`;
         },
       })
-      
       const client = createPublicClient({
-          chain: polygonAmoy,
+          chain: sepolia,
           transport: http(),
       });
       const walletClient = createWalletClient({
-          chain: polygonAmoy,
+          chain: sepolia,
           transport: http(),
           account: eoa7702,
       });
@@ -58,7 +66,7 @@ const SignMessageButton: React.FC<{
       });
       const smartAccountClient = createSmartAccountClient({
           client,
-          chain: polygonAmoy,
+          chain: sepolia,
           account: simple7702Account,
           paymaster: pimlicoClient,
           bundlerTransport: http(
@@ -99,8 +107,8 @@ const SignMessageButton: React.FC<{
       setLoading(false);
 
     } catch (err) {
-      console.error('Failed to sign message:', err);
-      alert('Failed to sign message. Please try again.');
+      console.error('Failed to send authorization:', err);
+      alert('Failed to send authorization. Please try again.');
     }
   }
 
@@ -112,10 +120,10 @@ const SignMessageButton: React.FC<{
         disabled={state !== EmbeddedState.READY}
         variant="outline"
       >
-        {loading ? <Loading /> : 'Sign Message'}
+        {loading ? <Loading /> : 'Sign Authorization'}
       </Button>
     </div>
   );
 };
 
-export default SignMessageButton;
+export default Authorizations7702;
