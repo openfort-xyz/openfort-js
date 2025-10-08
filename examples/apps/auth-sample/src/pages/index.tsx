@@ -13,8 +13,6 @@ import { Layout } from "../components/Layouts/Layout";
 import LogoutButton from "../components/Logout";
 import GetUserButton from "../components/User/GetUserButton";
 import LinkOAuthButton from "../components/OAuth/LinkOAuthButton";
-import ExportPrivateKey from "../components/Wallet/ExportPrivateKeyButton";
-import SetWalletRecovery from "../components/Wallet/SetWalletRecoveryButton";
 import { SetPairingCodeWithWagmi } from "../components/WalletConnect/SetPairingCode";
 import AddFunds from "../components/Funding/AddFunds";
 import { Button } from "@/components/ui/button";
@@ -76,7 +74,7 @@ const HomePage: NextPage = () => {
               Openfort gives you modular components so you can customize your
               product for your users.
               <a
-                href="https://www.openfort.io/docs/products/embedded-wallet/react/kit/create-react-app"
+                href="https://www.openfort.io/docs/products/embedded-wallet/react"
                 className="text-blue-600 hover:underline"
               >
                 Learn more
@@ -176,7 +174,7 @@ const HomePage: NextPage = () => {
               Openfort gives you modular components so you can customize your
               product for your users.
               <a
-                href="https://www.openfort.io/docs/products/embedded-wallet/react/kit/create-react-app"
+                href="https://www.openfort.io/docs/products/embedded-wallet/react"
                 className="text-blue-600 hover:underline"
               >
                 Learn more
