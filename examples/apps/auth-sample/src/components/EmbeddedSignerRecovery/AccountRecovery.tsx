@@ -417,7 +417,7 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
           Use this wallet
         </Button>
         {error && (
-          <p className="mt-2 text-sm text-red-600" id={errorId}>
+          <p className="mt-2 text-sm text-red-600" id={errorId} data-testid="wallet-recovery-error">
             {error}
           </p>
         )}

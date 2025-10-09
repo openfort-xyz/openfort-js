@@ -38,7 +38,7 @@ test('Mint Session NFT', async ({ page }) => {
   const logger = new Logger(page)
   await logger.init()
 
-  const mintNftButton = page.locator('#mint-nft-button')
+  const mintNftButton = page.getByTestId('mint-nft-button')
 
   // expect Mint nft to be disabled because no session key
   expect(mintNftButton).toBeVisible()

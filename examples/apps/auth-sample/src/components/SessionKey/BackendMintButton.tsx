@@ -60,7 +60,14 @@ const BackendMintButton: React.FC<{
 
   return (
     <div className="mt-4">
-      <Button className="w-full" onClick={handleMintNFT} disabled={!sessionKey} id={buttonId} variant="outline">
+      <Button
+        className="w-full"
+        onClick={handleMintNFT}
+        disabled={!sessionKey}
+        id={buttonId}
+        data-testid="mint-nft-button"
+        variant="outline"
+      >
         {loading ? <Loading /> : 'Mint NFT with session key'}
       </Button>
       {!sessionKey && (

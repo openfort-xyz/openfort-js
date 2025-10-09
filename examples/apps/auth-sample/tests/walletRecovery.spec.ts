@@ -69,7 +69,7 @@ test('Password recovery', async ({ page }) => {
     await passwordRecoveryInput.fill('incorrect password')
     passwordRecoveryButtonLogin.click()
 
-    await page.waitForSelector('#wallet-recovery-error', { timeout: 5000 })
+    await page.getByTestId('wallet-recovery-error').waitFor({ timeout: 5000 })
 
     await passwordRecoveryInput.fill('password')
     passwordRecoveryButtonLogin.click()
