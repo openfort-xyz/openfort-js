@@ -66,7 +66,7 @@ const SignTypedDataButton: React.FC<{
       <a
         target="_blank"
         rel="noopener noreferrer"
-        href="https://github.com/openfort-xyz/sample-browser-nextjs-embedded-signer/blob/main/src/components/Signatures/SignTypedDataButton.tsx#L25"
+        href="https://github.com/openfort-xyz/openfort-js/blob/main/examples/apps/auth-sample/src/components/Signatures/SignTypedDataButton.tsx#L32"
         className="text-blue-600 hover:underline text-xs"
       >
         {'View typed message'}
