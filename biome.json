@@ -1,7 +1,20 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
-    "includes": ["**", "!packages/internal/openapi-clients/src/backend", "!packages/internal/openapi-clients/dist"],
+    "includes": [
+      "sdk/**",
+      "packages/platform-bridge/**",
+      "examples/**",
+      "test/**",
+      "*.js",
+      "*.ts",
+      "*.json",
+      "!packages/internal/openapi-clients",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/coverage"
+    ],
     "ignoreUnknown": true
   },
   "formatter": {

@@ -10,3 +10,4 @@ CHANGELOG.md
 **/pnpm-lock.yaml
 **/.husky
 sdk/copyVersion.cjs
+packages/internal/openapi-clients/**

@@ -14,7 +14,7 @@
     "test:unit": "pnpm --filter @openfort/openfort-js test:unit",
     "test:watch": "pnpm --filter @openfort/openfort-js test:watch",
     "preinstall": "pnpx only-allow pnpm",
-    "check": "biome check --write --unsafe --staged",
+    "check": "biome check --write --unsafe",
     "check:repo": "sherif",
     "check:types": "tsc --noEmit",
     "clean": "rm -rf sdk/dist",
