@@ -4,7 +4,8 @@ import { changeToAutomaticRecovery, changeToPasswordRecovery } from './changeRec
 import { Logger } from './Logger'
 
 test.use({
-  storageState: [async (_, use) => use(undefined), { scope: 'test' }],
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring
+  storageState: [async ({}, use) => use(undefined), { scope: 'test' }],
 })
 
 const logout = async (page: Page) => {

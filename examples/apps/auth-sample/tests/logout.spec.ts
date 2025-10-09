@@ -2,7 +2,8 @@ import test from '@playwright/test'
 import { authenticateAndRecover } from './authenticate'
 
 test.use({
-  storageState: [async (_, use) => use(undefined), { scope: 'test' }],
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring
+  storageState: [async ({}, use) => use(undefined), { scope: 'test' }],
 })
 
 test('Logout', async ({ page }) => {
