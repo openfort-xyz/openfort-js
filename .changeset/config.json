@@ -10,5 +10,13 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "firebase-next-app",
+    "platform-bridge",
+    "solana-vite",
+    "wagmi-vite",
+    "wagmi-next-app",
+    "nextjs",
+    "test"
+  ]
 }
