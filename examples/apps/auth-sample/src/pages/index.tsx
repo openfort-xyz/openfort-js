@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import AccountActions from '@/components/AccountActions/AccountActions'
+import Authorizations7702 from '@/components/Authorizations7702/Authorizations7702'
 import { type StatusType, Toast } from '@/components/Toasts'
 import { Button } from '@/components/ui/button'
 import Wallets from '@/components/Wallet/Wallet'
@@ -167,7 +168,7 @@ const HomePage: NextPage = () => {
             <p className="text-sm text-gray-600 mb-4">
               Openfort gives you modular components so you can customize your product for your users.
               <a
-                href="https://www.openfort.io/docs/products/embedded-wallet/react/kit/create-react-app"
+                href="https://www.openfort.io/docs/products/embedded-wallet/react"
                 className="text-blue-600 hover:underline"
               >
                 Learn more
@@ -242,6 +243,12 @@ const HomePage: NextPage = () => {
             <div>
               <p className="font-medium text-black mb-4">Add funds is on-ramp or transfer funds from another wallet.</p>
               <AddFunds handleSetMessage={handleSetMessage} />
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
+            <h2 className="flex justify-left font-medium text-xl pb-4">7702 Authorizations</h2>
+            <div>
+              <Authorizations7702 handleSetMessage={handleSetMessage} />
             </div>
           </div>
         </div>
