@@ -1,4 +1,4 @@
-import { PasskeyDetails } from 'wallets/types';
+import type { PasskeyDetails } from 'wallets/types'
 
 export enum EmbeddedState {
   NONE,
@@ -14,21 +14,21 @@ export enum OpenfortEvents {
 }
 
 export interface OpenfortEventMap extends Record<string, any> {
-  [OpenfortEvents.LOGGED_OUT]: [];
-  [OpenfortEvents.SWITCH_ACCOUNT]: [string];
+  [OpenfortEvents.LOGGED_OUT]: []
+  [OpenfortEvents.SWITCH_ACCOUNT]: [string]
 }
 
 export type SessionKey = {
-  address: string;
-  isRegistered: boolean;
-};
+  address: string
+  isRegistered: boolean
+}
 
 export type CurrentAccount = {
-  address: string;
-  ownerAddress: string;
-  accountType: AccountType;
+  address: string
+  ownerAddress: string
+  accountType: AccountType
   chainId: number
-};
+}
 
 export enum RecoveryMethod {
   PASSWORD = 'password',
@@ -36,10 +36,17 @@ export enum RecoveryMethod {
   PASSKEY = 'passkey',
 }
 
+export interface PasskeyEnv {
+  name?: string
+  os?: string
+  osVersion?: string
+  device?: string
+}
+
 export type RecoveryMethodDetails = {
-  passkeyId?: string;
-  passkeyEnv?: string;
-};
+  passkeyId?: string
+  passkeyEnv?: PasskeyEnv
+}
 
 export enum AccountType {
   UPGRADEABLE_V4 = 'Upgradeable_v04',
@@ -60,41 +67,41 @@ export enum AuthType {
 }
 
 export type Auth = {
-  player?: string;
-  accessToken: string;
-  refreshToken: string;
-};
+  player?: string
+  accessToken: string
+  refreshToken: string
+}
 
 export type InitAuthResponse = {
-  url: string;
-  key: string;
-};
+  url: string
+  key: string
+}
 
 export type SIWEInitResponse = {
-  address: string;
-  nonce: string;
-  expiresAt: number;
-};
+  address: string
+  nonce: string
+  expiresAt: number
+}
 
 export type JWK = {
-  kty: string;
-  crv: string;
-  x: string;
-  y: string;
-  alg: string;
-};
+  kty: string
+  crv: string
+  x: string
+  y: string
+  alg: string
+}
 
 export type InitializeOAuthOptions = {
-  usePooling?: boolean,
+  usePooling?: boolean
   /** A URL to send the user to after they are confirmed. */
-  redirectTo?: string;
+  redirectTo?: string
   /** A space-separated list of scopes granted to the OAuth application. */
-  scopes?: string;
+  scopes?: string
   /** An object of query params */
-  queryParams?: { [key: string]: string };
+  queryParams?: { [key: string]: string }
   /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
-  skipBrowserRedirect?: boolean;
-};
+  skipBrowserRedirect?: boolean
+}
 
 export enum TokenType {
   ID_TOKEN = 'idToken',
@@ -132,9 +139,9 @@ export const AUTH_PROVIDER = {
   supabase: 'supabase',
   custom: 'custom',
   oidc: 'oidc',
-} as const;
+} as const
 
-export type AuthProvider = typeof AUTH_PROVIDER[keyof typeof AUTH_PROVIDER];
+export type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER]
 
 export enum OAuthProvider {
   GOOGLE = 'google',
@@ -147,219 +154,218 @@ export enum OAuthProvider {
 }
 
 export interface NextActionPayload {
-  'userOperation'?: any;
-  'userOperationHash'?: string;
-  'signableHash'?: string;
+  userOperation?: any
+  userOperationHash?: string
+  signableHash?: string
 }
 
 export interface NextActionResponse {
-  'type': 'sign_with_wallet';
-  'payload': NextActionPayload;
+  type: 'sign_with_wallet'
+  payload: NextActionPayload
 }
 
 export interface EntityIdResponse {
-  'id': string;
+  id: string
 }
 
 export interface Interaction {
-  'to'?: string;
-  'value'?: string;
-  'contract'?: string;
-  'functionName'?: string;
-  'functionArgs'?: Array<any>;
-  'dataSuffix'?: string;
-  'data'?: string;
+  to?: string
+  value?: string
+  contract?: string
+  functionName?: string
+  functionArgs?: any[]
+  dataSuffix?: string
+  data?: string
 }
 
 export interface Log {
-  'blockNumber': number;
-  'blockHash': string;
-  'transactionIndex': number;
-  'removed': boolean;
-  'address': string;
-  'data': string;
-  'topics': Array<string>;
-  'transactionHash': string;
-  'logIndex': number;
-  'orphaned'?: boolean;
+  blockNumber: number
+  blockHash: string
+  transactionIndex: number
+  removed: boolean
+  address: string
+  data: string
+  topics: string[]
+  transactionHash: string
+  logIndex: number
+  orphaned?: boolean
 }
 
 export interface ResponseResponse {
-  'createdAt': number;
-  'blockNumber'?: number;
-  'transactionHash'?: string;
-  'l1GasUsed'?: string;
-  'gasUsed'?: string;
-  'gasFee'?: string;
-  'l1GasFee'?: string;
-  'status'?: number;
-  'logs'?: Array<Log>;
-  'to'?: string;
-  'error'?: any;
+  createdAt: number
+  blockNumber?: number
+  transactionHash?: string
+  l1GasUsed?: string
+  gasUsed?: string
+  gasFee?: string
+  l1GasFee?: string
+  status?: number
+  logs?: Log[]
+  to?: string
+  error?: any
 }
 
 export interface SessionResponse {
-  'id': string;
-  'object': 'session';
-  'createdAt': number;
-  'updatedAt': number;
-  'isActive'?: boolean;
-  'address': string;
-  'validAfter'?: string;
-  'validUntil'?: string;
-  'whitelist'?: Array<string>;
-  'limit'?: number;
-  'nextAction'?: NextActionResponse;
-  'transactionIntents'?: Array<TransactionIntentResponse>;
+  id: string
+  object: 'session'
+  createdAt: number
+  updatedAt: number
+  isActive?: boolean
+  address: string
+  validAfter?: string
+  validUntil?: string
+  whitelist?: string[]
+  limit?: number
+  nextAction?: NextActionResponse
+  transactionIntents?: TransactionIntentResponse[]
 }
 
 export interface PolicyStrategy {
-  'sponsorSchema': 'fixed_rate';
-  'depositor'?: string | null;
-  'tokenContract': string;
-  'tokenContractAmount': string;
+  sponsorSchema: 'fixed_rate'
+  depositor?: string | null
+  tokenContract: string
+  tokenContractAmount: string
 }
 
 export interface TransactionIntentResponsePolicy {
-  'id': string;
-  'object': 'policy';
-  'createdAt': number;
-  'name': string | null;
-  'deleted': boolean;
-  'enabled': boolean;
-  'chainId': number;
-  'paymaster'?: EntityIdResponse;
-  'strategy': PolicyStrategy;
-  'transactionIntents': Array<EntityIdResponse>;
-  'policyRules': Array<EntityIdResponse>;
+  id: string
+  object: 'policy'
+  createdAt: number
+  name: string | null
+  deleted: boolean
+  enabled: boolean
+  chainId: number
+  paymaster?: EntityIdResponse
+  strategy: PolicyStrategy
+  transactionIntents: EntityIdResponse[]
+  policyRules: EntityIdResponse[]
 }
 
 export interface TransactionIntentResponseAccount {
-  'id': string;
-  'object': 'developerAccount';
-  'createdAt': number;
-  'address': string;
-  'ownerAddress': string;
-  'deployed': boolean;
-  'custodial': boolean;
-  'embeddedSigner': boolean;
-  'chainId': number;
-  'accountType': string;
-  'pendingOwnerAddress'?: string;
-  'transactionIntents'?: Array<EntityIdResponse>;
-  'player': EntityIdResponse;
-  'name'?: string;
+  id: string
+  object: 'developerAccount'
+  createdAt: number
+  address: string
+  ownerAddress: string
+  deployed: boolean
+  custodial: boolean
+  embeddedSigner: boolean
+  chainId: number
+  accountType: string
+  pendingOwnerAddress?: string
+  transactionIntents?: EntityIdResponse[]
+  player: EntityIdResponse
+  name?: string
 }
 
 export interface TransactionIntentResponsePlayer {
-  'id': string;
-  'object': 'player';
-  'createdAt': number;
-  'name': string;
-  'description'?: string;
-  'metadata'?: {
-    [key: string]: PlayerMetadataValue;
-  };
-  'transactionIntents'?: Array<EntityIdResponse>;
-  'accounts'?: Array<EntityIdResponse>;
+  id: string
+  object: 'player'
+  createdAt: number
+  name: string
+  description?: string
+  metadata?: {
+    [key: string]: PlayerMetadataValue
+  }
+  transactionIntents?: EntityIdResponse[]
+  accounts?: EntityIdResponse[]
 }
 
 export const TRANSACTION_ABSTRACTION_TYPE = {
   accountAbstractionV6: 'accountAbstractionV6',
   zksync: 'zkSync',
   standard: 'standard',
-} as const;
+} as const
 
-export type TransactionAbstractionType = typeof TRANSACTION_ABSTRACTION_TYPE[keyof typeof TRANSACTION_ABSTRACTION_TYPE];
+export type TransactionAbstractionType =
+  (typeof TRANSACTION_ABSTRACTION_TYPE)[keyof typeof TRANSACTION_ABSTRACTION_TYPE]
 
 export interface TransactionIntentResponse {
-  'id': string;
-  'object': 'transactionIntent';
-  'createdAt': number;
-  'updatedAt': number;
-  'abstractionType': TransactionAbstractionType;
-  'details'?: AccountAbstractionV6Details | ZKSyncDetails | StandardDetails;
-  'chainId': number;
-  'response'?: ResponseResponse;
-  'interactions'?: Array<Interaction>;
-  'nextAction'?: NextActionResponse;
-  'policy'?: TransactionIntentResponsePolicy | EntityIdResponse;
-  'player'?: TransactionIntentResponsePlayer | EntityIdResponse;
-  'account': TransactionIntentResponseAccount | EntityIdResponse;
+  id: string
+  object: 'transactionIntent'
+  createdAt: number
+  updatedAt: number
+  abstractionType: TransactionAbstractionType
+  details?: AccountAbstractionV6Details | ZKSyncDetails | StandardDetails
+  chainId: number
+  response?: ResponseResponse
+  interactions?: Interaction[]
+  nextAction?: NextActionResponse
+  policy?: TransactionIntentResponsePolicy | EntityIdResponse
+  player?: TransactionIntentResponsePlayer | EntityIdResponse
+  account: TransactionIntentResponseAccount | EntityIdResponse
 }
 
 export interface EstimateTransactionIntentGasResult {
-  'estimatedTXGas': string;
-  'estimatedTXGasFee': string;
-  'estimatedTXGasFeeUSD': string;
-  'estimatedTXGasFeeToken'?: string;
-  'gasPrice': string;
+  estimatedTXGas: string
+  estimatedTXGasFee: string
+  estimatedTXGasFeeUSD: string
+  estimatedTXGasFeeToken?: string
+  gasPrice: string
 }
 
-export interface PlayerMetadataValue {
-}
+export type PlayerMetadataValue = unknown
 
 export interface PlayerResponseAccountsInner {
-  'id': string;
-  'object': 'account';
-  'createdAt': number;
-  'address': string;
-  'ownerAddress': string;
-  'deployed': boolean;
-  'custodial': boolean;
-  'embeddedSigner': boolean;
-  'chainId': number;
-  'accountType': string;
-  'pendingOwnerAddress'?: string;
-  'transactionIntents'?: Array<EntityIdResponse>;
-  'player': EntityIdResponse;
+  id: string
+  object: 'account'
+  createdAt: number
+  address: string
+  ownerAddress: string
+  deployed: boolean
+  custodial: boolean
+  embeddedSigner: boolean
+  chainId: number
+  accountType: string
+  pendingOwnerAddress?: string
+  transactionIntents?: EntityIdResponse[]
+  player: EntityIdResponse
 }
 
 export interface AuthPlayerResponsePlayer {
-  'id': string;
-  'object': 'player';
-  'createdAt': number;
-  'name': string;
-  'description'?: string;
-  'metadata'?: {
-    [key: string]: PlayerMetadataValue;
-  };
-  'transactionIntents'?: Array<TransactionIntentResponse>;
-  'accounts'?: Array<PlayerResponseAccountsInner>;
+  id: string
+  object: 'player'
+  createdAt: number
+  name: string
+  description?: string
+  metadata?: {
+    [key: string]: PlayerMetadataValue
+  }
+  transactionIntents?: TransactionIntentResponse[]
+  accounts?: PlayerResponseAccountsInner[]
 }
 
-export interface PrismaInputJsonValue {
-}
+export type PrismaInputJsonValue = Record<string, unknown>
 
-export interface AuthProviderResponse { }
+export type AuthProviderResponse = Record<string, unknown>
 
 export interface LinkedAccountResponse {
-  'provider': AuthProvider;
-  'email'?: string;
-  'externalUserId'?: string;
-  'verified'?: boolean;
-  'disabled': boolean;
-  'walletClientType'?: string;
-  'connectorType'?: string;
-  'updatedAt'?: number;
-  'address'?: string;
-  'metadata'?: {
-    [key: string]: PlayerMetadataValue;
-  };
+  provider: AuthProvider
+  email?: string
+  externalUserId?: string
+  verified?: boolean
+  disabled: boolean
+  walletClientType?: string
+  connectorType?: string
+  updatedAt?: number
+  address?: string
+  metadata?: {
+    [key: string]: PlayerMetadataValue
+  }
 }
 
 export interface AuthPlayerResponse {
-  'player'?: AuthPlayerResponsePlayer;
-  'id': string;
-  'object': 'player';
-  'createdAt': number;
-  'linkedAccounts': Array<LinkedAccountResponse>;
+  player?: AuthPlayerResponsePlayer
+  id: string
+  object: 'player'
+  createdAt: number
+  linkedAccounts: LinkedAccountResponse[]
 }
 
 export interface AuthResponse {
-  'player': AuthPlayerResponse;
-  'token': string;
-  'refreshToken': string;
+  player: AuthPlayerResponse
+  token: string
+  refreshToken: string
 }
 
 export enum AuthActionRequiredActions {
@@ -367,56 +373,56 @@ export enum AuthActionRequiredActions {
 }
 
 export interface AuthActionRequiredResponse {
-  action: AuthActionRequiredActions;
+  action: AuthActionRequiredActions
 }
 
 export interface AccountAbstractionV6Details {
-  'userOperation': UserOperationV6;
-  'userOperationHash': string;
+  userOperation: UserOperationV6
+  userOperationHash: string
 }
 
 export interface UserOperationV6 {
-  'callData': string;
-  'callGasLimit': string;
-  'initCode'?: string;
-  'maxFeePerGas': string;
-  'maxPriorityFeePerGas': string;
-  'nonce': string;
-  'paymasterAndData'?: string;
-  'preVerificationGas': string;
-  'sender': string
-  'signature': string
-  'verificationGasLimit': string
+  callData: string
+  callGasLimit: string
+  initCode?: string
+  maxFeePerGas: string
+  maxPriorityFeePerGas: string
+  nonce: string
+  paymasterAndData?: string
+  preVerificationGas: string
+  sender: string
+  signature: string
+  verificationGasLimit: string
 }
 
 export interface ZKSyncDetails {
-  'from': string;
-  'to': string;
-  'data'?: string;
-  'nonce': string;
-  'gas': string;
-  'maxFeePerGas': string;
-  'maxPriorityFeePerGas': string;
-  'paymaster'?: string;
-  'paymasterInput'?: string;
-  'value'?: string;
+  from: string
+  to: string
+  data?: string
+  nonce: string
+  gas: string
+  maxFeePerGas: string
+  maxPriorityFeePerGas: string
+  paymaster?: string
+  paymasterInput?: string
+  value?: string
 }
 
 export interface StandardDetails {
-  'from': string;
-  'to': string;
-  'data'?: string;
-  'nonce': string;
-  'gas': string;
-  'maxFeePerGas': string;
-  'maxPriorityFeePerGas': string;
-  'value'?: string;
+  from: string
+  to: string
+  data?: string
+  nonce: string
+  gas: string
+  maxFeePerGas: string
+  maxPriorityFeePerGas: string
+  value?: string
 }
 
 export type PKCEData = {
-  state: string,
+  state: string
   verifier: string
-};
+}
 
 export enum CodeChallengeMethodEnum {
   PLAIN = 'plain',
@@ -434,65 +440,68 @@ export enum ChainTypeEnum {
 }
 
 export interface EmbeddedAccount {
-  user: string;
-  id: string;
-  chainType: ChainTypeEnum;
-  address: string;
-  createdAt?: number;
-  implementationType?: string;
-  factoryAddress?: string;
-  salt?: string;
-  accountType: AccountTypeEnum;
-  recoveryMethod?: RecoveryMethod;
-  recoveryMethodDetails?: RecoveryMethodDetails;
-  chainId?: number;
+  user: string
+  id: string
+  chainType: ChainTypeEnum
+  address: string
+  createdAt?: number
+  implementationType?: string
+  factoryAddress?: string
+  salt?: string
+  accountType: AccountTypeEnum
+  recoveryMethod?: RecoveryMethod
+  recoveryMethodDetails?: RecoveryMethodDetails
+  chainId?: number
   /** @deprecated  */
-  ownerAddress?: string;
+  ownerAddress?: string
   /** @deprecated  */
-  type?: string;
+  type?: string
 }
 
 export type EmbeddedAccountConfigureParams = {
-  chainId?: number;
-  recoveryParams: RecoveryParams;
-  chainType?: ChainTypeEnum;
-  accountType?: AccountTypeEnum;
-};
+  chainId?: number
+  recoveryParams: RecoveryParams
+  chainType?: ChainTypeEnum
+  accountType?: AccountTypeEnum
+}
 
 export type EmbeddedAccountRecoverParams = {
-  account: string;
-  recoveryParams: RecoveryParams;
-};
+  account: string
+  recoveryParams: RecoveryParams
+}
 
 export type EmbeddedAccountCreateParams = {
-  accountType: AccountTypeEnum;
-  chainType: ChainTypeEnum;
-  chainId?: number;
-  recoveryParams: RecoveryParams;
-};
+  accountType: AccountTypeEnum
+  chainType: ChainTypeEnum
+  chainId?: number
+  recoveryParams: RecoveryParams
+}
 
 export type PasskeyInfo = {
-  passkeyId: string;
-  passkeyEnv?: string;
-  passkeyKey?: Uint8Array;
-};
+  passkeyId: string
+  passkeyEnv?: string
+  passkeyKey?: Uint8Array
+}
 
-export type RecoveryParams = {
-  recoveryMethod: RecoveryMethod.AUTOMATIC;
-  encryptionSession: string,
-} | {
-  recoveryMethod: RecoveryMethod.PASSWORD;
-  password: string;
-} | {
-  recoveryMethod: RecoveryMethod.PASSKEY;
-  passkeyInfo?: PasskeyInfo;
-};
+export type RecoveryParams =
+  | {
+      recoveryMethod: RecoveryMethod.AUTOMATIC
+      encryptionSession: string
+    }
+  | {
+      recoveryMethod: RecoveryMethod.PASSWORD
+      password: string
+    }
+  | {
+      recoveryMethod: RecoveryMethod.PASSKEY
+      passkeyInfo?: PasskeyInfo
+    }
 
 export type EntropyResponse = {
-  recoveryPassword?: string;
-  encryptionSession?: string;
+  recoveryPassword?: string
+  encryptionSession?: string
   passkey?: PasskeyDetails
-};
+}
 
 export enum SortOrdering {
   ASC = 'asc',
@@ -500,11 +509,11 @@ export enum SortOrdering {
 }
 
 export type ListAccountsParams = {
-  address?: string;
-  accountType?: AccountTypeEnum;
-  chainType?: ChainTypeEnum;
-  chainId?: number;
-  order?: SortOrdering;
-  limit?: number;
-  skip?: number;
-};
+  address?: string
+  accountType?: AccountTypeEnum
+  chainType?: ChainTypeEnum
+  chainId?: number
+  order?: SortOrdering
+  limit?: number
+  skip?: number
+}

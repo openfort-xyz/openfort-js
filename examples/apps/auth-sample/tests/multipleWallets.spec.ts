@@ -1,15 +1,12 @@
-import test, { expect, Page } from '@playwright/test';
-import { Logger } from './Logger';
-import { authenticate, authenticateAndRecover, RecoveryMethod } from './authenticate';
-import { changeToAutomaticRecovery, changeToPasswordRecovery } from './changeRecovery';
-
+import test, { expect, type Page } from '@playwright/test'
+import { Logger } from './Logger'
 
 test.use({
-  storageState: [async ({ }, use) => use(undefined), { scope: 'test' }],
-});
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring
+  storageState: [async ({}, use) => use(undefined), { scope: 'test' }],
+})
 
-
-const logout = async (page: Page) => {
+const _logout = async (page: Page) => {
   const logoutButton = page.getByRole('button', { name: 'Logout' }).first()
   logoutButton.click()
 
@@ -17,72 +14,72 @@ const logout = async (page: Page) => {
 }
 
 test('Multiple wallets', async ({ page }) => {
-  await test.step("Authenticate as guest", async () => {
-    await page.goto('/login');
-    page.getByRole('button', { name: 'Continue as guest' }).click();
-    await page.waitForURL('/');
-  });
+  await test.step('Authenticate as guest', async () => {
+    await page.goto('/login')
+    page.getByRole('button', { name: 'Continue as guest' }).click()
+    await page.waitForURL('/')
+  })
 
-  await test.step("Create first wallet", async () => {
-    await expect(page.locator('h2')).toContainText('Create a new account');
+  await test.step('Create first wallet', async () => {
+    await expect(page.locator('h2')).toContainText('Create a new account')
     const createWalletButton = page.getByRole('button', { name: 'Set automatic recovery' }).first()
     createWalletButton.click()
 
-    await expect(page.locator('div.spinner')).toBeInViewport();
-    await page.locator("div.spinner").waitFor({ state: 'hidden' });
+    await expect(page.locator('div.spinner')).toBeInViewport()
+    await page.locator('div.spinner').waitFor({ state: 'hidden' })
 
-    await expect(page.locator('h2').getByText('Console')).toBeVisible();
-  });
+    await expect(page.locator('h2').getByText('Console')).toBeVisible()
+  })
   let logger = new Logger(page)
   await logger.init()
 
-  await test.step("Ensure only one wallet", async () => {
+  await test.step('Ensure only one wallet', async () => {
     page.getByRole('button', { name: 'List wallets' }).first().click()
 
     await logger.waitForNewLogs()
     const lastLog = logger.getLastLog()
 
-    expect(lastLog).toContain("wallet list (length: 1):")
-  });
+    expect(lastLog).toContain('wallet list (length: 1):')
+  })
 
-  await test.step("Create second wallet", async () => {
+  await test.step('Create second wallet', async () => {
     const createWalletButton = page.getByRole('button', { name: '+ Create wallet' }).first()
     createWalletButton.click()
 
     const createAutomaticButton = page.getByRole('button', { name: 'Create with Automatic Recovery' })
-    await expect(createAutomaticButton).toBeInViewport();
+    await expect(createAutomaticButton).toBeInViewport()
     createAutomaticButton.click()
 
-    await expect(page.locator('div.spinner')).toBeInViewport();
+    await expect(page.locator('div.spinner')).toBeInViewport()
 
     await logger.waitForNewLogs()
     const lastLog = logger.getLastLog()
 
-    expect(lastLog).toContain("Created a new wallet with automatic recovery.")
+    expect(lastLog).toContain('Created a new wallet with automatic recovery.')
   })
 
-  page.reload();
+  page.reload()
   logger = new Logger(page)
   await logger.init()
 
-  await test.step("Ensure 2 wallets", async () => {
+  await test.step('Ensure 2 wallets', async () => {
     page.getByRole('button', { name: 'List wallets' }).first().click()
 
     await logger.waitForNewLogs()
     const lastLog = logger.getLastLog()
 
-    expect(lastLog).toContain("wallet list (length: 2):")
-  });
+    expect(lastLog).toContain('wallet list (length: 2):')
+  })
 
-  await test.step("Change wallet", async () => {
+  await test.step('Change wallet', async () => {
     page.getByRole('button', { name: 'Change wallet' }).first().click()
-    const useThisWalletButton =  page.getByRole('button', { name: 'Use this wallet' })
-    await useThisWalletButton.waitFor({ timeout: 5000 });
+    const useThisWalletButton = page.getByRole('button', { name: 'Use this wallet' })
+    await useThisWalletButton.waitFor({ timeout: 5000 })
     useThisWalletButton.click()
 
     await logger.waitForNewLogs()
     const lastLog = logger.getLastLog()
 
-    expect(lastLog).toContain("Switched to wallet")
-  });
-});
+    expect(lastLog).toContain('Switched to wallet')
+  })
+})

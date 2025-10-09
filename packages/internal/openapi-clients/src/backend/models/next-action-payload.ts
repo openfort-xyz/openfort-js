@@ -21,14 +21,14 @@
  */
 export interface NextActionPayload {
     /**
-     * 
+     * The userOperation.
      * @type {any}
      * @memberof NextActionPayload
      * @deprecated
      */
     'userOp'?: any;
     /**
-     * 
+     * The hashed userOperation.
      * @type {string}
      * @memberof NextActionPayload
      * @deprecated
@@ -38,12 +38,14 @@ export interface NextActionPayload {
      * The userOperation.
      * @type {any}
      * @memberof NextActionPayload
+     * @deprecated
      */
     'userOperation'?: any;
     /**
      * The hashed userOperation.
      * @type {string}
      * @memberof NextActionPayload
+     * @deprecated
      */
     'userOperationHash'?: string;
     /**

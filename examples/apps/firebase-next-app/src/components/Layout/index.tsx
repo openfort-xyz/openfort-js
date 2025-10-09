@@ -1,9 +1,9 @@
-import Header from "./Header";
+import Header from './Header'
 
 type Props = {
-  sidebar: React.ReactNode;
-  children: React.ReactNode;
-};
+  sidebar: React.ReactNode
+  children: React.ReactNode
+}
 
 export default function Layout({ children, sidebar }: Props) {
   return (
@@ -16,5 +16,5 @@ export default function Layout({ children, sidebar }: Props) {
         <div className="w-full my-4">{children}</div>
       </main>
     </div>
-  );
+  )
 }

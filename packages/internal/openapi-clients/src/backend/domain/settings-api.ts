@@ -34,6 +34,10 @@ import { DeveloperAccountResponse } from '../models';
 // @ts-ignore
 import { DeveloperAccountResponseExpandable } from '../models';
 // @ts-ignore
+import { SignPayloadRequest } from '../models';
+// @ts-ignore
+import { SignPayloadResponse } from '../models';
+// @ts-ignore
 import { SortOrder } from '../models';
 // @ts-ignore
 import { UpdateDeveloperAccountCreateRequest } from '../models';
@@ -44,7 +48,7 @@ import { UpdateDeveloperAccountCreateRequest } from '../models';
 export const SettingsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
+         * Create or add a developer account. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
          * @summary Create a developer account.
          * @param {CreateDeveloperAccountCreateRequest} createDeveloperAccountCreateRequest 
          * @param {*} [options] Override http request option.
@@ -265,6 +269,50 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
+         * Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
+         * @summary Sign a given payload
+         * @param {string} id Specifies the unique developer account ID (starts with dac_).
+         * @param {SignPayloadRequest} signPayloadRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signPayloadDeveloperAccount: async (id: string, signPayloadRequest: SignPayloadRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('signPayloadDeveloperAccount', 'id', id)
+            // verify required parameter 'signPayloadRequest' is not null or undefined
+            assertParamExists('signPayloadDeveloperAccount', 'signPayloadRequest', signPayloadRequest)
+            const localVarPath = `/v1/settings/developer_accounts/{id}/sign_payload`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(signPayloadRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Update a developer account.
          * @summary Update a developer account.
          * @param {string} id 
@@ -319,7 +367,7 @@ export const SettingsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SettingsApiAxiosParamCreator(configuration)
     return {
         /**
-         * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
+         * Create or add a developer account. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
          * @summary Create a developer account.
          * @param {CreateDeveloperAccountCreateRequest} createDeveloperAccountCreateRequest 
          * @param {*} [options] Override http request option.
@@ -379,6 +427,18 @@ export const SettingsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
+         * @summary Sign a given payload
+         * @param {string} id Specifies the unique developer account ID (starts with dac_).
+         * @param {SignPayloadRequest} signPayloadRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async signPayloadDeveloperAccount(id: string, signPayloadRequest: SignPayloadRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignPayloadResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signPayloadDeveloperAccount(id, signPayloadRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Update a developer account.
          * @summary Update a developer account.
          * @param {string} id 
@@ -401,7 +461,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = SettingsApiFp(configuration)
     return {
         /**
-         * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
+         * Create or add a developer account. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
          * @summary Create a developer account.
          * @param {SettingsApiCreateDeveloperAccountRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -449,6 +509,16 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
          */
         getVerificationPayload(requestParameters: SettingsApiGetVerificationPayloadRequest, options?: AxiosRequestConfig): AxiosPromise<DeveloperAccountGetMessageResponse> {
             return localVarFp.getVerificationPayload(requestParameters.address, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
+         * @summary Sign a given payload
+         * @param {SettingsApiSignPayloadDeveloperAccountRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signPayloadDeveloperAccount(requestParameters: SettingsApiSignPayloadDeveloperAccountRequest, options?: AxiosRequestConfig): AxiosPromise<SignPayloadResponse> {
+            return localVarFp.signPayloadDeveloperAccount(requestParameters.id, requestParameters.signPayloadRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Update a developer account.
@@ -569,6 +639,27 @@ export interface SettingsApiGetVerificationPayloadRequest {
 }
 
 /**
+ * Request parameters for signPayloadDeveloperAccount operation in SettingsApi.
+ * @export
+ * @interface SettingsApiSignPayloadDeveloperAccountRequest
+ */
+export interface SettingsApiSignPayloadDeveloperAccountRequest {
+    /**
+     * Specifies the unique developer account ID (starts with dac_).
+     * @type {string}
+     * @memberof SettingsApiSignPayloadDeveloperAccount
+     */
+    readonly id: string
+
+    /**
+     * 
+     * @type {SignPayloadRequest}
+     * @memberof SettingsApiSignPayloadDeveloperAccount
+     */
+    readonly signPayloadRequest: SignPayloadRequest
+}
+
+/**
  * Request parameters for updateDeveloperAccount operation in SettingsApi.
  * @export
  * @interface SettingsApiUpdateDeveloperAccountRequest
@@ -597,7 +688,7 @@ export interface SettingsApiUpdateDeveloperAccountRequest {
  */
 export class SettingsApi extends BaseAPI {
     /**
-     * Create or add a developer account. Developer accounts can be used as for escrow, minting and transferring assets. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
+     * Create or add a developer account. To add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor
      * @summary Create a developer account.
      * @param {SettingsApiCreateDeveloperAccountRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -654,6 +745,18 @@ export class SettingsApi extends BaseAPI {
      */
     public getVerificationPayload(requestParameters: SettingsApiGetVerificationPayloadRequest, options?: AxiosRequestConfig) {
         return SettingsApiFp(this.configuration).getVerificationPayload(requestParameters.address, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
+     * @summary Sign a given payload
+     * @param {SettingsApiSignPayloadDeveloperAccountRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SettingsApi
+     */
+    public signPayloadDeveloperAccount(requestParameters: SettingsApiSignPayloadDeveloperAccountRequest, options?: AxiosRequestConfig) {
+        return SettingsApiFp(this.configuration).signPayloadDeveloperAccount(requestParameters.id, requestParameters.signPayloadRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check": "biome check --write --unsafe",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,21 +16,16 @@
     "buffer": "^6.0.3",
     "ox": "^0.6.10",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "vite-plugin-node-polyfills": "^0.23.0"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.7.5",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.21.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "tailwindcss": "^4.0.14",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0"
   }
 }

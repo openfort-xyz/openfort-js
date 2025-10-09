@@ -1,5 +1,5 @@
-import { VERSION } from 'version';
-import type { RecoveryMethod } from '../types/types';
+import { VERSION } from 'version'
+import type { RecoveryMethod } from '../types/types'
 
 export enum Event {
   LOADED = 'loaded',
@@ -25,102 +25,102 @@ export enum Event {
   PONG = 'pong',
 }
 
-export const NOT_CONFIGURED_ERROR = 'not-configured-error';
-export const MISSING_USER_ENTROPY_ERROR = 'missing-user-entropy-error';
-export const MISSING_PROJECT_ENTROPY_ERROR = 'missing-project-entropy-error';
-export const INCORRECT_USER_ENTROPY_ERROR = 'incorrect-user-entropy-error';
-export const INCORRECT_PASSKEY_ERROR = 'incorrect-passkey-error';
-export const MISSING_PASSKEY_ERROR = 'missing-passkey-error';
-export const OTP_REQUIRED_ERROR = 'otp-required-error';
+export const NOT_CONFIGURED_ERROR = 'not-configured-error'
+export const MISSING_USER_ENTROPY_ERROR = 'missing-user-entropy-error'
+export const MISSING_PROJECT_ENTROPY_ERROR = 'missing-project-entropy-error'
+export const INCORRECT_USER_ENTROPY_ERROR = 'incorrect-user-entropy-error'
+export const INCORRECT_PASSKEY_ERROR = 'incorrect-passkey-error'
+export const MISSING_PASSKEY_ERROR = 'missing-passkey-error'
+export const OTP_REQUIRED_ERROR = 'otp-required-error'
 
 export interface IEvent {
-  uuid: string;
+  uuid: string
 }
 
 export interface IEventRequest extends IEvent {
-  action: Event;
+  action: Event
 }
 
 export class GetCurrentDeviceRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.GET_CURRENT_DEVICE;
+  action: Event = Event.GET_CURRENT_DEVICE
 
-  playerID: string;
+  playerID: string
 
   constructor(uuid: string, playerId: string) {
-    this.uuid = uuid;
-    this.playerID = playerId;
+    this.uuid = uuid
+    this.playerID = playerId
   }
 }
 
 export class GetCurrentDeviceResponse implements IEventResponse {
-  uuid: string;
+  uuid: string
 
-  success: boolean;
+  success: boolean
 
-  action: Event = Event.CURRENT_DEVICE;
+  action: Event = Event.CURRENT_DEVICE
 
-  deviceID: string | null;
+  deviceID: string | null
 
-  accountType: string | null;
+  accountType: string | null
 
-  version: string | null = null;
+  version: string | null = null
 
-  chainId: number | null;
+  chainId: number | null
 
-  address: string | null;
+  address: string | null
 
   constructor(
     uuid: string,
     deviceID: string | null,
     accountType: string | null,
     chainId: number | null,
-    address: string | null,
+    address: string | null
   ) {
-    this.uuid = uuid;
-    this.success = true;
-    this.deviceID = deviceID;
-    this.accountType = accountType;
-    this.chainId = chainId;
-    this.address = address;
+    this.uuid = uuid
+    this.success = true
+    this.deviceID = deviceID
+    this.accountType = accountType
+    this.chainId = chainId
+    this.address = address
   }
 }
 
 export class CreateRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.CREATE;
+  action: Event = Event.CREATE
 
-  accountType: string;
+  accountType: string
 
-  chainType: string;
+  chainType: string
 
-  chainId: number | null;
+  chainId: number | null
 
-  recovery: ShieldAuthentication | null;
+  recovery: ShieldAuthentication | null
 
-  publishableKey: string;
+  publishableKey: string
 
-  shieldAPIKey: string;
+  shieldAPIKey: string
 
-  accessToken: string | null;
+  accessToken: string | null
 
-  encryptionKey: string | null;
+  encryptionKey: string | null
 
-  encryptionSession: string | null;
+  encryptionSession: string | null
 
-  passkey: PasskeyDetails | null;
+  passkey: PasskeyDetails | null
 
-  openfortURL: string;
+  openfortURL: string
 
-  shieldURL: string;
+  shieldURL: string
 
-  thirdPartyProvider: string | null;
+  thirdPartyProvider: string | null
 
-  thirdPartyTokenType: string | null;
+  thirdPartyTokenType: string | null
 
-  playerID: string | null;
+  playerID: string | null
 
   constructor(
     uuid: string,
@@ -138,57 +138,57 @@ export class CreateRequest implements IEventRequest {
     thirdPartyProvider: string | null = null,
     thirdPartyTokenType: string | null = null,
     encryptionSession: string | null = null,
-    passkey: PasskeyDetails | null = null,
+    passkey: PasskeyDetails | null = null
   ) {
-    this.uuid = uuid;
-    this.accountType = accountType;
-    this.chainType = chainType;
-    this.chainId = chainId;
-    this.recovery = recovery;
-    this.publishableKey = publishableKey;
-    this.shieldAPIKey = shieldAPIKey;
-    this.accessToken = accessToken;
-    this.playerID = playerID;
-    this.thirdPartyProvider = thirdPartyProvider;
-    this.thirdPartyTokenType = thirdPartyTokenType;
-    this.encryptionKey = encryptionKey;
-    this.openfortURL = openfortURL;
-    this.shieldURL = shieldURL;
-    this.encryptionSession = encryptionSession;
-    this.passkey = passkey;
+    this.uuid = uuid
+    this.accountType = accountType
+    this.chainType = chainType
+    this.chainId = chainId
+    this.recovery = recovery
+    this.publishableKey = publishableKey
+    this.shieldAPIKey = shieldAPIKey
+    this.accessToken = accessToken
+    this.playerID = playerID
+    this.thirdPartyProvider = thirdPartyProvider
+    this.thirdPartyTokenType = thirdPartyTokenType
+    this.encryptionKey = encryptionKey
+    this.openfortURL = openfortURL
+    this.shieldURL = shieldURL
+    this.encryptionSession = encryptionSession
+    this.passkey = passkey
   }
 }
 
 export class RecoverRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.RECOVER;
+  action: Event = Event.RECOVER
 
-  recovery: ShieldAuthentication | null;
+  recovery: ShieldAuthentication | null
 
-  publishableKey: string;
+  publishableKey: string
 
-  shieldAPIKey: string;
+  shieldAPIKey: string
 
-  accessToken: string | null;
+  accessToken: string | null
 
-  encryptionKey: string | null;
+  encryptionKey: string | null
 
-  encryptionSession: string | null;
+  encryptionSession: string | null
 
-  passkey: PasskeyDetails | null;
+  passkey: PasskeyDetails | null
 
-  openfortURL: string;
+  openfortURL: string
 
-  shieldURL: string;
+  shieldURL: string
 
-  thirdPartyProvider: string | null;
+  thirdPartyProvider: string | null
 
-  thirdPartyTokenType: string | null;
+  thirdPartyTokenType: string | null
 
-  playerID: string | null;
+  playerID: string | null
 
-  account: string;
+  account: string
 
   constructor(
     uuid: string,
@@ -204,49 +204,49 @@ export class RecoverRequest implements IEventRequest {
     thirdPartyProvider: string | null = null,
     thirdPartyTokenType: string | null = null,
     encryptionSession: string | null = null,
-    passkey: PasskeyDetails | null = null,
+    passkey: PasskeyDetails | null = null
   ) {
-    this.uuid = uuid;
-    this.recovery = recovery;
-    this.publishableKey = publishableKey;
-    this.shieldAPIKey = shieldAPIKey;
-    this.accessToken = accessToken;
-    this.playerID = playerID;
-    this.account = account;
-    this.thirdPartyProvider = thirdPartyProvider;
-    this.thirdPartyTokenType = thirdPartyTokenType;
-    this.encryptionKey = encryptionKey;
-    this.openfortURL = openfortURL;
-    this.shieldURL = shieldURL;
-    this.encryptionSession = encryptionSession;
-    this.passkey = passkey;
+    this.uuid = uuid
+    this.recovery = recovery
+    this.publishableKey = publishableKey
+    this.shieldAPIKey = shieldAPIKey
+    this.accessToken = accessToken
+    this.playerID = playerID
+    this.account = account
+    this.thirdPartyProvider = thirdPartyProvider
+    this.thirdPartyTokenType = thirdPartyTokenType
+    this.encryptionKey = encryptionKey
+    this.openfortURL = openfortURL
+    this.shieldURL = shieldURL
+    this.encryptionSession = encryptionSession
+    this.passkey = passkey
   }
 }
 
 export class LogoutRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.LOGOUT;
+  action: Event = Event.LOGOUT
 
   constructor(uuid: string) {
-    this.uuid = uuid;
+    this.uuid = uuid
   }
 }
 
 export class SignRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.SIGN;
+  action: Event = Event.SIGN
 
-  message: string | Uint8Array;
+  message: string | Uint8Array
 
-  requestConfiguration: RequestConfiguration;
+  requestConfiguration: RequestConfiguration
 
-  requireArrayify?: boolean;
+  requireArrayify?: boolean
 
-  requireHash?: boolean;
+  requireHash?: boolean
 
-  chainType: string;
+  chainType: string
 
   constructor(
     uuid: string,
@@ -254,65 +254,62 @@ export class SignRequest implements IEventRequest {
     requestConfiguration: RequestConfiguration,
     requireArrayify?: boolean,
     requireHash?: boolean,
-    chainType?: string,
+    chainType?: string
   ) {
-    this.uuid = uuid;
-    this.message = message;
-    this.requestConfiguration = requestConfiguration;
-    this.requireArrayify = requireArrayify;
-    this.requireHash = requireHash;
-    this.chainType = chainType || 'EVM';
+    this.uuid = uuid
+    this.message = message
+    this.requestConfiguration = requestConfiguration
+    this.requireArrayify = requireArrayify
+    this.requireHash = requireHash
+    this.chainType = chainType || 'EVM'
   }
 }
 
 export class SwitchChainRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.SWITCH_CHAIN;
+  action: Event = Event.SWITCH_CHAIN
 
-  chainId: number;
+  chainId: number
 
-  requestConfiguration?: RequestConfiguration;
+  requestConfiguration?: RequestConfiguration
 
   constructor(uuid: string, chainId: number, requestConfiguration?: RequestConfiguration) {
-    this.uuid = uuid;
-    this.chainId = chainId;
-    this.requestConfiguration = requestConfiguration;
+    this.uuid = uuid
+    this.chainId = chainId
+    this.requestConfiguration = requestConfiguration
   }
 }
 
 export class ExportPrivateKeyRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.EXPORT;
+  action: Event = Event.EXPORT
 
-  requestConfiguration: RequestConfiguration;
+  requestConfiguration: RequestConfiguration
 
-  constructor(
-    uuid: string,
-    requestConfiguration: RequestConfiguration,
-  ) {
-    this.uuid = uuid;
-    this.requestConfiguration = requestConfiguration;
+  constructor(uuid: string, requestConfiguration: RequestConfiguration) {
+    this.uuid = uuid
+    this.requestConfiguration = requestConfiguration
   }
 }
 
 export class SetRecoveryMethodRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.SET_RECOVERY_METHOD;
+  action: Event = Event.SET_RECOVERY_METHOD
 
-  recoveryMethod: RecoveryMethod;
+  recoveryMethod: RecoveryMethod
 
-  recoveryPassword?: string;
+  recoveryPassword?: string
 
-  encryptionSession?: string;
+  encryptionSession?: string
 
-  passkeyKey?: Uint8Array;
+  passkeyKey?: Uint8Array
 
-  passkeyId?: string;
+  passkeyId?: string
 
-  requestConfiguration: RequestConfiguration;
+  requestConfiguration: RequestConfiguration
 
   constructor(
     uuid: string,
@@ -321,190 +318,180 @@ export class SetRecoveryMethodRequest implements IEventRequest {
     recoveryPassword?: string,
     encryptionSession?: string,
     passkeyKey?: Uint8Array,
-    passkeyId?: string,
+    passkeyId?: string
   ) {
-    this.uuid = uuid;
-    this.recoveryMethod = recoveryMethod;
-    this.recoveryPassword = recoveryPassword;
-    this.encryptionSession = encryptionSession;
-    this.requestConfiguration = requestConfiguration;
-    this.passkeyKey = passkeyKey;
-    this.passkeyId = passkeyId;
+    this.uuid = uuid
+    this.recoveryMethod = recoveryMethod
+    this.recoveryPassword = recoveryPassword
+    this.encryptionSession = encryptionSession
+    this.requestConfiguration = requestConfiguration
+    this.passkeyKey = passkeyKey
+    this.passkeyId = passkeyId
   }
 }
 
 export interface IExportPrivateKeyResponse extends IEventResponse {
-  key: string;
+  key: string
 }
 
-export type ISetRecoveryMethodResponse = IEventResponse;
+export type ISetRecoveryMethodResponse = IEventResponse
 
 export class ExportPrivateKeyResponse implements IExportPrivateKeyResponse {
-  uuid: string;
+  uuid: string
 
-  success: boolean;
+  success: boolean
 
-  action: Event = Event.EXPORT;
+  action: Event = Event.EXPORT
 
-  key: string;
+  key: string
 
-  version = VERSION;
+  version = VERSION
 
   constructor(uuid: string, key: string) {
-    this.success = true;
-    this.key = key;
-    this.uuid = uuid;
+    this.success = true
+    this.key = key
+    this.uuid = uuid
   }
 }
 
 export class SetRecoveryMethodResponse implements ISetRecoveryMethodResponse {
-  uuid: string;
+  uuid: string
 
-  success: boolean;
+  success: boolean
 
-  action: Event = Event.SET_RECOVERY_METHOD;
+  action: Event = Event.SET_RECOVERY_METHOD
 
-  version = VERSION;
+  version = VERSION
 
   constructor(uuid: string) {
-    this.success = true;
-    this.uuid = uuid;
+    this.success = true
+    this.uuid = uuid
   }
 }
 
 export interface IEventResponse extends IEvent {
-  success: boolean;
-  action: Event;
+  success: boolean
+  action: Event
 }
 
 export interface IErrorResponse extends IEventResponse {
-  error: string;
+  error: string
 }
 
 export interface IConfigureResponse extends IEventResponse {
-  deviceID: string;
-  address: string;
-  chainId?: number;
-  accountType?: string;
+  deviceID: string
+  address: string
+  chainId?: number
+  accountType?: string
 }
 
-export type IUpdateAuthenticationResponse = IEventResponse;
+export type IUpdateAuthenticationResponse = IEventResponse
 
 export interface ISignResponse extends IEventResponse {
-  signature: string;
+  signature: string
 }
 
 export function isErrorResponse(response: IEventResponse): response is IErrorResponse {
-  return 'error' in response;
+  return 'error' in response
 }
 
-export type ILogoutResponse = IEventResponse;
+export type ILogoutResponse = IEventResponse
 
 export interface ISwitchChainResponse extends IEventResponse {
-  deviceID: string;
-  accountType: string | null;
-  chainId: number | null;
-  address: string | null;
+  deviceID: string
+  accountType: string | null
+  chainId: number | null
+  address: string | null
 }
 
 export class ErrorResponse implements IErrorResponse {
-  uuid: string;
+  uuid: string
 
-  success: boolean;
+  success: boolean
 
-  error: string;
+  error: string
 
-  action: Event;
+  action: Event
 
-  version: string | null;
+  version: string | null
 
   constructor(uuid: string, action: Event, error: string) {
-    this.action = action;
-    this.success = false;
-    this.error = error;
-    this.uuid = uuid;
-    this.version = null;
+    this.action = action
+    this.success = false
+    this.error = error
+    this.uuid = uuid
+    this.version = null
   }
 }
 
 export class CreateResponse implements IConfigureResponse {
-  uuid: string;
+  uuid: string
 
-  account: string;
+  account: string
 
-  success: boolean;
+  success: boolean
 
-  deviceID: string;
+  deviceID: string
 
-  address: string;
+  address: string
 
-  action: Event = Event.CREATED;
+  action: Event = Event.CREATED
 
-  version = VERSION;
+  version = VERSION
 
-  constructor(
-    uuid: string,
-    account: string,
-    deviceID: string,
-    address: string,
-  ) {
-    this.success = true;
-    this.account = account;
-    this.deviceID = deviceID;
-    this.uuid = uuid;
-    this.address = address;
+  constructor(uuid: string, account: string, deviceID: string, address: string) {
+    this.success = true
+    this.account = account
+    this.deviceID = deviceID
+    this.uuid = uuid
+    this.address = address
   }
 }
 
 export class RecoverResponse implements IConfigureResponse {
-  uuid: string;
+  uuid: string
 
-  account: string;
+  account: string
 
-  success: boolean;
+  success: boolean
 
-  deviceID: string;
+  deviceID: string
 
-  address: string;
+  address: string
 
-  action: Event = Event.RECOVERED;
+  action: Event = Event.RECOVERED
 
-  version = VERSION;
+  version = VERSION
 
-  constructor(
-    uuid: string,
-    account: string,
-    deviceID: string,
-    address: string,
-  ) {
-    this.success = true;
-    this.account = account;
-    this.deviceID = deviceID;
-    this.uuid = uuid;
-    this.address = address;
+  constructor(uuid: string, account: string, deviceID: string, address: string) {
+    this.success = true
+    this.account = account
+    this.deviceID = deviceID
+    this.uuid = uuid
+    this.address = address
   }
 }
 
 export class SwitchChainResponse implements ISwitchChainResponse {
-  uuid: string;
+  uuid: string
 
-  success: boolean;
+  success: boolean
 
-  deviceID: string;
+  deviceID: string
 
-  address: string;
+  address: string
 
-  chainId: number;
+  chainId: number
 
-  accountType: string;
+  accountType: string
 
-  ownerAddress: string;
+  ownerAddress: string
 
-  version: string | null;
+  version: string | null
 
-  action: Event = Event.CHAIN_SWITCHED;
+  action: Event = Event.CHAIN_SWITCHED
 
-  account: string | null;
+  account: string | null
 
   constructor(
     uuid: string,
@@ -513,86 +500,81 @@ export class SwitchChainResponse implements ISwitchChainResponse {
     chainId: number,
     address: string,
     ownerAddress: string,
-    account: string,
+    account: string
   ) {
-    this.success = true;
-    this.deviceID = deviceID;
-    this.uuid = uuid;
-    this.accountType = accountType;
-    this.chainId = chainId;
-    this.address = address;
-    this.ownerAddress = ownerAddress;
-    this.version = null;
-    this.account = account;
+    this.success = true
+    this.deviceID = deviceID
+    this.uuid = uuid
+    this.accountType = accountType
+    this.chainId = chainId
+    this.address = address
+    this.ownerAddress = ownerAddress
+    this.version = null
+    this.account = account
   }
 }
 
-export class UpdateAuthenticationResponse
-implements IUpdateAuthenticationResponse {
-  uuid: string;
+export class UpdateAuthenticationResponse implements IUpdateAuthenticationResponse {
+  uuid: string
 
-  success: boolean;
+  success: boolean
 
-  action: Event = Event.AUTHENTICATION_UPDATED;
+  action: Event = Event.AUTHENTICATION_UPDATED
 
-  version: string | null;
+  version: string | null
 
   constructor(uuid: string) {
-    this.success = true;
-    this.uuid = uuid;
-    this.version = null;
+    this.success = true
+    this.uuid = uuid
+    this.version = null
   }
 }
 
 export class SignResponse implements ISignResponse {
-  uuid: string;
+  uuid: string
 
-  success: boolean;
+  success: boolean
 
-  signature: string;
+  signature: string
 
-  action: Event = Event.SIGNED;
+  action: Event = Event.SIGNED
 
-  version: string | null;
+  version: string | null
 
   constructor(uuid: string, signature: string) {
-    this.success = true;
-    this.signature = signature;
-    this.uuid = uuid;
-    this.version = null;
+    this.success = true
+    this.signature = signature
+    this.uuid = uuid
+    this.version = null
   }
 }
 
 export class LogoutResponse implements ILogoutResponse {
-  uuid: string;
+  uuid: string
 
-  success: boolean;
+  success: boolean
 
-  action: Event = Event.LOGGED_OUT;
+  action: Event = Event.LOGGED_OUT
 
   constructor(uuid: string) {
-    this.success = true;
-    this.uuid = uuid;
+    this.success = true
+    this.uuid = uuid
   }
 }
 
 export class UpdateAuthenticationRequest implements IEventRequest {
-  uuid: string;
+  uuid: string
 
-  action: Event = Event.UPDATE_AUTHENTICATION;
+  action: Event = Event.UPDATE_AUTHENTICATION
 
-  accessToken: string;
+  accessToken: string
 
-  recovery?: ShieldAuthentication;
+  recovery?: ShieldAuthentication
 
-  constructor(
-    uuid: string,
-    accessToken: string,
-    recovery?: ShieldAuthentication,
-  ) {
-    this.uuid = uuid;
-    this.accessToken = accessToken;
-    this.recovery = recovery;
+  constructor(uuid: string, accessToken: string, recovery?: ShieldAuthentication) {
+    this.uuid = uuid
+    this.accessToken = accessToken
+    this.recovery = recovery
   }
 }
 
@@ -608,30 +590,30 @@ export enum ShieldAuthType {
 // TODO: Most of these parameters are repeated in the iframe configuration.
 // Consider refactoring to avoid duplication.
 export interface IframeAuthentication extends ShieldAuthentication {
-  auth?: ShieldAuthType;
-  authProvider?: string | null;
-  token?: string | null;
-  tokenType?: string | null;
+  auth?: ShieldAuthType
+  authProvider?: string | null
+  token?: string | null
+  tokenType?: string | null
 }
 
 export interface RequestConfiguration {
-  token?: string;
-  thirdPartyProvider?: string;
-  thirdPartyTokenType?: string;
-  publishableKey: string;
-  openfortURL?: string;
-  shieldAuthentication: IframeAuthentication;
-  shieldAPIKey: string;
-  shieldURL: string;
-  encryptionKey?: string;
+  token?: string
+  thirdPartyProvider?: string
+  thirdPartyTokenType?: string
+  publishableKey: string
+  openfortURL?: string
+  shieldAuthentication: IframeAuthentication
+  shieldAPIKey: string
+  shieldURL: string
+  encryptionKey?: string
 }
 
 export interface MessagePoster {
-  postMessage(message: string): void;
+  postMessage(message: string): void
 }
 
 export interface PasskeyDetails {
-  id?: string;
-  env?: string;
-  key?: Uint8Array;
+  id?: string
+  env?: string | import('../types/types').PasskeyEnv
+  key?: Uint8Array
 }

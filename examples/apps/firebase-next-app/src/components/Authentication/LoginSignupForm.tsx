@@ -1,42 +1,40 @@
-import React, { useState } from "react";
-import GoogleSignInButton from "./GoogleSignInButton";
-import { useAuthentication } from "../../hooks/useAuthentication";
-import Spinner from "../Shared/Spinner";
-import { useOpenfort } from "@/hooks/useOpenfort";
+import type React from 'react'
+import { useState } from 'react'
+import { useAuthentication } from '../../hooks/useAuthentication'
+import Spinner from '../Shared/Spinner'
+import GoogleSignInButton from './GoogleSignInButton'
 
 const LoginSignupForm: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
-  const { signIn, signUp } = useAuthentication();
-  const [loading, setLoading] = useState(false);
-  const handleToggle = () => setIsLogin(!isLogin);
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLogin, setIsLogin] = useState(true)
+  const { signIn, signUp } = useAuthentication()
+  const [loading, setLoading] = useState(false)
+  const handleToggle = () => setIsLogin(!isLogin)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    setLoading(true);
-    event.preventDefault();
-    if (password.length === 0) return;
+    setLoading(true)
+    event.preventDefault()
+    if (password.length === 0) return
     if (isLogin) {
       // Assuming 'login' is provided for signing in
       await signIn(email, password).catch((error) => {
-        console.error("Failed to sign in:", error);
-        alert("Failed to sign in. Please try again.");
-      });
+        console.error('Failed to sign in:', error)
+        alert('Failed to sign in. Please try again.')
+      })
     } else {
       // Assuming 'register' is provided for signing up
       await signUp(email, password).catch((error) => {
-        console.error("Failed to sign up:", error);
-        alert("Failed to sign up. Please try again.");
-      });
+        console.error('Failed to sign up:', error)
+        alert('Failed to sign up. Please try again.')
+      })
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col px-4 sm:px-6">
-      <h2 className="text-left mb-2 font-semibold text-xl">
-        {isLogin ? "Sign In" : "Sign Up"}
-      </h2>
+      <h2 className="text-left mb-2 font-semibold text-xl">{isLogin ? 'Sign In' : 'Sign Up'}</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
@@ -63,18 +61,15 @@ const LoginSignupForm: React.FC = () => {
           disabled={loading}
           className="w-full flex space-x-5 justify-center p-2 bg-black text-white rounded hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-opacity-50"
         >
-          {loading ? <Spinner /> : isLogin ? "Sign In" : "Sign Up"}
+          {loading ? <Spinner /> : isLogin ? 'Sign In' : 'Sign Up'}
         </button>
         <GoogleSignInButton />
       </form>
-      <button
-        onClick={handleToggle}
-        className="mt-4 text-indigo-600 hover:underline"
-      >
-        {isLogin ? "Need to create an account?" : "Already have an account?"}
+      <button type="button" onClick={handleToggle} className="mt-4 text-indigo-600 hover:underline">
+        {isLogin ? 'Need to create an account?' : 'Already have an account?'}
       </button>
     </div>
-  );
-};
+  )
+}
 
-export default LoginSignupForm;
+export default LoginSignupForm

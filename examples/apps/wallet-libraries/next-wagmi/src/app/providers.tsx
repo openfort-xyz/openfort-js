@@ -2,11 +2,10 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type ReactNode, useEffect, useState } from 'react'
-import { type State, useChainId, WagmiProvider } from 'wagmi'
-
-import { getConfig } from '../wagmi'
-import { openfortInstance } from '../openfort'
 import { sepolia } from 'viem/chains'
+import { type State, useChainId, WagmiProvider } from 'wagmi'
+import { openfortInstance } from '../openfort'
+import { getConfig } from '../wagmi'
 
 interface ProvidersProps {
   children: ReactNode
@@ -19,17 +18,16 @@ function OpenfortSetup({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const setupProvider = async () => {
-      if (!openfortInstance) return;
-      console.log('Setting up Openfort provider for chainId:', chainId);
-      await openfortInstance.embeddedWallet.getEthereumProvider(
-        {
-          policy: chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA
-        }
-      );
-    };
+      if (!openfortInstance) return
+      console.log('Setting up Openfort provider for chainId:', chainId)
+      await openfortInstance.embeddedWallet.getEthereumProvider({
+        policy:
+          chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
+      })
+    }
 
-    setupProvider();
-  }, [chainId]);
+    setupProvider()
+  }, [chainId])
 
   return children
 }
@@ -42,9 +40,7 @@ export function Providers({ children, initialState }: ProvidersProps) {
   return (
     <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        <OpenfortSetup>
-          {children}
-        </OpenfortSetup>
+        <OpenfortSetup>{children}</OpenfortSetup>
       </QueryClientProvider>
     </WagmiProvider>
   )

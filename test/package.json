@@ -15,13 +15,13 @@
     }
   },
   "devDependencies": {
-    "@openfort/openapi-clients": "workspace:packages/internal/openapi-clients",
+    "@openfort/openapi-clients": "workspace:*",
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vite-bundle-visualizer": "^1.2.1"
   },
   "dependencies": {
-    "@openfort/openfort-js": "workspace:sdk"
+    "@openfort/openfort-js": "workspace:*"
   },
   "sideEffects": false
 }

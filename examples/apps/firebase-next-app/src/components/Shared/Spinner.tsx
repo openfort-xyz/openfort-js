@@ -1,4 +1,4 @@
-import React from "react";
+import type React from 'react'
 
 const Spinner: React.FC = () => {
   return (
@@ -28,7 +28,7 @@ const Spinner: React.FC = () => {
         }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
-export default Spinner;
+export default Spinner

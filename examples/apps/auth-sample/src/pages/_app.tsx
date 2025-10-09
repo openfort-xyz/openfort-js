@@ -1,10 +1,10 @@
-import '../styles/tailwind.css';
+import '../styles/tailwind.css'
 
-import type {AppProps} from 'next/app';
-import * as ToastPrimitive from '@radix-ui/react-toast';
-import {OpenfortProvider} from '../hooks/useOpenfort';
+import * as ToastPrimitive from '@radix-ui/react-toast'
+import type { AppProps } from 'next/app'
+import { OpenfortProvider } from '../hooks/useOpenfort'
 
-function MyApp({Component, pageProps}: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <OpenfortProvider>
       <ToastPrimitive.Provider swipeDirection={'right'}>
@@ -12,7 +12,7 @@ function MyApp({Component, pageProps}: AppProps) {
         <ToastPrimitive.Viewport />
       </ToastPrimitive.Provider>
     </OpenfortProvider>
-  );
+  )
 }
 
-export default MyApp;
+export default MyApp

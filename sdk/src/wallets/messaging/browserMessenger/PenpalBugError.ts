@@ -4,10 +4,8 @@
  */
 class PenpalBugError extends Error {
   constructor(message: string) {
-    super(
-      `You've hit a bug in Penpal. Please file an issue with the following information: ${message}`,
-    );
+    super(`You've hit a bug in Penpal. Please file an issue with the following information: ${message}`)
   }
 }
 
-export default PenpalBugError;
+export default PenpalBugError

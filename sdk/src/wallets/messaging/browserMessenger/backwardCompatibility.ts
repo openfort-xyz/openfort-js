@@ -1,14 +1,9 @@
-import { Message, MethodPath } from './types';
-import namespace from './namespace';
-import {
-  isCallMessage,
-  isReplyMessage,
-  isAck1Message,
-  isObject,
-} from './guards';
-import PenpalBugError from './PenpalBugError';
+import { isAck1Message, isCallMessage, isObject, isReplyMessage } from './guards'
+import namespace from './namespace'
+import PenpalBugError from './PenpalBugError'
+import type { Message, MethodPath } from './types'
 
-export const DEPRECATED_PENPAL_PARTICIPANT_ID = 'deprecated-penpal';
+export const DEPRECATED_PENPAL_PARTICIPANT_ID = 'deprecated-penpal'
 
 // TODO: This file is used for backward-compatibility. Remove in next major version.
 
@@ -33,70 +28,67 @@ enum DeprecatedResolution {
 }
 
 type DeprecatedSynMessage = {
-  penpal: DeprecatedMessageType.Syn;
-};
+  penpal: DeprecatedMessageType.Syn
+}
 
 type DeprecatedSynAckMessage = {
-  penpal: DeprecatedMessageType.SynAck;
-  methodNames: string[];
-};
+  penpal: DeprecatedMessageType.SynAck
+  methodNames: string[]
+}
 
 type DeprecatedAckMessage = {
-  penpal: DeprecatedMessageType.Ack;
-  methodNames: string[];
-};
+  penpal: DeprecatedMessageType.Ack
+  methodNames: string[]
+}
 
 type DeprecatedCallMessage = {
-  penpal: DeprecatedMessageType.Call;
-  id: number;
-  methodName: string;
-  args: unknown[];
-};
+  penpal: DeprecatedMessageType.Call
+  id: number
+  methodName: string
+  args: unknown[]
+}
 
 type DeprecatedSerializedError = {
-  name: string;
-  message: string;
-  stack?: string;
-};
+  name: string
+  message: string
+  stack?: string
+}
 
 type DeprecatedReplyMessage = {
-  penpal: DeprecatedMessageType.Reply;
-  id: number;
+  penpal: DeprecatedMessageType.Reply
+  id: number
 } & (
   | {
-    resolution: DeprecatedResolution.Fulfilled;
-    returnValue: unknown;
-    returnValueIsError?: false;
-  }
+      resolution: DeprecatedResolution.Fulfilled
+      returnValue: unknown
+      returnValueIsError?: false
+    }
   | {
-    resolution: DeprecatedResolution.Rejected;
-    returnValue: unknown;
-    returnValueIsError?: false;
-  }
+      resolution: DeprecatedResolution.Rejected
+      returnValue: unknown
+      returnValueIsError?: false
+    }
   | {
-    resolution: DeprecatedResolution.Rejected;
-    returnValue: DeprecatedSerializedError;
-    returnValueIsError: true;
-  }
-);
+      resolution: DeprecatedResolution.Rejected
+      returnValue: DeprecatedSerializedError
+      returnValueIsError: true
+    }
+)
 
 export type DeprecatedMessage =
   | DeprecatedSynMessage
   | DeprecatedSynAckMessage
   | DeprecatedAckMessage
   | DeprecatedCallMessage
-  | DeprecatedReplyMessage;
+  | DeprecatedReplyMessage
 
-export const isDeprecatedMessage = (
-  data: unknown,
-): data is DeprecatedMessage => isObject(data) && 'penpal' in data;
+export const isDeprecatedMessage = (data: unknown): data is DeprecatedMessage => isObject(data) && 'penpal' in data
 
-const upgradeMethodPath = (methodPath: string): MethodPath => methodPath.split('.');
-const downgradeMethodPath = (methodPath: MethodPath) => methodPath.join('.');
+const upgradeMethodPath = (methodPath: string): MethodPath => methodPath.split('.')
+const downgradeMethodPath = (methodPath: MethodPath) => methodPath.join('.')
 
-const getUnexpectedMessageError = (message: unknown) => new PenpalBugError(
-  `Unexpected message to translate: ${JSON.stringify(message)}`,
-);
+const getUnexpectedMessageError = (message: unknown) =>
+  new PenpalBugError(`Unexpected message to translate: ${JSON.stringify(message)}`)
 
 export const upgradeMessage = (message: DeprecatedMessage): Message => {
   if (message.penpal === DeprecatedMessageType.Syn) {
@@ -105,7 +97,7 @@ export const upgradeMessage = (message: DeprecatedMessage): Message => {
       channel: undefined,
       type: 'SYN',
       participantId: DEPRECATED_PENPAL_PARTICIPANT_ID,
-    };
+    }
   }
 
   if (message.penpal === DeprecatedMessageType.SynAck) {
@@ -114,7 +106,7 @@ export const upgradeMessage = (message: DeprecatedMessage): Message => {
       channel: undefined,
       type: 'ACK1',
       methodPaths: message.methodNames.map(upgradeMethodPath),
-    };
+    }
   }
 
   if (message.penpal === DeprecatedMessageType.Ack) {
@@ -122,7 +114,7 @@ export const upgradeMessage = (message: DeprecatedMessage): Message => {
       namespace,
       channel: undefined,
       type: 'ACK2',
-    };
+    }
   }
 
   if (message.penpal === DeprecatedMessageType.Call) {
@@ -131,10 +123,10 @@ export const upgradeMessage = (message: DeprecatedMessage): Message => {
       channel: undefined,
       type: 'CALL',
       // Actually converting the ID to a string would break communication.
-      id: (message.id as unknown) as string,
+      id: message.id as unknown as string,
       methodPath: upgradeMethodPath(message.methodName),
       args: message.args,
-    };
+    }
   }
 
   if (message.penpal === DeprecatedMessageType.Reply) {
@@ -144,47 +136,47 @@ export const upgradeMessage = (message: DeprecatedMessage): Message => {
         channel: undefined,
         type: 'REPLY',
         // Actually converting the ID to a string would break communication.
-        callId: (message.id as unknown) as string,
+        callId: message.id as unknown as string,
         value: message.returnValue,
-      };
+      }
     }
     return {
       namespace,
       channel: undefined,
       type: 'REPLY',
       // Actually converting the ID to a string would break communication.
-      callId: (message.id as unknown) as string,
+      callId: message.id as unknown as string,
       isError: true,
       ...(message.returnValueIsError
         ? {
-          value: message.returnValue,
-          isSerializedErrorInstance: true,
-        }
+            value: message.returnValue,
+            isSerializedErrorInstance: true,
+          }
         : {
-          value: message.returnValue,
-        }),
-    };
+            value: message.returnValue,
+          }),
+    }
   }
 
-  throw getUnexpectedMessageError(message);
-};
+  throw getUnexpectedMessageError(message)
+}
 
 export const downgradeMessage = (message: Message): DeprecatedMessage => {
   if (isAck1Message(message)) {
     return {
       penpal: DeprecatedMessageType.SynAck,
       methodNames: message.methodPaths.map(downgradeMethodPath),
-    };
+    }
   }
 
   if (isCallMessage(message)) {
     return {
       penpal: DeprecatedMessageType.Call,
       // Actually converting the ID to a number would break communication.
-      id: (message.id as unknown) as number,
+      id: message.id as unknown as number,
       methodName: downgradeMethodPath(message.methodPath),
       args: message.args,
-    };
+    }
   }
 
   if (isReplyMessage(message)) {
@@ -192,24 +184,24 @@ export const downgradeMessage = (message: Message): DeprecatedMessage => {
       return {
         penpal: DeprecatedMessageType.Reply,
         // Actually converting the ID to a number would break communication.
-        id: (message.callId as unknown) as number,
+        id: message.callId as unknown as number,
         resolution: DeprecatedResolution.Rejected,
         ...(message.isSerializedErrorInstance
           ? {
-            returnValue: message.value,
-            returnValueIsError: true,
-          }
+              returnValue: message.value,
+              returnValueIsError: true,
+            }
           : { returnValue: message.value }),
-      };
+      }
     }
     return {
       penpal: DeprecatedMessageType.Reply,
       // Actually converting the ID to a number would break communication.
-      id: (message.callId as unknown) as number,
+      id: message.callId as unknown as number,
       resolution: DeprecatedResolution.Fulfilled,
       returnValue: message.value,
-    };
+    }
   }
 
-  throw getUnexpectedMessageError(message);
-};
+  throw getUnexpectedMessageError(message)
+}

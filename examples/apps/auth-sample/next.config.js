@@ -11,7 +11,13 @@ const nextConfig = {
       fs: false,
       net: false,
       tls: false,
-    };
+    }
+
+    // Ignore React Native dependencies in MetaMask SDK for browser builds
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
 
     // Handle ESM/CommonJS interop issues
     config.module.rules.push({
@@ -20,10 +26,10 @@ const nextConfig = {
       resolve: {
         fullySpecified: false,
       },
-    });
+    })
 
-    return config;
+    return config
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

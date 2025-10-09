@@ -1,15 +1,8 @@
-import {ComponentType} from 'react';
-import {WagmiProvider, Config} from 'wagmi';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import {signMessage} from '@wagmi/core';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { ComponentType } from 'react'
+import { type Config, WagmiProvider } from 'wagmi'
 
-const queryClient = new QueryClient();
-
-const createWagmiSignMessage = (config: Config) => (message: string) => {
-  return signMessage(config, {
-    message,
-  });
-};
+const queryClient = new QueryClient()
 
 export const withWagmi = <P extends object>(
   WrappedComponent: ComponentType<P>,
@@ -20,12 +13,9 @@ export const withWagmi = <P extends object>(
     return (
       <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
-          <WrappedComponent
-            {...props}
-            signMessage={createWagmiSignMessage(wagmiConfig)}
-          />
+          <WrappedComponent {...props} />
         </QueryClientProvider>
       </WagmiProvider>
-    );
-  };
-};
+    )
+  }
+}
