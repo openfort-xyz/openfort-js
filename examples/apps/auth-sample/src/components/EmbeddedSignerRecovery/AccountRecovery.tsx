@@ -381,7 +381,11 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
               {account.address.substring(0, 6)}...{account.address.substring(account.address.length - 4)}
             </p>
           </button>
-          <span className={cn('text-xs px-2 py-1 rounded-full border border-gray-300 capitalize')} id={recoveryBadgeId}>
+          <span
+            className={cn('text-xs px-2 py-1 rounded-full border border-gray-300 capitalize')}
+            id={recoveryBadgeId}
+            data-testid="recovery-method-badge"
+          >
             {`${account.recoveryMethod} recovery`}
           </span>
         </div>

@@ -38,7 +38,7 @@ const parseRecoveryMethod = (text: string | null): RecoveryMethod => {
 export async function authenticateAndRecover(page: Page) {
   await authenticate(page)
 
-  const recoveryMethodText = await page.locator('#recovery-method-badge').textContent()
+  const recoveryMethodText = await page.getByTestId('recovery-method-badge').textContent()
   expect(recoveryMethodText).toBeDefined()
 
   page.getByRole('button', { name: 'Use this wallet' }).click()
