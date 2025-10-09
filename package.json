@@ -34,7 +34,11 @@
     "build:solana": "pnpm build && pnpm --filter solana-vite build",
     "build:firebase": "pnpm build && pnpm --filter firebase-next-app build",
     "build:wagmi": "pnpm build && pnpm --filter wagmi-next-app build",
-    "build:platform-bridge": "pnpm build && pnpm --filter platform-bridge build"
+    "build:platform-bridge": "pnpm build && pnpm --filter platform-bridge build",
+    "changeset": "changeset",
+    "changeset:version": "pnpm install --lockfile-only && changeset version",
+    "changeset:publish": "pnpm build && changeset publish",
+    "changeset:prepublish": "pnpm build"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -45,6 +49,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.7",
     "@rollup/plugin-typescript": "^11.1.6",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
@@ -96,6 +102,8 @@
     ],
     "ignoreDependencies": [
       "@biomejs/biome",
+      "@changesets/changelog-github",
+      "@changesets/cli",
       "simple-git-hooks",
       "sherif",
       "knip",
