@@ -88,7 +88,7 @@ importers:
         specifier: ^2.2.8
         version: 2.2.8(@tanstack/react-query@5.90.2(react@18.3.1))(@types/react@18.3.26)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.2)(viem@2.38.0(bufferutil@4.0.9)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.22.4))(wagmi@2.15.2(@tanstack/query-core@5.90.2)(@tanstack/react-query@5.90.2(react@18.3.1))(@types/react@18.3.26)(bufferutil@4.0.9)(encoding@0.1.13)(react@18.3.1)(typescript@5.4.2)(utf-8-validate@5.0.10)(viem@2.38.0(bufferutil@4.0.9)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.22.4))(zod@3.22.4))
       '@reown/walletkit':
-        specifier: ^1.2.7
+        specifier: ^1.2.11
         version: 1.2.11(bufferutil@4.0.9)(typescript@5.4.2)(utf-8-validate@5.0.10)(zod@3.22.4)
       '@tailwindcss/forms':
         specifier: ^0.5.3
@@ -8729,15 +8729,13 @@ snapshots:
       - '@parcel/core'
       - napi-wasm
 
-  '@parcel/cache@2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)':
+  '@parcel/cache@2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))':
     dependencies:
       '@parcel/core': 2.16.0(@swc/helpers@0.5.17)
-      '@parcel/fs': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
+      '@parcel/fs': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))
       '@parcel/logger': 2.12.0
       '@parcel/utils': 2.12.0
       lmdb: 2.8.5
-    transitivePeerDependencies:
-      - '@swc/helpers'
 
   '@parcel/cache@2.16.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))':
     dependencies:
@@ -8852,7 +8850,7 @@ snapshots:
 
   '@parcel/feature-flags@2.16.0': {}
 
-  '@parcel/fs@2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)':
+  '@parcel/fs@2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))':
     dependencies:
       '@parcel/core': 2.16.0(@swc/helpers@0.5.17)
       '@parcel/rust': 2.12.0
@@ -8860,8 +8858,6 @@ snapshots:
       '@parcel/utils': 2.12.0
       '@parcel/watcher': 2.5.1
       '@parcel/workers': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))
-    transitivePeerDependencies:
-      - '@swc/helpers'
 
   '@parcel/fs@2.16.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))':
     dependencies:
@@ -8911,7 +8907,7 @@ snapshots:
     dependencies:
       '@mischnic/json-sourcemap': 0.1.1
       '@parcel/diagnostic': 2.12.0
-      '@parcel/fs': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
+      '@parcel/fs': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))
       '@parcel/rust': 2.12.0
       '@parcel/utils': 2.12.0
       nullthrows: 1.1.1
@@ -8991,7 +8987,7 @@ snapshots:
     dependencies:
       '@parcel/core': 2.16.0(@swc/helpers@0.5.17)
       '@parcel/diagnostic': 2.12.0
-      '@parcel/fs': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
+      '@parcel/fs': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))
       '@parcel/logger': 2.12.0
       '@parcel/node-resolver-core': 3.3.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))
       '@parcel/types': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
@@ -9382,9 +9378,9 @@ snapshots:
 
   '@parcel/types@2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)':
     dependencies:
-      '@parcel/cache': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
+      '@parcel/cache': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))
       '@parcel/diagnostic': 2.12.0
-      '@parcel/fs': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
+      '@parcel/fs': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))
       '@parcel/package-manager': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)
       '@parcel/source-map': 2.1.1
       '@parcel/workers': 2.12.0(@parcel/core@2.16.0(@swc/helpers@0.5.17))
@@ -12301,6 +12297,11 @@ snapshots:
       typescript: 5.4.2
       zod: 3.22.4
 
+  abitype@1.1.1(typescript@5.9.3)(zod@3.22.4):
+    optionalDependencies:
+      typescript: 5.9.3
+      zod: 3.22.4
+
   abitype@1.1.1(typescript@5.9.3)(zod@4.1.12):
     optionalDependencies:
       typescript: 5.9.3
@@ -14720,11 +14721,11 @@ snapshots:
   ox@0.6.7(typescript@5.4.2)(zod@3.22.4):
     dependencies:
       '@adraffy/ens-normalize': 1.11.1
-      '@noble/curves': 1.8.1
-      '@noble/hashes': 1.7.1
-      '@scure/bip32': 1.6.2
-      '@scure/bip39': 1.5.4
-      abitype: 1.0.8(typescript@5.4.2)(zod@3.22.4)
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      abitype: 1.1.1(typescript@5.4.2)(zod@3.22.4)
       eventemitter3: 5.0.1
     optionalDependencies:
       typescript: 5.4.2
@@ -14734,11 +14735,11 @@ snapshots:
   ox@0.6.7(typescript@5.9.3)(zod@3.22.4):
     dependencies:
       '@adraffy/ens-normalize': 1.11.1
-      '@noble/curves': 1.8.1
-      '@noble/hashes': 1.7.1
-      '@scure/bip32': 1.6.2
-      '@scure/bip39': 1.5.4
-      abitype: 1.0.8(typescript@5.9.3)(zod@3.22.4)
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      abitype: 1.1.1(typescript@5.9.3)(zod@3.22.4)
       eventemitter3: 5.0.1
     optionalDependencies:
       typescript: 5.9.3
@@ -14753,7 +14754,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
-      abitype: 1.0.8(typescript@5.4.2)(zod@3.22.4)
+      abitype: 1.1.1(typescript@5.4.2)(zod@3.22.4)
       eventemitter3: 5.0.1
     optionalDependencies:
       typescript: 5.4.2
