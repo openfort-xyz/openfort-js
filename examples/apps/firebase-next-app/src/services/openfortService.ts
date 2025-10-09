@@ -1,33 +1,33 @@
-import { Provider, RecoveryMethod } from '@openfort/openfort-js';
-import { baseSepolia } from 'viem/chains';
-import openfort from '../utils/openfortConfig';
+import { type Provider, RecoveryMethod } from '@openfort/openfort-js'
+import { baseSepolia } from 'viem/chains'
+import openfort from '../utils/openfortConfig'
 
 const chainId = baseSepolia.id
 
 class OpenfortService {
   async getEvmProvider(): Promise<Provider> {
-    return openfort.embeddedWallet.getEthereumProvider({ policy: process.env.NEXT_PUBLIC_POLICY_ID });
+    return openfort.embeddedWallet.getEthereumProvider({ policy: process.env.NEXT_PUBLIC_POLICY_ID })
   }
 
   async getEmbeddedState() {
-    const state = await openfort.embeddedWallet.getEmbeddedState();
-    return state;
+    const state = await openfort.embeddedWallet.getEmbeddedState()
+    return state
   }
 
   async getEncryptionSession(): Promise<string> {
     const resp = await fetch(`/api/protected-create-encryption-session`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-    });
+    })
 
     if (!resp.ok) {
-      throw new Error("Failed to create encryption session");
+      throw new Error('Failed to create encryption session')
     }
 
-    const respJSON = await resp.json();
-    return respJSON.session;
+    const respJSON = await resp.json()
+    return respJSON.session
   }
 
   async setAutomaticRecoveryMethod() {
@@ -37,11 +37,11 @@ class OpenfortService {
         recoveryParams: {
           recoveryMethod: RecoveryMethod.AUTOMATIC,
           encryptionSession: await this.getEncryptionSession(),
-        }
-      });
+        },
+      })
     } catch (error) {
-      console.error('Error authenticating with Openfort:', error);
-      throw error;
+      console.error('Error authenticating with Openfort:', error)
+      throw error
     }
   }
 
@@ -51,25 +51,25 @@ class OpenfortService {
         chainId,
         recoveryParams: {
           password: pin,
-          recoveryMethod: RecoveryMethod.PASSWORD
-        }
-      });
+          recoveryMethod: RecoveryMethod.PASSWORD,
+        },
+      })
     } catch (error) {
-      console.error('Error authenticating with Openfort:', error);
-      throw error;
+      console.error('Error authenticating with Openfort:', error)
+      throw error
     }
   }
   async logout() {
     try {
-      await openfort.auth.logout();
+      await openfort.auth.logout()
     } catch (error) {
-      console.error('Error logging out with Openfort:', error);
-      throw error;
+      console.error('Error logging out with Openfort:', error)
+      throw error
     }
   }
 }
 
 // Create a singleton instance of the OpenfortService
-const openfortService = new OpenfortService();
+const openfortService = new OpenfortService()
 
-export default openfortService;
+export default openfortService

@@ -1,5 +1,4 @@
-import { Openfort } from '@openfort/openfort-js';
-
+import { Openfort } from '@openfort/openfort-js'
 
 const openfortInstance = new Openfort({
   baseConfiguration: {
@@ -8,6 +7,6 @@ const openfortInstance = new Openfort({
   shieldConfiguration: {
     shieldPublishableKey: import.meta.env.VITE_APP_SHIELD_PUBLISHABLE_KEY,
   },
-});
+})
 
-export default openfortInstance;
+export default openfortInstance

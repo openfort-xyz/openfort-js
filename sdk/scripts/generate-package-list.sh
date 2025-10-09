@@ -2,4 +2,4 @@
 
 set -e
 
-yarn workspaces list --json | sed -e ' $ ! s/}/},/' | sed '$ s/$/]/' | sed '1 s/^/[/' > workspace-packages.json
+pnpm -r list --json --depth -1 > workspace-packages.json

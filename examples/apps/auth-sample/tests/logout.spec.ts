@@ -1,12 +1,12 @@
-import test from '@playwright/test';
-import { authenticateAndRecover } from './authenticate';
+import test from '@playwright/test'
+import { authenticateAndRecover } from './authenticate'
 
 test.use({
-  storageState: [async ({ }, use) => use(undefined), { scope: 'test' }],
-});
+  storageState: [async (_context, use) => use(undefined), { scope: 'test' }],
+})
 
 test('Logout', async ({ page }) => {
-  await authenticateAndRecover(page);
+  await authenticateAndRecover(page)
 
   await page.goto('/')
 

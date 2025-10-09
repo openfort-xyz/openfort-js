@@ -17,12 +17,13 @@
     "jose": "^5.2.2"
   },
   "devDependencies": {
-    "eslint": "^8.40.0",
     "parcel": "^2.15.0"
   },
   "scripts": {
     "build": "parcel build --no-cache --no-scope-hoist",
-    "lint": "eslint ./src --ext .ts,.jsx,.tsx --max-warnings=0",
+    "lint": "biome lint src",
+    "check": "biome check --write src",
+    "format": "biome format --write src",
     "start": "parcel"
   },
   "source": "src/index.html",

@@ -1,7 +1,7 @@
-import { expect, Page } from "@playwright/test"
-import { Logger } from "./Logger"
+import { expect, type Page } from '@playwright/test'
+import type { Logger } from './Logger'
 
-export const changeToAutomaticRecovery = async ({ page, logger }: { page: Page, logger: Logger }) => {
+export const changeToAutomaticRecovery = async ({ page, logger }: { page: Page; logger: Logger }) => {
   const passwordRecoveryButton = page.getByRole('button', { name: 'Set wallet recovery' }).first()
   passwordRecoveryButton.click()
 
@@ -22,11 +22,11 @@ export const changeToAutomaticRecovery = async ({ page, logger }: { page: Page, 
   await logger.waitForNewLogs()
   const lastLog = logger.getLastLog()
 
-  expect(lastLog).toContain("success")
-  expect(lastLog).toContain("automatic")
+  expect(lastLog).toContain('success')
+  expect(lastLog).toContain('automatic')
 }
 
-export const changeToPasswordRecovery = async ({ page, logger }: { page: Page, logger: Logger }) => {
+export const changeToPasswordRecovery = async ({ page, logger }: { page: Page; logger: Logger }) => {
   const passwordRecoveryButton = page.getByRole('button', { name: 'Set wallet recovery' }).first()
   passwordRecoveryButton.click()
 
@@ -42,7 +42,7 @@ export const changeToPasswordRecovery = async ({ page, logger }: { page: Page, l
   await logger.waitForNewLogs()
   const lastLog = logger.getLastLog()
 
-  console.log("Last log:", lastLog)
-  expect(lastLog).toContain("success")
-  expect(lastLog).toContain("password")
+  console.log('Last log:', lastLog)
+  expect(lastLog).toContain('success')
+  expect(lastLog).toContain('password')
 }

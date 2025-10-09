@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { PasskeyEnv } from './passkey-env';
 
 /**
  * 
@@ -28,9 +31,9 @@ export interface RecoveryMethodDetails {
     'passkeyId'?: string;
     /**
      * 
-     * @type {string}
+     * @type {PasskeyEnv}
      * @memberof RecoveryMethodDetails
      */
-    'passkeyEnv'?: string;
+    'passkeyEnv'?: PasskeyEnv;
 }
 

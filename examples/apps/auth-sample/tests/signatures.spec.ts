@@ -1,5 +1,5 @@
-import test, { expect } from '@playwright/test';
-import { Logger } from './Logger';
+import test, { expect } from '@playwright/test'
+import { Logger } from './Logger'
 
 test('Sign message', async ({ page }) => {
   await page.goto('/')

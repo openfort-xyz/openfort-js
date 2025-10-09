@@ -1,95 +1,91 @@
-import { BackendApiClients } from '@openfort/openapi-clients';
-import { InternalSentry } from './errors/sentry';
-import { IStorage, StorageKeys } from '../storage/istorage';
-import { LazyStorage } from '../storage/lazyStorage';
-import { OpenfortError, OpenfortErrorType } from './errors/openfortError';
-import { OpenfortSDKConfiguration, SDKConfiguration } from './config/config';
-import { AuthManager } from '../auth/authManager';
-import { AuthApi } from '../api/auth';
-import { PasskeyHandler } from './configuration/passkey';
-import { EmbeddedWalletApi } from '../api/embeddedWallet';
-import { UserApi } from '../api/user';
-import { ProxyApi } from '../api/proxy';
-import { OpenfortInternal } from './openfortInternal';
-import TypedEventEmitter from '../utils/typedEventEmitter';
-import { OpenfortEventMap } from '../types/types';
+import { BackendApiClients } from '@openfort/openapi-clients'
+import { AuthApi } from '../api/auth'
+import { EmbeddedWalletApi } from '../api/embeddedWallet'
+import { ProxyApi } from '../api/proxy'
+import { UserApi } from '../api/user'
+import { AuthManager } from '../auth/authManager'
+import { type IStorage, StorageKeys } from '../storage/istorage'
+import { LazyStorage } from '../storage/lazyStorage'
+import type { OpenfortEventMap } from '../types/types'
+import TypedEventEmitter from '../utils/typedEventEmitter'
+import { type OpenfortSDKConfiguration, SDKConfiguration } from './config/config'
+import { PasskeyHandler } from './configuration/passkey'
+import { OpenfortError, OpenfortErrorType } from './errors/openfortError'
+import { InternalSentry } from './errors/sentry'
+import { OpenfortInternal } from './openfortInternal'
 
 export class Openfort {
-  private storage: IStorage;
+  private storage: IStorage
 
-  private iAuthManager: AuthManager | null = null;
+  private iAuthManager: AuthManager | null = null
 
-  private openfortInternal!: OpenfortInternal;
+  private openfortInternal!: OpenfortInternal
 
-  private initPromise: Promise<void>;
+  private initPromise: Promise<void>
 
-  private asyncInitPromise: Promise<void> | null = null;
+  private asyncInitPromise: Promise<void> | null = null
 
-  private authInstance?: AuthApi;
+  private authInstance?: AuthApi
 
-  private embeddedWalletInstance?: EmbeddedWalletApi;
+  private embeddedWalletInstance?: EmbeddedWalletApi
 
-  private userInstance?: UserApi;
+  private userInstance?: UserApi
 
-  private proxyInstance?: ProxyApi;
+  private proxyInstance?: ProxyApi
 
-  private configuration: SDKConfiguration;
+  private configuration: SDKConfiguration
 
-  public eventEmitter: TypedEventEmitter<OpenfortEventMap>;
+  public eventEmitter: TypedEventEmitter<OpenfortEventMap>
 
-  private iPasskeyHandler: PasskeyHandler;
+  private iPasskeyHandler: PasskeyHandler
 
   public get auth(): AuthApi {
     if (!this.authInstance) {
       throw new OpenfortError(
         'Openfort SDK not initialized. Please await waitForInitialization() before accessing auth.',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
+        OpenfortErrorType.INVALID_CONFIGURATION
+      )
     }
-    return this.authInstance;
+    return this.authInstance
   }
 
   public get embeddedWallet(): EmbeddedWalletApi {
     if (!this.embeddedWalletInstance) {
       throw new OpenfortError(
         'Openfort SDK not initialized. Please await waitForInitialization() before accessing embeddedWallet.',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
+        OpenfortErrorType.INVALID_CONFIGURATION
+      )
     }
-    return this.embeddedWalletInstance;
+    return this.embeddedWalletInstance
   }
 
   public get user(): UserApi {
     if (!this.userInstance) {
       throw new OpenfortError(
         'Openfort SDK not initialized. Please await waitForInitialization() before accessing user.',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
+        OpenfortErrorType.INVALID_CONFIGURATION
+      )
     }
-    return this.userInstance;
+    return this.userInstance
   }
 
   public get proxy(): ProxyApi {
     if (!this.proxyInstance) {
       throw new OpenfortError(
         'Openfort SDK not initialized. Please await waitForInitialization() before accessing proxy.',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
+        OpenfortErrorType.INVALID_CONFIGURATION
+      )
     }
-    return this.proxyInstance;
+    return this.proxyInstance
   }
 
   private initializeSynchronously(): void {
     try {
       // Initialize auth manager with storage
-      this.iAuthManager = new AuthManager(this.storage);
+      this.iAuthManager = new AuthManager(this.storage)
 
       // Initialize internal helper
-      this.openfortInternal = new OpenfortInternal(
-        this.storage,
-        this.authManager,
-        this.eventEmitter,
-      );
+      this.openfortInternal = new OpenfortInternal(this.storage, this.authManager, this.eventEmitter)
 
       // Initialize all API instances with storage
       this.authInstance = new AuthApi(
@@ -97,20 +93,16 @@ export class Openfort {
         this.authManager,
         this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
-        this.eventEmitter,
-      );
+        this.eventEmitter
+      )
       this.embeddedWalletInstance = new EmbeddedWalletApi(
         this.storage,
         this.validateAndRefreshToken.bind(this),
         this.ensureInitialized.bind(this),
         this.eventEmitter,
-        this.passkeyHandler,
-      );
-      this.userInstance = new UserApi(
-        this.storage,
-        this.authManager,
-        this.validateAndRefreshToken.bind(this),
-      );
+        this.passkeyHandler
+      )
+      this.userInstance = new UserApi(this.storage, this.authManager, this.validateAndRefreshToken.bind(this))
       this.proxyInstance = new ProxyApi(
         this.storage,
         this.backendApiClients,
@@ -119,51 +111,41 @@ export class Openfort {
         async () => {
           // Get sign function from embedded wallet
           if (!this.embeddedWalletInstance) {
-            throw new OpenfortError(
-              'Embedded wallet not initialized',
-              OpenfortErrorType.MISSING_SIGNER_ERROR,
-            );
+            throw new OpenfortError('Embedded wallet not initialized', OpenfortErrorType.MISSING_SIGNER_ERROR)
           }
-          const signer = this.embeddedWalletInstance;
-          return (message: string | Uint8Array) => signer.signMessage(
-            message,
-            { hashMessage: true, arrayifyMessage: true },
-          );
-        },
-      );
-    } catch (error) {
-      throw new OpenfortError(
-        'Openfort SDK synchronous initialization failed',
-        OpenfortErrorType.INVALID_CONFIGURATION,
-      );
+          const signer = this.embeddedWalletInstance
+          return (message: string | Uint8Array) =>
+            signer.signMessage(message, { hashMessage: true, arrayifyMessage: true })
+        }
+      )
+    } catch (_error) {
+      throw new OpenfortError('Openfort SDK synchronous initialization failed', OpenfortErrorType.INVALID_CONFIGURATION)
     }
   }
 
   constructor(sdkConfiguration: OpenfortSDKConfiguration) {
-    this.configuration = new SDKConfiguration(sdkConfiguration);
+    this.configuration = new SDKConfiguration(sdkConfiguration)
 
     // Always create lazy storage - no localStorage access here
-    this.storage = new LazyStorage(this.configuration.storage);
+    this.storage = new LazyStorage(this.configuration.storage)
 
     // Create the centralized event emitter
-    this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>();
+    this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>()
 
     // Instantiate the passkey handler
-    this.iPasskeyHandler = new PasskeyHandler(
-      {
-        rpId: this.configuration.passkeyRpId,
-        rpName: this.configuration.passkeyRpName,
-        extractableKey: true,
-      },
-    );
+    this.iPasskeyHandler = new PasskeyHandler({
+      rpId: this.configuration.passkeyRpId,
+      rpName: this.configuration.passkeyRpName,
+      extractableKey: true,
+    })
 
-    InternalSentry.init({ configuration: this.configuration });
+    InternalSentry.init({ configuration: this.configuration })
 
     // Only do synchronous initialization - no storage access
-    this.initializeSynchronously();
+    this.initializeSynchronously()
 
     // Async initialization will be done lazily when needed
-    this.initPromise = Promise.resolve();
+    this.initPromise = Promise.resolve()
   }
 
   /**
@@ -172,8 +154,8 @@ export class Openfort {
    * @returns Promise that resolves when initialization is complete
    */
   public async waitForInitialization(): Promise<void> {
-    await this.initPromise;
-    await this.ensureAsyncInitialized();
+    await this.initPromise
+    await this.ensureAsyncInitialized()
   }
 
   /**
@@ -181,53 +163,50 @@ export class Openfort {
    * @returns Access token or null
    */
   public async getAccessToken(): Promise<string | null> {
-    await this.ensureInitialized();
-    return this.openfortInternal.getAccessToken();
+    await this.ensureInitialized()
+    return this.openfortInternal.getAccessToken()
   }
 
   /**
    * Validates and refreshes the access token if needed.
    */
   public async validateAndRefreshToken(forceRefresh?: boolean): Promise<void> {
-    await this.ensureInitialized();
-    return await this.openfortInternal.validateAndRefreshToken(forceRefresh);
+    await this.ensureInitialized()
+    return await this.openfortInternal.validateAndRefreshToken(forceRefresh)
   }
 
   private get backendApiClients(): BackendApiClients {
     return new BackendApiClients({
       basePath: this.configuration.backendUrl,
       accessToken: this.configuration.baseConfiguration.publishableKey,
-    });
+    })
   }
 
   private get authManager(): AuthManager {
     if (!this.iAuthManager) {
-      throw new OpenfortError(
-        'AuthManager not initialized',
-        OpenfortErrorType.INTERNAL_ERROR,
-      );
+      throw new OpenfortError('AuthManager not initialized', OpenfortErrorType.INTERNAL_ERROR)
     }
-    return this.iAuthManager;
+    return this.iAuthManager
   }
 
   get passkeyHandler(): PasskeyHandler {
-    return this.iPasskeyHandler;
+    return this.iPasskeyHandler
   }
 
   public static async isStorageAccessible(storage: IStorage): Promise<boolean> {
     try {
-      const testKey = StorageKeys.TEST;
-      const testValue = 'openfort_storage_test';
+      const testKey = StorageKeys.TEST
+      const testValue = 'openfort_storage_test'
 
-      storage.save(testKey, testValue);
-      const retrieved = await storage.get(testKey);
-      storage.remove(testKey);
+      storage.save(testKey, testValue)
+      const retrieved = await storage.get(testKey)
+      storage.remove(testKey)
 
       // Verify the value was correctly stored and retrieved
-      return retrieved === testValue;
-    } catch (error) {
+      return retrieved === testValue
+    } catch (_error) {
       // Storage accessibility check failed
-      return false;
+      return false
     }
   }
 
@@ -239,19 +218,13 @@ export class Openfort {
     try {
       // Validate storage accessibility
       if (!(await Openfort.isStorageAccessible(this.storage))) {
-        throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION);
+        throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION)
       }
 
       // Set up auth manager with backend clients
-      this.authManager.setBackendApiClients(
-        this.backendApiClients,
-        this.configuration.baseConfiguration.publishableKey,
-      );
-    } catch (error) {
-      throw new OpenfortError(
-        'Openfort SDK async initialization failed',
-        OpenfortErrorType.INTERNAL_ERROR,
-      );
+      this.authManager.setBackendApiClients(this.backendApiClients, this.configuration.baseConfiguration.publishableKey)
+    } catch (_error) {
+      throw new OpenfortError('Openfort SDK async initialization failed', OpenfortErrorType.INTERNAL_ERROR)
     }
   }
 
@@ -264,9 +237,9 @@ export class Openfort {
    */
   private async ensureAsyncInitialized(): Promise<void> {
     if (!this.asyncInitPromise) {
-      this.asyncInitPromise = this.initializeAsync();
+      this.asyncInitPromise = this.initializeAsync()
     }
-    await this.asyncInitPromise;
+    await this.asyncInitPromise
   }
 
   /**
@@ -277,7 +250,7 @@ export class Openfort {
    * @throws {OpenfortError} If initialization fails
    */
   private async ensureInitialized(): Promise<void> {
-    await this.initPromise;
-    await this.ensureAsyncInitialized();
+    await this.initPromise
+    await this.ensureAsyncInitialized()
   }
 }

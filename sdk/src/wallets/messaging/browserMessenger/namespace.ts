@@ -1,1 +1,1 @@
-export default 'penpal' as const;
+export default 'penpal' as const

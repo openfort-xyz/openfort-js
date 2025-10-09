@@ -22,6 +22,7 @@ export * from './domain/default-api';
 export * from './domain/events-api';
 export * from './domain/exchange-api';
 export * from './domain/forwarder-contract-api';
+export * from './domain/graph-qlapi';
 export * from './domain/inventories-api';
 export * from './domain/paymaster-api';
 export * from './domain/players-api';

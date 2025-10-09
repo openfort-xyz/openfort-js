@@ -1,13 +1,16 @@
 @import "tailwindcss";
 
 button {
+  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply bg-gray-700 p-2 rounded px-4 text-white cursor-pointer hover:bg-gray-600 transition-colors duration-100 ease-in-out;
 }
 
 input {
+  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply bg-gray-800 p-2 rounded px-4;
 }
 
 a {
+  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply text-blue-500 hover:text-blue-400 underline cursor-pointer transition-colors duration-100 ease-in-out;
 }

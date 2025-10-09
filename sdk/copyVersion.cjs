@@ -4,12 +4,12 @@
  * is always up to date with the version number in the package.json file.
  */
 
-const fs = require('fs');
-const config = require('./package.json');
+const fs = require('node:fs')
+const config = require('./package.json')
 
-const file = fs.readFileSync('./src/version.ts', 'utf8');
-const lines = file.split('\n');
-const versionLine = lines.findIndex((line) => line.includes('export const VERSION = '));
-lines[versionLine] = `export const VERSION = '${config.version}';`;
+const file = fs.readFileSync('./src/version.ts', 'utf8')
+const lines = file.split('\n')
+const versionLine = lines.findIndex((line) => line.includes('export const VERSION = '))
+lines[versionLine] = `export const VERSION = '${config.version}';`
 
-fs.writeFileSync('./src/version.ts', lines.join('\n'), 'utf8');
+fs.writeFileSync('./src/version.ts', lines.join('\n'), 'utf8')

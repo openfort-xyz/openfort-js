@@ -1,53 +1,43 @@
-import {useAccount, useDisconnect, useEnsAvatar, useEnsName} from 'wagmi';
-import {useState} from 'react';
-import openfortInstance from '../utils/openfortConfig';
+import { useState } from 'react'
+import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from 'wagmi'
+import openfortInstance from '../utils/openfortConfig'
 
 export function Account() {
-  const {address, connector} = useAccount();
-  const {disconnect} = useDisconnect();
-  const {data: ensName} = useEnsName({address});
-  const {data: ensAvatar} = useEnsAvatar({name: ensName!});
-  const [disconnectTxt, setDisconnectTxt] = useState('Disconnect');
+  const { address, connector } = useAccount()
+  const { disconnect } = useDisconnect()
+  const { data: ensName } = useEnsName({ address })
+  const { data: ensAvatar } = useEnsAvatar({ name: ensName! })
+  const [disconnectTxt, setDisconnectTxt] = useState('Disconnect')
 
-  const formattedAddress = formatAddress(address);
+  const formattedAddress = formatAddress(address)
 
   return (
     <div className="row">
       <div className="inline">
-        {ensAvatar ? (
-          <img alt="ENS Avatar" className="avatar" src={ensAvatar} />
-        ) : (
-          <div className="avatar" />
-        )}
+        {ensAvatar ? <img alt="ENS Avatar" className="avatar" src={ensAvatar} /> : <div className="avatar" />}
         <div className="stack">
-          {address && (
-            <div className="text">
-              {ensName ? `${ensName} (${formattedAddress})` : formattedAddress}
-            </div>
-          )}
-          <div className="subtext">
-            Connected to {connector?.name} Connector
-          </div>
+          {address && <div className="text">{ensName ? `${ensName} (${formattedAddress})` : formattedAddress}</div>}
+          <div className="subtext">Connected to {connector?.name} Connector</div>
         </div>
       </div>
       <button
         className="button"
         onClick={async () => {
-          setDisconnectTxt('Disconnecting ...');
-          if (connector && connector.name.includes('Openfort')) {
-            await openfortInstance.auth.logout();
+          setDisconnectTxt('Disconnecting ...')
+          if (connector?.name.includes('Openfort')) {
+            await openfortInstance.auth.logout()
           }
-          disconnect();
+          disconnect()
         }}
         type="button"
       >
         {disconnectTxt}
       </button>
     </div>
-  );
+  )
 }
 
 function formatAddress(address?: string) {
-  if (!address) return null;
-  return `${address.slice(0, 6)}…${address.slice(38, 42)}`;
+  if (!address) return null
+  return `${address.slice(0, 6)}…${address.slice(38, 42)}`
 }

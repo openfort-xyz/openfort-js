@@ -1,0 +1,12 @@
+**/dist
+**/node_modules
+**/.cache
+**/.next
+**/coverage
+CHANGELOG.md
+**/.yarn
+**/rollup.config.js
+**/.git
+**/pnpm-lock.yaml
+**/.husky
+sdk/copyVersion.cjs

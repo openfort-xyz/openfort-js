@@ -1,7 +1,7 @@
-import test, { expect } from '@playwright/test';
+import test, { expect } from '@playwright/test'
 
 // remove default auth tokens
-test.use({ storageState: { cookies: [], origins: [] } });
+test.use({ storageState: { cookies: [], origins: [] } })
 
 // TODO: Google login
 test.skip('Login page', async ({ page }) => {

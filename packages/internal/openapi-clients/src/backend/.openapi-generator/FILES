@@ -13,6 +13,7 @@ domain/default-api.ts
 domain/events-api.ts
 domain/exchange-api.ts
 domain/forwarder-contract-api.ts
+domain/graph-qlapi.ts
 domain/inventories-api.ts
 domain/paymaster-api.ts
 domain/players-api.ts
@@ -242,6 +243,7 @@ models/oauth-provider.ts
 models/oauth-response.ts
 models/oidcauth-config.ts
 models/paging-queries.ts
+models/passkey-env.ts
 models/pay-for-user-policy-strategy.ts
 models/paymaster-delete-response.ts
 models/paymaster-response.ts

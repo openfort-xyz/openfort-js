@@ -11,7 +11,7 @@ const nextConfig = {
       fs: false,
       net: false,
       tls: false,
-    };
+    }
 
     // Handle ESM/CommonJS interop issues
     config.module.rules.push({
@@ -20,10 +20,10 @@ const nextConfig = {
       resolve: {
         fullySpecified: false,
       },
-    });
+    })
 
-    return config;
+    return config
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

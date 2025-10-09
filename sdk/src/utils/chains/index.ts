@@ -40,4 +40,4 @@ export const defaultChainRpcs: { [key: number]: string } = {
   85011: 'https://subnets.avax.network/criminalsa/testnet/rpc',
   84358: 'https://subnets.avax.network/titan/mainnet/rpc',
   10143: 'https://testnet-rpc.monad.xyz',
-};
+}

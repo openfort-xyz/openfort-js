@@ -1,4 +1,4 @@
-import { XCircleIcon, CheckBadgeIcon } from '@heroicons/react/20/solid'
+import { CheckBadgeIcon, XCircleIcon } from '@heroicons/react/20/solid'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import * as ToastPrimitive from '@radix-ui/react-toast'
 import { clsx } from 'clsx'
@@ -15,10 +15,7 @@ interface InformationToastProps {
   setStatus: (status: StatusType | null) => void
 }
 
-export const InformationToast: React.FC<InformationToastProps> = ({
-  status,
-  setStatus,
-}) => {
+export const InformationToast: React.FC<InformationToastProps> = ({ status, setStatus }) => {
   return (
     <ToastPrimitive.Root
       open={status !== null}
@@ -43,7 +40,7 @@ export const InformationToast: React.FC<InformationToastProps> = ({
               <ToastPrimitive.Title className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {status.title}
               </ToastPrimitive.Title>
-              <ToastPrimitive.Description asChild >
+              <ToastPrimitive.Description asChild>
                 <pre className='className="m-0 text-sm text-gray-700 bg-gray-100 p-2 rounded-lg dark:text-gray-400 whitespace-pre-wrap max-w-full break-all'>
                   {status.description}
                 </pre>
@@ -82,10 +79,7 @@ interface LoadingToastProps {
   setStatus: (status: StatusType | null) => void
 }
 
-export const LoadingToast: React.FC<LoadingToastProps> = ({
-  status,
-  setStatus,
-}) => {
+export const LoadingToast: React.FC<LoadingToastProps> = ({ status, setStatus: _setStatus }) => {
   return (
     <ToastPrimitive.Root
       duration={20000}
@@ -127,12 +121,7 @@ interface SuccessToastProps {
   actionText?: string // Assuming actionText is a string
 }
 
-export const SuccessToast: React.FC<SuccessToastProps> = ({
-  status,
-  setStatus,
-  action,
-  actionText,
-}) => {
+export const SuccessToast: React.FC<SuccessToastProps> = ({ status, setStatus, action, actionText }) => {
   return (
     <ToastPrimitive.Root
       open={status !== null}
@@ -152,10 +141,7 @@ export const SuccessToast: React.FC<SuccessToastProps> = ({
     >
       <div className="flex">
         <div className="flex w-0 flex-1 items-center py-4 pl-5">
-          <CheckBadgeIcon
-            className="mr-2 h-7 w-7 fill-green-500 text-white"
-            aria-hidden="true"
-          />
+          <CheckBadgeIcon className="mr-2 h-7 w-7 fill-green-500 text-white" aria-hidden="true" />
           {status && (
             <div className="radix w-full">
               <ToastPrimitive.Title className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -197,10 +183,7 @@ interface ErrorToastProps {
   setStatus: (status: StatusType | null) => void
 }
 
-export const ErrorToast: React.FC<ErrorToastProps> = ({
-  status,
-  setStatus,
-}) => {
+export const ErrorToast: React.FC<ErrorToastProps> = ({ status, setStatus }) => {
   return (
     <ToastPrimitive.Root
       open={status !== null}
@@ -220,10 +203,7 @@ export const ErrorToast: React.FC<ErrorToastProps> = ({
     >
       <div className="flex">
         <div className="flex w-0 flex-1 items-center py-4 pl-5">
-          <XCircleIcon
-            className="mr-2 h-7 w-7 fill-red-500 text-white"
-            aria-hidden="true"
-          />
+          <XCircleIcon className="mr-2 h-7 w-7 fill-red-500 text-white" aria-hidden="true" />
           {status && (
             <div className="radix w-full">
               <ToastPrimitive.Title className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -265,27 +245,12 @@ interface ToastProps {
   actionText?: string // Assuming actionText is a string
 }
 
-export const Toast: React.FC<ToastProps> = ({
-  status,
-  setStatus,
-  action,
-  actionText,
-}) => {
+export const Toast: React.FC<ToastProps> = ({ status, setStatus, action, actionText }) => {
   if (status === null) return null
-  else if (status.type === 'loading')
-    return <LoadingToast status={status} setStatus={setStatus} />
+  else if (status.type === 'loading') return <LoadingToast status={status} setStatus={setStatus} />
   else if (status.type === 'success')
-    return (
-      <SuccessToast
-        status={status}
-        setStatus={setStatus}
-        action={action}
-        actionText={actionText}
-      />
-    )
-  else if (status.type === 'information')
-    return <InformationToast status={status} setStatus={setStatus} />
-  else if (status.type === 'error')
-    return <ErrorToast status={status} setStatus={setStatus} />
+    return <SuccessToast status={status} setStatus={setStatus} action={action} actionText={actionText} />
+  else if (status.type === 'information') return <InformationToast status={status} setStatus={setStatus} />
+  else if (status.type === 'error') return <ErrorToast status={status} setStatus={setStatus} />
   else return null
 }

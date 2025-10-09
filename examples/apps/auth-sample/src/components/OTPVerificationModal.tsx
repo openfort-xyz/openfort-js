@@ -1,100 +1,96 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import type React from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface OTPVerificationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (otpCode: string) => Promise<void>;
-  onResendOTP: () => Promise<void>;
-  email: string;
-  isLoading?: boolean;
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (otpCode: string) => Promise<void>
+  onResendOTP: () => Promise<void>
+  email: string
+  isLoading?: boolean
 }
 
-export function OTPVerificationModal({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  onResendOTP, 
-  email, 
-  isLoading = false 
+export function OTPVerificationModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  onResendOTP,
+  email,
+  isLoading = false,
 }: OTPVerificationModalProps) {
-  const [otpCode, setOtpCode] = useState('');
-  const [error, setError] = useState('');
-  const [isResending, setIsResending] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [otpCode, setOtpCode] = useState('')
+  const [error, setError] = useState('')
+  const [isResending, setIsResending] = useState(false)
+  const [countdown, setCountdown] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const otpCodeId = useId()
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: NodeJS.Timeout
     if (countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000)
     }
-    return () => clearTimeout(timer);
-  }, [countdown]);
+    return () => clearTimeout(timer)
+  }, [countdown])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     if (!otpCode.trim()) {
-      setError('Verification code is required');
-      return;
+      setError('Verification code is required')
+      return
     }
 
     if (otpCode.trim().length < 9) {
-      setError('Please enter the complete verification code');
-      return;
+      setError('Please enter the complete verification code')
+      return
     }
 
     try {
-      setError('');
-      await onSubmit(otpCode.trim());
-      setOtpCode('');
+      setError('')
+      await onSubmit(otpCode.trim())
+      setOtpCode('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid verification code');
+      setError(err instanceof Error ? err.message : 'Invalid verification code')
     }
-  };
+  }
 
   const handleResend = async () => {
-    if (countdown > 0) return;
-    
+    if (countdown > 0) return
+
     try {
-      setIsResending(true);
-      setError('');
-      await onResendOTP();
-      setCountdown(60); // 60 second cooldown
+      setIsResending(true)
+      setError('')
+      await onResendOTP()
+      setCountdown(60) // 60 second cooldown
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to resend code');
+      setError(err instanceof Error ? err.message : 'Failed to resend code')
     } finally {
-      setIsResending(false);
+      setIsResending(false)
     }
-  };
+  }
 
   const handleClose = () => {
-    setOtpCode('');
-    setError('');
-    setCountdown(0);
-    onClose();
-  };
+    setOtpCode('')
+    setError('')
+    setCountdown(0)
+    onClose()
+  }
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 9); // Only numbers, max 9 digits
-    setOtpCode(value);
-  };
+    const value = e.target.value.replace(/\D/g, '').slice(0, 9) // Only numbers, max 9 digits
+    setOtpCode(value)
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -105,13 +101,13 @@ export function OTPVerificationModal({
             We've sent a 9-digit verification code to <strong>{email}</strong>
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="otpCode">Verification Code</Label>
+            <Label htmlFor={otpCodeId}>Verification Code</Label>
             <Input
               ref={inputRef}
-              id="otpCode"
+              id={otpCodeId}
               type="text"
               placeholder="000000000"
               value={otpCode}
@@ -121,12 +117,8 @@ export function OTPVerificationModal({
               maxLength={9}
             />
           </div>
-          
-          {error && (
-            <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
-              {error}
-            </div>
-          )}
+
+          {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
 
           <div className="text-center">
             <Button
@@ -136,22 +128,12 @@ export function OTPVerificationModal({
               disabled={isResending || countdown > 0}
               className="text-sm"
             >
-              {isResending 
-                ? 'Sending...' 
-                : countdown > 0 
-                  ? `Resend code in ${countdown}s` 
-                  : 'Resend code'
-              }
+              {isResending ? 'Sending...' : countdown > 0 ? `Resend code in ${countdown}s` : 'Resend code'}
             </Button>
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading || otpCode.length < 9}>
@@ -161,5 +143,5 @@ export function OTPVerificationModal({
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

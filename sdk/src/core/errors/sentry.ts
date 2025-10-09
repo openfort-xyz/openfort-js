@@ -1,57 +1,49 @@
-import {
-  type Client,
-  type EventHint,
-  type Scope,
-} from '@sentry/core';
-import { AxiosError } from 'axios';
-import { OpenfortSDKConfiguration } from 'types';
-import { PACKAGE, VERSION } from '../../version';
+import type { Client, EventHint, Scope } from '@sentry/core'
+import { AxiosError } from 'axios'
+import type { OpenfortSDKConfiguration } from 'types'
+import { PACKAGE, VERSION } from '../../version'
 
-const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296'; // Prod
+const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296' // Prod
 
 declare module '@sentry/core' {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   interface Client {
-    captureAxiosError: (name: string, error: unknown, hint?: EventHint, scope?: Scope) => void;
+    captureAxiosError: (name: string, error: unknown, hint?: EventHint, scope?: Scope) => void
   }
 }
 
+// biome-ignore lint/complexity/noStaticOnlyClass: Sentry wrapper uses static-only pattern for singleton-like behavior
 export class InternalSentry {
-  private static sentryInstance: Client;
+  private static sentryInstance: Client
 
-  private static queuedCalls: Array<{ fn: string; args: any[] }> = [];
+  private static queuedCalls: Array<{ fn: string; args: any[] }> = []
 
   private static baseTags: {
-    projectId: string;
-    sdk: string;
-    sdkVersion: string;
-  };
+    projectId: string
+    sdk: string
+    sdkVersion: string
+  }
 
   private static set sentry(sentry: Client) {
     // eslint-disable-next-line no-param-reassign
-    const dsn = sentry.getDsn();
+    const dsn = sentry.getDsn()
     if (!dsn) {
-      throw new Error('Sentry DSN is not set');
+      throw new Error('Sentry DSN is not set')
     }
 
     if (
-      dsn.projectId !== SENTRY_DSN.split('https://')[1].split('/')[1]
-      || dsn.host !== SENTRY_DSN.split('@')[1].split('/')[0]
-      || dsn.publicKey !== SENTRY_DSN.split('@')[0].split('https://')[1]
+      dsn.projectId !== SENTRY_DSN.split('https://')[1].split('/')[1] ||
+      dsn.host !== SENTRY_DSN.split('@')[1].split('/')[0] ||
+      dsn.publicKey !== SENTRY_DSN.split('@')[0].split('https://')[1]
     ) {
-      throw new Error('Sentry DSN is not valid');
+      throw new Error('Sentry DSN is not valid')
     }
 
     // eslint-disable-next-line no-param-reassign
-    sentry.captureAxiosError = (
-      method: string,
-      error: unknown,
-      hint?: EventHint,
-      scope?: Scope,
-    ) => {
+    sentry.captureAxiosError = (method: string, error: unknown, hint?: EventHint, scope?: Scope) => {
       if (error instanceof AxiosError) {
         // eslint-disable-next-line no-param-reassign
-        error.name = method;
+        error.name = method
         sentry.captureException(error, {
           ...hint,
           captureContext: {
@@ -63,76 +55,76 @@ export class InternalSentry {
               errorRequest: error.request,
             },
             tags: {
-              ...this.baseTags,
+              ...InternalSentry.baseTags,
               method,
             },
           },
-        });
+        })
       } else {
-        sentry.captureException(error, hint, scope);
+        sentry.captureException(error, hint, scope)
       }
-    };
+    }
 
-    this.sentryInstance = sentry;
+    InternalSentry.sentryInstance = sentry
   }
 
   public static get sentry(): Client {
-    return this.proxy;
+    return InternalSentry.proxy
   }
 
   public static async init({
     sentry,
     configuration,
   }: {
-    sentry?: Client;
+    sentry?: Client
     configuration?: OpenfortSDKConfiguration
   }): Promise<void> {
     if (sentry) {
-      this.sentry = sentry;
-      return;
+      InternalSentry.sentry = sentry
+      return
     }
 
-    const sentryImport = await import('@sentry/browser');
+    const sentryImport = await import('@sentry/browser')
 
-    this.sentry = new sentryImport.BrowserClient({
+    InternalSentry.sentry = new sentryImport.BrowserClient({
       dsn: SENTRY_DSN,
       integrations: [],
       stackParser: sentryImport.defaultStackParser,
       transport: sentryImport.makeFetchTransport,
-    });
+    })
 
-    this.baseTags = {
+    InternalSentry.baseTags = {
       projectId: configuration?.baseConfiguration.publishableKey!,
       sdk: PACKAGE,
       sdkVersion: VERSION,
-    };
+    }
 
-    this.processQueuedCalls();
+    InternalSentry.processQueuedCalls()
   }
 
   private static proxy = new Proxy({} as Client, {
     get(_, prop: string) {
       if (InternalSentry.sentryInstance && typeof (InternalSentry.sentryInstance as any)[prop] === 'function') {
-        return (...args: any[]) => (InternalSentry.sentryInstance as any)[prop](...args);
+        return (...args: any[]) => (InternalSentry.sentryInstance as any)[prop](...args)
       }
 
       return (...args: any[]) => {
-        InternalSentry.queuedCalls.push({ fn: prop, args });
-      };
+        InternalSentry.queuedCalls.push({ fn: prop, args })
+      }
     },
-  });
+  })
 
   private static processQueuedCalls(): void {
-    if (this.sentryInstance) {
+    if (InternalSentry.sentryInstance) {
       // Process all queued calls
-      this.queuedCalls.forEach(({ fn, args }) => {
-        if (typeof (this.sentryInstance as Record<string, any>)[fn] === 'function') {
-          (this.sentryInstance as Record<string, any>)[fn](...args);
+      InternalSentry.queuedCalls.forEach(({ fn, args }) => {
+        if (typeof (InternalSentry.sentryInstance as Record<string, any>)[fn] === 'function') {
+          ;(InternalSentry.sentryInstance as Record<string, any>)[fn](...args)
         }
-      });
-      this.queuedCalls = [];
+      })
+      InternalSentry.queuedCalls = []
     }
   }
 }
 
-export const { sentry } = InternalSentry;
+export const { sentry } = InternalSentry

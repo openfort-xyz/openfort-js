@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { cookieToInitialState } from 'wagmi'
 import './globals.css'
 
@@ -16,10 +16,7 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout(props: { children: ReactNode }) {
-  const initialState = cookieToInitialState(
-    getConfig(),
-    (await headers()).get('cookie'),
-  )
+  const initialState = cookieToInitialState(getConfig(), (await headers()).get('cookie'))
 
   return (
     <html lang="en">

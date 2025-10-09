@@ -1,5 +1,5 @@
-import test, { expect } from '@playwright/test';
-import { Logger } from './Logger';
+import test, { expect } from '@playwright/test'
+import { Logger } from './Logger'
 
 test('Export key', async ({ page }) => {
   await page.goto('/')
@@ -13,7 +13,7 @@ test('Export key', async ({ page }) => {
   await logger.waitForNewLogs()
 
   const lastLog = logger.getLastLog()
-  expect(lastLog).toContain("0x")
+  expect(lastLog).toContain('0x')
 })
 
 test('Get wallet', async ({ page }) => {
@@ -28,5 +28,5 @@ test('Get wallet', async ({ page }) => {
   await logger.waitForNewLogs()
 
   const lastLog = logger.getLastLog()
-  expect(lastLog).toContain("Current wallet:")
+  expect(lastLog).toContain('Current wallet:')
 })

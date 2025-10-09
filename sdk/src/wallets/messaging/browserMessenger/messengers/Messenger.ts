@@ -1,18 +1,18 @@
-import { Message, Log } from '../types';
+import type { Log, Message } from '../types'
 
-export type MessageHandler = (message: Message) => void;
+export type MessageHandler = (message: Message) => void
 
 export type InitializeMessengerOptions = {
-  log?: Log;
-  validateReceivedMessage: (data: unknown) => data is Message;
-};
-
-interface Messenger {
-  sendMessage: (message: Message, transferables?: Transferable[]) => void;
-  addMessageHandler: (callback: MessageHandler) => void;
-  removeMessageHandler: (callback: MessageHandler) => void;
-  initialize: (options: InitializeMessengerOptions) => void;
-  destroy: () => void;
+  log?: Log
+  validateReceivedMessage: (data: unknown) => data is Message
 }
 
-export default Messenger;
+interface Messenger {
+  sendMessage: (message: Message, transferables?: Transferable[]) => void
+  addMessageHandler: (callback: MessageHandler) => void
+  removeMessageHandler: (callback: MessageHandler) => void
+  initialize: (options: InitializeMessengerOptions) => void
+  destroy: () => void
+}
+
+export default Messenger

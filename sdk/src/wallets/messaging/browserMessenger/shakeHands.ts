@@ -1,35 +1,27 @@
-import { randomUUID } from 'utils/crypto';
-import Messenger from './messengers/Messenger';
-import {
-  Ack2Message,
-  Methods,
-  Message,
-  RemoteProxy,
-  Ack1Message,
-  SynMessage,
-  Log,
-} from './types';
-import PenpalError from './PenpalError';
-import connectCallHandler from './connectCallHandler';
-import connectRemoteProxy from './connectRemoteProxy';
-import { isAck2Message, isAck1Message, isSynMessage } from './guards';
-import getPromiseWithResolvers from './getPromiseWithResolvers';
-import { extractMethodPathsFromMethods } from './methodSerialization';
-import { DEPRECATED_PENPAL_PARTICIPANT_ID } from './backwardCompatibility';
-import namespace from './namespace';
+import { randomUUID } from 'utils/crypto'
+import { DEPRECATED_PENPAL_PARTICIPANT_ID } from './backwardCompatibility'
+import connectCallHandler from './connectCallHandler'
+import connectRemoteProxy from './connectRemoteProxy'
+import getPromiseWithResolvers from './getPromiseWithResolvers'
+import { isAck1Message, isAck2Message, isSynMessage } from './guards'
+import type Messenger from './messengers/Messenger'
+import { extractMethodPathsFromMethods } from './methodSerialization'
+import namespace from './namespace'
+import PenpalError from './PenpalError'
+import type { Ack1Message, Ack2Message, Log, Message, Methods, RemoteProxy, SynMessage } from './types'
 
 type Options = {
-  messenger: Messenger;
-  methods: Methods;
-  timeout: number | undefined;
-  channel: string | undefined;
-  log: Log | undefined;
-};
+  messenger: Messenger
+  methods: Methods
+  timeout: number | undefined
+  channel: string | undefined
+  log: Log | undefined
+}
 
 type HandshakeResult<TMethods extends Methods> = {
-  remoteProxy: RemoteProxy<TMethods>;
-  destroy: () => void;
-};
+  remoteProxy: RemoteProxy<TMethods>
+  destroy: () => void
+}
 
 /**
  * Attempts to establish communication with the remote via a handshake protocol.
@@ -99,58 +91,49 @@ const shakeHands = <TMethods extends Methods>({
   channel,
   log,
 }: Options): Promise<HandshakeResult<TMethods>> => {
-  const participantId = randomUUID();
-  let remoteParticipantId: string;
-  const destroyHandlers: (() => void)[] = [];
-  let isComplete = false;
+  const participantId = randomUUID()
+  let remoteParticipantId: string
+  const destroyHandlers: (() => void)[] = []
+  let isComplete = false
 
-  const methodPaths = extractMethodPathsFromMethods(methods);
+  const methodPaths = extractMethodPathsFromMethods(methods)
 
-  const { promise, resolve, reject } = getPromiseWithResolvers<
-  HandshakeResult<TMethods>,
-  PenpalError
-  >();
+  const { promise, resolve, reject } = getPromiseWithResolvers<HandshakeResult<TMethods>, PenpalError>()
 
-  const timeoutId = timeout !== undefined
-    ? setTimeout(() => {
-      reject(
-        new PenpalError(
-          'CONNECTION_TIMEOUT',
-          `Connection timed out after ${timeout}ms`,
-        ),
-      );
-    }, timeout)
-    : undefined;
+  const timeoutId =
+    timeout !== undefined
+      ? setTimeout(() => {
+          reject(new PenpalError('CONNECTION_TIMEOUT', `Connection timed out after ${timeout}ms`))
+        }, timeout)
+      : undefined
 
   const destroy = () => {
     for (const destroyHandler of destroyHandlers) {
-      destroyHandler();
+      destroyHandler()
     }
-  };
+  }
 
   const connectCallHandlerAndMethodProxies = () => {
     if (isComplete) {
       // If we get here, it means the remote is attempting to re-connect. While
       // that's supported, we don't need to run the rest of this function again.
-      return;
+      return
     }
 
-    destroyHandlers.push(connectCallHandler(messenger, methods, channel, log));
+    destroyHandlers.push(connectCallHandler(messenger, methods, channel, log))
 
-    const { remoteProxy, destroy: destroyMethodProxies } = connectRemoteProxy<
-    TMethods
-    >(messenger, channel, log);
+    const { remoteProxy, destroy: destroyMethodProxies } = connectRemoteProxy<TMethods>(messenger, channel, log)
 
-    destroyHandlers.push(destroyMethodProxies);
+    destroyHandlers.push(destroyMethodProxies)
 
-    clearTimeout(timeoutId);
-    isComplete = true;
+    clearTimeout(timeoutId)
+    isComplete = true
 
     resolve({
       remoteProxy,
       destroy,
-    });
-  };
+    })
+  }
 
   const sendSynMessage = () => {
     const synMessage: SynMessage = {
@@ -158,39 +141,40 @@ const shakeHands = <TMethods extends Methods>({
       type: 'SYN',
       channel,
       participantId,
-    };
-    log?.('Sending handshake SYN', synMessage);
+    }
+    log?.('Sending handshake SYN', synMessage)
 
     try {
-      messenger.sendMessage(synMessage);
+      messenger.sendMessage(synMessage)
     } catch (error) {
-      reject(new PenpalError('TRANSMISSION_FAILED', (error as Error).message));
+      reject(new PenpalError('TRANSMISSION_FAILED', (error as Error).message))
     }
-  };
+  }
 
   const handleSynMessage = (message: SynMessage) => {
-    log?.('Received handshake SYN', message);
+    log?.('Received handshake SYN', message)
 
     if (
-      message.participantId === remoteParticipantId
+      message.participantId === remoteParticipantId &&
       // TODO: Used for backward-compatibility. Remove in next major version.
-      && remoteParticipantId !== DEPRECATED_PENPAL_PARTICIPANT_ID
+      remoteParticipantId !== DEPRECATED_PENPAL_PARTICIPANT_ID
     ) {
-      return;
+      return
     }
 
-    remoteParticipantId = message.participantId;
+    remoteParticipantId = message.participantId
 
     // We send another SYN message in case the other participant was not ready
     // when we sent the first SYN message.
-    sendSynMessage();
+    sendSynMessage()
 
-    const isHandshakeLeader = participantId > remoteParticipantId
+    const isHandshakeLeader =
+      participantId > remoteParticipantId ||
       // TODO: Used for backward-compatibility. Remove in next major version.
-      || remoteParticipantId === DEPRECATED_PENPAL_PARTICIPANT_ID;
+      remoteParticipantId === DEPRECATED_PENPAL_PARTICIPANT_ID
 
     if (!isHandshakeLeader) {
-      return;
+      return
     }
 
     const ack1Message: Ack1Message = {
@@ -198,60 +182,60 @@ const shakeHands = <TMethods extends Methods>({
       channel,
       type: 'ACK1',
       methodPaths,
-    };
-    log?.('Sending handshake ACK1', ack1Message);
+    }
+    log?.('Sending handshake ACK1', ack1Message)
 
     try {
-      messenger.sendMessage(ack1Message);
+      messenger.sendMessage(ack1Message)
     } catch (error) {
-      reject(new PenpalError('TRANSMISSION_FAILED', (error as Error).message));
+      reject(new PenpalError('TRANSMISSION_FAILED', (error as Error).message))
     }
-  };
+  }
 
   const handleAck1Message = (message: Ack1Message) => {
-    log?.('Received handshake ACK1', message);
+    log?.('Received handshake ACK1', message)
     const ack2Message: Ack2Message = {
       namespace,
       channel,
       type: 'ACK2',
-    };
-    log?.('Sending handshake ACK2', ack2Message);
+    }
+    log?.('Sending handshake ACK2', ack2Message)
 
     try {
-      messenger.sendMessage(ack2Message);
+      messenger.sendMessage(ack2Message)
     } catch (error) {
-      reject(new PenpalError('TRANSMISSION_FAILED', (error as Error).message));
-      return;
+      reject(new PenpalError('TRANSMISSION_FAILED', (error as Error).message))
+      return
     }
 
-    connectCallHandlerAndMethodProxies();
-  };
+    connectCallHandlerAndMethodProxies()
+  }
 
   const handleAck2Message = (message: Ack2Message) => {
-    log?.('Received handshake ACK2', message);
-    connectCallHandlerAndMethodProxies();
-  };
+    log?.('Received handshake ACK2', message)
+    connectCallHandlerAndMethodProxies()
+  }
 
   const handleMessage = (message: Message) => {
     if (isSynMessage(message)) {
-      handleSynMessage(message);
+      handleSynMessage(message)
     }
 
     if (isAck1Message(message)) {
-      handleAck1Message(message);
+      handleAck1Message(message)
     }
 
     if (isAck2Message(message)) {
-      handleAck2Message(message);
+      handleAck2Message(message)
     }
-  };
+  }
 
-  messenger.addMessageHandler(handleMessage);
-  destroyHandlers.push(() => messenger.removeMessageHandler(handleMessage));
+  messenger.addMessageHandler(handleMessage)
+  destroyHandlers.push(() => messenger.removeMessageHandler(handleMessage))
 
-  sendSynMessage();
+  sendSynMessage()
 
-  return promise;
-};
+  return promise
+}
 
-export default shakeHands;
+export default shakeHands

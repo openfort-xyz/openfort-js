@@ -1,4 +1,4 @@
-import { isAxiosError } from 'axios';
+import { isAxiosError } from 'axios'
 
 export enum OpenfortErrorType {
   AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR',
@@ -15,68 +15,67 @@ export enum OpenfortErrorType {
 }
 
 function isAPIError(error: any): error is Error {
-  return 'type' in error && 'message' in error;
+  return 'type' in error && 'message' in error
 }
 
 export interface Data {
-  [key: string]: any;
+  [key: string]: any
 }
 
 export class OpenfortError extends Error {
-  public type: OpenfortErrorType;
+  public type: OpenfortErrorType
 
-  public data: Data;
+  public data: Data
 
   constructor(message: string, type: OpenfortErrorType, data: Data = {}) {
-    super(message);
-    this.type = type;
-    this.data = data;
+    super(message)
+    this.type = type
+    this.data = data
   }
 }
 
 export interface StatusCodeOpenfortError {
-  default: OpenfortErrorType;
-  [statusCode: number]: OpenfortErrorType;
+  default: OpenfortErrorType
+  [statusCode: number]: OpenfortErrorType
 }
 
 export const withOpenfortError = async <T>(
   fn: () => Promise<T>,
   customErrorType: StatusCodeOpenfortError,
-  onUnexpectedError?: (error: unknown, openfortError: OpenfortError) => void,
+  onUnexpectedError?: (error: unknown, openfortError: OpenfortError) => void
 ): Promise<T> => {
   try {
-    return await fn();
+    return await fn()
   } catch (error) {
-    let errorMessage: string;
-    const data: Data = {};
-    let statusCode: number | undefined;
+    let errorMessage: string
+    const data: Data = {}
+    let statusCode: number | undefined
 
     if (isAxiosError(error)) {
-      statusCode = error.response?.status;
+      statusCode = error.response?.status
 
-      if (error.response?.data && error.response.data.error) {
+      if (error.response?.data?.error) {
         if (isAPIError(error.response.data.error)) {
-          errorMessage = error.response.data.error.message;
+          errorMessage = error.response.data.error.message
         } else {
-          errorMessage = (error as Error).message;
+          errorMessage = (error as Error).message
         }
       } else {
-        errorMessage = (error as Error).message;
+        errorMessage = (error as Error).message
       }
     } else {
-      errorMessage = (error as Error).message;
+      errorMessage = (error as Error).message
     }
 
-    const errorType = statusCode !== undefined && customErrorType[statusCode]
-      ? customErrorType[statusCode]
-      : customErrorType.default;
+    const errorType =
+      statusCode !== undefined && customErrorType[statusCode] ? customErrorType[statusCode] : customErrorType.default
 
-    const openfortError = new OpenfortError(errorMessage, errorType, data);
+    const openfortError = new OpenfortError(errorMessage, errorType, data)
 
     if (statusCode === undefined || !customErrorType[statusCode]) {
-      onUnexpectedError?.(error, openfortError);
+      onUnexpectedError?.(error, openfortError)
     }
 
-    throw openfortError;
+    throw openfortError
   }
-};
+}

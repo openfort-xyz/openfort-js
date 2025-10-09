@@ -1,20 +1,22 @@
-import React, {useCallback, useState} from 'react';
-import Loading from '../Loading';
-import openfort from '../../utils/openfortConfig';
-import { Button } from '../ui/button';
-import { privateKeyToAccount } from 'viem/accounts';
-import { createWalletClient, http } from 'viem';
-import { polygonAmoy } from 'viem/chains';
+import type React from 'react'
+import { useCallback, useId, useState } from 'react'
+import { createWalletClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { polygonAmoy } from 'viem/chains'
+import openfort from '../../utils/openfortConfig'
+import Loading from '../Loading'
+import { Button } from '../ui/button'
 
 const BackendMintButton: React.FC<{
-  handleSetMessage: (message: string) => void;
-  sessionKey: `0x${string}` | null;
-}> = ({handleSetMessage, sessionKey}) => {
-  const [loading, setLoading] = useState(false);
+  handleSetMessage: (message: string) => void
+  sessionKey: `0x${string}` | null
+}> = ({ handleSetMessage, sessionKey }) => {
+  const [loading, setLoading] = useState(false)
+  const buttonId = useId()
 
   const mintNFT = useCallback(async (): Promise<string | null> => {
     if (!sessionKey) {
-      return null;
+      return null
     }
     const collectResponse = await fetch(`/api/protected-collect`, {
       method: 'POST',
@@ -22,58 +24,50 @@ const BackendMintButton: React.FC<{
         'Content-Type': 'application/json',
         Authorization: `Bearer ${await openfort.getAccessToken()}`,
       },
-    });
+    })
 
     if (!collectResponse.ok) {
-      alert(`Failed to mint NFT status: ${collectResponse.status}`);
-      return null;
+      alert(`Failed to mint NFT status: ${collectResponse.status}`)
+      return null
     }
-    const collectResponseJSON = await collectResponse.json();
+    const collectResponseJSON = await collectResponse.json()
     const walletClient = createWalletClient({
       account: privateKeyToAccount(sessionKey),
       chain: polygonAmoy,
-      transport: http()
+      transport: http(),
     })
-    const signature = await walletClient.signMessage({message: {raw: collectResponseJSON.userOperationHash}});
+    const signature = await walletClient.signMessage({ message: { raw: collectResponseJSON.userOperationHash } })
     if (!signature) {
-      throw new Error('Failed to sign message with session key');
+      throw new Error('Failed to sign message with session key')
     }
 
     const response = await openfort.proxy.sendSignatureTransactionIntentRequest(
       collectResponseJSON.transactionIntentId,
       null,
       signature
-    );
-    return response?.response?.transactionHash ?? null;
-  }, [sessionKey]);
+    )
+    return response?.response?.transactionHash ?? null
+  }, [sessionKey])
 
   const handleMintNFT = async () => {
-    setLoading(true);
-    const transactionHash = await mintNFT();
-    setLoading(false);
+    setLoading(true)
+    const transactionHash = await mintNFT()
+    setLoading(false)
     if (transactionHash) {
-      handleSetMessage(`https://amoy.polygonscan.com/tx/${transactionHash}`);
+      handleSetMessage(`https://amoy.polygonscan.com/tx/${transactionHash}`)
     }
-  };
+  }
 
   return (
-    <div className='mt-4'>
-      <Button
-        className='w-full' 
-        onClick={handleMintNFT}
-        disabled={!sessionKey}
-        id="mint-nft-button"
-        variant="outline"
-      >
+    <div className="mt-4">
+      <Button className="w-full" onClick={handleMintNFT} disabled={!sessionKey} id={buttonId} variant="outline">
         {loading ? <Loading /> : 'Mint NFT with session key'}
       </Button>
       {!sessionKey && (
-        <p className="text-red-400 text-xs mt-2">
-          Create a session before minting an NFT signed with a session key.
-        </p>
+        <p className="text-red-400 text-xs mt-2">Create a session before minting an NFT signed with a session key.</p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default BackendMintButton;
+export default BackendMintButton

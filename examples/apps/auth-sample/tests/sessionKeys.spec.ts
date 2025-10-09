@@ -1,6 +1,6 @@
-import test, { expect } from '@playwright/test';
-import { Logger } from './Logger';
-import { TEST_MINT_SUCCESS_TEXT } from './constants';
+import test, { expect } from '@playwright/test'
+import { TEST_MINT_SUCCESS_TEXT } from './constants'
+import { Logger } from './Logger'
 
 // test('Create and revoke session', async ({ page }) => {
 //   await page.goto('/')
@@ -64,4 +64,3 @@ test('Mint Session NFT', async ({ page }) => {
 
   expect(lastLog).toContain(TEST_MINT_SUCCESS_TEXT)
 })
-

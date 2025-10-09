@@ -1,24 +1,19 @@
-const brand: unique symbol = Symbol('Reply');
+const _brand: unique symbol = Symbol('Reply')
 
 class Reply<T = unknown> {
-  readonly value: T;
+  readonly value: T
 
-  readonly transferables?: Transferable[];
-
-  // Allows TypeScript to distinguish between an actual instance of this
-  // class versus an object that looks structurally similar.
-  // eslint-disable-next-line no-unused-private-class-members
-  #brand = brand;
+  readonly transferables?: Transferable[]
 
   constructor(
     value: T,
     options?: {
-      transferables?: Transferable[];
-    },
+      transferables?: Transferable[]
+    }
   ) {
-    this.value = value;
-    this.transferables = options?.transferables;
+    this.value = value
+    this.transferables = options?.transferables
   }
 }
 
-export default Reply;
+export default Reply

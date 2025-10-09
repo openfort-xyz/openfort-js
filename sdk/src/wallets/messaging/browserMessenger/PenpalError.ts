@@ -1,13 +1,13 @@
-import { ErrorCode } from './types';
+import type { ErrorCode } from './types'
 
 class PenpalError extends Error {
-  public code: ErrorCode;
+  public code: ErrorCode
 
   constructor(code: ErrorCode, message: string) {
-    super(message);
-    this.name = 'PenpalError';
-    this.code = code;
+    super(message)
+    this.name = 'PenpalError'
+    this.code = code
   }
 }
 
-export default PenpalError;
+export default PenpalError

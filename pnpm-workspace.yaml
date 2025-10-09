@@ -1,0 +1,5 @@
+packages:
+  - 'sdk'
+  - 'packages/**'
+  - 'examples/**'
+  - 'test'

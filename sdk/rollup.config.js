@@ -1,22 +1,21 @@
-import typescript from '@rollup/plugin-typescript';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import { readFileSync } from 'fs';
-import commonJs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json';
-import dts from 'rollup-plugin-dts';
-import replace from '@rollup/plugin-replace';
-const pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
-import { visualizer } from 'rollup-plugin-visualizer';
-import terser from '@rollup/plugin-terser';
+import { readFileSync } from 'node:fs'
+import commonJs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import replace from '@rollup/plugin-replace'
+import typescript from '@rollup/plugin-typescript'
+import dts from 'rollup-plugin-dts'
 
-const packages = JSON.parse(
-  readFileSync('./workspace-packages.json', { encoding: 'utf8' })
-);
+const pkg = JSON.parse(readFileSync('./package.json', 'utf8'))
 
-const getPackages = () => packages.map((pkg) => pkg.name);
+import terser from '@rollup/plugin-terser'
+import { visualizer } from 'rollup-plugin-visualizer'
 
-const modules =
-{
+const packages = JSON.parse(readFileSync('./workspace-packages.json', { encoding: 'utf8' }))
+
+const getPackages = () => packages.map((pkg) => pkg.name)
+
+const modules = {
   input: `./src/index.ts`,
   output: {
     dir: 'dist',
@@ -43,8 +42,7 @@ const modules =
   ],
 }
 
-const types =
-{
+const types = {
   input: `./dist/types/index.d.ts`,
   output: {
     file: `./dist/index.d.ts`,
@@ -72,6 +70,7 @@ const cjs = {
     json(),
     commonJs(),
     typescript({
+      noEmitOnError: true,
       tsconfig: 'tsconfig.json',
     }),
     terser(),
@@ -84,8 +83,4 @@ const cjs = {
   ],
 }
 
-export default [
-  cjs,
-  modules,
-  types,
-];
+export default [cjs, modules, types]
