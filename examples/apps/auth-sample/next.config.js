@@ -13,6 +13,12 @@ const nextConfig = {
       tls: false,
     }
 
+    // Ignore React Native dependencies in MetaMask SDK for browser builds
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
     // Handle ESM/CommonJS interop issues
     config.module.rules.push({
       test: /\.m?js$/,

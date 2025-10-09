@@ -4,7 +4,7 @@ import { changeToAutomaticRecovery, changeToPasswordRecovery } from './changeRec
 import { Logger } from './Logger'
 
 test.use({
-  storageState: [async (_context, use) => use(undefined), { scope: 'test' }],
+  storageState: [async (_, use) => use(undefined), { scope: 'test' }],
 })
 
 const logout = async (page: Page) => {

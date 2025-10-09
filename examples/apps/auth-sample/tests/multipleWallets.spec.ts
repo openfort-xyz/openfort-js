@@ -2,7 +2,7 @@ import test, { expect, type Page } from '@playwright/test'
 import { Logger } from './Logger'
 
 test.use({
-  storageState: [async (_context, use) => use(undefined), { scope: 'test' }],
+  storageState: [async (_, use) => use(undefined), { scope: 'test' }],
 })
 
 const _logout = async (page: Page) => {

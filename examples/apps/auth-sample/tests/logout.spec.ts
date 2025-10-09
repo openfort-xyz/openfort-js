@@ -2,7 +2,7 @@ import test from '@playwright/test'
 import { authenticateAndRecover } from './authenticate'
 
 test.use({
-  storageState: [async (_context, use) => use(undefined), { scope: 'test' }],
+  storageState: [async (_, use) => use(undefined), { scope: 'test' }],
 })
 
 test('Logout', async ({ page }) => {
