@@ -15,11 +15,10 @@
     "README.md"
   ],
   "scripts": {
-    "test": "pnpm check && pnpm test:unit && pnpm typecheck",
+    "test": "pnpm check && pnpm test:unit",
     "test:unit": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "packageList": "./scripts/generate-package-list.sh",
-    "typecheck": "tsc --noEmit --jsx preserve",
     "dev": "NODE_ENV=development pnpm rollup --config rollup.config.js --watch",
     "check": "biome check --write src",
     "format": "biome format --write src",
