@@ -21,13 +21,13 @@ export enum RpcErrorCode {
 }
 
 export class JsonRpcError extends Error {
-  public readonly message: string;
+  public readonly message: string
 
-  public readonly code: ProviderErrorCode | RpcErrorCode;
+  public readonly code: ProviderErrorCode | RpcErrorCode
 
   constructor(code: ProviderErrorCode | RpcErrorCode, message: string) {
-    super(message);
-    this.message = message;
-    this.code = code;
+    super(message)
+    this.message = message
+    this.code = code
   }
 }

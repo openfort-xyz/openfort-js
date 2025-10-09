@@ -1,25 +1,27 @@
-import { useState } from "react"
-import { openfort } from "./openfort"
+import { useState } from 'react'
+import { openfort } from './openfort'
 
 export const Login = () => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(true)
 
   return (
     <div className="text-white flex flex-col items-center gap-2">
       <h1
-        className="text-2xl pb-2 font-bold"
+        className="text-2xl pb-2 font-bold cursor-pointer"
         onClick={() => {
-          setEmail(import.meta.env.VITE_TEST_EMAIL || "")
-          setPassword(import.meta.env.VITE_TEST_PASSWORD || "")
+          setEmail(import.meta.env.VITE_TEST_EMAIL || '')
+          setPassword(import.meta.env.VITE_TEST_PASSWORD || '')
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            setEmail(import.meta.env.VITE_TEST_EMAIL || '')
+            setPassword(import.meta.env.VITE_TEST_PASSWORD || '')
+          }
         }}
       >
-        {
-          isLoggingIn
-            ? "Log in"
-            : "Sign up"
-        }
+        {isLoggingIn ? 'Log in' : 'Sign up'}
       </h1>
       <div className="flex flex-col items-center justify-center gap-2 w-sm">
         <input
@@ -27,62 +29,53 @@ export const Login = () => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           className="w-full"
           type="password"
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <button
+          type="button"
           className="w-full"
           onClick={async () => {
             if (isLoggingIn) {
               await openfort.auth.logInWithEmailPassword({
                 email,
-                password
+                password,
               })
               return
             } else {
               await openfort.auth.signUpWithEmailPassword({
                 email,
-                password
+                password,
               })
             }
-          }}>
-          {
-            isLoggingIn
-              ? "Log in"
-              : "Sign up"
-          }
+          }}
+        >
+          {isLoggingIn ? 'Log in' : 'Sign up'}
         </button>
       </div>
       <div className="w-sm flex items-center justify-center gap-2 py-2">
         <div className="bg-gray-500 w-full h-[1px]" />
-        <span className="opacity-50">
-          or
-        </span>
+        <span className="opacity-50">or</span>
         <div className="bg-gray-500 w-full h-[1px]" />
       </div>
       <button
+        type="button"
         className="w-full"
         onClick={async () => {
           setIsLoggingIn(!isLoggingIn)
-        }}>
-        {
-          isLoggingIn
-            ? "Sign up"
-            : "Log in"
-        }
-      </button>
-      <button
-        className="w-full"
-        onClick={() => openfort.auth.signUpGuest()}
+        }}
       >
+        {isLoggingIn ? 'Sign up' : 'Log in'}
+      </button>
+      <button type="button" className="w-full" onClick={() => openfort.auth.signUpGuest()}>
         Login as guest
       </button>
-    </div >
+    </div>
   )
 }

@@ -1,22 +1,26 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import Cors from "cors"
+import Cors from 'cors'
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 const cors = Cors({
   methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE'],
   origin: '*',
   credentials: true,
-});
+})
 
-function runMiddleware(req: NextApiRequest, res: NextApiResponse, fn: Function) {
+function runMiddleware(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  fn: (req: NextApiRequest, res: NextApiResponse, callback: (result: unknown) => void) => void
+) {
   return new Promise((resolve, reject) => {
-    fn(req, res, (result: any) => {
+    fn(req, res, (result: unknown) => {
       if (result instanceof Error) {
-        return reject(result);
+        return reject(result)
       }
-      return resolve(result);
-    });
-  });
+      return resolve(result)
+    })
+  })
 }
 
-export default cors;
-export { runMiddleware };
+export default cors
+export { runMiddleware }

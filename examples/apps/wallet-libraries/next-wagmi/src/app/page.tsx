@@ -1,10 +1,25 @@
 'use client'
 
-import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { Address, type Hex, createPublicClient, createWalletClient, custom, formatEther, getAddress, http, parseAbi, parseEther } from 'viem'
+import { useSearchParams } from 'next/navigation'
+import { type FormEvent, useEffect, useState } from 'react'
+import {
+  type Address,
+  createPublicClient,
+  createWalletClient,
+  custom,
+  formatEther,
+  getAddress,
+  type Hex,
+  http,
+  parseAbi,
+  parseEther,
+} from 'viem'
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
+import { erc7715Actions, type GrantPermissionsReturnType } from 'viem/experimental'
+import { createSiweMessage, generateSiweNonce } from 'viem/siwe'
 import {
   type BaseError,
-  Connector,
+  type Connector,
   useAccount,
   useBalance,
   useBlockNumber,
@@ -16,67 +31,56 @@ import {
   useEnsName,
   useReadContract,
   useReadContracts,
+  useSendCalls,
   useSendTransaction,
   useSignMessage,
+  useSignTypedData,
   useSwitchAccount,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
-  useSendCalls,
-  useSignTypedData,
 } from 'wagmi'
-
-import { wagmiContractConfig } from './contracts'
-import { openfortInstance } from '../openfort'
-import { erc7715Actions, GrantPermissionsReturnType } from 'viem/experimental'
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
-import { createSiweMessage, generateSiweNonce } from 'viem/siwe'
 import AuthModal from '../components/AuthModal'
 import WalletList from '../components/WalletList'
-import { useSearchParams } from 'next/navigation'
+import { openfortInstance } from '../openfort'
+import { wagmiContractConfig } from './contracts'
 
 export default function App() {
-  const searchParams = useSearchParams();
-  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+  const searchParams = useSearchParams()
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null)
 
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const email = localStorage.getItem("email");
-        const state = searchParams.get('state');
-        if (
-          email &&
-          state
-        ) {
+        const email = localStorage.getItem('email')
+        const state = searchParams.get('state')
+        if (email && state) {
           await openfortInstance.auth.verifyEmail({
             email: email,
             state: state,
-          });
-          localStorage.removeItem("email");
-          setVerificationStatus('Email verified successfully! You can now sign in.');
+          })
+          localStorage.removeItem('email')
+          setVerificationStatus('Email verified successfully! You can now sign in.')
 
           // Clear the URL parameters
-          const url = new URL(window.location.href);
-          url.searchParams.delete('state');
-          window.history.replaceState({}, '', url.toString());
+          const url = new URL(window.location.href)
+          url.searchParams.delete('state')
+          window.history.replaceState({}, '', url.toString())
         }
       } catch (error) {
-        setVerificationStatus('Error verifying email. Please try again.');
-        console.log('Error verifying email:', error);
+        setVerificationStatus('Error verifying email. Please try again.')
+        console.log('Error verifying email:', error)
       }
-    };
-    verifyEmail();
-  }, [searchParams]);
+    }
+    verifyEmail()
+  }, [searchParams])
 
   return (
     <>
       {verificationStatus && (
         <div className="verification-banner">
           {verificationStatus}
-          <button
-            onClick={() => setVerificationStatus(null)}
-            className="verification-close"
-          >
+          <button type="button" onClick={() => setVerificationStatus(null)} className="verification-close">
             ×
           </button>
         </div>
@@ -122,15 +126,17 @@ function Account() {
       </div>
 
       {account.status === 'connected' && (
-        <button type="button" onClick={async () => {
-          if (account.connector && account.connector.name.includes('Openfort')) {
-            // without explicit logout, openfort embedded wallet is just disconnected
-            // but the user is still authenticated
-            await openfortInstance.auth.logout();
-          }
-          disconnect()
-        }
-        }>
+        <button
+          type="button"
+          onClick={async () => {
+            if (account.connector?.name.includes('Openfort')) {
+              // without explicit logout, openfort embedded wallet is just disconnected
+              // but the user is still authenticated
+              await openfortInstance.auth.logout()
+            }
+            disconnect()
+          }}
+        >
           Disconnect
         </button>
       )}
@@ -139,12 +145,12 @@ function Account() {
 }
 
 function Connect() {
-  const chainId = useChainId();
-  const { connectors, connect, error, status } = useConnect();
-  const [activeConnector, setActiveConnector] = useState<Connector | null>(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isInAuthFlow, setIsInAuthFlow] = useState(false);
+  const chainId = useChainId()
+  const { connectors, connect, error } = useConnect()
+  const [activeConnector, setActiveConnector] = useState<Connector | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isInAuthFlow, setIsInAuthFlow] = useState(false)
 
   useEffect(() => {
     // Only show modal if we're not already in an auth flow
@@ -154,43 +160,43 @@ function Connect() {
       error.message === 'Unauthorized - must be authenticated and configured with a signer.' &&
       !isInAuthFlow
     ) {
-      setShowAuthModal(true);
-      setIsInAuthFlow(true);
+      setShowAuthModal(true)
+      setIsInAuthFlow(true)
     }
-  }, [error, activeConnector, isInAuthFlow]);
+  }, [error, activeConnector, isInAuthFlow])
 
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const user = await openfortInstance.user.get();
-        setIsAuthenticated(!!user);
+        const user = await openfortInstance.user.get()
+        setIsAuthenticated(!!user)
       } catch {
-        setIsAuthenticated(false);
+        setIsAuthenticated(false)
       }
-    };
-    checkAuthStatus();
-  }, [status]);
+    }
+    checkAuthStatus()
+  }, [])
 
   const handleConnect = (connector: Connector) => {
-    setActiveConnector(connector);
-    setIsInAuthFlow(false); // Reset auth flow state when initiating new connection
-    connect({ connector, chainId });
-  };
+    setActiveConnector(connector)
+    setIsInAuthFlow(false) // Reset auth flow state when initiating new connection
+    connect({ connector, chainId })
+  }
 
   const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
-    setShowAuthModal(false);
+    setIsAuthenticated(true)
+    setShowAuthModal(false)
 
     if (activeConnector) {
-      connect({ connector: activeConnector, chainId });
+      connect({ connector: activeConnector, chainId })
     }
-  };
+  }
 
   const handleModalClose = () => {
-    setShowAuthModal(false);
-    setIsInAuthFlow(false); // Reset auth flow when user closes modal
-    setActiveConnector(null); // Clear connector since user cancelled
-  };
+    setShowAuthModal(false)
+    setIsInAuthFlow(false) // Reset auth flow when user closes modal
+    setActiveConnector(null) // Clear connector since user cancelled
+  }
 
   return (
     <div>
@@ -198,61 +204,40 @@ function Connect() {
         {connectors
           .filter((connector) => !connector.name.includes('Injected'))
           .map((connector) => (
-            <ConnectorButton
-              key={connector.uid}
-              connector={connector}
-              onClick={() => handleConnect(connector)}
-            />
+            <ConnectorButton key={connector.uid} connector={connector} onClick={() => handleConnect(connector)} />
           ))}
       </div>
       {error && <div className="error">Error: {error.message}</div>}
       <WalletList isVisible={isAuthenticated} />
 
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={handleModalClose}
-        onAuthSuccess={handleAuthSuccess}
-      />
+      <AuthModal isOpen={showAuthModal} onClose={handleModalClose} onAuthSuccess={handleAuthSuccess} />
     </div>
-  );
+  )
 }
-function ConnectorButton({
-  connector,
-  onClick,
-}: {
-  connector: Connector;
-  onClick: () => void;
-}) {
-  const [ready, setReady] = useState(false);
+function ConnectorButton({ connector, onClick }: { connector: Connector; onClick: () => void }) {
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    (async () => {
-      const provider = await connector.getProvider();
-      setReady(!!provider);
-    })();
-  }, [connector, setReady]);
+    ;(async () => {
+      const provider = await connector.getProvider()
+      setReady(!!provider)
+    })()
+  }, [connector])
 
   return (
-    <button
-      className="button"
-      disabled={!ready}
-      onClick={onClick}
-      type="button"
-    >
+    <button className="button" disabled={!ready} onClick={onClick} type="button">
       {connector.name}
     </button>
-  );
+  )
 }
 
 function SwitchAccount() {
   const account = useAccount()
   const { connectors, switchAccount } = useSwitchAccount()
 
-
   return (
     <div>
       <h2>Switch Account</h2>
-
 
       {connectors.map((connector) => (
         <button
@@ -318,20 +303,19 @@ function SIWE() {
           const signature = await signMessageAsync({ message })
           const publicClient = createPublicClient({
             chain: chain,
-            transport: http()
+            transport: http(),
           })
           const success = await publicClient.verifyMessage({
             address: address!,
             message: message,
             signature: signature,
-          });
+          })
           if (!success) {
-            setVerification('Verification failed');
+            setVerification('Verification failed')
           } else {
-            setVerification('Verification successful');
+            setVerification('Verification successful')
           }
-        }
-        }
+        }}
       >
         <button type="submit">authenticate</button>
         <p>{error?.message}</p>
@@ -356,80 +340,79 @@ function SignTypedData() {
           event.preventDefault()
           const signature = await signTypedDataAsync({
             domain: {
-              name: "Ether Mail",
-              version: "1",
+              name: 'Ether Mail',
+              version: '1',
               chainId: chain?.id,
-              verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+              verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
             },
             types: {
               Person: [
-                { name: "name", type: "string" },
-                { name: "wallet", type: "address" }
+                { name: 'name', type: 'string' },
+                { name: 'wallet', type: 'address' },
               ],
               Mail: [
-                { name: "from", type: "Person" },
-                { name: "to", type: "Person" },
-                { name: "contents", type: "string" }
-              ]
+                { name: 'from', type: 'Person' },
+                { name: 'to', type: 'Person' },
+                { name: 'contents', type: 'string' },
+              ],
             },
-            primaryType: "Mail",
+            primaryType: 'Mail',
             message: {
               from: {
-                name: "Cow",
-                wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                name: 'Cow',
+                wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
               },
               to: {
-                name: "Bob",
-                wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+                name: 'Bob',
+                wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
               },
-              contents: "Hello, Bob!"
-            }
+              contents: 'Hello, Bob!',
+            },
           })
           const publicClient = createPublicClient({
             chain: chain,
-            transport: http()
+            transport: http(),
           })
           const isVerified = await publicClient.verifyTypedData({
             address: address!,
             domain: {
-              name: "Ether Mail",
-              version: "1",
+              name: 'Ether Mail',
+              version: '1',
               chainId: chain?.id,
-              verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+              verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
             },
             types: {
               Person: [
-                { name: "name", type: "string" },
-                { name: "wallet", type: "address" }
+                { name: 'name', type: 'string' },
+                { name: 'wallet', type: 'address' },
               ],
               Mail: [
-                { name: "from", type: "Person" },
-                { name: "to", type: "Person" },
-                { name: "contents", type: "string" }
-              ]
+                { name: 'from', type: 'Person' },
+                { name: 'to', type: 'Person' },
+                { name: 'contents', type: 'string' },
+              ],
             },
-            primaryType: "Mail",
+            primaryType: 'Mail',
             message: {
               from: {
-                name: "Cow",
-                wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"
+                name: 'Cow',
+                wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
               },
               to: {
-                name: "Bob",
-                wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"
+                name: 'Bob',
+                wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
               },
-              contents: "Hello, Bob!"
+              contents: 'Hello, Bob!',
             },
-            signature
+            signature,
           })
 
           if (!isVerified) {
-            setVerification('Verification failed');
+            setVerification('Verification failed')
           } else {
-            setVerification('Verification successful');
+            setVerification('Verification successful')
           }
-        }
-        }
+        }}
       >
         <button type="submit">authenticate</button>
         <p>{error?.message}</p>
@@ -439,8 +422,6 @@ function SignTypedData() {
     </div>
   )
 }
-
-
 
 function SignMessage() {
   const { data, signMessage, error } = useSignMessage()
@@ -493,14 +474,8 @@ function Balance() {
     <div>
       <h2>Balance</h2>
 
-      <div>
-        Balance (Default Chain):{' '}
-        {!!default_?.value && formatEther(default_.value)}
-      </div>
-      <div>
-        Balance (Account Chain):{' '}
-        {!!account_?.value && formatEther(account_.value)}
-      </div>
+      <div>Balance (Default Chain): {!!default_?.value && formatEther(default_.value)}</div>
+      <div>Balance (Account Chain): {!!account_?.value && formatEther(account_.value)}</div>
     </div>
   )
 }
@@ -543,23 +518,16 @@ function SendTransaction() {
     sendTransaction({ to, value: parseEther(value) })
   }
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    })
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  })
 
   return (
     <div>
       <h2>Send Transaction</h2>
       <form onSubmit={submit}>
         <input name="address" placeholder="Address" required />
-        <input
-          name="value"
-          placeholder="Amount (ETH)"
-          type="number"
-          step="0.000000001"
-          required
-        />
+        <input name="value" placeholder="Amount (ETH)" type="number" step="0.000000001" required />
         <button disabled={isPending} type="submit">
           {isPending ? 'Confirming...' : 'Send'}
         </button>
@@ -567,9 +535,7 @@ function SendTransaction() {
       {hash && <div>Transaction Hash: {hash}</div>}
       {isConfirming && 'Waiting for confirmation...'}
       {isConfirmed && 'Transaction confirmed.'}
-      {error && (
-        <div>Error: {(error as BaseError).shortMessage || error.message}</div>
-      )}
+      {error && <div>Error: {(error as BaseError).shortMessage || error.message}</div>}
     </div>
   )
 }
@@ -636,16 +602,15 @@ function WriteContract() {
     })
   }
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    })
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  })
 
   return (
     <div>
       <h2>Write Contract</h2>
       <form onSubmit={submit}>
-        <input name="tokenId" placeholder="Token ID" type='number' required />
+        <input name="tokenId" placeholder="Token ID" type="number" required />
         <button disabled={isPending} type="submit">
           {isPending ? 'Confirming...' : 'Mint'}
         </button>
@@ -653,14 +618,10 @@ function WriteContract() {
       {hash && <div>Transaction Hash: {hash}</div>}
       {isConfirming && 'Waiting for confirmation...'}
       {isConfirmed && 'Transaction confirmed.'}
-      {error && (
-        <div>Error: {(error as BaseError).details || error.message}</div>
-      )}
+      {error && <div>Error: {(error as BaseError).details || error.message}</div>}
     </div>
   )
 }
-
-
 
 function WriteContracts() {
   const { data: hash, error, isPending, sendCalls } = useSendCalls()
@@ -669,36 +630,33 @@ function WriteContracts() {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
     const tokenId = formData.get('tokenId') as string
-    sendCalls(
-      {
-        calls: [
-          {
-            to: getAddress('0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2'),
-            abi: parseAbi(['function mint(uint256 tokenId)']),
-            functionName: 'mint',
-            args: [BigInt(tokenId)],
-          },
-          {
-            to: getAddress('0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2'),
-            abi: parseAbi(['function mint(uint256 tokenId)']),
-            functionName: 'mint',
-            args: [BigInt(tokenId)],
-          }
-        ],
-      }
-    )
+    sendCalls({
+      calls: [
+        {
+          to: getAddress('0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2'),
+          abi: parseAbi(['function mint(uint256 tokenId)']),
+          functionName: 'mint',
+          args: [BigInt(tokenId)],
+        },
+        {
+          to: getAddress('0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2'),
+          abi: parseAbi(['function mint(uint256 tokenId)']),
+          functionName: 'mint',
+          args: [BigInt(tokenId)],
+        },
+      ],
+    })
   }
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash: hash?.id as `0x${string}`,
-    })
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash: hash?.id as `0x${string}`,
+  })
 
   return (
     <div>
       <h2>Write Contracts (Batch)</h2>
       <form onSubmit={submit}>
-        <input name="tokenId" placeholder="Token ID" type='number' required />
+        <input name="tokenId" placeholder="Token ID" type="number" required />
         <button disabled={isPending} type="submit">
           {isPending ? 'Confirming...' : 'Mint'}
         </button>
@@ -706,108 +664,106 @@ function WriteContracts() {
       {hash && <div>Transaction Hash: {hash?.id}</div>}
       {isConfirming && 'Waiting for confirmation...'}
       {isConfirmed && 'Transaction confirmed.'}
-      {error && (
-        <div>Error: {(error as BaseError).details || error.message}</div>
-      )}
+      {error && <div>Error: {(error as BaseError).details || error.message}</div>}
     </div>
   )
 }
 
 function GrantPermission() {
-  const { connector, chain } = useAccount();
-  const [error, setError] = useState<BaseError | null>(null);
-  const [pending, setPending] = useState(false);
-  const [result, setResult] = useState<GrantPermissionsReturnType | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const { connector, chain } = useAccount()
+  const [error, setError] = useState<BaseError | null>(null)
+  const [pending, setPending] = useState(false)
+  const [result, setResult] = useState<GrantPermissionsReturnType | null>(null)
+  const [mounted, setMounted] = useState(false)
 
-  const [expiryMinutes, setExpiryMinutes] = useState(24 * 60);
-  const [limit, setLimit] = useState(5);
-  const [whitelistedContracts, setWhitelistedContracts] = useState<`0x${string}`[]>([]);
-  const [newContract, setNewContract] = useState<`0x${string}`>('0x');
+  const [expiryMinutes, setExpiryMinutes] = useState(24 * 60)
+  const [limit, setLimit] = useState(5)
+  const [whitelistedContracts, setWhitelistedContracts] = useState<`0x${string}`[]>([])
+  const [newContract, setNewContract] = useState<`0x${string}`>('0x')
 
   const PRESET_EXPIRY = {
     DAY: 24 * 60,
     WEEK: 7 * 24 * 60,
-    MONTH: 30 * 24 * 60
-  };
+    MONTH: 30 * 24 * 60,
+  }
 
   useEffect(() => {
-    setMounted(true);
-    setWhitelistedContracts(['0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a']);
-  }, []);
+    setMounted(true)
+    setWhitelistedContracts(['0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a'])
+  }, [])
 
   async function grantPermissions(sessionKeyAddress: Address) {
-    const provider = await connector?.getProvider();
+    const provider = await connector?.getProvider()
     const walletClient = createWalletClient({
       chain,
       transport: custom(provider as any),
-    }).extend(erc7715Actions());
+    }).extend(erc7715Actions())
 
     const response = await walletClient.grantPermissions({
       signer: {
-        type: "key",
+        type: 'key',
         data: {
-          id: sessionKeyAddress
-        }
+          id: sessionKeyAddress,
+        },
       },
       expiry: expiryMinutes * 60,
-      permissions: whitelistedContracts.map(contract => ({
+      permissions: whitelistedContracts.map((contract) => ({
         type: 'contract-call',
         data: {
           address: contract,
-          calls: []
+          calls: [],
         },
         policies: [
           {
             type: {
-              custom: "call-limit"
+              custom: 'call-limit',
             },
             data: {
-              limit
-            }
-          }
-        ]
-      }))
-    });
+              limit,
+            },
+          },
+        ],
+      })),
+    })
 
-    return response;
+    return response
   }
 
   async function submit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setPending(true);
-    setError(null);
+    e.preventDefault()
+    setPending(true)
+    setError(null)
 
     try {
-      const privateKey = generatePrivateKey();
-      const accountSession = privateKeyToAccount(privateKey).address;
-      const response = await grantPermissions(accountSession);
-      setResult(response);
+      const privateKey = generatePrivateKey()
+      const accountSession = privateKeyToAccount(privateKey).address
+      const response = await grantPermissions(accountSession)
+      setResult(response)
     } catch (err) {
-      setError(err as BaseError);
+      setError(err as BaseError)
     } finally {
-      setPending(false);
+      setPending(false)
     }
   }
 
   function handleAddContract() {
     if (newContract && !whitelistedContracts.includes(newContract)) {
       try {
-        const formattedAddress = getAddress(newContract);
-        setWhitelistedContracts([...whitelistedContracts, formattedAddress]);
-        setNewContract('0x');
-      } catch (err) {
-        setError(new Error('Invalid address format') as BaseError);
+        const formattedAddress = getAddress(newContract)
+        setWhitelistedContracts([...whitelistedContracts, formattedAddress])
+        setNewContract('0x')
+      } catch (_err) {
+        setError(new Error('Invalid address format') as BaseError)
       }
     }
   }
 
   function handleRemoveContract(contract: `0x${string}`) {
-    setWhitelistedContracts(whitelistedContracts.filter(c => c !== contract));
+    setWhitelistedContracts(whitelistedContracts.filter((c) => c !== contract))
   }
 
   if (!mounted) {
-    return null;
+    return null
   }
 
   return (
@@ -889,11 +845,7 @@ function GrantPermission() {
               placeholder="Add contract address (0x...)"
               className="flex-1 rounded border p-2"
             />
-            <button
-              type="button"
-              onClick={handleAddContract}
-              className="px-4 py-2 bg-green-500 text-white rounded"
-            >
+            <button type="button" onClick={handleAddContract} className="px-4 py-2 bg-green-500 text-white rounded">
               Add Contract
             </button>
           </div>
@@ -909,15 +861,9 @@ function GrantPermission() {
       </form>
 
       {result && (
-        <div className="mt-4 p-4 bg-green-100 rounded">
-          Registered! Permission context: {result.permissionsContext}
-        </div>
+        <div className="mt-4 p-4 bg-green-100 rounded">Registered! Permission context: {result.permissionsContext}</div>
       )}
-      {error && (
-        <div className="mt-4 p-4 bg-red-100 rounded">
-          Error: {error.details || error.message}
-        </div>
-      )}
+      {error && <div className="mt-4 p-4 bg-red-100 rounded">Error: {error.details || error.message}</div>}
     </div>
-  );
+  )
 }

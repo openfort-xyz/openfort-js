@@ -1,39 +1,36 @@
 import {
   Configuration as APIConfiguration,
-  ConfigurationParameters as ApiConfigurationParameters,
-} from '../backend';
+  type ConfigurationParameters as ApiConfigurationParameters,
+} from '../backend'
 
 /**
  * Configuration for generated clients
  */
-export type BackendAPIConfiguration = APIConfiguration;
+export type BackendAPIConfiguration = APIConfiguration
 
 export interface Environment {
-  basePath: string;
-  accessToken: string;
+  basePath: string
+  accessToken: string
 }
 
 export interface OpenfortAPIConfigurationOptions {
-  basePath: string;
-  accessToken: string;
+  basePath: string
+  accessToken: string
 }
 
-export const createConfig = ({
-  basePath,
-  accessToken,
-}: OpenfortAPIConfigurationOptions): BackendAPIConfiguration => {
+export const createConfig = ({ basePath, accessToken }: OpenfortAPIConfigurationOptions): BackendAPIConfiguration => {
   if (!basePath.trim()) {
-    throw Error('basePath can not be empty');
+    throw Error('basePath can not be empty')
   }
 
   const apiConfigOptions: ApiConfigurationParameters = {
     basePath,
     accessToken,
-  };
+  }
 
-  return new APIConfiguration(apiConfigOptions);
-};
+  return new APIConfiguration(apiConfigOptions)
+}
 
 export type OpenfortAPIConfiguration = {
-  backend: BackendAPIConfiguration;
-};
+  backend: BackendAPIConfiguration
+}

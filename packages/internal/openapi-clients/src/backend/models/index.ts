@@ -215,6 +215,7 @@ export * from './oauth-provider-twitter';
 export * from './oauth-response';
 export * from './oidcauth-config';
 export * from './paging-queries';
+export * from './passkey-env';
 export * from './pay-for-user-policy-strategy';
 export * from './paymaster-delete-response';
 export * from './paymaster-response';

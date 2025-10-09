@@ -1,10 +1,9 @@
-import { defineConfig, devices } from '@playwright/test';
-
-import dotenv from 'dotenv';
-import path from 'path';
+import path from 'node:path'
+import { defineConfig, devices } from '@playwright/test'
+import dotenv from 'dotenv'
 
 // Alternatively, read from "../my.env" file.
-dotenv.config({ path: path.resolve(__dirname, '.env.local') });
+dotenv.config({ path: path.resolve(__dirname, '.env.local') })
 
 /**
  * Read environment variables from file.
@@ -14,11 +13,7 @@ dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const allDevicesTestMatch = [
-  "**/base.spec.ts",
-  "**/auth.spec.ts",
-  "**/linkedSocials.spec.ts",
-]
+const allDevicesTestMatch = ['**/base.spec.ts', '**/auth.spec.ts', '**/linkedSocials.spec.ts']
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -114,8 +109,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'yarn dev',
+    command: 'pnpm dev',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
   },
-});
+})

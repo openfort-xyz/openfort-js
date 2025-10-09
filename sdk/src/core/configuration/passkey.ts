@@ -1,4 +1,4 @@
-import { humanId } from 'human-id';
+import { humanId } from 'human-id'
 /**
  * PasskeyHandler handles operations related to passkeys.
  * This class is ONLY suitable for key-derivation related use cases.
@@ -6,22 +6,22 @@ import { humanId } from 'human-id';
  */
 export class PasskeyHandler {
   // Valid byte length for target key derivation
-  private readonly iValidByteLengths: number[] = [16, 24, 32];
+  private readonly iValidByteLengths: number[] = [16, 24, 32]
 
   // The issuer's domain name
-  private readonly rpId?: string;
+  private readonly rpId?: string
 
   // The issuer's display name
-  private readonly rpName?: string;
+  private readonly rpName?: string
 
   // Timeout (in milliseconds) before a passkey dialog expires (default = 60_000)
-  private readonly timeoutMillis: number;
+  private readonly timeoutMillis: number
 
   // Derived key length (in bytes)
-  private readonly derivedKeyLengthBytes: number;
+  private readonly derivedKeyLengthBytes: number
 
   // Determine whether the derived keys are extractable
-  private readonly extractableKey: boolean;
+  private readonly extractableKey: boolean
 
   /**
    * Creates a new passkey handler
@@ -32,33 +32,25 @@ export class PasskeyHandler {
    * @param derivedKeyLengthBytes Byte length for target keys
    * @param extractableKey Whether keys are extractable
    */
-  constructor(
-    {
-      rpId,
-      rpName,
-      timeoutMillis,
-      derivedKeyLengthBytes,
-      extractableKey,
-    }: Passkeys.Configuration,
-  ) {
-    this.rpId = rpId;
-    this.rpName = rpName;
-    this.timeoutMillis = timeoutMillis ?? 60_000;
-    this.derivedKeyLengthBytes = derivedKeyLengthBytes ?? 32;
+  constructor({ rpId, rpName, timeoutMillis, derivedKeyLengthBytes, extractableKey }: Passkeys.Configuration) {
+    this.rpId = rpId
+    this.rpName = rpName
+    this.timeoutMillis = timeoutMillis ?? 60_000
+    this.derivedKeyLengthBytes = derivedKeyLengthBytes ?? 32
     // ⚠️ key has default extractable=true ON PURPOSE
     // so it can be sent to the iframe
     // as in the previous warning, consider very carefully what is your use case
     // before imitating this workflow, which is ONLY meant for passkey based wallet recovery
-    this.extractableKey = extractableKey ?? true;
+    this.extractableKey = extractableKey ?? true
 
     if (!this.iValidByteLengths.includes(this.derivedKeyLengthBytes)) {
-      throw new Error(`Invalid key byte length ${this.derivedKeyLengthBytes}`);
+      throw new Error(`Invalid key byte length ${this.derivedKeyLengthBytes}`)
     }
   }
 
   static randomPasskeyName() {
-    const id = () => humanId({ capitalize: true, separator: ' ' });
-    return id();
+    const id = () => humanId({ capitalize: true, separator: ' ' })
+    return id()
   }
 
   private getChallengeBytes(): Uint8Array {
@@ -73,30 +65,30 @@ export class PasskeyHandler {
     // Check how webauthn authentication ceremonies work in this case for further clarification
     // Key derivation is fine though: attackers still need to authenticate themselves within the passkey's authenticator
     // to access the passkey's PRF, an old, valid signature won't help much
-    return crypto.getRandomValues(new Uint8Array(32)) as Uint8Array;
+    return crypto.getRandomValues(new Uint8Array(32)) as Uint8Array
   }
 
   private async deriveFromAssertion(assertion: PublicKeyCredential): Promise<CryptoKey> {
-    const clientExtResults = assertion.getClientExtensionResults();
+    const clientExtResults = assertion.getClientExtensionResults()
 
     if (!clientExtResults) {
-      throw new Error('Passkey fetch failed');
+      throw new Error('Passkey fetch failed')
     }
 
-    const prfResults = clientExtResults.prf;
+    const prfResults = clientExtResults.prf
 
     if (!prfResults || !prfResults.results) {
-      throw new Error('PRF extension not supported or missing results');
+      throw new Error('PRF extension not supported or missing results')
     }
-    const rawBits = prfResults.results.first;
+    const rawBits = prfResults.results.first
     const key = await crypto.subtle.importKey(
       'raw',
       rawBits,
       { name: 'AES-CBC', length: this.derivedKeyLengthBytes },
       this.extractableKey,
-      ['encrypt', 'decrypt'],
-    );
-    return key;
+      ['encrypt', 'decrypt']
+    )
+    return key
   }
 
   /**
@@ -138,28 +130,28 @@ export class PasskeyHandler {
       },
       timeout: this.timeoutMillis,
       attestation: 'direct',
-    };
+    }
 
-    const credential = await navigator.credentials.create({ publicKey }) as PublicKeyCredential;
+    const credential = (await navigator.credentials.create({ publicKey })) as PublicKeyCredential
 
     if (credential) {
-      const passkeyId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+      const passkeyId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)))
       return {
         id: passkeyId,
         displayName,
         key: new Uint8Array(await crypto.subtle.exportKey('raw', await this.deriveFromAssertion(credential))),
-      };
+      }
     }
-    throw new Error('could not create passkey');
+    throw new Error('could not create passkey')
   }
 
   private base64ToArrayBuffer(base64: string): ArrayBuffer {
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
+    const binary = atob(base64)
+    const bytes = new Uint8Array(binary.length)
     for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
+      bytes[i] = binary.charCodeAt(i)
     }
-    return bytes.buffer;
+    return bytes.buffer
   }
 
   /**
@@ -172,33 +164,31 @@ export class PasskeyHandler {
     // This assertion is the authentication step in the passkey:
     // it will fail if the user is not able to provide valid
     // credentials (PIN, biometrics, etc)
-    const passkeyId = id;
-    const assertion = await navigator.credentials.get(
-      {
-        publicKey: {
-          // Challenge just adds extra noise here, no security concerns for this
-          // particular use case
-          challenge: this.getChallengeBytes() as BufferSource,
-          rpId: this.rpId,
-          allowCredentials: [
-            {
-              id: this.base64ToArrayBuffer(passkeyId),
-              type: 'public-key',
-            },
-          ],
-          userVerification: 'required',
-          extensions: {
-            prf: {
-              eval: {
-                first: new TextEncoder().encode(seed),
-              },
+    const passkeyId = id
+    const assertion = (await navigator.credentials.get({
+      publicKey: {
+        // Challenge just adds extra noise here, no security concerns for this
+        // particular use case
+        challenge: this.getChallengeBytes() as BufferSource,
+        rpId: this.rpId,
+        allowCredentials: [
+          {
+            id: this.base64ToArrayBuffer(passkeyId),
+            type: 'public-key',
+          },
+        ],
+        userVerification: 'required',
+        extensions: {
+          prf: {
+            eval: {
+              first: new TextEncoder().encode(seed),
             },
           },
         },
       },
-    ) as PublicKeyCredential;
+    })) as PublicKeyCredential
 
-    return this.deriveFromAssertion(assertion);
+    return this.deriveFromAssertion(assertion)
   }
 
   /**
@@ -207,36 +197,36 @@ export class PasskeyHandler {
    */
   async deriveAndExportKey({ id, seed }: Passkeys.DerivationDetails): Promise<Uint8Array> {
     if (!this.extractableKey) {
-      throw new Error('Derived keys cannot be exported if extractableKey is not set to true');
+      throw new Error('Derived keys cannot be exported if extractableKey is not set to true')
     }
-    const derivedKey = await this.deriveKey({ id, seed });
-    return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey));
+    const derivedKey = await this.deriveKey({ id, seed })
+    return new Uint8Array(await crypto.subtle.exportKey('raw', derivedKey))
   }
 }
 
 namespace Passkeys {
   export type Configuration = {
-    rpId?: string,
-    rpName?: string,
-    timeoutMillis?: number,
-    derivedKeyLengthBytes?: number,
-    extractableKey?: boolean,
-  };
+    rpId?: string
+    rpName?: string
+    timeoutMillis?: number
+    derivedKeyLengthBytes?: number
+    extractableKey?: boolean
+  }
 
   export type UserConfig = {
-    id: string,
-    displayName: string,
-    seed: string,
-  };
+    id: string
+    displayName: string
+    seed: string
+  }
 
   export type Details = {
-    id: string,
-    displayName?: string,
-    key?: Uint8Array,
-  };
+    id: string
+    displayName?: string
+    key?: Uint8Array
+  }
 
   export type DerivationDetails = {
-    id: string,
-    seed: string,
-  };
+    id: string
+    seed: string
+  }
 }

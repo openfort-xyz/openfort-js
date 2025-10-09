@@ -1,47 +1,36 @@
-import openfort from "@/utils/openfortConfig";
-import { User } from "firebase/auth";
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { authService } from "../services/authService";
+import type { User } from 'firebase/auth'
+import type React from 'react'
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
+import openfort from '@/utils/openfortConfig'
+import { authService } from '../services/authService'
 
 interface AuthContextType {
-  user: User | null;
+  user: User | null
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-});
+})
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
     return authService.onAuthStateChanged(async (user) => {
-      console.log("Auth state changed:", user);
+      console.log('Auth state changed:', user)
       if (!user) {
-        setUser(null);
-        return;
+        setUser(null)
+        return
       }
-      await user.getIdToken();
-      await openfort.getAccessToken();
-      setUser(user);
-    });
-  }, []);
+      await user.getIdToken()
+      await openfort.getAccessToken()
+      setUser(user)
+    })
+  }, [])
 
-  return (
-    <AuthContext.Provider value={{ user }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  return <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
+}
 
 export const useAuth = () => {
-  return useContext(AuthContext);
-};
+  return useContext(AuthContext)
+}

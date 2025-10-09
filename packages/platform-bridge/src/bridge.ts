@@ -1,14 +1,10 @@
 /* eslint-disable no-console */
-import {
-  Openfort,
-  OpenfortError,
-  SDKConfiguration,
-} from '@openfort/openfort-js';
-import { ethers } from 'ethers';
+import { Openfort, OpenfortError, type SDKConfiguration } from '@openfort/openfort-js'
+import { ethers } from 'ethers'
 
-const keyFunctionName = 'fxName';
-const keyRequestId = 'requestId';
-const keyData = 'data';
+const keyFunctionName = 'fxName'
+const keyRequestId = 'requestId'
+const keyData = 'data'
 
 const OPENFORT_FUNCTIONS = {
   init: 'init',
@@ -45,134 +41,138 @@ const OPENFORT_FUNCTIONS = {
   getUser: 'getUser',
   validateAndRefreshToken: 'validateAndRefreshToken',
   setThirdPartyToken: 'setThirdPartyToken',
-};
+}
 
 // To notify game engine that this file is loaded
-const initRequest = 'init';
-const initRequestId = '1';
+const initRequest = 'init'
+const initRequestId = '1'
 
 // Used for pending setThirdPartyToken requests
-const pending: Record<string, { resolve: (token: string) => void; reject: (error: any) => void }> = {};
+const pending: Record<string, { resolve: (token: string) => void; reject: (error: any) => void }> = {}
 
-let openfortClient: Openfort;
+let openfortClient: Openfort
 
 declare global {
   interface Window {
-    callFunction: (jsonData: string) => void;
-    requestAccessToken: () => Promise<string>;
-    onAccessTokenReceived: (requestId: string, token: string) => void;
-    ue: any;
+    callFunction: (jsonData: string) => void
+    requestAccessToken: () => Promise<string>
+    onAccessTokenReceived: (requestId: string, token: string) => void
+    ue: any
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    Unity: any;
-    unityWebView: any;
+    Unity: any
+    unityWebView: any
   }
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-declare function blu_event(event: string, data: string): void;
+declare function blu_event(event: string, data: string): void
 // eslint-disable-next-line @typescript-eslint/naming-convention
-declare function UnityPostMessage(message: string): void;
+declare function UnityPostMessage(message: string): void
 
 const callbackToGame = (data: object) => {
-  const message = JSON.stringify(data);
-  console.log(`callbackToGame: ${message}`);
-  console.log(message);
+  const message = JSON.stringify(data)
+  console.log(`callbackToGame: ${message}`)
+  console.log(message)
   if (typeof window.ue !== 'undefined') {
     if (typeof window.ue.jsconnector === 'undefined') {
-      console.error('Unreal JSConnector not defined');
+      console.error('Unreal JSConnector not defined')
     } else {
-      window.ue.jsconnector.sendtogame(message);
+      window.ue.jsconnector.sendtogame(message)
     }
   } else if (typeof blu_event !== 'undefined') {
-    blu_event('sendtogame', message);
+    blu_event('sendtogame', message)
   } else if (typeof UnityPostMessage !== 'undefined') {
-    UnityPostMessage(message);
+    UnityPostMessage(message)
   } else if (typeof window.parent.unityWebView !== 'undefined') {
-    window.parent.unityWebView.sendMessage('WebViewObject', message);
+    window.parent.unityWebView.sendMessage('WebViewObject', message)
   } else if (typeof window.Unity !== 'undefined') {
-    window.Unity.call(message);
+    window.Unity.call(message)
   } else {
-    console.error(
-      'No available game callbacks to call from OpenfortSDK platform-bridge',
-    );
+    console.error('No available game callbacks to call from OpenfortSDK platform-bridge')
   }
-};
+}
 
-window.requestAccessToken = () => new Promise((resolve, reject) => {
-  const requestId = Date.now() + Math.random();
-  pending[requestId] = { resolve, reject };
+window.requestAccessToken = () =>
+  new Promise((resolve, reject) => {
+    const requestId = Date.now() + Math.random()
+    pending[requestId] = { resolve, reject }
 
-  callbackToGame({
-    responseFor: OPENFORT_FUNCTIONS.setThirdPartyToken,
-    requestId,
-    success: true,
-  });
-});
+    callbackToGame({
+      responseFor: OPENFORT_FUNCTIONS.setThirdPartyToken,
+      requestId,
+      success: true,
+    })
+  })
 
 window.onAccessTokenReceived = (requestId, token) => {
   if (pending[requestId]) {
-    pending[requestId].resolve(token);
-    delete pending[requestId];
+    pending[requestId].resolve(token)
+    delete pending[requestId]
   }
-};
+}
 
 window.callFunction = async (jsonData: string) => {
   // eslint-disable-line no-unused-vars
-  console.log(`Call function ${jsonData}`);
+  console.log(`Call function ${jsonData}`)
 
-  let fxName = null;
-  let requestId = null;
+  let fxName = null
+  let requestId = null
 
   try {
-    const json = JSON.parse(jsonData);
-    fxName = json[keyFunctionName];
-    requestId = json[keyRequestId];
-    const data = json[keyData];
+    const json = JSON.parse(jsonData)
+    fxName = json[keyFunctionName]
+    requestId = json[keyRequestId]
+    const data = json[keyData]
 
     switch (fxName) {
       case OPENFORT_FUNCTIONS.init: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         if (!openfortClient) {
           const configuration = {
             baseConfiguration: {
               publishableKey: request.publishableKey,
             },
-            shieldConfiguration: request.shieldPublishableKey ? {
-              shieldPublishableKey: request.shieldPublishableKey,
-              shieldDebug: request.shieldDebug ?? false,
-            } : undefined,
-            thirdPartyAuth: request.thirdPartyAuth?.provider ? {
-              provider: request.thirdPartyAuth.provider,
-              getAccessToken: async () => await window.requestAccessToken(),
-            } : undefined,
+            shieldConfiguration: request.shieldPublishableKey
+              ? {
+                  shieldPublishableKey: request.shieldPublishableKey,
+                  shieldDebug: request.shieldDebug ?? false,
+                }
+              : undefined,
+            thirdPartyAuth: request.thirdPartyAuth?.provider
+              ? {
+                  provider: request.thirdPartyAuth.provider,
+                  getAccessToken: async () => await window.requestAccessToken(),
+                }
+              : undefined,
             overrides: {
               backendUrl: request?.backendUrl ?? 'https://api.openfort.io',
               iframeUrl: request?.iframeUrl,
               shieldUrl: request?.shieldUrl ?? 'https://shield.openfort.io',
             },
-          };
-          openfortClient = new Openfort(configuration as unknown as SDKConfiguration);
-          console.log('Openfort client initialized');
+          }
+          openfortClient = new Openfort(configuration as unknown as SDKConfiguration)
+          console.log('Openfort client initialized')
         }
 
-        ethers.Wallet.createRandom();
+        ethers.Wallet.createRandom()
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
+        })
 
-        break;
+        break
       }
       case OPENFORT_FUNCTIONS.initOAuth: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const initOAuthResponse = await openfortClient.auth.initOAuth({
           provider: request.provider,
           options: {
-            ...request.options, usePooling: request.usePooling,
+            ...request.options,
+            usePooling: request.usePooling,
           },
-        });
+        })
         callbackToGame({
           ...{
             responseFor: fxName,
@@ -180,26 +180,26 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...initOAuthResponse,
-        });
+        })
 
-        break;
+        break
       }
       case OPENFORT_FUNCTIONS.logout: {
-        await openfortClient.auth.logout();
+        await openfortClient.auth.logout()
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.initLinkOAuth: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const initAuthResponse = await openfortClient.auth.initLinkOAuth({
           authToken: request.authToken,
           provider: request.provider,
           options: request.options,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -208,16 +208,16 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...initAuthResponse,
-        });
+        })
 
-        break;
+        break
       }
       case OPENFORT_FUNCTIONS.unlinkOAuth: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const userProfile = await openfortClient.auth.unlinkOAuth({
           authToken: request.authToken,
           provider: request.provider,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -226,14 +226,12 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userProfile,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.poolOAuth: {
-        const request = JSON.parse(data);
-        const authResponse = await openfortClient.auth.poolOAuth(
-          request.key,
-        );
+        const request = JSON.parse(data)
+        const authResponse = await openfortClient.auth.poolOAuth(request.key)
         callbackToGame({
           ...{
             responseFor: fxName,
@@ -241,14 +239,14 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...authResponse,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.initSIWE: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const initResponse = await openfortClient.auth.initSIWE({
           address: request.address,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -257,17 +255,17 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...initResponse,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.authenticateWithSIWE: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const authResponse = await openfortClient.auth.authenticateWithSIWE({
           connectorType: request.connectorType,
           message: request.message,
           signature: request.signature,
           walletClientType: request.walletClientType,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -276,18 +274,18 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...authResponse,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.linkWallet: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const userProfile = await openfortClient.auth.linkWallet({
           authToken: request.authToken,
           connectorType: request.connectorType,
           message: request.message,
           signature: request.signature,
           walletClientType: request.walletClientType,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -296,15 +294,15 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userProfile,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.unlinkWallet: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const userProfile = await openfortClient.auth.unlinkWallet({
           address: request.address,
           authToken: request.authToken,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -313,32 +311,32 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userProfile,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.storeCredentials: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         await openfortClient.auth.storeCredentials({
           accessToken: request.accessToken,
           refreshToken: request.refreshToken,
           player: request.player,
-        });
+        })
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.sendSignatureTransactionIntentRequest: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const transactionIntentResponse = await openfortClient.proxy.sendSignatureTransactionIntentRequest(
           request.transactionIntentId,
           request.userOperationHash,
           request.signature,
-          request.optimistic,
-        );
+          request.optimistic
+        )
 
         callbackToGame({
           ...{
@@ -347,91 +345,88 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...transactionIntentResponse,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.signMessage: {
-        const request = JSON.parse(data);
-        const signature = await openfortClient.embeddedWallet.signMessage(
-          request.message,
-          request.options,
-        );
+        const request = JSON.parse(data)
+        const signature = await openfortClient.embeddedWallet.signMessage(request.message, request.options)
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
           result: signature,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.signTypedData: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const signature = await openfortClient.embeddedWallet.signTypedData(
           request.domain,
           request.types,
-          request.value,
-        );
+          request.value
+        )
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
           result: signature,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.getEmbeddedState: {
-        const embeddedState = await openfortClient.embeddedWallet.getEmbeddedState();
+        const embeddedState = await openfortClient.embeddedWallet.getEmbeddedState()
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
           result: embeddedState,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.validateAndRefreshToken: {
-        const request = JSON.parse(data);
-        await openfortClient.validateAndRefreshToken(request.forceRefresh);
+        const request = JSON.parse(data)
+        await openfortClient.validateAndRefreshToken(request.forceRefresh)
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.createEmbeddedWallet: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         await openfortClient.embeddedWallet.create({
           chainType: request.chainType,
           accountType: request.accountType,
           recoveryParams: request.recoveryParams,
-        });
+        })
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.recoverEmbeddedWallet: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         await openfortClient.embeddedWallet.recover({
           account: request.accountAddress,
           recoveryParams: request.recoveryParams,
-        });
+        })
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.getWallet: {
-        const wallet = await openfortClient.embeddedWallet.get();
+        const wallet = await openfortClient.embeddedWallet.get()
 
         callbackToGame({
           ...{
@@ -440,14 +435,14 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...wallet,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.listWallets: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const wallets = await openfortClient.embeddedWallet.list({
           ...request,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -456,86 +451,86 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...wallets,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.configureEmbeddedWallet: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         await openfortClient.embeddedWallet.configure({
           chainId: request.chainId,
           recoveryParams: request.recoveryParams,
-        });
+        })
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.requestResetPassword: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         await openfortClient.auth.requestResetPassword({
           email: request.email,
           redirectUrl: request.redirectUrl,
-        });
+        })
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.resetPassword: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         await openfortClient.auth.resetPassword({
           email: request.email,
           password: request.password,
           state: request.state,
-        });
+        })
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.requestEmailVerification: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         await openfortClient.auth.requestEmailVerification({
           email: request.email,
           redirectUrl: request.redirectUrl,
-        });
+        })
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.verifyEmail: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         await openfortClient.auth.verifyEmail({
           email: request.email,
           state: request.state,
-        });
+        })
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.unlinkEmailPassword: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const userInfo = await openfortClient.auth.unlinkEmailPassword({
           email: request.email,
           authToken: request.authToken,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -544,18 +539,16 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userInfo,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.linkEmailPassword: {
-        const request = JSON.parse(data);
-        const userInfo = await openfortClient.auth.linkEmailPassword(
-          {
-            email: request.email,
-            password: request.password,
-            authToken: request.authToken,
-          },
-        );
+        const request = JSON.parse(data)
+        const userInfo = await openfortClient.auth.linkEmailPassword({
+          email: request.email,
+          password: request.password,
+          authToken: request.authToken,
+        })
 
         callbackToGame({
           ...{
@@ -564,15 +557,15 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userInfo,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.logInWithEmailPassword: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const userInfo = await openfortClient.auth.logInWithEmailPassword({
           email: request.email,
           password: request.password,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -581,11 +574,11 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userInfo,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.signUpGuest: {
-        const userInfo = await openfortClient.auth.signUpGuest();
+        const userInfo = await openfortClient.auth.signUpGuest()
 
         callbackToGame({
           ...{
@@ -594,16 +587,16 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userInfo,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.signUpWithEmailPassword: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
         const userInfo = await openfortClient.auth.signUpWithEmailPassword({
           email: request.email,
           password: request.password,
           options: request.options,
-        });
+        })
 
         callbackToGame({
           ...{
@@ -612,22 +605,22 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userInfo,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.getAccessToken: {
-        const accessToken = await openfortClient.getAccessToken();
+        const accessToken = await openfortClient.getAccessToken()
 
         callbackToGame({
           responseFor: fxName,
           requestId,
           success: true,
           result: accessToken,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.getUser: {
-        const userProfile = await openfortClient.user.get();
+        const userProfile = await openfortClient.user.get()
 
         callbackToGame({
           ...{
@@ -636,11 +629,11 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...userProfile,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.getEthereumProvider: {
-        const evmProvider = await openfortClient.embeddedWallet.getEthereumProvider();
+        const evmProvider = await openfortClient.embeddedWallet.getEthereumProvider()
 
         callbackToGame({
           ...{
@@ -649,29 +642,29 @@ window.callFunction = async (jsonData: string) => {
             success: true,
           },
           ...evmProvider,
-        });
-        break;
+        })
+        break
       }
       case OPENFORT_FUNCTIONS.setThirdPartyToken: {
-        const request = JSON.parse(data);
+        const request = JSON.parse(data)
 
-        window.onAccessTokenReceived(requestId, request.token);
-        break;
+        window.onAccessTokenReceived(requestId, request.token)
+        break
       }
       default:
-        break;
+        break
     }
   } catch (error: any) {
-    console.log(error);
+    console.log(error)
     callbackToGame({
       responseFor: fxName,
       requestId,
       success: false,
       error: error.message,
       errorType: error instanceof OpenfortError ? error.type : null,
-    });
+    })
   }
-};
+}
 
 function onLoadHandler() {
   // File loaded
@@ -680,17 +673,17 @@ function onLoadHandler() {
     responseFor: initRequest,
     requestId: initRequestId,
     success: true,
-  });
+  })
 }
 
-console.log('index.ts loaded');
+console.log('index.ts loaded')
 
-function winLoad(callback: { (): void }) {
+function winLoad(callback: () => void) {
   if (document.readyState === 'complete') {
-    callback();
+    callback()
   } else {
-    window.addEventListener('load', callback);
+    window.addEventListener('load', callback)
   }
 }
 
-winLoad(onLoadHandler);
+winLoad(onLoadHandler)

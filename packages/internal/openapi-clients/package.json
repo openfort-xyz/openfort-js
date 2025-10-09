@@ -4,13 +4,17 @@
   "version": "0.0.0",
   "author": "Openfort",
   "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "axios-retry": "^4.5.0"
+  },
   "devDependencies": {
     "jest": "^29.4.3",
     "rollup": "^3.17.2",
-    "typescript": "^4.9.5"
+    "typescript": "^5.8.3"
   },
   "engines": {
-    "node": ">=20.11.0"
+    "node": ">=22.9"
   },
   "files": [
     "dist"
@@ -23,7 +27,8 @@
   "scripts": {
     "build": "NODE_ENV=production rollup --config rollup.config.js",
     "dev": "rollup --config rollup.config.js -w",
-    "prepare": "wsrun -r build",
+    "check": "biome check --write --unsafe",
+    "prepare": "pnpm build",
     "test": "jest --passWithNoTests",
     "typecheck": "tsc --noEmit --jsx preserve"
   },

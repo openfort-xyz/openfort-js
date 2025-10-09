@@ -1,71 +1,66 @@
-import { type StaticJsonRpcProvider } from '@ethersproject/providers';
-import { type BackendApiClients } from '@openfort/openapi-clients';
-import { GrantPermissionsParameters } from 'types';
-import { EmbeddedSigner } from 'wallets/embedded';
-import { Authentication } from '../../core/configuration/authentication';
-import {
-  Provider,
-  ProviderEvent,
-  ProviderEventMap,
-  RequestArguments,
-} from './types';
-import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError';
-import { signTypedDataV4 } from './signTypedDataV4';
-import { OpenfortEventMap, OpenfortEvents } from '../../types/types';
-import TypedEventEmitter from '../../utils/typedEventEmitter';
-import { defaultChainRpcs } from '../../utils/chains';
-import { Signer } from '../isigner';
-import { Account } from '../../core/configuration/account';
-import { IStorage } from '../../storage/istorage';
-import { addEthereumChain } from './addEthereumChain';
-import { registerSession } from './registerSession';
-import { RevokePermissionsRequestParams, revokeSession } from './revokeSession';
-import { sendCalls } from './sendCalls';
-import { GetCallsStatusParameters, getCallStatus } from './getCallsStatus';
-import { personalSign } from './personalSign';
-import { estimateGas } from './estimateGas';
-import { numberToHex } from '../../utils/crypto';
+import type { StaticJsonRpcProvider } from '@ethersproject/providers'
+import type { BackendApiClients } from '@openfort/openapi-clients'
+import type { GrantPermissionsParameters } from 'types'
+import type { EmbeddedSigner } from 'wallets/embedded'
+import { Account } from '../../core/configuration/account'
+import { Authentication } from '../../core/configuration/authentication'
+import type { IStorage } from '../../storage/istorage'
+import { type OpenfortEventMap, OpenfortEvents } from '../../types/types'
+import { defaultChainRpcs } from '../../utils/chains'
+import { numberToHex } from '../../utils/crypto'
+import TypedEventEmitter from '../../utils/typedEventEmitter'
+import type { Signer } from '../isigner'
+import { addEthereumChain } from './addEthereumChain'
+import { estimateGas } from './estimateGas'
+import { type GetCallsStatusParameters, getCallStatus } from './getCallsStatus'
+import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError'
+import { personalSign } from './personalSign'
+import { registerSession } from './registerSession'
+import { type RevokePermissionsRequestParams, revokeSession } from './revokeSession'
+import { sendCalls } from './sendCalls'
+import { signTypedDataV4 } from './signTypedDataV4'
+import { type Provider, ProviderEvent, type ProviderEventMap, type RequestArguments } from './types'
 
 export type EvmProviderInput = {
-  storage: IStorage;
-  ensureSigner: () => Promise<EmbeddedSigner>;
+  storage: IStorage
+  ensureSigner: () => Promise<EmbeddedSigner>
   chains?: Record<number, string>
-  account?: Account;
-  authentication?: Authentication;
-  backendApiClients: BackendApiClients;
-  openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>;
-  policyId?: string;
-  validateAndRefreshSession: () => Promise<void>;
-};
+  account?: Account
+  authentication?: Authentication
+  backendApiClients: BackendApiClients
+  openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>
+  policyId?: string
+  validateAndRefreshSession: () => Promise<void>
+}
 
 export class EvmProvider implements Provider {
-  readonly #storage: IStorage;
+  readonly #storage: IStorage
 
-  #policyId?: string;
+  #policyId?: string
 
-  #customChains?: Record<number, string>;
+  #customChains?: Record<number, string>
 
-  #signer?: Signer;
+  #signer?: Signer
 
   /**
    * Updates the policy ID for the provider
    * @param newPolicyId - The new policy ID to use
    */
   public updatePolicy(newPolicy: string) {
-    this.#policyId = newPolicy;
+    this.#policyId = newPolicy
   }
 
-  readonly #validateAndRefreshSession: () => Promise<void>;
+  readonly #validateAndRefreshSession: () => Promise<void>
 
-  readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>;
+  readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>
 
-  #rpcProvider: StaticJsonRpcProvider | null = null;
+  #rpcProvider: StaticJsonRpcProvider | null = null
 
-  readonly #backendApiClients: BackendApiClients;
+  readonly #backendApiClients: BackendApiClients
 
-  public readonly isOpenfort: boolean = true;
+  public readonly isOpenfort: boolean = true
 
-  readonly #ensureSignerFn: () => Promise<EmbeddedSigner>;
+  readonly #ensureSignerFn: () => Promise<EmbeddedSigner>
 
   constructor({
     storage,
@@ -76,85 +71,85 @@ export class EvmProvider implements Provider {
     chains,
     validateAndRefreshSession,
   }: EvmProviderInput) {
-    this.#ensureSignerFn = ensureSigner;
+    this.#ensureSignerFn = ensureSigner
 
-    this.#storage = storage;
+    this.#storage = storage
 
-    this.#customChains = chains;
+    this.#customChains = chains
 
-    this.#policyId = policyId;
+    this.#policyId = policyId
 
-    this.#validateAndRefreshSession = validateAndRefreshSession;
+    this.#validateAndRefreshSession = validateAndRefreshSession
 
-    this.#backendApiClients = backendApiClients;
+    this.#backendApiClients = backendApiClients
 
-    this.#backendApiClients = backendApiClients;
+    this.#backendApiClients = backendApiClients
 
-    this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>();
+    this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>()
 
-    openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout);
-    openfortEventEmitter.on(OpenfortEvents.SWITCH_ACCOUNT, this.#handleSwitchAccount);
+    openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout)
+    openfortEventEmitter.on(OpenfortEvents.SWITCH_ACCOUNT, this.#handleSwitchAccount)
   }
 
   #ensureSigner = async (): Promise<Signer> => {
     if (!this.#signer) {
-      this.#signer = await this.#ensureSignerFn();
+      this.#signer = await this.#ensureSignerFn()
     }
-    return this.#signer;
-  };
+    return this.#signer
+  }
 
   #handleLogout = async () => {
-    this.#signer = undefined;
-    this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, []);
-  };
+    this.#signer = undefined
+    this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [])
+  }
 
   #handleSwitchAccount = async (address: string) => {
-    this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [address]);
-  };
+    this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [address])
+  }
 
   async getRpcProvider(): Promise<StaticJsonRpcProvider> {
     if (!this.#rpcProvider) {
-      const account = await Account.fromStorage(this.#storage);
-      const chainId = account?.chainId || 8453;
+      const account = await Account.fromStorage(this.#storage)
+      const chainId = account?.chainId || 8453
 
       await import('@ethersproject/providers').then((module) => {
-        const rpcUrl = this.#customChains ? this.#customChains[chainId] : undefined;
-        this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainId]);
-      });
+        const rpcUrl = this.#customChains ? this.#customChains[chainId] : undefined
+        this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainId])
+      })
     }
     if (!this.#rpcProvider) {
-      throw new Error('RPC provider not initialized');
+      throw new Error('RPC provider not initialized')
     }
 
-    return this.#rpcProvider;
+    return this.#rpcProvider
   }
 
   async #performRequest(request: RequestArguments): Promise<any> {
     switch (request.method) {
       case 'eth_accounts': {
-        const account = await Account.fromStorage(this.#storage);
-        return account ? [account.address] : [];
+        const account = await Account.fromStorage(this.#storage)
+        return account ? [account.address] : []
       }
       case 'eth_requestAccounts': {
-        const account = await Account.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage)
         if (account) {
-          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: String(account.chainId) });
-          return [account.address];
+          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: String(account.chainId) })
+          return [account.address]
         }
 
         throw new JsonRpcError(
           ProviderErrorCode.UNAUTHORIZED,
-          'Unauthorized - must be authenticated and configured with a signer.',
-        );
+          'Unauthorized - must be authenticated and configured with a signer.'
+        )
       }
       case 'eth_sendTransaction': {
-        const account = await Account.fromStorage(this.#storage);
-        const signer = await this.#ensureSigner();
-        const authentication = await Authentication.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage)
+        const signer = await this.#ensureSigner()
+        const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
-        await this.#validateAndRefreshSession();
+        await this.#validateAndRefreshSession()
         return await sendCalls({
           params: request.params || [],
           signer,
@@ -162,33 +157,33 @@ export class EvmProvider implements Provider {
           authentication,
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
-        });
+        })
       }
       case 'eth_estimateGas': {
-        const account = await Account.fromStorage(this.#storage);
-        const authentication = await Authentication.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage)
+        const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
-        await this.#validateAndRefreshSession();
+        await this.#validateAndRefreshSession()
         return await estimateGas({
           params: request.params || [],
           account,
           authentication,
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
-        });
+        })
       }
       case 'eth_signTypedData':
       case 'eth_signTypedData_v4': {
-        const account = await Account.fromStorage(this.#storage);
-        const signer = await this.#ensureSigner();
+        const account = await Account.fromStorage(this.#storage)
+        const signer = await this.#ensureSigner()
         if (!account) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
-        await this.#validateAndRefreshSession();
+        await this.#validateAndRefreshSession()
 
-        const rpcProvider = await this.getRpcProvider();
+        const rpcProvider = await this.getRpcProvider()
 
         return await signTypedDataV4({
           method: request.method,
@@ -197,23 +192,21 @@ export class EvmProvider implements Provider {
           implementationType: (account.implementationType || account.type)!,
           rpcProvider,
           account,
-        });
+        })
       }
       case 'personal_sign': {
-        const account = await Account.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage)
         if (!account) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
-        const signer = await this.#ensureSigner();
-        await this.#validateAndRefreshSession();
+        const signer = await this.#ensureSigner()
+        await this.#validateAndRefreshSession()
 
-        return await personalSign(
-          {
-            params: request.params || [],
-            signer,
-            account,
-          },
-        );
+        return await personalSign({
+          params: request.params || [],
+          signer,
+          account,
+        })
       }
       case 'eth_chainId': {
         // Call detect network to fetch the chainId so to take advantage of
@@ -222,73 +215,67 @@ export class EvmProvider implements Provider {
         // JsonRpcProvider, this function will still work as expected given
         // that detectNetwork call _uncachedDetectNetwork which will force
         // the provider to re-fetch the chainId from remote.
-        const rpcProvider = await this.getRpcProvider();
-        const { chainId } = await rpcProvider.detectNetwork();
-        return numberToHex(chainId);
+        const rpcProvider = await this.getRpcProvider()
+        const { chainId } = await rpcProvider.detectNetwork()
+        return numberToHex(chainId)
       }
       case 'wallet_switchEthereumChain': {
-        const signer = await this.#ensureSigner();
+        const signer = await this.#ensureSigner()
         if (!request.params || !Array.isArray(request.params) || request.params.length === 0) {
-          throw new JsonRpcError(
-            RpcErrorCode.INVALID_PARAMS,
-            'Invalid parameters for wallet_switchEthereumChain',
-          );
+          throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'Invalid parameters for wallet_switchEthereumChain')
         }
-        await this.#validateAndRefreshSession();
+        await this.#validateAndRefreshSession()
 
         try {
-          const chainIdNumber = parseInt(request.params[0].chainId, 16);
-          await signer.switchChain({ chainId: chainIdNumber });
+          const chainIdNumber = parseInt(request.params[0].chainId, 16)
+          await signer.switchChain({ chainId: chainIdNumber })
           await import('@ethersproject/providers').then((module) => {
-            const rpcUrl = this.#customChains ? this.#customChains[chainIdNumber] : undefined;
-            this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainIdNumber]);
-          });
+            const rpcUrl = this.#customChains ? this.#customChains[chainIdNumber] : undefined
+            this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainIdNumber])
+          })
         } catch (error) {
-          const err = error as Error;
-          throw new JsonRpcError(
-            RpcErrorCode.INTERNAL_ERROR,
-            `Failed to switch chain: ${err.message}`,
-          );
+          const err = error as Error
+          throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, `Failed to switch chain: ${err.message}`)
         }
-        return null;
+        return null
       }
       case 'wallet_addEthereumChain': {
-        await this.#ensureSigner(); // Ensure signer exists
-        const rpcProvider = await this.getRpcProvider();
+        await this.#ensureSigner() // Ensure signer exists
+        const rpcProvider = await this.getRpcProvider()
         return await addEthereumChain({
           params: request.params || [],
           rpcProvider,
           storage: this.#storage,
-        });
+        })
       }
       // EIP-5792: Wallet Call API
       case 'wallet_showCallsStatus': {
-        return null;
+        return null
       }
       case 'wallet_getCallsStatus': {
-        const account = await Account.fromStorage(this.#storage);
-        await this.#ensureSigner(); // Ensure signer exists
-        const authentication = await Authentication.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage)
+        await this.#ensureSigner() // Ensure signer exists
+        const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
-        await this.#validateAndRefreshSession();
+        await this.#validateAndRefreshSession()
 
         return await getCallStatus({
-          params: (request.params || {} as unknown) as GetCallsStatusParameters,
+          params: (request.params || ({} as unknown)) as GetCallsStatusParameters,
           authentication,
           backendClient: this.#backendApiClients,
           account,
-        });
+        })
       }
       case 'wallet_sendCalls': {
-        const account = await Account.fromStorage(this.#storage);
-        const signer = await this.#ensureSigner();
-        const authentication = await Authentication.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage)
+        const signer = await this.#ensureSigner()
+        const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
-        await this.#validateAndRefreshSession();
+        await this.#validateAndRefreshSession()
         return await sendCalls({
           params: request.params ? request.params[0].calls : [],
           signer,
@@ -296,47 +283,47 @@ export class EvmProvider implements Provider {
           authentication,
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
-        });
+        })
       }
       case 'wallet_grantPermissions': {
-        const account = await Account.fromStorage(this.#storage);
-        const signer = await this.#ensureSigner();
-        const authentication = await Authentication.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage)
+        const signer = await this.#ensureSigner()
+        const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
-        await this.#validateAndRefreshSession();
+        await this.#validateAndRefreshSession()
 
         return await registerSession({
-          params: (request.params || [] as unknown) as GrantPermissionsParameters[],
+          params: (request.params || ([] as unknown)) as GrantPermissionsParameters[],
           signer,
           account,
           authentication,
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
-        });
+        })
       }
       // EIP-7715: Wallet Session Key API
       case 'wallet_revokePermissions': {
-        const account = await Account.fromStorage(this.#storage);
-        const signer = await this.#ensureSigner();
-        const authentication = await Authentication.fromStorage(this.#storage);
+        const account = await Account.fromStorage(this.#storage)
+        const signer = await this.#ensureSigner()
+        const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
-          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first');
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
-        await this.#validateAndRefreshSession();
+        await this.#validateAndRefreshSession()
 
         return await revokeSession({
-          params: (request.params || [] as unknown) as RevokePermissionsRequestParams[],
+          params: (request.params || ([] as unknown)) as RevokePermissionsRequestParams[],
           signer,
           account,
           authentication,
           backendClient: this.#backendApiClients,
-        });
+        })
       }
       case 'wallet_getCapabilities': {
-        const rpcProvider = await this.getRpcProvider();
-        const { chainId } = await rpcProvider.detectNetwork();
+        const rpcProvider = await this.getRpcProvider()
+        const { chainId } = await rpcProvider.detectNetwork()
         const capabilities = {
           [numberToHex(chainId)]: {
             permissions: {
@@ -352,8 +339,8 @@ export class EvmProvider implements Provider {
               supported: true,
             },
           },
-        };
-        return capabilities;
+        }
+        return capabilities
       }
       // Pass through methods
       case 'eth_gasPrice':
@@ -367,37 +354,35 @@ export class EvmProvider implements Provider {
       case 'eth_getTransactionByHash':
       case 'eth_getTransactionReceipt':
       case 'eth_getTransactionCount': {
-        const rpcProvider = await this.getRpcProvider();
-        return rpcProvider.send(request.method, request.params || []);
+        const rpcProvider = await this.getRpcProvider()
+        return rpcProvider.send(request.method, request.params || [])
       }
       default: {
-        throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`);
+        throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
       }
     }
   }
 
-  public async request(
-    request: RequestArguments,
-  ): Promise<any> {
+  public async request(request: RequestArguments): Promise<any> {
     try {
-      return this.#performRequest(request);
+      return this.#performRequest(request)
     } catch (error: unknown) {
       if (error instanceof JsonRpcError) {
-        throw error;
+        throw error
       }
       if (error instanceof Error) {
-        throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, error.message);
+        throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, error.message)
       }
 
-      throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, 'Internal error');
+      throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, 'Internal error')
     }
   }
 
   public on(event: string, listener: (...args: any[]) => void): void {
-    this.#eventEmitter.on(event, listener);
+    this.#eventEmitter.on(event, listener)
   }
 
   public removeListener(event: string, listener: (...args: any[]) => void): void {
-    this.#eventEmitter.off(event, listener);
+    this.#eventEmitter.off(event, listener)
   }
 }

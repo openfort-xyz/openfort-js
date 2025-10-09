@@ -54,13 +54,13 @@ export interface AccountListQueriesV2 {
      */
     'user'?: string;
     /**
-     * Specifies the type of chain
+     * The chain type. Must be either \"EVM\" or \"SVM\".
      * @type {string}
      * @memberof AccountListQueriesV2
      */
     'chainType'?: string;
     /**
-     * Specifies the type of account
+     * Specifies the type of account. Must be either \"Smart Account\" or \"Externally Owned Account\".
      * @type {string}
      * @memberof AccountListQueriesV2
      */

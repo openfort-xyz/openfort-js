@@ -420,15 +420,15 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
-         * @summary List accounts of a player.
+         * Returns a list of accounts for the given user.  This object represents a user\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List accounts of a user.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [user] Specifies the unique user ID (starts with pla_)
-         * @param {string} [chainType] Specifies the type of chain
-         * @param {string} [accountType] Specifies the type of account
+         * @param {string} [chainType] The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
+         * @param {string} [accountType] Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
          * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -845,15 +845,15 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
-         * @summary List accounts of a player.
+         * Returns a list of accounts for the given user.  This object represents a user\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List accounts of a user.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {SortOrder} [order] Specifies the order in which to sort the results.
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [user] Specifies the unique user ID (starts with pla_)
-         * @param {string} [chainType] Specifies the type of chain
-         * @param {string} [accountType] Specifies the type of account
+         * @param {string} [chainType] The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
+         * @param {string} [accountType] Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
          * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1018,8 +1018,8 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(axios, basePath));
         },
         /**
-         * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
-         * @summary List accounts of a player.
+         * Returns a list of accounts for the given user.  This object represents a user\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
+         * @summary List accounts of a user.
          * @param {AccountsApiGetAccountsV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1312,14 +1312,14 @@ export interface AccountsApiGetAccountsV2Request {
     readonly user?: string
 
     /**
-     * Specifies the type of chain
+     * The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
      * @type {string}
      * @memberof AccountsApiGetAccountsV2
      */
     readonly chainType?: string
 
     /**
-     * Specifies the type of account
+     * Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
      * @type {string}
      * @memberof AccountsApiGetAccountsV2
      */
@@ -1540,8 +1540,8 @@ export class AccountsApi extends BaseAPI {
     }
 
     /**
-     * Returns a list of accounts for the given player.  This object represents a player\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
-     * @summary List accounts of a player.
+     * Returns a list of accounts for the given user.  This object represents a user\'s account, which is a blockchain smart account that can be used to interact with the blockchain.  The accounts are returned sorted by creation date, with the most recently created accounts appearing first.  Returns the latest 10 transaction intents for each account.  By default, a maximum of 10 accounts are shown per page.
+     * @summary List accounts of a user.
      * @param {AccountsApiGetAccountsV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

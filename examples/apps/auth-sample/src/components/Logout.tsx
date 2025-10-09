@@ -1,29 +1,26 @@
-import React from 'react';
-import {useOpenfort} from '../hooks/useOpenfort';
-import {useRouter} from 'next/router';
-import { Button } from './ui/button';
+import { useRouter } from 'next/router'
+import type React from 'react'
+import { useOpenfort } from '../hooks/useOpenfort'
+import { Button } from './ui/button'
 
 const LogoutButton: React.FC = () => {
-  const {logout} = useOpenfort();
-  const router = useRouter();
+  const { logout } = useOpenfort()
+  const router = useRouter()
   const handleLogout = async () => {
     try {
-      await logout();
-      router.push('/login');
+      await logout()
+      router.push('/login')
     } catch (error) {
-      console.error('Logout failed:', error);
-      alert('Logout failed. Please try again.');
+      console.error('Logout failed:', error)
+      alert('Logout failed. Please try again.')
     }
-  };
+  }
 
   return (
-    <Button
-      variant="destructive"
-      onClick={handleLogout}
-    >
+    <Button variant="destructive" onClick={handleLogout}>
       Logout
     </Button>
-  );
-};
+  )
+}
 
-export default LogoutButton;
+export default LogoutButton

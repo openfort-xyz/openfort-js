@@ -1,93 +1,80 @@
-import {baseSepolia, polygonAmoy} from 'wagmi/chains';
-import React, {FunctionComponent, useState} from 'react';
-import {withWagmi} from './wagmiProvider';
-import {Connector, createConfig, http, useChainId, useConnect} from 'wagmi';
-import {Chain, WalletConnector} from '../utils/constants';
-import type {Chain as WagmiChain} from 'wagmi/chains';
-import {coinbaseWallet, metaMask, walletConnect} from 'wagmi/connectors';
-import {Transport} from '@wagmi/core';
-import {OnSuccess, SignMessageFunction} from '../utils/types';
-import {createSIWEMessage} from '../utils/create-siwe-message';
-import openfort from '../utils/openfortConfig';
+import Image from 'next/image'
+import { type FunctionComponent, useState } from 'react'
+import { type Connector, createConfig, http, useChainId, useConnect } from 'wagmi'
+import type { Chain as WagmiChain } from 'wagmi/chains'
+import { baseSepolia, polygonAmoy } from 'wagmi/chains'
+import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors'
+import { Chain, WalletConnector } from '../utils/constants'
+import { createSIWEMessage } from '../utils/create-siwe-message'
+import openfort from '../utils/openfortConfig'
+import type { OnSuccess, SignMessageFunction } from '../utils/types'
+import { withWagmi } from './wagmiProvider'
 
 type GetWalletButtonsParams = {
-  chains: (typeof Chain)[keyof typeof Chain][];
-  connectors: (typeof WalletConnector)[keyof typeof WalletConnector][];
-  walletConnectProjectId?: string;
-};
+  chains: (typeof Chain)[keyof typeof Chain][]
+  connectors: (typeof WalletConnector)[keyof typeof WalletConnector][]
+  walletConnectProjectId?: string
+}
 
 type WalletConnectButtonsOwnProps = {
-  onSuccess: OnSuccess;
-  link: boolean;
-};
+  onSuccess: OnSuccess
+  link: boolean
+}
 
 type WalletConnectButtonsProps = WalletConnectButtonsOwnProps & {
-  signMessage: SignMessageFunction;
-};
+  signMessage: SignMessageFunction
+}
 
 type WalletConnectButtonProps = {
-  title: string;
-  isLoading: boolean;
-  icon: string;
-  initConnect: () => void;
-};
+  title: string
+  isLoading: boolean
+  icon: string
+  initConnect: () => void
+}
 
-const WalletConnectButton = ({
-  title,
-  isLoading,
-  icon,
-  initConnect,
-}: WalletConnectButtonProps) => {
+const WalletConnectButton = ({ title, isLoading, icon, initConnect }: WalletConnectButtonProps) => {
   return (
     <button
       onClick={initConnect}
       type="button"
       className="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 mb-2"
     >
-      <img
+      <Image
         src={isLoading ? 'spinner.svg' : icon}
         width={24}
         height={24}
-        className={
-          isLoading
-            ? 'inline me-3 text-gray-200 animate-spin'
-            : 'inline me-3 text-gray-200'
-        }
+        className={isLoading ? 'inline me-3 text-gray-200 animate-spin' : 'inline me-3 text-gray-200'}
         alt={isLoading ? 'Loading icon' : `${title} logo`}
       />
       {title}
     </button>
-  );
-};
+  )
+}
 
-const WalletConnectButtons = ({
-  onSuccess,
-  link,
-  signMessage,
-}: WalletConnectButtonsProps) => {
-  const {connectors, connect} = useConnect();
+const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectButtonsProps) => {
+  const { connectors, connect } = useConnect()
   const chainId = useChainId()
-  const [loading, setLoading] = useState<string>(null!);
+  const [loading, setLoading] = useState<string>(null!)
 
   const initConnect = async (connector: Connector) => {
-    setLoading(connector.id);
+    setLoading(connector.id)
     connect(
-      {connector},
+      { connector },
       {
         onError: () => {
-          setLoading(null!);
+          setLoading(null!)
         },
         onSettled: () => {
-          setLoading(null!);
+          setLoading(null!)
         },
-        onSuccess: async ({accounts}) => {
-          const address = accounts[0];
-          if (connector.name === 'Openfort') onSuccess();
+        onSuccess: async ({ accounts }) => {
+          const address = accounts[0]
+          if (connector.name === 'Openfort') onSuccess()
           if (address) {
             try {
-              const {nonce} = await openfort.auth.initSIWE({address});
-              const SIWEMessage = createSIWEMessage(address, nonce, chainId);
-              const signature = await signMessage(SIWEMessage);
+              const { nonce } = await openfort.auth.initSIWE({ address })
+              const SIWEMessage = createSIWEMessage(address, nonce, chainId)
+              const signature = await signMessage(SIWEMessage)
               link
                 ? await openfort.auth.linkWallet({
                     authToken: (await openfort.getAccessToken()) as string,
@@ -101,16 +88,16 @@ const WalletConnectButtons = ({
                     message: SIWEMessage,
                     connectorType: connector?.type,
                     walletClientType: connector?.name,
-                  });
-              onSuccess();
+                  })
+              onSuccess()
             } finally {
-              setLoading(null!);
+              setLoading(null!)
             }
           }
         },
       }
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -119,50 +106,46 @@ const WalletConnectButtons = ({
           key={connector.uid}
           initConnect={() => initConnect(connector)}
           isLoading={loading === connector.id}
-          icon={`${connector.type.toLowerCase()}.${
-            connector.type === 'injected' ? 'webp' : 'svg'
-          }`}
+          icon={`${connector.type.toLowerCase()}.${connector.type === 'injected' ? 'webp' : 'svg'}`}
           title={connector.name}
         />
       ))}
     </>
-  );
-};
+  )
+}
 
 const chainToWagmiChain = {
   [Chain.AMOY]: polygonAmoy,
   [Chain.BASE_SEPOLIA]: baseSepolia,
-};
+}
 const connectorToWagmiConnector = {
   [WalletConnector.METAMASK]: metaMask,
   [WalletConnector.WALLET_CONNECT]: walletConnect,
   [WalletConnector.COINBASE]: coinbaseWallet,
-};
+}
 
 export const getWalletButtons = (params: GetWalletButtonsParams) => {
-  const chains = params.chains.map(
-    (chain) => chainToWagmiChain[chain]
-  ) as WagmiChain[];
-  const transports: Record<WagmiChain['id'], Transport> = {};
+  const chains = params.chains.map((chain) => chainToWagmiChain[chain]) as WagmiChain[]
+  const transports: Record<WagmiChain['id'], ReturnType<typeof http>> = {}
   chains.forEach((chain) => {
-    transports[chain.id] = http();
-  });
+    transports[chain.id] = http()
+  })
 
   const connectors = params.connectors.map((connector) =>
     connector === 'walletConnect'
       ? connectorToWagmiConnector[connector]({
           projectId: params.walletConnectProjectId as string,
         })
-      : connectorToWagmiConnector[connector]({dappMetadata: {name: 'Openfort'}})
-  );
+      : connectorToWagmiConnector[connector]({ dappMetadata: { name: 'Openfort' } })
+  )
   const config = createConfig({
     chains: chains as any,
     connectors,
     ssr: true,
     transports,
-  });
+  })
   return withWagmi<WalletConnectButtonsOwnProps>(
     WalletConnectButtons as FunctionComponent<WalletConnectButtonsOwnProps>,
     config
-  );
-};
+  )
+}

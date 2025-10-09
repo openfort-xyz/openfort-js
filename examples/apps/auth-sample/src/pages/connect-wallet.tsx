@@ -1,36 +1,36 @@
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Layout } from "../components/Layouts/Layout";
-import openfort from "../utils/openfortConfig";
-import { StatusType, Toast } from "../components/Toasts";
-import { AuthPlayerResponse } from "@openfort/openfort-js";
-import { useRouter } from "next/router";
-import { getWalletButtons } from "../components/WalletConnectButton";
-import { Chain, WalletConnector } from "../utils/constants";
+import type { AuthPlayerResponse } from '@openfort/openfort-js'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { Layout } from '../components/Layouts/Layout'
+import { type StatusType, Toast } from '../components/Toasts'
+import { getWalletButtons } from '../components/WalletConnectButton'
+import { Chain, WalletConnector } from '../utils/constants'
+import openfort from '../utils/openfortConfig'
 
 function ConnectWalletPage() {
-  const [user, setUser] = useState<AuthPlayerResponse | null>(null);
-  const router = useRouter();
+  const [_user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchUser = async () => {
       const sessionData = await openfort.user.get().catch((error: Error) => {
-        console.log("error", error);
-      });
-      if (sessionData) setUser(sessionData);
-    };
-    fetchUser();
-  }, [openfort]);
+        console.log('error', error)
+      })
+      if (sessionData) setUser(sessionData)
+    }
+    fetchUser()
+  }, [])
 
-  const [status, setStatus] = useState<StatusType>(null);
+  const [status, setStatus] = useState<StatusType>(null)
   const WalletButtons = getWalletButtons({
     chains: [Chain.AMOY],
     connectors: [WalletConnector.METAMASK, WalletConnector.COINBASE],
-  });
+  })
 
   const redirect = () => {
-    router.push("/");
-  };
+    router.push('/')
+  }
 
   return (
     <Layout sidebar={<div />}>
@@ -39,12 +39,12 @@ function ConnectWalletPage() {
           <div className="-mx-4 flex-auto bg-white py-10 px-8 sm:mx-0 sm:flex-none sm:rounded-md sm:p-14 sm:shadow-2xl">
             <div className="relative mb-6">
               <h1 className="text-left text-2xl font-semibold tracking-tight text-gray-900">
-                {"Continue with your wallet"}
+                {'Continue with your wallet'}
               </h1>
             </div>
             <WalletButtons onSuccess={redirect} link={false} />
             <p className="my-5 text-left text-sm text-gray-600">
-              {"Have an account? "}
+              {'Have an account? '}
               <Link href="/login" className="text-blue-600">
                 Sign in
               </Link>
@@ -54,7 +54,7 @@ function ConnectWalletPage() {
       </div>
       <Toast status={status} setStatus={setStatus} />
     </Layout>
-  );
+  )
 }
 
-export default ConnectWalletPage;
+export default ConnectWalletPage

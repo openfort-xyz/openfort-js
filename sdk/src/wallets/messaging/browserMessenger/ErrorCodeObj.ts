@@ -15,6 +15,6 @@ const ErrorCodeObj = {
   MethodNotFound: 'METHOD_NOT_FOUND',
   // eslint-disable-next-line @typescript-eslint/naming-convention
   TransmissionFailed: 'TRANSMISSION_FAILED',
-} as const;
+} as const
 
-export default ErrorCodeObj;
+export default ErrorCodeObj

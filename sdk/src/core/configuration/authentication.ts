@@ -1,4 +1,4 @@
-import { IStorage, StorageKeys } from '../../storage/istorage';
+import { type IStorage, StorageKeys } from '../../storage/istorage'
 
 export class Authentication {
   constructor(
@@ -7,51 +7,54 @@ export class Authentication {
     public readonly player: string,
     public readonly refreshToken: string | null,
     public readonly thirdPartyProvider?: string,
-    public readonly thirdPartyTokenType?: string,
-  ) { }
+    public readonly thirdPartyTokenType?: string
+  ) {}
 
   // Access to third party auth token
-  private static thirdPartyAuthToken: string;
+  private static thirdPartyAuthToken: string
 
   get provider(): string | undefined {
-    return this.thirdPartyProvider;
+    return this.thirdPartyProvider
   }
 
   get tokenType(): string | undefined {
-    return this.thirdPartyTokenType;
+    return this.thirdPartyTokenType
   }
 
   save(storage: IStorage): void {
-    const isThirdParty = this.type === 'third_party';
+    const isThirdParty = this.type === 'third_party'
     if (isThirdParty) {
-      Authentication.thirdPartyAuthToken = this.token;
+      Authentication.thirdPartyAuthToken = this.token
     }
 
-    storage.save(StorageKeys.AUTHENTICATION, JSON.stringify({
-      type: this.type,
-      token: isThirdParty ? undefined : this.token,
-      player: this.player,
-      refreshToken: this.refreshToken,
-      thirdPartyProvider: this.thirdPartyProvider,
-      thirdPartyTokenType: this.thirdPartyTokenType,
-    }));
+    storage.save(
+      StorageKeys.AUTHENTICATION,
+      JSON.stringify({
+        type: this.type,
+        token: isThirdParty ? undefined : this.token,
+        player: this.player,
+        refreshToken: this.refreshToken,
+        thirdPartyProvider: this.thirdPartyProvider,
+        thirdPartyTokenType: this.thirdPartyTokenType,
+      })
+    )
   }
 
   static clear(storage: IStorage): void {
-    Authentication.thirdPartyAuthToken = '';
+    Authentication.thirdPartyAuthToken = ''
     // Clear the storage
-    storage.remove(StorageKeys.AUTHENTICATION);
+    storage.remove(StorageKeys.AUTHENTICATION)
   }
 
   static async fromStorage(storage: IStorage): Promise<Authentication | null> {
-    const data = await storage.get(StorageKeys.AUTHENTICATION);
-    if (!data) return null;
+    const data = await storage.get(StorageKeys.AUTHENTICATION)
+    if (!data) return null
 
     try {
-      const parsed = JSON.parse(data);
+      const parsed = JSON.parse(data)
 
       if (parsed.type === 'third_party') {
-        parsed.token = Authentication.thirdPartyAuthToken;
+        parsed.token = Authentication.thirdPartyAuthToken
       }
 
       return new Authentication(
@@ -60,10 +63,10 @@ export class Authentication {
         parsed.player,
         parsed.refreshToken,
         parsed.thirdPartyProvider,
-        parsed.thirdPartyTokenType,
-      );
+        parsed.thirdPartyTokenType
+      )
     } catch {
-      return null;
+      return null
     }
   }
 }

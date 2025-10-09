@@ -5,61 +5,61 @@
   "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
   "homepage": "https://github.com/openfort-xyz/openfort-js#readme",
   "repository": "github.com/openfort-xyz/openfort-js.git",
-  "license": "MIT",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test": "wsrun --exclude-missing -e test",
-    "test-e2e": "yarn workspace nextjs run test",
-    "test-e2e-ui": "yarn workspace nextjs run test-ui",
-    "typecheck": "wsrun --exclude-missing typecheck",
-    "lint": "yarn workspace @openfort/openfort-js run lint --no-error-on-unmatched-pattern",
-    "postinstall": "husky install; ./.husky/install_gitleaks.sh",
+    "test": "pnpm -r --filter='!examples/**' test",
+    "test-e2e": "pnpm --filter nextjs test",
+    "test-e2e-ui": "pnpm --filter nextjs test-ui",
+    "test:unit": "pnpm --filter @openfort/openfort-js test:unit",
+    "test:watch": "pnpm --filter @openfort/openfort-js test:watch",
+    "preinstall": "pnpx only-allow pnpm",
+    "check": "biome check --write --unsafe",
+    "check:repo": "sherif",
+    "check:types": "tsc --noEmit",
+    "clean": "rm -rf sdk/dist",
+    "check:unused": "pnpm clean && knip",
+    "postinstall": "git config --unset core.hooksPath 2>/dev/null || true && simple-git-hooks && ./.husky/install_gitleaks.sh",
     "scan:secrets": "./.husky/run_gitleaks.sh",
-    "stats": "yarn workspace @openfort/openfort-js run stats",
-    "dev": "yarn workspace @openfort/openfort-js run dev",
-    "dev:nextjs": "yarn workspace nextjs run dev",
-    "dev:firebase": "yarn workspace firebase-next-app run dev",
-    "dev:solana": "yarn workspace solana-vite run dev",
-    "dev:wagmi-vite": "yarn workspace wagmi-vite run dev",
-    "dev:wagmi": "yarn workspace wagmi-next-app run dev",
-    "build": "NODE_OPTIONS=--max-old-space-size=14366 wsrun -y 4 -p @openfort/openfort-js -e -r --serial build",
+    "stats": "pnpm --filter @openfort/openfort-js stats",
+    "dev": "pnpm --filter @openfort/openfort-js dev",
+    "dev:nextjs": "pnpm --filter nextjs dev",
+    "dev:firebase": "pnpm --filter firebase-next-app dev",
+    "dev:solana": "pnpm --filter solana-vite dev",
+    "dev:wagmi-vite": "pnpm --filter wagmi-vite dev",
+    "dev:wagmi": "pnpm --filter wagmi-next-app dev",
+    "build": "NODE_OPTIONS=--max-old-space-size=14366 pnpm -r --filter @openfort/openfort-js... build",
     "build:docs": "typedoc --json docs/spec.json",
-    "build:nextjs": "yarn build && yarn workspace nextjs build",
-    "build:solana": "yarn build && yarn workspace solana-vite build",
-    "build:firebase": "yarn build && yarn workspace firebase-next-app build",
-    "build:wagmi": "yarn build && yarn workspace wagmi-next-app build",
-    "build:platform-bridge": "yarn build && yarn workspace platform-bridge build"
+    "build:nextjs": "pnpm build && pnpm --filter nextjs build",
+    "build:solana": "pnpm build && pnpm --filter solana-vite build",
+    "build:firebase": "pnpm build && pnpm --filter firebase-next-app build",
+    "build:wagmi": "pnpm build && pnpm --filter wagmi-next-app build",
+    "build:platform-bridge": "pnpm build && pnpm --filter platform-bridge build"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "packageManager": "yarn@3.6.1",
-  "private": true,
-  "dependencies": {
-    "tslib": "^2.6.2"
+  "packageManager": "pnpm@10.16.1",
+  "engines": {
+    "node": ">=22.9"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.57.1",
-    "@typescript-eslint/parser": "^5.57.1",
+    "@biomejs/biome": "^2.2.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
-    "eslint": "^8.40.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.3.0",
     "events": "^3.1.0",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.2.0",
+    "knip": "^5.64.0",
+    "sherif": "^0.8.4",
+    "simple-git-hooks": "^2.13.1",
     "stream-browserify": "^3.0.0",
+    "tslib": "^2.8.1",
     "typedoc": "^0.24.8",
     "typescript": "^5.8.3",
-    "vm-browserify": "^1.1.2",
-    "wsrun": "^5.2.4"
+    "vm-browserify": "^1.1.2"
   },
-  "lint-staged": {
-    "*": "yarn scan:secrets",
-    "*.{js,jsx,ts,tsx}": "eslint"
+  "simple-git-hooks": {
+    "pre-commit": "./.husky/run_gitleaks.sh && pnpm check"
   },
   "workspaces": {
     "packages": [
@@ -68,6 +68,90 @@
       "examples/**",
       "test"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "@vanilla-extract/sprinkles": "1.6.4",
+      "micromatch@<4.0.8": ">=4.0.8",
+      "cookie@<0.7.0": ">=0.7.0",
+      "@metamask/sdk-communication-layer@>=0.16.0 <=0.33.0": ">=0.33.1",
+      "@metamask/sdk@>=0.16.0 <=0.33.0": ">=0.33.1"
+    }
+  },
+  "knip": {
+    "ignore": [
+      ".github/**",
+      ".husky/**",
+      ".parcel-cache/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/stats.html",
+      "sdk/copyVersion.cjs",
+      "sdk/scripts/**"
+    ],
+    "ignoreBinaries": [
+      "dev",
+      "only-allow",
+      "printf"
+    ],
+    "ignoreDependencies": [
+      "@biomejs/biome",
+      "simple-git-hooks",
+      "sherif",
+      "knip",
+      "typedoc",
+      "tslib",
+      "@rollup/plugin-typescript",
+      "buffer",
+      "crypto-browserify",
+      "events",
+      "stream-browserify",
+      "vm-browserify"
+    ],
+    "ignoreWorkspaces": [
+      "examples/**",
+      "test"
+    ],
+    "jest": {
+      "entry": [
+        "**/*.{test,spec}.{js,ts,tsx}"
+      ]
+    },
+    "workspaces": {
+      ".": {
+        "entry": [
+          "rollup.config.js!",
+          "typedoc.json!"
+        ],
+        "ignoreDependencies": [
+          "typescript"
+        ]
+      },
+      "sdk": {
+        "entry": [
+          "src/index.ts!"
+        ],
+        "ignore": [
+          "version.ts"
+        ]
+      },
+      "packages/internal/openapi-clients": {
+        "entry": [
+          "src/backend-api-clients.ts!",
+          "src/backend/index.ts!"
+        ],
+        "ignore": [
+          "src/backend-openapi.json"
+        ]
+      },
+      "packages/platform-bridge": {
+        "entry": [
+          "src/index.ts!",
+          "src/bridge.ts!",
+          "src/index.html!"
+        ]
+      }
+    }
   },
   "sideEffects": false
 }

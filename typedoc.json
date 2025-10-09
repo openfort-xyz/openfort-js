@@ -1,7 +1,5 @@
 {
-  "entryPoints": [
-    "sdk/",
-  ],
+  "entryPoints": ["sdk/"],
   "name": "js-openfort-sdk",
   "entryPointStrategy": "packages",
   "excludeReferences": true,
