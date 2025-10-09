@@ -69,14 +69,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm lint
+      - name: Check (lint & format)
+        run: pnpm check
 
       - name: Build
         run: pnpm build
-
-      - name: Typecheck
-        run: pnpm typecheck
 
       - name: Configure npm for Authentication
         run: |
