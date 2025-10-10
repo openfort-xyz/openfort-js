@@ -228,12 +228,12 @@ export class EmbeddedWalletApi {
         return {
           passkey: recoveryParams.passkeyInfo
             ? {
-              id: recoveryParams.passkeyInfo.passkeyId,
-              // if passkey was just created don't re-derive key to avoid double popup
-              key:
-                recoveryParams.passkeyInfo.passkeyKey ||
-                (await this.getPasskeyKey(recoveryParams.passkeyInfo.passkeyId)),
-            }
+                id: recoveryParams.passkeyInfo.passkeyId,
+                // if passkey was just created don't re-derive key to avoid double popup
+                key:
+                  recoveryParams.passkeyInfo.passkeyKey ||
+                  (await this.getPasskeyKey(recoveryParams.passkeyInfo.passkeyId)),
+              }
             : {},
         }
       default:
