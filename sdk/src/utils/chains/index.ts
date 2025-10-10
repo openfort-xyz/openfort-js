@@ -26,7 +26,6 @@ export const defaultChainRpcs: { [key: number]: string } = {
   50104: 'https://rpc.sophon.xyz',
   80002: 'https://polygon-amoy-bor-rpc.publicnode.com',
   84532: 'https://sepolia.base.org',
-  247253: 'https://rpc-testnet.saakuru.network',
   421614: 'https://sepolia-rollup.arbitrum.io/rpc',
   7225878: 'https://rpc.saakuru.network',
   7777777: 'https://rpc.zora.energy',
@@ -40,4 +39,7 @@ export const defaultChainRpcs: { [key: number]: string } = {
   85011: 'https://subnets.avax.network/criminalsa/testnet/rpc',
   84358: 'https://subnets.avax.network/titan/mainnet/rpc',
   10143: 'https://testnet-rpc.monad.xyz',
+  510525: 'https://rpc.clankermon.com',
+  3008: 'https://kl1-testnet.kiooverse.xyz/rpc',
+  167000: 'https://rpc.taiko.xyz'
 }
