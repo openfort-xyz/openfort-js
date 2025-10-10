@@ -18,18 +18,6 @@ export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.SWITCH_ACCOUNT]: [string]
 }
 
-export type SessionKey = {
-  address: string
-  isRegistered: boolean
-}
-
-export type CurrentAccount = {
-  address: string
-  ownerAddress: string
-  accountType: AccountType
-  chainId: number
-}
-
 export enum RecoveryMethod {
   PASSWORD = 'password',
   AUTOMATIC = 'automatic',
@@ -83,14 +71,6 @@ export type SIWEInitResponse = {
   expiresAt: number
 }
 
-export type JWK = {
-  kty: string
-  crv: string
-  x: string
-  y: string
-  alg: string
-}
-
 export type InitializeOAuthOptions = {
   usePooling?: boolean
   /** A URL to send the user to after they are confirmed. */
@@ -123,7 +103,7 @@ export enum BasicAuthProvider {
   WALLET = 'wallet',
 }
 
-export const AUTH_PROVIDER = {
+const AUTH_PROVIDER = {
   email: 'email',
   wallet: 'wallet',
   apple: 'apple',
@@ -141,7 +121,7 @@ export const AUTH_PROVIDER = {
   oidc: 'oidc',
 } as const
 
-export type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER]
+type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER]
 
 export enum OAuthProvider {
   GOOGLE = 'google',
@@ -153,18 +133,18 @@ export enum OAuthProvider {
   LINE = 'line',
 }
 
-export interface NextActionPayload {
+interface NextActionPayload {
   userOperation?: any
   userOperationHash?: string
   signableHash?: string
 }
 
-export interface NextActionResponse {
+interface NextActionResponse {
   type: 'sign_with_wallet'
   payload: NextActionPayload
 }
 
-export interface EntityIdResponse {
+interface EntityIdResponse {
   id: string
 }
 
@@ -178,7 +158,7 @@ export interface Interaction {
   data?: string
 }
 
-export interface Log {
+interface Log {
   blockNumber: number
   blockHash: string
   transactionIndex: number
@@ -191,7 +171,7 @@ export interface Log {
   orphaned?: boolean
 }
 
-export interface ResponseResponse {
+interface ResponseResponse {
   createdAt: number
   blockNumber?: number
   transactionHash?: string
@@ -220,14 +200,14 @@ export interface SessionResponse {
   transactionIntents?: TransactionIntentResponse[]
 }
 
-export interface PolicyStrategy {
+interface PolicyStrategy {
   sponsorSchema: 'fixed_rate'
   depositor?: string | null
   tokenContract: string
   tokenContractAmount: string
 }
 
-export interface TransactionIntentResponsePolicy {
+interface TransactionIntentResponsePolicy {
   id: string
   object: 'policy'
   createdAt: number
@@ -241,7 +221,7 @@ export interface TransactionIntentResponsePolicy {
   policyRules: EntityIdResponse[]
 }
 
-export interface TransactionIntentResponseAccount {
+interface TransactionIntentResponseAccount {
   id: string
   object: 'developerAccount'
   createdAt: number
@@ -258,7 +238,7 @@ export interface TransactionIntentResponseAccount {
   name?: string
 }
 
-export interface TransactionIntentResponsePlayer {
+interface TransactionIntentResponsePlayer {
   id: string
   object: 'player'
   createdAt: number
@@ -271,14 +251,13 @@ export interface TransactionIntentResponsePlayer {
   accounts?: EntityIdResponse[]
 }
 
-export const TRANSACTION_ABSTRACTION_TYPE = {
+const TRANSACTION_ABSTRACTION_TYPE = {
   accountAbstractionV6: 'accountAbstractionV6',
   zksync: 'zkSync',
   standard: 'standard',
 } as const
 
-export type TransactionAbstractionType =
-  (typeof TRANSACTION_ABSTRACTION_TYPE)[keyof typeof TRANSACTION_ABSTRACTION_TYPE]
+type TransactionAbstractionType = (typeof TRANSACTION_ABSTRACTION_TYPE)[keyof typeof TRANSACTION_ABSTRACTION_TYPE]
 
 export interface TransactionIntentResponse {
   id: string
@@ -304,9 +283,9 @@ export interface EstimateTransactionIntentGasResult {
   gasPrice: string
 }
 
-export type PlayerMetadataValue = unknown
+type PlayerMetadataValue = unknown
 
-export interface PlayerResponseAccountsInner {
+interface PlayerResponseAccountsInner {
   id: string
   object: 'account'
   createdAt: number
@@ -322,7 +301,7 @@ export interface PlayerResponseAccountsInner {
   player: EntityIdResponse
 }
 
-export interface AuthPlayerResponsePlayer {
+interface AuthPlayerResponsePlayer {
   id: string
   object: 'player'
   createdAt: number
@@ -335,11 +314,7 @@ export interface AuthPlayerResponsePlayer {
   accounts?: PlayerResponseAccountsInner[]
 }
 
-export type PrismaInputJsonValue = Record<string, unknown>
-
-export type AuthProviderResponse = Record<string, unknown>
-
-export interface LinkedAccountResponse {
+interface LinkedAccountResponse {
   provider: AuthProvider
   email?: string
   externalUserId?: string
@@ -376,12 +351,12 @@ export interface AuthActionRequiredResponse {
   action: AuthActionRequiredActions
 }
 
-export interface AccountAbstractionV6Details {
+interface AccountAbstractionV6Details {
   userOperation: UserOperationV6
   userOperationHash: string
 }
 
-export interface UserOperationV6 {
+interface UserOperationV6 {
   callData: string
   callGasLimit: string
   initCode?: string
@@ -395,7 +370,7 @@ export interface UserOperationV6 {
   verificationGasLimit: string
 }
 
-export interface ZKSyncDetails {
+interface ZKSyncDetails {
   from: string
   to: string
   data?: string
@@ -408,7 +383,7 @@ export interface ZKSyncDetails {
   value?: string
 }
 
-export interface StandardDetails {
+interface StandardDetails {
   from: string
   to: string
   data?: string
@@ -425,7 +400,6 @@ export type PKCEData = {
 }
 
 export enum CodeChallengeMethodEnum {
-  PLAIN = 'plain',
   S256 = 'S256',
 }
 
@@ -479,7 +453,6 @@ export type EmbeddedAccountCreateParams = {
 
 export type PasskeyInfo = {
   passkeyId: string
-  passkeyEnv?: string
   passkeyKey?: Uint8Array
 }
 
@@ -503,7 +476,7 @@ export type EntropyResponse = {
   passkey?: PasskeyDetails
 }
 
-export enum SortOrdering {
+enum SortOrdering {
   ASC = 'asc',
   DESC = 'desc',
 }

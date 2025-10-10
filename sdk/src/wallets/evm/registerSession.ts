@@ -8,7 +8,7 @@ import type { Signer as OpenfortSigner } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import type { GrantPermissionsParameters, GrantPermissionsReturnType, Permission, Policy } from './sessionTypes'
 
-export type WalletRequestPermissionsParams = {
+type WalletRequestPermissionsParams = {
   params: GrantPermissionsParameters[]
   signer: OpenfortSigner
   backendClient: BackendApiClients

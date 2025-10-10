@@ -75,7 +75,7 @@ type DeprecatedReplyMessage = {
     }
 )
 
-export type DeprecatedMessage =
+type DeprecatedMessage =
   | DeprecatedSynMessage
   | DeprecatedSynAckMessage
   | DeprecatedAckMessage

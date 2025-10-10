@@ -42,7 +42,7 @@ import {
   type UpdateAuthenticationResponse,
 } from './types'
 
-export interface IframeConfiguration {
+interface IframeConfiguration {
   thirdPartyTokenType: string | null
   thirdPartyProvider: string | null
   accessToken: string | null
@@ -93,13 +93,7 @@ export class MissingRecoveryPasswordError extends Error {
   }
 }
 
-export class MissingPasskeyError extends Error {
-  constructor() {
-    super('MissingPasskeyError')
-  }
-}
-
-export class WrongPasskeyError extends Error {
+class WrongPasskeyError extends Error {
   constructor() {
     super('Wrong recovery passkey for this embedded signer')
   }
@@ -114,27 +108,6 @@ export class MissingProjectEntropyError extends Error {
 export class WrongRecoveryPasswordError extends Error {
   constructor() {
     super('Wrong recovery password for this embedded signer')
-  }
-}
-
-export class NoResponseError extends Error {
-  constructor() {
-    super('No response from iframe')
-  }
-}
-
-export class UnknownResponseError extends Error {
-  message: string
-
-  constructor(message: string) {
-    super(`Unknown response from iframe: ${message}`)
-    this.message = message || ''
-  }
-}
-
-export class InvalidResponseError extends Error {
-  constructor() {
-    super('Invalid response from iframe')
   }
 }
 

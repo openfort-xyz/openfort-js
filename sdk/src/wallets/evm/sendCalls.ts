@@ -6,7 +6,7 @@ import type { Interaction, TransactionIntentResponse } from '../../types/types'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
-export type WalletSendCallsParams = {
+type WalletSendCallsParams = {
   signer: Signer
   backendClient: BackendApiClients
   account: Account

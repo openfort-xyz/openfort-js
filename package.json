@@ -93,12 +93,18 @@
       "**/dist/**",
       "**/stats.html",
       "sdk/copyVersion.cjs",
-      "sdk/scripts/**"
+      "sdk/scripts/**",
+      "test/**",
+      "**/next-env.d.ts",
+      "**/vite-env.d.ts"
     ],
     "ignoreBinaries": [
       "dev",
       "only-allow",
-      "printf"
+      "printf",
+      "open",
+      "simple-git-hooks",
+      "parcel"
     ],
     "ignoreDependencies": [
       "@biomejs/biome",

@@ -229,7 +229,6 @@ export class EmbeddedWalletApi {
           passkey: recoveryParams.passkeyInfo
             ? {
                 id: recoveryParams.passkeyInfo.passkeyId,
-                env: recoveryParams.passkeyInfo.passkeyEnv,
                 // if passkey was just created don't re-derive key to avoid double popup
                 key:
                   recoveryParams.passkeyInfo.passkeyKey ||
@@ -340,7 +339,6 @@ export class EmbeddedWalletApi {
       }
       recoveryParams.passkeyInfo = {
         passkeyId: recoveryParams.passkeyInfo.passkeyId,
-        passkeyEnv: recoveryParams.passkeyInfo.passkeyEnv,
       }
     }
 

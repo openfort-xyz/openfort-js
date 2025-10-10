@@ -21,7 +21,7 @@ import { sendCalls } from './sendCalls'
 import { signTypedDataV4 } from './signTypedDataV4'
 import { type Provider, ProviderEvent, type ProviderEventMap, type RequestArguments } from './types'
 
-export type EvmProviderInput = {
+type EvmProviderInput = {
   storage: IStorage
   ensureSigner: () => Promise<EmbeddedSigner>
   chains?: Record<number, string>

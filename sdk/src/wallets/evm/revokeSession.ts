@@ -7,7 +7,7 @@ import type { SessionResponse } from '../../types/types'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
-export type WalletRequestPermissionsParams = {
+type WalletRequestPermissionsParams = {
   params: RevokePermissionsRequestParams[]
   signer: Signer
   backendClient: BackendApiClients
