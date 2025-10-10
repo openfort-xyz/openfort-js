@@ -34,7 +34,7 @@ export class OpenfortError extends Error {
   }
 }
 
-export interface StatusCodeOpenfortError {
+interface StatusCodeOpenfortError {
   default: OpenfortErrorType
   [statusCode: number]: OpenfortErrorType
 }

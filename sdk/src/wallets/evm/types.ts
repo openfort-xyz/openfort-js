@@ -1,28 +1,3 @@
-export enum BackendTransactionStatus {
-  PENDING = 'PENDING',
-  SUBMITTED = 'SUBMITTED',
-  SUCCESSFUL = 'SUCCESSFUL',
-  REVERTED = 'REVERTED',
-  FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED',
-}
-
-export interface BackendTransaction {
-  status: BackendTransactionStatus
-  chainId: string
-  backendId: string
-  hash: string
-  statusMessage?: string
-}
-
-export interface FeeOption {
-  tokenPrice: string
-  tokenSymbol: string
-  tokenDecimals: number
-  tokenAddress: string
-  recipientAddress: string
-}
-
 // https://eips.ethereum.org/EIPS/eip-712
 export interface TypedDataPayload {
   types: {
@@ -59,7 +34,7 @@ export enum ProviderEvent {
   ACCOUNTS_CONNECT = 'connect',
 }
 
-export type AccountsChangedEvent = string[]
+type AccountsChangedEvent = string[]
 
 export interface ProviderEventMap extends Record<string, any> {
   [ProviderEvent.ACCOUNTS_CHANGED]: [AccountsChangedEvent]

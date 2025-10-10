@@ -1,10 +1,8 @@
 import { VERSION } from 'version'
 import type { RecoveryMethod } from '../types/types'
+import type { PasskeyEnv } from '@openfort/shield-js'
 
 export enum Event {
-  LOADED = 'loaded',
-  CONFIGURE = 'configure',
-  CONFIGURED = 'configured',
   RECOVER = 'recover',
   RECOVERED = 'recovered',
   CREATE = 'create',
@@ -17,12 +15,9 @@ export enum Event {
   CHAIN_SWITCHED = 'chain-switched',
   EXPORT = 'export',
   SIGNED = 'signed',
-  LOGOUT = 'logout',
   LOGGED_OUT = 'logged-out',
   GET_CURRENT_DEVICE = 'get-current-device',
   CURRENT_DEVICE = 'current-device',
-  PING = 'ping',
-  PONG = 'pong',
 }
 
 export const NOT_CONFIGURED_ERROR = 'not-configured-error'
@@ -33,11 +28,11 @@ export const INCORRECT_PASSKEY_ERROR = 'incorrect-passkey-error'
 export const MISSING_PASSKEY_ERROR = 'missing-passkey-error'
 export const OTP_REQUIRED_ERROR = 'otp-required-error'
 
-export interface IEvent {
+interface IEvent {
   uuid: string
 }
 
-export interface IEventRequest extends IEvent {
+interface IEventRequest extends IEvent {
   action: Event
 }
 
@@ -223,16 +218,6 @@ export class RecoverRequest implements IEventRequest {
   }
 }
 
-export class LogoutRequest implements IEventRequest {
-  uuid: string
-
-  action: Event = Event.LOGOUT
-
-  constructor(uuid: string) {
-    this.uuid = uuid
-  }
-}
-
 export class SignRequest implements IEventRequest {
   uuid: string
 
@@ -330,11 +315,11 @@ export class SetRecoveryMethodRequest implements IEventRequest {
   }
 }
 
-export interface IExportPrivateKeyResponse extends IEventResponse {
+interface IExportPrivateKeyResponse extends IEventResponse {
   key: string
 }
 
-export type ISetRecoveryMethodResponse = IEventResponse
+type ISetRecoveryMethodResponse = IEventResponse
 
 export class ExportPrivateKeyResponse implements IExportPrivateKeyResponse {
   uuid: string
@@ -369,25 +354,25 @@ export class SetRecoveryMethodResponse implements ISetRecoveryMethodResponse {
   }
 }
 
-export interface IEventResponse extends IEvent {
+interface IEventResponse extends IEvent {
   success: boolean
   action: Event
 }
 
-export interface IErrorResponse extends IEventResponse {
+interface IErrorResponse extends IEventResponse {
   error: string
 }
 
-export interface IConfigureResponse extends IEventResponse {
+interface IConfigureResponse extends IEventResponse {
   deviceID: string
   address: string
   chainId?: number
   accountType?: string
 }
 
-export type IUpdateAuthenticationResponse = IEventResponse
+type IUpdateAuthenticationResponse = IEventResponse
 
-export interface ISignResponse extends IEventResponse {
+interface ISignResponse extends IEventResponse {
   signature: string
 }
 
@@ -395,33 +380,13 @@ export function isErrorResponse(response: IEventResponse): response is IErrorRes
   return 'error' in response
 }
 
-export type ILogoutResponse = IEventResponse
+type ILogoutResponse = IEventResponse
 
-export interface ISwitchChainResponse extends IEventResponse {
+interface ISwitchChainResponse extends IEventResponse {
   deviceID: string
   accountType: string | null
   chainId: number | null
   address: string | null
-}
-
-export class ErrorResponse implements IErrorResponse {
-  uuid: string
-
-  success: boolean
-
-  error: string
-
-  action: Event
-
-  version: string | null
-
-  constructor(uuid: string, action: Event, error: string) {
-    this.action = action
-    this.success = false
-    this.error = error
-    this.uuid = uuid
-    this.version = null
-  }
 }
 
 export class CreateResponse implements IConfigureResponse {
@@ -578,7 +543,7 @@ export class UpdateAuthenticationRequest implements IEventRequest {
   }
 }
 
-export interface ShieldAuthentication {
+interface ShieldAuthentication {
   // When using encryption sessions, the session ID
   encryptionSession?: string
 }
@@ -614,6 +579,6 @@ export interface MessagePoster {
 
 export interface PasskeyDetails {
   id?: string
-  env?: string | import('../types/types').PasskeyEnv
+  env?: PasskeyEnv
   key?: Uint8Array
 }

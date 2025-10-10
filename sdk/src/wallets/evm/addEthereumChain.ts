@@ -2,7 +2,7 @@ import type { StaticJsonRpcProvider } from '@ethersproject/providers'
 import type { IStorage } from '../../storage/istorage'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
-export interface AddEthereumChainParameter {
+interface AddEthereumChainParameter {
   chainId: string
   blockExplorerUrls?: string[]
   chainName?: string
@@ -15,7 +15,7 @@ export interface AddEthereumChainParameter {
   }
 }
 
-export interface AddChainParams {
+interface AddChainParams {
   rpcProvider: StaticJsonRpcProvider
   params: any[]
   storage: IStorage

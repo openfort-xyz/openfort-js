@@ -5,7 +5,7 @@ import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import type { TypedDataPayload } from './types'
 import { signMessage } from './walletHelpers'
 
-export type SignTypedDataV4Params = {
+type SignTypedDataV4Params = {
   signer: Signer
   implementationType: string
   rpcProvider: StaticJsonRpcProvider
