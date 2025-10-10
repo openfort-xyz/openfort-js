@@ -5,7 +5,7 @@ import type { EmbeddedSigner } from 'wallets/embedded'
 import { Account } from '../../core/configuration/account'
 import { Authentication } from '../../core/configuration/authentication'
 import type { IStorage } from '../../storage/istorage'
-import { type OpenfortEventMap, OpenfortEvents } from '../../types/types'
+import { AccountTypeEnum, type OpenfortEventMap, OpenfortEvents } from '../../types/types'
 import { defaultChainRpcs } from '../../utils/chains'
 import { numberToHex } from '../../utils/crypto'
 import TypedEventEmitter from '../../utils/typedEventEmitter'
@@ -20,6 +20,7 @@ import { type RevokePermissionsRequestParams, revokeSession } from './revokeSess
 import { sendCalls } from './sendCalls'
 import { signTypedDataV4 } from './signTypedDataV4'
 import { type Provider, ProviderEvent, type ProviderEventMap, type RequestArguments } from './types'
+import { sendCallsSync } from './sendCallSync'
 
 type EvmProviderInput = {
   storage: IStorage
@@ -144,6 +145,9 @@ export class EvmProvider implements Provider {
       }
       case 'eth_sendTransaction': {
         const account = await Account.fromStorage(this.#storage)
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          break;
+        }
         const signer = await this.#ensureSigner()
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
@@ -151,6 +155,26 @@ export class EvmProvider implements Provider {
         }
         await this.#validateAndRefreshSession()
         return await sendCalls({
+          params: request.params || [],
+          signer,
+          account,
+          authentication,
+          backendClient: this.#backendApiClients,
+          policyId: this.#policyId,
+        })
+      }
+      case 'eth_sendRawTransactionSync': {
+        const account = await Account.fromStorage(this.#storage)
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          break;
+        }
+        const signer = await this.#ensureSigner()
+        const authentication = await Authentication.fromStorage(this.#storage)
+        if (!account || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
+        }
+        await this.#validateAndRefreshSession()
+        return await sendCallsSync({
           params: request.params || [],
           signer,
           account,
@@ -254,7 +278,9 @@ export class EvmProvider implements Provider {
       }
       case 'wallet_getCallsStatus': {
         const account = await Account.fromStorage(this.#storage)
-        await this.#ensureSigner() // Ensure signer exists
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          break;
+        }
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
@@ -270,6 +296,9 @@ export class EvmProvider implements Provider {
       }
       case 'wallet_sendCalls': {
         const account = await Account.fromStorage(this.#storage)
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          break;
+        }
         const signer = await this.#ensureSigner()
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
