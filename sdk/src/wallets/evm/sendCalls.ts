@@ -17,6 +17,11 @@ export type WalletSendCallsParams = {
 
 type RawCall = { data?: `0x${string}`; to?: `0x${string}`; value?: bigint }
 
+type WalletSendCallsResult = {
+  id: string
+  transactionHash?: `0x${string}`
+}
+
 const buildOpenfortTransactions = async (
   calls: RawCall[],
   backendApiClients: BackendApiClients,
@@ -72,7 +77,7 @@ export const sendCalls = async ({
   authentication,
   backendClient,
   policyId,
-}: WalletSendCallsParams): Promise<`0x${string}`> => {
+}: WalletSendCallsParams): Promise<WalletSendCallsResult> => {
   const policy = params[0]?.capabilities?.paymasterService?.policy ?? policyId
   const openfortTransaction = await buildOpenfortTransactions(
     params,
@@ -111,7 +116,14 @@ export const sendCalls = async ({
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response?.error.reason)
     }
 
-    return response.data.response?.transactionHash as `0x${string}`
+    return {
+      id: response.data.id,
+      transactionHash: response.data.response?.transactionHash as `0x${string}` | undefined,
+    }
   }
-  return openfortTransaction.response?.transactionHash as `0x${string}`
+
+  return {
+    id: openfortTransaction.id,
+    transactionHash: openfortTransaction.response?.transactionHash as `0x${string}` | undefined,
+  }
 }

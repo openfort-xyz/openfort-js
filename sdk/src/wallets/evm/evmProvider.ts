@@ -150,7 +150,7 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
         await this.#validateAndRefreshSession()
-        return await sendCalls({
+        const result = await sendCalls({
           params: request.params || [],
           signer,
           account,
@@ -158,6 +158,7 @@ export class EvmProvider implements Provider {
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
         })
+        return result.transactionHash ?? result.id
       }
       case 'eth_estimateGas': {
         const account = await Account.fromStorage(this.#storage)
@@ -276,7 +277,7 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
         await this.#validateAndRefreshSession()
-        return await sendCalls({
+        const result = await sendCalls({
           params: request.params ? request.params[0].calls : [],
           signer,
           account,
@@ -284,6 +285,7 @@ export class EvmProvider implements Provider {
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
         })
+        return result.id
       }
       case 'wallet_grantPermissions': {
         const account = await Account.fromStorage(this.#storage)
