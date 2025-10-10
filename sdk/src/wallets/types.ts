@@ -1,6 +1,5 @@
 import { VERSION } from 'version'
 import type { RecoveryMethod } from '../types/types'
-import type { PasskeyEnv } from '@openfort/shield-js'
 
 export enum Event {
   RECOVER = 'recover',
@@ -579,6 +578,6 @@ export interface MessagePoster {
 
 export interface PasskeyDetails {
   id?: string
-  env?: PasskeyEnv
+  env?: string | import('../types/types').PasskeyEnv
   key?: Uint8Array
 }

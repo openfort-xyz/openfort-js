@@ -24,7 +24,7 @@ export enum RecoveryMethod {
   PASSKEY = 'passkey',
 }
 
-interface PasskeyEnv {
+export interface PasskeyEnv {
   name?: string
   os?: string
   osVersion?: string
@@ -459,17 +459,17 @@ export type PasskeyInfo = {
 
 export type RecoveryParams =
   | {
-    recoveryMethod: RecoveryMethod.AUTOMATIC
-    encryptionSession: string
-  }
+      recoveryMethod: RecoveryMethod.AUTOMATIC
+      encryptionSession: string
+    }
   | {
-    recoveryMethod: RecoveryMethod.PASSWORD
-    password: string
-  }
+      recoveryMethod: RecoveryMethod.PASSWORD
+      password: string
+    }
   | {
-    recoveryMethod: RecoveryMethod.PASSKEY
-    passkeyInfo?: PasskeyInfo
-  }
+      recoveryMethod: RecoveryMethod.PASSKEY
+      passkeyInfo?: PasskeyInfo
+    }
 
 export type EntropyResponse = {
   recoveryPassword?: string
