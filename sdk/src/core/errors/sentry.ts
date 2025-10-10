@@ -42,6 +42,10 @@ export class InternalSentry {
     // eslint-disable-next-line no-param-reassign
     sentry.captureAxiosError = (method: string, error: unknown, hint?: EventHint, scope?: Scope) => {
       if (error instanceof AxiosError) {
+        // Skip Sentry notification for 400 and 401 errors
+        if (error.response?.status === 400 || error.response?.status === 401) {
+          return
+        }
         // eslint-disable-next-line no-param-reassign
         error.name = method
         sentry.captureException(error, {

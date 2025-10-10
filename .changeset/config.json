@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@2.1.0/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "openfort-xyz/openfort-js"
+    }
+  ],
+  "commit": false,
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "firebase-next-app",
+    "platform-bridge",
+    "solana-vite",
+    "wagmi-vite",
+    "wagmi-next-app",
+    "nextjs",
+    "test"
+  ]
+}

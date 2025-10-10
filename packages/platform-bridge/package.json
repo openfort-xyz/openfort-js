@@ -1,5 +1,6 @@
 {
   "name": "platform-bridge",
+  "private": true,
   "version": "0.0.0",
   "dependencies": {
     "@ethersproject/abi": "^5.8.0",

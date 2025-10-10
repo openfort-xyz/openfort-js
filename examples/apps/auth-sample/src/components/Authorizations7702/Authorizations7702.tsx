@@ -3,7 +3,7 @@ import { createSmartAccountClient } from 'permissionless'
 import { to7702SimpleSmartAccount } from 'permissionless/accounts'
 import { createPimlicoClient } from 'permissionless/clients/pimlico'
 import type React from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { type Address, createPublicClient, createWalletClient, type Hex, http, parseSignature, zeroAddress } from 'viem'
 import { toAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains'
@@ -17,6 +17,39 @@ const Authorizations7702: React.FC<{
 }> = ({ handleSetMessage }) => {
   const { signMessage, state, account } = useOpenfort()
   const [loading, setLoading] = useState(false)
+  const [isDeployed, setIsDeployed] = useState<boolean | null>(null)
+  const [checkingDeployment, setCheckingDeployment] = useState(false)
+
+  useEffect(() => {
+    const checkDeploymentStatus = async () => {
+      if (state !== EmbeddedState.READY || !account?.ownerAddress) {
+        return
+      }
+
+      try {
+        setCheckingDeployment(true)
+
+        const client = createPublicClient({
+          chain: sepolia,
+          transport: http(),
+        })
+
+        const eoaAddress = (account?.ownerAddress ?? account?.address) as Address
+        const code = await client.getCode({ address: eoaAddress })
+
+        // If there's code at the address, the account is deployed as a smart account
+        const deployed = code !== undefined && code !== '0x'
+        setIsDeployed(deployed)
+      } catch (err) {
+        console.error('Failed to check deployment status:', err)
+        setIsDeployed(null)
+      } finally {
+        setCheckingDeployment(false)
+      }
+    }
+
+    checkDeploymentStatus()
+  }, [state, account])
 
   const handleSignAuthorization = async () => {
     try {
@@ -90,7 +123,10 @@ const Authorizations7702: React.FC<{
             ...parsedSignature,
           },
         })
-        handleSetMessage(`Smart Account Deployment Tx Hash: ${transactionHash}`)
+        handleSetMessage(
+          `Smart Account Deployment Tx Hash: ${transactionHash}\nView on Etherscan: https://sepolia.etherscan.io/tx/${transactionHash}`
+        )
+        setIsDeployed(true)
       } else {
         handleSetMessage('Smart Account already deployed')
       }
@@ -103,14 +139,33 @@ const Authorizations7702: React.FC<{
   }
 
   return (
-    <div>
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <div className="text-sm text-muted-foreground">
+          <p className="mb-1">
+            This authorization is for deploying your smart account on the <strong>Sepolia testnet</strong>.
+          </p>
+          <div className="flex items-center gap-2">
+            <span>Deployment Status:</span>
+            {checkingDeployment ? (
+              <span className="text-yellow-600">Checking...</span>
+            ) : isDeployed === null ? (
+              <span className="text-gray-500">Unknown</span>
+            ) : isDeployed ? (
+              <span className="text-green-600 font-semibold">✓ Deployed</span>
+            ) : (
+              <span className="text-orange-600 font-semibold">Not Deployed</span>
+            )}
+          </div>
+        </div>
+      </div>
       <Button
         className="w-full"
         onClick={handleSignAuthorization}
-        disabled={state !== EmbeddedState.READY}
+        disabled={state !== EmbeddedState.READY || isDeployed === true}
         variant="outline"
       >
-        {loading ? <Loading /> : 'Sign Authorization'}
+        {loading ? <Loading /> : isDeployed ? 'Already Deployed' : 'Sign Authorization'}
       </Button>
     </div>
   )
