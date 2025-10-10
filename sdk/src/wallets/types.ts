@@ -1,5 +1,5 @@
 import { VERSION } from 'version'
-import type { RecoveryMethod } from '../types/types'
+import type { PasskeyEnv, RecoveryMethod } from '../types/types'
 
 export enum Event {
   RECOVER = 'recover',
@@ -578,6 +578,6 @@ export interface MessagePoster {
 
 export interface PasskeyDetails {
   id?: string
-  env?: string | import('../types/types').PasskeyEnv
+  env?: PasskeyEnv
   key?: Uint8Array
 }

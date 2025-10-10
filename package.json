@@ -93,12 +93,14 @@
       "**/dist/**",
       "**/stats.html",
       "sdk/copyVersion.cjs",
-      "sdk/scripts/**"
+      "sdk/scripts/**",
+      "test/**"
     ],
     "ignoreBinaries": [
       "dev",
       "only-allow",
-      "printf"
+      "printf",
+      "open"
     ],
     "ignoreDependencies": [
       "@biomejs/biome",

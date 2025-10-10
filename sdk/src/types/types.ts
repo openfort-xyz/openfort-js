@@ -453,23 +453,22 @@ export type EmbeddedAccountCreateParams = {
 
 export type PasskeyInfo = {
   passkeyId: string
-  passkeyEnv?: string
   passkeyKey?: Uint8Array
 }
 
 export type RecoveryParams =
   | {
-      recoveryMethod: RecoveryMethod.AUTOMATIC
-      encryptionSession: string
-    }
+    recoveryMethod: RecoveryMethod.AUTOMATIC
+    encryptionSession: string
+  }
   | {
-      recoveryMethod: RecoveryMethod.PASSWORD
-      password: string
-    }
+    recoveryMethod: RecoveryMethod.PASSWORD
+    password: string
+  }
   | {
-      recoveryMethod: RecoveryMethod.PASSKEY
-      passkeyInfo?: PasskeyInfo
-    }
+    recoveryMethod: RecoveryMethod.PASSKEY
+    passkeyInfo?: PasskeyInfo
+  }
 
 export type EntropyResponse = {
   recoveryPassword?: string
