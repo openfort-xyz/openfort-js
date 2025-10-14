@@ -275,7 +275,7 @@ export function parseTransactionRequest({ from, ...transaction }: RpcTransaction
   }
 }
 
-function formatTransactionRequest(transaction: RpcTransactionRequest): string {
+function _formatTransactionRequest(transaction: RpcTransactionRequest): string {
   const processedTransaction = parseTransactionRequest(transaction)
   const serializedTransaction = serializeTransaction(processedTransaction)
   return serializedTransaction.replace(/^0x/, '')

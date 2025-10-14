@@ -1,5 +1,4 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers'
-import { recoverAddress } from '@ethersproject/transactions'
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { GrantPermissionsParameters } from 'types'
 import type { EmbeddedSigner } from 'wallets/embedded'
@@ -195,15 +194,6 @@ export class EvmProvider implements Provider {
         await this.#validateAndRefreshSession()
         const signature = await signer.sign(digest, false, false)
 
-        // Verify signature recovers to the correct address
-        const recoveredAddress = recoverAddress(digest, signature)
-        if (recoveredAddress.toLowerCase() !== account.address.toLowerCase()) {
-          throw new JsonRpcError(
-            ProviderErrorCode.UNAUTHORIZED,
-            `Signature recovery failed: expected ${account.address}, got ${recoveredAddress}`
-          )
-        }
-
         // Combine signature with transaction to create signed raw transaction
         const { splitSignature } = await import('@ethersproject/bytes')
         const sig = splitSignature(signature)
@@ -236,14 +226,16 @@ export class EvmProvider implements Provider {
           })
         }
 
-        return await sendCalls({
-          params: request.params || [],
-          signer,
-          account,
-          authentication,
-          backendClient: this.#backendApiClients,
-          policyId: this.#policyId,
-        })
+        return (
+          await sendCallsSync({
+            params: request.params || [],
+            signer,
+            account,
+            authentication,
+            backendClient: this.#backendApiClients,
+            policyId: this.#policyId,
+          })
+        ).receipt.transactionHash
       }
       case 'eth_sendRawTransactionSync': {
         const account = await Account.fromStorage(this.#storage)
@@ -387,7 +379,7 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
         await this.#validateAndRefreshSession()
-        return await sendCalls({
+        const result = await sendCalls({
           params: request.params ? request.params[0].calls : [],
           signer,
           account,
@@ -395,6 +387,7 @@ export class EvmProvider implements Provider {
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
         })
+        return result
       }
       case 'wallet_grantPermissions': {
         const account = await Account.fromStorage(this.#storage)

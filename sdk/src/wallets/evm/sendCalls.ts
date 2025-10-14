@@ -20,8 +20,8 @@ export const sendCalls = async ({
   authentication,
   backendClient,
   policyId,
-}: WalletSendCallsParams): Promise<`0x${string}`> => {
-  const receipt = await sendCallsSync({
+}: WalletSendCallsParams): Promise<string> => {
+  const response = await sendCallsSync({
     params,
     signer,
     account,
@@ -30,9 +30,5 @@ export const sendCalls = async ({
     policyId,
   })
 
-  if (!receipt.transactionHash) {
-    throw new Error('Transaction hash not available in receipt')
-  }
-
-  return receipt.transactionHash as `0x${string}`
+  return response.id
 }

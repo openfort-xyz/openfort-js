@@ -98,7 +98,10 @@ export const sendCallsSync = async ({
   authentication,
   backendClient,
   policyId,
-}: WalletSendCallsParams): Promise<TransactionReceipt<string, number, 'success' | 'reverted', TransactionType>> => {
+}: WalletSendCallsParams): Promise<{
+  id: string
+  receipt: TransactionReceipt<string, number, 'success' | 'reverted', TransactionType>
+}> => {
   const policy = params[0]?.capabilities?.paymasterService?.policy ?? policyId
   const openfortTransaction = await buildOpenfortTransactions(
     params,
@@ -141,12 +144,12 @@ export const sendCallsSync = async ({
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, 'No transaction response received')
     }
 
-    return convertToTransactionReceipt(response.data.response)
+    return { id: openfortTransaction.id, receipt: convertToTransactionReceipt(response.data.response) }
   }
 
   if (!openfortTransaction.response) {
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, 'No transaction response received')
   }
 
-  return convertToTransactionReceipt(openfortTransaction.response)
+  return { id: openfortTransaction.id, receipt: convertToTransactionReceipt(openfortTransaction.response) }
 }
