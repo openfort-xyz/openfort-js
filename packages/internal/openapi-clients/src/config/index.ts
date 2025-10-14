@@ -2,7 +2,6 @@
 export {
   BackendAPIConfiguration,
   createConfig,
-  type Environment,
   OpenfortAPIConfiguration,
   type OpenfortAPIConfigurationOptions,
 } from './config'

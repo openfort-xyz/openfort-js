@@ -8,11 +8,6 @@ import {
  */
 export type BackendAPIConfiguration = APIConfiguration
 
-export interface Environment {
-  basePath: string
-  accessToken: string
-}
-
 export interface OpenfortAPIConfigurationOptions {
   basePath: string
   accessToken: string

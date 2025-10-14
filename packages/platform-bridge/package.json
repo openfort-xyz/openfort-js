@@ -3,19 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "dependencies": {
-    "@ethersproject/abi": "^5.8.0",
-    "@ethersproject/bytes": "^5.8.0",
-    "@ethersproject/hash": "^5.8.0",
-    "@ethersproject/providers": "^5.8.0",
     "@openfort/openfort-js": "workspace:sdk",
-    "@openfort/shield-js": "^0.1.27",
-    "@sentry/browser": "^9.15.0",
-    "@sentry/core": "^9.15.0",
-    "axios": "^1.8.2",
-    "axios-retry": "^4.5.0",
-    "ethers": "^5.8.0",
-    "eventemitter3": "5.0.1",
-    "jose": "^5.2.2"
+    "ethers": "^5.8.0"
   },
   "devDependencies": {
     "parcel": "^2.15.0"

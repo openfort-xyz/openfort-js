@@ -1,26 +1,37 @@
-export enum BackendTransactionStatus {
-  PENDING = 'PENDING',
-  SUBMITTED = 'SUBMITTED',
-  SUCCESSFUL = 'SUCCESSFUL',
-  REVERTED = 'REVERTED',
-  FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED',
-}
+// Transaction Types
+export type TransactionType = 'legacy' | 'eip2930' | 'eip1559' | 'eip4844' | 'eip7702' | undefined
 
-export interface BackendTransaction {
-  status: BackendTransactionStatus
+export type Hex = `0x${string}`
+
+export type AccessList = readonly { address: string; storageKeys: readonly Hex[] }[]
+
+export interface RpcTransactionRequest {
+  from?: string
+  to?: string
+  gas?: string
+  gasPrice?: string
+  maxFeePerGas?: string
+  maxPriorityFeePerGas?: string
+  value?: string
+  data?: string
+  nonce?: string
   chainId: string
-  backendId: string
-  hash: string
-  statusMessage?: string
+  type?: string
+  accessList?: AccessList
 }
 
-export interface FeeOption {
-  tokenPrice: string
-  tokenSymbol: string
-  tokenDecimals: number
-  tokenAddress: string
-  recipientAddress: string
+export interface TransactionSerializable {
+  to?: string | null
+  data?: Hex
+  value?: bigint
+  gas?: bigint
+  nonce?: number
+  chainId?: number
+  type?: TransactionType
+  gasPrice?: bigint
+  maxFeePerGas?: bigint
+  maxPriorityFeePerGas?: bigint
+  accessList?: AccessList
 }
 
 // https://eips.ethereum.org/EIPS/eip-712
@@ -59,7 +70,7 @@ export enum ProviderEvent {
   ACCOUNTS_CONNECT = 'connect',
 }
 
-export type AccountsChangedEvent = string[]
+type AccountsChangedEvent = string[]
 
 export interface ProviderEventMap extends Record<string, any> {
   [ProviderEvent.ACCOUNTS_CHANGED]: [AccountsChangedEvent]

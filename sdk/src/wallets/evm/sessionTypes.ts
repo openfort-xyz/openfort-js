@@ -1,7 +1,7 @@
 import type { OneOf } from '../../utils/helpers'
 
 /** @internal */
-export type AccountSigner = {
+type AccountSigner = {
   type: 'account'
   data: {
     id: `0x${string}`
@@ -9,7 +9,7 @@ export type AccountSigner = {
 }
 
 /** @internal */
-export type KeySigner = {
+type KeySigner = {
   type: 'key'
   data: {
     id: string
@@ -17,7 +17,7 @@ export type KeySigner = {
 }
 
 /** @internal */
-export type MultiKeySigner = {
+type MultiKeySigner = {
   type: 'keys'
   data: {
     ids: string[]
@@ -25,7 +25,7 @@ export type MultiKeySigner = {
 }
 
 /** @internal */
-export type WalletSigner = {
+type WalletSigner = {
   type: 'wallet'
 }
 
@@ -33,14 +33,14 @@ export type Signer = OneOf<AccountSigner | KeySigner | MultiKeySigner | WalletSi
 
 /** @internal */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export type CustomPolicy<data = unknown> = {
+type CustomPolicy<data = unknown> = {
   data: data
   type: { custom: string }
 }
 
 /** @internal */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export type TokenAllowancePolicy<uint256 = bigint> = {
+type TokenAllowancePolicy<uint256 = bigint> = {
   type: 'token-allowance'
   data: {
     /** Token allowance (in wei). */
@@ -50,7 +50,7 @@ export type TokenAllowancePolicy<uint256 = bigint> = {
 
 /** @internal */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export type GasLimitPolicy<uint256 = bigint> = {
+type GasLimitPolicy<uint256 = bigint> = {
   type: 'gas-limit'
   data: {
     /** Gas limit (in wei). */
@@ -59,7 +59,7 @@ export type GasLimitPolicy<uint256 = bigint> = {
 }
 
 /** @internal */
-export type RateLimitPolicy = {
+type RateLimitPolicy = {
   type: 'rate-limit'
   data: {
     /** Number of times during each interval. */
@@ -76,13 +76,13 @@ export type Policy<amount = bigint> = OneOf<
 
 /** @internal */
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export type CustomPermission<data = unknown, type = { custom: string }> = {
+type CustomPermission<data = unknown, type = { custom: string }> = {
   data: data
   type: type
 }
 
 /** @internal */
-export type GasLimitPermission = {
+type GasLimitPermission = {
   type: 'gas-limit'
   data: {
     limit: `0x${string}` // hex value
@@ -90,14 +90,14 @@ export type GasLimitPermission = {
 }
 
 /** @internal */
-export type CallLimitPermission = {
+type CallLimitPermission = {
   type: 'call-limit'
   data: {
     count: number
   }
 }
 
-export type RateLimitPermission = {
+type RateLimitPermission = {
   type: 'rate-limit'
   data: {
     count: number // the number of times during each interval
@@ -106,7 +106,7 @@ export type RateLimitPermission = {
 }
 
 /** @internal */
-export type NativeTokenTransferPermission = {
+type NativeTokenTransferPermission = {
   type: 'native-token-transfer'
   data: {
     /** Native token ticker (e.g. ETH). */
@@ -115,7 +115,7 @@ export type NativeTokenTransferPermission = {
 }
 
 /** @internal */
-export type ERC721TokenTransferPermission = {
+type ERC721TokenTransferPermission = {
   type: 'erc721-token-transfer'
   data: {
     address: `0x${string}` // erc721 contract
@@ -124,7 +124,7 @@ export type ERC721TokenTransferPermission = {
 }
 
 /** @internal */
-export type ERC1155TokenTransferPermission = {
+type ERC1155TokenTransferPermission = {
   type: 'erc1155-token-transfer'
   data: {
     address: `0x${string}` // erc1155 contract
@@ -135,7 +135,7 @@ export type ERC1155TokenTransferPermission = {
 }
 
 /** @internal */
-export type Erc20TokenTransferPermission = {
+type Erc20TokenTransferPermission = {
   type: 'erc20-token-transfer'
   data: {
     /** ERC20 address. */
@@ -146,7 +146,7 @@ export type Erc20TokenTransferPermission = {
 }
 
 /** @internal */
-export type ContractCallPermission = {
+type ContractCallPermission = {
   type: 'contract-call'
   data: {
     /** Contract address. */

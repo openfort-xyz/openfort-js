@@ -1,11 +1,12 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers'
+import { recoverAddress } from '@ethersproject/transactions'
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { GrantPermissionsParameters } from 'types'
 import type { EmbeddedSigner } from 'wallets/embedded'
 import { Account } from '../../core/configuration/account'
 import { Authentication } from '../../core/configuration/authentication'
 import type { IStorage } from '../../storage/istorage'
-import { type OpenfortEventMap, OpenfortEvents } from '../../types/types'
+import { AccountTypeEnum, type OpenfortEventMap, OpenfortEvents } from '../../types/types'
 import { defaultChainRpcs } from '../../utils/chains'
 import { numberToHex } from '../../utils/crypto'
 import TypedEventEmitter from '../../utils/typedEventEmitter'
@@ -17,11 +18,19 @@ import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError'
 import { personalSign } from './personalSign'
 import { registerSession } from './registerSession'
 import { type RevokePermissionsRequestParams, revokeSession } from './revokeSession'
+import { sendCallsSync } from './sendCallSync'
 import { sendCalls } from './sendCalls'
 import { signTypedDataV4 } from './signTypedDataV4'
-import { type Provider, ProviderEvent, type ProviderEventMap, type RequestArguments } from './types'
+import {
+  type Provider,
+  ProviderEvent,
+  type ProviderEventMap,
+  type RequestArguments,
+  type RpcTransactionRequest,
+} from './types'
+import { parseTransactionRequest, prepareEOATransaction } from './walletHelpers'
 
-export type EvmProviderInput = {
+type EvmProviderInput = {
   storage: IStorage
   ensureSigner: () => Promise<EmbeddedSigner>
   chains?: Record<number, string>
@@ -83,8 +92,6 @@ export class EvmProvider implements Provider {
 
     this.#backendApiClients = backendApiClients
 
-    this.#backendApiClients = backendApiClients
-
     this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>()
 
     openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout)
@@ -142,6 +149,68 @@ export class EvmProvider implements Provider {
           'Unauthorized - must be authenticated and configured with a signer.'
         )
       }
+      case 'eth_signTransaction': {
+        const account = await Account.fromStorage(this.#storage)
+        const signer = await this.#ensureSigner()
+        const authentication = await Authentication.fromStorage(this.#storage)
+        if (!account || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
+        }
+
+        const rpcProvider = await this.getRpcProvider()
+        const { chainId } = await rpcProvider.detectNetwork()
+        const [transaction]: RpcTransactionRequest[] = request.params || []
+
+        if (!transaction.chainId) {
+          transaction.chainId = chainId.toString()
+        }
+
+        const parsedTransaction = parseTransactionRequest(transaction)
+        const { serialize } = await import('@ethersproject/transactions')
+
+        const typeToNumber = (type?: string): number | undefined => {
+          if (!type) return undefined
+          const mapping: Record<string, number> = {
+            legacy: 0,
+            eip2930: 1,
+            eip1559: 2,
+          }
+          return mapping[type]
+        }
+
+        // Convert to ethers.js UnsignedTransaction format
+        const { gas, ...rest } = parsedTransaction
+        const ethersTransaction = {
+          ...rest,
+          gasLimit: gas,
+          to: parsedTransaction.to ?? undefined,
+          type: typeToNumber(parsedTransaction.type),
+        } as any
+
+        // Serialize unsigned transaction and hash it to create the digest for signing
+        const unsignedTx = serialize(ethersTransaction)
+        const { keccak256 } = await import('@ethersproject/keccak256')
+        const digest = keccak256(unsignedTx)
+
+        await this.#validateAndRefreshSession()
+        const signature = await signer.sign(digest, false, false)
+
+        // Verify signature recovers to the correct address
+        const recoveredAddress = recoverAddress(digest, signature)
+        if (recoveredAddress.toLowerCase() !== account.address.toLowerCase()) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            `Signature recovery failed: expected ${account.address}, got ${recoveredAddress}`
+          )
+        }
+
+        // Combine signature with transaction to create signed raw transaction
+        const { splitSignature } = await import('@ethersproject/bytes')
+        const sig = splitSignature(signature)
+        const signedTransaction = serialize(ethersTransaction, sig)
+
+        return signedTransaction
+      }
       case 'eth_sendTransaction': {
         const account = await Account.fromStorage(this.#storage)
         const signer = await this.#ensureSigner()
@@ -150,7 +219,46 @@ export class EvmProvider implements Provider {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
         await this.#validateAndRefreshSession()
-        const result = await sendCalls({
+
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          const [transaction] = request.params || []
+          const rpcProvider = await this.getRpcProvider()
+          const completeTransaction = await prepareEOATransaction(transaction, rpcProvider, account.address)
+
+          const signedTransaction = await this.#performRequest({
+            method: 'eth_signTransaction',
+            params: [completeTransaction],
+          })
+
+          return this.#performRequest({
+            method: 'eth_sendRawTransaction',
+            params: [signedTransaction],
+          })
+        }
+
+        return (
+          await sendCallsSync({
+            params: request.params || [],
+            signer,
+            account,
+            authentication,
+            backendClient: this.#backendApiClients,
+            policyId: this.#policyId,
+          })
+        ).receipt.transactionHash
+      }
+      case 'eth_sendRawTransactionSync': {
+        const account = await Account.fromStorage(this.#storage)
+        const signer = await this.#ensureSigner()
+        const authentication = await Authentication.fromStorage(this.#storage)
+        if (!account || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
+        }
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
+        }
+        await this.#validateAndRefreshSession()
+        return await sendCallsSync({
           params: request.params || [],
           signer,
           account,
@@ -158,7 +266,6 @@ export class EvmProvider implements Provider {
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
         })
-        return result.transactionHash ?? result.id
       }
       case 'eth_estimateGas': {
         const account = await Account.fromStorage(this.#storage)
@@ -255,7 +362,9 @@ export class EvmProvider implements Provider {
       }
       case 'wallet_getCallsStatus': {
         const account = await Account.fromStorage(this.#storage)
-        await this.#ensureSigner() // Ensure signer exists
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
+        }
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
@@ -271,6 +380,9 @@ export class EvmProvider implements Provider {
       }
       case 'wallet_sendCalls': {
         const account = await Account.fromStorage(this.#storage)
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
+        }
         const signer = await this.#ensureSigner()
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
@@ -285,10 +397,13 @@ export class EvmProvider implements Provider {
           backendClient: this.#backendApiClients,
           policyId: this.#policyId,
         })
-        return result.id
+        return result
       }
       case 'wallet_grantPermissions': {
         const account = await Account.fromStorage(this.#storage)
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
+        }
         const signer = await this.#ensureSigner()
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
@@ -324,6 +439,10 @@ export class EvmProvider implements Provider {
         })
       }
       case 'wallet_getCapabilities': {
+        const account = await Account.fromStorage(this.#storage)
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
+        }
         const rpcProvider = await this.getRpcProvider()
         const { chainId } = await rpcProvider.detectNetwork()
         const capabilities = {
@@ -347,6 +466,7 @@ export class EvmProvider implements Provider {
       // Pass through methods
       case 'eth_gasPrice':
       case 'eth_getBalance':
+      case 'eth_sendRawTransaction':
       case 'eth_getCode':
       case 'eth_getStorageAt':
       case 'eth_call':

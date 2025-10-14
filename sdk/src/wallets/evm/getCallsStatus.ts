@@ -9,7 +9,7 @@ import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 export type GetCallsStatusParameters = string[]
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export type WalletCallReceipt<quantity = `0x${string}`, status = `0x${string}`> = {
+type WalletCallReceipt<quantity = `0x${string}`, status = `0x${string}`> = {
   logs: {
     address: `0x${string}`
     data: `0x${string}`
@@ -23,14 +23,14 @@ export type WalletCallReceipt<quantity = `0x${string}`, status = `0x${string}`> 
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export type WalletGetCallsStatusReturnType<quantity = `0x${string}`, status = `0x${string}`> = {
+type WalletGetCallsStatusReturnType<quantity = `0x${string}`, status = `0x${string}`> = {
   status: 'PENDING' | 'CONFIRMED'
   receipts?: WalletCallReceipt<quantity, status>[] | undefined
 }
 
-export type GetCallsStatusReturnType = Prettify<WalletGetCallsStatusReturnType<bigint, 'success' | 'reverted'>>
+type GetCallsStatusReturnType = Prettify<WalletGetCallsStatusReturnType<bigint, 'success' | 'reverted'>>
 
-export type GetCallsStatusParams = {
+type GetCallsStatusParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication

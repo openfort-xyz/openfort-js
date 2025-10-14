@@ -5,7 +5,7 @@ import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfort
 import type { EstimateTransactionIntentGasResult, Interaction } from '../../types/types'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
-export type EthEstimateGasParams = {
+type EthEstimateGasParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication

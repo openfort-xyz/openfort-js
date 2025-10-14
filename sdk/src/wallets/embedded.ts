@@ -7,7 +7,7 @@ import type TypedEventEmitter from 'utils/typedEventEmitter'
 import { Account } from '../core/configuration/account'
 import { type IStorage, StorageKeys } from '../storage/istorage'
 import {
-  type AccountTypeEnum,
+  AccountTypeEnum,
   type ChainTypeEnum,
   type OpenfortEventMap,
   OpenfortEvents,
@@ -200,10 +200,13 @@ export class EmbeddedSigner implements Signer {
   }
 
   async switchChain({ chainId }: { chainId: number }): Promise<void> {
-    const resp = await this.iframeManager.switchChain(chainId)
     const acc = await Account.fromStorage(this.storage)
-
-    new Account({ ...acc!, id: resp.account!, chainId }).save(this.storage)
+    if (acc?.accountType === AccountTypeEnum.EOA) {
+      new Account({ ...acc!, chainId }).save(this.storage)
+    } else {
+      const resp = await this.iframeManager.switchChain(chainId)
+      new Account({ ...acc!, id: resp.account!, chainId }).save(this.storage)
+    }
   }
 
   async create(params: SignerCreateRequest): Promise<Account> {

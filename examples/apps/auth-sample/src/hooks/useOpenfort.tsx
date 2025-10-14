@@ -191,7 +191,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
     const externalProvider = await openfort.embeddedWallet.getEthereumProvider({
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
       chains: {
-        [polygonAmoy.id]: 'https://rpc-amoy.polygon.technology',
+        [polygonAmoy.id]: 'https://polygon-amoy-bor-rpc.publicnode.com',
       },
     })
     if (!externalProvider) {
