@@ -88,11 +88,11 @@ const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectBut
                     message: SIWEMessage,
                     connectorType: connector?.type,
                     walletClientType: connector?.name,
-                  });
-              onSuccess();
+                  })
+              onSuccess()
             } catch (error) {
-              console.error('Openfort request failed.', error);
-              throw error;
+              console.error('Openfort request failed.', error)
+              throw error
             } finally {
               setLoading(null!)
             }
