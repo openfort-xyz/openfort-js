@@ -156,7 +156,7 @@ const EIP1193MintButton: React.FC<{
           ],
         })
 
-        handleSetMessage(`https://amoy.polygonscan.com/tx/${tx.id}`)
+        handleSetMessage(`Transaction ID: ${tx.id}`)
       } catch (error) {
         handleSetMessage(`Failed to send transaction: ${(error as BaseError).details}`)
       }
