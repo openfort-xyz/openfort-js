@@ -1,5 +1,5 @@
 import test, { expect } from '@playwright/test'
-import { TEST_MINT_SUCCESS_TEXT } from './constants'
+import { TEST_BATCH_SUCCESS_TEXT, TEST_MINT_SUCCESS_TEXT } from './constants'
 import { Logger } from './Logger'
 
 test('mint NFT', async ({ page }) => {
@@ -29,5 +29,5 @@ test('Send batch calls', async ({ page }) => {
   await logger.waitForNewLogs()
 
   const lastLog = logger.getLastLog()
-  expect(lastLog).toContain(TEST_MINT_SUCCESS_TEXT)
+  expect(lastLog).toContain(TEST_BATCH_SUCCESS_TEXT)
 })
