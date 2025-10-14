@@ -1,7 +1,7 @@
 import { EmbeddedState } from '@openfort/openfort-js'
 import type React from 'react'
 import { useEffect, useState } from 'react'
-import { createPublicClient, createWalletClient, custom, encodeFunctionData } from 'viem'
+import { createPublicClient, createWalletClient, custom, encodeFunctionData, type WriteContractErrorType } from 'viem'
 import { polygonAmoy } from 'viem/chains'
 import type { BaseError } from 'wagmi'
 import { useOpenfort } from '../../hooks/useOpenfort'
@@ -43,6 +43,7 @@ const EIP1193MintButton: React.FC<{
       if (!provider) {
         throw new Error('Failed to get EVM provider')
       }
+
       setLoading(true)
       const publicClient = createPublicClient({
         chain: polygonAmoy,
@@ -73,6 +74,8 @@ const EIP1193MintButton: React.FC<{
       ]
 
       const [account] = await walletClient.getAddresses()
+      await walletClient.switchChain(polygonAmoy)
+
       const { request } = await publicClient.simulateContract({
         account,
         address: erc721Address,
@@ -86,8 +89,8 @@ const EIP1193MintButton: React.FC<{
         tx = await walletClient.writeContract(request)
         handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`)
       } catch (error) {
-        console.log('Error:', error)
-        handleSetMessage(`Failed to send transaction: ${(error as BaseError).details}`)
+        const er = error as WriteContractErrorType
+        handleSetMessage(`Failed to send transaction: ${er.cause}`)
       }
     } catch (error) {
       console.error('Error in handleSendTransaction:', error)
