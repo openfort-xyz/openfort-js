@@ -1,5 +1,13 @@
 # @openfort/openfort-js
 
+## 0.10.24
+
+### Patch Changes
+
+- [#134](https://github.com/openfort-xyz/openfort-js/pull/134) [`3a96fc0`](https://github.com/openfort-xyz/openfort-js/commit/3a96fc00e2c652587bb033130d8d198195f89e2d) Thanks [@jamalavedra](https://github.com/jamalavedra)! - eoa transaction support
+
+- [#130](https://github.com/openfort-xyz/openfort-js/pull/130) [`4cb6fb8`](https://github.com/openfort-xyz/openfort-js/commit/4cb6fb8b6d31e6e3dec872aae4459907b9b583aa) Thanks [@Huguet57](https://github.com/Huguet57)! - fix sendCalls
+
 ## 0.10.23
 
 ### Patch Changes
