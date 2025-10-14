@@ -64,7 +64,7 @@ function toRlp(input: any): Hex {
 }
 
 // Simplified serializeTransaction - supports EIP-1559 and legacy transactions
-export function serializeTransaction(transaction: TransactionSerializable): Hex {
+function serializeTransaction(transaction: TransactionSerializable): Hex {
   const { chainId, nonce, maxPriorityFeePerGas, maxFeePerGas, gasPrice, gas, to, value, data, accessList, type } =
     transaction
 
@@ -275,7 +275,7 @@ export function parseTransactionRequest({ from, ...transaction }: RpcTransaction
   }
 }
 
-export function formatTransactionRequest(transaction: RpcTransactionRequest): string {
+function formatTransactionRequest(transaction: RpcTransactionRequest): string {
   const processedTransaction = parseTransactionRequest(transaction)
   const serializedTransaction = serializeTransaction(processedTransaction)
   return serializedTransaction.replace(/^0x/, '')
