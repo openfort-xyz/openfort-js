@@ -90,6 +90,9 @@ const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectBut
                     walletClientType: connector?.name,
                   })
               onSuccess()
+            } catch (error) {
+              console.error('Openfort request failed.', error)
+              throw error
             } finally {
               setLoading(null!)
             }
