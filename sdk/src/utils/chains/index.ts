@@ -41,5 +41,5 @@ export const defaultChainRpcs: { [key: number]: string } = {
   10143: 'https://testnet-rpc.monad.xyz',
   510525: 'https://rpc.clankermon.com',
   3008: 'https://kl1-testnet.kiooverse.xyz/rpc',
-  167000: 'https://rpc.taiko.xyz'
+  167000: 'https://rpc.taiko.xyz',
 }

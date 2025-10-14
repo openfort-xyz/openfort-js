@@ -1,3 +1,39 @@
+// Transaction Types
+export type TransactionType = 'legacy' | 'eip2930' | 'eip1559' | 'eip4844' | 'eip7702' | undefined
+
+export type Hex = `0x${string}`
+
+export type AccessList = readonly { address: string; storageKeys: readonly Hex[] }[]
+
+export interface RpcTransactionRequest {
+  from?: string
+  to?: string
+  gas?: string
+  gasPrice?: string
+  maxFeePerGas?: string
+  maxPriorityFeePerGas?: string
+  value?: string
+  data?: string
+  nonce?: string
+  chainId: string
+  type?: string
+  accessList?: AccessList
+}
+
+export interface TransactionSerializable {
+  to?: string | null
+  data?: Hex
+  value?: bigint
+  gas?: bigint
+  nonce?: number
+  chainId?: number
+  type?: TransactionType
+  gasPrice?: bigint
+  maxFeePerGas?: bigint
+  maxPriorityFeePerGas?: bigint
+  accessList?: AccessList
+}
+
 // https://eips.ethereum.org/EIPS/eip-712
 export interface TypedDataPayload {
   types: {

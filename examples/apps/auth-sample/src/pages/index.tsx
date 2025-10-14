@@ -72,7 +72,7 @@ const HomePage: NextPage = () => {
               <p className="text-sm text-gray-600 mb-4">
                 Openfort gives you modular components so you can customize your product for your users.
                 <a
-                  href="https://www.openfort.io/docs/products/embedded-wallet/react/kit/create-react-app"
+                  href="https://www.openfort.io/docs/products/embedded-wallet/react"
                   className="text-blue-600 hover:underline"
                 >
                   Learn more

@@ -1,4 +1,5 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers'
+import { recoverAddress } from '@ethersproject/transactions'
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { GrantPermissionsParameters } from 'types'
 import type { EmbeddedSigner } from 'wallets/embedded'
@@ -17,10 +18,17 @@ import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError'
 import { personalSign } from './personalSign'
 import { registerSession } from './registerSession'
 import { type RevokePermissionsRequestParams, revokeSession } from './revokeSession'
+import { sendCallsSync } from './sendCallSync'
 import { sendCalls } from './sendCalls'
 import { signTypedDataV4 } from './signTypedDataV4'
-import { type Provider, ProviderEvent, type ProviderEventMap, type RequestArguments } from './types'
-import { sendCallsSync } from './sendCallSync'
+import {
+  type Provider,
+  ProviderEvent,
+  type ProviderEventMap,
+  type RequestArguments,
+  type RpcTransactionRequest,
+} from './types'
+import { parseTransactionRequest, prepareEOATransaction } from './walletHelpers'
 
 type EvmProviderInput = {
   storage: IStorage
@@ -84,8 +92,6 @@ export class EvmProvider implements Provider {
 
     this.#backendApiClients = backendApiClients
 
-    this.#backendApiClients = backendApiClients
-
     this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>()
 
     openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout)
@@ -143,17 +149,93 @@ export class EvmProvider implements Provider {
           'Unauthorized - must be authenticated and configured with a signer.'
         )
       }
+      case 'eth_signTransaction': {
+        const account = await Account.fromStorage(this.#storage)
+        const signer = await this.#ensureSigner()
+        const authentication = await Authentication.fromStorage(this.#storage)
+        if (!account || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
+        }
+
+        const rpcProvider = await this.getRpcProvider()
+        const { chainId } = await rpcProvider.detectNetwork()
+        const [transaction]: RpcTransactionRequest[] = request.params || []
+
+        if (!transaction.chainId) {
+          transaction.chainId = chainId.toString()
+        }
+
+        const parsedTransaction = parseTransactionRequest(transaction)
+        const { serialize } = await import('@ethersproject/transactions')
+
+        const typeToNumber = (type?: string): number | undefined => {
+          if (!type) return undefined
+          const mapping: Record<string, number> = {
+            legacy: 0,
+            eip2930: 1,
+            eip1559: 2,
+          }
+          return mapping[type]
+        }
+
+        // Convert to ethers.js UnsignedTransaction format
+        const { gas, ...rest } = parsedTransaction
+        const ethersTransaction = {
+          ...rest,
+          gasLimit: gas,
+          to: parsedTransaction.to ?? undefined,
+          type: typeToNumber(parsedTransaction.type),
+        } as any
+
+        // Serialize unsigned transaction and hash it to create the digest for signing
+        const unsignedTx = serialize(ethersTransaction)
+        const { keccak256 } = await import('@ethersproject/keccak256')
+        const digest = keccak256(unsignedTx)
+
+        await this.#validateAndRefreshSession()
+        const signature = await signer.sign(digest, false, false)
+
+        // Verify signature recovers to the correct address
+        const recoveredAddress = recoverAddress(digest, signature)
+        if (recoveredAddress.toLowerCase() !== account.address.toLowerCase()) {
+          throw new JsonRpcError(
+            ProviderErrorCode.UNAUTHORIZED,
+            `Signature recovery failed: expected ${account.address}, got ${recoveredAddress}`
+          )
+        }
+
+        // Combine signature with transaction to create signed raw transaction
+        const { splitSignature } = await import('@ethersproject/bytes')
+        const sig = splitSignature(signature)
+        const signedTransaction = serialize(ethersTransaction, sig)
+
+        return signedTransaction
+      }
       case 'eth_sendTransaction': {
         const account = await Account.fromStorage(this.#storage)
-        if (account?.accountType === AccountTypeEnum.EOA) {
-          break;
-        }
         const signer = await this.#ensureSigner()
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
         await this.#validateAndRefreshSession()
+
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          const [transaction] = request.params || []
+          const rpcProvider = await this.getRpcProvider()
+          const completeTransaction = await prepareEOATransaction(transaction, rpcProvider, account.address)
+
+          const signedTransaction = await this.#performRequest({
+            method: 'eth_signTransaction',
+            params: [completeTransaction],
+          })
+
+          return this.#performRequest({
+            method: 'eth_sendRawTransaction',
+            params: [signedTransaction],
+          })
+        }
+
         return await sendCalls({
           params: request.params || [],
           signer,
@@ -165,13 +247,13 @@ export class EvmProvider implements Provider {
       }
       case 'eth_sendRawTransactionSync': {
         const account = await Account.fromStorage(this.#storage)
-        if (account?.accountType === AccountTypeEnum.EOA) {
-          break;
-        }
         const signer = await this.#ensureSigner()
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
+        }
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
         }
         await this.#validateAndRefreshSession()
         return await sendCallsSync({
@@ -279,7 +361,7 @@ export class EvmProvider implements Provider {
       case 'wallet_getCallsStatus': {
         const account = await Account.fromStorage(this.#storage)
         if (account?.accountType === AccountTypeEnum.EOA) {
-          break;
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
         }
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
@@ -297,7 +379,7 @@ export class EvmProvider implements Provider {
       case 'wallet_sendCalls': {
         const account = await Account.fromStorage(this.#storage)
         if (account?.accountType === AccountTypeEnum.EOA) {
-          break;
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
         }
         const signer = await this.#ensureSigner()
         const authentication = await Authentication.fromStorage(this.#storage)
@@ -316,6 +398,9 @@ export class EvmProvider implements Provider {
       }
       case 'wallet_grantPermissions': {
         const account = await Account.fromStorage(this.#storage)
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
+        }
         const signer = await this.#ensureSigner()
         const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
@@ -351,6 +436,10 @@ export class EvmProvider implements Provider {
         })
       }
       case 'wallet_getCapabilities': {
+        const account = await Account.fromStorage(this.#storage)
+        if (account?.accountType === AccountTypeEnum.EOA) {
+          throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
+        }
         const rpcProvider = await this.getRpcProvider()
         const { chainId } = await rpcProvider.detectNetwork()
         const capabilities = {
@@ -374,6 +463,7 @@ export class EvmProvider implements Provider {
       // Pass through methods
       case 'eth_gasPrice':
       case 'eth_getBalance':
+      case 'eth_sendRawTransaction':
       case 'eth_getCode':
       case 'eth_getStorageAt':
       case 'eth_call':

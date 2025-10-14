@@ -33,6 +33,8 @@
     "@ethersproject/bytes": "^5.8.0",
     "@ethersproject/hash": "^5.8.0",
     "@ethersproject/providers": "^5.8.0",
+    "@ethersproject/transactions": "^5.8.0",
+    "@ethersproject/keccak256": "^5.8.0",
     "@openfort/shield-js": "^0.1.27",
     "@sentry/browser": "^9.15.0",
     "@sentry/core": "^9.15.0",

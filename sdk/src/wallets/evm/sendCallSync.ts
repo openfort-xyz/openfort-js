@@ -17,25 +17,29 @@ type WalletSendCallsParams = {
 
 type RawCall = { data?: `0x${string}`; to?: `0x${string}`; value?: bigint }
 
-const convertToTransactionReceipt = (response: any): TransactionReceipt<string, number, 'success' | 'reverted', TransactionType> => {
+const convertToTransactionReceipt = (
+  response: TransactionIntentResponse['response']
+): TransactionReceipt<string, number, 'success' | 'reverted', TransactionType> => {
+  const firstLog = response?.logs?.[0]
+
   return {
-    blockHash: response.blockHash,
-    blockNumber: response.blockNumber?.toString(),
-    contractAddress: response.contractAddress,
-    cumulativeGasUsed: response.cumulativeGasUsed,
-    effectiveGasPrice: response.effectiveGasPrice,
-    from: response.from,
-    gasUsed: response.gasUsed,
-    logs: response.logs || [],
-    logsBloom: response.logsBloom,
-    status: response.status === 1 ? 'success' : response.status === 0 ? 'reverted' : undefined,
-    to: response.to,
-    transactionHash: response.transactionHash,
-    transactionIndex: response.transactionIndex,
-    type: response.type,
-    blobGasPrice: response.blobGasPrice,
-    blobGasUsed: response.blobGasUsed,
-    root: response.root,
+    blockHash: firstLog?.blockHash,
+    blockNumber: response?.blockNumber?.toString(),
+    contractAddress: undefined,
+    cumulativeGasUsed: response?.gasUsed,
+    effectiveGasPrice: response?.gasFee,
+    from: undefined,
+    gasUsed: response?.gasUsed,
+    logs: response?.logs || [],
+    logsBloom: undefined,
+    status: response?.status === 1 ? 'success' : response?.status === 0 ? 'reverted' : undefined,
+    to: response?.to,
+    transactionHash: response?.transactionHash,
+    transactionIndex: firstLog?.transactionIndex,
+    type: 'eip1559',
+    blobGasPrice: undefined,
+    blobGasUsed: undefined,
+    root: undefined,
   } as TransactionReceipt<string, number, 'success' | 'reverted', TransactionType>
 }
 

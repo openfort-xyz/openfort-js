@@ -62,5 +62,11 @@ export interface CreateEmbeddedRequest {
      * @memberof CreateEmbeddedRequest
      */
     'share'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateEmbeddedRequest
+     */
+    'signerUuid'?: string;
 }
 

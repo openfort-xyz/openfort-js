@@ -158,7 +158,7 @@ export interface Interaction {
   data?: string
 }
 
-interface Log {
+export interface Log {
   blockNumber: number
   blockHash: string
   transactionIndex: number
@@ -215,7 +215,7 @@ export type TransactionReceipt<
   type?: type
 }
 
-interface ResponseResponse {
+export interface ResponseResponse {
   createdAt: number
   blockNumber?: number
   transactionHash?: string
@@ -226,14 +226,6 @@ interface ResponseResponse {
   status?: number
   logs?: Log[]
   to?: string
-  from?: string
-  blockHash?: string
-  contractAddress?: string | null
-  cumulativeGasUsed?: string
-  effectiveGasPrice?: string
-  logsBloom?: string
-  transactionIndex?: number
-  type?: TransactionType
   error?: any
 }
 
