@@ -3,6 +3,7 @@ import { type AuthPlayerResponse, OAuthProvider } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useId, useState } from 'react'
+import EventMonitor from '@/components/EventMonitor/EventMonitor'
 import { Button } from '@/components/ui/button'
 import { TextField } from '../components/Fields'
 import { Layout } from '../components/Layouts/Layout'
@@ -96,17 +97,21 @@ function RegisterPage() {
   return (
     <Layout
       sidebar={
-        <div className="flex-col space-y-4 p-8">
-          <div className="bg-white text-sm p-3 border-orange-400 border-4 rounded-sm">
-            <p className="font-medium pb-1">Explore Openfort</p>
-            <p className="text-gray-500">Sign in to the demo to access the dev tools.</p>
-            <Button variant={'outline'} size={'sm'} className="mt-2" asChild>
-              <Link href="https://www.openfort.io/docs" target="_blank">
-                Explore the Docs
-              </Link>
-            </Button>
+        <>
+          <div className="flex-1 flex-col space-y-4 p-8">
+            <div className="bg-white text-sm p-3 border-orange-400 border-4 rounded-sm">
+              <p className="font-medium pb-1">Explore Openfort</p>
+              <p className="text-gray-500">Sign in to the demo to access the dev tools.</p>
+              <Button variant={'outline'} size={'sm'} className="mt-2">
+                <Link href="https://www.openfort.io/docs" target="_blank">
+                  Explore the Docs
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
+          <EventMonitor />
+          <div className="py-12" />
+        </>
       }
     >
       <div className="flex min-h-full overflow-hidden pt-8 sm:py-12">

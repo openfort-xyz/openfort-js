@@ -179,7 +179,7 @@ export class EmbeddedSigner implements Signer {
           recoveryMethodDetails: response.data.recoveryMethodDetails,
         })
         account.save(this.storage)
-        this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address)
+        this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, response.data.address)
         return account
       },
       { default: OpenfortErrorType.AUTHENTICATION_ERROR }
@@ -254,7 +254,7 @@ export class EmbeddedSigner implements Signer {
           recoveryMethodDetails: response.data.recoveryMethodDetails,
         })
         account.save(this.storage)
-        this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address)
+        this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, response.data.address)
         return account
       },
       { default: OpenfortErrorType.AUTHENTICATION_ERROR }
@@ -306,7 +306,7 @@ export class EmbeddedSigner implements Signer {
           recoveryMethodDetails: response.data.recoveryMethodDetails,
         })
         account.save(this.storage)
-        this.eventEmitter.emit(OpenfortEvents.SWITCH_ACCOUNT, response.data.address)
+        this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, response.data.address)
         return account
       },
       { default: OpenfortErrorType.AUTHENTICATION_ERROR }

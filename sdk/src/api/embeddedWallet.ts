@@ -56,7 +56,7 @@ export class EmbeddedWalletApi {
     private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
     private readonly passkeyHandler: PasskeyHandler
   ) {
-    this.eventEmitter.on(OpenfortEvents.LOGGED_OUT, () => {
+    this.eventEmitter.on(OpenfortEvents.ON_LOGOUT, () => {
       debugLog('Handling logout event in EmbeddedWalletApi')
       this.handleLogout()
     })
@@ -308,7 +308,7 @@ export class EmbeddedWalletApi {
       chainId: params.chainId,
       entropy,
     })
-    return {
+    const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
       user: auth!.player,
@@ -321,6 +321,10 @@ export class EmbeddedWalletApi {
       recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
       recoveryMethodDetails: account.recoveryMethodDetails,
     }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED, embeddedAccount)
+
+    return embeddedAccount
   }
 
   async recover(params: EmbeddedAccountRecoverParams): Promise<EmbeddedAccount> {
@@ -351,7 +355,7 @@ export class EmbeddedWalletApi {
       account: params.account,
       entropy,
     })
-    return {
+    const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
       user: auth!.player,
@@ -364,6 +368,10 @@ export class EmbeddedWalletApi {
       recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
       recoveryMethodDetails: account.recoveryMethodDetails,
     }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED, embeddedAccount)
+
+    return embeddedAccount
   }
 
   /**
@@ -381,7 +389,11 @@ export class EmbeddedWalletApi {
     const signer = await this.ensureSigner()
     const { hashMessage = true, arrayifyMessage = false } = options || {}
     const account = await Account.fromStorage(this.storage)
-    return await signer.sign(message, arrayifyMessage, hashMessage, account?.chainType)
+    const signature = await signer.sign(message, arrayifyMessage, hashMessage, account?.chainType)
+
+    this.eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, { message, signature })
+
+    return signature
   }
 
   async signTypedData(

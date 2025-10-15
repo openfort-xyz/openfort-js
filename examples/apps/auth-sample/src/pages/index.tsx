@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import AccountActions from '@/components/AccountActions/AccountActions'
 import Authorizations7702 from '@/components/Authorizations7702/Authorizations7702'
+import EventMonitor from '@/components/EventMonitor/EventMonitor'
 import { type StatusType, Toast } from '@/components/Toasts'
 import { Button } from '@/components/ui/button'
 import Wallets from '@/components/Wallet/Wallet'
@@ -68,6 +69,7 @@ const HomePage: NextPage = () => {
                 </Button>
               </div>
             </div>
+            <EventMonitor />
             <div className="p-6 mb-14 border-t bg-white">
               <p className="text-sm text-gray-600 mb-4">
                 Openfort gives you modular components so you can customize your product for your users.
@@ -107,6 +109,7 @@ const HomePage: NextPage = () => {
         sidebar={
           <>
             <div className="flex-1 w-full" />
+            <EventMonitor />
             <div className="p-6 mb-14 border-t bg-white">
               <p className="text-sm text-gray-600 mb-4">
                 Openfort gives you modular components so you can customize your product for your users.
@@ -164,6 +167,7 @@ const HomePage: NextPage = () => {
               readOnly
             />
           </div>
+          <EventMonitor />
           <div className="p-6 mb-14 border-t bg-white">
             <p className="text-sm text-gray-600 mb-4">
               Openfort gives you modular components so you can customize your product for your users.
