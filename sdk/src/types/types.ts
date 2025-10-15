@@ -8,14 +8,63 @@ export enum EmbeddedState {
   READY,
 }
 
+/**
+ * Openfort SDK Events
+ * Subscribe to these events to handle authentication, wallet operations, and UI flows
+ */
 export enum OpenfortEvents {
-  LOGGED_OUT = 'loggedOut',
-  SWITCH_ACCOUNT = 'switchAccount',
+  /** Called when an authentication process begins */
+  ON_AUTH_INIT = 'onAuthInit',
+  /** Called after the user successfully authenticates */
+  ON_AUTH_SUCCESS = 'onAuthSuccess',
+  /** Called when authentication fails */
+  ON_AUTH_FAILURE = 'onAuthFailure',
+  /** Called after the user logs out */
+  ON_LOGOUT = 'onLogout',
+  /** Called when switching between accounts */
+  ON_SWITCH_ACCOUNT = 'onSwitchAccount',
+  /** Called when the user signs a message */
+  ON_SIGNED_MESSAGE = 'onSignedMessage',
+  /** Called after embedded wallet is created for user */
+  ON_EMBEDDED_WALLET_CREATED = 'onEmbeddedWalletCreated',
+  /** Called when an embedded wallet is recovered */
+  ON_EMBEDDED_WALLET_RECOVERED = 'onEmbeddedWalletRecovered',
+  /** Called after the auth flow modal is opened */
+  ON_AUTH_FLOW_OPEN = 'onAuthFlowOpen',
+  /** Called whenever the auth flow modal is closed */
+  ON_AUTH_FLOW_CLOSE = 'onAuthFlowClose',
+  /** Called when the auth modal is closed before authentication is successful */
+  ON_AUTH_FLOW_CANCEL = 'onAuthFlowCancel',
+}
+
+/**
+ * Authentication initialization payload
+ */
+export type AuthInitPayload = {
+  method: 'email' | 'oauth' | 'siwe' | 'idToken' | 'guest'
+  provider?: string
+}
+
+/**
+ * Signed message payload
+ */
+export type SignedMessagePayload = {
+  message: string | Uint8Array
+  signature: string
 }
 
 export interface OpenfortEventMap extends Record<string, any> {
-  [OpenfortEvents.LOGGED_OUT]: []
-  [OpenfortEvents.SWITCH_ACCOUNT]: [string]
+  [OpenfortEvents.ON_AUTH_INIT]: [AuthInitPayload]
+  [OpenfortEvents.ON_AUTH_SUCCESS]: [AuthResponse]
+  [OpenfortEvents.ON_AUTH_FAILURE]: [Error]
+  [OpenfortEvents.ON_LOGOUT]: []
+  [OpenfortEvents.ON_SWITCH_ACCOUNT]: [string]
+  [OpenfortEvents.ON_SIGNED_MESSAGE]: [SignedMessagePayload]
+  [OpenfortEvents.ON_EMBEDDED_WALLET_CREATED]: [EmbeddedAccount]
+  [OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED]: [EmbeddedAccount]
+  [OpenfortEvents.ON_AUTH_FLOW_OPEN]: []
+  [OpenfortEvents.ON_AUTH_FLOW_CLOSE]: []
+  [OpenfortEvents.ON_AUTH_FLOW_CANCEL]: []
 }
 
 export enum RecoveryMethod {

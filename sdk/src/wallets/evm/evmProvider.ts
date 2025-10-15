@@ -93,8 +93,8 @@ export class EvmProvider implements Provider {
 
     this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>()
 
-    openfortEventEmitter.on(OpenfortEvents.LOGGED_OUT, this.#handleLogout)
-    openfortEventEmitter.on(OpenfortEvents.SWITCH_ACCOUNT, this.#handleSwitchAccount)
+    openfortEventEmitter.on(OpenfortEvents.ON_LOGOUT, this.#handleLogout)
+    openfortEventEmitter.on(OpenfortEvents.ON_SWITCH_ACCOUNT, this.#handleSwitchAccount)
   }
 
   #ensureSigner = async (): Promise<Signer> => {

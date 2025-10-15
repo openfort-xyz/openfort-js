@@ -39,12 +39,21 @@ export class AuthApi {
     if (auth) {
       throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
     }
-    const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame)
-    if ('action' in result) {
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
+
+    try {
+      const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame)
+      if ('action' in result) {
+        return result
+      }
+      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
     }
-    new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
-    return result
   }
 
   async signUpGuest(): Promise<AuthResponse> {
@@ -53,9 +62,18 @@ export class AuthApi {
     if (auth) {
       throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
     }
-    const result = await this.authManager.registerGuest()
-    new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
-    return result
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'guest' })
+
+    try {
+      const result = await this.authManager.registerGuest()
+      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
+      return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
   }
 
   async signUpWithEmailPassword({
@@ -74,12 +92,21 @@ export class AuthApi {
     if (auth) {
       throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
     }
-    const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame)
-    if ('action' in result) {
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
+
+    try {
+      const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame)
+      if ('action' in result) {
+        return result
+      }
+      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
     }
-    new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
-    return result
   }
 
   async linkEmailPassword({
@@ -136,6 +163,10 @@ export class AuthApi {
     if (auth) {
       throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
     }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_OPEN)
+
     return await this.authManager.initOAuth(provider, options, ecosystemGame)
   }
 
@@ -154,6 +185,9 @@ export class AuthApi {
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
     }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_OPEN)
+
     return await this.authManager.linkOAuth(auth, provider, options, ecosystemGame)
   }
 
@@ -170,9 +204,19 @@ export class AuthApi {
 
   async poolOAuth(key: string): Promise<AuthResponse> {
     await this.ensureInitialized()
-    const response = await this.authManager.poolOAuth(key)
-    new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage)
-    return response
+
+    try {
+      const response = await this.authManager.poolOAuth(key)
+      new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, response)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_CLOSE)
+      return response
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_CANCEL)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_CLOSE)
+      throw error
+    }
   }
 
   async loginWithIdToken({
@@ -189,9 +233,18 @@ export class AuthApi {
     if (auth) {
       throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
     }
-    const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame)
-    new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
-    return result
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'idToken', provider })
+
+    try {
+      const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame)
+      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
+      return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
   }
 
   async initSIWE({ address, ecosystemGame }: { address: string; ecosystemGame?: string }): Promise<SIWEInitResponse> {
@@ -215,9 +268,18 @@ export class AuthApi {
     if (auth) {
       throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
     }
-    const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType)
-    new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
-    return result
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'siwe', provider: 'wallet' })
+
+    try {
+      const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType)
+      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
+      return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
   }
 
   async linkWallet({
@@ -264,6 +326,6 @@ export class AuthApi {
       // Ignoring logout errors as we're clearing local state anyway
     }
     Authentication.clear(this.storage)
-    this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT)
+    this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
   }
 }

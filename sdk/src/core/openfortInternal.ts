@@ -73,7 +73,7 @@ export class OpenfortInternal {
       credentials = await this.authManager.validateCredentials(auth, forceRefresh)
     } catch (error) {
       Authentication.clear(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.LOGGED_OUT)
+      this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
       throw error
     }
     if (!credentials.player) {

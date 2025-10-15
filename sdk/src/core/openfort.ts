@@ -39,6 +39,12 @@ export class Openfort {
 
   private iPasskeyHandler: PasskeyHandler
 
+  /**
+   * Global event emitter singleton for subscribing to SDK events
+   * @internal
+   */
+  private static globalEventEmitter: TypedEventEmitter<OpenfortEventMap> | null = null
+
   public get auth(): AuthApi {
     if (!this.authInstance) {
       throw new OpenfortError(
@@ -132,6 +138,35 @@ export class Openfort {
     // Create the centralized event emitter
     this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>()
 
+    // Initialize the global event emitter if it doesn't exist
+    if (!Openfort.globalEventEmitter) {
+      Openfort.globalEventEmitter = this.eventEmitter
+    } else {
+      // If global emitter already exists, forward all events from instance to global
+      // This ensures that both instance.eventEmitter and openfortEvents work
+      const forwardEvent = <K extends keyof OpenfortEventMap>(event: K) => {
+        this.eventEmitter.on(event, (...args: OpenfortEventMap[K]) => {
+          Openfort.globalEventEmitter?.emit(event, ...args)
+        })
+      }
+
+      // Forward all event types
+      const events: (keyof OpenfortEventMap)[] = [
+        'onAuthInit',
+        'onAuthSuccess',
+        'onAuthFailure',
+        'onLogout',
+        'onSwitchAccount',
+        'onSignedMessage',
+        'onEmbeddedWalletCreated',
+        'onEmbeddedWalletRecovered',
+        'onAuthFlowOpen',
+        'onAuthFlowClose',
+        'onAuthFlowCancel',
+      ]
+      events.forEach(forwardEvent)
+    }
+
     // Instantiate the passkey handler
     this.iPasskeyHandler = new PasskeyHandler({
       rpId: this.configuration.passkeyRpId,
@@ -146,6 +181,17 @@ export class Openfort {
 
     // Async initialization will be done lazily when needed
     this.initPromise = Promise.resolve()
+  }
+
+  /**
+   * Get the global event emitter for subscribing to SDK events
+   * @returns The global event emitter instance
+   */
+  public static getEventEmitter(): TypedEventEmitter<OpenfortEventMap> {
+    if (!Openfort.globalEventEmitter) {
+      Openfort.globalEventEmitter = new TypedEventEmitter<OpenfortEventMap>()
+    }
+    return Openfort.globalEventEmitter
   }
 
   /**
