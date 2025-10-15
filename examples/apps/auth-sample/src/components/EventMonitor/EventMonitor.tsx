@@ -46,7 +46,7 @@ export default function EventMonitor() {
             </Button>
           </div>
           <a
-            href="https://www.openfort.io/docs/products/embedded-wallet/javascript"
+            href="https://www.openfort.io/docs/products/embedded-wallet/javascript/events"
             className="text-blue-600 hover:underline text-xs"
           >
             View available events
