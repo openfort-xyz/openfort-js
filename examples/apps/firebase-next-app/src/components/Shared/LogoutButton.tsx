@@ -1,6 +1,6 @@
 import { EmbeddedState } from '@openfort/openfort-js'
 import type React from 'react'
-import { useOpenfort } from '@/contexts/OpenfortContext'
+import { useOpenfort } from '@/hooks/useOpenfort'
 import { useAuthentication } from '../../hooks/useAuthentication'
 
 const LogoutButton: React.FC = () => {
