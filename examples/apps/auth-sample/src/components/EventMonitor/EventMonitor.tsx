@@ -33,8 +33,8 @@ export default function EventMonitor() {
   return (
     <div>
       <div className="flex items-center justify-between p-4 border-b">
-        <div className='flex flex-col w-full'>
-          <div className='flex w-full'>
+        <div className="flex flex-col w-full">
+          <div className="flex w-full">
             <div className="flex-1 flex items-center space-x-2">
               <Activity className="h-5 w-5" />
               <h2 className="font-semibold text-lg">Event Monitor</h2>
@@ -51,7 +51,7 @@ export default function EventMonitor() {
           >
             View available events
           </a>
-         </div>
+        </div>
       </div>
 
       {events.length === 0 ? (

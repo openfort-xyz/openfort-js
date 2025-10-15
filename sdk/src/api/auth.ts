@@ -23,7 +23,7 @@ export class AuthApi {
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>
-  ) { }
+  ) {}
 
   async logInWithEmailPassword({
     email,
