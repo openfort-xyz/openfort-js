@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.25
+
+### Patch Changes
+
+- [#136](https://github.com/openfort-xyz/openfort-js/pull/136) [`7d755b9`](https://github.com/openfort-xyz/openfort-js/commit/7d755b95d39daa2414de62594fcc4ab2cf372205) Thanks [@jamalavedra](https://github.com/jamalavedra)! - events for openfortjs
+
 ## 0.10.24
 
 ### Patch Changes
