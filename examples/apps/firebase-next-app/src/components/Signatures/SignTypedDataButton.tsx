@@ -3,7 +3,7 @@ import type React from 'react'
 import { useEffect } from 'react'
 import { baseSepolia } from 'viem/chains'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/hooks/useOpenfort'
 import Spinner from '../Shared/Spinner'
 
 const SignTypedDataButton: React.FC<{

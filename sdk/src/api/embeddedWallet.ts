@@ -391,8 +391,6 @@ export class EmbeddedWalletApi {
     const account = await Account.fromStorage(this.storage)
     const signature = await signer.sign(message, arrayifyMessage, hashMessage, account?.chainType)
 
-    this.eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, { message, signature })
-
     return signature
   }
 

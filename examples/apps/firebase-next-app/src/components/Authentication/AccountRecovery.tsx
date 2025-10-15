@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/hooks/useOpenfort'
 import Spinner from '../Shared/Spinner'
 
 const AccountRecovery: React.FC = () => {

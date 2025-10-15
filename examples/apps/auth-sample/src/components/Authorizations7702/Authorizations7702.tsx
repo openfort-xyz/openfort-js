@@ -8,7 +8,7 @@ import { type Address, createPublicClient, createWalletClient, type Hex, http, p
 import { toAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains'
 import { hashAuthorization, hashTypedData } from 'viem/utils'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 

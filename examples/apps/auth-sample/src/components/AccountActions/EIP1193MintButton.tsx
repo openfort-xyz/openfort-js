@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { createPublicClient, createWalletClient, custom, encodeFunctionData, type WriteContractErrorType } from 'viem'
 import { polygonAmoy } from 'viem/chains'
 import type { BaseError } from 'wagmi'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 

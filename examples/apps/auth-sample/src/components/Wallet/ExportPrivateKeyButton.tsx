@@ -1,7 +1,7 @@
 import { EmbeddedState } from '@openfort/openfort-js'
 import type React from 'react'
 import { useState } from 'react'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 

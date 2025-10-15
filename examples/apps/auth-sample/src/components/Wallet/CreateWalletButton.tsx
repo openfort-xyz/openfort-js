@@ -1,7 +1,7 @@
 import { RecoveryMethod } from '@openfort/openfort-js'
 import { useState } from 'react'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import { OTPRequestModal } from '../OTPRequestModal'
 import { OTPVerificationModal } from '../OTPVerificationModal'
 import { Button } from '../ui/button'
