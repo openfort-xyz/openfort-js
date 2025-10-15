@@ -1,7 +1,7 @@
 import type { AuthPlayerResponse, OAuthProvider } from '@openfort/openfort-js'
 import type React from 'react'
 import { useMemo, useState } from 'react'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import { getURL } from '../../utils/getUrl'
 import openfort from '../../utils/openfortConfig'
 import Loading from '../Loading'

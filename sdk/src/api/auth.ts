@@ -23,7 +23,7 @@ export class AuthApi {
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>
-  ) {}
+  ) { }
 
   async logInWithEmailPassword({
     email,
@@ -165,7 +165,6 @@ export class AuthApi {
     }
 
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_OPEN)
 
     return await this.authManager.initOAuth(provider, options, ecosystemGame)
   }
@@ -186,7 +185,7 @@ export class AuthApi {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_OPEN)
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
 
     return await this.authManager.linkOAuth(auth, provider, options, ecosystemGame)
   }
@@ -209,12 +208,9 @@ export class AuthApi {
       const response = await this.authManager.poolOAuth(key)
       new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, response)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_CLOSE)
       return response
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_CANCEL)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FLOW_CLOSE)
       throw error
     }
   }

@@ -42,9 +42,6 @@ export function EventMonitorProvider({ children }: { children: React.ReactNode }
     openfortEvents.on(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED, (wallet) =>
       addEvent('onEmbeddedWalletRecovered', wallet)
     )
-    openfortEvents.on(OpenfortEvents.ON_AUTH_FLOW_OPEN, () => addEvent('onAuthFlowOpen'))
-    openfortEvents.on(OpenfortEvents.ON_AUTH_FLOW_CLOSE, () => addEvent('onAuthFlowClose'))
-    openfortEvents.on(OpenfortEvents.ON_AUTH_FLOW_CANCEL, () => addEvent('onAuthFlowCancel'))
 
     // Cleanup function to remove all listeners
     return () => {
@@ -56,9 +53,6 @@ export function EventMonitorProvider({ children }: { children: React.ReactNode }
       openfortEvents.removeAllListeners(OpenfortEvents.ON_SIGNED_MESSAGE)
       openfortEvents.removeAllListeners(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED)
       openfortEvents.removeAllListeners(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_AUTH_FLOW_OPEN)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_AUTH_FLOW_CLOSE)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_AUTH_FLOW_CANCEL)
     }
   }, [])
 

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import type React from 'react'
-import { useOpenfort } from '../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import { Button } from './ui/button'
 
 const LogoutButton: React.FC = () => {

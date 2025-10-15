@@ -21,7 +21,7 @@ import SignMessageButton from '../components/Signatures/SignMessageButton'
 import SignTypedDataButton from '../components/Signatures/SignTypedDataButton'
 import GetUserButton from '../components/User/GetUserButton'
 import { SetPairingCodeWithWagmi } from '../components/WalletConnect/SetPairingCode'
-import { useOpenfort } from '../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import openfort from '../utils/openfortConfig'
 
 const HomePage: NextPage = () => {

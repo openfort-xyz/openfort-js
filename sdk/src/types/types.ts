@@ -29,12 +29,6 @@ export enum OpenfortEvents {
   ON_EMBEDDED_WALLET_CREATED = 'onEmbeddedWalletCreated',
   /** Called when an embedded wallet is recovered */
   ON_EMBEDDED_WALLET_RECOVERED = 'onEmbeddedWalletRecovered',
-  /** Called after the auth flow modal is opened */
-  ON_AUTH_FLOW_OPEN = 'onAuthFlowOpen',
-  /** Called whenever the auth flow modal is closed */
-  ON_AUTH_FLOW_CLOSE = 'onAuthFlowClose',
-  /** Called when the auth modal is closed before authentication is successful */
-  ON_AUTH_FLOW_CANCEL = 'onAuthFlowCancel',
 }
 
 /**
@@ -62,9 +56,6 @@ export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.ON_SIGNED_MESSAGE]: [SignedMessagePayload]
   [OpenfortEvents.ON_EMBEDDED_WALLET_CREATED]: [EmbeddedAccount]
   [OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED]: [EmbeddedAccount]
-  [OpenfortEvents.ON_AUTH_FLOW_OPEN]: []
-  [OpenfortEvents.ON_AUTH_FLOW_CLOSE]: []
-  [OpenfortEvents.ON_AUTH_FLOW_CANCEL]: []
 }
 
 export enum RecoveryMethod {
@@ -551,17 +542,17 @@ export type PasskeyInfo = {
 
 export type RecoveryParams =
   | {
-      recoveryMethod: RecoveryMethod.AUTOMATIC
-      encryptionSession: string
-    }
+    recoveryMethod: RecoveryMethod.AUTOMATIC
+    encryptionSession: string
+  }
   | {
-      recoveryMethod: RecoveryMethod.PASSWORD
-      password: string
-    }
+    recoveryMethod: RecoveryMethod.PASSWORD
+    password: string
+  }
   | {
-      recoveryMethod: RecoveryMethod.PASSKEY
-      passkeyInfo?: PasskeyInfo
-    }
+    recoveryMethod: RecoveryMethod.PASSKEY
+    passkeyInfo?: PasskeyInfo
+  }
 
 export type EntropyResponse = {
   recoveryPassword?: string

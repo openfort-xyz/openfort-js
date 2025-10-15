@@ -2,7 +2,7 @@ import { EmbeddedState, RecoveryMethod, type RecoveryParams } from '@openfort/op
 import { ChevronLeft } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import Loading from '../Loading'
 import { OTPRequestModal } from '../OTPRequestModal'
 import { OTPVerificationModal } from '../OTPVerificationModal'

@@ -4,7 +4,7 @@ import ChangeWallet from '@/components/Wallet/ChangeWalletButton'
 import CreateWalletButton from '@/components/Wallet/CreateWalletButton'
 import ExportPrivateKey from '@/components/Wallet/ExportPrivateKeyButton'
 import SetWalletRecovery from '@/components/Wallet/SetWalletRecoveryButton'
-import { useOpenfort } from '../../hooks/useOpenfort'
+import { useOpenfort } from '@/contexts/OpenfortContext'
 import { Button } from '../ui/button'
 
 const Wallets: React.FC<{

@@ -11,7 +11,7 @@ import SignMessageButton from '../components/Signatures/SignMessageButton'
 import SignTypedDataButton from '../components/Signatures/SignTypedDataButton'
 
 import { useAuth } from '../contexts/AuthContext'
-import { useOpenfort } from '../hooks/useOpenfort'
+import { useOpenfort } from '@/hooks/useOpenfort'
 
 const HomePage: NextPage = () => {
   const { user } = useAuth()
