@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.26
+
+### Patch Changes
+
+- [#138](https://github.com/openfort-xyz/openfort-js/pull/138) [`45a0e41`](https://github.com/openfort-xyz/openfort-js/commit/45a0e41b94e84a38a9e03463f560826f60590fa1) Thanks [@jamalavedra](https://github.com/jamalavedra)! - simplify events, trigger on any sign payload
+
 ## 0.10.25
 
 ### Patch Changes
