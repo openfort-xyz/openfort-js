@@ -49,7 +49,7 @@ export async function authenticateAndRecover(page: Page) {
       await expect(page.locator('div.spinner')).toBeInViewport()
       await page.locator('div.spinner').waitFor({ state: 'hidden' })
       await page.waitForTimeout(500)
-      const consoleExists = (await page.locator('h2').getByText('Console').count()) > 0
+      const consoleExists = (await page.getByRole('heading', { name: 'Console' }).count()) > 0
       expect(consoleExists).toBe(true)
       break
     }
@@ -63,7 +63,7 @@ export async function authenticateAndRecover(page: Page) {
       await expect(page.locator('div.spinner')).toBeInViewport()
       await page.locator('div.spinner').waitFor({ state: 'hidden' })
 
-      await expect(page.locator('h2').getByText('Console'), {
+      await expect(page.getByRole('heading', { name: 'Console' }), {
         // error message in case it fails:
         message: 'Password recovery failed, maybe someone changed the recovery password? It should be "password"',
       }).toBeVisible()

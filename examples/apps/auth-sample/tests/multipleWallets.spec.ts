@@ -21,14 +21,14 @@ test('Multiple wallets', async ({ page }) => {
   })
 
   await test.step('Create first wallet', async () => {
-    await expect(page.locator('h2')).toContainText('Create a new account')
+    await expect(page.getByRole('heading', { name: 'Create a new account' })).toBeVisible()
     const createWalletButton = page.getByRole('button', { name: 'Set automatic recovery' }).first()
     createWalletButton.click()
 
     await expect(page.locator('div.spinner')).toBeInViewport()
     await page.locator('div.spinner').waitFor({ state: 'hidden' })
 
-    await expect(page.locator('h2').getByText('Console')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Console' })).toBeVisible()
   })
   let logger = new Logger(page)
   await logger.init()
