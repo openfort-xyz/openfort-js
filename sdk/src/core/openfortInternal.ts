@@ -1,5 +1,6 @@
 import { SDKConfiguration } from 'types'
 import { debugLog } from 'utils/debug'
+import { singlePromise } from 'utils/promiseUtils'
 import type { AuthManager } from '../auth/authManager'
 import type { IStorage } from '../storage/istorage'
 import { type Auth, type OpenfortEventMap, OpenfortEvents, TokenType } from '../types/types'
@@ -57,31 +58,42 @@ export class OpenfortInternal {
 
   /**
    * Validates and refreshes the access token if needed.
+   * Uses promise deduplication to prevent race conditions when multiple API calls
+   * simultaneously detect an expired token.
    */
   async validateAndRefreshToken(forceRefresh?: boolean): Promise<void> {
-    if (SDKConfiguration.getInstance()?.thirdPartyAuth) {
-      await this.getThirdPartyAuthToken()
-      return
-    }
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) {
-      throw new OpenfortError('Must be logged in to validate and refresh token', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
-    }
-    debugLog('validating credentials...')
-    let credentials: Auth
-    try {
-      credentials = await this.authManager.validateCredentials(auth, forceRefresh)
-    } catch (error) {
-      Authentication.clear(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
-      throw error
-    }
-    if (!credentials.player) {
-      throw new OpenfortError('No user found in credentials', OpenfortErrorType.INTERNAL_ERROR)
-    }
-    if (credentials.accessToken === auth.token) return
-    debugLog('tokens refreshed')
+    // Use singlePromise to ensure only one refresh operation runs at a time
+    // All concurrent calls will receive the same Promise instead of making duplicate requests
+    return singlePromise(async () => {
+      if (SDKConfiguration.getInstance()?.thirdPartyAuth) {
+        await this.getThirdPartyAuthToken()
+        return
+      }
+      const auth = await Authentication.fromStorage(this.storage)
+      if (!auth) {
+        throw new OpenfortError(
+          'Must be logged in to validate and refresh token',
+          OpenfortErrorType.NOT_LOGGED_IN_ERROR
+        )
+      }
+      debugLog('validating credentials...')
+      let credentials: Auth
+      try {
+        credentials = await this.authManager.validateCredentials(auth, forceRefresh)
+      } catch (error) {
+        Authentication.clear(this.storage)
+        this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
+        throw error
+      }
+      if (!credentials.player) {
+        throw new OpenfortError('No user found in credentials', OpenfortErrorType.INTERNAL_ERROR)
+      }
+      if (credentials.accessToken === auth.token) return
+      debugLog('tokens refreshed')
 
-    new Authentication('jwt', credentials.accessToken, credentials.player, credentials.refreshToken).save(this.storage)
+      new Authentication('jwt', credentials.accessToken, credentials.player, credentials.refreshToken).save(
+        this.storage
+      )
+    }, 'openfort.validateAndRefreshToken')
   }
 }
