@@ -1,6 +1,5 @@
 /**
  * Promise utilities for preventing race conditions
- * Inspired by Auth0 SPA JS SDK's approach to token refresh deduplication
  */
 
 /**
