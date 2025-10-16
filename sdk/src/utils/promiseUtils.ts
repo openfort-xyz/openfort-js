@@ -45,19 +45,3 @@ export const singlePromise = <T>(cb: () => Promise<T>, key: string): Promise<T> 
 
   return promise
 }
-
-/**
- * Retries a promise-returning function multiple times until it succeeds or max retries reached
- *
- * @param cb - The async operation to retry (should return true on success, false to retry)
- * @param maxNumberOfRetries - Maximum number of retry attempts (default: 3)
- * @returns Promise<boolean> - true if succeeded within retry limit, false otherwise
- */
-export const retryPromise = async (cb: () => Promise<boolean>, maxNumberOfRetries = 3): Promise<boolean> => {
-  for (let i = 0; i < maxNumberOfRetries; i++) {
-    if (await cb()) {
-      return true
-    }
-  }
-  return false
-}
