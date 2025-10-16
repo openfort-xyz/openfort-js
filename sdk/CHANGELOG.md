@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.27
+
+### Patch Changes
+
+- [#141](https://github.com/openfort-xyz/openfort-js/pull/141) [`cf616a9`](https://github.com/openfort-xyz/openfort-js/commit/cf616a92c6ffbd0d9f1d62996918f48955ce7bcd) Thanks [@jamalavedra](https://github.com/jamalavedra)! - fix race condition in token reset
+
 ## 0.10.26
 
 ### Patch Changes
