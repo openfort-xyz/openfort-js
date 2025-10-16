@@ -540,9 +540,15 @@ export class IframeManager {
   }
 
   async disconnect(): Promise<void> {
-    const remote = await this.ensureConnection()
-    const request = { uuid: randomUUID() }
-    await remote.logout(request)
+    try {
+      const remote = await this.ensureConnection()
+      const request = { uuid: randomUUID() }
+      await remote.logout(request)
+    } catch (error) {
+      // Ignore logout errors as we're cleaning up local state anyway
+      // The parent SDK may have already called logout on the backend
+      debugLog('Iframe disconnect error (ignored):', error)
+    }
   }
 
   /**
