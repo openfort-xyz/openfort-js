@@ -1,0 +1,46 @@
+/**
+ * Promise utilities for preventing race conditions
+ */
+
+/**
+ * Map to store ongoing promises keyed by a unique identifier
+ * When a promise completes (resolve or reject), it's automatically removed from the map
+ */
+const singlePromiseMap: Record<string, Promise<any>> = {}
+
+/**
+ * Ensures that only one instance of a promise runs at a time for a given key.
+ * If multiple callers request the same operation concurrently, they all receive
+ * the same Promise instead of triggering duplicate operations.
+ *
+ * This is particularly useful for token refresh operations where multiple API calls
+ * might simultaneously detect an expired token and attempt to refresh it.
+ *
+ * @example
+ * ```typescript
+ * // Multiple concurrent calls will share the same Promise
+ * const result1 = singlePromise(() => refreshToken(), 'token-refresh')
+ * const result2 = singlePromise(() => refreshToken(), 'token-refresh')
+ * // Only one refreshToken() call is made, both callers get the same result
+ * ```
+ *
+ * @param cb - The async operation to execute
+ * @param key - A unique identifier for this operation
+ * @returns Promise that resolves/rejects with the operation result
+ */
+export const singlePromise = <T>(cb: () => Promise<T>, key: string): Promise<T> => {
+  let promise: Promise<T> | null = singlePromiseMap[key]
+
+  if (!promise) {
+    // No ongoing operation for this key, start a new one
+    promise = cb().finally(() => {
+      // Clean up the promise from the map when it completes
+      // This allows future calls to start fresh
+      delete singlePromiseMap[key]
+      promise = null
+    })
+    singlePromiseMap[key] = promise
+  }
+
+  return promise
+}

@@ -124,7 +124,8 @@
     ],
     "ignoreWorkspaces": [
       "examples/**",
-      "test"
+      "test",
+      "packages/platform-bridge"
     ],
     "jest": {
       "entry": [
@@ -147,6 +148,9 @@
         ],
         "ignore": [
           "version.ts"
+        ],
+        "ignoreDependencies": [
+          "axios-retry"
         ]
       },
       "packages/internal/openapi-clients": {
@@ -156,13 +160,6 @@
         ],
         "ignore": [
           "src/backend-openapi.json"
-        ]
-      },
-      "packages/platform-bridge": {
-        "entry": [
-          "src/index.ts!",
-          "src/bridge.ts!",
-          "src/index.html!"
         ]
       }
     }
