@@ -38,7 +38,7 @@
     "@openfort/shield-js": "^0.1.29",
     "@sentry/browser": "^9.15.0",
     "@sentry/core": "^9.15.0",
-    "axios": "^1.8.2",
+    "axios": "^1.12.2",
     "axios-retry": "^4.5.0",
     "eventemitter3": "5.0.1",
     "human-id": "^4.1.1",

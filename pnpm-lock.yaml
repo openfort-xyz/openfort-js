@@ -489,7 +489,7 @@ importers:
         specifier: ^9.15.0
         version: 9.46.0
       axios:
-        specifier: ^1.8.2
+        specifier: ^1.12.2
         version: 1.12.2
       axios-retry:
         specifier: ^4.5.0
