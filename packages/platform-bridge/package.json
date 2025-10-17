@@ -9,31 +9,18 @@
     "ethers": "^5.8.0"
   },
   "devDependencies": {
-    "parcel": "^2.15.0"
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-replace": "^5.0.0",
+    "@rollup/plugin-terser": "^0.4.0",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "rollup": "^4.0.0"
   },
   "scripts": {
-    "build": "parcel build --no-cache --no-scope-hoist",
+    "build": "rollup --config rollup.config.js",
     "lint": "biome lint src",
     "check": "biome check --write src",
-    "format": "biome format --write src",
-    "start": "parcel"
-  },
-  "source": "src/index.html",
-  "targets": {
-    "unity": {
-      "context": "browser",
-      "source": "src/index.html",
-      "engines": {
-        "browsers": "Chrome 90"
-      }
-    },
-    "bundle": {
-      "outputFormat": "global",
-      "context": "browser",
-      "source": "src/index.ts",
-      "engines": {
-        "browsers": "Chrome 90"
-      }
-    }
+    "format": "biome format --write src"
   }
 }
