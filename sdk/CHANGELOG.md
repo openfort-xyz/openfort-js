@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.28
+
+### Patch Changes
+
+- [#144](https://github.com/openfort-xyz/openfort-js/pull/144) [`6e3d002`](https://github.com/openfort-xyz/openfort-js/commit/6e3d002ae12d6ccddfc282e97fb56daf87dd378b) Thanks [@jamalavedra](https://github.com/jamalavedra)! - native app identifier
+
 ## 0.10.27
 
 ### Patch Changes
