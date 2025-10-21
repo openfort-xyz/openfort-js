@@ -70,6 +70,7 @@ export class EmbeddedWalletApi {
     return new BackendApiClients({
       basePath: configuration.backendUrl,
       accessToken: configuration.baseConfiguration.publishableKey,
+      nativeAppIdentifier: configuration.nativeAppIdentifier,
     })
   }
 

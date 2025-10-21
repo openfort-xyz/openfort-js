@@ -6,6 +6,7 @@ import { createConfig, type OpenfortAPIConfiguration, type OpenfortAPIConfigurat
 export interface BackendApiClientsOptions {
   basePath: string
   accessToken: string
+  nativeAppIdentifier?: string
 }
 
 export class BackendApiClients {
@@ -31,6 +32,7 @@ export class BackendApiClients {
     const configOptions: OpenfortAPIConfigurationOptions = {
       basePath: options.basePath,
       accessToken: options.accessToken,
+      nativeAppIdentifier: options.nativeAppIdentifier,
     }
 
     this.config = {

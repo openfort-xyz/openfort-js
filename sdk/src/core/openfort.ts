@@ -225,6 +225,7 @@ export class Openfort {
     return new BackendApiClients({
       basePath: this.configuration.backendUrl,
       accessToken: this.configuration.baseConfiguration.publishableKey,
+      nativeAppIdentifier: this.configuration.nativeAppIdentifier,
     })
   }
 
