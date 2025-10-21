@@ -20,8 +20,11 @@ export interface ThirdPartyAuthConfiguration {
 export class OpenfortConfiguration {
   readonly publishableKey: string
 
-  constructor(options: { publishableKey: string }) {
+  readonly nativeAppIdentifier?: string
+
+  constructor(options: { publishableKey: string; nativeAppIdentifier?: string }) {
     this.publishableKey = options.publishableKey
+    this.nativeAppIdentifier = options.nativeAppIdentifier
   }
 }
 
@@ -78,6 +81,8 @@ export class SDKConfiguration {
 
   readonly passkeyRpName?: string
 
+  readonly nativeAppIdentifier?: string
+
   static instance: SDKConfiguration | null = null
 
   constructor({ baseConfiguration, shieldConfiguration, overrides, thirdPartyAuth }: OpenfortSDKConfiguration) {
@@ -95,6 +100,8 @@ export class SDKConfiguration {
 
     this.passkeyRpId = shieldConfiguration?.passkeyRpId
     this.passkeyRpName = shieldConfiguration?.passkeyRpName
+
+    this.nativeAppIdentifier = baseConfiguration.nativeAppIdentifier
 
     // Set crypto digest override if provided
     if (overrides?.crypto?.digest) {
