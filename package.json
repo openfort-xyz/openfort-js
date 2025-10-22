@@ -37,7 +37,7 @@
     "build:wagmi": "pnpm build && pnpm --filter wagmi-next-app build",
     "build:platform-bridge": "pnpm build && pnpm --filter platform-bridge build",
     "changeset": "changeset",
-    "changeset:version": "pnpm install --lockfile-only && changeset version",
+    "changeset:version": "pnpm install --lockfile-only && changeset version && cp sdk/CHANGELOG.md CHANGELOG.md",
     "changeset:publish": "pnpm build && changeset publish",
     "changeset:prepublish": "pnpm build"
   },
