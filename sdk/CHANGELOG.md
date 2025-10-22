@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.29
+
+### Patch Changes
+
+- [#146](https://github.com/openfort-xyz/openfort-js/pull/146) [`d5aafca`](https://github.com/openfort-xyz/openfort-js/commit/d5aafcac6a07dce7981af01dd41227bb52177eb0) Thanks [@martimayoral](https://github.com/martimayoral)! - fix linting
+
 All notable changes to this project will be documented in this file.
 
 ## 0.10.28
@@ -47,7 +53,7 @@ All notable changes to this project will be documented in this file.
 ### Chore
 
 - update package manager and linter
-  
+
 ## [0.10.21] - 2025-09-30
 
 ### Chore
