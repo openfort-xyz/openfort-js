@@ -138,6 +138,8 @@ export class IframeManager {
 
   private initializationPromise: Promise<void> | null = null
 
+  private hasFailed = false
+
   constructor(configuration: SDKConfiguration, storage: IStorage, messenger: Messenger) {
     if (!configuration) {
       throw new OpenfortError('Configuration is required for IframeManager', OpenfortErrorType.INVALID_CONFIGURATION)
@@ -165,6 +167,15 @@ export class IframeManager {
       return
     }
 
+    // If this IframeManager has failed before, throw the original error
+    // This will trigger recreation at the parent level
+    if (this.hasFailed) {
+      throw new OpenfortError(
+        'Failed to establish iFrame connection: Previous connection attempt failed',
+        OpenfortErrorType.INTERNAL_ERROR
+      )
+    }
+
     // If initialization is in progress, return the existing promise
     if (this.initializationPromise) {
       await this.initializationPromise
@@ -178,7 +189,9 @@ export class IframeManager {
       await this.initializationPromise
       this.isInitialized = true
     } catch (error) {
-      // Clear the promise on failure to allow retry
+      // Mark as failed so this instance won't be reused
+      this.hasFailed = true
+      // Clear the promise on failure
       this.initializationPromise = null
       throw error
     }
@@ -279,6 +292,7 @@ export class IframeManager {
       shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       shieldURL: this.sdkConfiguration.shieldUrl,
       encryptionKey: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? undefined,
+      appNativeIdentifier: this.sdkConfiguration?.nativeAppIdentifier ?? undefined,
     }
   }
 
@@ -341,6 +355,7 @@ export class IframeManager {
       chainId: params.chainId ?? null,
       accountType: params.accountType,
       chainType: params.chainType,
+      nativeAppIdentifier: this.sdkConfiguration?.nativeAppIdentifier ?? null,
     }
 
     const response = await remote.create(request)
@@ -389,6 +404,7 @@ export class IframeManager {
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldURL: this.sdkConfiguration.shieldUrl,
       account: params.account,
+      nativeAppIdentifier: this.sdkConfiguration?.nativeAppIdentifier ?? null,
     }
 
     const response = await remote.recover(request)
@@ -582,7 +598,8 @@ export class IframeManager {
 
   destroy(): void {
     if (this.connection) this.connection.destroy()
-    this.messenger.destroy()
+    // Don't destroy messenger here - it's managed by EmbeddedWalletApi
+    // and needs to be recreated fresh on retry
     this.remote = undefined
     this.isInitialized = false
     this.connection = undefined

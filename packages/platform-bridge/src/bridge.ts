@@ -131,6 +131,7 @@ window.callFunction = async (jsonData: string) => {
           const configuration = {
             baseConfiguration: {
               publishableKey: request.publishableKey,
+              nativeAppIdentifier: request.nativeAppIdentifier,
             },
             shieldConfiguration: request.shieldPublishableKey
               ? {

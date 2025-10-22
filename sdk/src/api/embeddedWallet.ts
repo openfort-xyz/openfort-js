@@ -77,7 +77,17 @@ export class EmbeddedWalletApi {
   private async getIframeManager(): Promise<IframeManager> {
     debugLog('[HANDSHAKE DEBUG] getIframeManager called')
 
-    // Return existing instance if available
+    // Check if existing instance has failed - if so, clear it for recreation
+    if (this.iframeManager && (this.iframeManager as any).hasFailed) {
+      debugLog('[HANDSHAKE DEBUG] Existing iframeManager has failed, clearing for recreation')
+      if (this.messenger) {
+        this.messenger.destroy()
+        this.messenger = null
+      }
+      this.iframeManager = null
+    }
+
+    // Return existing instance if available and not failed
     if (this.iframeManager) {
       debugLog('[HANDSHAKE DEBUG] Returning existing iframeManager instance')
       return this.iframeManager
@@ -102,8 +112,15 @@ export class EmbeddedWalletApi {
       return this.iframeManager
     } catch (error) {
       debugLog('[HANDSHAKE DEBUG] Error creating iframeManager:', error)
-      // Clear the promise on failure so we can retry
+      // Clear the promise and cleanup on failure to allow fresh retry
       this.iframeManagerPromise = null
+      // Destroy and clear the messenger so a new one is created on retry
+      if (this.messenger) {
+        this.messenger.destroy()
+        this.messenger = null
+      }
+      // Clear the iframeManager reference
+      this.iframeManager = null
       throw error
     }
   }
@@ -121,6 +138,11 @@ export class EmbeddedWalletApi {
     let messenger: ReactNativeMessenger | WindowMessenger
     if (this.messagePoster) {
       debugLog('[HANDSHAKE DEBUG] Creating ReactNativeMessenger with messagePoster')
+      // Destroy old messenger if it exists before creating new one
+      if (this.messenger) {
+        debugLog('[HANDSHAKE DEBUG] Destroying old messenger before creating new one')
+        this.messenger.destroy()
+      }
       this.messenger = new ReactNativeMessenger(this.messagePoster)
       debugLog('[HANDSHAKE DEBUG] Created new ReactNativeMessenger instance')
       messenger = this.messenger
@@ -144,6 +166,12 @@ export class EmbeddedWalletApi {
    * Ensure signer is available, creating it from storage if needed
    */
   private async ensureSigner(): Promise<EmbeddedSigner> {
+    // Check if the IframeManager has failed - if so, clear the signer for recreation
+    if (this.iframeManager && (this.iframeManager as any).hasFailed) {
+      debugLog('IframeManager has failed, clearing signer for recreation')
+      this.signer = null
+    }
+
     // Return existing instance if available
     if (this.signer) {
       return this.signer
