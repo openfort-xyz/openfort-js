@@ -131,18 +131,20 @@ window.callFunction = async (jsonData: string) => {
           const configuration = {
             baseConfiguration: {
               publishableKey: request.publishableKey,
+              nativeAppIdentifier: request.nativeAppIdentifier,
+
             },
             shieldConfiguration: request.shieldPublishableKey
               ? {
-                  shieldPublishableKey: request.shieldPublishableKey,
-                  shieldDebug: request.shieldDebug ?? false,
-                }
+                shieldPublishableKey: request.shieldPublishableKey,
+                shieldDebug: request.shieldDebug ?? false,
+              }
               : undefined,
             thirdPartyAuth: request.thirdPartyAuth?.provider
               ? {
-                  provider: request.thirdPartyAuth.provider,
-                  getAccessToken: async () => await window.requestAccessToken(),
-                }
+                provider: request.thirdPartyAuth.provider,
+                getAccessToken: async () => await window.requestAccessToken(),
+              }
               : undefined,
             overrides: {
               backendUrl: request?.backendUrl ?? 'https://api.openfort.io',

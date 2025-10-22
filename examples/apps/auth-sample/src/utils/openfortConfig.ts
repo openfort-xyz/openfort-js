@@ -8,7 +8,7 @@ export const passkeyRpName = process.env.NEXT_PUBLIC_PASSKEY_RP_NAME ?? 'Openfor
 
 const openfort = new Openfort({
   baseConfiguration: {
-    publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY!,
+    publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY!
   },
   shieldConfiguration: {
     shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,

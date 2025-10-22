@@ -114,6 +114,8 @@ export class CreateRequest implements IEventRequest {
 
   thirdPartyTokenType: string | null
 
+  nativeAppIdentifier: string | null
+
   playerID: string | null
 
   constructor(
@@ -132,7 +134,8 @@ export class CreateRequest implements IEventRequest {
     thirdPartyProvider: string | null = null,
     thirdPartyTokenType: string | null = null,
     encryptionSession: string | null = null,
-    passkey: PasskeyDetails | null = null
+    passkey: PasskeyDetails | null = null,
+    nativeAppIdentifier: string | null = null
   ) {
     this.uuid = uuid
     this.accountType = accountType
@@ -150,6 +153,7 @@ export class CreateRequest implements IEventRequest {
     this.shieldURL = shieldURL
     this.encryptionSession = encryptionSession
     this.passkey = passkey
+    this.nativeAppIdentifier = nativeAppIdentifier
   }
 }
 
@@ -184,6 +188,8 @@ export class RecoverRequest implements IEventRequest {
 
   account: string
 
+  nativeAppIdentifier: string | null
+
   constructor(
     uuid: string,
     recovery: ShieldAuthentication,
@@ -198,7 +204,8 @@ export class RecoverRequest implements IEventRequest {
     thirdPartyProvider: string | null = null,
     thirdPartyTokenType: string | null = null,
     encryptionSession: string | null = null,
-    passkey: PasskeyDetails | null = null
+    passkey: PasskeyDetails | null = null,
+    nativeAppIdentifier: string | null = null
   ) {
     this.uuid = uuid
     this.recovery = recovery
@@ -214,6 +221,7 @@ export class RecoverRequest implements IEventRequest {
     this.shieldURL = shieldURL
     this.encryptionSession = encryptionSession
     this.passkey = passkey
+    this.nativeAppIdentifier = nativeAppIdentifier
   }
 }
 
@@ -570,6 +578,7 @@ export interface RequestConfiguration {
   shieldAPIKey: string
   shieldURL: string
   encryptionKey?: string
+  appNativeIdentifier?: string
 }
 
 export interface MessagePoster {
