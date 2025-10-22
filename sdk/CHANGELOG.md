@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.30
+
+### Patch Changes
+
+- [#156](https://github.com/openfort-xyz/openfort-js/pull/156) [`d21ba5e`](https://github.com/openfort-xyz/openfort-js/commit/d21ba5e27ecaa2291658afe2a9c356290b5787a5) Thanks [@jamalavedra](https://github.com/jamalavedra)! - update iframe to use native app identifier
+
 ## 0.10.29
 
 ### Patch Changes
