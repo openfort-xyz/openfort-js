@@ -14,7 +14,8 @@
     "test:unit": "pnpm --filter @openfort/openfort-js test:unit",
     "test:watch": "pnpm --filter @openfort/openfort-js test:watch",
     "preinstall": "pnpx only-allow pnpm",
-    "check": "biome check --write --unsafe",
+    "check": "biome check",
+    "check:fix": "biome check --write --unsafe",
     "check:repo": "sherif",
     "check:types": "tsc --noEmit",
     "clean": "rm -rf sdk/dist",
@@ -65,7 +66,7 @@
     "vm-browserify": "^1.1.2"
   },
   "simple-git-hooks": {
-    "pre-commit": "./.husky/run_gitleaks.sh && pnpm check"
+    "pre-commit": "./.husky/run_gitleaks.sh && pnpm check --staged"
   },
   "workspaces": {
     "packages": [
