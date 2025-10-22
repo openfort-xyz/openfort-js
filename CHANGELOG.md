@@ -1,11 +1,57 @@
-# Changelog
+# @openfort/openfort-js
+
+## 0.10.29
+
+### Patch Changes
+
+- [#146](https://github.com/openfort-xyz/openfort-js/pull/146) [`d5aafca`](https://github.com/openfort-xyz/openfort-js/commit/d5aafcac6a07dce7981af01dd41227bb52177eb0) Thanks [@martimayoral](https://github.com/martimayoral)! - fix linting
+
+## 0.10.28
+
+### Patch Changes
+
+- [#144](https://github.com/openfort-xyz/openfort-js/pull/144) [`6e3d002`](https://github.com/openfort-xyz/openfort-js/commit/6e3d002ae12d6ccddfc282e97fb56daf87dd378b) Thanks [@jamalavedra](https://github.com/jamalavedra)! - native app identifier
+
+## 0.10.27
+
+### Patch Changes
+
+- [#141](https://github.com/openfort-xyz/openfort-js/pull/141) [`cf616a9`](https://github.com/openfort-xyz/openfort-js/commit/cf616a92c6ffbd0d9f1d62996918f48955ce7bcd) Thanks [@jamalavedra](https://github.com/jamalavedra)! - fix race condition in token reset
+
+## 0.10.26
+
+### Patch Changes
+
+- [#138](https://github.com/openfort-xyz/openfort-js/pull/138) [`45a0e41`](https://github.com/openfort-xyz/openfort-js/commit/45a0e41b94e84a38a9e03463f560826f60590fa1) Thanks [@jamalavedra](https://github.com/jamalavedra)! - simplify events, trigger on any sign payload
+
+## 0.10.25
+
+### Patch Changes
+
+- [#136](https://github.com/openfort-xyz/openfort-js/pull/136) [`7d755b9`](https://github.com/openfort-xyz/openfort-js/commit/7d755b95d39daa2414de62594fcc4ab2cf372205) Thanks [@jamalavedra](https://github.com/jamalavedra)! - events for openfortjs
+
+## 0.10.24
+
+### Patch Changes
+
+- [#134](https://github.com/openfort-xyz/openfort-js/pull/134) [`3a96fc0`](https://github.com/openfort-xyz/openfort-js/commit/3a96fc00e2c652587bb033130d8d198195f89e2d) Thanks [@jamalavedra](https://github.com/jamalavedra)! - eoa transaction support
+
+- [#130](https://github.com/openfort-xyz/openfort-js/pull/130) [`4cb6fb8`](https://github.com/openfort-xyz/openfort-js/commit/4cb6fb8b6d31e6e3dec872aae4459907b9b583aa) Thanks [@Huguet57](https://github.com/Huguet57)! - fix sendCalls
+
+## 0.10.23
+
+### Patch Changes
+
+- [#131](https://github.com/openfort-xyz/openfort-js/pull/131) [`79497fd`](https://github.com/openfort-xyz/openfort-js/commit/79497fd0d7e68e1884cdfe15050b0e9431dc29e8) Thanks [@jamalavedra](https://github.com/jamalavedra)! - update sentry logs and remove unused
+
+- [#127](https://github.com/openfort-xyz/openfort-js/pull/127) [`39dc10a`](https://github.com/openfort-xyz/openfort-js/commit/39dc10a5384c4296d7c7563df2e1a13620eca0ff) Thanks [@jamalavedra](https://github.com/jamalavedra)! - decrease sentry errors
 
 ## [0.10.22] - 2025-10-09
 
 ### Chore
 
 - update package manager and linter
-  
+
 ## [0.10.21] - 2025-09-30
 
 ### Chore
