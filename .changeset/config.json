@@ -3,8 +3,7 @@
   "changelog": [
     "@changesets/changelog-github",
     {
-      "repo": "openfort-xyz/openfort-js",
-      "changelogFile": "CHANGELOG.md"
+      "repo": "openfort-xyz/openfort-js"
     }
   ],
   "commit": false,
