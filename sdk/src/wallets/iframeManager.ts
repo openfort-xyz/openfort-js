@@ -580,7 +580,7 @@ export class IframeManager {
       } else {
         debugLog(
           '[HANDSHAKE DEBUG] Connection already initialized ' +
-          `(isInitialized: ${this.isInitialized}, hasConnection: ${!!this.connection})`
+            `(isInitialized: ${this.isInitialized}, hasConnection: ${!!this.connection})`
         )
       }
 
