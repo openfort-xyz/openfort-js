@@ -10,6 +10,6 @@ const config = require('./package.json')
 const file = fs.readFileSync('./src/version.ts', 'utf8')
 const lines = file.split('\n')
 const versionLine = lines.findIndex((line) => line.includes('export const VERSION = '))
-lines[versionLine] = `export const VERSION = '${config.version}';`
+lines[versionLine] = `export const VERSION = '${config.version}'`
 
 fs.writeFileSync('./src/version.ts', lines.join('\n'), 'utf8')
