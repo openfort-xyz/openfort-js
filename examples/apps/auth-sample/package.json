@@ -2,7 +2,7 @@
   "name": "nextjs",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3002",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "check": "biome check --write --unsafe",
