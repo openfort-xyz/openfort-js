@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.29
+
+### Patch Changes
+
+- [#146](https://github.com/openfort-xyz/openfort-js/pull/146) [`d5aafca`](https://github.com/openfort-xyz/openfort-js/commit/d5aafcac6a07dce7981af01dd41227bb52177eb0) Thanks [@martimayoral](https://github.com/martimayoral)! - fix linting
+
 ## 0.10.28
 
 ### Patch Changes
