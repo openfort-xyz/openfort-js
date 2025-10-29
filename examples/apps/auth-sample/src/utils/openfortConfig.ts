@@ -16,6 +16,7 @@ const openfort = new Openfort({
     debug: false,
     passkeyRpName: passkeyRpName,
   },
+  debug: false,
   overrides: {
     shieldUrl: shieldUrl,
     backendUrl: backendUrl,

@@ -60,6 +60,7 @@ export type OpenfortSDKConfiguration = {
   shieldConfiguration?: ShieldConfiguration
   overrides?: SDKOverrides
   thirdPartyAuth?: ThirdPartyAuthConfiguration
+  debug?: boolean
 }
 
 export class SDKConfiguration {
@@ -83,14 +84,17 @@ export class SDKConfiguration {
 
   readonly nativeAppIdentifier?: string
 
+  readonly debug?: boolean
+
   static instance: SDKConfiguration | null = null
 
-  constructor({ baseConfiguration, shieldConfiguration, overrides, thirdPartyAuth }: OpenfortSDKConfiguration) {
+  constructor({ baseConfiguration, shieldConfiguration, overrides, thirdPartyAuth, debug }: OpenfortSDKConfiguration) {
     this.shieldConfiguration = shieldConfiguration
     this.baseConfiguration = baseConfiguration
     this.backendUrl = overrides?.backendUrl || 'https://api.openfort.io'
     this.iframeUrl = overrides?.iframeUrl || 'https://embed.openfort.io'
     this.iframeUrl = `${this.iframeUrl}/iframe/${this.baseConfiguration.publishableKey}`
+    this.debug = debug
     if (shieldConfiguration?.debug) {
       this.iframeUrl = `${this.iframeUrl}?debug=true`
     }
