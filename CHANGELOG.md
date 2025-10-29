@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.31
+
+### Patch Changes
+
+- [#158](https://github.com/openfort-xyz/openfort-js/pull/158) [`7265f03`](https://github.com/openfort-xyz/openfort-js/commit/7265f03588b3532498908fb87ae6d4fc6626fcd3) Thanks [@martimayoral](https://github.com/martimayoral)! - distinct logs between shield and sdk
+
 ## 0.10.30
 
 ### Patch Changes
