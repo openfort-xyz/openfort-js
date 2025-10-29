@@ -308,6 +308,92 @@ export class AuthApi {
     new Authentication('jwt', auth.accessToken, auth.player, auth.refreshToken).save(this.storage)
   }
 
+  async requestEmailOTP(email: string): Promise<void> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'email', provider: 'email' })
+
+    try {
+      await this.authManager.requestEmailOTP(email)
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async loginWithEmailOTP(email: string, otp: string): Promise<AuthResponse> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
+
+    try {
+      const accessToken = await this.authManager.loginWithEmailOTP(email, otp)
+
+      const authData = await this.authManager.getJWTWithAccessToken(accessToken)
+
+      new Authentication('jwt', authData.token, authData.player.id, authData.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, authData)
+
+      return authData
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async requestSMSOTP(phone: string): Promise<void> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'phone', provider: 'phone' })
+
+    try {
+      await this.authManager.requestSMSOTP(phone)
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async loginWithSMSOTP(phone: string, otp: string): Promise<AuthResponse> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'phone', provider: 'phone' })
+
+    try {
+      const accessToken = await this.authManager.loginWithSMSOTP(phone, otp)
+
+      const authData = await this.authManager.getJWTWithAccessToken(accessToken)
+
+      new Authentication('jwt', authData.token, authData.player.id, authData.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, authData)
+
+      return authData
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
+  }
+
   /**
    * Logs the user out by flushing the signer and removing credentials.
    */

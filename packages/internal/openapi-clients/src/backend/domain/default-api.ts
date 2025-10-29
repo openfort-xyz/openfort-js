@@ -22,13 +22,439 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { AccountInfoPost200Response } from '../models';
+// @ts-ignore
+import { AccountInfoPostRequest } from '../models';
+// @ts-ignore
 import { AuthProviderListResponse } from '../models';
+// @ts-ignore
+import { ChangeEmailPost200Response } from '../models';
+// @ts-ignore
+import { ChangeEmailPostRequest } from '../models';
+// @ts-ignore
+import { ChangePasswordPost200Response } from '../models';
+// @ts-ignore
+import { ChangePasswordPostRequest } from '../models';
+// @ts-ignore
+import { DeleteUserCallbackGet200Response } from '../models';
+// @ts-ignore
+import { DeleteUserPost200Response } from '../models';
+// @ts-ignore
+import { DeleteUserPostRequest } from '../models';
+// @ts-ignore
+import { ForgetPasswordPost200Response } from '../models';
+// @ts-ignore
+import { ForgetPasswordPostRequest } from '../models';
+// @ts-ignore
+import { GetSessionGet200Response } from '../models';
+// @ts-ignore
+import { LinkSocialPost200Response } from '../models';
+// @ts-ignore
+import { LinkSocialPostRequest } from '../models';
+// @ts-ignore
+import { ListAccountsGet200ResponseInner } from '../models';
+// @ts-ignore
+import { OkGet200Response } from '../models';
+// @ts-ignore
+import { RefreshTokenPost200Response } from '../models';
+// @ts-ignore
+import { RefreshTokenPostRequest } from '../models';
+// @ts-ignore
+import { ResetPasswordPost200Response } from '../models';
+// @ts-ignore
+import { ResetPasswordPostRequest } from '../models';
+// @ts-ignore
+import { ResetPasswordTokenGet200Response } from '../models';
+// @ts-ignore
+import { RevokeOtherSessionsPost200Response } from '../models';
+// @ts-ignore
+import { RevokeSessionPost200Response } from '../models';
+// @ts-ignore
+import { RevokeSessionPostRequest } from '../models';
+// @ts-ignore
+import { RevokeSessionsPost200Response } from '../models';
+// @ts-ignore
+import { SendVerificationEmailPost200Response } from '../models';
+// @ts-ignore
+import { SendVerificationEmailPost400Response } from '../models';
+// @ts-ignore
+import { SendVerificationEmailPostRequest } from '../models';
+// @ts-ignore
+import { Session } from '../models';
+// @ts-ignore
+import { SignInEmailPost200Response } from '../models';
+// @ts-ignore
+import { SignInEmailPostRequest } from '../models';
+// @ts-ignore
+import { SignOutPost200Response } from '../models';
+// @ts-ignore
+import { SignUpEmailPost200Response } from '../models';
+// @ts-ignore
+import { SignUpEmailPostRequest } from '../models';
+// @ts-ignore
+import { SocialSignIn200Response } from '../models';
+// @ts-ignore
+import { SocialSignIn400Response } from '../models';
+// @ts-ignore
+import { SocialSignIn403Response } from '../models';
+// @ts-ignore
+import { SocialSignInRequest } from '../models';
+// @ts-ignore
+import { UnlinkAccountPostRequest } from '../models';
+// @ts-ignore
+import { UpdateUserPost200Response } from '../models';
+// @ts-ignore
+import { UpdateUserPostRequest } from '../models';
+// @ts-ignore
+import { VerifyEmailGet200Response } from '../models';
 /**
  * DefaultApi - axios parameter creator
  * @export
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * Get the account info provided by the provider
+         * @param {AccountInfoPostRequest} accountInfoPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        accountInfoPost: async (accountInfoPostRequest: AccountInfoPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'accountInfoPostRequest' is not null or undefined
+            assertParamExists('accountInfoPost', 'accountInfoPostRequest', accountInfoPostRequest)
+            const localVarPath = `/account-info`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(accountInfoPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {ChangeEmailPostRequest} changeEmailPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changeEmailPost: async (changeEmailPostRequest: ChangeEmailPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'changeEmailPostRequest' is not null or undefined
+            assertParamExists('changeEmailPost', 'changeEmailPostRequest', changeEmailPostRequest)
+            const localVarPath = `/change-email`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(changeEmailPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Change the password of the user
+         * @param {ChangePasswordPostRequest} changePasswordPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changePasswordPost: async (changePasswordPostRequest: ChangePasswordPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'changePasswordPostRequest' is not null or undefined
+            assertParamExists('changePasswordPost', 'changePasswordPostRequest', changePasswordPostRequest)
+            const localVarPath = `/change-password`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(changePasswordPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Callback to complete user deletion with verification token
+         * @param {string} [token] 
+         * @param {string | null} [callbackURL] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteUserCallbackGet: async (token?: string, callbackURL?: string | null, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/delete-user/callback`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (token !== undefined) {
+                localVarQueryParameter['token'] = token;
+            }
+
+            if (callbackURL !== undefined) {
+                localVarQueryParameter['callbackURL'] = callbackURL;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Delete the user
+         * @param {DeleteUserPostRequest} deleteUserPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteUserPost: async (deleteUserPostRequest: DeleteUserPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'deleteUserPostRequest' is not null or undefined
+            assertParamExists('deleteUserPost', 'deleteUserPostRequest', deleteUserPostRequest)
+            const localVarPath = `/delete-user`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(deleteUserPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Displays an error page
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        errorGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/error`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Send a password reset email to the user
+         * @param {ForgetPasswordPostRequest} forgetPasswordPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        forgetPasswordPost: async (forgetPasswordPostRequest: ForgetPasswordPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'forgetPasswordPostRequest' is not null or undefined
+            assertParamExists('forgetPasswordPost', 'forgetPasswordPostRequest', forgetPasswordPostRequest)
+            const localVarPath = `/forget-password`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(forgetPasswordPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get a valid access token, doing a refresh if needed
+         * @param {RefreshTokenPostRequest} refreshTokenPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAccessTokenPost: async (refreshTokenPostRequest: RefreshTokenPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'refreshTokenPostRequest' is not null or undefined
+            assertParamExists('getAccessTokenPost', 'refreshTokenPostRequest', refreshTokenPostRequest)
+            const localVarPath = `/get-access-token`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(refreshTokenPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get the current session
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/get-session`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Link a social account to the user
+         * @param {LinkSocialPostRequest} linkSocialPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSocialPost: async (linkSocialPostRequest: LinkSocialPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'linkSocialPostRequest' is not null or undefined
+            assertParamExists('linkSocialPost', 'linkSocialPostRequest', linkSocialPostRequest)
+            const localVarPath = `/link-social`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(linkSocialPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * List configured auth methods for the current project environment.
          * @summary List of auth configurations.
@@ -68,6 +494,609 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * List all accounts linked to the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAccountsGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/list-accounts`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * List all active sessions for the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/list-sessions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Check if the API is working
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        okGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/ok`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Refresh the access token using a refresh token
+         * @param {RefreshTokenPostRequest} refreshTokenPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        refreshTokenPost: async (refreshTokenPostRequest: RefreshTokenPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'refreshTokenPostRequest' is not null or undefined
+            assertParamExists('refreshTokenPost', 'refreshTokenPostRequest', refreshTokenPostRequest)
+            const localVarPath = `/refresh-token`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(refreshTokenPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Send a password reset email to the user
+         * @param {ForgetPasswordPostRequest} forgetPasswordPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        requestPasswordResetPost: async (forgetPasswordPostRequest: ForgetPasswordPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'forgetPasswordPostRequest' is not null or undefined
+            assertParamExists('requestPasswordResetPost', 'forgetPasswordPostRequest', forgetPasswordPostRequest)
+            const localVarPath = `/request-password-reset`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(forgetPasswordPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Reset the password for a user
+         * @param {ResetPasswordPostRequest} resetPasswordPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetPasswordPost: async (resetPasswordPostRequest: ResetPasswordPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'resetPasswordPostRequest' is not null or undefined
+            assertParamExists('resetPasswordPost', 'resetPasswordPostRequest', resetPasswordPostRequest)
+            const localVarPath = `/reset-password`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(resetPasswordPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Redirects the user to the callback URL with the token
+         * @param {string} [callbackURL] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetPasswordTokenGet: async (callbackURL?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/reset-password/{token}`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (callbackURL !== undefined) {
+                localVarQueryParameter['callbackURL'] = callbackURL;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Revoke all other sessions for the user except the current one
+         * @param {object} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revokeOtherSessionsPost: async (body?: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/revoke-other-sessions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Revoke a single session
+         * @param {RevokeSessionPostRequest} [revokeSessionPostRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revokeSessionPost: async (revokeSessionPostRequest?: RevokeSessionPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/revoke-session`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(revokeSessionPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Revoke all sessions for the user
+         * @param {object} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revokeSessionsPost: async (body?: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/revoke-sessions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Send a verification email to the user
+         * @param {SendVerificationEmailPostRequest} [sendVerificationEmailPostRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendVerificationEmailPost: async (sendVerificationEmailPostRequest?: SendVerificationEmailPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/send-verification-email`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sendVerificationEmailPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Sign in with email and password
+         * @param {SignInEmailPostRequest} signInEmailPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signInEmailPost: async (signInEmailPostRequest: SignInEmailPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'signInEmailPostRequest' is not null or undefined
+            assertParamExists('signInEmailPost', 'signInEmailPostRequest', signInEmailPostRequest)
+            const localVarPath = `/sign-in/email`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(signInEmailPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Sign out the current user
+         * @param {object} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signOutPost: async (body?: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/sign-out`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Sign up a user using email and password
+         * @param {SignUpEmailPostRequest} [signUpEmailPostRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signUpEmailPost: async (signUpEmailPostRequest?: SignUpEmailPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/sign-up/email`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(signUpEmailPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Sign in with a social provider
+         * @param {SocialSignInRequest} socialSignInRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        socialSignIn: async (socialSignInRequest: SocialSignInRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'socialSignInRequest' is not null or undefined
+            assertParamExists('socialSignIn', 'socialSignInRequest', socialSignInRequest)
+            const localVarPath = `/sign-in/social`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(socialSignInRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Unlink an account
+         * @param {UnlinkAccountPostRequest} unlinkAccountPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unlinkAccountPost: async (unlinkAccountPostRequest: UnlinkAccountPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'unlinkAccountPostRequest' is not null or undefined
+            assertParamExists('unlinkAccountPost', 'unlinkAccountPostRequest', unlinkAccountPostRequest)
+            const localVarPath = `/unlink-account`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(unlinkAccountPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Update the current user
+         * @param {UpdateUserPostRequest} [updateUserPostRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserPost: async (updateUserPostRequest?: UpdateUserPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/update-user`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateUserPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Verify the email of the user
+         * @param {string} token The token to verify the email
+         * @param {string} [callbackURL] The URL to redirect to after email verification
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        verifyEmailGet: async (token: string, callbackURL?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('verifyEmailGet', 'token', token)
+            const localVarPath = `/verify-email`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (token !== undefined) {
+                localVarQueryParameter['token'] = token;
+            }
+
+            if (callbackURL !== undefined) {
+                localVarQueryParameter['callbackURL'] = callbackURL;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -79,6 +1108,105 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
         /**
+         * Get the account info provided by the provider
+         * @param {AccountInfoPostRequest} accountInfoPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async accountInfoPost(accountInfoPostRequest: AccountInfoPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountInfoPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.accountInfoPost(accountInfoPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {ChangeEmailPostRequest} changeEmailPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async changeEmailPost(changeEmailPostRequest: ChangeEmailPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChangeEmailPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.changeEmailPost(changeEmailPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Change the password of the user
+         * @param {ChangePasswordPostRequest} changePasswordPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async changePasswordPost(changePasswordPostRequest: ChangePasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChangePasswordPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.changePasswordPost(changePasswordPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Callback to complete user deletion with verification token
+         * @param {string} [token] 
+         * @param {string | null} [callbackURL] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteUserCallbackGet(token?: string, callbackURL?: string | null, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteUserCallbackGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUserCallbackGet(token, callbackURL, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Delete the user
+         * @param {DeleteUserPostRequest} deleteUserPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteUserPost(deleteUserPostRequest: DeleteUserPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteUserPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUserPost(deleteUserPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Displays an error page
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async errorGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.errorGet(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Send a password reset email to the user
+         * @param {ForgetPasswordPostRequest} forgetPasswordPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async forgetPasswordPost(forgetPasswordPostRequest: ForgetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ForgetPasswordPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.forgetPasswordPost(forgetPasswordPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Get a valid access token, doing a refresh if needed
+         * @param {RefreshTokenPostRequest} refreshTokenPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAccessTokenPost(refreshTokenPostRequest: RefreshTokenPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RefreshTokenPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccessTokenPost(refreshTokenPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Get the current session
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSessionGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSessionGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSessionGet(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Link a social account to the user
+         * @param {LinkSocialPostRequest} linkSocialPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkSocialPost(linkSocialPostRequest: LinkSocialPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkSocialPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkSocialPost(linkSocialPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * List configured auth methods for the current project environment.
          * @summary List of auth configurations.
          * @param {boolean} [enabled] 
@@ -87,6 +1215,184 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async list(enabled?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthProviderListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.list(enabled, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * List all accounts linked to the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listAccountsGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ListAccountsGet200ResponseInner>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listAccountsGet(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * List all active sessions for the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listSessionsGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Session>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listSessionsGet(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Check if the API is working
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async okGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OkGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.okGet(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Refresh the access token using a refresh token
+         * @param {RefreshTokenPostRequest} refreshTokenPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async refreshTokenPost(refreshTokenPostRequest: RefreshTokenPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RefreshTokenPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.refreshTokenPost(refreshTokenPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Send a password reset email to the user
+         * @param {ForgetPasswordPostRequest} forgetPasswordPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async requestPasswordResetPost(forgetPasswordPostRequest: ForgetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ForgetPasswordPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.requestPasswordResetPost(forgetPasswordPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Reset the password for a user
+         * @param {ResetPasswordPostRequest} resetPasswordPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async resetPasswordPost(resetPasswordPostRequest: ResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.resetPasswordPost(resetPasswordPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Redirects the user to the callback URL with the token
+         * @param {string} [callbackURL] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async resetPasswordTokenGet(callbackURL?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordTokenGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.resetPasswordTokenGet(callbackURL, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Revoke all other sessions for the user except the current one
+         * @param {object} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async revokeOtherSessionsPost(body?: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RevokeOtherSessionsPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.revokeOtherSessionsPost(body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Revoke a single session
+         * @param {RevokeSessionPostRequest} [revokeSessionPostRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async revokeSessionPost(revokeSessionPostRequest?: RevokeSessionPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RevokeSessionPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.revokeSessionPost(revokeSessionPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Revoke all sessions for the user
+         * @param {object} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async revokeSessionsPost(body?: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RevokeSessionsPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.revokeSessionsPost(body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Send a verification email to the user
+         * @param {SendVerificationEmailPostRequest} [sendVerificationEmailPostRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async sendVerificationEmailPost(sendVerificationEmailPostRequest?: SendVerificationEmailPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SendVerificationEmailPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.sendVerificationEmailPost(sendVerificationEmailPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Sign in with email and password
+         * @param {SignInEmailPostRequest} signInEmailPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async signInEmailPost(signInEmailPostRequest: SignInEmailPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignInEmailPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signInEmailPost(signInEmailPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Sign out the current user
+         * @param {object} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async signOutPost(body?: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignOutPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signOutPost(body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Sign up a user using email and password
+         * @param {SignUpEmailPostRequest} [signUpEmailPostRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async signUpEmailPost(signUpEmailPostRequest?: SignUpEmailPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignUpEmailPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signUpEmailPost(signUpEmailPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Sign in with a social provider
+         * @param {SocialSignInRequest} socialSignInRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async socialSignIn(socialSignInRequest: SocialSignInRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SocialSignIn200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.socialSignIn(socialSignInRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Unlink an account
+         * @param {UnlinkAccountPostRequest} unlinkAccountPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async unlinkAccountPost(unlinkAccountPostRequest: UnlinkAccountPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkAccountPost(unlinkAccountPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Update the current user
+         * @param {UpdateUserPostRequest} [updateUserPostRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateUserPost(updateUserPostRequest?: UpdateUserPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UpdateUserPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateUserPost(updateUserPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Verify the email of the user
+         * @param {string} token The token to verify the email
+         * @param {string} [callbackURL] The URL to redirect to after email verification
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async verifyEmailGet(token: string, callbackURL?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VerifyEmailGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyEmailGet(token, callbackURL, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -100,6 +1406,94 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = DefaultApiFp(configuration)
     return {
         /**
+         * Get the account info provided by the provider
+         * @param {DefaultApiAccountInfoPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        accountInfoPost(requestParameters: DefaultApiAccountInfoPostRequest, options?: AxiosRequestConfig): AxiosPromise<AccountInfoPost200Response> {
+            return localVarFp.accountInfoPost(requestParameters.accountInfoPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {DefaultApiChangeEmailPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changeEmailPost(requestParameters: DefaultApiChangeEmailPostRequest, options?: AxiosRequestConfig): AxiosPromise<ChangeEmailPost200Response> {
+            return localVarFp.changeEmailPost(requestParameters.changeEmailPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Change the password of the user
+         * @param {DefaultApiChangePasswordPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        changePasswordPost(requestParameters: DefaultApiChangePasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<ChangePasswordPost200Response> {
+            return localVarFp.changePasswordPost(requestParameters.changePasswordPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Callback to complete user deletion with verification token
+         * @param {DefaultApiDeleteUserCallbackGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteUserCallbackGet(requestParameters: DefaultApiDeleteUserCallbackGetRequest = {}, options?: AxiosRequestConfig): AxiosPromise<DeleteUserCallbackGet200Response> {
+            return localVarFp.deleteUserCallbackGet(requestParameters.token, requestParameters.callbackURL, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Delete the user
+         * @param {DefaultApiDeleteUserPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteUserPost(requestParameters: DefaultApiDeleteUserPostRequest, options?: AxiosRequestConfig): AxiosPromise<DeleteUserPost200Response> {
+            return localVarFp.deleteUserPost(requestParameters.deleteUserPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Displays an error page
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        errorGet(options?: AxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.errorGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Send a password reset email to the user
+         * @param {DefaultApiForgetPasswordPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        forgetPasswordPost(requestParameters: DefaultApiForgetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<ForgetPasswordPost200Response> {
+            return localVarFp.forgetPasswordPost(requestParameters.forgetPasswordPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get a valid access token, doing a refresh if needed
+         * @param {DefaultApiGetAccessTokenPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAccessTokenPost(requestParameters: DefaultApiGetAccessTokenPostRequest, options?: AxiosRequestConfig): AxiosPromise<RefreshTokenPost200Response> {
+            return localVarFp.getAccessTokenPost(requestParameters.refreshTokenPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get the current session
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSessionGet(options?: AxiosRequestConfig): AxiosPromise<GetSessionGet200Response> {
+            return localVarFp.getSessionGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Link a social account to the user
+         * @param {DefaultApiLinkSocialPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSocialPost(requestParameters: DefaultApiLinkSocialPostRequest, options?: AxiosRequestConfig): AxiosPromise<LinkSocialPost200Response> {
+            return localVarFp.linkSocialPost(requestParameters.linkSocialPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * List configured auth methods for the current project environment.
          * @summary List of auth configurations.
          * @param {DefaultApiListRequest} requestParameters Request parameters.
@@ -109,8 +1503,286 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         list(requestParameters: DefaultApiListRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AuthProviderListResponse> {
             return localVarFp.list(requestParameters.enabled, options).then((request) => request(axios, basePath));
         },
+        /**
+         * List all accounts linked to the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listAccountsGet(options?: AxiosRequestConfig): AxiosPromise<Array<ListAccountsGet200ResponseInner>> {
+            return localVarFp.listAccountsGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * List all active sessions for the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listSessionsGet(options?: AxiosRequestConfig): AxiosPromise<Array<Session>> {
+            return localVarFp.listSessionsGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Check if the API is working
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        okGet(options?: AxiosRequestConfig): AxiosPromise<OkGet200Response> {
+            return localVarFp.okGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Refresh the access token using a refresh token
+         * @param {DefaultApiRefreshTokenPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        refreshTokenPost(requestParameters: DefaultApiRefreshTokenPostRequest, options?: AxiosRequestConfig): AxiosPromise<RefreshTokenPost200Response> {
+            return localVarFp.refreshTokenPost(requestParameters.refreshTokenPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Send a password reset email to the user
+         * @param {DefaultApiRequestPasswordResetPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        requestPasswordResetPost(requestParameters: DefaultApiRequestPasswordResetPostRequest, options?: AxiosRequestConfig): AxiosPromise<ForgetPasswordPost200Response> {
+            return localVarFp.requestPasswordResetPost(requestParameters.forgetPasswordPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Reset the password for a user
+         * @param {DefaultApiResetPasswordPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetPasswordPost(requestParameters: DefaultApiResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordPost200Response> {
+            return localVarFp.resetPasswordPost(requestParameters.resetPasswordPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Redirects the user to the callback URL with the token
+         * @param {DefaultApiResetPasswordTokenGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetPasswordTokenGet(requestParameters: DefaultApiResetPasswordTokenGetRequest = {}, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordTokenGet200Response> {
+            return localVarFp.resetPasswordTokenGet(requestParameters.callbackURL, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Revoke all other sessions for the user except the current one
+         * @param {DefaultApiRevokeOtherSessionsPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revokeOtherSessionsPost(requestParameters: DefaultApiRevokeOtherSessionsPostRequest = {}, options?: AxiosRequestConfig): AxiosPromise<RevokeOtherSessionsPost200Response> {
+            return localVarFp.revokeOtherSessionsPost(requestParameters.body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Revoke a single session
+         * @param {DefaultApiRevokeSessionPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revokeSessionPost(requestParameters: DefaultApiRevokeSessionPostRequest = {}, options?: AxiosRequestConfig): AxiosPromise<RevokeSessionPost200Response> {
+            return localVarFp.revokeSessionPost(requestParameters.revokeSessionPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Revoke all sessions for the user
+         * @param {DefaultApiRevokeSessionsPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        revokeSessionsPost(requestParameters: DefaultApiRevokeSessionsPostRequest = {}, options?: AxiosRequestConfig): AxiosPromise<RevokeSessionsPost200Response> {
+            return localVarFp.revokeSessionsPost(requestParameters.body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Send a verification email to the user
+         * @param {DefaultApiSendVerificationEmailPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendVerificationEmailPost(requestParameters: DefaultApiSendVerificationEmailPostRequest = {}, options?: AxiosRequestConfig): AxiosPromise<SendVerificationEmailPost200Response> {
+            return localVarFp.sendVerificationEmailPost(requestParameters.sendVerificationEmailPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Sign in with email and password
+         * @param {DefaultApiSignInEmailPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signInEmailPost(requestParameters: DefaultApiSignInEmailPostRequest, options?: AxiosRequestConfig): AxiosPromise<SignInEmailPost200Response> {
+            return localVarFp.signInEmailPost(requestParameters.signInEmailPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Sign out the current user
+         * @param {DefaultApiSignOutPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signOutPost(requestParameters: DefaultApiSignOutPostRequest = {}, options?: AxiosRequestConfig): AxiosPromise<SignOutPost200Response> {
+            return localVarFp.signOutPost(requestParameters.body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Sign up a user using email and password
+         * @param {DefaultApiSignUpEmailPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signUpEmailPost(requestParameters: DefaultApiSignUpEmailPostRequest = {}, options?: AxiosRequestConfig): AxiosPromise<SignUpEmailPost200Response> {
+            return localVarFp.signUpEmailPost(requestParameters.signUpEmailPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Sign in with a social provider
+         * @param {DefaultApiSocialSignInRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        socialSignIn(requestParameters: DefaultApiSocialSignInRequest, options?: AxiosRequestConfig): AxiosPromise<SocialSignIn200Response> {
+            return localVarFp.socialSignIn(requestParameters.socialSignInRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Unlink an account
+         * @param {DefaultApiUnlinkAccountPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unlinkAccountPost(requestParameters: DefaultApiUnlinkAccountPostRequest, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordPost200Response> {
+            return localVarFp.unlinkAccountPost(requestParameters.unlinkAccountPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Update the current user
+         * @param {DefaultApiUpdateUserPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateUserPost(requestParameters: DefaultApiUpdateUserPostRequest = {}, options?: AxiosRequestConfig): AxiosPromise<UpdateUserPost200Response> {
+            return localVarFp.updateUserPost(requestParameters.updateUserPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Verify the email of the user
+         * @param {DefaultApiVerifyEmailGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        verifyEmailGet(requestParameters: DefaultApiVerifyEmailGetRequest, options?: AxiosRequestConfig): AxiosPromise<VerifyEmailGet200Response> {
+            return localVarFp.verifyEmailGet(requestParameters.token, requestParameters.callbackURL, options).then((request) => request(axios, basePath));
+        },
     };
 };
+
+/**
+ * Request parameters for accountInfoPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiAccountInfoPostRequest
+ */
+export interface DefaultApiAccountInfoPostRequest {
+    /**
+     * 
+     * @type {AccountInfoPostRequest}
+     * @memberof DefaultApiAccountInfoPost
+     */
+    readonly accountInfoPostRequest: AccountInfoPostRequest
+}
+
+/**
+ * Request parameters for changeEmailPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiChangeEmailPostRequest
+ */
+export interface DefaultApiChangeEmailPostRequest {
+    /**
+     * 
+     * @type {ChangeEmailPostRequest}
+     * @memberof DefaultApiChangeEmailPost
+     */
+    readonly changeEmailPostRequest: ChangeEmailPostRequest
+}
+
+/**
+ * Request parameters for changePasswordPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiChangePasswordPostRequest
+ */
+export interface DefaultApiChangePasswordPostRequest {
+    /**
+     * 
+     * @type {ChangePasswordPostRequest}
+     * @memberof DefaultApiChangePasswordPost
+     */
+    readonly changePasswordPostRequest: ChangePasswordPostRequest
+}
+
+/**
+ * Request parameters for deleteUserCallbackGet operation in DefaultApi.
+ * @export
+ * @interface DefaultApiDeleteUserCallbackGetRequest
+ */
+export interface DefaultApiDeleteUserCallbackGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof DefaultApiDeleteUserCallbackGet
+     */
+    readonly token?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof DefaultApiDeleteUserCallbackGet
+     */
+    readonly callbackURL?: string | null
+}
+
+/**
+ * Request parameters for deleteUserPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiDeleteUserPostRequest
+ */
+export interface DefaultApiDeleteUserPostRequest {
+    /**
+     * 
+     * @type {DeleteUserPostRequest}
+     * @memberof DefaultApiDeleteUserPost
+     */
+    readonly deleteUserPostRequest: DeleteUserPostRequest
+}
+
+/**
+ * Request parameters for forgetPasswordPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiForgetPasswordPostRequest
+ */
+export interface DefaultApiForgetPasswordPostRequest {
+    /**
+     * 
+     * @type {ForgetPasswordPostRequest}
+     * @memberof DefaultApiForgetPasswordPost
+     */
+    readonly forgetPasswordPostRequest: ForgetPasswordPostRequest
+}
+
+/**
+ * Request parameters for getAccessTokenPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiGetAccessTokenPostRequest
+ */
+export interface DefaultApiGetAccessTokenPostRequest {
+    /**
+     * 
+     * @type {RefreshTokenPostRequest}
+     * @memberof DefaultApiGetAccessTokenPost
+     */
+    readonly refreshTokenPostRequest: RefreshTokenPostRequest
+}
+
+/**
+ * Request parameters for linkSocialPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiLinkSocialPostRequest
+ */
+export interface DefaultApiLinkSocialPostRequest {
+    /**
+     * 
+     * @type {LinkSocialPostRequest}
+     * @memberof DefaultApiLinkSocialPost
+     */
+    readonly linkSocialPostRequest: LinkSocialPostRequest
+}
 
 /**
  * Request parameters for list operation in DefaultApi.
@@ -127,12 +1799,337 @@ export interface DefaultApiListRequest {
 }
 
 /**
+ * Request parameters for refreshTokenPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiRefreshTokenPostRequest
+ */
+export interface DefaultApiRefreshTokenPostRequest {
+    /**
+     * 
+     * @type {RefreshTokenPostRequest}
+     * @memberof DefaultApiRefreshTokenPost
+     */
+    readonly refreshTokenPostRequest: RefreshTokenPostRequest
+}
+
+/**
+ * Request parameters for requestPasswordResetPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiRequestPasswordResetPostRequest
+ */
+export interface DefaultApiRequestPasswordResetPostRequest {
+    /**
+     * 
+     * @type {ForgetPasswordPostRequest}
+     * @memberof DefaultApiRequestPasswordResetPost
+     */
+    readonly forgetPasswordPostRequest: ForgetPasswordPostRequest
+}
+
+/**
+ * Request parameters for resetPasswordPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiResetPasswordPostRequest
+ */
+export interface DefaultApiResetPasswordPostRequest {
+    /**
+     * 
+     * @type {ResetPasswordPostRequest}
+     * @memberof DefaultApiResetPasswordPost
+     */
+    readonly resetPasswordPostRequest: ResetPasswordPostRequest
+}
+
+/**
+ * Request parameters for resetPasswordTokenGet operation in DefaultApi.
+ * @export
+ * @interface DefaultApiResetPasswordTokenGetRequest
+ */
+export interface DefaultApiResetPasswordTokenGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof DefaultApiResetPasswordTokenGet
+     */
+    readonly callbackURL?: string
+}
+
+/**
+ * Request parameters for revokeOtherSessionsPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiRevokeOtherSessionsPostRequest
+ */
+export interface DefaultApiRevokeOtherSessionsPostRequest {
+    /**
+     * 
+     * @type {object}
+     * @memberof DefaultApiRevokeOtherSessionsPost
+     */
+    readonly body?: object
+}
+
+/**
+ * Request parameters for revokeSessionPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiRevokeSessionPostRequest
+ */
+export interface DefaultApiRevokeSessionPostRequest {
+    /**
+     * 
+     * @type {RevokeSessionPostRequest}
+     * @memberof DefaultApiRevokeSessionPost
+     */
+    readonly revokeSessionPostRequest?: RevokeSessionPostRequest
+}
+
+/**
+ * Request parameters for revokeSessionsPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiRevokeSessionsPostRequest
+ */
+export interface DefaultApiRevokeSessionsPostRequest {
+    /**
+     * 
+     * @type {object}
+     * @memberof DefaultApiRevokeSessionsPost
+     */
+    readonly body?: object
+}
+
+/**
+ * Request parameters for sendVerificationEmailPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiSendVerificationEmailPostRequest
+ */
+export interface DefaultApiSendVerificationEmailPostRequest {
+    /**
+     * 
+     * @type {SendVerificationEmailPostRequest}
+     * @memberof DefaultApiSendVerificationEmailPost
+     */
+    readonly sendVerificationEmailPostRequest?: SendVerificationEmailPostRequest
+}
+
+/**
+ * Request parameters for signInEmailPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiSignInEmailPostRequest
+ */
+export interface DefaultApiSignInEmailPostRequest {
+    /**
+     * 
+     * @type {SignInEmailPostRequest}
+     * @memberof DefaultApiSignInEmailPost
+     */
+    readonly signInEmailPostRequest: SignInEmailPostRequest
+}
+
+/**
+ * Request parameters for signOutPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiSignOutPostRequest
+ */
+export interface DefaultApiSignOutPostRequest {
+    /**
+     * 
+     * @type {object}
+     * @memberof DefaultApiSignOutPost
+     */
+    readonly body?: object
+}
+
+/**
+ * Request parameters for signUpEmailPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiSignUpEmailPostRequest
+ */
+export interface DefaultApiSignUpEmailPostRequest {
+    /**
+     * 
+     * @type {SignUpEmailPostRequest}
+     * @memberof DefaultApiSignUpEmailPost
+     */
+    readonly signUpEmailPostRequest?: SignUpEmailPostRequest
+}
+
+/**
+ * Request parameters for socialSignIn operation in DefaultApi.
+ * @export
+ * @interface DefaultApiSocialSignInRequest
+ */
+export interface DefaultApiSocialSignInRequest {
+    /**
+     * 
+     * @type {SocialSignInRequest}
+     * @memberof DefaultApiSocialSignIn
+     */
+    readonly socialSignInRequest: SocialSignInRequest
+}
+
+/**
+ * Request parameters for unlinkAccountPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiUnlinkAccountPostRequest
+ */
+export interface DefaultApiUnlinkAccountPostRequest {
+    /**
+     * 
+     * @type {UnlinkAccountPostRequest}
+     * @memberof DefaultApiUnlinkAccountPost
+     */
+    readonly unlinkAccountPostRequest: UnlinkAccountPostRequest
+}
+
+/**
+ * Request parameters for updateUserPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiUpdateUserPostRequest
+ */
+export interface DefaultApiUpdateUserPostRequest {
+    /**
+     * 
+     * @type {UpdateUserPostRequest}
+     * @memberof DefaultApiUpdateUserPost
+     */
+    readonly updateUserPostRequest?: UpdateUserPostRequest
+}
+
+/**
+ * Request parameters for verifyEmailGet operation in DefaultApi.
+ * @export
+ * @interface DefaultApiVerifyEmailGetRequest
+ */
+export interface DefaultApiVerifyEmailGetRequest {
+    /**
+     * The token to verify the email
+     * @type {string}
+     * @memberof DefaultApiVerifyEmailGet
+     */
+    readonly token: string
+
+    /**
+     * The URL to redirect to after email verification
+     * @type {string}
+     * @memberof DefaultApiVerifyEmailGet
+     */
+    readonly callbackURL?: string
+}
+
+/**
  * DefaultApi - object-oriented interface
  * @export
  * @class DefaultApi
  * @extends {BaseAPI}
  */
 export class DefaultApi extends BaseAPI {
+    /**
+     * Get the account info provided by the provider
+     * @param {DefaultApiAccountInfoPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public accountInfoPost(requestParameters: DefaultApiAccountInfoPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).accountInfoPost(requestParameters.accountInfoPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {DefaultApiChangeEmailPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public changeEmailPost(requestParameters: DefaultApiChangeEmailPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).changeEmailPost(requestParameters.changeEmailPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Change the password of the user
+     * @param {DefaultApiChangePasswordPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public changePasswordPost(requestParameters: DefaultApiChangePasswordPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).changePasswordPost(requestParameters.changePasswordPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Callback to complete user deletion with verification token
+     * @param {DefaultApiDeleteUserCallbackGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteUserCallbackGet(requestParameters: DefaultApiDeleteUserCallbackGetRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deleteUserCallbackGet(requestParameters.token, requestParameters.callbackURL, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Delete the user
+     * @param {DefaultApiDeleteUserPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteUserPost(requestParameters: DefaultApiDeleteUserPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deleteUserPost(requestParameters.deleteUserPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Displays an error page
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public errorGet(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).errorGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Send a password reset email to the user
+     * @param {DefaultApiForgetPasswordPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public forgetPasswordPost(requestParameters: DefaultApiForgetPasswordPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).forgetPasswordPost(requestParameters.forgetPasswordPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get a valid access token, doing a refresh if needed
+     * @param {DefaultApiGetAccessTokenPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getAccessTokenPost(requestParameters: DefaultApiGetAccessTokenPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getAccessTokenPost(requestParameters.refreshTokenPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get the current session
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getSessionGet(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getSessionGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Link a social account to the user
+     * @param {DefaultApiLinkSocialPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public linkSocialPost(requestParameters: DefaultApiLinkSocialPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).linkSocialPost(requestParameters.linkSocialPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * List configured auth methods for the current project environment.
      * @summary List of auth configurations.
@@ -143,6 +2140,201 @@ export class DefaultApi extends BaseAPI {
      */
     public list(requestParameters: DefaultApiListRequest = {}, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).list(requestParameters.enabled, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * List all accounts linked to the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public listAccountsGet(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).listAccountsGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * List all active sessions for the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public listSessionsGet(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).listSessionsGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Check if the API is working
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public okGet(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).okGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Refresh the access token using a refresh token
+     * @param {DefaultApiRefreshTokenPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public refreshTokenPost(requestParameters: DefaultApiRefreshTokenPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).refreshTokenPost(requestParameters.refreshTokenPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Send a password reset email to the user
+     * @param {DefaultApiRequestPasswordResetPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public requestPasswordResetPost(requestParameters: DefaultApiRequestPasswordResetPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).requestPasswordResetPost(requestParameters.forgetPasswordPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Reset the password for a user
+     * @param {DefaultApiResetPasswordPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public resetPasswordPost(requestParameters: DefaultApiResetPasswordPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).resetPasswordPost(requestParameters.resetPasswordPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Redirects the user to the callback URL with the token
+     * @param {DefaultApiResetPasswordTokenGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public resetPasswordTokenGet(requestParameters: DefaultApiResetPasswordTokenGetRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).resetPasswordTokenGet(requestParameters.callbackURL, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Revoke all other sessions for the user except the current one
+     * @param {DefaultApiRevokeOtherSessionsPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public revokeOtherSessionsPost(requestParameters: DefaultApiRevokeOtherSessionsPostRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).revokeOtherSessionsPost(requestParameters.body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Revoke a single session
+     * @param {DefaultApiRevokeSessionPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public revokeSessionPost(requestParameters: DefaultApiRevokeSessionPostRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).revokeSessionPost(requestParameters.revokeSessionPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Revoke all sessions for the user
+     * @param {DefaultApiRevokeSessionsPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public revokeSessionsPost(requestParameters: DefaultApiRevokeSessionsPostRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).revokeSessionsPost(requestParameters.body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Send a verification email to the user
+     * @param {DefaultApiSendVerificationEmailPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public sendVerificationEmailPost(requestParameters: DefaultApiSendVerificationEmailPostRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).sendVerificationEmailPost(requestParameters.sendVerificationEmailPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Sign in with email and password
+     * @param {DefaultApiSignInEmailPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public signInEmailPost(requestParameters: DefaultApiSignInEmailPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).signInEmailPost(requestParameters.signInEmailPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Sign out the current user
+     * @param {DefaultApiSignOutPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public signOutPost(requestParameters: DefaultApiSignOutPostRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).signOutPost(requestParameters.body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Sign up a user using email and password
+     * @param {DefaultApiSignUpEmailPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public signUpEmailPost(requestParameters: DefaultApiSignUpEmailPostRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).signUpEmailPost(requestParameters.signUpEmailPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Sign in with a social provider
+     * @param {DefaultApiSocialSignInRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public socialSignIn(requestParameters: DefaultApiSocialSignInRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).socialSignIn(requestParameters.socialSignInRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Unlink an account
+     * @param {DefaultApiUnlinkAccountPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public unlinkAccountPost(requestParameters: DefaultApiUnlinkAccountPostRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).unlinkAccountPost(requestParameters.unlinkAccountPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Update the current user
+     * @param {DefaultApiUpdateUserPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public updateUserPost(requestParameters: DefaultApiUpdateUserPostRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).updateUserPost(requestParameters.updateUserPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Verify the email of the user
+     * @param {DefaultApiVerifyEmailGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public verifyEmailGet(requestParameters: DefaultApiVerifyEmailGetRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).verifyEmailGet(requestParameters.token, requestParameters.callbackURL, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

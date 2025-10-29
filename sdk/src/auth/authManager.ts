@@ -532,13 +532,13 @@ export class AuthManager {
 
     if (!decodedToken) {
       // Token is malformed, try to refresh
-      return this.refreshTokens(authentication.refreshToken)
+      return this.refreshTokens(authentication.refreshToken, forceRefresh)
     }
 
     // Check if token is expired
     if (decodedToken.isExpired()) {
       debugLog('Token expired, refreshing...')
-      return this.refreshTokens(authentication.refreshToken)
+      return this.refreshTokens(authentication.refreshToken, forceRefresh)
     }
 
     // Token appears valid (not expired), return it
@@ -551,10 +551,27 @@ export class AuthManager {
   }
 
   /**
+   * Check type of received refresh token and calls appropriate method to refresh JWT token
+   */
+  private async refreshTokens(refreshToken: string, forceRefresh?: boolean): Promise<Auth> {
+    if (this.isTokenJWT(refreshToken)) {
+      return this.refreshJWTTokens(refreshToken, forceRefresh)
+    } else {
+      const authResponse = await this.getJWTWithAccessToken(refreshToken)
+
+      return {
+        player: authResponse.player.id,
+        accessToken: authResponse.token,
+        refreshToken: refreshToken,
+      }
+    }
+  }
+
+  /**
    * Refresh tokens with the server
    * Server will verify the refresh token and issue new tokens
    */
-  private async refreshTokens(refreshToken: string, forceRefresh?: boolean): Promise<Auth> {
+  private async refreshJWTTokens(refreshToken: string, forceRefresh?: boolean): Promise<Auth> {
     const request = {
       refreshTokenRequest: {
         refreshToken,
@@ -813,5 +830,179 @@ export class AuthManager {
       },
       { default: OpenfortErrorType.AUTHENTICATION_ERROR }
     )
+  }
+
+  public async requestEmailOTP(email: string): Promise<void> {
+    const request = {
+      emailOtpSendVerificationOtpPostRequest: {
+        email,
+        type: 'sign-in',
+      },
+    }
+
+    await withOpenfortError(
+      async () => {
+        const response = await this.backendApiClients.emailOTPApi.emailOtpSendVerificationOtpPost(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
+        return response.data
+      },
+      {
+        default: OpenfortErrorType.REQUEST_EMAIL_OTP_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        401: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+      },
+      (error) => {
+        sentry.captureAxiosError('loginWithIdToken', error)
+      }
+    )
+  }
+
+  public async loginWithEmailOTP(email: string, otp: string): Promise<string> {
+    const request = {
+      signInEmailOtpPostRequest: {
+        email,
+        otp,
+      },
+    }
+
+    return await withOpenfortError<string>(
+      async () => {
+        const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
+        return response.data.token
+      },
+      {
+        default: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        401: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+      },
+      (error) => {
+        sentry.captureAxiosError('loginWithIdToken', error)
+      }
+    )
+  }
+
+  public async requestSMSOTP(phoneNumber: string): Promise<void> {
+    const request = {
+      phoneNumberSendOtpPostRequest: {
+        phoneNumber,
+      },
+    }
+
+    await withOpenfortError(
+      async () => {
+        const response = await this.backendApiClients.smsOTPApi.phoneNumberSendOtpPost(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
+        return response.data
+      },
+      {
+        default: OpenfortErrorType.REQUEST_SMS_OTP_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        401: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+      },
+      (error) => {
+        sentry.captureAxiosError('loginWithIdToken', error)
+      }
+    )
+  }
+
+  public async loginWithSMSOTP(phoneNumber: string, code: string): Promise<string> {
+    const request = {
+      phoneNumberVerifyPostRequest: {
+        phoneNumber,
+        code,
+      },
+    }
+
+    return await withOpenfortError<string>(
+      async () => {
+        const response = await this.backendApiClients.smsOTPApi.phoneNumberVerifyPost(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
+        if (!response.data.token) {
+          throw new Error('Code is not verified')
+        }
+        return response.data.token
+      },
+      {
+        default: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        401: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+      },
+      (error) => {
+        sentry.captureAxiosError('loginWithIdToken', error)
+      }
+    )
+  }
+
+  public async getJWTWithAccessToken(accessToken: string): Promise<AuthResponse> {
+    return await withOpenfortError<AuthResponse>(
+      async () => {
+        // Implementing raw GET call here because response for this endpoint is changed on the API side,
+        // and those changes are not showed on generated OpenAPI files
+        const axios = (await import('axios')).default
+        const basePath = this.backendApiClients.config.backend.basePath
+        const response = await axios.get(`${basePath}/api/auth/token`, {
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        })
+        return {
+          player: response.data.player,
+          token: response.data.token,
+          refreshToken: response.data.refreshToken,
+        }
+      },
+      {
+        default: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        401: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+      },
+      (error) => {
+        sentry.captureAxiosError('getJWTWithAccessToken', error)
+      }
+    )
+  }
+
+  private isTokenJWT(token: string): boolean {
+    const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/
+
+    if (!jwtPattern.test(token)) {
+      return false
+    }
+
+    try {
+      const parts = token.split('.')
+
+      // Decode header and payload (skip signature verification for now)
+      const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')))
+      JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+
+      // Check for typical JWT properties
+      return header.alg !== undefined && header.typ === 'JWT'
+    } catch (_e) {
+      return false
+    }
   }
 }

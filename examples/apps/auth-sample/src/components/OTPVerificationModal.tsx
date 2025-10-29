@@ -12,6 +12,8 @@ interface OTPVerificationModalProps {
   onResendOTP: () => Promise<void>
   email: string
   isLoading?: boolean
+  type?: 'email' | 'phone'
+  codeLength?: 6 | 9
 }
 
 export function OTPVerificationModal({
@@ -21,6 +23,8 @@ export function OTPVerificationModal({
   onResendOTP,
   email,
   isLoading = false,
+  type = 'email',
+  codeLength = 9,
 }: OTPVerificationModalProps) {
   const [otpCode, setOtpCode] = useState('')
   const [error, setError] = useState('')
@@ -51,7 +55,7 @@ export function OTPVerificationModal({
       return
     }
 
-    if (otpCode.trim().length < 9) {
+    if (otpCode.trim().length < codeLength) {
       setError('Please enter the complete verification code')
       return
     }
@@ -88,7 +92,7 @@ export function OTPVerificationModal({
   }
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 9) // Only numbers, max 9 digits
+    const value = e.target.value.replace(/\D/g, '').slice(0, codeLength) // Only numbers, max codeLength digits
     setOtpCode(value)
   }
 
@@ -98,7 +102,8 @@ export function OTPVerificationModal({
         <DialogHeader>
           <DialogTitle>Enter Verification Code</DialogTitle>
           <DialogDescription>
-            We've sent a 9-digit verification code to <strong>{email}</strong>
+            We've sent a {codeLength}-digit verification code to your {type === 'phone' ? 'phone' : 'email'}{' '}
+            <strong>{email}</strong>
           </DialogDescription>
         </DialogHeader>
 
@@ -109,12 +114,12 @@ export function OTPVerificationModal({
               ref={inputRef}
               id={otpCodeId}
               type="text"
-              placeholder="000000000"
+              placeholder={codeLength === 6 ? '000000' : '000000000'}
               value={otpCode}
               onChange={handleOtpChange}
               disabled={isLoading}
               className="w-full text-center text-2xl tracking-widest"
-              maxLength={9}
+              maxLength={codeLength}
             />
           </div>
 
@@ -136,7 +141,7 @@ export function OTPVerificationModal({
             <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading || otpCode.length < 9}>
+            <Button type="submit" disabled={isLoading || otpCode.length < codeLength}>
               {isLoading ? 'Verifying...' : 'Verify'}
             </Button>
           </div>
