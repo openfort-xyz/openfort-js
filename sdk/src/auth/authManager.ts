@@ -11,7 +11,7 @@ import {
   type AuthActionRequiredResponse,
   type AuthPlayerResponse,
   type AuthResponse,
-  AuthResponseV2,
+  type AuthResponseV2,
   CodeChallengeMethodEnum,
   type InitAuthResponse,
   type InitializeOAuthOptions,
