@@ -2,9 +2,11 @@ import { type AuthPlayerResponse, OAuthProvider } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useId, useState } from 'react'
+import { EmailOTPRequestModal } from '@/components/EmailOTPRequestModal'
 import EventMonitor from '@/components/EventMonitor/EventMonitor'
 import Loading from '@/components/Loading'
 import { OTPVerificationModal } from '@/components/OTPVerificationModal'
+import { SMSOTPRequestModal } from '@/components/SMSOTPRequestModal'
 import { Button } from '@/components/ui/button'
 import { TextField } from '../components/Fields'
 import { Layout } from '../components/Layouts/Layout'
@@ -23,6 +25,8 @@ function LoginPage() {
   // OTP states
   const [showEmailOTPModal, setShowEmailOTPModal] = useState(false)
   const [showSMSOTPModal, setShowSMSOTPModal] = useState(false)
+  const [showEmailOTPRequestModal, setShowEmailOTPRequestModal] = useState(false)
+  const [showSMSOTPRequestModal, setShowSMSOTPRequestModal] = useState(false)
   const [otpEmail, setOtpEmail] = useState('')
   const [otpPhone, setOtpPhone] = useState('')
   const [isOTPLoading, setIsOTPLoading] = useState(false)
@@ -160,6 +164,7 @@ function LoginPage() {
     try {
       await openfort.auth.requestEmailOTP(email)
       setOtpEmail(email)
+      setShowEmailOTPRequestModal(false)
       setShowEmailOTPModal(true)
       setStatus({
         type: 'success',
@@ -171,9 +176,14 @@ function LoginPage() {
         type: 'error',
         title: 'Error sending OTP',
       })
+      throw error
     } finally {
       setIsOTPLoading(false)
     }
+  }
+
+  const handleEmailOTPRequestSubmit = async (email: string) => {
+    await handleEmailOTPRequest(email)
   }
 
   const handleEmailOTPVerify = async (otp: string) => {
@@ -216,6 +226,7 @@ function LoginPage() {
     try {
       await openfort.auth.requestSMSOTP(phone)
       setOtpPhone(phone)
+      setShowSMSOTPRequestModal(false)
       setShowSMSOTPModal(true)
       setStatus({
         type: 'success',
@@ -227,9 +238,14 @@ function LoginPage() {
         type: 'error',
         title: 'Error sending OTP',
       })
+      throw error
     } finally {
       setIsOTPLoading(false)
     }
+  }
+
+  const handleSMSOTPRequestSubmit = async (phone: string) => {
+    await handleSMSOTPRequest(phone)
   }
 
   const handleSMSOTPVerify = async (otp: string) => {
@@ -391,26 +407,12 @@ function LoginPage() {
                   </Button>
                 </div>
                 <div>
-                  <Button
-                    onClick={() => {
-                      const email = prompt('Enter your email address:')
-                      if (email) handleEmailOTPRequest(email)
-                    }}
-                    variant="outline"
-                    className="w-full"
-                  >
+                  <Button onClick={() => setShowEmailOTPRequestModal(true)} variant="outline" className="w-full">
                     <p>Continue with Email OTP</p>
                   </Button>
                 </div>
                 <div>
-                  <Button
-                    onClick={() => {
-                      const phone = prompt('Enter your phone number:')
-                      if (phone) handleSMSOTPRequest(phone)
-                    }}
-                    variant="outline"
-                    className="w-full"
-                  >
+                  <Button onClick={() => setShowSMSOTPRequestModal(true)} variant="outline" className="w-full">
                     <p>Continue with SMS OTP</p>
                   </Button>
                 </div>
@@ -426,6 +428,26 @@ function LoginPage() {
         </div>
       </div>
       <Toast status={status} setStatus={setStatus} />
+
+      {/* Email OTP Request Modal */}
+      <EmailOTPRequestModal
+        isOpen={showEmailOTPRequestModal}
+        onClose={() => setShowEmailOTPRequestModal(false)}
+        onSubmit={handleEmailOTPRequestSubmit}
+        isLoading={isOTPLoading}
+        title="Continue with Email OTP"
+        description="Enter your email address to receive a verification code."
+      />
+
+      {/* SMS OTP Request Modal */}
+      <SMSOTPRequestModal
+        isOpen={showSMSOTPRequestModal}
+        onClose={() => setShowSMSOTPRequestModal(false)}
+        onSubmit={handleSMSOTPRequestSubmit}
+        isLoading={isOTPLoading}
+        title="Continue with SMS OTP"
+        description="Enter your phone number to receive a verification code."
+      />
 
       {/* Email OTP Modal */}
       <OTPVerificationModal
