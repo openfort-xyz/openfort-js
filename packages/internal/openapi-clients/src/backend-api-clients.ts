@@ -52,7 +52,7 @@ export class BackendApiClients {
     this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, customAxiosInstance)
 
     const authConfigOptions: OpenfortAPIConfigurationOptions = {
-      basePath: `${options.basePath}/api/auth`,
+      basePath: `${options.basePath}/iam/v2/auth`,
       accessToken: options.accessToken,
       nativeAppIdentifier: options.nativeAppIdentifier,
     }

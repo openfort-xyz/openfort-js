@@ -961,7 +961,7 @@ export class AuthManager {
         // and those changes are not showed on generated OpenAPI files
         const axios = (await import('axios')).default
         const basePath = this.backendApiClients.config.backend.basePath
-        const response = await axios.get(`${basePath}/api/auth/token`, {
+        const response = await axios.get(`${basePath}/iam/v2/auth/token`, {
           headers: {
             authorization: `Bearer ${accessToken}`,
           },
