@@ -11,6 +11,7 @@ import {
   type AuthActionRequiredResponse,
   type AuthPlayerResponse,
   type AuthResponse,
+  AuthResponseV2,
   CodeChallengeMethodEnum,
   type InitAuthResponse,
   type InitializeOAuthOptions,
@@ -560,7 +561,7 @@ export class AuthManager {
       const authResponse = await this.getJWTWithAccessToken(refreshToken)
 
       return {
-        player: authResponse.player.id,
+        player: authResponse.userId,
         accessToken: authResponse.token,
         refreshToken: refreshToken,
       }
@@ -862,22 +863,26 @@ export class AuthManager {
     )
   }
 
-  public async loginWithEmailOTP(email: string, otp: string): Promise<string> {
-    const request = {
-      signInEmailOtpPostRequest: {
-        email,
-        otp,
-      },
-    }
-
-    return await withOpenfortError<string>(
+  public async loginWithEmailOTP(email: string, otp: string): Promise<{ accessToken: string; userId: string }> {
+    return await withOpenfortError<{ accessToken: string; userId: string }>(
       async () => {
-        const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(request, {
-          headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+        // Implementing raw POST call here because response for this endpoint is changed on the API side,
+        // and those changes are not showed on generated OpenAPI files
+        const axios = (await import('axios')).default
+        const basePath = this.backendApiClients.config.backend.basePath
+        const response = await axios.post(
+          `${basePath}/iam/v2/auth/sign-in/email-otp`,
+          {
+            email,
+            otp,
           },
-        })
-        return response.data.token
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
+        return { accessToken: response.data.token, userId: response.data.userId }
       },
       {
         default: OpenfortErrorType.AUTHENTICATION_ERROR,
@@ -921,25 +926,26 @@ export class AuthManager {
     )
   }
 
-  public async loginWithSMSOTP(phoneNumber: string, code: string): Promise<string> {
-    const request = {
-      phoneNumberVerifyPostRequest: {
-        phoneNumber,
-        code,
-      },
-    }
-
-    return await withOpenfortError<string>(
+  public async loginWithSMSOTP(phoneNumber: string, code: string): Promise<{ accessToken: string; userId: string }> {
+    return await withOpenfortError<{ accessToken: string; userId: string }>(
       async () => {
-        const response = await this.backendApiClients.smsOTPApi.phoneNumberVerifyPost(request, {
-          headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+        // Implementing raw POST call here because response for this endpoint is changed on the API side,
+        // and those changes are not showed on generated OpenAPI files
+        const axios = (await import('axios')).default
+        const basePath = this.backendApiClients.config.backend.basePath
+        const response = await axios.post(
+          `${basePath}/iam/v2/auth/phone-number/verify`,
+          {
+            code,
+            phoneNumber,
           },
-        })
-        if (!response.data.token) {
-          throw new Error('Code is not verified')
-        }
-        return response.data.token
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
+        return { accessToken: response.data.token, userId: response.data.userId }
       },
       {
         default: OpenfortErrorType.AUTHENTICATION_ERROR,
@@ -954,8 +960,8 @@ export class AuthManager {
     )
   }
 
-  public async getJWTWithAccessToken(accessToken: string): Promise<AuthResponse> {
-    return await withOpenfortError<AuthResponse>(
+  public async getJWTWithAccessToken(accessToken: string): Promise<AuthResponseV2> {
+    return await withOpenfortError<AuthResponseV2>(
       async () => {
         // Implementing raw GET call here because response for this endpoint is changed on the API side,
         // and those changes are not showed on generated OpenAPI files
@@ -967,7 +973,7 @@ export class AuthManager {
           },
         })
         return {
-          player: response.data.player,
+          userId: response.data.userId,
           token: response.data.token,
           refreshToken: response.data.refreshToken,
         }

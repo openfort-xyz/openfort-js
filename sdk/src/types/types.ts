@@ -53,7 +53,7 @@ export type SignedMessagePayload = {
 
 export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.ON_AUTH_INIT]: [AuthInitPayload]
-  [OpenfortEvents.ON_AUTH_SUCCESS]: [AuthResponse]
+  [OpenfortEvents.ON_AUTH_SUCCESS]: [AuthResponse | AuthResponseV2]
   [OpenfortEvents.ON_AUTH_FAILURE]: [Error]
   [OpenfortEvents.ON_LOGOUT]: []
   [OpenfortEvents.ON_SWITCH_ACCOUNT]: [string]
@@ -427,6 +427,12 @@ export interface AuthPlayerResponse {
 
 export interface AuthResponse {
   player: AuthPlayerResponse
+  token: string
+  refreshToken: string
+}
+
+export interface AuthResponseV2 {
+  userId: string
   token: string
   refreshToken: string
 }

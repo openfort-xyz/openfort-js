@@ -7,6 +7,7 @@ import {
   type AuthActionRequiredResponse,
   type AuthPlayerResponse,
   type AuthResponse,
+  AuthResponseV2,
   type InitAuthResponse,
   type InitializeOAuthOptions,
   type OAuthProvider,
@@ -308,6 +309,25 @@ export class AuthApi {
     new Authentication('jwt', auth.accessToken, auth.player, auth.refreshToken).save(this.storage)
   }
 
+  /**
+   * Logs the user out by flushing the signer and removing credentials.
+   */
+  async logout(): Promise<void> {
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) return
+    try {
+      if (auth.type !== 'third_party') {
+        await this.authManager.logout(auth.token, auth?.refreshToken!)
+      }
+    } catch (_error) {
+      // Ignoring logout errors as we're clearing local state anyway
+    }
+    Authentication.clear(this.storage)
+    this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
+  }
+
+  // Below provided methods for authentication which use V2 API endpoints
+
   async requestEmailOTP(email: string): Promise<void> {
     await this.ensureInitialized()
 
@@ -326,7 +346,7 @@ export class AuthApi {
     }
   }
 
-  async loginWithEmailOTP(email: string, otp: string): Promise<AuthResponse> {
+  async loginWithEmailOTP(email: string, otp: string): Promise<AuthResponseV2> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
@@ -337,11 +357,11 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
 
     try {
-      const accessToken = await this.authManager.loginWithEmailOTP(email, otp)
+      const { accessToken, userId } = await this.authManager.loginWithEmailOTP(email, otp)
 
       const authData = await this.authManager.getJWTWithAccessToken(accessToken)
 
-      new Authentication('jwt', authData.token, authData.player.id, authData.refreshToken).save(this.storage)
+      new Authentication('jwt', authData.token, userId, authData.refreshToken).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, authData)
 
       return authData
@@ -369,7 +389,7 @@ export class AuthApi {
     }
   }
 
-  async loginWithSMSOTP(phone: string, otp: string): Promise<AuthResponse> {
+  async loginWithSMSOTP(phone: string, otp: string): Promise<AuthResponseV2> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
@@ -380,11 +400,11 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'phone', provider: 'phone' })
 
     try {
-      const accessToken = await this.authManager.loginWithSMSOTP(phone, otp)
+      const { accessToken, userId } = await this.authManager.loginWithSMSOTP(phone, otp)
 
       const authData = await this.authManager.getJWTWithAccessToken(accessToken)
 
-      new Authentication('jwt', authData.token, authData.player.id, authData.refreshToken).save(this.storage)
+      new Authentication('jwt', authData.token, userId, authData.refreshToken).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, authData)
 
       return authData
@@ -392,22 +412,5 @@ export class AuthApi {
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
       throw error
     }
-  }
-
-  /**
-   * Logs the user out by flushing the signer and removing credentials.
-   */
-  async logout(): Promise<void> {
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) return
-    try {
-      if (auth.type !== 'third_party') {
-        await this.authManager.logout(auth.token, auth?.refreshToken!)
-      }
-    } catch (_error) {
-      // Ignoring logout errors as we're clearing local state anyway
-    }
-    Authentication.clear(this.storage)
-    this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
   }
 }
