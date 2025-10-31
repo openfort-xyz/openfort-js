@@ -24,7 +24,7 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { AuthConfig } from '../models';
 // @ts-ignore
-import { V2OAuthParameters } from '../models';
+import { OAuthParametersV2 } from '../models';
 /**
  * AdminAuthenticationV2Api - axios parameter creator
  * @export
@@ -34,14 +34,14 @@ export const AdminAuthenticationV2ApiAxiosParamCreator = function (configuration
         /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
-         * @param {V2OAuthParameters} v2OAuthParameters Specifies the oauth provider specific configuration.
+         * @param {OAuthParametersV2} oAuthParametersV2 Specifies the oauth provider specific configuration.
          * @param {*} [options] Override http request option.
          * @deprecated
          * @throws {RequiredError}
          */
-        createOAuthConfigV2: async (v2OAuthParameters: V2OAuthParameters, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'v2OAuthParameters' is not null or undefined
-            assertParamExists('createOAuthConfigV2', 'v2OAuthParameters', v2OAuthParameters)
+        createOAuthConfig1: async (oAuthParametersV2: OAuthParametersV2, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'oAuthParametersV2' is not null or undefined
+            assertParamExists('createOAuthConfig1', 'oAuthParametersV2', oAuthParametersV2)
             const localVarPath = `/iam/v2/oauth`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -65,7 +65,7 @@ export const AdminAuthenticationV2ApiAxiosParamCreator = function (configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(v2OAuthParameters, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(oAuthParametersV2, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -85,13 +85,13 @@ export const AdminAuthenticationV2ApiFp = function(configuration?: Configuration
         /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
-         * @param {V2OAuthParameters} v2OAuthParameters Specifies the oauth provider specific configuration.
+         * @param {OAuthParametersV2} oAuthParametersV2 Specifies the oauth provider specific configuration.
          * @param {*} [options] Override http request option.
          * @deprecated
          * @throws {RequiredError}
          */
-        async createOAuthConfigV2(v2OAuthParameters: V2OAuthParameters, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthConfig>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createOAuthConfigV2(v2OAuthParameters, options);
+        async createOAuthConfig1(oAuthParametersV2: OAuthParametersV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthConfig>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createOAuthConfig1(oAuthParametersV2, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -107,29 +107,29 @@ export const AdminAuthenticationV2ApiFactory = function (configuration?: Configu
         /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
-         * @param {AdminAuthenticationV2ApiCreateOAuthConfigV2Request} requestParameters Request parameters.
+         * @param {AdminAuthenticationV2ApiCreateOAuthConfig1Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @deprecated
          * @throws {RequiredError}
          */
-        createOAuthConfigV2(requestParameters: AdminAuthenticationV2ApiCreateOAuthConfigV2Request, options?: AxiosRequestConfig): AxiosPromise<AuthConfig> {
-            return localVarFp.createOAuthConfigV2(requestParameters.v2OAuthParameters, options).then((request) => request(axios, basePath));
+        createOAuthConfig1(requestParameters: AdminAuthenticationV2ApiCreateOAuthConfig1Request, options?: AxiosRequestConfig): AxiosPromise<AuthConfig> {
+            return localVarFp.createOAuthConfig1(requestParameters.oAuthParametersV2, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for createOAuthConfigV2 operation in AdminAuthenticationV2Api.
+ * Request parameters for createOAuthConfig1 operation in AdminAuthenticationV2Api.
  * @export
- * @interface AdminAuthenticationV2ApiCreateOAuthConfigV2Request
+ * @interface AdminAuthenticationV2ApiCreateOAuthConfig1Request
  */
-export interface AdminAuthenticationV2ApiCreateOAuthConfigV2Request {
+export interface AdminAuthenticationV2ApiCreateOAuthConfig1Request {
     /**
      * Specifies the oauth provider specific configuration.
-     * @type {V2OAuthParameters}
-     * @memberof AdminAuthenticationV2ApiCreateOAuthConfigV2
+     * @type {OAuthParametersV2}
+     * @memberof AdminAuthenticationV2ApiCreateOAuthConfig1
      */
-    readonly v2OAuthParameters: V2OAuthParameters
+    readonly oAuthParametersV2: OAuthParametersV2
 }
 
 /**
@@ -142,14 +142,14 @@ export class AdminAuthenticationV2Api extends BaseAPI {
     /**
      * The endpoint creates oauth configuration for the current project environment.
      * @summary Create oauth configuration.
-     * @param {AdminAuthenticationV2ApiCreateOAuthConfigV2Request} requestParameters Request parameters.
+     * @param {AdminAuthenticationV2ApiCreateOAuthConfig1Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @deprecated
      * @throws {RequiredError}
      * @memberof AdminAuthenticationV2Api
      */
-    public createOAuthConfigV2(requestParameters: AdminAuthenticationV2ApiCreateOAuthConfigV2Request, options?: AxiosRequestConfig) {
-        return AdminAuthenticationV2ApiFp(this.configuration).createOAuthConfigV2(requestParameters.v2OAuthParameters, options).then((request) => request(this.axios, this.basePath));
+    public createOAuthConfig1(requestParameters: AdminAuthenticationV2ApiCreateOAuthConfig1Request, options?: AxiosRequestConfig) {
+        return AdminAuthenticationV2ApiFp(this.configuration).createOAuthConfig1(requestParameters.oAuthParametersV2, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

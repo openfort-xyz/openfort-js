@@ -41,85 +41,85 @@ import { VonageSMSParameters } from './vonage-smsparameters';
 /**
  * 
  * @export
- * @interface V2OAuthParameters
+ * @interface OAuthParametersV2
  */
-export interface V2OAuthParameters {
+export interface OAuthParametersV2 {
     /**
      * 
      * @type {BetterAuthEmailClients}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'senderClient': BetterAuthEmailClients;
     /**
      * Twilio Account SID
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'accountSid': string;
     /**
      * Twilio Auth Token
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'authToken': string;
     /**
      * Twilio phone number (from)
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'phoneNumber': string;
     /**
      * 
      * @type {boolean}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'enabled': boolean;
     /**
      * 
      * @type {BetterAuthProvidersReqParams}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'provider': BetterAuthProvidersReqParams;
     /**
      * MessageBird Access Key
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'accessKey': string;
     /**
      * Sender name or number
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'originator': string;
     /**
      * Key for client API will use
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'apiKey': string;
     /**
      * Sender name
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'sender': string;
     /**
      * Vonage API Secret
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'apiSecret': string;
     /**
      * Sender name
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'from': string;
     /**
      * SMSAPI OAuth token
      * @type {string}
-     * @memberof V2OAuthParameters
+     * @memberof OAuthParametersV2
      */
     'token': string;
 }

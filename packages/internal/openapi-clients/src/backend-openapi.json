@@ -2155,64 +2155,6 @@
         }
       }
     },
-    "/iam/v2/oauth": {
-      "post": {
-        "operationId": "CreateOAuthConfigV2",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OAuthConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "enabled": true,
-                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
-                      "clientId": "1234567890abcdef1234567890abcdef",
-                      "clientSecret": "abcdef1234567890abcdef1234567890",
-                      "provider": "accelbyte"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "The endpoint creates oauth configuration for the current project environment.",
-        "summary": "Create oauth configuration.",
-        "tags": [
-          "AdminAuthenticationV2"
-        ],
-        "deprecated": true,
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "description": "Specifies the oauth provider specific configuration.",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/V2OAuthParameters",
-                "description": "Specifies the oauth provider specific configuration."
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/accounts": {
       "get": {
         "operationId": "GetAccounts",
@@ -10526,6 +10468,111 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/SwitchChainQueriesV2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v2/me": {
+      "get": {
+        "operationId": "Me1",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_...",
+                      "createdAt": 1234567890,
+                      "email": "jaume@openfort.xyz",
+                      "emailVerified": true,
+                      "phone": "",
+                      "phoneVerified": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "tags": [
+          "AuthenticationV2"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "better_auth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/iam/v2/oauth": {
+      "post": {
+        "operationId": "CreateOAuthConfig1",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "enabled": true,
+                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
+                      "clientId": "1234567890abcdef1234567890abcdef",
+                      "clientSecret": "abcdef1234567890abcdef1234567890",
+                      "provider": "accelbyte"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "The endpoint creates oauth configuration for the current project environment.",
+        "summary": "Create oauth configuration.",
+        "tags": [
+          "AdminAuthenticationV2"
+        ],
+        "deprecated": true,
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "description": "Specifies the oauth provider specific configuration.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthParametersV2",
+                "description": "Specifies the oauth provider specific configuration."
               }
             }
           }
@@ -19911,365 +19958,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "BetterAuthSMSClients.TWILIO": {
-        "enum": [
-          "twilio"
-        ],
-        "type": "string"
-      },
-      "Pick_TwilioSMSConfig.Exclude_keyofTwilioSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.TWILIO"
-          },
-          "accountSid": {
-            "type": "string",
-            "description": "Twilio Account SID"
-          },
-          "authToken": {
-            "type": "string",
-            "description": "Twilio Auth Token"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "description": "Twilio phone number (from)"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "senderClient",
-          "accountSid",
-          "authToken",
-          "phoneNumber",
-          "enabled"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_TwilioSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_TwilioSMSConfig.Exclude_keyofTwilioSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "BetterAuthProvidersReqParams": {
-        "enum": [
-          "sms",
-          "email"
-        ],
-        "type": "string"
-      },
-      "TwilioSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_TwilioSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthSMSClients.MESSAGEBIRD": {
-        "enum": [
-          "messagebird"
-        ],
-        "type": "string"
-      },
-      "Pick_MessageBirdSMSConfig.Exclude_keyofMessageBirdSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.MESSAGEBIRD"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "accessKey": {
-            "type": "string",
-            "description": "MessageBird Access Key"
-          },
-          "originator": {
-            "type": "string",
-            "description": "Sender name or number"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "accessKey",
-          "originator"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_MessageBirdSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_MessageBirdSMSConfig.Exclude_keyofMessageBirdSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "MessageBirdSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_MessageBirdSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthSMSClients.TXTLOCAL": {
-        "enum": [
-          "txtlocal"
-        ],
-        "type": "string"
-      },
-      "Pick_TxtLocalSMSConfig.Exclude_keyofTxtLocalSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.TXTLOCAL"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "apiKey": {
-            "type": "string",
-            "description": "TxtLocal API Key"
-          },
-          "sender": {
-            "type": "string",
-            "description": "Sender name"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "apiKey",
-          "sender"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_TxtLocalSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_TxtLocalSMSConfig.Exclude_keyofTxtLocalSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "TxtLocalSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_TxtLocalSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthSMSClients.VONAGE": {
-        "enum": [
-          "vonage"
-        ],
-        "type": "string"
-      },
-      "Pick_VonageSMSConfig.Exclude_keyofVonageSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.VONAGE"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "apiKey": {
-            "type": "string",
-            "description": "Vonage API Key"
-          },
-          "apiSecret": {
-            "type": "string",
-            "description": "Vonage API Secret"
-          },
-          "from": {
-            "type": "string",
-            "description": "Sender ID or phone number"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "apiKey",
-          "apiSecret",
-          "from"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_VonageSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_VonageSMSConfig.Exclude_keyofVonageSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "VonageSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_VonageSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthSMSClients.SMS_API": {
-        "enum": [
-          "sms_api"
-        ],
-        "type": "string"
-      },
-      "Pick_SmsApiSMSConfig.Exclude_keyofSmsApiSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.SMS_API"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "from": {
-            "type": "string",
-            "description": "Sender name"
-          },
-          "token": {
-            "type": "string",
-            "description": "SMSAPI OAuth token"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "from",
-          "token"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_SmsApiSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_SmsApiSMSConfig.Exclude_keyofSmsApiSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "SmsApiSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_SmsApiSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthEmailClients": {
-        "enum": [
-          "brevo"
-        ],
-        "type": "string"
-      },
-      "Pick_BetterAuthEmailOTPConfig.Exclude_keyofBetterAuthEmailOTPConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthEmailClients",
-            "description": "Client API will use in order to send Emails"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "apiKey": {
-            "type": "string",
-            "description": "Key for client API will use"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "apiKey"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_BetterAuthEmailOTPConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_BetterAuthEmailOTPConfig.Exclude_keyofBetterAuthEmailOTPConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "BetterAuthEmailOTPParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_BetterAuthEmailOTPConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "V2OAuthParameters": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/TwilioSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/MessageBirdSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/TxtLocalSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/VonageSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/SmsApiSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/BetterAuthEmailOTPParameters"
-          }
-        ]
-      },
       "Player": {
         "properties": {
           "id": {
@@ -26796,6 +26484,398 @@
         ],
         "type": "object",
         "additionalProperties": false
+      },
+      "AuthUserResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "email": {
+            "type": "string"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "phoneVerified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "email",
+          "emailVerified",
+          "phone",
+          "phoneVerified"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BetterAuthSMSClients.TWILIO": {
+        "enum": [
+          "twilio"
+        ],
+        "type": "string"
+      },
+      "Pick_TwilioSMSConfig.Exclude_keyofTwilioSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.TWILIO"
+          },
+          "accountSid": {
+            "type": "string",
+            "description": "Twilio Account SID"
+          },
+          "authToken": {
+            "type": "string",
+            "description": "Twilio Auth Token"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Twilio phone number (from)"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "senderClient",
+          "accountSid",
+          "authToken",
+          "phoneNumber",
+          "enabled"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_TwilioSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_TwilioSMSConfig.Exclude_keyofTwilioSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "BetterAuthProvidersReqParams": {
+        "enum": [
+          "sms",
+          "email"
+        ],
+        "type": "string"
+      },
+      "TwilioSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_TwilioSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthSMSClients.MESSAGEBIRD": {
+        "enum": [
+          "messagebird"
+        ],
+        "type": "string"
+      },
+      "Pick_MessageBirdSMSConfig.Exclude_keyofMessageBirdSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.MESSAGEBIRD"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "accessKey": {
+            "type": "string",
+            "description": "MessageBird Access Key"
+          },
+          "originator": {
+            "type": "string",
+            "description": "Sender name or number"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "accessKey",
+          "originator"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_MessageBirdSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_MessageBirdSMSConfig.Exclude_keyofMessageBirdSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "MessageBirdSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_MessageBirdSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthSMSClients.TXTLOCAL": {
+        "enum": [
+          "txtlocal"
+        ],
+        "type": "string"
+      },
+      "Pick_TxtLocalSMSConfig.Exclude_keyofTxtLocalSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.TXTLOCAL"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "TxtLocal API Key"
+          },
+          "sender": {
+            "type": "string",
+            "description": "Sender name"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "apiKey",
+          "sender"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_TxtLocalSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_TxtLocalSMSConfig.Exclude_keyofTxtLocalSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "TxtLocalSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_TxtLocalSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthSMSClients.VONAGE": {
+        "enum": [
+          "vonage"
+        ],
+        "type": "string"
+      },
+      "Pick_VonageSMSConfig.Exclude_keyofVonageSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.VONAGE"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "Vonage API Key"
+          },
+          "apiSecret": {
+            "type": "string",
+            "description": "Vonage API Secret"
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender ID or phone number"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "apiKey",
+          "apiSecret",
+          "from"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_VonageSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_VonageSMSConfig.Exclude_keyofVonageSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "VonageSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_VonageSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthSMSClients.SMS_API": {
+        "enum": [
+          "sms_api"
+        ],
+        "type": "string"
+      },
+      "Pick_SmsApiSMSConfig.Exclude_keyofSmsApiSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.SMS_API"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender name"
+          },
+          "token": {
+            "type": "string",
+            "description": "SMSAPI OAuth token"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "from",
+          "token"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_SmsApiSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_SmsApiSMSConfig.Exclude_keyofSmsApiSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "SmsApiSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_SmsApiSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthEmailClients": {
+        "enum": [
+          "brevo"
+        ],
+        "type": "string"
+      },
+      "Pick_BetterAuthEmailOTPConfig.Exclude_keyofBetterAuthEmailOTPConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthEmailClients",
+            "description": "Client API will use in order to send Emails"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "Key for client API will use"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "apiKey"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_BetterAuthEmailOTPConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_BetterAuthEmailOTPConfig.Exclude_keyofBetterAuthEmailOTPConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "BetterAuthEmailOTPParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_BetterAuthEmailOTPConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "OAuthParametersV2": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TwilioSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/MessageBirdSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/TxtLocalSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/VonageSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/SmsApiSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/BetterAuthEmailOTPParameters"
+          }
+        ]
       },
       "User": {
         "type": "object",

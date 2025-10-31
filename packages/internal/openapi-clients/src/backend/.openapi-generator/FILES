@@ -9,6 +9,7 @@ domain/accounts-api.ts
 domain/admin-authentication-api.ts
 domain/admin-authentication-v2-api.ts
 domain/authentication-api.ts
+domain/authentication-v2-api.ts
 domain/contracts-api.ts
 domain/default-api.ts
 domain/email-otp-api.ts
@@ -82,6 +83,7 @@ models/auth-provider-with-type-response.ts
 models/auth-provider.ts
 models/auth-response.ts
 models/auth-session-response.ts
+models/auth-user-response.ts
 models/authenticate-oauth-request-provider.ts
 models/authenticate-oauth-request.ts
 models/authenticated-player-response.ts
@@ -274,6 +276,7 @@ models/next-action-type.ts
 models/oauth-config-list-response.ts
 models/oauth-init-request-options.ts
 models/oauth-init-request.ts
+models/oauth-parameters-v2.ts
 models/oauth-provider-apple.ts
 models/oauth-provider-discord.ts
 models/oauth-provider-epicgames.ts
@@ -492,7 +495,6 @@ models/user-project-role-member.ts
 models/user-project-role.ts
 models/user-project-update-request.ts
 models/user.ts
-models/v2-oauth-parameters.ts
 models/verification.ts
 models/verify-email-get200-response-user.ts
 models/verify-email-get200-response.ts
