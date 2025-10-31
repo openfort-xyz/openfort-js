@@ -18,6 +18,9 @@
 import { BasicAuthProvider } from './basic-auth-provider';
 // May contain unused imports in some cases
 // @ts-ignore
+import { BetterAuthProviders } from './better-auth-providers';
+// May contain unused imports in some cases
+// @ts-ignore
 import { OAuthProvider } from './oauth-provider';
 // May contain unused imports in some cases
 // @ts-ignore

@@ -2,8 +2,11 @@ import { type AuthPlayerResponse, OAuthProvider } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useId, useState } from 'react'
+import { EmailOTPRequestModal } from '@/components/EmailOTPRequestModal'
 import EventMonitor from '@/components/EventMonitor/EventMonitor'
 import Loading from '@/components/Loading'
+import { OTPVerificationModal } from '@/components/OTPVerificationModal'
+import { SMSOTPRequestModal } from '@/components/SMSOTPRequestModal'
 import { Button } from '@/components/ui/button'
 import { TextField } from '../components/Fields'
 import { Layout } from '../components/Layouts/Layout'
@@ -18,6 +21,15 @@ function LoginPage() {
   const [guestLoading, setGuestLoading] = useState(false)
   const emailId = useId()
   const passwordId = useId()
+
+  // OTP states
+  const [showEmailOTPModal, setShowEmailOTPModal] = useState(false)
+  const [showSMSOTPModal, setShowSMSOTPModal] = useState(false)
+  const [showEmailOTPRequestModal, setShowEmailOTPRequestModal] = useState(false)
+  const [showSMSOTPRequestModal, setShowSMSOTPRequestModal] = useState(false)
+  const [otpEmail, setOtpEmail] = useState('')
+  const [otpPhone, setOtpPhone] = useState('')
+  const [isOTPLoading, setIsOTPLoading] = useState(false)
 
   // check if "state" exists in url query param and if it does make an api call:
   useEffect(() => {
@@ -138,6 +150,130 @@ function LoginPage() {
         title: 'Successfully signed in',
       })
       router.push('/')
+    }
+  }
+
+  // Email OTP handlers
+  const handleEmailOTPRequest = async (email: string) => {
+    setIsOTPLoading(true)
+    setStatus({
+      type: 'loading',
+      title: 'Sending OTP...',
+    })
+
+    try {
+      await openfort.auth.requestEmailOTP(email)
+      setOtpEmail(email)
+      setShowEmailOTPRequestModal(false)
+      setShowEmailOTPModal(true)
+      setStatus({
+        type: 'success',
+        title: 'OTP sent to your email',
+      })
+    } catch (error) {
+      console.log('error', error)
+      setStatus({
+        type: 'error',
+        title: 'Error sending OTP',
+      })
+      throw error
+    } finally {
+      setIsOTPLoading(false)
+    }
+  }
+
+  const handleEmailOTPRequestSubmit = async (email: string) => {
+    await handleEmailOTPRequest(email)
+  }
+
+  const handleEmailOTPVerify = async (otp: string) => {
+    setIsOTPLoading(true)
+    setStatus({
+      type: 'loading',
+      title: 'Verifying OTP...',
+    })
+
+    try {
+      const data = await openfort.auth.loginWithEmailOTP(otpEmail, otp)
+      if (data) {
+        setStatus({
+          type: 'success',
+          title: 'Successfully signed in',
+        })
+        setShowEmailOTPModal(false)
+        router.push('/')
+      }
+    } catch (error) {
+      console.log('error', error)
+      setStatus({
+        type: 'error',
+        title: 'Invalid OTP code',
+      })
+      throw error
+    } finally {
+      setIsOTPLoading(false)
+    }
+  }
+
+  // SMS OTP handlers
+  const handleSMSOTPRequest = async (phone: string) => {
+    setIsOTPLoading(true)
+    setStatus({
+      type: 'loading',
+      title: 'Sending OTP...',
+    })
+
+    try {
+      await openfort.auth.requestSMSOTP(phone)
+      setOtpPhone(phone)
+      setShowSMSOTPRequestModal(false)
+      setShowSMSOTPModal(true)
+      setStatus({
+        type: 'success',
+        title: 'OTP sent to your phone',
+      })
+    } catch (error) {
+      console.log('error', error)
+      setStatus({
+        type: 'error',
+        title: 'Error sending OTP',
+      })
+      throw error
+    } finally {
+      setIsOTPLoading(false)
+    }
+  }
+
+  const handleSMSOTPRequestSubmit = async (phone: string) => {
+    await handleSMSOTPRequest(phone)
+  }
+
+  const handleSMSOTPVerify = async (otp: string) => {
+    setIsOTPLoading(true)
+    setStatus({
+      type: 'loading',
+      title: 'Verifying OTP...',
+    })
+
+    try {
+      const data = await openfort.auth.loginWithSMSOTP(otpPhone, otp)
+      if (data) {
+        setStatus({
+          type: 'success',
+          title: 'Successfully signed in',
+        })
+        setShowSMSOTPModal(false)
+        router.push('/')
+      }
+    } catch (error) {
+      console.log('error', error)
+      setStatus({
+        type: 'error',
+        title: 'Invalid OTP code',
+      })
+      throw error
+    } finally {
+      setIsOTPLoading(false)
     }
   }
 
@@ -270,6 +406,16 @@ function LoginPage() {
                     <p>Continue with wallet</p>
                   </Button>
                 </div>
+                <div>
+                  <Button onClick={() => setShowEmailOTPRequestModal(true)} variant="outline" className="w-full">
+                    <p>Continue with Email OTP</p>
+                  </Button>
+                </div>
+                <div>
+                  <Button onClick={() => setShowSMSOTPRequestModal(true)} variant="outline" className="w-full">
+                    <p>Continue with SMS OTP</p>
+                  </Button>
+                </div>
               </div>
             </div>
             <p className="my-5 text-left text-sm text-gray-600">
@@ -282,6 +428,50 @@ function LoginPage() {
         </div>
       </div>
       <Toast status={status} setStatus={setStatus} />
+
+      {/* Email OTP Request Modal */}
+      <EmailOTPRequestModal
+        isOpen={showEmailOTPRequestModal}
+        onClose={() => setShowEmailOTPRequestModal(false)}
+        onSubmit={handleEmailOTPRequestSubmit}
+        isLoading={isOTPLoading}
+        title="Continue with Email OTP"
+        description="Enter your email address to receive a verification code."
+      />
+
+      {/* SMS OTP Request Modal */}
+      <SMSOTPRequestModal
+        isOpen={showSMSOTPRequestModal}
+        onClose={() => setShowSMSOTPRequestModal(false)}
+        onSubmit={handleSMSOTPRequestSubmit}
+        isLoading={isOTPLoading}
+        title="Continue with SMS OTP"
+        description="Enter your phone number to receive a verification code."
+      />
+
+      {/* Email OTP Modal */}
+      <OTPVerificationModal
+        isOpen={showEmailOTPModal}
+        onClose={() => setShowEmailOTPModal(false)}
+        onSubmit={handleEmailOTPVerify}
+        onResendOTP={() => handleEmailOTPRequest(otpEmail)}
+        email={otpEmail}
+        isLoading={isOTPLoading}
+        type="email"
+        codeLength={6}
+      />
+
+      {/* SMS OTP Modal */}
+      <OTPVerificationModal
+        isOpen={showSMSOTPModal}
+        onClose={() => setShowSMSOTPModal(false)}
+        onSubmit={handleSMSOTPVerify}
+        onResendOTP={() => handleSMSOTPRequest(otpPhone)}
+        email={otpPhone}
+        isLoading={isOTPLoading}
+        type="phone"
+        codeLength={6}
+      />
     </Layout>
   )
 }

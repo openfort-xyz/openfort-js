@@ -17,6 +17,10 @@ export enum OpenfortEvents {
   ON_AUTH_INIT = 'onAuthInit',
   /** Called after the user successfully authenticates */
   ON_AUTH_SUCCESS = 'onAuthSuccess',
+  /** Called when an OTP for login was requested */
+  ON_OTP_REQUEST = 'onOtpRequest',
+  /** Called when an OTP for login wasn't sent successfully */
+  ON_OTP_FAILURE = 'onOtpFailure',
   /** Called when authentication fails */
   ON_AUTH_FAILURE = 'onAuthFailure',
   /** Called after the user logs out */
@@ -35,7 +39,7 @@ export enum OpenfortEvents {
  * Authentication initialization payload
  */
 export type AuthInitPayload = {
-  method: 'email' | 'oauth' | 'siwe' | 'idToken' | 'guest'
+  method: 'email' | 'oauth' | 'siwe' | 'idToken' | 'guest' | 'phone'
   provider?: string
 }
 
@@ -49,7 +53,7 @@ export type SignedMessagePayload = {
 
 export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.ON_AUTH_INIT]: [AuthInitPayload]
-  [OpenfortEvents.ON_AUTH_SUCCESS]: [AuthResponse]
+  [OpenfortEvents.ON_AUTH_SUCCESS]: [AuthResponse | AuthResponseV2]
   [OpenfortEvents.ON_AUTH_FAILURE]: [Error]
   [OpenfortEvents.ON_LOGOUT]: []
   [OpenfortEvents.ON_SWITCH_ACCOUNT]: [string]
@@ -423,6 +427,12 @@ export interface AuthPlayerResponse {
 
 export interface AuthResponse {
   player: AuthPlayerResponse
+  token: string
+  refreshToken: string
+}
+
+export interface AuthResponseV2 {
+  userId: string
   token: string
   refreshToken: string
 }
