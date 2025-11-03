@@ -12,7 +12,7 @@
   "dependencies": {
     "@openfort/openfort-js": "workspace:sdk",
     "@solana/web3.js": "^1.98.0",
-    "@tailwindcss/vite": "^4.0.14",
+    "@tailwindcss/vite": "^4.1.16",
     "buffer": "^6.0.3",
     "ox": "^0.6.10",
     "react": "^19.0.0",
