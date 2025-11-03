@@ -426,6 +426,7 @@ export class EvmProvider implements Provider {
           account,
           authentication,
           backendClient: this.#backendApiClients,
+          policyId: this.#policyId,
         })
       }
       case 'wallet_getCapabilities': {
