@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.32
+
+### Patch Changes
+
+- [#163](https://github.com/openfort-xyz/openfort-js/pull/163) [`9875151`](https://github.com/openfort-xyz/openfort-js/commit/987515111caaf2c411bdf5347480e8b66fe1c94c) Thanks [@martimayoral](https://github.com/martimayoral)! - fix revoke permissions policy
+
 ## 0.10.31
 
 ### Patch Changes
