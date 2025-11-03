@@ -1,5 +1,6 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { RevokeSessionRequest } from '@openfort/openapi-clients/dist/backend'
+import type { Hex } from 'wallets/evm/types'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
@@ -17,7 +18,7 @@ type WalletRequestPermissionsParams = {
 }
 
 export type RevokePermissionsRequestParams = {
-  permissionContext: `0x${string}`
+  permissionContext: Hex
 }
 
 const formatSessionRequest = (
