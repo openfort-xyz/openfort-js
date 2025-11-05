@@ -15,19 +15,22 @@
 
 
 /**
- * 
+ * Unified payment link structure.
  * @export
- * @enum {string}
+ * @interface OnrampPaymentLink
  */
-
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
-} as const;
-
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
-
-
+export interface OnrampPaymentLink {
+    /**
+     * URL to the payment interface
+     * @type {string}
+     * @memberof OnrampPaymentLink
+     */
+    'url': string;
+    /**
+     * Type of payment link
+     * @type {string}
+     * @memberof OnrampPaymentLink
+     */
+    'type': string;
+}
 

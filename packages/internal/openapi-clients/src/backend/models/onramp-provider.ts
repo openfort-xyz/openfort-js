@@ -20,14 +20,12 @@
  * @enum {string}
  */
 
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
+export const OnrampProvider = {
+    Coinbase: 'coinbase',
+    Stripe: 'stripe'
 } as const;
 
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
+export type OnrampProvider = typeof OnrampProvider[keyof typeof OnrampProvider];
 
 
 

@@ -20,14 +20,11 @@
  * @enum {string}
  */
 
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
+export const BetterAuthSMSClientsTWILIO = {
+    Twilio: 'twilio'
 } as const;
 
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
+export type BetterAuthSMSClientsTWILIO = typeof BetterAuthSMSClientsTWILIO[keyof typeof BetterAuthSMSClientsTWILIO];
 
 
 

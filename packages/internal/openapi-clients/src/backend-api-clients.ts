@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance } from 'axios'
 import axiosRetry from 'axios-retry'
-import { AccountsApi, AuthenticationApi, SessionsApi, TransactionIntentsApi } from './backend'
+import { AccountsApi, AssetsApi, AuthenticationApi, SessionsApi, TransactionIntentsApi } from './backend'
 import { createConfig, type OpenfortAPIConfiguration, type OpenfortAPIConfigurationOptions } from './config'
 
 export interface BackendApiClientsOptions {
@@ -15,6 +15,8 @@ export class BackendApiClients {
   public transactionIntentsApi: TransactionIntentsApi
 
   public accountsApi: AccountsApi
+
+  public assetsApi: AssetsApi
 
   public sessionsApi: SessionsApi
 
@@ -43,6 +45,7 @@ export class BackendApiClients {
     this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend, undefined, customAxiosInstance)
     this.accountsApi = new AccountsApi(this.config.backend, undefined, customAxiosInstance)
     this.sessionsApi = new SessionsApi(this.config.backend, undefined, customAxiosInstance)
+    this.assetsApi = new AssetsApi(this.config.backend, undefined, customAxiosInstance)
     this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, customAxiosInstance)
   }
 }

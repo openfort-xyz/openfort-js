@@ -17,17 +17,14 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface AuthorizedOriginsResponse
  */
-
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
-} as const;
-
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
-
-
+export interface AuthorizedOriginsResponse {
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof AuthorizedOriginsResponse
+     */
+    'origins': Array<string>;
+}
 

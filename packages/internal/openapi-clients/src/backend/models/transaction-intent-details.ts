@@ -18,10 +18,13 @@
 import { AccountAbstractionV6Details } from './account-abstraction-v6-details';
 // May contain unused imports in some cases
 // @ts-ignore
+import { AccountAbstractionV8Details } from './account-abstraction-v8-details';
+// May contain unused imports in some cases
+// @ts-ignore
 import { StandardDetails } from './standard-details';
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserOperationV6 } from './user-operation-v6';
+import { UserOperationV8 } from './user-operation-v8';
 // May contain unused imports in some cases
 // @ts-ignore
 import { ZKSyncDetails } from './zksync-details';
@@ -94,10 +97,10 @@ export interface TransactionIntentDetails {
     'value'?: string;
     /**
      * 
-     * @type {UserOperationV6}
+     * @type {UserOperationV8}
      * @memberof TransactionIntentDetails
      */
-    'userOperation': UserOperationV6;
+    'userOperation': UserOperationV8;
     /**
      * A User Operation hash.
      * @type {string}

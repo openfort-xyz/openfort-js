@@ -17,20 +17,14 @@
 /**
  * 
  * @export
- * @interface CreateApiAuthorizedNetworkRequest
+ * @enum {string}
  */
-export interface CreateApiAuthorizedNetworkRequest {
-    /**
-     * The name of the authorized network.
-     * @type {string}
-     * @memberof CreateApiAuthorizedNetworkRequest
-     */
-    'name': string;
-    /**
-     * The network address.
-     * @type {string}
-     * @memberof CreateApiAuthorizedNetworkRequest
-     */
-    'network': string;
-}
+
+export const BetterAuthEmailClients = {
+    Brevo: 'brevo'
+} as const;
+
+export type BetterAuthEmailClients = typeof BetterAuthEmailClients[keyof typeof BetterAuthEmailClients];
+
+
 

@@ -78,6 +78,13 @@
         ],
         "type": "string"
       },
+      "BetterAuthProviders": {
+        "enum": [
+          "better_auth_sms",
+          "better_auth_email"
+        ],
+        "type": "string"
+      },
       "AuthProvider": {
         "anyOf": [
           {
@@ -88,6 +95,9 @@
           },
           {
             "$ref": "#/components/schemas/BasicAuthProvider"
+          },
+          {
+            "$ref": "#/components/schemas/BetterAuthProviders"
           }
         ],
         "description": "Enum of the supporting Auth providers."
@@ -260,6 +270,7 @@
       "TransactionAbstractionType": {
         "enum": [
           "accountAbstractionV6",
+          "accountAbstractionV8",
           "zkSync",
           "standard"
         ],
@@ -430,6 +441,100 @@
         "properties": {
           "userOperation": {
             "$ref": "#/components/schemas/UserOperationV6"
+          },
+          "userOperationHash": {
+            "type": "string",
+            "description": "A User Operation hash."
+          }
+        },
+        "required": [
+          "userOperation",
+          "userOperationHash"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UserOperationV8": {
+        "properties": {
+          "callData": {
+            "type": "string",
+            "description": "The data to pass to the `sender` during the main execution call."
+          },
+          "callGasLimit": {
+            "type": "string",
+            "description": "The amount of gas to allocate the main execution call"
+          },
+          "factory": {
+            "type": "string",
+            "description": "Account init code. Only for new accounts."
+          },
+          "factoryData": {
+            "type": "string",
+            "description": "Factory data for account creation."
+          },
+          "maxFeePerGas": {
+            "type": "string",
+            "description": "Maximum fee per gas."
+          },
+          "maxPriorityFeePerGas": {
+            "type": "string",
+            "description": "Maximum priority fee per gas."
+          },
+          "nonce": {
+            "type": "string",
+            "description": "Anti-replay parameter."
+          },
+          "paymaster": {
+            "type": "string",
+            "description": "Paymaster address."
+          },
+          "paymasterVerificationGasLimit": {
+            "type": "string",
+            "description": "Paymaster verification gas limit."
+          },
+          "paymasterPostOpGasLimit": {
+            "type": "string",
+            "description": "Paymaster post-operation gas limit."
+          },
+          "paymasterData": {
+            "type": "string",
+            "description": "Paymaster data."
+          },
+          "preVerificationGas": {
+            "type": "string",
+            "description": "Extra gas to pay the bundler."
+          },
+          "sender": {
+            "type": "string",
+            "description": "The account making the operation."
+          },
+          "signature": {
+            "type": "string",
+            "description": "Data passed into the account to verify authorization."
+          },
+          "verificationGasLimit": {
+            "type": "string",
+            "description": "The amount of gas to allocate for the verification step."
+          }
+        },
+        "required": [
+          "callData",
+          "callGasLimit",
+          "maxFeePerGas",
+          "maxPriorityFeePerGas",
+          "nonce",
+          "preVerificationGas",
+          "sender",
+          "signature",
+          "verificationGasLimit"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountAbstractionV8Details": {
+        "properties": {
+          "userOperation": {
+            "$ref": "#/components/schemas/UserOperationV8"
           },
           "userOperationHash": {
             "type": "string",
@@ -757,6 +862,9 @@
               },
               {
                 "$ref": "#/components/schemas/AccountAbstractionV6Details"
+              },
+              {
+                "$ref": "#/components/schemas/AccountAbstractionV8Details"
               },
               {
                 "$ref": "#/components/schemas/StandardDetails"
@@ -3062,6 +3170,9 @@
                 "$ref": "#/components/schemas/AccountAbstractionV6Details"
               },
               {
+                "$ref": "#/components/schemas/AccountAbstractionV8Details"
+              },
+              {
                 "$ref": "#/components/schemas/StandardDetails"
               }
             ],
@@ -3362,97 +3473,104 @@
         "type": "object",
         "additionalProperties": false
       },
-      "EntityType.PROJECT": {
-        "enum": [
-          "project"
-        ],
-        "type": "string"
-      },
-      "ApiAuthorizedNetworkResponse": {
+      "AuthorizedAppsResponse": {
         "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.PROJECT"
-          },
-          "createdAt": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 256
-          },
-          "network": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 45
-          }
-        },
-        "required": [
-          "id",
-          "object",
-          "createdAt",
-          "name",
-          "network"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ApiAuthorizedNetworkListResponse": {
-        "properties": {
-          "object": {
-            "$ref": "#/components/schemas/ResponseType.LIST"
-          },
-          "url": {
-            "type": "string"
-          },
-          "data": {
+          "authorizedApps": {
             "items": {
-              "$ref": "#/components/schemas/ApiAuthorizedNetworkResponse"
+              "properties": {
+                "appUrlScheme": {
+                  "type": "string"
+                },
+                "appIdentifier": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "appIdentifier",
+                "name"
+              ],
+              "type": "object"
             },
             "type": "array"
-          },
-          "start": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "end": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
           }
         },
         "required": [
-          "object",
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
+          "authorizedApps"
         ],
         "type": "object",
         "additionalProperties": false
       },
-      "CreateApiAuthorizedNetworkRequest": {
+      "AuthorizedApp": {
         "properties": {
           "name": {
-            "type": "string",
-            "description": "The name of the authorized network.",
-            "example": "My Authorized Network",
-            "minLength": 1,
-            "maxLength": 256
+            "type": "string"
+          },
+          "appIdentifier": {
+            "type": "string"
+          },
+          "appUrlScheme": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "appIdentifier"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateAuthorizedAppsRequest": {
+        "properties": {
+          "authorizedApps": {
+            "items": {
+              "$ref": "#/components/schemas/AuthorizedApp"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "authorizedApps"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthorizedNetworksResponse": {
+        "properties": {
+          "authorizedNetworks": {
+            "items": {
+              "properties": {
+                "network": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "network",
+                "name"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "authorizedNetworks"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthorizedNetwork": {
+        "properties": {
+          "name": {
+            "type": "string"
           },
           "network": {
-            "type": "string",
-            "description": "The network address.",
-            "minLength": 1,
-            "maxLength": 45
+            "type": "string"
           }
         },
         "required": [
@@ -3462,22 +3580,47 @@
         "type": "object",
         "additionalProperties": false
       },
-      "ApiAuthorizedNetworkDeleteResponse": {
+      "UpdateAuthorizedNetworksRequest": {
         "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.PROJECT"
-          },
-          "deleted": {
-            "type": "boolean"
+          "authorizedNetworks": {
+            "items": {
+              "$ref": "#/components/schemas/AuthorizedNetwork"
+            },
+            "type": "array"
           }
         },
         "required": [
-          "id",
-          "object",
-          "deleted"
+          "authorizedNetworks"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthorizedOriginsResponse": {
+        "properties": {
+          "origins": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "origins"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UpdateAuthorizedOriginsRequest": {
+        "properties": {
+          "origins": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "origins"
         ],
         "type": "object",
         "additionalProperties": false
@@ -3528,6 +3671,12 @@
         ],
         "type": "object",
         "additionalProperties": false
+      },
+      "EntityType.PROJECT": {
+        "enum": [
+          "project"
+        ],
+        "type": "string"
       },
       "ChildProjectResponse": {
         "properties": {
@@ -4632,6 +4781,50 @@
         ],
         "type": "object",
         "additionalProperties": false
+      },
+      "EntityType.WALLET_ASSETS": {
+        "enum": [
+          "wallet_assets"
+        ],
+        "type": "string"
+      },
+      "Record_number.Asset7811-Array_": {
+        "properties": {},
+        "type": "object",
+        "description": "Construct a type with a set of properties K of type T"
+      },
+      "WalletAssetsResponse": {
+        "description": "Wallet assets response following EIP-7811 structure",
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/EntityType.WALLET_ASSETS",
+            "description": "Object type identifier"
+          },
+          "address": {
+            "type": "string",
+            "description": "The wallet address that was queried",
+            "example": "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+          },
+          "assets": {
+            "$ref": "#/components/schemas/Record_number.Asset7811-Array_",
+            "description": "Assets grouped by chain ID\nMaps chain ID to array of assets"
+          }
+        },
+        "required": [
+          "object",
+          "address",
+          "assets"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AssetTypeFilter": {
+        "description": "Asset type filter options",
+        "enum": [
+          "native",
+          "erc20"
+        ],
+        "type": "string"
       },
       "AbiType": {
         "properties": {
@@ -8575,6 +8768,11 @@
             "description": "Set to `true` to indicate that the transactionIntent request should be resolved as soon as possible, after the transactionIntent is created and simulated and before it arrives on chain.",
             "example": true
           },
+          "signedAuthorization": {
+            "type": "string",
+            "description": "Signed authorization for delegated accounts. This signature is used to authorize the user operation for AccountAbstractionV8.\nThe signature should be in the format \"0x...\" and will be parsed to extract r, s, and yParity values.",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1c"
+          },
           "interactions": {
             "items": {
               "$ref": "#/components/schemas/Interaction"
@@ -8649,9 +8847,7 @@
         },
         "required": [
           "implementationType",
-          "factoryAddress",
           "implementationAddress",
-          "salt",
           "active"
         ],
         "type": "object",
@@ -8862,6 +9058,60 @@
         "type": "object",
         "additionalProperties": false
       },
+      "CreateAccountRequestV2": {
+        "properties": {
+          "accountType": {
+            "type": "string",
+            "enum": [
+              "Externally Owned Account",
+              "Smart Account",
+              "Delegated Account"
+            ],
+            "description": "The type of smart account that will be created. \"Externally Owned Account\", \"Smart Account\" or \"Delegated Account\".",
+            "example": "Externally Owned Account"
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type. \"EVM\" or \"SVM\".",
+            "example": "EVM"
+          },
+          "address": {
+            "type": "string"
+          },
+          "implementationType": {
+            "type": "string",
+            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.",
+            "example": "UpgradeableV6"
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Must be a [supported chain](/development/chains).",
+            "example": 80002
+          },
+          "user": {
+            "type": "string",
+            "description": "ID of the user this account belongs to (starts with `pla_`). If none is provided, a new user will be created.",
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "account": {
+            "type": "string",
+            "description": "ID of the account (starts with `acc_`) to be linked with. Required for accountType \"Smart Account\".",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          }
+        },
+        "required": [
+          "accountType",
+          "chainType",
+          "user"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "RecoverV2Response": {
         "properties": {
           "id": {
@@ -8946,12 +9196,6 @@
             "type": "number",
             "format": "double"
           },
-          "privateKey": {
-            "type": "string"
-          },
-          "kmsKey": {
-            "type": "string"
-          },
           "share": {
             "type": "string"
           },
@@ -8963,6 +9207,453 @@
           "accountType",
           "chainType",
           "address"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampProvider": {
+        "enum": [
+          "coinbase",
+          "stripe"
+        ],
+        "type": "string"
+      },
+      "OnrampFee": {
+        "description": "Unified fee structure across all onramp providers.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Fee type (e.g., \"network\", \"exchange\", \"FEE_TYPE_NETWORK\")"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Fee amount as a decimal string"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Fee currency code"
+          }
+        },
+        "required": [
+          "type",
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampQuote": {
+        "description": "Unified quote information across all onramp providers.",
+        "properties": {
+          "paymentTotal": {
+            "type": "string",
+            "description": "Total payment amount including fees"
+          },
+          "paymentSubtotal": {
+            "type": "string",
+            "description": "Payment amount before fees"
+          },
+          "paymentCurrency": {
+            "type": "string",
+            "description": "Fiat currency being paid"
+          },
+          "purchaseAmount": {
+            "type": "string",
+            "description": "Crypto amount to be received"
+          },
+          "purchaseCurrency": {
+            "type": "string",
+            "description": "Crypto currency to be received"
+          },
+          "destinationNetwork": {
+            "type": "string",
+            "description": "Blockchain network for the crypto"
+          },
+          "fees": {
+            "items": {
+              "$ref": "#/components/schemas/OnrampFee"
+            },
+            "type": "array",
+            "description": "Array of fees applied"
+          },
+          "exchangeRate": {
+            "type": "string",
+            "description": "Exchange rate used"
+          }
+        },
+        "required": [
+          "paymentTotal",
+          "paymentSubtotal",
+          "paymentCurrency",
+          "purchaseAmount",
+          "purchaseCurrency",
+          "destinationNetwork",
+          "fees",
+          "exchangeRate"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Record_string.unknown_": {
+        "properties": {},
+        "type": "object",
+        "description": "Construct a type with a set of properties K of type T"
+      },
+      "OnrampSessionResponse": {
+        "description": "Unified onramp session response.\nAll providers return this same structure, ensuring true substitutability.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider",
+            "description": "The onramp provider used"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Session identifier (may be empty if provider doesn't provide one)"
+          },
+          "onrampUrl": {
+            "type": "string",
+            "description": "URL to redirect user to complete the onramp flow"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/OnrampQuote",
+            "description": "Quote information if available"
+          },
+          "providerMetadata": {
+            "$ref": "#/components/schemas/Record_string.unknown_",
+            "description": "Provider-specific additional data (use sparingly)"
+          }
+        },
+        "required": [
+          "provider",
+          "sessionId",
+          "onrampUrl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampSessionRequest": {
+        "description": "Common unified request format for creating an onramp session.\nThis format is provider-agnostic and will be adapted by each provider service.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider"
+          },
+          "destinationCurrency": {
+            "type": "string"
+          },
+          "destinationNetwork": {
+            "type": "string"
+          },
+          "destinationAddress": {
+            "type": "string"
+          },
+          "sourceAmount": {
+            "type": "string"
+          },
+          "sourceCurrency": {
+            "type": "string"
+          },
+          "redirectUrl": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "subdivision": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "clientIp": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "destinationCurrency",
+          "destinationNetwork",
+          "destinationAddress"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampPaymentLink": {
+        "description": "Unified payment link structure.",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL to the payment interface"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of payment link"
+          }
+        },
+        "required": [
+          "url",
+          "type"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampOrderResponse": {
+        "description": "Unified onramp order response.\nAll providers return this same structure, ensuring true substitutability.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider",
+            "description": "The onramp provider used"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Unique order identifier"
+          },
+          "paymentTotal": {
+            "type": "string",
+            "description": "Total payment amount including fees"
+          },
+          "paymentSubtotal": {
+            "type": "string",
+            "description": "Payment amount before fees"
+          },
+          "paymentCurrency": {
+            "type": "string",
+            "description": "Fiat currency being paid"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Payment method used"
+          },
+          "purchaseAmount": {
+            "type": "string",
+            "description": "Crypto amount to be received"
+          },
+          "purchaseCurrency": {
+            "type": "string",
+            "description": "Crypto currency to be received"
+          },
+          "fees": {
+            "items": {
+              "$ref": "#/components/schemas/OnrampFee"
+            },
+            "type": "array",
+            "description": "Array of fees applied"
+          },
+          "exchangeRate": {
+            "type": "string",
+            "description": "Exchange rate used"
+          },
+          "destinationAddress": {
+            "type": "string",
+            "description": "Destination wallet address"
+          },
+          "destinationNetwork": {
+            "type": "string",
+            "description": "Blockchain network for the crypto"
+          },
+          "status": {
+            "type": "string",
+            "description": "Order status (normalized across providers)"
+          },
+          "txHash": {
+            "type": "string",
+            "description": "Transaction hash (once crypto is sent)"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Order creation timestamp (ISO 8601)"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Order last update timestamp (ISO 8601)"
+          },
+          "partnerUserRef": {
+            "type": "string",
+            "description": "Partner user reference"
+          },
+          "paymentLink": {
+            "$ref": "#/components/schemas/OnrampPaymentLink",
+            "description": "Payment link if available"
+          },
+          "providerMetadata": {
+            "$ref": "#/components/schemas/Record_string.unknown_",
+            "description": "Provider-specific additional data (use sparingly)"
+          }
+        },
+        "required": [
+          "provider",
+          "orderId",
+          "paymentTotal",
+          "paymentSubtotal",
+          "paymentCurrency",
+          "paymentMethod",
+          "purchaseAmount",
+          "purchaseCurrency",
+          "fees",
+          "exchangeRate",
+          "destinationAddress",
+          "destinationNetwork",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampOrderRequest": {
+        "description": "Common unified request format for creating an onramp order.\nThis format is provider-agnostic and will be adapted by each provider service.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider"
+          },
+          "sourceCurrency": {
+            "type": "string"
+          },
+          "destinationCurrency": {
+            "type": "string"
+          },
+          "destinationAddress": {
+            "type": "string"
+          },
+          "destinationNetwork": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "agreementAcceptedAt": {
+            "type": "string"
+          },
+          "phoneNumberVerifiedAt": {
+            "type": "string"
+          },
+          "partnerUserRef": {
+            "type": "string"
+          },
+          "sourceAmount": {
+            "type": "string"
+          },
+          "destinationAmount": {
+            "type": "string"
+          },
+          "sourceSubtotalTarget": {
+            "type": "string"
+          },
+          "isQuote": {
+            "type": "boolean"
+          },
+          "partnerOrderRef": {
+            "type": "string"
+          },
+          "clientIp": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "sourceCurrency",
+          "destinationCurrency",
+          "destinationAddress",
+          "destinationNetwork",
+          "paymentMethod",
+          "phoneNumber",
+          "email",
+          "agreementAcceptedAt",
+          "phoneNumberVerifiedAt",
+          "partnerUserRef"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampQuoteResponse": {
+        "description": "Unified onramp quote response.\nAll providers return this same structure, ensuring true substitutability.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider",
+            "description": "The onramp provider used"
+          },
+          "sourceAmount": {
+            "type": "string",
+            "description": "Amount of fiat currency to spend"
+          },
+          "sourceCurrency": {
+            "type": "string",
+            "description": "Fiat currency code"
+          },
+          "destinationAmount": {
+            "type": "string",
+            "description": "Amount of crypto to receive"
+          },
+          "destinationCurrency": {
+            "type": "string",
+            "description": "Crypto currency code"
+          },
+          "destinationNetwork": {
+            "type": "string",
+            "description": "Blockchain network for the crypto"
+          },
+          "fees": {
+            "items": {
+              "$ref": "#/components/schemas/OnrampFee"
+            },
+            "type": "array",
+            "description": "Array of fees that will be applied"
+          },
+          "exchangeRate": {
+            "type": "string",
+            "description": "Exchange rate from source to destination"
+          },
+          "providerMetadata": {
+            "$ref": "#/components/schemas/Record_string.unknown_",
+            "description": "Provider-specific additional data (use sparingly)"
+          }
+        },
+        "required": [
+          "provider",
+          "sourceAmount",
+          "sourceCurrency",
+          "destinationAmount",
+          "destinationCurrency",
+          "destinationNetwork",
+          "fees",
+          "exchangeRate"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampQuoteRequest": {
+        "description": "Common unified request format for getting an onramp quote.\nThis format is provider-agnostic and will be adapted by each provider service.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider"
+          },
+          "sourceCurrency": {
+            "type": "string"
+          },
+          "destinationCurrency": {
+            "type": "string"
+          },
+          "destinationNetwork": {
+            "type": "string"
+          },
+          "sourceAmount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "sourceCurrency",
+          "destinationCurrency",
+          "destinationNetwork",
+          "sourceAmount"
         ],
         "type": "object",
         "additionalProperties": false
@@ -9066,6 +9757,439 @@
         ],
         "type": "object",
         "additionalProperties": false
+      },
+      "AuthUserResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "email": {
+            "type": "string"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "phoneVerified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "email",
+          "emailVerified",
+          "phone",
+          "phoneVerified"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BaseEntityListResponse_AuthUserResponse_": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AuthUserResponse"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthUserListResponse": {
+        "$ref": "#/components/schemas/BaseEntityListResponse_AuthUserResponse_"
+      },
+      "BetterAuthSMSClients.TWILIO": {
+        "enum": [
+          "twilio"
+        ],
+        "type": "string"
+      },
+      "Pick_TwilioSMSConfig.Exclude_keyofTwilioSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.TWILIO"
+          },
+          "accountSid": {
+            "type": "string",
+            "description": "Twilio Account SID"
+          },
+          "authToken": {
+            "type": "string",
+            "description": "Twilio Auth Token"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Twilio phone number (from)"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "senderClient",
+          "accountSid",
+          "authToken",
+          "phoneNumber",
+          "enabled"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_TwilioSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_TwilioSMSConfig.Exclude_keyofTwilioSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "BetterAuthProvidersReqParams": {
+        "enum": [
+          "sms",
+          "email"
+        ],
+        "type": "string"
+      },
+      "TwilioSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_TwilioSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthSMSClients.MESSAGEBIRD": {
+        "enum": [
+          "messagebird"
+        ],
+        "type": "string"
+      },
+      "Pick_MessageBirdSMSConfig.Exclude_keyofMessageBirdSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.MESSAGEBIRD"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "accessKey": {
+            "type": "string",
+            "description": "MessageBird Access Key"
+          },
+          "originator": {
+            "type": "string",
+            "description": "Sender name or number"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "accessKey",
+          "originator"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_MessageBirdSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_MessageBirdSMSConfig.Exclude_keyofMessageBirdSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "MessageBirdSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_MessageBirdSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthSMSClients.TXTLOCAL": {
+        "enum": [
+          "txtlocal"
+        ],
+        "type": "string"
+      },
+      "Pick_TxtLocalSMSConfig.Exclude_keyofTxtLocalSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.TXTLOCAL"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "TxtLocal API Key"
+          },
+          "sender": {
+            "type": "string",
+            "description": "Sender name"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "apiKey",
+          "sender"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_TxtLocalSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_TxtLocalSMSConfig.Exclude_keyofTxtLocalSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "TxtLocalSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_TxtLocalSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthSMSClients.VONAGE": {
+        "enum": [
+          "vonage"
+        ],
+        "type": "string"
+      },
+      "Pick_VonageSMSConfig.Exclude_keyofVonageSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.VONAGE"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "Vonage API Key"
+          },
+          "apiSecret": {
+            "type": "string",
+            "description": "Vonage API Secret"
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender ID or phone number"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "apiKey",
+          "apiSecret",
+          "from"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_VonageSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_VonageSMSConfig.Exclude_keyofVonageSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "VonageSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_VonageSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthSMSClients.SMS_API": {
+        "enum": [
+          "sms_api"
+        ],
+        "type": "string"
+      },
+      "Pick_SmsApiSMSConfig.Exclude_keyofSmsApiSMSConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthSMSClients.SMS_API"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender name"
+          },
+          "token": {
+            "type": "string",
+            "description": "SMSAPI OAuth token"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "from",
+          "token"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_SmsApiSMSConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_SmsApiSMSConfig.Exclude_keyofSmsApiSMSConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "SmsApiSMSParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_SmsApiSMSConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "BetterAuthEmailClients": {
+        "enum": [
+          "brevo"
+        ],
+        "type": "string"
+      },
+      "Pick_BetterAuthEmailOTPConfig.Exclude_keyofBetterAuthEmailOTPConfig.provider__": {
+        "properties": {
+          "senderClient": {
+            "$ref": "#/components/schemas/BetterAuthEmailClients",
+            "description": "Client API will use in order to send Emails"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "Key for client API will use"
+          }
+        },
+        "required": [
+          "senderClient",
+          "enabled",
+          "apiKey"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "Omit_BetterAuthEmailOTPConfig.provider_": {
+        "$ref": "#/components/schemas/Pick_BetterAuthEmailOTPConfig.Exclude_keyofBetterAuthEmailOTPConfig.provider__",
+        "description": "Construct a type with the properties of T except for those in type K."
+      },
+      "BetterAuthEmailOTPParameters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Omit_BetterAuthEmailOTPConfig.provider_"
+          },
+          {
+            "properties": {
+              "provider": {
+                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
+              }
+            },
+            "required": [
+              "provider"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "OAuthParametersV2": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/TwilioSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/MessageBirdSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/TxtLocalSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/VonageSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/SmsApiSMSParameters"
+          },
+          {
+            "$ref": "#/components/schemas/BetterAuthEmailOTPParameters"
+          }
+        ]
       }
     },
     "securitySchemes": {
@@ -9251,6 +10375,9 @@
           },
           {
             "pk_third_party": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": []
@@ -11282,6 +12409,9 @@
           },
           {
             "user_project": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -11425,6 +12555,9 @@
           },
           {
             "user_project": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [],
@@ -11550,6 +12683,9 @@
           },
           {
             "user_project": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -12255,6 +13391,103 @@
             }
           }
         }
+      }
+    },
+    "/v1/assets/{address}": {
+      "get": {
+        "operationId": "GetAssets",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletAssetsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Get wallet assets (native tokens and ERC20 tokens) across multiple chains.\n\nThis endpoint fetches token balances for a given wallet address across all supported chains\nor specific chains if filtered. It includes:\n- Native token balances (ETH, MATIC, etc.)\n- ERC20 token balances\n- USD pricing information (optional)\n- Token metadata (name, symbol, decimals)\n\nResults are cached for 5 minutes to improve performance.\n\nBy default, fetches balances for popular stablecoins (USDC, USDT, DAI) and wrapped tokens\non each chain. You can customize this using the `assetFilter` parameter.",
+        "summary": "Get wallet assets across chains",
+        "tags": [
+          "Assets"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "user_project": []
+          },
+          {
+            "better_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The wallet address to query (EVM address format)",
+            "in": "path",
+            "name": "address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+          },
+          {
+            "in": "query",
+            "name": "chainFilter",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "assetFilter",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "assetTypeFilter",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AssetTypeFilter"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "includePrices",
+            "required": false,
+            "schema": {
+              "default": true,
+              "type": "boolean"
+            }
+          }
+        ]
       }
     },
     "/v1/contracts": {
@@ -18797,6 +20030,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -18952,6 +20188,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -19065,6 +20304,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [],
@@ -19276,6 +20518,9 @@
           },
           {
             "user_project": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -19362,6 +20607,43 @@
             "example": "0xf7b4c54cca21cccf42796502bf94e2838fbd44c4"
           }
         ]
+      },
+      "post": {
+        "operationId": "createAccountV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountV2Response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "tags": [
+          "Accounts"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountRequestV2"
+              }
+            }
+          }
+        }
       }
     },
     "/v2/accounts/signer": {
@@ -19397,6 +20679,9 @@
           },
           {
             "user_project": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -19444,6 +20729,9 @@
           },
           {
             "user_project": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -19488,6 +20776,9 @@
           },
           {
             "sk": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [],
@@ -19497,6 +20788,404 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/SwitchChainQueriesV2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/onramp/sessions": {
+      "post": {
+        "operationId": "createOnrampSession",
+        "responses": {
+          "200": {
+            "description": "Onramp session created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampSessionResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "provider": "coinbase",
+                      "sessionId": "",
+                      "onrampUrl": "https://pay.coinbase.com/buy/session/abc123def456",
+                      "quote": {
+                        "paymentTotal": "105.50",
+                        "paymentSubtotal": "100.00",
+                        "paymentCurrency": "USD",
+                        "purchaseAmount": "100.00",
+                        "purchaseCurrency": "USDC",
+                        "destinationNetwork": "base",
+                        "fees": [
+                          {
+                            "type": "FEE_TYPE_NETWORK",
+                            "amount": "5.50",
+                            "currency": "USD"
+                          }
+                        ],
+                        "exchangeRate": "1.0"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "description": "Creates an onramp session for the selected provider.\n\nThe provider is selected via the `provider` field. All request and response formats are unified\nand provider-agnostic. The service layer handles translation between the common format and\nprovider-specific APIs.",
+        "summary": "Create onramp session",
+        "tags": [
+          "Onramp"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnrampSessionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/onramp/orders": {
+      "post": {
+        "operationId": "createOnrampOrder",
+        "responses": {
+          "201": {
+            "description": "Onramp order created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampOrderResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "provider": "coinbase",
+                      "orderId": "order_abc123def456",
+                      "paymentTotal": "105.50",
+                      "paymentSubtotal": "100.00",
+                      "paymentCurrency": "USD",
+                      "paymentMethod": "GUEST_CHECKOUT_APPLE_PAY",
+                      "purchaseAmount": "100.00",
+                      "purchaseCurrency": "USDC",
+                      "fees": [
+                        {
+                          "type": "FEE_TYPE_NETWORK",
+                          "amount": "5.50",
+                          "currency": "USD"
+                        }
+                      ],
+                      "exchangeRate": "1.0",
+                      "destinationAddress": "0x1234567890123456789012345678901234567890",
+                      "destinationNetwork": "base",
+                      "status": "ONRAMP_ORDER_STATUS_PENDING_PAYMENT",
+                      "createdAt": "2025-04-24T10:00:00Z",
+                      "updatedAt": "2025-04-24T10:00:00Z",
+                      "paymentLink": {
+                        "url": "https://pay.coinbase.com/payment/abc123",
+                        "type": "PAYMENT_LINK_TYPE_APPLE_PAY_BUTTON"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "description": "Creates an onramp order for the selected provider.\n\nNot all providers support order creation. The provider must support the operation otherwise\nan error will be returned. All request and response formats are unified and provider-agnostic.",
+        "summary": "Create onramp order",
+        "tags": [
+          "Onramp"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnrampOrderRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/onramp/quotes": {
+      "post": {
+        "operationId": "getOnrampQuote",
+        "responses": {
+          "200": {
+            "description": "Onramp quote retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampQuoteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "provider": "stripe",
+                      "sourceAmount": "100.00",
+                      "sourceCurrency": "usd",
+                      "destinationAmount": "95.24",
+                      "destinationCurrency": "usdc",
+                      "destinationNetwork": "ethereum",
+                      "fees": [
+                        {
+                          "amount": "2.99",
+                          "currency": "usd",
+                          "type": "network"
+                        }
+                      ],
+                      "exchangeRate": "0.9524"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "description": "Retrieves an onramp quote for the selected provider without creating an actual transaction.\n\nAll request and response formats are unified and provider-agnostic.",
+        "summary": "Get onramp quote",
+        "tags": [
+          "Onramp"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnrampQuoteRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v2/me": {
+      "get": {
+        "operationId": "MeV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_...",
+                      "createdAt": 1234567890,
+                      "email": "jaume@openfort.xyz",
+                      "emailVerified": true,
+                      "phone": "",
+                      "phoneVerified": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "tags": [
+          "AuthenticationV2"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "better_auth": []
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/iam/v2/users": {
+      "get": {
+        "operationId": "GetAuthPlayersV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_...",
+                      "createdAt": 1234567890,
+                      "email": "jaume@openfort.xyz",
+                      "emailVerified": true,
+                      "phone": "",
+                      "phoneVerified": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "tags": [
+          "AuthenticationV2"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/SortOrder"
+            }
+          }
+        ]
+      }
+    },
+    "/iam/v2/oauth": {
+      "post": {
+        "operationId": "CreateOAuthConfigV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "enabled": true,
+                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
+                      "clientId": "1234567890abcdef1234567890abcdef",
+                      "clientSecret": "abcdef1234567890abcdef1234567890",
+                      "provider": "accelbyte"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "The endpoint creates oauth configuration for the current project environment.",
+        "summary": "Create oauth configuration.",
+        "tags": [
+          "AdminAuthenticationV2"
+        ],
+        "deprecated": true,
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "description": "Specifies the oauth provider specific configuration.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthParametersV2",
+                "description": "Specifies the oauth provider specific configuration."
               }
             }
           }

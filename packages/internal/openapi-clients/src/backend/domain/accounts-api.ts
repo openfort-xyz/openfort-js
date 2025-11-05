@@ -38,6 +38,8 @@ import { CompleteRecoveryRequest } from '../models';
 // @ts-ignore
 import { CreateAccountRequest } from '../models';
 // @ts-ignore
+import { CreateAccountRequestV2 } from '../models';
+// @ts-ignore
 import { DeployRequest } from '../models';
 // @ts-ignore
 import { SignPayloadRequest } from '../models';
@@ -183,6 +185,45 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createAccountRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {CreateAccountRequestV2} createAccountRequestV2 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAccountV2: async (createAccountRequestV2: CreateAccountRequestV2, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createAccountRequestV2' is not null or undefined
+            assertParamExists('createAccountV2', 'createAccountRequestV2', createAccountRequestV2)
+            const localVarPath = `/v2/accounts`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createAccountRequestV2, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -788,6 +829,16 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 
+         * @param {CreateAccountRequestV2} createAccountRequestV2 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAccountV2(createAccountRequestV2: CreateAccountRequestV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAccountV2(createAccountRequestV2, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
          * @summary Deploy an account.
          * @param {string} id Specifies the unique account ID (starts with acc_).
@@ -974,6 +1025,15 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.createAccount(requestParameters.createAccountRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @param {AccountsApiCreateAccountV2Request} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAccountV2(requestParameters: AccountsApiCreateAccountV2Request, options?: AxiosRequestConfig): AxiosPromise<AccountV2Response> {
+            return localVarFp.createAccountV2(requestParameters.createAccountRequestV2, options).then((request) => request(axios, basePath));
+        },
+        /**
          * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
          * @summary Deploy an account.
          * @param {AccountsApiDeployAccountRequest} requestParameters Request parameters.
@@ -1146,6 +1206,20 @@ export interface AccountsApiCreateAccountRequest {
      * @memberof AccountsApiCreateAccount
      */
     readonly createAccountRequest: CreateAccountRequest
+}
+
+/**
+ * Request parameters for createAccountV2 operation in AccountsApi.
+ * @export
+ * @interface AccountsApiCreateAccountV2Request
+ */
+export interface AccountsApiCreateAccountV2Request {
+    /**
+     * 
+     * @type {CreateAccountRequestV2}
+     * @memberof AccountsApiCreateAccountV2
+     */
+    readonly createAccountRequestV2: CreateAccountRequestV2
 }
 
 /**
@@ -1483,6 +1557,17 @@ export class AccountsApi extends BaseAPI {
      */
     public createAccount(requestParameters: AccountsApiCreateAccountRequest, options?: AxiosRequestConfig) {
         return AccountsApiFp(this.configuration).createAccount(requestParameters.createAccountRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {AccountsApiCreateAccountV2Request} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApi
+     */
+    public createAccountV2(requestParameters: AccountsApiCreateAccountV2Request, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).createAccountV2(requestParameters.createAccountRequestV2, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

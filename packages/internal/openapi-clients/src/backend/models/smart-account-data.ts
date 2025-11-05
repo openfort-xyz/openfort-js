@@ -31,7 +31,7 @@ export interface SmartAccountData {
      * @type {string}
      * @memberof SmartAccountData
      */
-    'factoryAddress': string;
+    'factoryAddress'?: string;
     /**
      * 
      * @type {string}
@@ -43,7 +43,7 @@ export interface SmartAccountData {
      * @type {string}
      * @memberof SmartAccountData
      */
-    'salt': string;
+    'salt'?: string;
     /**
      * 
      * @type {string}

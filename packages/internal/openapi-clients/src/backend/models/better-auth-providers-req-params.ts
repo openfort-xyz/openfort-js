@@ -20,14 +20,12 @@
  * @enum {string}
  */
 
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
+export const BetterAuthProvidersReqParams = {
+    Sms: 'sms',
+    Email: 'email'
 } as const;
 
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
+export type BetterAuthProvidersReqParams = typeof BetterAuthProvidersReqParams[keyof typeof BetterAuthProvidersReqParams];
 
 
 

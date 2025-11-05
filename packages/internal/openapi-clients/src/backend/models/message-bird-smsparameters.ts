@@ -15,22 +15,21 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { BasicAuthProvider } from './basic-auth-provider';
+import { BetterAuthProvidersReqParams } from './better-auth-providers-req-params';
 // May contain unused imports in some cases
 // @ts-ignore
-import { BetterAuthProviders } from './better-auth-providers';
+import { BetterAuthSMSClientsMESSAGEBIRD } from './better-auth-smsclients-messagebird';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProvider } from './oauth-provider';
+import { PickMessageBirdSMSConfigExcludeKeyofMessageBirdSMSConfigProvider } from './pick-message-bird-smsconfig-exclude-keyof-message-bird-smsconfig-provider';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ThirdPartyOAuthProvider } from './third-party-oauth-provider';
+import { TwilioSMSParametersAllOf } from './twilio-smsparameters-all-of';
 
 /**
- * Enum of the supporting Auth providers.
+ * @type MessageBirdSMSParameters
  * @export
- * @interface AuthProvider
  */
-export interface AuthProvider {
-}
+export type MessageBirdSMSParameters = PickMessageBirdSMSConfigExcludeKeyofMessageBirdSMSConfigProvider & TwilioSMSParametersAllOf;
+
 

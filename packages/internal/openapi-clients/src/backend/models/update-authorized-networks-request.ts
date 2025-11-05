@@ -13,21 +13,21 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { AuthorizedNetwork } from './authorized-network';
 
 /**
  * 
  * @export
- * @enum {string}
+ * @interface UpdateAuthorizedNetworksRequest
  */
-
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
-} as const;
-
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
-
-
+export interface UpdateAuthorizedNetworksRequest {
+    /**
+     * 
+     * @type {Array<AuthorizedNetwork>}
+     * @memberof UpdateAuthorizedNetworksRequest
+     */
+    'authorizedNetworks': Array<AuthorizedNetwork>;
+}
 

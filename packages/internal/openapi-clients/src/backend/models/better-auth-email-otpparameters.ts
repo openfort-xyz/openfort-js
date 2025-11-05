@@ -15,22 +15,21 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { BasicAuthProvider } from './basic-auth-provider';
+import { BetterAuthEmailClients } from './better-auth-email-clients';
 // May contain unused imports in some cases
 // @ts-ignore
-import { BetterAuthProviders } from './better-auth-providers';
+import { BetterAuthProvidersReqParams } from './better-auth-providers-req-params';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OAuthProvider } from './oauth-provider';
+import { PickBetterAuthEmailOTPConfigExcludeKeyofBetterAuthEmailOTPConfigProvider } from './pick-better-auth-email-otpconfig-exclude-keyof-better-auth-email-otpconfig-provider';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ThirdPartyOAuthProvider } from './third-party-oauth-provider';
+import { TwilioSMSParametersAllOf } from './twilio-smsparameters-all-of';
 
 /**
- * Enum of the supporting Auth providers.
+ * @type BetterAuthEmailOTPParameters
  * @export
- * @interface AuthProvider
  */
-export interface AuthProvider {
-}
+export type BetterAuthEmailOTPParameters = PickBetterAuthEmailOTPConfigExcludeKeyofBetterAuthEmailOTPConfigProvider & TwilioSMSParametersAllOf;
+
 

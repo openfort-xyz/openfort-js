@@ -17,17 +17,20 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface AuthorizedNetwork
  */
-
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
-} as const;
-
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
-
-
+export interface AuthorizedNetwork {
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthorizedNetwork
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthorizedNetwork
+     */
+    'network': string;
+}
 

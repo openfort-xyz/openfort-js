@@ -15,19 +15,17 @@
 
 
 /**
- * 
+ * Asset type filter options
  * @export
  * @enum {string}
  */
 
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
+export const AssetTypeFilter = {
+    Native: 'native',
+    Erc20: 'erc20'
 } as const;
 
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
+export type AssetTypeFilter = typeof AssetTypeFilter[keyof typeof AssetTypeFilter];
 
 
 

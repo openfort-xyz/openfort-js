@@ -13,21 +13,21 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { AuthorizedApp } from './authorized-app';
 
 /**
  * 
  * @export
- * @enum {string}
+ * @interface UpdateAuthorizedAppsRequest
  */
-
-export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
-} as const;
-
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
-
-
+export interface UpdateAuthorizedAppsRequest {
+    /**
+     * 
+     * @type {Array<AuthorizedApp>}
+     * @memberof UpdateAuthorizedAppsRequest
+     */
+    'authorizedApps': Array<AuthorizedApp>;
+}
 
