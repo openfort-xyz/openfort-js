@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { PrismaSortOrder } from './prisma-sort-order';
 
 /**
  * 
@@ -37,10 +37,10 @@ export interface AccountInventoryListQueries {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof AccountInventoryListQueries
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * 
      * @type {Array<string>}

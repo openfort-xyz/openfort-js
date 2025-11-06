@@ -139,10 +139,10 @@ export interface OnrampOrderResponse {
     'paymentLink'?: OnrampPaymentLink;
     /**
      * Construct a type with a set of properties K of type T
-     * @type {object}
+     * @type {{ [key: string]: any; }}
      * @memberof OnrampOrderResponse
      */
-    'providerMetadata'?: object;
+    'providerMetadata'?: { [key: string]: any; };
 }
 
 

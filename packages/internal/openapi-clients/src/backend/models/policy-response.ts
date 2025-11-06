@@ -15,13 +15,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { DeveloperAccountResponseTransactionIntentsInner } from './developer-account-response-transaction-intents-inner';
+// May contain unused imports in some cases
+// @ts-ignore
 import { EntityIdResponse } from './entity-id-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import { EntityTypePOLICY } from './entity-type-policy';
-// May contain unused imports in some cases
-// @ts-ignore
-import { PlayerResponseTransactionIntentsInner } from './player-response-transaction-intents-inner';
 // May contain unused imports in some cases
 // @ts-ignore
 import { PolicyResponsePolicyRulesInner } from './policy-response-policy-rules-inner';
@@ -97,10 +97,10 @@ export interface PolicyResponse {
     'strategy': PolicyStrategy;
     /**
      * 
-     * @type {Array<PlayerResponseTransactionIntentsInner>}
+     * @type {Array<DeveloperAccountResponseTransactionIntentsInner>}
      * @memberof PolicyResponse
      */
-    'transactionIntents': Array<PlayerResponseTransactionIntentsInner>;
+    'transactionIntents': Array<DeveloperAccountResponseTransactionIntentsInner>;
     /**
      * 
      * @type {Array<PolicyResponsePolicyRulesInner>}

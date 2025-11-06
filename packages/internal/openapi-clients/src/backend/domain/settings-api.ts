@@ -34,11 +34,11 @@ import { DeveloperAccountResponse } from '../models';
 // @ts-ignore
 import { DeveloperAccountResponseExpandable } from '../models';
 // @ts-ignore
+import { PrismaSortOrder } from '../models';
+// @ts-ignore
 import { SignPayloadRequest } from '../models';
 // @ts-ignore
 import { SignPayloadResponse } from '../models';
-// @ts-ignore
-import { SortOrder } from '../models';
 // @ts-ignore
 import { UpdateDeveloperAccountCreateRequest } from '../models';
 /**
@@ -173,13 +173,13 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
          * @summary List of developer accounts.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<DeveloperAccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {boolean} [deleted] Specifies whether to include deleted dev accounts.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDeveloperAccounts: async (limit?: number, skip?: number, order?: SortOrder, expand?: Array<DeveloperAccountResponseExpandable>, deleted?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getDeveloperAccounts: async (limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<DeveloperAccountResponseExpandable>, deleted?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/settings/developer_accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -405,13 +405,13 @@ export const SettingsApiFp = function(configuration?: Configuration) {
          * @summary List of developer accounts.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<DeveloperAccountResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {boolean} [deleted] Specifies whether to include deleted dev accounts.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getDeveloperAccounts(limit?: number, skip?: number, order?: SortOrder, expand?: Array<DeveloperAccountResponseExpandable>, deleted?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountListResponse>> {
+        async getDeveloperAccounts(limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<DeveloperAccountResponseExpandable>, deleted?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeveloperAccountListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getDeveloperAccounts(limit, skip, order, expand, deleted, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -604,10 +604,10 @@ export interface SettingsApiGetDeveloperAccountsRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof SettingsApiGetDeveloperAccounts
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the fields to expand in the response.

@@ -76,10 +76,10 @@ export interface OnrampQuoteResponse {
     'exchangeRate': string;
     /**
      * Construct a type with a set of properties K of type T
-     * @type {object}
+     * @type {{ [key: string]: any; }}
      * @memberof OnrampQuoteResponse
      */
-    'providerMetadata'?: object;
+    'providerMetadata'?: { [key: string]: any; };
 }
 
 

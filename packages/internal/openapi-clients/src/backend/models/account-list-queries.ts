@@ -18,7 +18,7 @@
 import { AccountResponseExpandable } from './account-response-expandable';
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { PrismaSortOrder } from './prisma-sort-order';
 
 /**
  * 
@@ -40,10 +40,10 @@ export interface AccountListQueries {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof AccountListQueries
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * The chain ID. Must be a [supported chain](/development/chains).
      * @type {number}

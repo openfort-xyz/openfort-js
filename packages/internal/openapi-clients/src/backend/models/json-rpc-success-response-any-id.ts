@@ -15,17 +15,10 @@
 
 
 /**
- * Asset type filter options
+ * 
  * @export
- * @enum {string}
+ * @interface JsonRpcSuccessResponseAnyId
  */
-
-export const AssetTypeFilter = {
-    Native: 'native',
-    Erc20: 'erc20'
-} as const;
-
-export type AssetTypeFilter = typeof AssetTypeFilter[keyof typeof AssetTypeFilter];
-
-
+export interface JsonRpcSuccessResponseAnyId {
+}
 

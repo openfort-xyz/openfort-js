@@ -17,26 +17,15 @@
 /**
  * 
  * @export
- * @interface SubscriptionResponsePlan
+ * @enum {string}
  */
-export interface SubscriptionResponsePlan {
-    /**
-     * 
-     * @type {number}
-     * @memberof SubscriptionResponsePlan
-     */
-    'price': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof SubscriptionResponsePlan
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SubscriptionResponsePlan
-     */
-    'id': string;
-}
+
+export const PrismaSortOrder = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+
+export type PrismaSortOrder = typeof PrismaSortOrder[keyof typeof PrismaSortOrder];
+
+
 

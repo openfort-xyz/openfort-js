@@ -32,7 +32,7 @@ import { CreateSubscriptionRequest } from '../models';
 // @ts-ignore
 import { CreateTriggerRequest } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 // @ts-ignore
 import { Status } from '../models';
 // @ts-ignore
@@ -374,7 +374,7 @@ export const SubscriptionsApiAxiosParamCreator = function (configuration?: Confi
          * @summary List logs of triggered subscriptions.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {APITopic} [topic] Specifies the topic of the subscription logs
          * @param {Status} [status] Specifies the status of the subscription logs
          * @param {string} [object] Specifies the object ID of the object related to triggered notification
@@ -384,7 +384,7 @@ export const SubscriptionsApiAxiosParamCreator = function (configuration?: Confi
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listSubscriptionLogs: async (limit?: number, skip?: number, order?: SortOrder, topic?: APITopic, status?: Status, object?: string, subscription?: string, trigger?: string, requestID?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listSubscriptionLogs: async (limit?: number, skip?: number, order?: PrismaSortOrder, topic?: APITopic, status?: Status, object?: string, subscription?: string, trigger?: string, requestID?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/subscriptions/logs`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -587,7 +587,7 @@ export const SubscriptionsApiFp = function(configuration?: Configuration) {
          * @summary List logs of triggered subscriptions.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {APITopic} [topic] Specifies the topic of the subscription logs
          * @param {Status} [status] Specifies the status of the subscription logs
          * @param {string} [object] Specifies the object ID of the object related to triggered notification
@@ -597,7 +597,7 @@ export const SubscriptionsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listSubscriptionLogs(limit?: number, skip?: number, order?: SortOrder, topic?: APITopic, status?: Status, object?: string, subscription?: string, trigger?: string, requestID?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseLogResponse>> {
+        async listSubscriptionLogs(limit?: number, skip?: number, order?: PrismaSortOrder, topic?: APITopic, status?: Status, object?: string, subscription?: string, trigger?: string, requestID?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseLogResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listSubscriptionLogs(limit, skip, order, topic, status, object, subscription, trigger, requestID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -863,10 +863,10 @@ export interface SubscriptionsApiListSubscriptionLogsRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof SubscriptionsApiListSubscriptionLogs
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the topic of the subscription logs

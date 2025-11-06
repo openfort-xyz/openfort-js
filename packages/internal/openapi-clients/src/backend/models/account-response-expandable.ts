@@ -21,8 +21,8 @@
  */
 
 export const AccountResponseExpandable = {
-    TransactionIntents: 'transactionIntents',
-    Player: 'player'
+    Player: 'player',
+    TransactionIntents: 'transactionIntents'
 } as const;
 
 export type AccountResponseExpandable = typeof AccountResponseExpandable[keyof typeof AccountResponseExpandable];

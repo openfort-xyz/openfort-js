@@ -15,17 +15,28 @@
 
 
 /**
- * 
+ * JSON-RPC 2.0 Error Object
  * @export
- * @enum {string}
+ * @interface JsonRpcError
  */
-
-export const SortOrder = {
-    Asc: 'asc',
-    Desc: 'desc'
-} as const;
-
-export type SortOrder = typeof SortOrder[keyof typeof SortOrder];
-
-
+export interface JsonRpcError {
+    /**
+     * 
+     * @type {number}
+     * @memberof JsonRpcError
+     */
+    'code': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof JsonRpcError
+     */
+    'message': string;
+    /**
+     * 
+     * @type {any}
+     * @memberof JsonRpcError
+     */
+    'data'?: any;
+}
 

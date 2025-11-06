@@ -28,7 +28,7 @@ import { PaymasterDeleteResponse } from '../models';
 // @ts-ignore
 import { PaymasterResponse } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 /**
  * PaymasterApi - axios parameter creator
  * @export
@@ -156,11 +156,11 @@ export const PaymasterApiAxiosParamCreator = function (configuration?: Configura
          * @summary List paymasters.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPaymasters: async (limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listPaymasters: async (limit?: number, skip?: number, order?: PrismaSortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/paymasters`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -292,11 +292,11 @@ export const PaymasterApiFp = function(configuration?: Configuration) {
          * @summary List paymasters.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPaymasters(limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PaymasterResponse>>> {
+        async listPaymasters(limit?: number, skip?: number, order?: PrismaSortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PaymasterResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPaymasters(limit, skip, order, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -439,10 +439,10 @@ export interface PaymasterApiListPaymastersRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof PaymasterApiListPaymasters
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 }
 
 /**

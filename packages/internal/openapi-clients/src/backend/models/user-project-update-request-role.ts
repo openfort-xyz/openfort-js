@@ -13,18 +13,18 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { UserProjectRoleADMIN } from './user-project-role-admin';
+// May contain unused imports in some cases
+// @ts-ignore
+import { UserProjectRoleMEMBER } from './user-project-role-member';
 
 /**
- * 
+ * The role of the user.
  * @export
- * @enum {string}
+ * @interface UserProjectUpdateRequestRole
  */
-
-export const EntityTypeWALLETASSETS = {
-    WalletAssets: 'wallet_assets'
-} as const;
-
-export type EntityTypeWALLETASSETS = typeof EntityTypeWALLETASSETS[keyof typeof EntityTypeWALLETASSETS];
-
-
+export interface UserProjectUpdateRequestRole {
+}
 

@@ -1,39 +1,72 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import type { AssetTypeFilter, WalletAssetsResponse } from '@openfort/openapi-clients/dist/backend'
+import type { JsonRpcResponse } from '@openfort/openapi-clients/dist/backend'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
+import type { Hex } from './types'
 
-export type GetAssetsParameters = {
-  chainFilter?: number[]
-  assetFilter?: string
-  assetTypeFilter?: AssetTypeFilter[]
-  includePrices?: boolean
+// EIP-7811 wallet_getAssets RPC request parameters
+export type AssetType = 'native' | 'erc20' | (string & Record<string, never>)
+export type AddressOrNative = string | 'native'
+
+export type WalletGetAssetsParameters = {
+  account: string
+  chainFilter?: readonly Hex[] | undefined
+  assetFilter?:
+    | {
+        [chainId: Hex]: readonly {
+          address: AddressOrNative
+          type: AssetType
+        }[]
+      }
+    | undefined
+  assetTypeFilter?: readonly AssetType[] | undefined
+}
+
+// EIP-7811 wallet_getAssets RPC response
+export type Asset = {
+  address: AddressOrNative
+  balance: Hex
+  type: AssetType
+  metadata?: any
+}
+
+export type WalletGetAssetsReturnType = {
+  [chainId: Hex]: readonly Asset[]
 }
 
 type GetAssetsParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication
-  params?: GetAssetsParameters
+  params?: WalletGetAssetsParameters
 }
 
 const fetchWalletAssets = async (
   backendApiClients: BackendApiClients,
   account: Account,
   authentication: Authentication,
-  params?: GetAssetsParameters
-): Promise<WalletAssetsResponse> =>
-  withOpenfortError<WalletAssetsResponse>(
+  params?: WalletGetAssetsParameters
+): Promise<JsonRpcResponse> => {
+  // Convert hex chainIds to integers for backend API
+  const chainFilter = params?.chainFilter?.map((hexChainId) => Number.parseInt(hexChainId, 16))
+
+  return withOpenfortError<JsonRpcResponse>(
     async () => {
-      const response = await backendApiClients.assetsApi.getAssets(
+      const response = await backendApiClients.rpcApi.handleRpcRequest(
         {
-          address: account.address,
-          chainFilter: params?.chainFilter,
-          assetFilter: params?.assetFilter,
-          assetTypeFilter: params?.assetTypeFilter,
-          includePrices: params?.includePrices,
+          jsonRpcRequest: {
+            method: 'wallet_getAssets',
+            params: {
+              account: account.address,
+              chainFilter: chainFilter,
+              assetFilter: params?.assetFilter,
+              assetTypeFilter: params?.assetTypeFilter,
+            },
+            id: 1,
+            jsonrpc: '2.0',
+          },
         },
         {
           headers: {
@@ -51,16 +84,17 @@ const fetchWalletAssets = async (
     },
     { default: OpenfortErrorType.AUTHENTICATION_ERROR }
   )
+}
 
 export const getAssets = async ({
   params,
   account,
   authentication,
   backendClient,
-}: GetAssetsParams): Promise<WalletAssetsResponse> => {
-  const assets = await fetchWalletAssets(backendClient, account, authentication, params).catch((error) => {
+}: GetAssetsParams): Promise<WalletGetAssetsReturnType> => {
+  const response = await fetchWalletAssets(backendClient, account, authentication, params).catch((error) => {
     throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, error.message)
   })
 
-  return assets
+  return response.result
 }

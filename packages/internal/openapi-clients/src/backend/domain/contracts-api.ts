@@ -32,7 +32,7 @@ import { ContractResponse } from '../models';
 // @ts-ignore
 import { CreateContractRequest } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 // @ts-ignore
 import { UpdateContractRequest } from '../models';
 /**
@@ -162,7 +162,7 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
          * @summary List contracts.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [name] Specifies the name of the contract.
          * @param {boolean} [deleted] Specifies whether to include deleted contracts.
          * @param {number} [chainId] The chain ID of the contract.
@@ -170,7 +170,7 @@ export const ContractsApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getContracts: async (limit?: number, skip?: number, order?: SortOrder, name?: string, deleted?: boolean, chainId?: number, address?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getContracts: async (limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, deleted?: boolean, chainId?: number, address?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/contracts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -368,7 +368,7 @@ export const ContractsApiFp = function(configuration?: Configuration) {
          * @summary List contracts.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [name] Specifies the name of the contract.
          * @param {boolean} [deleted] Specifies whether to include deleted contracts.
          * @param {number} [chainId] The chain ID of the contract.
@@ -376,7 +376,7 @@ export const ContractsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getContracts(limit?: number, skip?: number, order?: SortOrder, name?: string, deleted?: boolean, chainId?: number, address?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractListResponse>> {
+        async getContracts(limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, deleted?: boolean, chainId?: number, address?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContractListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getContracts(limit, skip, order, name, deleted, chainId, address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -542,10 +542,10 @@ export interface ContractsApiGetContractsRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof ContractsApiGetContracts
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the name of the contract.

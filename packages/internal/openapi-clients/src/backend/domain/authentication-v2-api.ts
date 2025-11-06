@@ -26,7 +26,7 @@ import { AuthUserResponse } from '../models';
 // @ts-ignore
 import { BaseEntityListResponseAuthUserResponse } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 /**
  * AuthenticationV2Api - axios parameter creator
  * @export
@@ -37,11 +37,11 @@ export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Co
          * 
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthPlayersV2: async (limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAuthPlayersV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/iam/v2/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -124,11 +124,11 @@ export const AuthenticationV2ApiFp = function(configuration?: Configuration) {
          * 
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAuthPlayersV2(limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAuthUserResponse>> {
+        async getAuthPlayersV2(limit?: number, skip?: number, order?: PrismaSortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAuthUserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthPlayersV2(limit, skip, order, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -193,10 +193,10 @@ export interface AuthenticationV2ApiGetAuthPlayersV2Request {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof AuthenticationV2ApiGetAuthPlayersV2
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 }
 
 /**

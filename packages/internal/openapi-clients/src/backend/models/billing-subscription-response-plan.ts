@@ -13,21 +13,30 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { UserProjectUpdateRequestRole } from './user-project-update-request-role';
 
 /**
  * 
  * @export
- * @interface UserProjectUpdateRequest
+ * @interface BillingSubscriptionResponsePlan
  */
-export interface UserProjectUpdateRequest {
+export interface BillingSubscriptionResponsePlan {
     /**
      * 
-     * @type {UserProjectUpdateRequestRole}
-     * @memberof UserProjectUpdateRequest
+     * @type {number}
+     * @memberof BillingSubscriptionResponsePlan
      */
-    'role': UserProjectUpdateRequestRole;
+    'price': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof BillingSubscriptionResponsePlan
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof BillingSubscriptionResponsePlan
+     */
+    'id': string;
 }
 

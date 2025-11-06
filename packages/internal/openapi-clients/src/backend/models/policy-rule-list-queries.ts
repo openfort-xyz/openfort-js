@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { PrismaSortOrder } from './prisma-sort-order';
 
 /**
  * 
@@ -37,10 +37,10 @@ export interface PolicyRuleListQueries {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof PolicyRuleListQueries
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * Specifies the fields to expand in the response.
      * @type {Array<string>}

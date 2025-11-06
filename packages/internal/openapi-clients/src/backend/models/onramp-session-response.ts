@@ -52,10 +52,10 @@ export interface OnrampSessionResponse {
     'quote'?: OnrampQuote;
     /**
      * Construct a type with a set of properties K of type T
-     * @type {object}
+     * @type {{ [key: string]: any; }}
      * @memberof OnrampSessionResponse
      */
-    'providerMetadata'?: object;
+    'providerMetadata'?: { [key: string]: any; };
 }
 
 

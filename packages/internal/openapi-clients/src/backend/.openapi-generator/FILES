@@ -8,7 +8,6 @@ configuration.ts
 domain/accounts-api.ts
 domain/admin-authentication-api.ts
 domain/admin-authentication-v2-api.ts
-domain/assets-api.ts
 domain/authentication-api.ts
 domain/authentication-v2-api.ts
 domain/contracts-api.ts
@@ -23,6 +22,7 @@ domain/paymaster-api.ts
 domain/players-api.ts
 domain/policies-api.ts
 domain/policy-rules-api.ts
+domain/rpcapi.ts
 domain/sessions-api.ts
 domain/settings-api.ts
 domain/subscriptions-api.ts
@@ -60,7 +60,6 @@ models/apitopic.ts
 models/apitrigger-type.ts
 models/apple-oauth-config.ts
 models/asset-inventory.ts
-models/asset-type-filter.ts
 models/asset-type.ts
 models/auth-config.ts
 models/auth-migration-list-response.ts
@@ -110,6 +109,8 @@ models/better-auth-smsclients-smsapi.ts
 models/better-auth-smsclients-twilio.ts
 models/better-auth-smsclients-txtlocal.ts
 models/better-auth-smsclients-vonage.ts
+models/billing-subscription-response-plan.ts
+models/billing-subscription-response.ts
 models/cancel-transfer-ownership-request.ts
 models/charge-custom-token-policy-strategy.ts
 models/checkout-request.ts
@@ -161,6 +162,7 @@ models/developer-account-get-message-response.ts
 models/developer-account-list-queries.ts
 models/developer-account-list-response.ts
 models/developer-account-response-expandable.ts
+models/developer-account-response-transaction-intents-inner.ts
 models/developer-account-response.ts
 models/developer-account.ts
 models/device-list-queries.ts
@@ -172,6 +174,7 @@ models/email-sample-delete-response.ts
 models/email-sample-response.ts
 models/email-type-request.ts
 models/email-type-response.ts
+models/embedded-next-action-response.ts
 models/embedded-response.ts
 models/embedded-v2-response.ts
 models/entity-id-response.ts
@@ -197,7 +200,6 @@ models/entity-type-subscription.ts
 models/entity-type-transactionintent.ts
 models/entity-type-trigger.ts
 models/entity-type-user.ts
-models/entity-type-walletassets.ts
 models/epic-games-oauth-config.ts
 models/error-type-invalidrequesterror.ts
 models/estimate-transaction-intent-gas-result.ts
@@ -229,6 +231,12 @@ models/invalid-request-error-response.ts
 models/invalid-request-error.ts
 models/inventory-list-response.ts
 models/inventory-response.ts
+models/json-rpc-error-response.ts
+models/json-rpc-error.ts
+models/json-rpc-request.ts
+models/json-rpc-response.ts
+models/json-rpc-success-response-any-id.ts
+models/json-rpc-success-response-any.ts
 models/jwt-key-response.ts
 models/jwt-key.ts
 models/line-oauth-config.ts
@@ -283,6 +291,8 @@ models/paymaster-delete-response.ts
 models/paymaster-response.ts
 models/pick-better-auth-email-otpconfig-exclude-keyof-better-auth-email-otpconfig-provider.ts
 models/pick-contract-response-id.ts
+models/pick-json-fragment-exclude-keyof-json-fragment-inputs-or-outputs.ts
+models/pick-json-fragment-type-exclude-keyof-json-fragment-type-components.ts
 models/pick-message-bird-smsconfig-exclude-keyof-message-bird-smsconfig-provider.ts
 models/pick-player-response-id.ts
 models/pick-sms-api-smsconfig-exclude-keyof-sms-api-smsconfig-provider.ts
@@ -302,7 +312,6 @@ models/player-list-response.ts
 models/player-metadata-value.ts
 models/player-response-accounts-inner.ts
 models/player-response-expandable.ts
-models/player-response-transaction-intents-inner.ts
 models/player-response.ts
 models/player-transfer-ownership-request.ts
 models/player-update-request.ts
@@ -331,6 +340,7 @@ models/policy-rule-type.ts
 models/policy-strategy-request.ts
 models/policy-strategy.ts
 models/policy.ts
+models/prisma-sort-order.ts
 models/private-key-policy.ts
 models/project-list-response.ts
 models/project-logs.ts
@@ -366,7 +376,6 @@ models/siwerequest.ts
 models/smart-account-data.ts
 models/sms-api-smsparameters.ts
 models/smtpconfig-response.ts
-models/sort-order.ts
 models/sponsor-schema-chargecustomtokens.ts
 models/sponsor-schema-fixedrate.ts
 models/sponsor-schema-payforuser.ts
@@ -377,7 +386,6 @@ models/stat.ts
 models/status.ts
 models/subscription-delete-response.ts
 models/subscription-list-response.ts
-models/subscription-response-plan.ts
 models/subscription-response.ts
 models/supabase-auth-config.ts
 models/switch-chain-queries-v2.ts
@@ -399,15 +407,16 @@ models/token.ts
 models/trade-type.ts
 models/transaction-abstraction-type.ts
 models/transaction-confirmed-event-response.ts
-models/transaction-intent-details.ts
 models/transaction-intent-list-queries.ts
 models/transaction-intent-list-response.ts
 models/transaction-intent-response-account.ts
+models/transaction-intent-response-details.ts
 models/transaction-intent-response-expandable.ts
 models/transaction-intent-response-player.ts
 models/transaction-intent-response-policy.ts
 models/transaction-intent-response.ts
 models/transaction-intent.ts
+models/transaction-response-log.ts
 models/transaction-stat.ts
 models/transaction-status.ts
 models/transfer-ownership-request.ts
@@ -444,10 +453,10 @@ models/user-project-response.ts
 models/user-project-role-admin.ts
 models/user-project-role-member.ts
 models/user-project-role.ts
+models/user-project-update-request-role.ts
 models/user-project-update-request.ts
 models/verify-email-request.ts
 models/vonage-smsparameters.ts
-models/wallet-assets-response.ts
 models/webhook-response.ts
 models/withdrawal-policy-request.ts
 models/zksync-details.ts
