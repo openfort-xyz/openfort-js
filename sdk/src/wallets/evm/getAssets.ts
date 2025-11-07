@@ -7,10 +7,10 @@ import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import type { Hex } from './types'
 
 // EIP-7811 wallet_getAssets RPC request parameters
-export type AssetType = 'native' | 'erc20' | (string & Record<string, never>)
-export type AddressOrNative = string | 'native'
+type AssetType = 'native' | 'erc20' | (string & Record<string, never>)
+type AddressOrNative = string | 'native'
 
-export type WalletGetAssetsParameters = {
+type WalletGetAssetsParameters = {
   account: string
   chainFilter?: readonly Hex[] | undefined
   assetFilter?:
@@ -25,14 +25,14 @@ export type WalletGetAssetsParameters = {
 }
 
 // EIP-7811 wallet_getAssets RPC response
-export type Asset = {
+type Asset = {
   address: AddressOrNative
   balance: Hex
   type: AssetType
   metadata?: any
 }
 
-export type WalletGetAssetsReturnType = {
+type WalletGetAssetsReturnType = {
   [chainId: Hex]: readonly Asset[]
 }
 
