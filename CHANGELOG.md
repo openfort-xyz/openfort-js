@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.33
+
+### Patch Changes
+
+- [#165](https://github.com/openfort-xyz/openfort-js/pull/165) [`49f07f1`](https://github.com/openfort-xyz/openfort-js/commit/49f07f147596bc7b0334179dc333ee55e16e80dd) Thanks [@jamalavedra](https://github.com/jamalavedra)! - new wallet_getAssets and improve flush on 401
+
 ## 0.10.32
 
 ### Patch Changes
