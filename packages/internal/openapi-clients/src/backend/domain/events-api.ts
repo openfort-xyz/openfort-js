@@ -30,7 +30,7 @@ import { EventListResponse } from '../models';
 // @ts-ignore
 import { EventResponse } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 /**
  * EventsApi - axios parameter creator
  * @export
@@ -158,13 +158,13 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
          * @summary List events.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [name] Specifies the name of the event
          * @param {boolean} [deleted] Specifies if display deleted events
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvents: async (limit?: number, skip?: number, order?: SortOrder, name?: string, deleted?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getEvents: async (limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, deleted?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -260,13 +260,13 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @summary List events.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [name] Specifies the name of the event
          * @param {boolean} [deleted] Specifies if display deleted events
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getEvents(limit?: number, skip?: number, order?: SortOrder, name?: string, deleted?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventListResponse>> {
+        async getEvents(limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, deleted?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(limit, skip, order, name, deleted, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -387,10 +387,10 @@ export interface EventsApiGetEventsRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof EventsApiGetEvents
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the name of the event

@@ -17,20 +17,8 @@
 /**
  * 
  * @export
- * @interface CreateApiAuthorizedNetworkRequest
+ * @interface JsonRpcSuccessResponseAnyId
  */
-export interface CreateApiAuthorizedNetworkRequest {
-    /**
-     * The name of the authorized network.
-     * @type {string}
-     * @memberof CreateApiAuthorizedNetworkRequest
-     */
-    'name': string;
-    /**
-     * The network address.
-     * @type {string}
-     * @memberof CreateApiAuthorizedNetworkRequest
-     */
-    'network': string;
+export interface JsonRpcSuccessResponseAnyId {
 }
 

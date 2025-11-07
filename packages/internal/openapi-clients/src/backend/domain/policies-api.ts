@@ -38,7 +38,7 @@ import { PolicyResponse } from '../models';
 // @ts-ignore
 import { PolicyResponseExpandable } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 // @ts-ignore
 import { TransactionIntentResponse } from '../models';
 // @ts-ignore
@@ -254,7 +254,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
          * @summary List policies.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {string} [name] Specifies the name of the policy.
          * @param {boolean} [deleted] Specifies whether to include deleted policies.
@@ -263,7 +263,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicies: async (limit?: number, skip?: number, order?: SortOrder, expand?: Array<PolicyResponseExpandable>, name?: string, deleted?: boolean, chainId?: number, enabled?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicies: async (limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<PolicyResponseExpandable>, name?: string, deleted?: boolean, chainId?: number, enabled?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/policies`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -462,11 +462,11 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
          * @param {string} id Specifies the unique policy ID (starts with pol_).
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyTotalGasUsage: async (id: string, limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyTotalGasUsage: async (id: string, limit?: number, skip?: number, order?: PrismaSortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPolicyTotalGasUsage', 'id', id)
             const localVarPath = `/v1/policies/{id}/reports`
@@ -624,7 +624,7 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
          * @summary List policies.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {string} [name] Specifies the name of the policy.
          * @param {boolean} [deleted] Specifies whether to include deleted policies.
@@ -633,7 +633,7 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicies(limit?: number, skip?: number, order?: SortOrder, expand?: Array<PolicyResponseExpandable>, name?: string, deleted?: boolean, chainId?: number, enabled?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyListResponse>> {
+        async getPolicies(limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<PolicyResponseExpandable>, name?: string, deleted?: boolean, chainId?: number, enabled?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicies(limit, skip, order, expand, name, deleted, chainId, enabled, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -679,11 +679,11 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
          * @param {string} id Specifies the unique policy ID (starts with pol_).
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyTotalGasUsage(id: string, limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportListResponse>> {
+        async getPolicyTotalGasUsage(id: string, limit?: number, skip?: number, order?: PrismaSortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyTotalGasUsage(id, limit, skip, order, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -921,10 +921,10 @@ export interface PoliciesApiGetPoliciesRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof PoliciesApiGetPolicies
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the fields to expand in the response.
@@ -1054,10 +1054,10 @@ export interface PoliciesApiGetPolicyTotalGasUsageRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof PoliciesApiGetPolicyTotalGasUsage
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 }
 
 /**

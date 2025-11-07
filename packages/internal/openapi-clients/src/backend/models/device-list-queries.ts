@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { PrismaSortOrder } from './prisma-sort-order';
 
 /**
  * 
@@ -37,10 +37,10 @@ export interface DeviceListQueries {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof DeviceListQueries
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * Specifies the unique account ID (starts with acc_)
      * @type {string}

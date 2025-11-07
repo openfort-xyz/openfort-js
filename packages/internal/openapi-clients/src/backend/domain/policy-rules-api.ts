@@ -30,7 +30,7 @@ import { PolicyRuleListResponse } from '../models';
 // @ts-ignore
 import { PolicyRuleResponse } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 // @ts-ignore
 import { UpdatePolicyRuleRequest } from '../models';
 /**
@@ -123,12 +123,12 @@ export const PolicyRulesApiAxiosParamCreator = function (configuration?: Configu
          * @param {string} policy Specifies the unique policy ID (starts with pol_).
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<GetPolicyRulesExpandEnum>} [expand] Specifies the fields to expand in the response.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicyRules: async (policy: string, limit?: number, skip?: number, order?: SortOrder, expand?: Array<GetPolicyRulesExpandEnum>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPolicyRules: async (policy: string, limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<GetPolicyRulesExpandEnum>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'policy' is not null or undefined
             assertParamExists('getPolicyRules', 'policy', policy)
             const localVarPath = `/v1/policy_rules`;
@@ -260,12 +260,12 @@ export const PolicyRulesApiFp = function(configuration?: Configuration) {
          * @param {string} policy Specifies the unique policy ID (starts with pol_).
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<GetPolicyRulesExpandEnum>} [expand] Specifies the fields to expand in the response.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicyRules(policy: string, limit?: number, skip?: number, order?: SortOrder, expand?: Array<GetPolicyRulesExpandEnum>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleListResponse>> {
+        async getPolicyRules(policy: string, limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<GetPolicyRulesExpandEnum>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyRuleListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyRules(policy, limit, skip, order, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -391,10 +391,10 @@ export interface PolicyRulesApiGetPolicyRulesRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof PolicyRulesApiGetPolicyRules
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the fields to expand in the response.

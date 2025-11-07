@@ -38,7 +38,7 @@ import { PlayerTransferOwnershipRequest } from '../models';
 // @ts-ignore
 import { PlayerUpdateRequest } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 // @ts-ignore
 import { TransactionIntentResponse } from '../models';
 /**
@@ -217,13 +217,13 @@ export const PlayersApiAxiosParamCreator = function (configuration?: Configurati
          * @summary List players.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<PlayerResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {string} [name] Filter by player name.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayers: async (limit?: number, skip?: number, order?: SortOrder, expand?: Array<PlayerResponseExpandable>, name?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayers: async (limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<PlayerResponseExpandable>, name?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -420,13 +420,13 @@ export const PlayersApiFp = function(configuration?: Configuration) {
          * @summary List players.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<PlayerResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {string} [name] Filter by player name.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayers(limit?: number, skip?: number, order?: SortOrder, expand?: Array<PlayerResponseExpandable>, name?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerListResponse>> {
+        async getPlayers(limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<PlayerResponseExpandable>, name?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayers(limit, skip, order, expand, name, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -629,10 +629,10 @@ export interface PlayersApiGetPlayersRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof PlayersApiGetPlayers
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the fields to expand in the response.

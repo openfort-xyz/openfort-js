@@ -18,7 +18,7 @@
 import { PlayerResponseExpandable } from './player-response-expandable';
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { PrismaSortOrder } from './prisma-sort-order';
 
 /**
  * 
@@ -40,10 +40,10 @@ export interface PlayerListQueries {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof PlayerListQueries
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * Specifies the fields to expand in the response.
      * @type {Array<PlayerResponseExpandable>}

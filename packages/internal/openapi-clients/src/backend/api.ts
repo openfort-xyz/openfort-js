@@ -16,7 +16,9 @@
 
 export * from './domain/accounts-api';
 export * from './domain/admin-authentication-api';
+export * from './domain/admin-authentication-v2-api';
 export * from './domain/authentication-api';
+export * from './domain/authentication-v2-api';
 export * from './domain/contracts-api';
 export * from './domain/default-api';
 export * from './domain/events-api';
@@ -24,10 +26,12 @@ export * from './domain/exchange-api';
 export * from './domain/forwarder-contract-api';
 export * from './domain/graph-qlapi';
 export * from './domain/inventories-api';
+export * from './domain/onramp-api';
 export * from './domain/paymaster-api';
 export * from './domain/players-api';
 export * from './domain/policies-api';
 export * from './domain/policy-rules-api';
+export * from './domain/rpcapi';
 export * from './domain/sessions-api';
 export * from './domain/settings-api';
 export * from './domain/subscriptions-api';

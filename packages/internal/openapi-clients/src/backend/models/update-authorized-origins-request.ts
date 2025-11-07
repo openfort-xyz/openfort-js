@@ -17,15 +17,14 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface UpdateAuthorizedOriginsRequest
  */
-
-export const SortOrder = {
-    Asc: 'asc',
-    Desc: 'desc'
-} as const;
-
-export type SortOrder = typeof SortOrder[keyof typeof SortOrder];
-
-
+export interface UpdateAuthorizedOriginsRequest {
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof UpdateAuthorizedOriginsRequest
+     */
+    'origins': Array<string>;
+}
 

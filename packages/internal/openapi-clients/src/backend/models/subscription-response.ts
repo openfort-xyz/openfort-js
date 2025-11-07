@@ -15,7 +15,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { SubscriptionResponsePlan } from './subscription-response-plan';
+import { APITopic } from './apitopic';
+// May contain unused imports in some cases
+// @ts-ignore
+import { EntityTypeSUBSCRIPTION } from './entity-type-subscription';
+// May contain unused imports in some cases
+// @ts-ignore
+import { TriggerResponse } from './trigger-response';
 
 /**
  * 
@@ -28,24 +34,38 @@ export interface SubscriptionResponse {
      * @type {string}
      * @memberof SubscriptionResponse
      */
-    'currentPeriodEnd'?: string;
+    'id': string;
     /**
      * 
-     * @type {string}
+     * @type {EntityTypeSUBSCRIPTION}
      * @memberof SubscriptionResponse
      */
-    'currentPeriodStart'?: string;
+    'object': EntityTypeSUBSCRIPTION;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof SubscriptionResponse
      */
-    'canceledAt'?: string;
+    'createdAt': number;
     /**
      * 
-     * @type {SubscriptionResponsePlan}
+     * @type {APITopic}
      * @memberof SubscriptionResponse
      */
-    'plan': SubscriptionResponsePlan;
+    'topic': APITopic;
+    /**
+     * 
+     * @type {Array<TriggerResponse>}
+     * @memberof SubscriptionResponse
+     */
+    'triggers': Array<TriggerResponse>;
+    /**
+     * 
+     * @type {number}
+     * @memberof SubscriptionResponse
+     */
+    'updatedAt'?: number;
 }
+
+
 

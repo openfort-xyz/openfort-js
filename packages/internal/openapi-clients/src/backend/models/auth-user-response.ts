@@ -13,47 +13,48 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { EntityTypePROJECT } from './entity-type-project';
 
 /**
  * 
  * @export
- * @interface ApiAuthorizedNetworkResponse
+ * @interface AuthUserResponse
  */
-export interface ApiAuthorizedNetworkResponse {
+export interface AuthUserResponse {
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof AuthUserResponse
      */
     'id': string;
     /**
      * 
-     * @type {EntityTypePROJECT}
-     * @memberof ApiAuthorizedNetworkResponse
-     */
-    'object': EntityTypePROJECT;
-    /**
-     * 
      * @type {number}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof AuthUserResponse
      */
     'createdAt': number;
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof AuthUserResponse
      */
-    'name': string;
+    'email': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AuthUserResponse
+     */
+    'emailVerified': boolean;
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof AuthUserResponse
      */
-    'network': string;
+    'phone': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AuthUserResponse
+     */
+    'phoneVerified': boolean;
 }
-
-
 

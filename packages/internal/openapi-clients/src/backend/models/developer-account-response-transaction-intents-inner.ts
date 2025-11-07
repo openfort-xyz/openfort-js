@@ -36,7 +36,7 @@ import { TransactionAbstractionType } from './transaction-abstraction-type';
 import { TransactionIntent } from './transaction-intent';
 // May contain unused imports in some cases
 // @ts-ignore
-import { TransactionIntentDetails } from './transaction-intent-details';
+import { TransactionIntentResponseDetails } from './transaction-intent-response-details';
 // May contain unused imports in some cases
 // @ts-ignore
 import { Transition } from './transition';
@@ -44,105 +44,105 @@ import { Transition } from './transition';
 /**
  * 
  * @export
- * @interface PlayerResponseTransactionIntentsInner
+ * @interface DeveloperAccountResponseTransactionIntentsInner
  */
-export interface PlayerResponseTransactionIntentsInner {
+export interface DeveloperAccountResponseTransactionIntentsInner {
     /**
      * 
      * @type {string}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'id': string;
     /**
      * 
      * @type {EntityTypeTRANSACTIONINTENT}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'object': EntityTypeTRANSACTIONINTENT;
     /**
      * 
      * @type {number}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'createdAt': number;
     /**
      * The unix timestamp in seconds when the transactionIntent was created.
      * @type {number}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'updatedAt': number;
     /**
      * The chain ID.
      * @type {number}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'chainId': number;
     /**
      * 
      * @type {TransactionAbstractionType}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'abstractionType': TransactionAbstractionType;
     /**
      * Transition of statuses the transaction has gone through.
      * @type {Array<Transition>}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'transitions'?: Array<Transition>;
     /**
      * 
-     * @type {TransactionIntentDetails}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @type {TransactionIntentResponseDetails}
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
-    'details'?: TransactionIntentDetails;
+    'details'?: TransactionIntentResponseDetails;
     /**
      * 
      * @type {string}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      * @deprecated
      */
     'userOperationHash'?: string;
     /**
      * 
      * @type {any}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      * @deprecated
      */
     'userOperation'?: any;
     /**
      * 
      * @type {ResponseResponse}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'response'?: ResponseResponse;
     /**
      * 
      * @type {Array<Interaction>}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'interactions'?: Array<Interaction>;
     /**
      * 
      * @type {NextActionResponse}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'nextAction'?: NextActionResponse;
     /**
      * 
      * @type {EntityIdResponse}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'policy'?: EntityIdResponse;
     /**
      * 
      * @type {EntityIdResponse}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'player'?: EntityIdResponse;
     /**
      * 
      * @type {EntityIdResponse}
-     * @memberof PlayerResponseTransactionIntentsInner
+     * @memberof DeveloperAccountResponseTransactionIntentsInner
      */
     'account': EntityIdResponse;
 }

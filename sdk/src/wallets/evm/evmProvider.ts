@@ -12,6 +12,7 @@ import TypedEventEmitter from '../../utils/typedEventEmitter'
 import type { Signer } from '../isigner'
 import { addEthereumChain } from './addEthereumChain'
 import { estimateGas } from './estimateGas'
+import { getAssets } from './getAssets'
 import { type GetCallsStatusParameters, getCallStatus } from './getCallsStatus'
 import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError'
 import { personalSign } from './personalSign'
@@ -453,6 +454,20 @@ export class EvmProvider implements Provider {
           },
         }
         return capabilities
+      }
+      case 'wallet_getAssets': {
+        const account = await Account.fromStorage(this.#storage)
+        const authentication = await Authentication.fromStorage(this.#storage)
+        if (!account || !authentication) {
+          throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
+        }
+        await this.#validateAndRefreshSession()
+        return await getAssets({
+          params: request.params?.[0],
+          account,
+          authentication,
+          backendClient: this.#backendApiClients,
+        })
       }
       // Pass through methods
       case 'eth_gasPrice':

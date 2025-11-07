@@ -15,13 +15,16 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { DeveloperAccountResponseTransactionIntentsInner } from './developer-account-response-transaction-intents-inner';
+// May contain unused imports in some cases
+// @ts-ignore
+import { EntityIdResponse } from './entity-id-response';
+// May contain unused imports in some cases
+// @ts-ignore
 import { EntityTypeSESSION } from './entity-type-session';
 // May contain unused imports in some cases
 // @ts-ignore
 import { NextActionResponse } from './next-action-response';
-// May contain unused imports in some cases
-// @ts-ignore
-import { PlayerResponseTransactionIntentsInner } from './player-response-transaction-intents-inner';
 
 /**
  * 
@@ -79,6 +82,12 @@ export interface SessionResponse {
     'validUntil': string;
     /**
      * 
+     * @type {EntityIdResponse}
+     * @memberof SessionResponse
+     */
+    'account': EntityIdResponse;
+    /**
+     * 
      * @type {Array<string>}
      * @memberof SessionResponse
      */
@@ -97,10 +106,10 @@ export interface SessionResponse {
     'nextAction'?: NextActionResponse;
     /**
      * 
-     * @type {Array<PlayerResponseTransactionIntentsInner>}
+     * @type {Array<DeveloperAccountResponseTransactionIntentsInner>}
      * @memberof SessionResponse
      */
-    'transactionIntents'?: Array<PlayerResponseTransactionIntentsInner>;
+    'transactionIntents'?: Array<DeveloperAccountResponseTransactionIntentsInner>;
 }
 
 

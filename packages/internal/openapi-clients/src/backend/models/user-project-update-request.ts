@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserProjectCreateRequestRole } from './user-project-create-request-role';
+import { UserProjectUpdateRequestRole } from './user-project-update-request-role';
 
 /**
  * 
@@ -25,9 +25,9 @@ import { UserProjectCreateRequestRole } from './user-project-create-request-role
 export interface UserProjectUpdateRequest {
     /**
      * 
-     * @type {UserProjectCreateRequestRole}
+     * @type {UserProjectUpdateRequestRole}
      * @memberof UserProjectUpdateRequest
      */
-    'role': UserProjectCreateRequestRole;
+    'role': UserProjectUpdateRequestRole;
 }
 

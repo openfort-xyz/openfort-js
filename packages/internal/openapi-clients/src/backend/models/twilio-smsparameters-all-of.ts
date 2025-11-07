@@ -15,32 +15,20 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EntityTypePROJECT } from './entity-type-project';
+import { BetterAuthProvidersReqParams } from './better-auth-providers-req-params';
 
 /**
  * 
  * @export
- * @interface ApiAuthorizedNetworkDeleteResponse
+ * @interface TwilioSMSParametersAllOf
  */
-export interface ApiAuthorizedNetworkDeleteResponse {
+export interface TwilioSMSParametersAllOf {
     /**
      * 
-     * @type {string}
-     * @memberof ApiAuthorizedNetworkDeleteResponse
+     * @type {BetterAuthProvidersReqParams}
+     * @memberof TwilioSMSParametersAllOf
      */
-    'id': string;
-    /**
-     * 
-     * @type {EntityTypePROJECT}
-     * @memberof ApiAuthorizedNetworkDeleteResponse
-     */
-    'object': EntityTypePROJECT;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ApiAuthorizedNetworkDeleteResponse
-     */
-    'deleted': boolean;
+    'provider': BetterAuthProvidersReqParams;
 }
 
 

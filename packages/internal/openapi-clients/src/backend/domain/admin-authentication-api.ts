@@ -46,7 +46,7 @@ import { OAuthProvider } from '../models';
 // @ts-ignore
 import { PlayerResponse } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 /**
  * AdminAuthenticationApi - axios parameter creator
  * @export
@@ -333,13 +333,13 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
          * @summary List authenticated players.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [email] Specifies the email address of the user.
          * @param {string} [externalUserId] Specifies the external user ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthPlayers: async (limit?: number, skip?: number, order?: SortOrder, email?: string, externalUserId?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAuthPlayers: async (limit?: number, skip?: number, order?: PrismaSortOrder, email?: string, externalUserId?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/iam/v1/players`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -635,13 +635,13 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
          * @summary List authenticated players.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [email] Specifies the email address of the user.
          * @param {string} [externalUserId] Specifies the external user ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAuthPlayers(limit?: number, skip?: number, order?: SortOrder, email?: string, externalUserId?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerListResponse>> {
+        async getAuthPlayers(limit?: number, skip?: number, order?: PrismaSortOrder, email?: string, externalUserId?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthPlayerListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthPlayers(limit, skip, order, email, externalUserId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -945,10 +945,10 @@ export interface AdminAuthenticationApiGetAuthPlayersRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof AdminAuthenticationApiGetAuthPlayers
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the email address of the user.

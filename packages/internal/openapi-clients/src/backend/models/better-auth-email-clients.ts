@@ -17,26 +17,14 @@
 /**
  * 
  * @export
- * @interface SubscriptionResponsePlan
+ * @enum {string}
  */
-export interface SubscriptionResponsePlan {
-    /**
-     * 
-     * @type {number}
-     * @memberof SubscriptionResponsePlan
-     */
-    'price': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof SubscriptionResponsePlan
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SubscriptionResponsePlan
-     */
-    'id': string;
-}
+
+export const BetterAuthEmailClients = {
+    Brevo: 'brevo'
+} as const;
+
+export type BetterAuthEmailClients = typeof BetterAuthEmailClients[keyof typeof BetterAuthEmailClients];
+
+
 

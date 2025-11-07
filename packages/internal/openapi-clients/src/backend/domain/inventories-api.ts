@@ -26,7 +26,7 @@ import { InventoryListResponse } from '../models';
 // @ts-ignore
 import { InventoryResponse } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 /**
  * InventoriesApi - axios parameter creator
  * @export
@@ -39,12 +39,12 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<string>} [contractId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountCryptoCurrencyInventory: async (id: string, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountCryptoCurrencyInventory: async (id: string, limit?: number, skip?: number, order?: PrismaSortOrder, contractId?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getAccountCryptoCurrencyInventory', 'id', id)
             const localVarPath = `/v1/accounts/{id}/inventory/cryptocurrency`
@@ -135,12 +135,12 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<string>} [contractId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountNftInventory: async (id: string, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountNftInventory: async (id: string, limit?: number, skip?: number, order?: PrismaSortOrder, contractId?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getAccountNftInventory', 'id', id)
             const localVarPath = `/v1/accounts/{id}/inventory/nft`
@@ -194,12 +194,12 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerCryptoCurrencyInventory: async (id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerCryptoCurrencyInventory: async (id: string, chainId: number, limit?: number, skip?: number, order?: PrismaSortOrder, contract?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlayerCryptoCurrencyInventory', 'id', id)
             // verify required parameter 'chainId' is not null or undefined
@@ -304,12 +304,12 @@ export const InventoriesApiAxiosParamCreator = function (configuration?: Configu
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerNftInventory: async (id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerNftInventory: async (id: string, chainId: number, limit?: number, skip?: number, order?: PrismaSortOrder, contract?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPlayerNftInventory', 'id', id)
             // verify required parameter 'chainId' is not null or undefined
@@ -378,12 +378,12 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<string>} [contractId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountCryptoCurrencyInventory(id: string, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
+        async getAccountCryptoCurrencyInventory(id: string, limit?: number, skip?: number, order?: PrismaSortOrder, contractId?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountCryptoCurrencyInventory(id, limit, skip, order, contractId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -404,12 +404,12 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
          * @param {string} id Specifies the unique account ID.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<string>} [contractId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountNftInventory(id: string, limit?: number, skip?: number, order?: SortOrder, contractId?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
+        async getAccountNftInventory(id: string, limit?: number, skip?: number, order?: PrismaSortOrder, contractId?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountNftInventory(id, limit, skip, order, contractId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -420,12 +420,12 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerCryptoCurrencyInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
+        async getPlayerCryptoCurrencyInventory(id: string, chainId: number, limit?: number, skip?: number, order?: PrismaSortOrder, contract?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerCryptoCurrencyInventory(id, chainId, limit, skip, order, contract, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -448,12 +448,12 @@ export const InventoriesApiFp = function(configuration?: Configuration) {
          * @param {number} chainId Filter by chain id.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<string>} [contract] Filter by contract ID (starts with con_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerNftInventory(id: string, chainId: number, limit?: number, skip?: number, order?: SortOrder, contract?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
+        async getPlayerNftInventory(id: string, chainId: number, limit?: number, skip?: number, order?: PrismaSortOrder, contract?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InventoryListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerNftInventory(id, chainId, limit, skip, order, contract, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -559,10 +559,10 @@ export interface InventoriesApiGetAccountCryptoCurrencyInventoryRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof InventoriesApiGetAccountCryptoCurrencyInventory
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * 
@@ -615,10 +615,10 @@ export interface InventoriesApiGetAccountNftInventoryRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof InventoriesApiGetAccountNftInventory
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * 
@@ -664,10 +664,10 @@ export interface InventoriesApiGetPlayerCryptoCurrencyInventoryRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof InventoriesApiGetPlayerCryptoCurrencyInventory
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Filter by contract ID (starts with con_).
@@ -734,10 +734,10 @@ export interface InventoriesApiGetPlayerNftInventoryRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof InventoriesApiGetPlayerNftInventory
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Filter by contract ID (starts with con_).

@@ -60,6 +60,12 @@ export interface CreateTransactionIntentRequest {
      */
     'optimistic'?: boolean;
     /**
+     * Signed authorization for delegated accounts. This signature is used to authorize the user operation for AccountAbstractionV8. The signature should be in the format \"0x...\" and will be parsed to extract r, s, and yParity values.
+     * @type {string}
+     * @memberof CreateTransactionIntentRequest
+     */
+    'signedAuthorization'?: string;
+    /**
      * 
      * @type {Array<Interaction>}
      * @memberof CreateTransactionIntentRequest

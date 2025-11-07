@@ -226,6 +226,11 @@ export class Openfort {
       basePath: this.configuration.backendUrl,
       accessToken: this.configuration.baseConfiguration.publishableKey,
       nativeAppIdentifier: this.configuration.nativeAppIdentifier,
+      storage: this.storage,
+      onLogout: () => {
+        // Emit logout event when 401 error occurs
+        this.eventEmitter.emit('onLogout')
+      },
     })
   }
 
