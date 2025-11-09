@@ -22,13 +22,9 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { OnrampOrderRequest } from '../models';
-// @ts-ignore
-import { OnrampOrderResponse } from '../models';
-// @ts-ignore
 import { OnrampQuoteRequest } from '../models';
 // @ts-ignore
-import { OnrampQuoteResponse } from '../models';
+import { OnrampQuotesResponse } from '../models';
 // @ts-ignore
 import { OnrampSessionRequest } from '../models';
 // @ts-ignore
@@ -39,42 +35,6 @@ import { OnrampSessionResponse } from '../models';
  */
 export const OnrampApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * Creates an onramp order for the selected provider.  Not all providers support order creation. The provider must support the operation otherwise an error will be returned. All request and response formats are unified and provider-agnostic.
-         * @summary Create onramp order
-         * @param {OnrampOrderRequest} onrampOrderRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createOnrampOrder: async (onrampOrderRequest: OnrampOrderRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'onrampOrderRequest' is not null or undefined
-            assertParamExists('createOnrampOrder', 'onrampOrderRequest', onrampOrderRequest)
-            const localVarPath = `/v1/onramp/orders`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(onrampOrderRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
          * @summary Create onramp session
@@ -97,6 +57,10 @@ export const OnrampApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -112,8 +76,8 @@ export const OnrampApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * Retrieves an onramp quote for the selected provider without creating an actual transaction.  All request and response formats are unified and provider-agnostic.
-         * @summary Get onramp quote
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * @summary Get onramp quote(s)
          * @param {OnrampQuoteRequest} onrampQuoteRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -132,6 +96,10 @@ export const OnrampApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -158,17 +126,6 @@ export const OnrampApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = OnrampApiAxiosParamCreator(configuration)
     return {
         /**
-         * Creates an onramp order for the selected provider.  Not all providers support order creation. The provider must support the operation otherwise an error will be returned. All request and response formats are unified and provider-agnostic.
-         * @summary Create onramp order
-         * @param {OnrampOrderRequest} onrampOrderRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createOnrampOrder(onrampOrderRequest: OnrampOrderRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampOrderResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createOnrampOrder(onrampOrderRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
          * @summary Create onramp session
          * @param {OnrampSessionRequest} onrampSessionRequest 
@@ -180,13 +137,13 @@ export const OnrampApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Retrieves an onramp quote for the selected provider without creating an actual transaction.  All request and response formats are unified and provider-agnostic.
-         * @summary Get onramp quote
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * @summary Get onramp quote(s)
          * @param {OnrampQuoteRequest} onrampQuoteRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOnrampQuote(onrampQuoteRequest: OnrampQuoteRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampQuoteResponse>> {
+        async getOnrampQuote(onrampQuoteRequest: OnrampQuoteRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampQuotesResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOnrampQuote(onrampQuoteRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -201,16 +158,6 @@ export const OnrampApiFactory = function (configuration?: Configuration, basePat
     const localVarFp = OnrampApiFp(configuration)
     return {
         /**
-         * Creates an onramp order for the selected provider.  Not all providers support order creation. The provider must support the operation otherwise an error will be returned. All request and response formats are unified and provider-agnostic.
-         * @summary Create onramp order
-         * @param {OnrampApiCreateOnrampOrderRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createOnrampOrder(requestParameters: OnrampApiCreateOnrampOrderRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampOrderResponse> {
-            return localVarFp.createOnrampOrder(requestParameters.onrampOrderRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
          * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
          * @summary Create onramp session
          * @param {OnrampApiCreateOnrampSessionRequest} requestParameters Request parameters.
@@ -221,31 +168,17 @@ export const OnrampApiFactory = function (configuration?: Configuration, basePat
             return localVarFp.createOnrampSession(requestParameters.onrampSessionRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieves an onramp quote for the selected provider without creating an actual transaction.  All request and response formats are unified and provider-agnostic.
-         * @summary Get onramp quote
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * @summary Get onramp quote(s)
          * @param {OnrampApiGetOnrampQuoteRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOnrampQuote(requestParameters: OnrampApiGetOnrampQuoteRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampQuoteResponse> {
+        getOnrampQuote(requestParameters: OnrampApiGetOnrampQuoteRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampQuotesResponse> {
             return localVarFp.getOnrampQuote(requestParameters.onrampQuoteRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
-
-/**
- * Request parameters for createOnrampOrder operation in OnrampApi.
- * @export
- * @interface OnrampApiCreateOnrampOrderRequest
- */
-export interface OnrampApiCreateOnrampOrderRequest {
-    /**
-     * 
-     * @type {OnrampOrderRequest}
-     * @memberof OnrampApiCreateOnrampOrder
-     */
-    readonly onrampOrderRequest: OnrampOrderRequest
-}
 
 /**
  * Request parameters for createOnrampSession operation in OnrampApi.
@@ -283,18 +216,6 @@ export interface OnrampApiGetOnrampQuoteRequest {
  */
 export class OnrampApi extends BaseAPI {
     /**
-     * Creates an onramp order for the selected provider.  Not all providers support order creation. The provider must support the operation otherwise an error will be returned. All request and response formats are unified and provider-agnostic.
-     * @summary Create onramp order
-     * @param {OnrampApiCreateOnrampOrderRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OnrampApi
-     */
-    public createOnrampOrder(requestParameters: OnrampApiCreateOnrampOrderRequest, options?: AxiosRequestConfig) {
-        return OnrampApiFp(this.configuration).createOnrampOrder(requestParameters.onrampOrderRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
      * @summary Create onramp session
      * @param {OnrampApiCreateOnrampSessionRequest} requestParameters Request parameters.
@@ -307,8 +228,8 @@ export class OnrampApi extends BaseAPI {
     }
 
     /**
-     * Retrieves an onramp quote for the selected provider without creating an actual transaction.  All request and response formats are unified and provider-agnostic.
-     * @summary Get onramp quote
+     * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+     * @summary Get onramp quote(s)
      * @param {OnrampApiGetOnrampQuoteRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

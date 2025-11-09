@@ -131,7 +131,7 @@ export enum TokenType {
 export enum ThirdPartyAuthProvider {
   ACCELBYTE = 'accelbyte',
   FIREBASE = 'firebase',
-  BETTERAUTH = 'betterauth',
+  BETTER_AUTH = 'better-auth',
   LOOTLOCKER = 'lootlocker',
   PLAYFAB = 'playfab',
   SUPABASE = 'supabase',
@@ -155,7 +155,7 @@ const AUTH_PROVIDER = {
   epicGames: 'epic_games',
   accelbyte: 'accelbyte',
   firebase: 'firebase',
-  betterauth: 'betterauth',
+  betterAuth: 'better-auth',
   lootlocker: 'lootlocker',
   playfab: 'playfab',
   supabase: 'supabase',
@@ -568,17 +568,17 @@ export type PasskeyInfo = {
 
 export type RecoveryParams =
   | {
-      recoveryMethod: RecoveryMethod.AUTOMATIC
-      encryptionSession: string
-    }
+    recoveryMethod: RecoveryMethod.AUTOMATIC
+    encryptionSession: string
+  }
   | {
-      recoveryMethod: RecoveryMethod.PASSWORD
-      password: string
-    }
+    recoveryMethod: RecoveryMethod.PASSWORD
+    password: string
+  }
   | {
-      recoveryMethod: RecoveryMethod.PASSKEY
-      passkeyInfo?: PasskeyInfo
-    }
+    recoveryMethod: RecoveryMethod.PASSKEY
+    passkeyInfo?: PasskeyInfo
+  }
 
 export type EntropyResponse = {
   recoveryPassword?: string

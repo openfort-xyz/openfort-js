@@ -237,454 +237,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OnrampProvider": {
-        "enum": [
-          "coinbase",
-          "stripe"
-        ],
-        "type": "string"
-      },
-      "OnrampFee": {
-        "description": "Unified fee structure across all onramp providers.",
-        "properties": {
-          "type": {
-            "type": "string",
-            "description": "Fee type (e.g., \"network\", \"exchange\", \"FEE_TYPE_NETWORK\")"
-          },
-          "amount": {
-            "type": "string",
-            "description": "Fee amount as a decimal string"
-          },
-          "currency": {
-            "type": "string",
-            "description": "Fee currency code"
-          }
-        },
-        "required": [
-          "type",
-          "amount",
-          "currency"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampQuote": {
-        "description": "Unified quote information across all onramp providers.",
-        "properties": {
-          "paymentTotal": {
-            "type": "string",
-            "description": "Total payment amount including fees"
-          },
-          "paymentSubtotal": {
-            "type": "string",
-            "description": "Payment amount before fees"
-          },
-          "paymentCurrency": {
-            "type": "string",
-            "description": "Fiat currency being paid"
-          },
-          "purchaseAmount": {
-            "type": "string",
-            "description": "Crypto amount to be received"
-          },
-          "purchaseCurrency": {
-            "type": "string",
-            "description": "Crypto currency to be received"
-          },
-          "destinationNetwork": {
-            "type": "string",
-            "description": "Blockchain network for the crypto"
-          },
-          "fees": {
-            "items": {
-              "$ref": "#/components/schemas/OnrampFee"
-            },
-            "type": "array",
-            "description": "Array of fees applied"
-          },
-          "exchangeRate": {
-            "type": "string",
-            "description": "Exchange rate used"
-          }
-        },
-        "required": [
-          "paymentTotal",
-          "paymentSubtotal",
-          "paymentCurrency",
-          "purchaseAmount",
-          "purchaseCurrency",
-          "destinationNetwork",
-          "fees",
-          "exchangeRate"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Record_string.unknown_": {
-        "properties": {},
-        "additionalProperties": {},
-        "type": "object",
-        "description": "Construct a type with a set of properties K of type T"
-      },
-      "OnrampSessionResponse": {
-        "description": "Unified onramp session response.\nAll providers return this same structure, ensuring true substitutability.",
-        "properties": {
-          "provider": {
-            "$ref": "#/components/schemas/OnrampProvider",
-            "description": "The onramp provider used"
-          },
-          "sessionId": {
-            "type": "string",
-            "description": "Session identifier (may be empty if provider doesn't provide one)"
-          },
-          "onrampUrl": {
-            "type": "string",
-            "description": "URL to redirect user to complete the onramp flow"
-          },
-          "quote": {
-            "$ref": "#/components/schemas/OnrampQuote",
-            "description": "Quote information if available"
-          },
-          "providerMetadata": {
-            "$ref": "#/components/schemas/Record_string.unknown_",
-            "description": "Provider-specific additional data (use sparingly)"
-          }
-        },
-        "required": [
-          "provider",
-          "sessionId",
-          "onrampUrl"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampSessionRequest": {
-        "description": "Common unified request format for creating an onramp session.\nThis format is provider-agnostic and will be adapted by each provider service.",
-        "properties": {
-          "provider": {
-            "$ref": "#/components/schemas/OnrampProvider"
-          },
-          "destinationCurrency": {
-            "type": "string"
-          },
-          "destinationNetwork": {
-            "type": "string"
-          },
-          "destinationAddress": {
-            "type": "string"
-          },
-          "sourceAmount": {
-            "type": "string"
-          },
-          "sourceCurrency": {
-            "type": "string"
-          },
-          "redirectUrl": {
-            "type": "string"
-          },
-          "country": {
-            "type": "string"
-          },
-          "subdivision": {
-            "type": "string"
-          },
-          "paymentMethod": {
-            "type": "string"
-          },
-          "clientIp": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "provider",
-          "destinationCurrency",
-          "destinationNetwork",
-          "destinationAddress"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampPaymentLink": {
-        "description": "Unified payment link structure.",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL to the payment interface"
-          },
-          "type": {
-            "type": "string",
-            "description": "Type of payment link"
-          }
-        },
-        "required": [
-          "url",
-          "type"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampOrderResponse": {
-        "description": "Unified onramp order response.\nAll providers return this same structure, ensuring true substitutability.",
-        "properties": {
-          "provider": {
-            "$ref": "#/components/schemas/OnrampProvider",
-            "description": "The onramp provider used"
-          },
-          "orderId": {
-            "type": "string",
-            "description": "Unique order identifier"
-          },
-          "paymentTotal": {
-            "type": "string",
-            "description": "Total payment amount including fees"
-          },
-          "paymentSubtotal": {
-            "type": "string",
-            "description": "Payment amount before fees"
-          },
-          "paymentCurrency": {
-            "type": "string",
-            "description": "Fiat currency being paid"
-          },
-          "paymentMethod": {
-            "type": "string",
-            "description": "Payment method used"
-          },
-          "purchaseAmount": {
-            "type": "string",
-            "description": "Crypto amount to be received"
-          },
-          "purchaseCurrency": {
-            "type": "string",
-            "description": "Crypto currency to be received"
-          },
-          "fees": {
-            "items": {
-              "$ref": "#/components/schemas/OnrampFee"
-            },
-            "type": "array",
-            "description": "Array of fees applied"
-          },
-          "exchangeRate": {
-            "type": "string",
-            "description": "Exchange rate used"
-          },
-          "destinationAddress": {
-            "type": "string",
-            "description": "Destination wallet address"
-          },
-          "destinationNetwork": {
-            "type": "string",
-            "description": "Blockchain network for the crypto"
-          },
-          "status": {
-            "type": "string",
-            "description": "Order status (normalized across providers)"
-          },
-          "txHash": {
-            "type": "string",
-            "description": "Transaction hash (once crypto is sent)"
-          },
-          "createdAt": {
-            "type": "string",
-            "description": "Order creation timestamp (ISO 8601)"
-          },
-          "updatedAt": {
-            "type": "string",
-            "description": "Order last update timestamp (ISO 8601)"
-          },
-          "partnerUserRef": {
-            "type": "string",
-            "description": "Partner user reference"
-          },
-          "paymentLink": {
-            "$ref": "#/components/schemas/OnrampPaymentLink",
-            "description": "Payment link if available"
-          },
-          "providerMetadata": {
-            "$ref": "#/components/schemas/Record_string.unknown_",
-            "description": "Provider-specific additional data (use sparingly)"
-          }
-        },
-        "required": [
-          "provider",
-          "orderId",
-          "paymentTotal",
-          "paymentSubtotal",
-          "paymentCurrency",
-          "paymentMethod",
-          "purchaseAmount",
-          "purchaseCurrency",
-          "fees",
-          "exchangeRate",
-          "destinationAddress",
-          "destinationNetwork",
-          "status",
-          "createdAt",
-          "updatedAt"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampOrderRequest": {
-        "description": "Common unified request format for creating an onramp order.\nThis format is provider-agnostic and will be adapted by each provider service.",
-        "properties": {
-          "provider": {
-            "$ref": "#/components/schemas/OnrampProvider"
-          },
-          "sourceCurrency": {
-            "type": "string"
-          },
-          "destinationCurrency": {
-            "type": "string"
-          },
-          "destinationAddress": {
-            "type": "string"
-          },
-          "destinationNetwork": {
-            "type": "string"
-          },
-          "paymentMethod": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "agreementAcceptedAt": {
-            "type": "string"
-          },
-          "phoneNumberVerifiedAt": {
-            "type": "string"
-          },
-          "partnerUserRef": {
-            "type": "string"
-          },
-          "sourceAmount": {
-            "type": "string"
-          },
-          "destinationAmount": {
-            "type": "string"
-          },
-          "sourceSubtotalTarget": {
-            "type": "string"
-          },
-          "isQuote": {
-            "type": "boolean"
-          },
-          "partnerOrderRef": {
-            "type": "string"
-          },
-          "clientIp": {
-            "type": "string"
-          },
-          "domain": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "provider",
-          "sourceCurrency",
-          "destinationCurrency",
-          "destinationAddress",
-          "destinationNetwork",
-          "paymentMethod",
-          "phoneNumber",
-          "email",
-          "agreementAcceptedAt",
-          "phoneNumberVerifiedAt",
-          "partnerUserRef"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampQuoteResponse": {
-        "description": "Unified onramp quote response.\nAll providers return this same structure, ensuring true substitutability.",
-        "properties": {
-          "provider": {
-            "$ref": "#/components/schemas/OnrampProvider",
-            "description": "The onramp provider used"
-          },
-          "sourceAmount": {
-            "type": "string",
-            "description": "Amount of fiat currency to spend"
-          },
-          "sourceCurrency": {
-            "type": "string",
-            "description": "Fiat currency code"
-          },
-          "destinationAmount": {
-            "type": "string",
-            "description": "Amount of crypto to receive"
-          },
-          "destinationCurrency": {
-            "type": "string",
-            "description": "Crypto currency code"
-          },
-          "destinationNetwork": {
-            "type": "string",
-            "description": "Blockchain network for the crypto"
-          },
-          "fees": {
-            "items": {
-              "$ref": "#/components/schemas/OnrampFee"
-            },
-            "type": "array",
-            "description": "Array of fees that will be applied"
-          },
-          "exchangeRate": {
-            "type": "string",
-            "description": "Exchange rate from source to destination"
-          },
-          "providerMetadata": {
-            "$ref": "#/components/schemas/Record_string.unknown_",
-            "description": "Provider-specific additional data (use sparingly)"
-          }
-        },
-        "required": [
-          "provider",
-          "sourceAmount",
-          "sourceCurrency",
-          "destinationAmount",
-          "destinationCurrency",
-          "destinationNetwork",
-          "fees",
-          "exchangeRate"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampQuoteRequest": {
-        "description": "Common unified request format for getting an onramp quote.\nThis format is provider-agnostic and will be adapted by each provider service.",
-        "properties": {
-          "provider": {
-            "$ref": "#/components/schemas/OnrampProvider"
-          },
-          "sourceCurrency": {
-            "type": "string"
-          },
-          "destinationCurrency": {
-            "type": "string"
-          },
-          "destinationNetwork": {
-            "type": "string"
-          },
-          "sourceAmount": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "provider",
-          "sourceCurrency",
-          "destinationCurrency",
-          "destinationNetwork",
-          "sourceAmount"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
       "ResponseType.LIST": {
         "enum": [
           "list"
@@ -4687,6 +4239,233 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OnrampProvider": {
+        "enum": [
+          "coinbase",
+          "stripe"
+        ],
+        "type": "string"
+      },
+      "OnrampFee": {
+        "description": "Common fee structure for onramp operations",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampSessionResponse": {
+        "description": "Common unified response format for creating an onramp session.\nThis format is provider-agnostic.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "clientSecret": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "onrampUrl": {
+            "type": "string"
+          },
+          "redirectUrl": {
+            "type": "string"
+          },
+          "quote": {
+            "properties": {
+              "exchangeRate": {
+                "type": "string"
+              },
+              "fees": {
+                "items": {
+                  "$ref": "#/components/schemas/OnrampFee"
+                },
+                "type": "array"
+              },
+              "destinationNetwork": {
+                "type": "string"
+              },
+              "destinationCurrency": {
+                "type": "string"
+              },
+              "destinationAmount": {
+                "type": "string"
+              },
+              "sourceCurrency": {
+                "type": "string"
+              },
+              "sourceAmount": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "provider",
+          "onrampUrl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampSessionRequest": {
+        "description": "Common unified request format for creating an onramp session.\nThis format is provider-agnostic and will be adapted by each provider service.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider"
+          },
+          "destinationCurrency": {
+            "type": "string"
+          },
+          "destinationNetwork": {
+            "type": "string"
+          },
+          "destinationAddress": {
+            "type": "string"
+          },
+          "sourceAmount": {
+            "type": "string"
+          },
+          "sourceCurrency": {
+            "type": "string"
+          },
+          "redirectUrl": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "subdivision": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "clientIp": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "destinationCurrency",
+          "destinationNetwork",
+          "destinationAddress"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampQuoteResponse": {
+        "description": "Common unified response format for getting an onramp quote.\nThis format is provider-agnostic.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider"
+          },
+          "sourceAmount": {
+            "type": "string"
+          },
+          "sourceCurrency": {
+            "type": "string"
+          },
+          "destinationAmount": {
+            "type": "string"
+          },
+          "destinationCurrency": {
+            "type": "string"
+          },
+          "destinationNetwork": {
+            "type": "string"
+          },
+          "fees": {
+            "items": {
+              "$ref": "#/components/schemas/OnrampFee"
+            },
+            "type": "array"
+          },
+          "exchangeRate": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "sourceAmount",
+          "sourceCurrency",
+          "destinationAmount",
+          "destinationCurrency",
+          "destinationNetwork",
+          "fees",
+          "exchangeRate"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampQuotesResponse": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/OnrampQuoteResponse"
+          },
+          {
+            "items": {
+              "$ref": "#/components/schemas/OnrampQuoteResponse"
+            },
+            "type": "array"
+          }
+        ],
+        "description": "Response type for quote requests that can return either a single quote or multiple quotes.\n- Returns OnrampQuoteResponse when provider is specified\n- Returns OnrampQuoteResponse[] when provider is not specified"
+      },
+      "OnrampQuoteRequest": {
+        "description": "Common unified request format for getting an onramp quote.\nThis format is provider-agnostic and will be adapted by each provider service.\nIf provider is specified, returns a single quote for that provider.\nIf provider is not specified, returns quotes from all available providers.",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/OnrampProvider"
+          },
+          "sourceCurrency": {
+            "type": "string"
+          },
+          "destinationCurrency": {
+            "type": "string"
+          },
+          "destinationNetwork": {
+            "type": "string"
+          },
+          "sourceAmount": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "subdivision": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sourceCurrency",
+          "destinationCurrency",
+          "destinationNetwork",
+          "sourceAmount"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "Log": {
         "properties": {
           "id": {
@@ -8169,6 +7948,7 @@
         "additionalProperties": false
       },
       "AuthProviderResponse": {
+        "type": "string",
         "enum": [
           "email",
           "wallet",
@@ -8185,8 +7965,7 @@
           "supabase",
           "custom",
           "oidc"
-        ],
-        "type": "string"
+        ]
       },
       "LinkedAccountResponse": {
         "properties": {
@@ -8712,7 +8491,8 @@
           "playfab",
           "supabase",
           "custom",
-          "oidc"
+          "oidc",
+          "better-auth"
         ],
         "type": "string"
       },
@@ -9378,6 +9158,41 @@
         "type": "object",
         "additionalProperties": false
       },
+      "ThirdPartyOAuthProvider.BETTER_AUTH": {
+        "enum": [
+          "better-auth"
+        ],
+        "type": "string"
+      },
+      "BetterAuthConfig": {
+        "description": "Better Auth configuration",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider.BETTER_AUTH",
+            "description": "OAuth provider type"
+          },
+          "baseUrl": {
+            "type": "string",
+            "description": "Base URL of the Better Auth instance. E.g. https://your-app.com/api/auth"
+          },
+          "sessionCookieName": {
+            "type": "string",
+            "description": "Session cookie name (if customized in Better Auth config).",
+            "default": "better-auth.session_token"
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "baseUrl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "AuthConfig": {
         "anyOf": [
           {
@@ -9424,6 +9239,9 @@
           },
           {
             "$ref": "#/components/schemas/LootLockerOAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/BetterAuthConfig"
           }
         ]
       },
@@ -10484,223 +10302,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/JsonRpcRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/onramp/sessions": {
-      "post": {
-        "operationId": "createOnrampSession",
-        "responses": {
-          "200": {
-            "description": "Onramp session created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampSessionResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "provider": "coinbase",
-                      "sessionId": "",
-                      "onrampUrl": "https://pay.coinbase.com/buy/session/abc123def456",
-                      "quote": {
-                        "paymentTotal": "105.50",
-                        "paymentSubtotal": "100.00",
-                        "paymentCurrency": "USD",
-                        "purchaseAmount": "100.00",
-                        "purchaseCurrency": "USDC",
-                        "destinationNetwork": "base",
-                        "fees": [
-                          {
-                            "type": "FEE_TYPE_NETWORK",
-                            "amount": "5.50",
-                            "currency": "USD"
-                          }
-                        ],
-                        "exchangeRate": "1.0"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "description": "Creates an onramp session for the selected provider.\n\nThe provider is selected via the `provider` field. All request and response formats are unified\nand provider-agnostic. The service layer handles translation between the common format and\nprovider-specific APIs.",
-        "summary": "Create onramp session",
-        "tags": [
-          "Onramp"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnrampSessionRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/onramp/orders": {
-      "post": {
-        "operationId": "createOnrampOrder",
-        "responses": {
-          "201": {
-            "description": "Onramp order created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampOrderResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "provider": "coinbase",
-                      "orderId": "order_abc123def456",
-                      "paymentTotal": "105.50",
-                      "paymentSubtotal": "100.00",
-                      "paymentCurrency": "USD",
-                      "paymentMethod": "GUEST_CHECKOUT_APPLE_PAY",
-                      "purchaseAmount": "100.00",
-                      "purchaseCurrency": "USDC",
-                      "fees": [
-                        {
-                          "type": "FEE_TYPE_NETWORK",
-                          "amount": "5.50",
-                          "currency": "USD"
-                        }
-                      ],
-                      "exchangeRate": "1.0",
-                      "destinationAddress": "0x1234567890123456789012345678901234567890",
-                      "destinationNetwork": "base",
-                      "status": "ONRAMP_ORDER_STATUS_PENDING_PAYMENT",
-                      "createdAt": "2025-04-24T10:00:00Z",
-                      "updatedAt": "2025-04-24T10:00:00Z",
-                      "paymentLink": {
-                        "url": "https://pay.coinbase.com/payment/abc123",
-                        "type": "PAYMENT_LINK_TYPE_APPLE_PAY_BUTTON"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "description": "Creates an onramp order for the selected provider.\n\nNot all providers support order creation. The provider must support the operation otherwise\nan error will be returned. All request and response formats are unified and provider-agnostic.",
-        "summary": "Create onramp order",
-        "tags": [
-          "Onramp"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnrampOrderRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/onramp/quotes": {
-      "post": {
-        "operationId": "getOnrampQuote",
-        "responses": {
-          "200": {
-            "description": "Onramp quote retrieved successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampQuoteResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "provider": "stripe",
-                      "sourceAmount": "100.00",
-                      "sourceCurrency": "usd",
-                      "destinationAmount": "95.24",
-                      "destinationCurrency": "usdc",
-                      "destinationNetwork": "ethereum",
-                      "fees": [
-                        {
-                          "amount": "2.99",
-                          "currency": "usd",
-                          "type": "network"
-                        }
-                      ],
-                      "exchangeRate": "0.9524"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "description": "Retrieves an onramp quote for the selected provider without creating an actual transaction.\n\nAll request and response formats are unified and provider-agnostic.",
-        "summary": "Get onramp quote",
-        "tags": [
-          "Onramp"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnrampQuoteRequest"
               }
             }
           }
@@ -15808,6 +15409,94 @@
         ]
       }
     },
+    "/v1/onramp/sessions": {
+      "post": {
+        "operationId": "createOnrampSession",
+        "responses": {
+          "200": {
+            "description": "Onramp session created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "description": "Creates an onramp session for the selected provider.\n\nThe provider is selected via the `provider` field. All request and response formats are unified\nand provider-agnostic. The service layer handles translation between the common format and\nprovider-specific APIs.",
+        "summary": "Create onramp session",
+        "tags": [
+          "Onramp"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnrampSessionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/onramp/quotes": {
+      "post": {
+        "operationId": "getOnrampQuote",
+        "responses": {
+          "200": {
+            "description": "Onramp quote(s) retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampQuotesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "description": "Retrieves onramp quote(s) without creating an actual transaction.\n\nIf provider is specified, returns a single quote for that provider.\nIf provider is not specified, returns quotes from all available providers.\n\nAll request and response formats are unified and provider-agnostic.",
+        "summary": "Get onramp quote(s)",
+        "tags": [
+          "Onramp"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnrampQuoteRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/players/{id}/inventory/nft": {
       "get": {
         "operationId": "GetPlayerNftInventory",
@@ -20690,7 +20379,6 @@
                       "createdAt": 1691658234,
                       "linkedAccounts": [
                         {
-                          "provider": "email",
                           "email": "jaume@openfort.xyz",
                           "disabled": false,
                           "updatedAt": 1691658234
@@ -20759,7 +20447,6 @@
                           "createdAt": 1691658234,
                           "linkedAccounts": [
                             {
-                              "provider": "email",
                               "email": "jaume@openfort.xyz",
                               "disabled": false,
                               "updatedAt": 1691658234
@@ -20864,7 +20551,6 @@
                       "createdAt": 1691658234,
                       "linkedAccounts": [
                         {
-                          "provider": "email",
                           "email": "jaume@openfort.xyz",
                           "disabled": false,
                           "updatedAt": 1691658234
@@ -20922,7 +20608,6 @@
                       "createdAt": 1691658234,
                       "linkedAccounts": [
                         {
-                          "provider": "email",
                           "email": "jaume@openfort.xyz",
                           "disabled": false,
                           "updatedAt": 1691658234

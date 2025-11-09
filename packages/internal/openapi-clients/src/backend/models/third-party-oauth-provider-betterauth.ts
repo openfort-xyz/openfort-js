@@ -15,22 +15,16 @@
 
 
 /**
- * Unified payment link structure.
+ * 
  * @export
- * @interface OnrampPaymentLink
+ * @enum {string}
  */
-export interface OnrampPaymentLink {
-    /**
-     * URL to the payment interface
-     * @type {string}
-     * @memberof OnrampPaymentLink
-     */
-    'url': string;
-    /**
-     * Type of payment link
-     * @type {string}
-     * @memberof OnrampPaymentLink
-     */
-    'type': string;
-}
+
+export const ThirdPartyOAuthProviderBETTERAUTH = {
+    BetterAuth: 'better-auth'
+} as const;
+
+export type ThirdPartyOAuthProviderBETTERAUTH = typeof ThirdPartyOAuthProviderBETTERAUTH[keyof typeof ThirdPartyOAuthProviderBETTERAUTH];
+
+
 

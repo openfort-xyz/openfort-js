@@ -21,6 +21,9 @@ import { AccelbyteOAuthConfig } from './accelbyte-oauth-config';
 import { AppleOAuthConfig } from './apple-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { BetterAuthConfig } from './better-auth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { CustomAuthConfig } from './custom-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -57,7 +60,7 @@ import { PlayFabOAuthConfig } from './play-fab-oauth-config';
 import { SupabaseAuthConfig } from './supabase-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ThirdPartyOAuthProviderLOOTLOCKER } from './third-party-oauth-provider-lootlocker';
+import { ThirdPartyOAuthProviderBETTERAUTH } from './third-party-oauth-provider-betterauth';
 // May contain unused imports in some cases
 // @ts-ignore
 import { TwitterOAuthConfig } from './twitter-oauth-config';
@@ -76,10 +79,10 @@ export interface AuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {ThirdPartyOAuthProviderLOOTLOCKER}
+     * @type {ThirdPartyOAuthProviderBETTERAUTH}
      * @memberof AuthConfig
      */
-    'provider': ThirdPartyOAuthProviderLOOTLOCKER;
+    'provider': ThirdPartyOAuthProviderBETTERAUTH;
     /**
      * Allow unverified emails: Users will be able to sign in with unverified emails
      * @type {boolean}
@@ -117,7 +120,7 @@ export interface AuthConfig {
      */
     'jwksUrl'?: string;
     /**
-     * Base URI of your accelbyte gaming service environment. E.g. https://mygame.dev.gamingservices.accelbyte.io/
+     * Base URL of the Better Auth instance. E.g. https://your-app.com/api/auth
      * @type {string}
      * @memberof AuthConfig
      */
@@ -170,6 +173,12 @@ export interface AuthConfig {
      * @memberof AuthConfig
      */
     'authenticationUrl': string;
+    /**
+     * Session cookie name (if customized in Better Auth config).
+     * @type {string}
+     * @memberof AuthConfig
+     */
+    'sessionCookieName'?: string;
 }
 
 
