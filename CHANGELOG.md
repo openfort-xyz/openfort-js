@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.34
+
+### Patch Changes
+
+- [#167](https://github.com/openfort-xyz/openfort-js/pull/167) [`18d5b53`](https://github.com/openfort-xyz/openfort-js/commit/18d5b530022ee72fb2a51f21d4c78ea09d1ddd4f) Thanks [@jamalavedra](https://github.com/jamalavedra)! - update better-auth tp
+
 ## 0.10.33
 
 ### Patch Changes
