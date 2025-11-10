@@ -18,7 +18,7 @@
 import { OnrampProvider } from './onramp-provider';
 
 /**
- * Common unified request format for getting an onramp quote. This format is provider-agnostic and will be adapted by each provider service.
+ * Common unified request format for getting an onramp quote. This format is provider-agnostic and will be adapted by each provider service. If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.
  * @export
  * @interface OnrampQuoteRequest
  */
@@ -28,7 +28,7 @@ export interface OnrampQuoteRequest {
      * @type {OnrampProvider}
      * @memberof OnrampQuoteRequest
      */
-    'provider': OnrampProvider;
+    'provider'?: OnrampProvider;
     /**
      * 
      * @type {string}
@@ -53,6 +53,24 @@ export interface OnrampQuoteRequest {
      * @memberof OnrampQuoteRequest
      */
     'sourceAmount': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampQuoteRequest
+     */
+    'paymentMethod'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampQuoteRequest
+     */
+    'country'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampQuoteRequest
+     */
+    'subdivision'?: string;
 }
 
 

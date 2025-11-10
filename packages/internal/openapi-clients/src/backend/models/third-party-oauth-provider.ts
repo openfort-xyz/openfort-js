@@ -27,7 +27,8 @@ export const ThirdPartyOAuthProvider = {
     Playfab: 'playfab',
     Supabase: 'supabase',
     Custom: 'custom',
-    Oidc: 'oidc'
+    Oidc: 'oidc',
+    BetterAuth: 'better-auth'
 } as const;
 
 export type ThirdPartyOAuthProvider = typeof ThirdPartyOAuthProvider[keyof typeof ThirdPartyOAuthProvider];

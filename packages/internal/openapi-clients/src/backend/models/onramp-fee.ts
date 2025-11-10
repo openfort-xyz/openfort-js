@@ -15,25 +15,25 @@
 
 
 /**
- * Unified fee structure across all onramp providers.
+ * Common fee structure for onramp operations
  * @export
  * @interface OnrampFee
  */
 export interface OnrampFee {
     /**
-     * Fee type (e.g., \"network\", \"exchange\", \"FEE_TYPE_NETWORK\")
+     * 
      * @type {string}
      * @memberof OnrampFee
      */
     'type': string;
     /**
-     * Fee amount as a decimal string
+     * 
      * @type {string}
      * @memberof OnrampFee
      */
     'amount': string;
     /**
-     * Fee currency code
+     * 
      * @type {string}
      * @memberof OnrampFee
      */

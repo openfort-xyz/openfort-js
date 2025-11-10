@@ -131,6 +131,7 @@ export enum TokenType {
 export enum ThirdPartyAuthProvider {
   ACCELBYTE = 'accelbyte',
   FIREBASE = 'firebase',
+  BETTER_AUTH = 'better-auth',
   LOOTLOCKER = 'lootlocker',
   PLAYFAB = 'playfab',
   SUPABASE = 'supabase',
@@ -154,6 +155,7 @@ const AUTH_PROVIDER = {
   epicGames: 'epic_games',
   accelbyte: 'accelbyte',
   firebase: 'firebase',
+  betterAuth: 'better-auth',
   lootlocker: 'lootlocker',
   playfab: 'playfab',
   supabase: 'supabase',

@@ -18,10 +18,10 @@
 import { OnrampProvider } from './onramp-provider';
 // May contain unused imports in some cases
 // @ts-ignore
-import { OnrampQuote } from './onramp-quote';
+import { OnrampSessionResponseQuote } from './onramp-session-response-quote';
 
 /**
- * Unified onramp session response. All providers return this same structure, ensuring true substitutability.
+ * Common unified response format for creating an onramp session. This format is provider-agnostic.
  * @export
  * @interface OnrampSessionResponse
  */
@@ -33,29 +33,41 @@ export interface OnrampSessionResponse {
      */
     'provider': OnrampProvider;
     /**
-     * Session identifier (may be empty if provider doesn\'t provide one)
+     * 
      * @type {string}
      * @memberof OnrampSessionResponse
      */
-    'sessionId': string;
+    'sessionId'?: string;
     /**
-     * URL to redirect user to complete the onramp flow
+     * 
+     * @type {string}
+     * @memberof OnrampSessionResponse
+     */
+    'clientSecret'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampSessionResponse
+     */
+    'status'?: string;
+    /**
+     * 
      * @type {string}
      * @memberof OnrampSessionResponse
      */
     'onrampUrl': string;
     /**
      * 
-     * @type {OnrampQuote}
+     * @type {string}
      * @memberof OnrampSessionResponse
      */
-    'quote'?: OnrampQuote;
+    'redirectUrl'?: string;
     /**
-     * Construct a type with a set of properties K of type T
-     * @type {{ [key: string]: any; }}
+     * 
+     * @type {OnrampSessionResponseQuote}
      * @memberof OnrampSessionResponse
      */
-    'providerMetadata'?: { [key: string]: any; };
+    'quote'?: OnrampSessionResponseQuote;
 }
 
 

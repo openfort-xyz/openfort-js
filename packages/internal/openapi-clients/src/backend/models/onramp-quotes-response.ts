@@ -19,59 +19,62 @@ import { OnrampFee } from './onramp-fee';
 // May contain unused imports in some cases
 // @ts-ignore
 import { OnrampProvider } from './onramp-provider';
+// May contain unused imports in some cases
+// @ts-ignore
+import { OnrampQuoteResponse } from './onramp-quote-response';
 
 /**
- * Common unified response format for getting an onramp quote. This format is provider-agnostic.
+ * Response type for quote requests that can return either a single quote or multiple quotes. - Returns OnrampQuoteResponse when provider is specified - Returns OnrampQuoteResponse[] when provider is not specified
  * @export
- * @interface OnrampQuoteResponse
+ * @interface OnrampQuotesResponse
  */
-export interface OnrampQuoteResponse {
+export interface OnrampQuotesResponse {
     /**
      * 
      * @type {OnrampProvider}
-     * @memberof OnrampQuoteResponse
+     * @memberof OnrampQuotesResponse
      */
     'provider': OnrampProvider;
     /**
      * 
      * @type {string}
-     * @memberof OnrampQuoteResponse
+     * @memberof OnrampQuotesResponse
      */
     'sourceAmount': string;
     /**
      * 
      * @type {string}
-     * @memberof OnrampQuoteResponse
+     * @memberof OnrampQuotesResponse
      */
     'sourceCurrency': string;
     /**
      * 
      * @type {string}
-     * @memberof OnrampQuoteResponse
+     * @memberof OnrampQuotesResponse
      */
     'destinationAmount': string;
     /**
      * 
      * @type {string}
-     * @memberof OnrampQuoteResponse
+     * @memberof OnrampQuotesResponse
      */
     'destinationCurrency': string;
     /**
      * 
      * @type {string}
-     * @memberof OnrampQuoteResponse
+     * @memberof OnrampQuotesResponse
      */
     'destinationNetwork': string;
     /**
      * 
      * @type {Array<OnrampFee>}
-     * @memberof OnrampQuoteResponse
+     * @memberof OnrampQuotesResponse
      */
     'fees': Array<OnrampFee>;
     /**
      * 
      * @type {string}
-     * @memberof OnrampQuoteResponse
+     * @memberof OnrampQuotesResponse
      */
     'exchangeRate': string;
 }

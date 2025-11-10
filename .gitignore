@@ -21,6 +21,7 @@ yalc.lock
 
 docs/
 
+/examples/apps/web-betterauth/
 # Test and Playwright related artifacts
 /examples/apps/auth-sample/test-results/
 /examples/apps/auth-sample/playwright-report/
