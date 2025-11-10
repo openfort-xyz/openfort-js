@@ -173,12 +173,6 @@ export interface AuthConfig {
      * @memberof AuthConfig
      */
     'authenticationUrl': string;
-    /**
-     * Session cookie name (if customized in Better Auth config).
-     * @type {string}
-     * @memberof AuthConfig
-     */
-    'sessionCookieName'?: string;
 }
 
 

@@ -41,12 +41,6 @@ export interface BetterAuthConfig {
      * @memberof BetterAuthConfig
      */
     'baseUrl': string;
-    /**
-     * Session cookie name (if customized in Better Auth config).
-     * @type {string}
-     * @memberof BetterAuthConfig
-     */
-    'sessionCookieName'?: string;
 }
 
 

@@ -9178,11 +9178,6 @@
           "baseUrl": {
             "type": "string",
             "description": "Base URL of the Better Auth instance. E.g. https://your-app.com/api/auth"
-          },
-          "sessionCookieName": {
-            "type": "string",
-            "description": "Session cookie name (if customized in Better Auth config).",
-            "default": "better-auth.session_token"
           }
         },
         "required": [
