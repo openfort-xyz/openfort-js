@@ -15,10 +15,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EntityTypeDEVELOPERACCOUNT } from './entity-type-developeraccount';
+import { DeveloperAccountResponseTransactionIntentsInner } from './developer-account-response-transaction-intents-inner';
 // May contain unused imports in some cases
 // @ts-ignore
-import { PlayerResponseTransactionIntentsInner } from './player-response-transaction-intents-inner';
+import { EntityTypeDEVELOPERACCOUNT } from './entity-type-developeraccount';
 
 /**
  * 
@@ -64,10 +64,10 @@ export interface DeveloperAccountResponse {
     'name'?: string;
     /**
      * 
-     * @type {Array<PlayerResponseTransactionIntentsInner>}
+     * @type {Array<DeveloperAccountResponseTransactionIntentsInner>}
      * @memberof DeveloperAccountResponse
      */
-    'transactionIntents'?: Array<PlayerResponseTransactionIntentsInner>;
+    'transactionIntents'?: Array<DeveloperAccountResponseTransactionIntentsInner>;
 }
 
 

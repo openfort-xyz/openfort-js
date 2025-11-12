@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Log } from './log';
+import { TransactionResponseLog } from './transaction-response-log';
 
 /**
  * 
@@ -73,10 +73,10 @@ export interface ResponseResponse {
     'status'?: number;
     /**
      * The logs of the transaction of this log.
-     * @type {Array<Log>}
+     * @type {Array<TransactionResponseLog>}
      * @memberof ResponseResponse
      */
-    'logs'?: Array<Log>;
+    'logs'?: Array<TransactionResponseLog>;
     /**
      * The address of the contract of this log.
      * @type {string}

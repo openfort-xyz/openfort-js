@@ -13,19 +13,18 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { UserProjectRoleADMIN } from './user-project-role-admin';
+// May contain unused imports in some cases
+// @ts-ignore
+import { UserProjectRoleMEMBER } from './user-project-role-member';
 
 /**
- * 
+ * The role of the user.
  * @export
- * @enum {string}
+ * @interface UserProjectUpdateRequestRole
  */
-
-export const SortOrder = {
-    Asc: 'asc',
-    Desc: 'desc'
-} as const;
-
-export type SortOrder = typeof SortOrder[keyof typeof SortOrder];
-
-
+export interface UserProjectUpdateRequestRole {
+}
 

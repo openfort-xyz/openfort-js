@@ -28,9 +28,9 @@ import { EstimateTransactionIntentGasResult } from '../models';
 // @ts-ignore
 import { InvalidRequestErrorResponse } from '../models';
 // @ts-ignore
-import { SignatureRequest } from '../models';
+import { PrismaSortOrder } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { SignatureRequest } from '../models';
 // @ts-ignore
 import { TransactionIntentListResponse } from '../models';
 // @ts-ignore
@@ -176,7 +176,7 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
          * @summary List transaction intents.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {Array<string>} [account] Filter by account ID or developer account (starts with acc_ or dac_ respectively).
@@ -186,7 +186,7 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getTransactionIntents: async (limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, account?: Array<string>, player?: Array<string>, status?: number, policy?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getTransactionIntents: async (limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, account?: Array<string>, player?: Array<string>, status?: number, policy?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/transaction_intents`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -348,7 +348,7 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
          * @summary List transaction intents.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionIntentResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {Array<string>} [account] Filter by account ID or developer account (starts with acc_ or dac_ respectively).
@@ -358,7 +358,7 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getTransactionIntents(limit?: number, skip?: number, order?: SortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, account?: Array<string>, player?: Array<string>, status?: number, policy?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentListResponse>> {
+        async getTransactionIntents(limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<TransactionIntentResponseExpandable>, chainId?: number, account?: Array<string>, player?: Array<string>, status?: number, policy?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getTransactionIntents(limit, skip, order, expand, chainId, account, player, status, policy, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -515,10 +515,10 @@ export interface TransactionIntentsApiGetTransactionIntentsRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof TransactionIntentsApiGetTransactionIntents
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the fields to expand in the response.

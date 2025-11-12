@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { ApiAuthorizedNetworkResponse } from './api-authorized-network-response';
+import { AuthUserResponse } from './auth-user-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import { ResponseTypeLIST } from './response-type-list';
@@ -23,43 +23,43 @@ import { ResponseTypeLIST } from './response-type-list';
 /**
  * 
  * @export
- * @interface ApiAuthorizedNetworkListResponse
+ * @interface BaseEntityListResponseAuthUserResponse
  */
-export interface ApiAuthorizedNetworkListResponse {
+export interface BaseEntityListResponseAuthUserResponse {
     /**
      * 
      * @type {ResponseTypeLIST}
-     * @memberof ApiAuthorizedNetworkListResponse
+     * @memberof BaseEntityListResponseAuthUserResponse
      */
     'object': ResponseTypeLIST;
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkListResponse
+     * @memberof BaseEntityListResponseAuthUserResponse
      */
     'url': string;
     /**
      * 
-     * @type {Array<ApiAuthorizedNetworkResponse>}
-     * @memberof ApiAuthorizedNetworkListResponse
+     * @type {Array<AuthUserResponse>}
+     * @memberof BaseEntityListResponseAuthUserResponse
      */
-    'data': Array<ApiAuthorizedNetworkResponse>;
+    'data': Array<AuthUserResponse>;
     /**
      * 
      * @type {number}
-     * @memberof ApiAuthorizedNetworkListResponse
+     * @memberof BaseEntityListResponseAuthUserResponse
      */
     'start': number;
     /**
      * 
      * @type {number}
-     * @memberof ApiAuthorizedNetworkListResponse
+     * @memberof BaseEntityListResponseAuthUserResponse
      */
     'end': number;
     /**
      * 
      * @type {number}
-     * @memberof ApiAuthorizedNetworkListResponse
+     * @memberof BaseEntityListResponseAuthUserResponse
      */
     'total': number;
 }

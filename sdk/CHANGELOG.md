@@ -1,5 +1,29 @@
 # @openfort/openfort-js
 
+## 0.10.34
+
+### Patch Changes
+
+- [#167](https://github.com/openfort-xyz/openfort-js/pull/167) [`18d5b53`](https://github.com/openfort-xyz/openfort-js/commit/18d5b530022ee72fb2a51f21d4c78ea09d1ddd4f) Thanks [@jamalavedra](https://github.com/jamalavedra)! - update better-auth tp
+
+## 0.10.33
+
+### Patch Changes
+
+- [#165](https://github.com/openfort-xyz/openfort-js/pull/165) [`49f07f1`](https://github.com/openfort-xyz/openfort-js/commit/49f07f147596bc7b0334179dc333ee55e16e80dd) Thanks [@jamalavedra](https://github.com/jamalavedra)! - new wallet_getAssets and improve flush on 401
+
+## 0.10.32
+
+### Patch Changes
+
+- [#163](https://github.com/openfort-xyz/openfort-js/pull/163) [`9875151`](https://github.com/openfort-xyz/openfort-js/commit/987515111caaf2c411bdf5347480e8b66fe1c94c) Thanks [@martimayoral](https://github.com/martimayoral)! - fix revoke permissions policy
+
+## 0.10.31
+
+### Patch Changes
+
+- [#158](https://github.com/openfort-xyz/openfort-js/pull/158) [`7265f03`](https://github.com/openfort-xyz/openfort-js/commit/7265f03588b3532498908fb87ae6d4fc6626fcd3) Thanks [@martimayoral](https://github.com/martimayoral)! - distinct logs between shield and sdk
+
 ## 0.10.30
 
 ### Patch Changes

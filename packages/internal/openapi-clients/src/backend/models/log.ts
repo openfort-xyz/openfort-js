@@ -22,63 +22,45 @@
 export interface Log {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof Log
      */
-    'blockNumber': number;
+    'id': string;
     /**
      * 
      * @type {string}
      * @memberof Log
      */
-    'blockHash': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof Log
-     */
-    'transactionIndex': number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof Log
-     */
-    'removed': boolean;
+    'timestamp': string;
     /**
      * 
      * @type {string}
      * @memberof Log
      */
-    'address': string;
+    'event': string;
     /**
      * 
-     * @type {string}
+     * @type {any}
      * @memberof Log
      */
-    'data': string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof Log
-     */
-    'topics': Array<string>;
-    /**
-     * 
-     * @type {string}
-     * @memberof Log
-     */
-    'transactionHash': string;
+    'request_body': any;
     /**
      * 
      * @type {number}
      * @memberof Log
      */
-    'logIndex': number;
+    'status': number;
     /**
      * 
-     * @type {boolean}
+     * @type {number}
      * @memberof Log
      */
-    'orphaned'?: boolean;
+    'response_time': number;
+    /**
+     * 
+     * @type {any}
+     * @memberof Log
+     */
+    'response_data': any;
 }
 

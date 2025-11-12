@@ -15,45 +15,37 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { EntityTypePROJECT } from './entity-type-project';
+import { BillingSubscriptionResponsePlan } from './billing-subscription-response-plan';
 
 /**
  * 
  * @export
- * @interface ApiAuthorizedNetworkResponse
+ * @interface BillingSubscriptionResponse
  */
-export interface ApiAuthorizedNetworkResponse {
+export interface BillingSubscriptionResponse {
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof BillingSubscriptionResponse
      */
-    'id': string;
-    /**
-     * 
-     * @type {EntityTypePROJECT}
-     * @memberof ApiAuthorizedNetworkResponse
-     */
-    'object': EntityTypePROJECT;
-    /**
-     * 
-     * @type {number}
-     * @memberof ApiAuthorizedNetworkResponse
-     */
-    'createdAt': number;
+    'currentPeriodEnd'?: string;
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof BillingSubscriptionResponse
      */
-    'name': string;
+    'currentPeriodStart'?: string;
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkResponse
+     * @memberof BillingSubscriptionResponse
      */
-    'network': string;
+    'canceledAt'?: string;
+    /**
+     * 
+     * @type {BillingSubscriptionResponsePlan}
+     * @memberof BillingSubscriptionResponse
+     */
+    'plan': BillingSubscriptionResponsePlan;
 }
-
-
 

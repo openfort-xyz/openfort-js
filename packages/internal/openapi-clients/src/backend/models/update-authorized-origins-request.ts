@@ -17,26 +17,14 @@
 /**
  * 
  * @export
- * @interface SubscriptionResponsePlan
+ * @interface UpdateAuthorizedOriginsRequest
  */
-export interface SubscriptionResponsePlan {
+export interface UpdateAuthorizedOriginsRequest {
     /**
      * 
-     * @type {number}
-     * @memberof SubscriptionResponsePlan
+     * @type {Array<string>}
+     * @memberof UpdateAuthorizedOriginsRequest
      */
-    'price': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof SubscriptionResponsePlan
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SubscriptionResponsePlan
-     */
-    'id': string;
+    'origins': Array<string>;
 }
 

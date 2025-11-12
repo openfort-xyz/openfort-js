@@ -23,6 +23,10 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
 import { AuthUserResponse } from '../models';
+// @ts-ignore
+import { BaseEntityListResponseAuthUserResponse } from '../models';
+// @ts-ignore
+import { PrismaSortOrder } from '../models';
 /**
  * AuthenticationV2Api - axios parameter creator
  * @export
@@ -31,10 +35,58 @@ export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Co
     return {
         /**
          * 
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        me1: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAuthPlayersV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v2/users`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        meV2: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/iam/v2/me`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -70,11 +122,23 @@ export const AuthenticationV2ApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async me1(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.me1(options);
+        async getAuthPlayersV2(limit?: number, skip?: number, order?: PrismaSortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAuthUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthPlayersV2(limit, skip, order, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async meV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.meV2(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -89,14 +153,51 @@ export const AuthenticationV2ApiFactory = function (configuration?: Configuratio
     return {
         /**
          * 
+         * @param {AuthenticationV2ApiGetAuthPlayersV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        me1(options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
-            return localVarFp.me1(options).then((request) => request(axios, basePath));
+        getAuthPlayersV2(requestParameters: AuthenticationV2ApiGetAuthPlayersV2Request = {}, options?: AxiosRequestConfig): AxiosPromise<BaseEntityListResponseAuthUserResponse> {
+            return localVarFp.getAuthPlayersV2(requestParameters.limit, requestParameters.skip, requestParameters.order, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        meV2(options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
+            return localVarFp.meV2(options).then((request) => request(axios, basePath));
         },
     };
 };
+
+/**
+ * Request parameters for getAuthPlayersV2 operation in AuthenticationV2Api.
+ * @export
+ * @interface AuthenticationV2ApiGetAuthPlayersV2Request
+ */
+export interface AuthenticationV2ApiGetAuthPlayersV2Request {
+    /**
+     * Specifies the maximum number of records to return.
+     * @type {number}
+     * @memberof AuthenticationV2ApiGetAuthPlayersV2
+     */
+    readonly limit?: number
+
+    /**
+     * Specifies the offset for the first records to return.
+     * @type {number}
+     * @memberof AuthenticationV2ApiGetAuthPlayersV2
+     */
+    readonly skip?: number
+
+    /**
+     * Specifies the order in which to sort the results.
+     * @type {PrismaSortOrder}
+     * @memberof AuthenticationV2ApiGetAuthPlayersV2
+     */
+    readonly order?: PrismaSortOrder
+}
 
 /**
  * AuthenticationV2Api - object-oriented interface
@@ -107,12 +208,23 @@ export const AuthenticationV2ApiFactory = function (configuration?: Configuratio
 export class AuthenticationV2Api extends BaseAPI {
     /**
      * 
+     * @param {AuthenticationV2ApiGetAuthPlayersV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthenticationV2Api
      */
-    public me1(options?: AxiosRequestConfig) {
-        return AuthenticationV2ApiFp(this.configuration).me1(options).then((request) => request(this.axios, this.basePath));
+    public getAuthPlayersV2(requestParameters: AuthenticationV2ApiGetAuthPlayersV2Request = {}, options?: AxiosRequestConfig) {
+        return AuthenticationV2ApiFp(this.configuration).getAuthPlayersV2(requestParameters.limit, requestParameters.skip, requestParameters.order, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationV2Api
+     */
+    public meV2(options?: AxiosRequestConfig) {
+        return AuthenticationV2ApiFp(this.configuration).meV2(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

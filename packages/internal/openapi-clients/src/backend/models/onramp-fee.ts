@@ -13,35 +13,30 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { EntityTypePROJECT } from './entity-type-project';
 
 /**
- * 
+ * Common fee structure for onramp operations
  * @export
- * @interface ApiAuthorizedNetworkDeleteResponse
+ * @interface OnrampFee
  */
-export interface ApiAuthorizedNetworkDeleteResponse {
+export interface OnrampFee {
     /**
      * 
      * @type {string}
-     * @memberof ApiAuthorizedNetworkDeleteResponse
+     * @memberof OnrampFee
      */
-    'id': string;
+    'type': string;
     /**
      * 
-     * @type {EntityTypePROJECT}
-     * @memberof ApiAuthorizedNetworkDeleteResponse
+     * @type {string}
+     * @memberof OnrampFee
      */
-    'object': EntityTypePROJECT;
+    'amount': string;
     /**
      * 
-     * @type {boolean}
-     * @memberof ApiAuthorizedNetworkDeleteResponse
+     * @type {string}
+     * @memberof OnrampFee
      */
-    'deleted': boolean;
+    'currency': string;
 }
-
-
 

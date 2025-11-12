@@ -18,10 +18,13 @@
 import { AccountAbstractionV6Details } from './account-abstraction-v6-details';
 // May contain unused imports in some cases
 // @ts-ignore
+import { AccountAbstractionV8Details } from './account-abstraction-v8-details';
+// May contain unused imports in some cases
+// @ts-ignore
 import { StandardDetails } from './standard-details';
 // May contain unused imports in some cases
 // @ts-ignore
-import { UserOperationV6 } from './user-operation-v6';
+import { UserOperationV8 } from './user-operation-v8';
 // May contain unused imports in some cases
 // @ts-ignore
 import { ZKSyncDetails } from './zksync-details';
@@ -29,79 +32,79 @@ import { ZKSyncDetails } from './zksync-details';
 /**
  * Specific transaction details based on its type
  * @export
- * @interface TransactionIntentDetails
+ * @interface TransactionIntentResponseDetails
  */
-export interface TransactionIntentDetails {
+export interface TransactionIntentResponseDetails {
     /**
      * The transaction sender.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'from': string;
     /**
      * The transaction recipient or contract address.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'to': string;
     /**
      * A contract hashed method call with encoded args.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'data'?: string;
     /**
      * Unique number identifying this transaction.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'nonce': string;
     /**
      * The gas limit for the transaction.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'gas': string;
     /**
      * Total fee per gas (in wei), inclusive of `maxPriorityFeePerGas`. Only applies to EIP-1559 Transactions.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'maxFeePerGas': string;
     /**
      * Max priority fee per gas (in wei). Only applies to EIP-1559 Transactions.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'maxPriorityFeePerGas': string;
     /**
      * Address of the paymaster account that will pay the fees.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'paymaster'?: string;
     /**
      * Input data to the paymaster
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'paymasterInput'?: string;
     /**
      * Value in wei sent with this transaction.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'value'?: string;
     /**
      * 
-     * @type {UserOperationV6}
-     * @memberof TransactionIntentDetails
+     * @type {UserOperationV8}
+     * @memberof TransactionIntentResponseDetails
      */
-    'userOperation': UserOperationV6;
+    'userOperation': UserOperationV8;
     /**
      * A User Operation hash.
      * @type {string}
-     * @memberof TransactionIntentDetails
+     * @memberof TransactionIntentResponseDetails
      */
     'userOperationHash': string;
 }

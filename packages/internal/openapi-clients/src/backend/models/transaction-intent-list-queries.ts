@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { PrismaSortOrder } from './prisma-sort-order';
 // May contain unused imports in some cases
 // @ts-ignore
 import { TransactionIntentResponseExpandable } from './transaction-intent-response-expandable';
@@ -40,10 +40,10 @@ export interface TransactionIntentListQueries {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof TransactionIntentListQueries
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * Specifies the fields to expand in the response.
      * @type {Array<TransactionIntentResponseExpandable>}

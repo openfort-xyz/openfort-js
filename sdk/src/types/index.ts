@@ -9,6 +9,7 @@ export { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
 export { Openfort } from '../core/openfort'
 export { OpenfortInternal } from '../core/openfortInternal'
 export { IStorage as Storage } from '../storage/istorage'
+export { RevokePermissionsRequestParams } from '../wallets/evm/revokeSession'
 export {
   GrantPermissionsParameters,
   GrantPermissionsReturnType,

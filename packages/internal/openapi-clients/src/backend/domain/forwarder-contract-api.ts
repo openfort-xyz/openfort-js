@@ -28,7 +28,7 @@ import { ForwarderContractDeleteResponse } from '../models';
 // @ts-ignore
 import { ForwarderContractResponse } from '../models';
 // @ts-ignore
-import { SortOrder } from '../models';
+import { PrismaSortOrder } from '../models';
 /**
  * ForwarderContractApi - axios parameter creator
  * @export
@@ -156,11 +156,11 @@ export const ForwarderContractApiAxiosParamCreator = function (configuration?: C
          * @summary List forwarder contract.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listForwarderContracts: async (limit?: number, skip?: number, order?: SortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listForwarderContracts: async (limit?: number, skip?: number, order?: PrismaSortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/forwarder_contracts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -292,11 +292,11 @@ export const ForwarderContractApiFp = function(configuration?: Configuration) {
          * @summary List forwarder contract.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listForwarderContracts(limit?: number, skip?: number, order?: SortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ForwarderContractResponse>>> {
+        async listForwarderContracts(limit?: number, skip?: number, order?: PrismaSortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ForwarderContractResponse>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listForwarderContracts(limit, skip, order, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -439,10 +439,10 @@ export interface ForwarderContractApiListForwarderContractsRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof ForwarderContractApiListForwarderContracts
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 }
 
 /**

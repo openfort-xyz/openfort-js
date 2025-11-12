@@ -22,6 +22,7 @@
 
 export const TransactionAbstractionType = {
     AccountAbstractionV6: 'accountAbstractionV6',
+    AccountAbstractionV8: 'accountAbstractionV8',
     ZkSync: 'zkSync',
     Standard: 'standard'
 } as const;

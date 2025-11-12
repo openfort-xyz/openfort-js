@@ -21,8 +21,8 @@
  */
 
 export const TransactionIntentResponseExpandable = {
-    Player: 'player',
     Policy: 'policy',
+    Player: 'player',
     Account: 'account'
 } as const;
 

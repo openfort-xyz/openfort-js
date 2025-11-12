@@ -135,6 +135,7 @@ export enum TokenType {
 export enum ThirdPartyAuthProvider {
   ACCELBYTE = 'accelbyte',
   FIREBASE = 'firebase',
+  BETTER_AUTH = 'better-auth',
   LOOTLOCKER = 'lootlocker',
   PLAYFAB = 'playfab',
   SUPABASE = 'supabase',
@@ -158,6 +159,7 @@ const AUTH_PROVIDER = {
   epicGames: 'epic_games',
   accelbyte: 'accelbyte',
   firebase: 'firebase',
+  betterAuth: 'better-auth',
   lootlocker: 'lootlocker',
   playfab: 'playfab',
   supabase: 'supabase',
@@ -341,6 +343,7 @@ interface TransactionIntentResponsePlayer {
 
 const TRANSACTION_ABSTRACTION_TYPE = {
   accountAbstractionV6: 'accountAbstractionV6',
+  accountAbstractionV8: 'accountAbstractionV8',
   zksync: 'zkSync',
   standard: 'standard',
 } as const
@@ -353,7 +356,7 @@ export interface TransactionIntentResponse {
   createdAt: number
   updatedAt: number
   abstractionType: TransactionAbstractionType
-  details?: AccountAbstractionV6Details | ZKSyncDetails | StandardDetails
+  details?: AccountAbstractionV6Details | AccountAbstractionV8Details | ZKSyncDetails | StandardDetails
   chainId: number
   response?: ResponseResponse
   interactions?: Interaction[]
@@ -458,6 +461,29 @@ interface UserOperationV6 {
   maxPriorityFeePerGas: string
   nonce: string
   paymasterAndData?: string
+  preVerificationGas: string
+  sender: string
+  signature: string
+  verificationGasLimit: string
+}
+
+interface AccountAbstractionV8Details {
+  userOperation: UserOperationV8
+  userOperationHash: string
+}
+
+interface UserOperationV8 {
+  callData: string
+  callGasLimit: string
+  factory?: string
+  factoryData?: string
+  maxFeePerGas: string
+  maxPriorityFeePerGas: string
+  nonce: string
+  paymaster?: string
+  paymasterVerificationGasLimit?: string
+  paymasterPostOpGasLimit?: string
+  paymasterData?: string
   preVerificationGas: string
   sender: string
   signature: string

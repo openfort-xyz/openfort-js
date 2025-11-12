@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { CreateSessionRequest } from '../models';
 // @ts-ignore
+import { PrismaSortOrder } from '../models';
+// @ts-ignore
 import { RevokeSessionRequest } from '../models';
 // @ts-ignore
 import { SessionListResponse } from '../models';
@@ -33,8 +35,6 @@ import { SessionResponse } from '../models';
 import { SessionResponseExpandable } from '../models';
 // @ts-ignore
 import { SignatureRequest } from '../models';
-// @ts-ignore
-import { SortOrder } from '../models';
 /**
  * SessionsApi - axios parameter creator
  * @export
@@ -92,12 +92,12 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {string} player The player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPlayerSessions: async (player: string, limit?: number, skip?: number, order?: SortOrder, expand?: Array<SessionResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPlayerSessions: async (player: string, limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<SessionResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'player' is not null or undefined
             assertParamExists('getPlayerSessions', 'player', player)
             const localVarPath = `/v1/sessions`;
@@ -311,12 +311,12 @@ export const SessionsApiFp = function(configuration?: Configuration) {
          * @param {string} player The player ID (starts with pla_)
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {SortOrder} [order] Specifies the order in which to sort the results.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<SessionResponseExpandable>} [expand] Specifies the fields to expand in the response.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPlayerSessions(player: string, limit?: number, skip?: number, order?: SortOrder, expand?: Array<SessionResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionListResponse>> {
+        async getPlayerSessions(player: string, limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<SessionResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SessionListResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPlayerSessions(player, limit, skip, order, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -469,10 +469,10 @@ export interface SessionsApiGetPlayerSessionsRequest {
 
     /**
      * Specifies the order in which to sort the results.
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof SessionsApiGetPlayerSessions
      */
-    readonly order?: SortOrder
+    readonly order?: PrismaSortOrder
 
     /**
      * Specifies the fields to expand in the response.

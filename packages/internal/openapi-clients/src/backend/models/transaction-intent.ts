@@ -33,7 +33,7 @@ import { ResponseResponse } from './response-response';
 import { TransactionAbstractionType } from './transaction-abstraction-type';
 // May contain unused imports in some cases
 // @ts-ignore
-import { TransactionIntentDetails } from './transaction-intent-details';
+import { TransactionIntentResponseDetails } from './transaction-intent-response-details';
 // May contain unused imports in some cases
 // @ts-ignore
 import { Transition } from './transition';
@@ -88,10 +88,10 @@ export interface TransactionIntent {
     'transitions'?: Array<Transition>;
     /**
      * 
-     * @type {TransactionIntentDetails}
+     * @type {TransactionIntentResponseDetails}
      * @memberof TransactionIntent
      */
-    'details'?: TransactionIntentDetails;
+    'details'?: TransactionIntentResponseDetails;
     /**
      * 
      * @type {string}

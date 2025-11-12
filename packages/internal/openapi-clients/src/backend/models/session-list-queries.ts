@@ -15,10 +15,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { SessionResponseExpandable } from './session-response-expandable';
+import { PrismaSortOrder } from './prisma-sort-order';
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { SessionResponseExpandable } from './session-response-expandable';
 
 /**
  * 
@@ -40,10 +40,10 @@ export interface SessionListQueries {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof SessionListQueries
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * The player ID (starts with pla_)
      * @type {string}

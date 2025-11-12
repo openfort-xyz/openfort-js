@@ -21,7 +21,7 @@ import { AuthMigrationStatus } from './auth-migration-status';
 import { AuthProvider } from './auth-provider';
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { PrismaSortOrder } from './prisma-sort-order';
 
 /**
  * Request for listing Migrations
@@ -43,10 +43,10 @@ export interface ListMigrationsRequest {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof ListMigrationsRequest
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * 
      * @type {AuthProvider}

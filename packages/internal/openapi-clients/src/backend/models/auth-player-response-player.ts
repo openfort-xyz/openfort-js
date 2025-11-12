@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { DeveloperAccountResponseTransactionIntentsInner } from './developer-account-response-transaction-intents-inner';
+// May contain unused imports in some cases
+// @ts-ignore
 import { EntityTypePLAYER } from './entity-type-player';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -28,9 +31,6 @@ import { PlayerResponse } from './player-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import { PlayerResponseAccountsInner } from './player-response-accounts-inner';
-// May contain unused imports in some cases
-// @ts-ignore
-import { PlayerResponseTransactionIntentsInner } from './player-response-transaction-intents-inner';
 
 /**
  * 
@@ -76,10 +76,10 @@ export interface AuthPlayerResponsePlayer {
     'metadata'?: { [key: string]: PlayerMetadataValue; };
     /**
      * 
-     * @type {Array<PlayerResponseTransactionIntentsInner>}
+     * @type {Array<DeveloperAccountResponseTransactionIntentsInner>}
      * @memberof AuthPlayerResponsePlayer
      */
-    'transactionIntents'?: Array<PlayerResponseTransactionIntentsInner>;
+    'transactionIntents'?: Array<DeveloperAccountResponseTransactionIntentsInner>;
     /**
      * 
      * @type {Array<PlayerResponseAccountsInner>}

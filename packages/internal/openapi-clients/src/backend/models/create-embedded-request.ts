@@ -49,18 +49,6 @@ export interface CreateEmbeddedRequest {
      * @type {string}
      * @memberof CreateEmbeddedRequest
      */
-    'privateKey'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateEmbeddedRequest
-     */
-    'kmsKey'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateEmbeddedRequest
-     */
     'share'?: string;
     /**
      * 

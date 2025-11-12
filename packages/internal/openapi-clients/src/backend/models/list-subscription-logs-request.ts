@@ -18,7 +18,7 @@
 import { APITopic } from './apitopic';
 // May contain unused imports in some cases
 // @ts-ignore
-import { SortOrder } from './sort-order';
+import { PrismaSortOrder } from './prisma-sort-order';
 // May contain unused imports in some cases
 // @ts-ignore
 import { Status } from './status';
@@ -43,10 +43,10 @@ export interface ListSubscriptionLogsRequest {
     'skip'?: number;
     /**
      * 
-     * @type {SortOrder}
+     * @type {PrismaSortOrder}
      * @memberof ListSubscriptionLogsRequest
      */
-    'order'?: SortOrder;
+    'order'?: PrismaSortOrder;
     /**
      * 
      * @type {APITopic}
