@@ -1,6 +1,7 @@
 # Openfort embedded wallet with third-party auth 
 
-This is a template for integrating [**Openfort**](https://www.openfort.io/) into a [NextJS](https://nextjs.org/) project using [Firebase](https://firebase.google.com/) as for authentication. Check out the deployed app [here](https://firebase-auth-embedded-wallet.vercel.app/)!
+This is a template for integrating [**Openfort**](https://www.openfort.io/) into a [NextJS](https://nextjs.org/) project using [Firebase](https://firebase.google.com/) as for authentication.  
+Check out the deployed app [here](https://firebase-auth-embedded-wallet.openfort.io/)!
 
 This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-your-application/routing).
 
