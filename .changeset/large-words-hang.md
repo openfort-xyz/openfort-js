@@ -2,4 +2,4 @@
 "@openfort/openfort-js": patch
 ---
 
-support for delegated accounts and 7702: fix account implementation enum
+Add support for delegated accounts and fix account implementation enum for EIP-7702 compatibility
