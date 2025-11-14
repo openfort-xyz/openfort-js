@@ -40,6 +40,8 @@ import { CreateAccountRequest } from '../models';
 // @ts-ignore
 import { CreateAccountRequestV2 } from '../models';
 // @ts-ignore
+import { DeleteAccountResponse } from '../models';
+// @ts-ignore
 import { DeployRequest } from '../models';
 // @ts-ignore
 import { PrismaSortOrder } from '../models';
@@ -575,6 +577,43 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
+         * Removes an account from a project.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeAccount: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('removeAccount', 'id', id)
+            const localVarPath = `/v2/accounts/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
          * @summary Request transfer ownership of account.
          * @param {string} id Specifies the unique account ID (starts with acc_).
@@ -928,6 +967,16 @@ export const AccountsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Removes an account from a project.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async removeAccount(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteAccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removeAccount(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
          * @summary Request transfer ownership of account.
          * @param {string} id Specifies the unique account ID (starts with acc_).
@@ -1099,6 +1148,15 @@ export const AccountsApiFactory = function (configuration?: Configuration, baseP
          */
         getSignerIdByAddress(requestParameters: AccountsApiGetSignerIdByAddressRequest, options?: AxiosRequestConfig): AxiosPromise<SignerIdResponse> {
             return localVarFp.getSignerIdByAddress(requestParameters.address, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Removes an account from a project.
+         * @param {AccountsApiRemoveAccountRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeAccount(requestParameters: AccountsApiRemoveAccountRequest, options?: AxiosRequestConfig): AxiosPromise<DeleteAccountResponse> {
+            return localVarFp.removeAccount(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
@@ -1426,6 +1484,20 @@ export interface AccountsApiGetSignerIdByAddressRequest {
 }
 
 /**
+ * Request parameters for removeAccount operation in AccountsApi.
+ * @export
+ * @interface AccountsApiRemoveAccountRequest
+ */
+export interface AccountsApiRemoveAccountRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof AccountsApiRemoveAccount
+     */
+    readonly id: string
+}
+
+/**
  * Request parameters for requestTransferOwnership operation in AccountsApi.
  * @export
  * @interface AccountsApiRequestTransferOwnershipRequest
@@ -1649,6 +1721,17 @@ export class AccountsApi extends BaseAPI {
      */
     public getSignerIdByAddress(requestParameters: AccountsApiGetSignerIdByAddressRequest, options?: AxiosRequestConfig) {
         return AccountsApiFp(this.configuration).getSignerIdByAddress(requestParameters.address, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Removes an account from a project.
+     * @param {AccountsApiRemoveAccountRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountsApi
+     */
+    public removeAccount(requestParameters: AccountsApiRemoveAccountRequest, options?: AxiosRequestConfig) {
+        return AccountsApiFp(this.configuration).removeAccount(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

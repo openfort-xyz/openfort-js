@@ -156,6 +156,7 @@ models/create-transaction-intent-request.ts
 models/create-trigger-request.ts
 models/currency.ts
 models/custom-auth-config.ts
+models/delete-account-response.ts
 models/delete-smtpconfig-response.ts
 models/deploy-request.ts
 models/developer-account-delete-response.ts

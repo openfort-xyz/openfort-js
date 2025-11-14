@@ -234,6 +234,7 @@ export class EvmProvider implements Provider {
             account,
             authentication,
             backendClient: this.#backendApiClients,
+            rpcProvider: await this.getRpcProvider(),
             policyId: this.#policyId,
           })
         ).receipt.transactionHash
@@ -255,6 +256,7 @@ export class EvmProvider implements Provider {
           account,
           authentication,
           backendClient: this.#backendApiClients,
+          rpcProvider: await this.getRpcProvider(),
           policyId: this.#policyId,
         })
       }
@@ -386,6 +388,7 @@ export class EvmProvider implements Provider {
           account,
           authentication,
           backendClient: this.#backendApiClients,
+          rpcProvider: await this.getRpcProvider(),
           policyId: this.#policyId,
         })
         return result

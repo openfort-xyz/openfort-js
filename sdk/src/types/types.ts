@@ -516,6 +516,7 @@ export enum CodeChallengeMethodEnum {
 export enum AccountTypeEnum {
   EOA = 'Externally Owned Account',
   SMART_ACCOUNT = 'Smart Account',
+  DELEGATED_ACCOUNT = 'Delegated Account',
 }
 
 export enum ChainTypeEnum {
@@ -531,6 +532,7 @@ export interface EmbeddedAccount {
   createdAt?: number
   implementationType?: string
   factoryAddress?: string
+  implementationAddress?: string
   salt?: string
   accountType: AccountTypeEnum
   recoveryMethod?: RecoveryMethod

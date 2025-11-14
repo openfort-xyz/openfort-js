@@ -6638,6 +6638,26 @@
         "type": "object",
         "additionalProperties": false
       },
+      "DeleteAccountResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.ACCOUNT"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "deleted"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "UserProjectRole": {
         "enum": [
           "OWNER",
@@ -7121,6 +7141,9 @@
               "downgrade",
               "none"
             ]
+          },
+          "legacy": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -18700,6 +18723,49 @@
           },
           {
             "better_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "RemoveAccount",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAccountResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Account not found."
+          }
+        },
+        "description": "Removes an account from a project.",
+        "tags": [
+          "Accounts"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
           }
         ],
         "parameters": [
