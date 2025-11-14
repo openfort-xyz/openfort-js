@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.35
+
+### Patch Changes
+
+- [#169](https://github.com/openfort-xyz/openfort-js/pull/169) [`b58f03a`](https://github.com/openfort-xyz/openfort-js/commit/b58f03a4c47902e5cbe8febc59b1750458d335e3) Thanks [@jamalavedra](https://github.com/jamalavedra)! - Add support for delegated accounts and fix account implementation enum for EIP-7702 compatibility
+
 ## 0.10.34
 
 ### Patch Changes
