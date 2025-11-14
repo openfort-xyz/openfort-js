@@ -4,6 +4,7 @@ import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
 import {
+  AccountType,
   AccountTypeEnum,
   type Interaction,
   type TransactionIntentResponse,
@@ -135,14 +136,14 @@ export const sendCallsSync = async ({
   let signedAuthorization: string | undefined
 
   if (account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
-    // Check if the account already has code (i.e., is already delegated)
-    const alreadyDelegated = await hasAccountCode(rpcProvider, account.address!)
+    // Parallelize RPC calls: check delegation status and fetch nonce simultaneously
+    const [alreadyDelegated, nonce] = await Promise.all([
+      hasAccountCode(rpcProvider, account.address!),
+      rpcProvider.getTransactionCount(account.address!),
+    ])
 
     if (!alreadyDelegated) {
-      // Account not yet delegated, create authorization
-      // Fetch nonce from RPC
-      const nonce = await rpcProvider.getTransactionCount(account.address!)
-
+      // Account not yet delegated, create authorization using pre-fetched nonce
       const _signedAuthorization = await prepareAndSignAuthorization({
         signer,
         accountAddress: account.address!,
@@ -174,7 +175,7 @@ export const sendCallsSync = async ({
     // zkSync based chains don't need hashMessage
     if (
       [300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId!) ||
-      account.implementationType === 'Calibur'
+      (account.implementationType && [AccountType.CALIBUR].includes(account.implementationType as AccountType))
     ) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)
     } else {

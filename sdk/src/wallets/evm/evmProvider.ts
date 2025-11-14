@@ -203,9 +203,12 @@ export class EvmProvider implements Provider {
         return signedTransaction
       }
       case 'eth_sendTransaction': {
-        const account = await Account.fromStorage(this.#storage)
-        const signer = await this.#ensureSigner()
-        const authentication = await Authentication.fromStorage(this.#storage)
+        // Parallelize storage reads and signer initialization
+        const [account, signer, authentication] = await Promise.all([
+          Account.fromStorage(this.#storage),
+          this.#ensureSigner(),
+          Authentication.fromStorage(this.#storage),
+        ])
         if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
@@ -240,9 +243,12 @@ export class EvmProvider implements Provider {
         ).receipt.transactionHash
       }
       case 'eth_sendRawTransactionSync': {
-        const account = await Account.fromStorage(this.#storage)
-        const signer = await this.#ensureSigner()
-        const authentication = await Authentication.fromStorage(this.#storage)
+        // Parallelize storage reads and signer initialization
+        const [account, signer, authentication] = await Promise.all([
+          Account.fromStorage(this.#storage),
+          this.#ensureSigner(),
+          Authentication.fromStorage(this.#storage),
+        ])
         if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
@@ -372,12 +378,15 @@ export class EvmProvider implements Provider {
         })
       }
       case 'wallet_sendCalls': {
-        const account = await Account.fromStorage(this.#storage)
+        // Parallelize storage reads and signer initialization
+        const [account, signer, authentication] = await Promise.all([
+          Account.fromStorage(this.#storage),
+          this.#ensureSigner(),
+          Authentication.fromStorage(this.#storage),
+        ])
         if (account?.accountType === AccountTypeEnum.EOA) {
           throw new JsonRpcError(ProviderErrorCode.UNSUPPORTED_METHOD, `${request.method}: Method not supported`)
         }
-        const signer = await this.#ensureSigner()
-        const authentication = await Authentication.fromStorage(this.#storage)
         if (!account || !authentication) {
           throw new JsonRpcError(ProviderErrorCode.UNAUTHORIZED, 'Unauthorized - call eth_requestAccounts first')
         }
