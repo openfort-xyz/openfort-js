@@ -1,21 +1,18 @@
 'use client'
 
-import { AccountTypeEnum, ChainTypeEnum, type EmbeddedAccount } from '@openfort/openfort-js'
-import { useCallback, useEffect, useState } from 'react'
+import { ChainTypeEnum, type EmbeddedAccount } from '@openfort/openfort-js'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount, useChainId } from 'wagmi'
 import { createEmbeddedSigner, createEthereumEOA, recoverEmbeddedSigner } from '../lib/utils'
 import { openfortInstance } from '../openfort'
+import { type WalletByAddress, WalletListAccordionItem } from './WalletListAccordionItem'
 
 interface WalletListProps {
   isVisible: boolean
 }
 
-type WalletWithChainIds = EmbeddedAccount & {
-  chainIds: number[]
-}
-
 function WalletList({ isVisible }: WalletListProps) {
-  const [wallets, setWallets] = useState<WalletWithChainIds[]>([])
+  const [wallets, setWallets] = useState<EmbeddedAccount[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const chainId = useChainId()
@@ -23,46 +20,6 @@ function WalletList({ isVisible }: WalletListProps) {
   const [isRecovering, setIsRecovering] = useState<string | null>(null)
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
   const { address: activeAddress } = useAccount()
-
-  const processSmartAccounts = useCallback((wallets: EmbeddedAccount[], walletMap: Map<string, WalletWithChainIds>) => {
-    wallets
-      .filter((wallet) => wallet.accountType === AccountTypeEnum.SMART_ACCOUNT)
-      .forEach((wallet) => {
-        const addressKey = wallet.address.toLowerCase()
-        const existing = walletMap.get(addressKey)
-
-        if (existing) {
-          if (wallet.chainId && !existing.chainIds.includes(wallet.chainId)) {
-            existing.chainIds.push(wallet.chainId)
-          }
-        } else {
-          walletMap.set(addressKey, {
-            ...wallet,
-            chainIds: wallet.chainId ? [wallet.chainId] : [],
-          })
-        }
-      })
-  }, [])
-
-  const processEOAWallets = useCallback((wallets: EmbeddedAccount[], eoaMap: Map<string, WalletWithChainIds>) => {
-    wallets.forEach((wallet) => {
-      if (wallet.accountType === AccountTypeEnum.EOA) {
-        const existingEoa = eoaMap.get(wallet.address)
-        if (existingEoa) {
-          eoaMap.delete(wallet.address)
-        } else {
-          eoaMap.set(wallet.address, { ...wallet, chainIds: [] })
-        }
-      } else if (wallet.accountType === AccountTypeEnum.SMART_ACCOUNT && wallet.ownerAddress) {
-        const existingEoa = eoaMap.get(wallet.ownerAddress)
-        if (existingEoa) {
-          eoaMap.delete(wallet.ownerAddress)
-        } else {
-          eoaMap.set(wallet.ownerAddress, { ...wallet, chainIds: [] })
-        }
-      }
-    })
-  }, [])
 
   const loadWallets = useCallback(async () => {
     if (!isVisible) return
@@ -76,16 +33,7 @@ function WalletList({ isVisible }: WalletListProps) {
         chainType: ChainTypeEnum.EVM,
       })
 
-      const walletMap = new Map<string, WalletWithChainIds>()
-      const eoaMap = new Map<string, WalletWithChainIds>()
-
-      processSmartAccounts(walletsResponse, walletMap)
-      processEOAWallets(walletsResponse, eoaMap)
-
-      const uniqueWallets = Array.from(walletMap.values())
-      const uniqueEOAs = Array.from(eoaMap.values())
-
-      setWallets([...uniqueWallets, ...uniqueEOAs])
+      setWallets(walletsResponse)
       setHasLoadedOnce(true)
     } catch (err) {
       console.error('Error loading wallets:', err)
@@ -94,7 +42,33 @@ function WalletList({ isVisible }: WalletListProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [isVisible, processEOAWallets, processSmartAccounts])
+  }, [isVisible])
+
+  // Group wallets by address (similar to AccountList logic)
+  const walletsGroupedByAddress: WalletByAddress[] = useMemo(() => {
+    return wallets.reduce((acc, wallet) => {
+      if (acc.find((w) => w.address.toLowerCase() === wallet.address.toLowerCase())) {
+        return acc
+      }
+      const groupedWallets = wallets.filter((w) => w.address.toLowerCase() === wallet.address.toLowerCase())
+
+      // Aggregate all chain IDs for this address
+      const allChainIds = Array.from(
+        new Set(groupedWallets.map((w) => w.chainId).filter((id): id is number => id !== undefined))
+      ).sort((a, b) => a - b)
+
+      const isActive = activeAddress?.toLowerCase() === wallet.address.toLowerCase()
+
+      acc.push({
+        address: wallet.address,
+        wallets: groupedWallets,
+        chainIds: allChainIds,
+        accountType: wallet.accountType,
+        isActive,
+      })
+      return acc
+    }, [] as WalletByAddress[])
+  }, [wallets, activeAddress])
 
   // Load wallets when component becomes visible
   useEffect(() => {
@@ -175,56 +149,38 @@ function WalletList({ isVisible }: WalletListProps) {
         <div>{isCreating ? 'Creating your first wallet...' : 'No wallets found. Create your first wallet below.'}</div>
       )}
 
-      {wallets.length > 0 && (
-        <div className="wallet-list">
-          {wallets.map((wallet) => {
-            const isActive = activeAddress?.toLowerCase() === wallet.address.toLowerCase()
-
-            return (
-              <div key={wallet.id} className={`wallet-item ${isActive ? 'wallet-item-active' : ''}`}>
-                <div className="wallet-info">
-                  <div className="wallet-address">
-                    {wallet.address}
-                    {isActive && <span className="wallet-active-badge">Active</span>}
-                  </div>
-                  <div className="wallet-details">
-                    {wallet.implementationType || wallet.accountType} • {wallet.chainType}
-                    {wallet.chainIds.length > 0 ? ` • Chain IDs: ${wallet.chainIds.join(', ')}` : ''}
-                  </div>
-                </div>
-                {!isActive && (
-                  <button
-                    type="button"
-                    className="button"
-                    onClick={() => handleRecoverWallet(wallet.id)}
-                    disabled={isRecovering === wallet.id || isCreating}
-                  >
-                    {isRecovering === wallet.id ? 'Recovering...' : 'Recover'}
-                  </button>
-                )}
-              </div>
-            )
-          })}
+      {walletsGroupedByAddress.length > 0 && (
+        <div className="wallet-list-accordion">
+          {walletsGroupedByAddress.map((wallet) => (
+            <WalletListAccordionItem
+              key={wallet.address}
+              wallet={wallet}
+              onRecover={handleRecoverWallet}
+              isRecovering={isRecovering === wallet.wallets[0]?.id}
+            />
+          ))}
         </div>
       )}
 
-      <button
-        type="button"
-        className="button create-wallet-button"
-        onClick={handleCreateWallet}
-        disabled={isCreating || isRecovering !== null}
-      >
-        {isCreating ? 'Creating...' : 'Create New Wallet'}
-      </button>
+      <div className="wallet-actions">
+        <button
+          type="button"
+          className="button create-wallet-button"
+          onClick={handleCreateWallet}
+          disabled={isCreating || isRecovering !== null}
+        >
+          {isCreating ? 'Creating...' : 'Create New Wallet'}
+        </button>
 
-      <button
-        type="button"
-        className="button create-wallet-button"
-        onClick={handleCreateEOA}
-        disabled={isCreating || isRecovering !== null}
-      >
-        {isCreating ? 'Creating...' : 'Create EOA'}
-      </button>
+        <button
+          type="button"
+          className="button create-wallet-button"
+          onClick={handleCreateEOA}
+          disabled={isCreating || isRecovering !== null}
+        >
+          {isCreating ? 'Creating...' : 'Create EOA'}
+        </button>
+      </div>
     </div>
   )
 }

@@ -10,7 +10,7 @@ export const openfort = new Openfort({
   },
   shieldConfiguration: {
     shieldPublishableKey: import.meta.env.VITE_SHIELD_PUBLISHABLE_KEY!,
-    debug: true,
+    debug: false,
   },
   overrides: {
     shieldUrl: shieldUrl,

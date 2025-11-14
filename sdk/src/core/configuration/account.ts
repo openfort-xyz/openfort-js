@@ -11,6 +11,7 @@ export class Account implements EmbeddedAccount {
     this.accountType = account.accountType
     this.chainId = account.chainId
     this.createdAt = account.createdAt
+    this.implementationAddress = account.implementationAddress
     this.implementationType = account.implementationType
     this.factoryAddress = account.factoryAddress
     this.recoveryMethod = account.recoveryMethod
@@ -35,6 +36,8 @@ export class Account implements EmbeddedAccount {
   public readonly ownerAddress?: string
 
   public readonly factoryAddress?: string
+
+  public readonly implementationAddress?: string
 
   public readonly salt?: string
 
@@ -63,6 +66,7 @@ export class Account implements EmbeddedAccount {
         createdAt: this.createdAt,
         implementationType: this.implementationType,
         factoryAddress: this.factoryAddress,
+        implementationAddress: this.implementationAddress,
         salt: this.salt,
         recoveryMethod: this.recoveryMethod,
         recoveryMethodDetails: this.recoveryMethodDetails,

@@ -50,6 +50,12 @@ export interface Plan {
      * @memberof Plan
      */
     'change_type': PlanChangeTypeEnum;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof Plan
+     */
+    'legacy'?: boolean;
 }
 
 export const PlanChangeTypeEnum = {

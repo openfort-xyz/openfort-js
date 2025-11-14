@@ -4,7 +4,7 @@ import type { Hex } from 'wallets/evm/types'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
-import type { SessionResponse } from '../../types/types'
+import { AccountType, type SessionResponse } from '../../types/types'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
@@ -107,7 +107,10 @@ export const revokeSession = async ({
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature: string
     // zkSync based chains need a different signature
-    if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId!)) {
+    if (
+      [300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId!) ||
+      (account.implementationType && [AccountType.CALIBUR].includes(account.implementationType as AccountType))
+    ) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)

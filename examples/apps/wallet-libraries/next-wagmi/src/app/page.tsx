@@ -37,6 +37,7 @@ import {
   useSignTypedData,
   useSwitchAccount,
   useSwitchChain,
+  useWaitForCallsStatus,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from 'wagmi'
@@ -280,7 +281,6 @@ function SwitchChain() {
 function SIWE() {
   const { signMessageAsync, error } = useSignMessage()
   const { address, chain } = useAccount()
-  const chainId = useChainId()
   const [verification, setVerification] = useState<string | null>(null)
 
   return (
@@ -294,7 +294,7 @@ function SIWE() {
 
           const message = createSiweMessage({
             address: address!,
-            chainId: chainId,
+            chainId: chain?.id!,
             domain: window.location.host,
             nonce: nonce,
             uri: window.location.origin,
@@ -624,7 +624,7 @@ function WriteContract() {
 }
 
 function WriteContracts() {
-  const { data: hash, error, isPending, sendCalls } = useSendCalls()
+  const { data, error, isPending, sendCalls } = useSendCalls()
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -648,8 +648,8 @@ function WriteContracts() {
     })
   }
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash: hash?.id as `0x${string}`,
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForCallsStatus({
+    id: data?.id,
   })
 
   return (
@@ -661,7 +661,7 @@ function WriteContracts() {
           {isPending ? 'Confirming...' : 'Mint'}
         </button>
       </form>
-      {hash && <div>Transaction Hash: {hash?.id}</div>}
+      {data?.id && <div>Transaction ID: {data.id}</div>}
       {isConfirming && 'Waiting for confirmation...'}
       {isConfirmed && 'Transaction confirmed.'}
       {error && <div>Error: {(error as BaseError).details || error.message}</div>}

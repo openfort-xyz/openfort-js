@@ -1,3 +1,4 @@
+import type { StaticJsonRpcProvider } from '@ethersproject/providers'
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
@@ -9,6 +10,7 @@ type WalletSendCallsParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication
+  rpcProvider: StaticJsonRpcProvider
   policyId?: string
   params: any[]
 }
@@ -19,6 +21,7 @@ export const sendCalls = async ({
   account,
   authentication,
   backendClient,
+  rpcProvider,
   policyId,
 }: WalletSendCallsParams): Promise<string> => {
   const response = await sendCallsSync({
@@ -27,6 +30,7 @@ export const sendCalls = async ({
     account,
     authentication,
     backendClient,
+    rpcProvider,
     policyId,
   })
 

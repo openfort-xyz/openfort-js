@@ -125,6 +125,7 @@ export * from './create-transaction-intent-request';
 export * from './create-trigger-request';
 export * from './currency';
 export * from './custom-auth-config';
+export * from './delete-account-response';
 export * from './delete-smtpconfig-response';
 export * from './deploy-request';
 export * from './developer-account';

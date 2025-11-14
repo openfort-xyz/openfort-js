@@ -3,7 +3,7 @@ export type TransactionType = 'legacy' | 'eip2930' | 'eip1559' | 'eip4844' | 'ei
 
 export type Hex = `0x${string}`
 
-export type AccessList = readonly { address: string; storageKeys: readonly Hex[] }[]
+type AccessList = readonly { address: string; storageKeys: readonly Hex[] }[]
 
 export interface RpcTransactionRequest {
   from?: string
