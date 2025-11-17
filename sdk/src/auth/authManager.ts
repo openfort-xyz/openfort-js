@@ -6,18 +6,18 @@ import type { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError'
 import { sentry } from '../core/errors/sentry'
 import { type IStorage, StorageKeys } from '../storage/istorage'
-import {
-  type Auth,
-  type AuthActionRequiredResponse,
-  type AuthPlayerResponse,
-  type AuthResponse,
-  type InitAuthResponse,
-  type InitializeOAuthOptions,
-  type OAuthProvider,
-  type PKCEData,
-  type SIWEInitResponse,
-  type ThirdPartyAuthProvider,
-  type TokenType,
+import type {
+  Auth,
+  AuthActionRequiredResponse,
+  AuthPlayerResponse,
+  AuthResponse,
+  InitAuthResponse,
+  InitializeOAuthOptions,
+  OAuthProvider,
+  PKCEData,
+  SIWEInitResponse,
+  ThirdPartyAuthProvider,
+  TokenType,
 } from '../types/types'
 
 class TokenDecoder {
