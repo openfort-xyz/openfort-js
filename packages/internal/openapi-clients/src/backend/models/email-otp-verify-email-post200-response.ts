@@ -28,18 +28,18 @@ export interface EmailOtpVerifyEmailPost200Response {
      * @type {boolean}
      * @memberof EmailOtpVerifyEmailPost200Response
      */
-    'status'?: boolean;
+    'status': boolean;
     /**
      * Session token if autoSignInAfterVerification is enabled, otherwise null
      * @type {string}
      * @memberof EmailOtpVerifyEmailPost200Response
      */
-    'token'?: string | null;
+    'token': string | null;
     /**
      * 
      * @type {User}
      * @memberof EmailOtpVerifyEmailPost200Response
      */
-    'user'?: User;
+    'user': User;
 }
 

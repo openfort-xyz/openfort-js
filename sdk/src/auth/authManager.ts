@@ -21,6 +21,7 @@ import {
   type ThirdPartyAuthProvider,
   type TokenType,
 } from '../types/types'
+import type { AuthResponse as newAuthResponse } from '../types/v2/types'
 import { cryptoDigest } from '../utils/crypto'
 
 // Modern crypto implementation using Web Crypto API
@@ -141,45 +142,49 @@ export class AuthManager {
     return this.publishableKeyInstance
   }
 
-  public async initOAuth(
-    provider: OAuthProvider,
-    options?: InitializeOAuthOptions,
-    ecosystemGame?: string
-  ): Promise<InitAuthResponse> {
-    const usePooling = options?.usePooling ?? false
-    const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { usePooling: _usePooling, skipBrowserRedirect: _skipBrowserRedirect, ...restOptions } = options || {}
-    const request = {
-      oAuthInitRequest: {
-        provider,
-        options: restOptions,
-        usePooling,
+  public async initOAuth(provider: OAuthProvider, redirectUrl: string): Promise<string> {
+    return await withOpenfortError<string>(
+      async () => {
+        const axios = (await import('axios')).default
+        const basePath = this.backendApiClients.config.backend.basePath
+        const response = await axios.post(
+          `${basePath}/iam/v2/auth/sign-in/social`,
+          {
+            provider,
+            redirectUrl,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
+        return response.data.url
       },
-    }
-    const result = await withOpenfortError(
-      async () =>
-        this.backendApiClients.authenticationApi.initOAuth(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
-        ),
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        default: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        401: OpenfortErrorType.AUTHENTICATION_ERROR,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+      },
+      (error) => {
+        sentry.captureAxiosError('loginWithIdToken', error)
+      }
     )
-
-    if (typeof window !== 'undefined' && !skipBrowserRedirect) {
-      window.location.assign(result.data.url)
-    }
-    return {
-      url: result.data.url,
-      key: result.data.key,
-    }
   }
 
-  public async registerGuest(): Promise<AuthResponse> {
+  public async registerGuest(): Promise<newAuthResponse> {
     const request = {}
-    return withOpenfortError<AuthResponse>(
+    return withOpenfortError<newAuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.registerGuest(request)
+        const axios = (await import('axios')).default
+        const basePath = this.backendApiClients.config.backend.basePath
+        const response = await axios.post(`${basePath}/iam/v2/auth/sign-in/anonymous`, request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
         return response.data
       },
       { default: OpenfortErrorType.USER_REGISTRATION_ERROR }
@@ -345,23 +350,22 @@ export class AuthManager {
     return undefined
   }
 
-  public async loginEmailPassword(
-    email: string,
-    password: string,
-    ecosystemGame?: string
-  ): Promise<AuthResponse | AuthActionRequiredResponse> {
-    const request = {
-      loginRequest: {
-        email,
-        password,
-      },
-    }
-
-    return withOpenfortError<AuthResponse>(
+  public async loginEmailPassword(email: string, password: string): Promise<newAuthResponse> {
+    return withOpenfortError<newAuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.loginEmailPassword(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
+        const axios = (await import('axios')).default
+        const basePath = this.backendApiClients.config.backend.basePath
+        const response = await axios.post(
+          `${basePath}/iam/v2/auth/sign-in/email`,
+          {
+            email,
+            password,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
         )
         return response.data
       },
@@ -483,25 +487,23 @@ export class AuthManager {
     )
   }
 
-  public async signupEmailPassword(
-    email: string,
-    password: string,
-    name?: string,
-    ecosystemGame?: string
-  ): Promise<AuthResponse | AuthActionRequiredResponse> {
-    const request = {
-      signupRequest: {
-        email,
-        password,
-        name,
-      },
-    }
-
-    return withOpenfortError<AuthResponse>(
+  public async signupEmailPassword(email: string, password: string, name: string): Promise<newAuthResponse> {
+    return withOpenfortError<newAuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.signupEmailPassword(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
+        const axios = (await import('axios')).default
+        const basePath = this.backendApiClients.config.backend.basePath
+        const response = await axios.post(
+          `${basePath}/iam/v2/auth/sign-up/email`,
+          {
+            email,
+            password,
+            name,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
         )
         return response.data
       },

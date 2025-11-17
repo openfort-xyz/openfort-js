@@ -15,6 +15,7 @@ import {
   OpenfortEvents,
   type SIWEInitResponse,
 } from '../types/types'
+import type { AuthResponse as newAuthResponse, OAuthProvider as newOAuthProvider } from '../types/v2/types'
 import type TypedEventEmitter from '../utils/typedEventEmitter'
 
 export class AuthApi {
@@ -26,15 +27,7 @@ export class AuthApi {
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>
   ) {}
 
-  async logInWithEmailPassword({
-    email,
-    password,
-    ecosystemGame,
-  }: {
-    email: string
-    password: string
-    ecosystemGame?: string
-  }): Promise<AuthResponse | AuthActionRequiredResponse> {
+  async logInWithEmailPassword({ email, password }: { email: string; password: string }): Promise<newAuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -44,11 +37,11 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
 
     try {
-      const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame)
+      const result = await this.authManager.loginEmailPassword(email, password)
       if ('action' in result) {
         return result
       }
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -57,7 +50,7 @@ export class AuthApi {
     }
   }
 
-  async signUpGuest(): Promise<AuthResponse> {
+  async signUpGuest(): Promise<newAuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -68,7 +61,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.registerGuest()
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -80,14 +73,12 @@ export class AuthApi {
   async signUpWithEmailPassword({
     email,
     password,
-    options,
-    ecosystemGame,
+    name,
   }: {
     email: string
     password: string
-    options?: { data: { name: string } }
-    ecosystemGame?: string
-  }): Promise<AuthResponse | AuthActionRequiredResponse> {
+    name?: string
+  }): Promise<newAuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -97,11 +88,13 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
 
     try {
-      const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame)
+      const n = name ? name : email
+
+      const result = await this.authManager.signupEmailPassword(email, password, n)
       if ('action' in result) {
         return result
       }
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -110,56 +103,9 @@ export class AuthApi {
     }
   }
 
-  async linkEmailPassword({
-    email,
-    password,
-    authToken,
-    ecosystemGame,
-  }: {
-    email: string
-    password: string
-    authToken: string
-    ecosystemGame?: string
-  }): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.linkEmail(email, password, authToken, ecosystemGame)
-  }
-
-  async unlinkEmailPassword({ email, authToken }: { email: string; authToken: string }): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.unlinkEmail(email, authToken)
-  }
-
-  async requestEmailVerification({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
+  async initOAuth({ provider, redirectTo }: { provider: newOAuthProvider; redirectTo: string }): Promise<string> {
     await this.ensureInitialized()
-    await this.authManager.requestEmailVerification(email, redirectUrl)
-  }
 
-  async resetPassword({ email, password, state }: { email: string; password: string; state: string }): Promise<void> {
-    await this.ensureInitialized()
-    await this.authManager.resetPassword(email, password, state)
-  }
-
-  async requestResetPassword({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
-    await this.ensureInitialized()
-    await this.authManager.requestResetPassword(email, redirectUrl)
-  }
-
-  async verifyEmail({ email, state }: { email: string; state: string }): Promise<void> {
-    await this.ensureInitialized()
-    await this.authManager.verifyEmail(email, state)
-  }
-
-  async initOAuth({
-    provider,
-    options,
-    ecosystemGame,
-  }: {
-    provider: OAuthProvider
-    options?: InitializeOAuthOptions
-    ecosystemGame?: string
-  }): Promise<InitAuthResponse> {
-    await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
       throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
@@ -167,51 +113,10 @@ export class AuthApi {
 
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
 
-    return await this.authManager.initOAuth(provider, options, ecosystemGame)
-  }
-
-  async initLinkOAuth({
-    provider,
-    options,
-    ecosystemGame,
-  }: {
-    provider: OAuthProvider
-    authToken: string
-    options?: InitializeOAuthOptions
-    ecosystemGame?: string
-  }): Promise<InitAuthResponse> {
-    await this.validateAndRefreshToken()
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
-    }
-
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
-
-    return await this.authManager.linkOAuth(auth, provider, options, ecosystemGame)
-  }
-
-  async unlinkOAuth({
-    provider,
-    authToken,
-  }: {
-    provider: OAuthProvider
-    authToken: string
-  }): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.unlinkOAuth(provider, authToken)
-  }
-
-  async poolOAuth(key: string): Promise<AuthResponse> {
-    await this.ensureInitialized()
-
     try {
-      const response = await this.authManager.poolOAuth(key)
-      new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, response)
-      return response
+      return await this.authManager.initOAuth(provider, redirectTo)
     } catch (error) {
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      console.log(`Got an error calling API for Google login: ${JSON.stringify(error)}`)
       throw error
     }
   }
@@ -244,63 +149,6 @@ export class AuthApi {
     }
   }
 
-  async initSIWE({ address, ecosystemGame }: { address: string; ecosystemGame?: string }): Promise<SIWEInitResponse> {
-    await this.ensureInitialized()
-    return await this.authManager.initSIWE(address, ecosystemGame)
-  }
-
-  async authenticateWithSIWE({
-    signature,
-    message,
-    walletClientType,
-    connectorType,
-  }: {
-    signature: string
-    message: string
-    walletClientType: string
-    connectorType: string
-  }): Promise<AuthResponse> {
-    await this.ensureInitialized()
-    const auth = await Authentication.fromStorage(this.storage)
-    if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
-    }
-
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'siwe', provider: 'wallet' })
-
-    try {
-      const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType)
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
-      return result
-    } catch (error) {
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
-      throw error
-    }
-  }
-
-  async linkWallet({
-    signature,
-    message,
-    walletClientType,
-    connectorType,
-    authToken,
-  }: {
-    signature: string
-    message: string
-    walletClientType: string
-    connectorType: string
-    authToken: string
-  }): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken)
-  }
-
-  async unlinkWallet({ address, authToken }: { address: string; authToken: string }): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.unlinkWallet(address, authToken)
-  }
-
   async storeCredentials(auth: Auth): Promise<void> {
     await this.ensureInitialized()
     if (!auth.player) {
@@ -325,8 +173,6 @@ export class AuthApi {
     Authentication.clear(this.storage)
     this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
   }
-
-  // Below provided methods for authentication which use V2 API endpoints
 
   async requestEmailOTP(email: string): Promise<void> {
     await this.ensureInitialized()
@@ -412,5 +258,152 @@ export class AuthApi {
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
       throw error
     }
+  }
+
+  async requestResetPassword({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.requestResetPassword(email, redirectUrl)
+  }
+
+  async resetPassword({ email, password, state }: { email: string; password: string; state: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.resetPassword(email, password, state)
+  }
+
+  //*
+  //* Questionable functions:
+  //*
+
+  async linkEmailPassword({
+    email,
+    password,
+    authToken,
+    ecosystemGame,
+  }: {
+    email: string
+    password: string
+    authToken: string
+    ecosystemGame?: string
+  }): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
+    await this.validateAndRefreshToken()
+    return await this.authManager.linkEmail(email, password, authToken, ecosystemGame)
+  }
+
+  async unlinkEmailPassword({ email, authToken }: { email: string; authToken: string }): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken()
+    return await this.authManager.unlinkEmail(email, authToken)
+  }
+
+  async requestEmailVerification({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.requestEmailVerification(email, redirectUrl)
+  }
+
+  async verifyEmail({ email, state }: { email: string; state: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.verifyEmail(email, state)
+  }
+
+  async initLinkOAuth({
+    provider,
+    options,
+    ecosystemGame,
+  }: {
+    provider: OAuthProvider
+    authToken: string
+    options?: InitializeOAuthOptions
+    ecosystemGame?: string
+  }): Promise<InitAuthResponse> {
+    await this.validateAndRefreshToken()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
+
+    return await this.authManager.linkOAuth(auth, provider, options, ecosystemGame)
+  }
+
+  async unlinkOAuth({
+    provider,
+    authToken,
+  }: {
+    provider: OAuthProvider
+    authToken: string
+  }): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken()
+    return await this.authManager.unlinkOAuth(provider, authToken)
+  }
+
+  async poolOAuth(key: string): Promise<AuthResponse> {
+    await this.ensureInitialized()
+
+    try {
+      const response = await this.authManager.poolOAuth(key)
+      new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, response)
+      return response
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async initSIWE({ address, ecosystemGame }: { address: string; ecosystemGame?: string }): Promise<SIWEInitResponse> {
+    await this.ensureInitialized()
+    return await this.authManager.initSIWE(address, ecosystemGame)
+  }
+
+  async authenticateWithSIWE({
+    signature,
+    message,
+    walletClientType,
+    connectorType,
+  }: {
+    signature: string
+    message: string
+    walletClientType: string
+    connectorType: string
+  }): Promise<AuthResponse> {
+    await this.ensureInitialized()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'siwe', provider: 'wallet' })
+
+    try {
+      const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType)
+      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
+      return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async linkWallet({
+    signature,
+    message,
+    walletClientType,
+    connectorType,
+    authToken,
+  }: {
+    signature: string
+    message: string
+    walletClientType: string
+    connectorType: string
+    authToken: string
+  }): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken()
+    return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken)
+  }
+
+  async unlinkWallet({ address, authToken }: { address: string; authToken: string }): Promise<AuthPlayerResponse> {
+    await this.validateAndRefreshToken()
+    return await this.authManager.unlinkWallet(address, authToken)
   }
 }

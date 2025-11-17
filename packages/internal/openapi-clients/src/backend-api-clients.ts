@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
-import { AccountsApi, AuthenticationApi, EmailOtpApi, JwtApi, RPCApi, PhoneNumberApi, SessionsApi, TransactionIntentsApi } from './backend'
+import { AccountsApi, AuthenticationApi, EmailOtpApi, JwtApi, RPCApi, PhoneNumberApi, SessionsApi, TransactionIntentsApi, DefaultApi } from './backend'
 import { createConfig, type OpenfortAPIConfiguration, type OpenfortAPIConfigurationOptions } from './config'
 
 export interface IStorage {
@@ -37,8 +37,8 @@ export class BackendApiClients {
 
   public jwtApi: JwtApi
 
-  constructor(options: BackendApiClientsOptions) {
-  const customAxiosInstance: AxiosInstance = axios.create()
+  public authApi: DefaultApi
+
   private storage?: IStorage
 
   private onLogout?: () => void
@@ -87,6 +87,7 @@ export class BackendApiClients {
     this.sessionsApi = new SessionsApi(this.config.backend, undefined, this.axiosInstance)
     this.rpcApi = new RPCApi(this.config.backend, undefined, this.axiosInstance)
     this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, this.axiosInstance)
+    this.authApi = new DefaultApi(this.config.backend, undefined, this.axiosInstance)
   }
 
   /**

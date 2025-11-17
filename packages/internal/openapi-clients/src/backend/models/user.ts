@@ -43,7 +43,7 @@ export interface User {
      * @type {boolean}
      * @memberof User
      */
-    'emailVerified': boolean;
+    'emailVerified'?: boolean;
     /**
      * 
      * @type {string}
@@ -80,5 +80,11 @@ export interface User {
      * @memberof User
      */
     'playerId'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof User
+     */
+    'projectEnvId'?: number;
 }
 
