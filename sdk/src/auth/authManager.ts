@@ -383,53 +383,39 @@ export class AuthManager {
   }
 
   public async requestResetPassword(email: string, redirectUrl: string): Promise<void> {
-    const verifierBytes = getRandomBytes(32)
-    const verifier = base64url.encode(verifierBytes)
-    const challengeBytes = await createHashBuffer(verifier)
-    const challenge = base64url.encode(challengeBytes)
-
-    const stateBytes = getRandomBytes(32)
-    const state = base64url.encode(stateBytes)
-
-    await this.deviceCredentialsManager.savePKCEData({ state, verifier })
-
     const request = {
-      requestResetPasswordRequest: {
+      forgetPasswordPostRequest: {
         email,
-        redirectUrl,
-        challenge: {
-          codeChallenge: challenge,
-          method: CodeChallengeMethodEnum.S256,
-        },
+        redirectTo: redirectUrl,
       },
     }
     await withOpenfortError<void>(
       async () => {
-        await this.backendApiClients.authenticationApi.requestResetPassword(request)
+        await this.backendApiClients.authApi.requestPasswordResetPost(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
       },
       { default: OpenfortErrorType.AUTHENTICATION_ERROR }
     )
   }
 
-  public async resetPassword(email: string, password: string, state: string): Promise<void> {
+  public async resetPassword(password: string, token: string): Promise<void> {
     return withOpenfortError<void>(
       async () => {
-        const pkceData = await this.deviceCredentialsManager.getPKCEData()
-        if (!pkceData) {
-          throw new Error('No code verifier or state for PKCE')
-        }
-
         const request = {
-          resetPasswordRequest: {
-            email,
-            password,
-            state,
-            challenge: {
-              codeVerifier: pkceData.verifier,
-            },
+          resetPasswordPostRequest: {
+            newPassword: password,
+            token,
           },
         }
-        await this.backendApiClients.authenticationApi.resetPassword(request)
+
+        await this.backendApiClients.authApi.resetPasswordPost(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
       },
       { default: OpenfortErrorType.AUTHENTICATION_ERROR }
     )
