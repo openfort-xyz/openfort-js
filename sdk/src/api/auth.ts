@@ -263,9 +263,9 @@ export class AuthApi {
     await this.authManager.requestResetPassword(email, redirectUrl)
   }
 
-  async resetPassword({ email, password, state }: { email: string; password: string; state: string }): Promise<void> {
+  async resetPassword({ password, token }: { password: string; token: string }): Promise<void> {
     await this.ensureInitialized()
-    await this.authManager.resetPassword(email, password, state)
+    await this.authManager.resetPassword(password, token)
   }
 
   async linkEmailPassword({

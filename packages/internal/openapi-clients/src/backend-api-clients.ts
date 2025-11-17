@@ -82,12 +82,13 @@ export class BackendApiClients {
     this.emailOTPApi = new EmailOtpApi(authConfig, undefined, this.axiosInstance)
     this.smsOTPApi = new PhoneNumberApi(authConfig, undefined, this.axiosInstance)
     this.jwtApi = new JwtApi(authConfig, undefined, this.axiosInstance)
+    this.authApi = new DefaultApi(authConfig, undefined, this.axiosInstance)
     this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend, undefined, this.axiosInstance)
     this.accountsApi = new AccountsApi(this.config.backend, undefined, this.axiosInstance)
     this.sessionsApi = new SessionsApi(this.config.backend, undefined, this.axiosInstance)
     this.rpcApi = new RPCApi(this.config.backend, undefined, this.axiosInstance)
     this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, this.axiosInstance)
-    this.authApi = new DefaultApi(this.config.backend, undefined, this.axiosInstance)
+
   }
 
   /**
