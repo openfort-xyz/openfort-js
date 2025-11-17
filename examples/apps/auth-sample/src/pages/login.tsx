@@ -162,7 +162,7 @@ function LoginPage() {
     })
 
     try {
-      await openfort.auth.requestEmailOTP(email)
+      await openfort.auth.requestEmailOtp({ email })
       setOtpEmail(email)
       setShowEmailOTPRequestModal(false)
       setShowEmailOTPModal(true)
@@ -194,7 +194,7 @@ function LoginPage() {
     })
 
     try {
-      const data = await openfort.auth.loginWithEmailOTP(otpEmail, otp)
+      const data = await openfort.auth.logInWithEmailOtp({ email: otpEmail, otp })
       if (data) {
         setStatus({
           type: 'success',
@@ -224,7 +224,7 @@ function LoginPage() {
     })
 
     try {
-      await openfort.auth.requestSMSOTP(phone)
+      await openfort.auth.requestPhoneOtp({ phoneNumber: phone })
       setOtpPhone(phone)
       setShowSMSOTPRequestModal(false)
       setShowSMSOTPModal(true)
@@ -256,7 +256,7 @@ function LoginPage() {
     })
 
     try {
-      const data = await openfort.auth.loginWithSMSOTP(otpPhone, otp)
+      const data = await openfort.auth.logInWithPhoneOtp({ phoneNumber: otpPhone, otp: otp })
       if (data) {
         setStatus({
           type: 'success',

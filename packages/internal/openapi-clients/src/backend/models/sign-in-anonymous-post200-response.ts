@@ -23,19 +23,19 @@ import { User } from './user';
 /**
  * 
  * @export
- * @interface SignInPhoneNumberPost200Response
+ * @interface SignInAnonymousPost200Response
  */
-export interface SignInPhoneNumberPost200Response {
+export interface SignInAnonymousPost200Response {
     /**
      * 
      * @type {User}
-     * @memberof SignInPhoneNumberPost200Response
+     * @memberof SignInAnonymousPost200Response
      */
     'user'?: User;
     /**
      * 
      * @type {Session}
-     * @memberof SignInPhoneNumberPost200Response
+     * @memberof SignInAnonymousPost200Response
      */
     'session'?: Session;
 }

@@ -11,7 +11,6 @@ import {
   type AuthActionRequiredResponse,
   type AuthPlayerResponse,
   type AuthResponse,
-  type AuthResponseV2,
   CodeChallengeMethodEnum,
   type InitAuthResponse,
   type InitializeOAuthOptions,
@@ -21,7 +20,6 @@ import {
   type ThirdPartyAuthProvider,
   type TokenType,
 } from '../types/types'
-import type { AuthResponse as newAuthResponse } from '../types/v2/types'
 import { cryptoDigest } from '../utils/crypto'
 
 // Modern crypto implementation using Web Crypto API
@@ -174,9 +172,9 @@ export class AuthManager {
     )
   }
 
-  public async registerGuest(): Promise<newAuthResponse> {
+  public async registerGuest(): Promise<AuthResponse> {
     const request = {}
-    return withOpenfortError<newAuthResponse>(
+    return withOpenfortError<AuthResponse>(
       async () => {
         const axios = (await import('axios')).default
         const basePath = this.backendApiClients.config.backend.basePath
@@ -189,37 +187,6 @@ export class AuthManager {
       },
       { default: OpenfortErrorType.USER_REGISTRATION_ERROR }
     )
-  }
-
-  public async poolOAuth(key: string): Promise<AuthResponse> {
-    const request = {
-      key,
-    }
-    for (let i = 0; i < 600; i++) {
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        const response = await withOpenfortError(
-          async () => this.backendApiClients.authenticationApi.poolOAuth(request),
-          { default: OpenfortErrorType.AUTHENTICATION_ERROR }
-        )
-        if (response.status === 200) {
-          return response.data
-        }
-      } catch (error) {
-        // @ts-expect-error
-        if (error.response && error.response.status === 404) {
-          // eslint-disable-next-line no-await-in-loop
-          await new Promise((resolve) => {
-            setTimeout(resolve, 500)
-          })
-          // eslint-disable-next-line no-continue
-          continue
-        }
-        throw error
-      }
-    }
-
-    throw new Error('Failed to pool OAuth, try again later')
   }
 
   public async loginWithIdToken(provider: OAuthProvider, token: string, ecosystemGame?: string): Promise<AuthResponse> {
@@ -350,8 +317,8 @@ export class AuthManager {
     return undefined
   }
 
-  public async loginEmailPassword(email: string, password: string): Promise<newAuthResponse> {
-    return withOpenfortError<newAuthResponse>(
+  public async loginEmailPassword(email: string, password: string): Promise<AuthResponse> {
+    return withOpenfortError<AuthResponse>(
       async () => {
         const axios = (await import('axios')).default
         const basePath = this.backendApiClients.config.backend.basePath
@@ -487,8 +454,8 @@ export class AuthManager {
     )
   }
 
-  public async signupEmailPassword(email: string, password: string, name: string): Promise<newAuthResponse> {
-    return withOpenfortError<newAuthResponse>(
+  public async signupEmailPassword(email: string, password: string, name: string): Promise<AuthResponse> {
+    return withOpenfortError<AuthResponse>(
       async () => {
         const axios = (await import('axios')).default
         const basePath = this.backendApiClients.config.backend.basePath
@@ -962,8 +929,8 @@ export class AuthManager {
     )
   }
 
-  public async getJWTWithAccessToken(accessToken: string): Promise<AuthResponseV2> {
-    return await withOpenfortError<AuthResponseV2>(
+  public async getJWTWithAccessToken(accessToken: string): Promise<AuthResponse> {
+    return await withOpenfortError<AuthResponse>(
       async () => {
         // Implementing raw GET call here because response for this endpoint is changed on the API side,
         // and those changes are not showed on generated OpenAPI files

@@ -13,7 +13,8 @@
       "!**/dist",
       "!**/node_modules",
       "!**/.next",
-      "!**/coverage"
+      "!**/coverage",
+      "!examples/apps/web-betterauth/src/index.css"
     ],
     "ignoreUnknown": true
   },

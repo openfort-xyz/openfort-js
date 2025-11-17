@@ -38,7 +38,7 @@ import { PhoneNumberVerifyPost200Response } from '../models';
 // @ts-ignore
 import { PhoneNumberVerifyPostRequest } from '../models';
 // @ts-ignore
-import { SignInPhoneNumberPost200Response } from '../models';
+import { SignInAnonymousPost200Response } from '../models';
 // @ts-ignore
 import { SignInPhoneNumberPostRequest } from '../models';
 // @ts-ignore
@@ -327,7 +327,7 @@ export const PhoneNumberApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signInPhoneNumberPost(signInPhoneNumberPostRequest: SignInPhoneNumberPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignInPhoneNumberPost200Response>> {
+        async signInPhoneNumberPost(signInPhoneNumberPostRequest: SignInPhoneNumberPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignInAnonymousPost200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signInPhoneNumberPost(signInPhoneNumberPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -392,7 +392,7 @@ export const PhoneNumberApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signInPhoneNumberPost(requestParameters: PhoneNumberApiSignInPhoneNumberPostRequest, options?: AxiosRequestConfig): AxiosPromise<SignInPhoneNumberPost200Response> {
+        signInPhoneNumberPost(requestParameters: PhoneNumberApiSignInPhoneNumberPostRequest, options?: AxiosRequestConfig): AxiosPromise<SignInAnonymousPost200Response> {
             return localVarFp.signInPhoneNumberPost(requestParameters.signInPhoneNumberPostRequest, options).then((request) => request(axios, basePath));
         },
     };

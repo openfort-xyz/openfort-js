@@ -15486,6 +15486,136 @@
         }
       }
     },
+    "/sign-in/anonymous": {
+      "post": {
+        "tags": [
+          "Anonymous"
+        ],
+        "description": "Sign in anonymously",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Sign in anonymously",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "session": {
+                      "$ref": "#/components/schemas/Session"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized. Due to missing or invalid authentication."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Not Found. The requested resource was not found."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
+          }
+        }
+      }
+    },
     "/jwks": {
       "get": {
         "tags": [
@@ -24025,23 +24155,47 @@
       "CreateEmbeddedRequest": {
         "properties": {
           "accountType": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "Externally Owned Account",
+              "Smart Account",
+              "Delegated Account"
+            ],
+            "description": "The type of smart account that will be created. \"Externally Owned Account\", \"Smart Account\" or \"Delegated Account\".",
+            "example": "Externally Owned Account"
           },
           "chainType": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type. \"EVM\" or \"SVM\".",
+            "example": "EVM"
           },
           "address": {
-            "type": "string"
+            "type": "string",
+            "description": "The wallet address. For EOA: the EOA address. For Smart Account: the owner address (EOA will be created with this address). For Delegated Account: the address for both EOA and Delegated Account.",
+            "example": "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
           },
           "chainId": {
-            "type": "number",
-            "format": "double"
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Must be a [supported chain](/development/chains). Required for Smart Account and Delegated Account types.",
+            "example": 80002
           },
           "share": {
-            "type": "string"
+            "type": "string",
+            "description": "Specifies the share repositories. Required for creating embedded accounts.",
+            "example": "7d526b7e99fbf52850a183..."
           },
           "signerUuid": {
             "type": "string"
+          },
+          "implementationType": {
+            "type": "string",
+            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, Calibur, Simple). Defaults to UpgradeableV6 in mainnets. Must support EIP-7702 for Delegated Accounts.",
+            "example": "UpgradeableV6"
           }
         },
         "required": [
@@ -24316,7 +24470,7 @@
           },
           "implementationType": {
             "type": "string",
-            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.",
+            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, Calibur). Defaults to UpgradeableV6 in mainnets.",
             "example": "UpgradeableV6"
           },
           "chainId": {
@@ -27991,6 +28145,9 @@
           "updatedAt": {
             "type": "string",
             "default": "Generated at runtime"
+          },
+          "isAnonymous": {
+            "type": "boolean"
           },
           "phoneNumber": {
             "type": "string"

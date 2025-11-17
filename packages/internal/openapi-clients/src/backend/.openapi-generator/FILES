@@ -8,6 +8,7 @@ configuration.ts
 domain/accounts-api.ts
 domain/admin-authentication-api.ts
 domain/admin-authentication-v2-api.ts
+domain/anonymous-api.ts
 domain/authentication-api.ts
 domain/authentication-v2-api.ts
 domain/contracts-api.ts
@@ -418,13 +419,13 @@ models/session-list-response.ts
 models/session-response-expandable.ts
 models/session-response.ts
 models/session.ts
+models/sign-in-anonymous-post200-response.ts
 models/sign-in-email-otp-post-request.ts
 models/sign-in-email-otp-post200-response.ts
 models/sign-in-email-post-request.ts
 models/sign-in-email-post200-response-user.ts
 models/sign-in-email-post200-response.ts
 models/sign-in-phone-number-post-request.ts
-models/sign-in-phone-number-post200-response.ts
 models/sign-out-post200-response.ts
 models/sign-payload-request.ts
 models/sign-payload-response.ts

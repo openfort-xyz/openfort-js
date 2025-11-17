@@ -64,6 +64,12 @@ export interface User {
     'updatedAt': string;
     /**
      * 
+     * @type {boolean}
+     * @memberof User
+     */
+    'isAnonymous'?: boolean;
+    /**
+     * 
      * @type {string}
      * @memberof User
      */

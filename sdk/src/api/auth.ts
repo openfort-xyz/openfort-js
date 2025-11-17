@@ -7,7 +7,6 @@ import {
   type AuthActionRequiredResponse,
   type AuthPlayerResponse,
   type AuthResponse,
-  type AuthResponseV2,
   type InitAuthResponse,
   type InitializeOAuthOptions,
   type OAuthProvider,
@@ -15,7 +14,6 @@ import {
   OpenfortEvents,
   type SIWEInitResponse,
 } from '../types/types'
-import type { AuthResponse as newAuthResponse, OAuthProvider as newOAuthProvider } from '../types/v2/types'
 import type TypedEventEmitter from '../utils/typedEventEmitter'
 
 export class AuthApi {
@@ -27,7 +25,7 @@ export class AuthApi {
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>
   ) {}
 
-  async logInWithEmailPassword({ email, password }: { email: string; password: string }): Promise<newAuthResponse> {
+  async logInWithEmailPassword({ email, password }: { email: string; password: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -50,7 +48,7 @@ export class AuthApi {
     }
   }
 
-  async signUpGuest(): Promise<newAuthResponse> {
+  async signUpGuest(): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -78,7 +76,7 @@ export class AuthApi {
     email: string
     password: string
     name?: string
-  }): Promise<newAuthResponse> {
+  }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -103,7 +101,7 @@ export class AuthApi {
     }
   }
 
-  async initOAuth({ provider, redirectTo }: { provider: newOAuthProvider; redirectTo: string }): Promise<string> {
+  async initOAuth({ provider, redirectTo }: { provider: OAuthProvider; redirectTo: string }): Promise<string> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
@@ -121,7 +119,7 @@ export class AuthApi {
     }
   }
 
-  async loginWithIdToken({
+  async logInWithIdToken({
     provider,
     token,
     ecosystemGame,
@@ -140,7 +138,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame)
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -174,7 +172,7 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
   }
 
-  async requestEmailOTP(email: string): Promise<void> {
+  async requestEmailOtp({ email }: { email: string }): Promise<void> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
@@ -192,7 +190,7 @@ export class AuthApi {
     }
   }
 
-  async loginWithEmailOTP(email: string, otp: string): Promise<AuthResponseV2> {
+  async logInWithEmailOtp({ email, otp }: { email: string; otp: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
@@ -217,7 +215,7 @@ export class AuthApi {
     }
   }
 
-  async requestSMSOTP(phone: string): Promise<void> {
+  async requestPhoneOtp({ phoneNumber }: { phoneNumber: string }): Promise<void> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
@@ -228,14 +226,14 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'phone', provider: 'phone' })
 
     try {
-      await this.authManager.requestSMSOTP(phone)
+      await this.authManager.requestSMSOTP(phoneNumber)
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
       throw error
     }
   }
 
-  async loginWithSMSOTP(phone: string, otp: string): Promise<AuthResponseV2> {
+  async logInWithPhoneOtp({ phoneNumber, otp }: { phoneNumber: string; otp: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
@@ -246,7 +244,7 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'phone', provider: 'phone' })
 
     try {
-      const { accessToken, userId } = await this.authManager.loginWithSMSOTP(phone, otp)
+      const { accessToken, userId } = await this.authManager.loginWithSMSOTP(phoneNumber, otp)
 
       const authData = await this.authManager.getJWTWithAccessToken(accessToken)
 
@@ -269,10 +267,6 @@ export class AuthApi {
     await this.ensureInitialized()
     await this.authManager.resetPassword(email, password, state)
   }
-
-  //*
-  //* Questionable functions:
-  //*
 
   async linkEmailPassword({
     email,
@@ -336,20 +330,6 @@ export class AuthApi {
     return await this.authManager.unlinkOAuth(provider, authToken)
   }
 
-  async poolOAuth(key: string): Promise<AuthResponse> {
-    await this.ensureInitialized()
-
-    try {
-      const response = await this.authManager.poolOAuth(key)
-      new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, response)
-      return response
-    } catch (error) {
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
-      throw error
-    }
-  }
-
   async initSIWE({ address, ecosystemGame }: { address: string; ecosystemGame?: string }): Promise<SIWEInitResponse> {
     await this.ensureInitialized()
     return await this.authManager.initSIWE(address, ecosystemGame)
@@ -376,7 +356,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType)
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
