@@ -288,16 +288,6 @@ export class AuthApi {
     return await this.authManager.unlinkEmail(email, authToken)
   }
 
-  async requestEmailVerification({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
-    await this.ensureInitialized()
-    await this.authManager.requestEmailVerification(email, redirectUrl)
-  }
-
-  async verifyEmail({ email, state }: { email: string; state: string }): Promise<void> {
-    await this.ensureInitialized()
-    await this.authManager.verifyEmail(email, state)
-  }
-
   async initLinkOAuth({
     provider,
     options,

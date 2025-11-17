@@ -1,6 +1,6 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { AxiosRequestConfig } from 'axios'
-import { base64url, decodeJwt } from 'jose'
+import { decodeJwt } from 'jose'
 import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError'
@@ -11,7 +11,6 @@ import {
   type AuthActionRequiredResponse,
   type AuthPlayerResponse,
   type AuthResponse,
-  CodeChallengeMethodEnum,
   type InitAuthResponse,
   type InitializeOAuthOptions,
   type OAuthProvider,
@@ -20,22 +19,6 @@ import {
   type ThirdPartyAuthProvider,
   type TokenType,
 } from '../types/types'
-import { cryptoDigest } from '../utils/crypto'
-
-// Modern crypto implementation using Web Crypto API
-async function createHashBuffer(input: string): Promise<Uint8Array> {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(input)
-  const hashBuffer = await cryptoDigest('SHA-256', data)
-  return new Uint8Array(hashBuffer)
-}
-
-// Generate cryptographically secure random bytes
-function getRandomBytes(length: number): Uint8Array {
-  const bytes = new Uint8Array(length)
-  crypto.getRandomValues(bytes)
-  return bytes
-}
 
 class TokenDecoder {
   private decodedPayload: any
@@ -388,30 +371,16 @@ export class AuthManager {
     )
   }
 
-  public async requestEmailVerification(email: string, redirectUrl: string): Promise<void> {
-    const verifierBytes = getRandomBytes(32)
-    const verifier = base64url.encode(verifierBytes)
-    const challengeBytes = await createHashBuffer(verifier)
-    const challenge = base64url.encode(challengeBytes)
-
-    const stateBytes = getRandomBytes(32)
-    const state = base64url.encode(stateBytes)
-
-    await this.deviceCredentialsManager.savePKCEData({ state, verifier })
-
+  public async requestEmailVerification(email: string, callbackURL: string): Promise<void> {
     const request = {
-      requestVerifyEmailRequest: {
+      sendVerificationEmailPostRequest: {
         email,
-        redirectUrl,
-        challenge: {
-          codeChallenge: challenge,
-          method: CodeChallengeMethodEnum.S256,
-        },
+        callbackURL,
       },
     }
     await withOpenfortError<void>(
       async () => {
-        await this.backendApiClients.authenticationApi.requestEmailVerification(request)
+        await this.backendApiClients.authApi.sendVerificationEmailPost(request)
       },
       { default: OpenfortErrorType.AUTHENTICATION_ERROR }
     )
