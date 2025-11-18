@@ -82,13 +82,8 @@
       "micromatch@<4.0.8": ">=4.0.8",
       "cookie@<0.7.0": ">=0.7.0",
       "@metamask/sdk-communication-layer@>=0.16.0 <=0.33.0": ">=0.33.1",
-      "@metamask/sdk@>=0.16.0 <=0.33.0": ">=0.33.1"
-    },
-    "auditConfig": {
-      "ignoreCves": [
-        "GHSA-mh29-5h37-fv8m"
-      ],
-      "comment": "js-yaml <4.1.1 vulnerability in @changesets/parse - waiting for changesets to update to js-yaml 4.x API (load vs safeLoad)"
+      "@metamask/sdk@>=0.16.0 <=0.33.0": ">=0.33.1",
+      "glob@>=10.3.7 <=11.0.3": ">=11.1.0"
     }
   },
   "knip": {
