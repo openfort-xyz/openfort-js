@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.36
+
+### Patch Changes
+
+- [#177](https://github.com/openfort-xyz/openfort-js/pull/177) [`10a8e8c`](https://github.com/openfort-xyz/openfort-js/commit/10a8e8c97bbb358320b4d84e28a3cfc956c320b4) Thanks [@martimayoral](https://github.com/martimayoral)! - fix vulnerability in glob package
+
 ## 0.10.35
 
 ### Patch Changes
