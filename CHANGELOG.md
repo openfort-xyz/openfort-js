@@ -4,7 +4,9 @@
 
 ### Patch Changes
 
-- [#169](https://github.com/openfort-xyz/openfort-js/pull/169) [`b58f03a`](https://github.com/openfort-xyz/openfort-js/commit/b58f03a4c47902e5cbe8febc59b1750458d335e3) Thanks [@jamalavedra](https://github.com/jamalavedra)! - Add support for delegated accounts and fix account implementation enum for EIP-7702 compatibility
+- [#179](https://github.com/openfort-xyz/openfort-js/pull/179) [`5d54c7a`](https://github.com/openfort-xyz/openfort-js/commit/5d54c7afd15ffef9a4a464175cc552fa07368f9e) Thanks [@martimayoral](https://github.com/martimayoral)! - Add support for delegated accounts and fix account implementation enum for EIP-7702 compatibility
+
+- [#177](https://github.com/openfort-xyz/openfort-js/pull/177) [`10a8e8c`](https://github.com/openfort-xyz/openfort-js/commit/10a8e8c97bbb358320b4d84e28a3cfc956c320b4) Thanks [@martimayoral](https://github.com/martimayoral)! - fix vulnerability in glob package
 
 ## 0.10.34
 
