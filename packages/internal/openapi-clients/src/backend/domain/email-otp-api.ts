@@ -22,7 +22,7 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { EmailOtpCheckVerificationOtpPostRequest } from '../models';
+import { CheckVerificationOtpRequest } from '../models';
 // @ts-ignore
 import { EmailOtpResetPasswordPostRequest } from '../models';
 // @ts-ignore
@@ -53,13 +53,13 @@ export const EmailOtpApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * Check if a verification OTP is valid
-         * @param {EmailOtpCheckVerificationOtpPostRequest} emailOtpCheckVerificationOtpPostRequest 
+         * @param {CheckVerificationOtpRequest} checkVerificationOtpRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        emailOtpCheckVerificationOtpPost: async (emailOtpCheckVerificationOtpPostRequest: EmailOtpCheckVerificationOtpPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'emailOtpCheckVerificationOtpPostRequest' is not null or undefined
-            assertParamExists('emailOtpCheckVerificationOtpPost', 'emailOtpCheckVerificationOtpPostRequest', emailOtpCheckVerificationOtpPostRequest)
+        checkVerificationOtp: async (checkVerificationOtpRequest: CheckVerificationOtpRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'checkVerificationOtpRequest' is not null or undefined
+            assertParamExists('checkVerificationOtp', 'checkVerificationOtpRequest', checkVerificationOtpRequest)
             const localVarPath = `/email-otp/check-verification-otp`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -79,7 +79,7 @@ export const EmailOtpApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(emailOtpCheckVerificationOtpPostRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(checkVerificationOtpRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -273,12 +273,12 @@ export const EmailOtpApiFp = function(configuration?: Configuration) {
     return {
         /**
          * Check if a verification OTP is valid
-         * @param {EmailOtpCheckVerificationOtpPostRequest} emailOtpCheckVerificationOtpPostRequest 
+         * @param {CheckVerificationOtpRequest} checkVerificationOtpRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async emailOtpCheckVerificationOtpPost(emailOtpCheckVerificationOtpPostRequest: EmailOtpCheckVerificationOtpPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignOutPost200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.emailOtpCheckVerificationOtpPost(emailOtpCheckVerificationOtpPostRequest, options);
+        async checkVerificationOtp(checkVerificationOtpRequest: CheckVerificationOtpRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignOutPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkVerificationOtp(checkVerificationOtpRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -287,7 +287,7 @@ export const EmailOtpApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async emailOtpResetPasswordPost(emailOtpResetPasswordPostRequest: EmailOtpResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async emailOtpResetPasswordPost(emailOtpResetPasswordPostRequest: EmailOtpResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignOutPost200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.emailOtpResetPasswordPost(emailOtpResetPasswordPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -343,12 +343,12 @@ export const EmailOtpApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * Check if a verification OTP is valid
-         * @param {EmailOtpApiEmailOtpCheckVerificationOtpPostRequest} requestParameters Request parameters.
+         * @param {EmailOtpApiCheckVerificationOtpRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        emailOtpCheckVerificationOtpPost(requestParameters: EmailOtpApiEmailOtpCheckVerificationOtpPostRequest, options?: AxiosRequestConfig): AxiosPromise<SignOutPost200Response> {
-            return localVarFp.emailOtpCheckVerificationOtpPost(requestParameters.emailOtpCheckVerificationOtpPostRequest, options).then((request) => request(axios, basePath));
+        checkVerificationOtp(requestParameters: EmailOtpApiCheckVerificationOtpRequest, options?: AxiosRequestConfig): AxiosPromise<SignOutPost200Response> {
+            return localVarFp.checkVerificationOtp(requestParameters.checkVerificationOtpRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Reset user password with OTP
@@ -356,7 +356,7 @@ export const EmailOtpApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        emailOtpResetPasswordPost(requestParameters: EmailOtpApiEmailOtpResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+        emailOtpResetPasswordPost(requestParameters: EmailOtpApiEmailOtpResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<SignOutPost200Response> {
             return localVarFp.emailOtpResetPasswordPost(requestParameters.emailOtpResetPasswordPostRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -399,17 +399,17 @@ export const EmailOtpApiFactory = function (configuration?: Configuration, baseP
 };
 
 /**
- * Request parameters for emailOtpCheckVerificationOtpPost operation in EmailOtpApi.
+ * Request parameters for checkVerificationOtp operation in EmailOtpApi.
  * @export
- * @interface EmailOtpApiEmailOtpCheckVerificationOtpPostRequest
+ * @interface EmailOtpApiCheckVerificationOtpRequest
  */
-export interface EmailOtpApiEmailOtpCheckVerificationOtpPostRequest {
+export interface EmailOtpApiCheckVerificationOtpRequest {
     /**
      * 
-     * @type {EmailOtpCheckVerificationOtpPostRequest}
-     * @memberof EmailOtpApiEmailOtpCheckVerificationOtpPost
+     * @type {CheckVerificationOtpRequest}
+     * @memberof EmailOtpApiCheckVerificationOtp
      */
-    readonly emailOtpCheckVerificationOtpPostRequest: EmailOtpCheckVerificationOtpPostRequest
+    readonly checkVerificationOtpRequest: CheckVerificationOtpRequest
 }
 
 /**
@@ -491,13 +491,13 @@ export interface EmailOtpApiSignInEmailOtpPostRequest {
 export class EmailOtpApi extends BaseAPI {
     /**
      * Check if a verification OTP is valid
-     * @param {EmailOtpApiEmailOtpCheckVerificationOtpPostRequest} requestParameters Request parameters.
+     * @param {EmailOtpApiCheckVerificationOtpRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EmailOtpApi
      */
-    public emailOtpCheckVerificationOtpPost(requestParameters: EmailOtpApiEmailOtpCheckVerificationOtpPostRequest, options?: AxiosRequestConfig) {
-        return EmailOtpApiFp(this.configuration).emailOtpCheckVerificationOtpPost(requestParameters.emailOtpCheckVerificationOtpPostRequest, options).then((request) => request(this.axios, this.basePath));
+    public checkVerificationOtp(requestParameters: EmailOtpApiCheckVerificationOtpRequest, options?: AxiosRequestConfig) {
+        return EmailOtpApiFp(this.configuration).checkVerificationOtp(requestParameters.checkVerificationOtpRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

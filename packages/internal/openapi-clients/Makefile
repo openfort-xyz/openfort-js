@@ -13,8 +13,8 @@ get-backend-openapi:
 .PHONY: get-auth-openapi
 get-auth-openapi:
 	@echo "Fetching better-auth OpenAPI spec..."
-	curl -s $(API_DOCS_URL)/iam/v2/auth/reference | \
-	python3 ./scripts/extract-auth-spec.py > src/backend-openapi-auth.json
+	curl -s $(API_DOCS_URL)/iam/v2/auth/reference \
+	-o src/backend-openapi-auth.json
 
 .PHONY: merge-openapi-specs
 merge-openapi-specs:

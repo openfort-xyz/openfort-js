@@ -238,7 +238,7 @@ export class EmbeddedWalletApi {
     const auth = await Authentication.fromStorage(this.storage)
     const derivedKey = await this.passkeyHandler.deriveAndExportKey({
       id,
-      seed: auth!.player,
+      seed: auth!.userId,
     })
     return derivedKey
   }
@@ -296,7 +296,7 @@ export class EmbeddedWalletApi {
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth!.player,
+      user: auth!.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -322,7 +322,7 @@ export class EmbeddedWalletApi {
       const passkeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
-        seed: auth?.player!,
+        seed: auth?.userId!,
       })
       recoveryParams.passkeyInfo = {
         passkeyId: passkeyDetails.id,
@@ -340,7 +340,7 @@ export class EmbeddedWalletApi {
     const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
-      user: auth!.player,
+      user: auth!.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -387,7 +387,7 @@ export class EmbeddedWalletApi {
     const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
-      user: auth!.player,
+      user: auth!.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -490,14 +490,14 @@ export class EmbeddedWalletApi {
         passkeyId,
         passkeyKey: await this.passkeyHandler.deriveAndExportKey({
           id: passkeyId,
-          seed: auth.player,
+          seed: auth.userId,
         }),
       }
     } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
       const newPasskeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
-        seed: auth.player!,
+        seed: auth.userId!,
       })
       passkeyInfo = {
         passkeyId: newPasskeyDetails.id,
@@ -555,7 +555,7 @@ export class EmbeddedWalletApi {
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth.player,
+      user: auth.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -695,7 +695,7 @@ export class EmbeddedWalletApi {
       const auth = await Authentication.fromStorage(this.storage)
       if (auth) {
         try {
-          await iframeManager.getCurrentDevice(auth.player)
+          await iframeManager.getCurrentDevice(auth.userId)
           return true
         } catch (_error) {
           return false

@@ -26,8 +26,6 @@ import { AccountInfoPost200Response } from '../models';
 // @ts-ignore
 import { AccountInfoPostRequest } from '../models';
 // @ts-ignore
-import { AuthProviderListResponse } from '../models';
-// @ts-ignore
 import { ChangeEmailPost200Response } from '../models';
 // @ts-ignore
 import { ChangeEmailPostRequest } from '../models';
@@ -81,8 +79,6 @@ import { SendVerificationEmailPost400Response } from '../models';
 import { SendVerificationEmailPostRequest } from '../models';
 // @ts-ignore
 import { Session } from '../models';
-// @ts-ignore
-import { SignInEmailPost200Response } from '../models';
 // @ts-ignore
 import { SignInEmailPostRequest } from '../models';
 // @ts-ignore
@@ -449,45 +445,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(linkSocialPostRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * List configured auth methods for the current project environment.
-         * @summary List of auth configurations.
-         * @param {boolean} [enabled] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        list: async (enabled?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v1/config`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication pk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (enabled !== undefined) {
-                localVarQueryParameter['enabled'] = enabled;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1207,17 +1164,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * List configured auth methods for the current project environment.
-         * @summary List of auth configurations.
-         * @param {boolean} [enabled] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async list(enabled?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthProviderListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.list(enabled, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * List all accounts linked to the user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1330,7 +1276,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signInEmailPost(signInEmailPostRequest: SignInEmailPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignInEmailPost200Response>> {
+        async signInEmailPost(signInEmailPostRequest: SignInEmailPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SocialSignIn200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signInEmailPost(signInEmailPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1494,16 +1440,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.linkSocialPost(requestParameters.linkSocialPostRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * List configured auth methods for the current project environment.
-         * @summary List of auth configurations.
-         * @param {DefaultApiListRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        list(requestParameters: DefaultApiListRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AuthProviderListResponse> {
-            return localVarFp.list(requestParameters.enabled, options).then((request) => request(axios, basePath));
-        },
-        /**
          * List all accounts linked to the user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1605,7 +1541,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signInEmailPost(requestParameters: DefaultApiSignInEmailPostRequest, options?: AxiosRequestConfig): AxiosPromise<SignInEmailPost200Response> {
+        signInEmailPost(requestParameters: DefaultApiSignInEmailPostRequest, options?: AxiosRequestConfig): AxiosPromise<SocialSignIn200Response> {
             return localVarFp.signInEmailPost(requestParameters.signInEmailPostRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1782,20 +1718,6 @@ export interface DefaultApiLinkSocialPostRequest {
      * @memberof DefaultApiLinkSocialPost
      */
     readonly linkSocialPostRequest: LinkSocialPostRequest
-}
-
-/**
- * Request parameters for list operation in DefaultApi.
- * @export
- * @interface DefaultApiListRequest
- */
-export interface DefaultApiListRequest {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof DefaultApiList
-     */
-    readonly enabled?: boolean
 }
 
 /**
@@ -2128,18 +2050,6 @@ export class DefaultApi extends BaseAPI {
      */
     public linkSocialPost(requestParameters: DefaultApiLinkSocialPostRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).linkSocialPost(requestParameters.linkSocialPostRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * List configured auth methods for the current project environment.
-     * @summary List of auth configurations.
-     * @param {DefaultApiListRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public list(requestParameters: DefaultApiListRequest = {}, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).list(requestParameters.enabled, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

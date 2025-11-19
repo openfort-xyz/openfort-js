@@ -15,37 +15,31 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { SignInEmailPost200ResponseUser } from './sign-in-email-post200-response-user';
+import { SiweVerifyPost200ResponseUser } from './siwe-verify-post200-response-user';
 
 /**
- * Session response when idToken is provided
+ * 
  * @export
- * @interface SignInEmailPost200Response
+ * @interface SiweVerifyPost200Response
  */
-export interface SignInEmailPost200Response {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof SignInEmailPost200Response
-     */
-    'redirect': boolean;
+export interface SiweVerifyPost200Response {
     /**
      * Session token
      * @type {string}
-     * @memberof SignInEmailPost200Response
+     * @memberof SiweVerifyPost200Response
      */
     'token': string;
     /**
-     * 
-     * @type {any}
-     * @memberof SignInEmailPost200Response
+     * Always true on successful authentication
+     * @type {boolean}
+     * @memberof SiweVerifyPost200Response
      */
-    'url'?: any | null;
+    'success': boolean;
     /**
      * 
-     * @type {SignInEmailPost200ResponseUser}
-     * @memberof SignInEmailPost200Response
+     * @type {SiweVerifyPost200ResponseUser}
+     * @memberof SiweVerifyPost200Response
      */
-    'user': SignInEmailPost200ResponseUser;
+    'user': SiweVerifyPost200ResponseUser;
 }
 

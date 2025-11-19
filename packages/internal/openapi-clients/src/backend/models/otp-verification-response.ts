@@ -13,23 +13,18 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { BetterAuthProvidersReqParams } from './better-auth-providers-req-params';
 
 /**
- * 
+ * Response from OTP verification check
  * @export
- * @interface TwilioSMSParametersAllOf
+ * @interface OtpVerificationResponse
  */
-export interface TwilioSMSParametersAllOf {
+export interface OtpVerificationResponse {
     /**
-     * 
-     * @type {BetterAuthProvidersReqParams}
-     * @memberof TwilioSMSParametersAllOf
+     * Indicates whether the OTP verification was successful
+     * @type {boolean}
+     * @memberof OtpVerificationResponse
      */
-    'provider': BetterAuthProvidersReqParams;
+    'success': boolean;
 }
-
-
 

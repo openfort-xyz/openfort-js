@@ -17,14 +17,14 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface SiweNoncePost200Response
  */
-
-export const BetterAuthSMSClientsVONAGE = {
-    Vonage: 'vonage'
-} as const;
-
-export type BetterAuthSMSClientsVONAGE = typeof BetterAuthSMSClientsVONAGE[keyof typeof BetterAuthSMSClientsVONAGE];
-
-
+export interface SiweNoncePost200Response {
+    /**
+     * Cryptographically secure random nonce to be used in SIWE message
+     * @type {string}
+     * @memberof SiweNoncePost200Response
+     */
+    'nonce': string;
+}
 

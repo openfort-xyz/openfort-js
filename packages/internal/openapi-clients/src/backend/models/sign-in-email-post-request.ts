@@ -40,9 +40,9 @@ export interface SignInEmailPostRequest {
     'callbackURL'?: string | null;
     /**
      * 
-     * @type {string}
+     * @type {boolean}
      * @memberof SignInEmailPostRequest
      */
-    'rememberMe'?: string | null;
+    'rememberMe'?: boolean | null;
 }
 

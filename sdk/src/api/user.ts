@@ -2,7 +2,6 @@ import type { AuthManager } from '../auth/authManager'
 import { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
-import type { AuthPlayerResponse } from '../types/types'
 
 export class UserApi {
   constructor(
@@ -11,7 +10,7 @@ export class UserApi {
     private validateAndRefreshToken: () => Promise<void>
   ) {}
 
-  async get(): Promise<AuthPlayerResponse> {
+  async get() {
     await this.validateAndRefreshToken()
     const authentication = await Authentication.fromStorage(this.storage)
     if (!authentication) {

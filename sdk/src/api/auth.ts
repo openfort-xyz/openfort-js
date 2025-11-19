@@ -3,8 +3,6 @@ import { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 import {
-  type Auth,
-  type AuthActionRequiredResponse,
   type AuthPlayerResponse,
   type AuthResponse,
   type InitAuthResponse,
@@ -39,7 +37,7 @@ export class AuthApi {
       if ('action' in result) {
         return result
       }
-      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -59,7 +57,8 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.registerGuest()
-      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
+      console.log('Guest signup result:', result)
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -92,7 +91,7 @@ export class AuthApi {
       if ('action' in result) {
         return result
       }
-      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -119,15 +118,7 @@ export class AuthApi {
     }
   }
 
-  async logInWithIdToken({
-    provider,
-    token,
-    ecosystemGame,
-  }: {
-    provider: OAuthProvider
-    token: string
-    ecosystemGame?: string
-  }): Promise<AuthResponse> {
+  async logInWithIdToken({ provider, token }: { provider: OAuthProvider; token: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -137,8 +128,8 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'idToken', provider })
 
     try {
-      const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame)
-      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
+      const result = await this.authManager.loginWithIdToken(provider, token)
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -147,12 +138,12 @@ export class AuthApi {
     }
   }
 
-  async storeCredentials(auth: Auth): Promise<void> {
+  async storeCredentials({ token, userId }: { token: string; userId: string }): Promise<void> {
     await this.ensureInitialized()
-    if (!auth.player) {
-      throw new OpenfortError('Player ID is required to store credentials', OpenfortErrorType.INVALID_CONFIGURATION)
+    if (!userId) {
+      throw new OpenfortError('User ID is required to store credentials', OpenfortErrorType.INVALID_CONFIGURATION)
     }
-    new Authentication('jwt', auth.accessToken, auth.player, auth.refreshToken).save(this.storage)
+    new Authentication('session', token, userId).save(this.storage)
   }
 
   /**
@@ -163,7 +154,7 @@ export class AuthApi {
     if (!auth) return
     try {
       if (auth.type !== 'third_party') {
-        await this.authManager.logout(auth.token, auth?.refreshToken!)
+        await this.authManager.logout(auth.token)
       }
     } catch (_error) {
       // Ignoring logout errors as we're clearing local state anyway
@@ -201,14 +192,12 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
 
     try {
-      const { accessToken, userId } = await this.authManager.loginWithEmailOTP(email, otp)
+      const result = await this.authManager.loginWithEmailOTP(email, otp)
 
-      const authData = await this.authManager.getJWTWithAccessToken(accessToken)
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
 
-      new Authentication('jwt', authData.token, userId, authData.refreshToken).save(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, authData)
-
-      return authData
+      return result
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
       throw error
@@ -226,7 +215,7 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'phone', provider: 'phone' })
 
     try {
-      await this.authManager.requestSMSOTP(phoneNumber)
+      await this.authManager.requestPhoneOtp(phoneNumber)
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
       throw error
@@ -244,14 +233,12 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'phone', provider: 'phone' })
 
     try {
-      const { accessToken, userId } = await this.authManager.loginWithSMSOTP(phoneNumber, otp)
+      const result = await this.authManager.loginWithSMSOTP(phoneNumber, otp)
 
-      const authData = await this.authManager.getJWTWithAccessToken(accessToken)
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
 
-      new Authentication('jwt', authData.token, userId, authData.refreshToken).save(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, authData)
-
-      return authData
+      return result
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
       throw error
@@ -268,45 +255,23 @@ export class AuthApi {
     await this.authManager.resetPassword(password, token)
   }
 
-  async linkEmailPassword({
-    email,
-    password,
-    authToken,
-    ecosystemGame,
-  }: {
-    email: string
-    password: string
-    authToken: string
-    ecosystemGame?: string
-  }): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.linkEmail(email, password, authToken, ecosystemGame)
-  }
-
-  async unlinkEmailPassword({ email, authToken }: { email: string; authToken: string }): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.unlinkEmail(email, authToken)
-  }
-
   async requestEmailVerification({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
     await this.ensureInitialized()
     await this.authManager.requestEmailVerification(email, redirectUrl)
   }
 
-  async verifyEmail({ email, state }: { email: string; state: string }): Promise<void> {
+  async verifyEmail({ token, callbackURL }: { token: string; callbackURL?: string }): Promise<void> {
     await this.ensureInitialized()
-    await this.authManager.verifyEmail(email, state)
+    await this.authManager.verifyEmail(token, callbackURL)
   }
 
   async initLinkOAuth({
     provider,
     options,
-    ecosystemGame,
   }: {
     provider: OAuthProvider
     authToken: string
     options?: InitializeOAuthOptions
-    ecosystemGame?: string
   }): Promise<InitAuthResponse> {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
@@ -316,23 +281,17 @@ export class AuthApi {
 
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
 
-    return await this.authManager.linkOAuth(auth, provider, options, ecosystemGame)
+    return await this.authManager.linkOAuth(auth, provider, options)
   }
 
-  async unlinkOAuth({
-    provider,
-    authToken,
-  }: {
-    provider: OAuthProvider
-    authToken: string
-  }): Promise<AuthPlayerResponse> {
+  async unlinkOAuth({ provider, authToken }: { provider: OAuthProvider; authToken: string }) {
     await this.validateAndRefreshToken()
     return await this.authManager.unlinkOAuth(provider, authToken)
   }
 
-  async initSIWE({ address, ecosystemGame }: { address: string; ecosystemGame?: string }): Promise<SIWEInitResponse> {
+  async initSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
     await this.ensureInitialized()
-    return await this.authManager.initSIWE(address, ecosystemGame)
+    return await this.authManager.initSIWE(address)
   }
 
   async authenticateWithSIWE({
@@ -340,11 +299,13 @@ export class AuthApi {
     message,
     walletClientType,
     connectorType,
+    address,
   }: {
     signature: string
     message: string
     walletClientType: string
     connectorType: string
+    address: string
   }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
@@ -355,8 +316,14 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'siwe', provider: 'wallet' })
 
     try {
-      const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType)
-      new Authentication('jwt', result.token, result.userId, result.refreshToken).save(this.storage)
+      const result = await this.authManager.authenticateSIWE(
+        signature,
+        message,
+        walletClientType,
+        connectorType,
+        address
+      )
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -385,5 +352,10 @@ export class AuthApi {
   async unlinkWallet({ address, authToken }: { address: string; authToken: string }): Promise<AuthPlayerResponse> {
     await this.validateAndRefreshToken()
     return await this.authManager.unlinkWallet(address, authToken)
+  }
+
+  async unlinkEmail({ authToken }: { authToken: string }) {
+    await this.validateAndRefreshToken()
+    return await this.authManager.unlinkEmail(authToken)
   }
 }

@@ -11,6 +11,9 @@ export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'
 // Export main SDK classes
 export { Openfort }
+// Export error handling
+export { OPENFORT_AUTH_ERROR_CODES, type OpenfortAuthErrorCode } from './core/errors/authErrorCodes'
+export { OpenfortError, type OpenfortErrorDetails, OpenfortErrorType } from './core/errors/openfortError'
 // Export storage interface
 export { IStorage as Storage } from './storage/istorage'
 // biome-ignore lint/performance/noReExportAll: Main SDK entry point needs to re-export all types

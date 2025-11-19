@@ -17,14 +17,20 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface SiweVerifyPost401Response
  */
-
-export const BetterAuthSMSClientsMESSAGEBIRD = {
-    Messagebird: 'messagebird'
-} as const;
-
-export type BetterAuthSMSClientsMESSAGEBIRD = typeof BetterAuthSMSClientsMESSAGEBIRD[keyof typeof BetterAuthSMSClientsMESSAGEBIRD];
-
-
+export interface SiweVerifyPost401Response {
+    /**
+     * 
+     * @type {string}
+     * @memberof SiweVerifyPost401Response
+     */
+    'message': string;
+    /**
+     * Error code (e.g., UNAUTHORIZED_INVALID_OR_EXPIRED_NONCE)
+     * @type {string}
+     * @memberof SiweVerifyPost401Response
+     */
+    'code'?: string;
+}
 

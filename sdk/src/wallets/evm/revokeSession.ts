@@ -50,7 +50,7 @@ const buildOpenfortTransactions = async (
   const sessionRequest = formatSessionRequest(
     params.permissionContext,
     account.chainId!,
-    authentication.player,
+    authentication.userId,
     policyId,
     account.id
   )

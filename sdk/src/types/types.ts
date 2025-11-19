@@ -98,12 +98,6 @@ export enum AuthType {
   THIRD_PARTY = 'thirdParty',
 }
 
-export type Auth = {
-  player?: string
-  accessToken: string
-  refreshToken: string
-}
-
 export type InitAuthResponse = {
   url: string
   key: string
@@ -112,7 +106,6 @@ export type InitAuthResponse = {
 export type SIWEInitResponse = {
   address: string
   nonce: string
-  expiresAt: number
 }
 
 export type InitializeOAuthOptions = {
@@ -428,10 +421,55 @@ export interface AuthPlayerResponse {
   linkedAccounts: LinkedAccountResponse[]
 }
 
-export interface AuthResponse {
-  userId: string
+/**
+ * User profile information
+ */
+export interface User {
+  /** Unique user identifier */
+  id: string
+  /** User's email address */
+  email?: string
+  /** User's display name */
+  name?: string | null
+  /** URL to user's profile image */
+  image?: string | null
+  /** Whether the user's email has been verified */
+  emailVerified?: boolean
+  /** ISO timestamp when the user was created */
+  createdAt?: string
+  /** ISO timestamp when the user was last updated */
+  updatedAt?: string
+}
+
+/**
+ * Session information
+ */
+export interface Session {
+  /** Session identifier */
+  id?: string
+  /** Session token for authentication */
   token: string
-  refreshToken: string
+  /** User ID associated with this session */
+  userId: string
+  /** ISO timestamp when the session expires */
+  expiresAt?: string
+  /** ISO timestamp when the session was created */
+  createdAt?: string
+  /** ISO timestamp when the session was last updated */
+  updatedAt?: string
+}
+
+/**
+ * Authentication response returned by SDK auth methods
+ * Contains session token and user/session details
+ */
+export interface AuthResponse {
+  /** Session token for authentication */
+  token: string
+  /** Full user profile information */
+  user?: User
+  /** Session details */
+  session?: Session
 }
 
 export enum AuthActionRequiredActions {
@@ -506,15 +544,6 @@ interface StandardDetails {
   maxFeePerGas: string
   maxPriorityFeePerGas: string
   value?: string
-}
-
-export type PKCEData = {
-  state: string
-  verifier: string
-}
-
-export enum CodeChallengeMethodEnum {
-  S256 = 'S256',
 }
 
 export enum AccountTypeEnum {

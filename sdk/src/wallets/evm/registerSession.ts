@@ -156,7 +156,7 @@ const buildOpenfortTransactions = async (
     policyId,
     false,
     whitelist,
-    authentication.player,
+    authentication.userId,
     limit,
     account.id
   )

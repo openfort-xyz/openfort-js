@@ -17,14 +17,20 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface SiweNoncePostRequest
  */
-
-export const BetterAuthEmailClients = {
-    Brevo: 'brevo'
-} as const;
-
-export type BetterAuthEmailClients = typeof BetterAuthEmailClients[keyof typeof BetterAuthEmailClients];
-
-
+export interface SiweNoncePostRequest {
+    /**
+     * Ethereum wallet address (must be 42 characters starting with 0x)
+     * @type {string}
+     * @memberof SiweNoncePostRequest
+     */
+    'walletAddress': string;
+    /**
+     * Blockchain network chain ID (default: 1 for Ethereum mainnet)
+     * @type {number}
+     * @memberof SiweNoncePostRequest
+     */
+    'chainId'?: number;
+}
 

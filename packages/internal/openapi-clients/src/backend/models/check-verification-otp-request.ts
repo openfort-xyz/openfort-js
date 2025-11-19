@@ -17,26 +17,35 @@
 /**
  * 
  * @export
- * @interface EmailOtpCheckVerificationOtpPostRequest
+ * @interface CheckVerificationOtpRequest
  */
-export interface EmailOtpCheckVerificationOtpPostRequest {
+export interface CheckVerificationOtpRequest {
     /**
      * Email address the OTP was sent to
      * @type {string}
-     * @memberof EmailOtpCheckVerificationOtpPostRequest
+     * @memberof CheckVerificationOtpRequest
      */
     'email': string;
     /**
      * Type of the OTP
      * @type {string}
-     * @memberof EmailOtpCheckVerificationOtpPostRequest
+     * @memberof CheckVerificationOtpRequest
      */
-    'type': string;
+    'type': CheckVerificationOtpRequestTypeEnum;
     /**
      * OTP to verify
      * @type {string}
-     * @memberof EmailOtpCheckVerificationOtpPostRequest
+     * @memberof CheckVerificationOtpRequest
      */
     'otp': string;
 }
+
+export const CheckVerificationOtpRequestTypeEnum = {
+    EmailVerification: 'email-verification',
+    SignIn: 'sign-in',
+    ForgetPassword: 'forget-password'
+} as const;
+
+export type CheckVerificationOtpRequestTypeEnum = typeof CheckVerificationOtpRequestTypeEnum[keyof typeof CheckVerificationOtpRequestTypeEnum];
+
 

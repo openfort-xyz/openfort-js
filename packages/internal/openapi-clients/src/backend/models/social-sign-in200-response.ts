@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { SocialSignIn200ResponseUser } from './social-sign-in200-response-user';
 
 /**
  * Session response when idToken is provided
@@ -32,5 +35,17 @@ export interface SocialSignIn200Response {
      * @memberof SocialSignIn200Response
      */
     'token': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SocialSignIn200Response
+     */
+    'url'?: string | null;
+    /**
+     * 
+     * @type {SocialSignIn200ResponseUser}
+     * @memberof SocialSignIn200Response
+     */
+    'user': SocialSignIn200ResponseUser;
 }
 

@@ -26,7 +26,7 @@
   "tags": [
     {
       "name": "Default",
-      "description": "Default endpoints that are included with Better Auth by default. These endpoints are not part of any plugin."
+      "description": "Authentication endpoints."
     }
   ],
   "paths": {
@@ -10094,6 +10094,9 @@
         },
         "description": "List configured auth methods for the current project environment.",
         "summary": "List of auth configurations.",
+        "tags": [
+          "AdminAuthentication"
+        ],
         "security": [
           {
             "pk": []
@@ -10697,187 +10700,6 @@
         }
       }
     },
-    "/iam/v2/oauth": {
-      "post": {
-        "operationId": "CreateOAuthConfigV2",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OAuthConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "enabled": true,
-                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
-                      "clientId": "1234567890abcdef1234567890abcdef",
-                      "clientSecret": "abcdef1234567890abcdef1234567890",
-                      "provider": "accelbyte"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "The endpoint creates oauth configuration for the current project environment.",
-        "summary": "Create oauth configuration.",
-        "tags": [
-          "AdminAuthenticationV2"
-        ],
-        "deprecated": true,
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "description": "Specifies the oauth provider specific configuration.",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OAuthParametersV2",
-                "description": "Specifies the oauth provider specific configuration."
-              }
-            }
-          }
-        }
-      }
-    },
-    "/iam/v2/me": {
-      "get": {
-        "operationId": "MeV2",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthUserResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_...",
-                      "createdAt": 1234567890,
-                      "email": "jaume@openfort.xyz",
-                      "emailVerified": true,
-                      "phone": "",
-                      "phoneVerified": false
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "tags": [
-          "AuthenticationV2"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          },
-          {
-            "better_auth": []
-          }
-        ],
-        "parameters": []
-      }
-    },
-    "/iam/v2/users": {
-      "get": {
-        "operationId": "GetAuthPlayersV2",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthUserListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_...",
-                      "createdAt": 1234567890,
-                      "email": "jaume@openfort.xyz",
-                      "emailVerified": true,
-                      "phone": "",
-                      "phoneVerified": false
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "tags": [
-          "AuthenticationV2"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          }
-        ]
-      }
-    },
     "/sign-in/social": {
       "post": {
         "tags": [
@@ -10956,10 +10778,10 @@
                   "scopes": {
                     "type": "array",
                     "description": "Array of scopes to request from the provider. This will override the default scopes passed.",
-                    "nullable": true,
                     "items": {
                       "type": "string"
-                    }
+                    },
+                    "nullable": true
                   },
                   "requestSignUp": {
                     "type": "boolean",
@@ -10996,47 +10818,48 @@
                     },
                     "token": {
                       "type": "string",
-                      "description": "Session token",
-                      "url": {
-                        "nullable": true
-                      },
-                      "user": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "email": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "image": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "emailVerified": {
-                            "type": "boolean"
-                          },
-                          "createdAt": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "updatedAt": {
-                            "type": "string",
-                            "format": "date-time"
-                          }
+                      "description": "Session token"
+                    },
+                    "url": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
                         },
-                        "required": [
-                          "id",
-                          "email",
-                          "emailVerified",
-                          "createdAt",
-                          "updatedAt"
-                        ]
-                      }
+                        "email": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "image": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "emailVerified": {
+                          "type": "boolean"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "email",
+                        "emailVerified",
+                        "createdAt",
+                        "updatedAt"
+                      ]
                     }
                   },
                   "required": [
@@ -11684,7 +11507,7 @@
                     "nullable": true
                   },
                   "rememberMe": {
-                    "type": "string",
+                    "type": "boolean",
                     "nullable": true
                   }
                 },
@@ -11716,6 +11539,7 @@
                       "description": "Session token"
                     },
                     "url": {
+                      "type": "string",
                       "nullable": true
                     },
                     "user": {
@@ -14108,10 +13932,10 @@
                       },
                       "scopes": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                           "type": "string"
-                        }
+                        },
+                        "nullable": true
                       }
                     },
                     "required": [
@@ -14126,10 +13950,10 @@
                   "scopes": {
                     "type": "array",
                     "description": "Additional scopes to request from the provider",
-                    "nullable": true,
                     "items": {
                       "type": "string"
-                    }
+                    },
+                    "nullable": true
                   },
                   "errorCallbackURL": {
                     "type": "string",
@@ -15506,326 +15330,18 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Session token"
+                    },
                     "user": {
                       "$ref": "#/components/schemas/User"
-                    },
-                    "session": {
-                      "$ref": "#/components/schemas/Session"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
                     }
                   },
                   "required": [
-                    "message"
+                    "token",
+                    "user"
                   ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
-    "/jwks": {
-      "get": {
-        "tags": [
-          "Jwt"
-        ],
-        "description": "Get the JSON Web Key Set",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "JSON Web Key Set retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "keys": {
-                      "type": "array",
-                      "description": "Array of public JSON Web Keys",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "kid": {
-                            "type": "string",
-                            "description": "Key ID uniquely identifying the key, corresponds to the 'id' from the stored Jwk"
-                          },
-                          "kty": {
-                            "type": "string",
-                            "description": "Key type (e.g., 'RSA', 'EC', 'OKP')"
-                          },
-                          "alg": {
-                            "type": "string",
-                            "description": "Algorithm intended for use with the key (e.g., 'EdDSA', 'RS256')"
-                          },
-                          "use": {
-                            "type": "string",
-                            "description": "Intended use of the public key (e.g., 'sig' for signature)",
-                            "enum": [
-                              "sig"
-                            ],
-                            "nullable": true
-                          },
-                          "n": {
-                            "type": "string",
-                            "description": "Modulus for RSA keys (base64url-encoded)",
-                            "nullable": true
-                          },
-                          "e": {
-                            "type": "string",
-                            "description": "Exponent for RSA keys (base64url-encoded)",
-                            "nullable": true
-                          },
-                          "crv": {
-                            "type": "string",
-                            "description": "Curve name for elliptic curve keys (e.g., 'Ed25519', 'P-256')",
-                            "nullable": true
-                          },
-                          "x": {
-                            "type": "string",
-                            "description": "X coordinate for elliptic curve keys (base64url-encoded)",
-                            "nullable": true
-                          },
-                          "y": {
-                            "type": "string",
-                            "description": "Y coordinate for elliptic curve keys (base64url-encoded)",
-                            "nullable": true
-                          }
-                        },
-                        "required": [
-                          "kid",
-                          "kty",
-                          "alg"
-                        ]
-                      }
-                    }
-                  },
-                  "required": [
-                    "keys"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
-    "/token": {
-      "get": {
-        "tags": [
-          "Jwt"
-        ],
-        "description": "Get a JWT token",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string"
-                    }
-                  }
                 }
               }
             }
@@ -15978,13 +15494,18 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Session token"
+                    },
                     "user": {
                       "$ref": "#/components/schemas/User"
-                    },
-                    "session": {
-                      "$ref": "#/components/schemas/Session"
                     }
-                  }
+                  },
+                  "required": [
+                    "token",
+                    "user"
+                  ]
                 }
               }
             }
@@ -17056,6 +16577,7 @@
     },
     "/email-otp/check-verification-otp": {
       "post": {
+        "operationId": "checkVerificationOtp",
         "tags": [
           "Email-otp"
         ],
@@ -17079,6 +16601,11 @@
                   },
                   "type": {
                     "type": "string",
+                    "enum": [
+                      "email-verification",
+                      "sign-in",
+                      "forget-password"
+                    ],
                     "description": "Type of the OTP"
                   },
                   "otp": {
@@ -17728,7 +17255,7 @@
         "responses": {
           "200": {
             "description": "Success",
-            "contnt": {
+            "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
@@ -17821,6 +17348,285 @@
               }
             },
             "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
+          }
+        }
+      }
+    },
+    "/siwe/nonce": {
+      "post": {
+        "tags": [
+          "SIWE"
+        ],
+        "description": "Generate a nonce for Sign-In With Ethereum (SIWE) authentication",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "walletAddress": {
+                    "type": "string",
+                    "description": "Ethereum wallet address (must be 42 characters starting with 0x)",
+                    "pattern": "^0[xX][a-fA-F0-9]{40}$",
+                    "minLength": 42,
+                    "maxLength": 42
+                  },
+                  "chainId": {
+                    "type": "number",
+                    "description": "Blockchain network chain ID (default: 1 for Ethereum mainnet)",
+                    "default": 1,
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "walletAddress"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nonce generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nonce": {
+                      "type": "string",
+                      "description": "Cryptographically secure random nonce to be used in SIWE message"
+                    }
+                  },
+                  "required": [
+                    "nonce"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Bad Request. Invalid wallet address format or parameters."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized. Due to missing or invalid authentication."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
+          }
+        }
+      }
+    },
+    "/siwe/verify": {
+      "post": {
+        "tags": [
+          "SIWE"
+        ],
+        "description": "Verify a signed SIWE message and authenticate the user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The SIWE message string that was signed",
+                    "minLength": 1
+                  },
+                  "signature": {
+                    "type": "string",
+                    "description": "The signature from the user's wallet",
+                    "minLength": 1
+                  },
+                  "walletAddress": {
+                    "type": "string",
+                    "description": "Ethereum wallet address (must be 42 characters starting with 0x)",
+                    "pattern": "^0[xX][a-fA-F0-9]{40}$",
+                    "minLength": 42,
+                    "maxLength": 42
+                  },
+                  "chainId": {
+                    "type": "number",
+                    "description": "Blockchain network chain ID (must match the Chain ID in SIWE message, default: 1)",
+                    "default": 1,
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email address (required if anonymous mode is disabled)"
+                  }
+                },
+                "required": [
+                  "message",
+                  "signature",
+                  "walletAddress"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Session token"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "Always true on successful authentication"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "User ID"
+                        },
+                        "walletAddress": {
+                          "type": "string",
+                          "description": "Ethereum wallet address"
+                        },
+                        "chainId": {
+                          "type": "number",
+                          "description": "Chain ID used for authentication"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "walletAddress",
+                        "chainId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "token",
+                    "success",
+                    "user"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Bad Request. Invalid parameters or email required when anonymous is disabled."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "description": "Error code (e.g., UNAUTHORIZED_INVALID_OR_EXPIRED_NONCE)"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized. Invalid or expired nonce, invalid signature, or chainId mismatch."
           },
           "500": {
             "content": {
@@ -27685,439 +27491,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "BetterAuthSMSClients.TWILIO": {
-        "enum": [
-          "twilio"
-        ],
-        "type": "string"
-      },
-      "Pick_TwilioSMSConfig.Exclude_keyofTwilioSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.TWILIO"
-          },
-          "accountSid": {
-            "type": "string",
-            "description": "Twilio Account SID"
-          },
-          "authToken": {
-            "type": "string",
-            "description": "Twilio Auth Token"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "description": "Twilio phone number (from)"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "senderClient",
-          "accountSid",
-          "authToken",
-          "phoneNumber",
-          "enabled"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_TwilioSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_TwilioSMSConfig.Exclude_keyofTwilioSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "BetterAuthProvidersReqParams": {
-        "enum": [
-          "sms",
-          "email"
-        ],
-        "type": "string"
-      },
-      "TwilioSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_TwilioSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthSMSClients.MESSAGEBIRD": {
-        "enum": [
-          "messagebird"
-        ],
-        "type": "string"
-      },
-      "Pick_MessageBirdSMSConfig.Exclude_keyofMessageBirdSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.MESSAGEBIRD"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "accessKey": {
-            "type": "string",
-            "description": "MessageBird Access Key"
-          },
-          "originator": {
-            "type": "string",
-            "description": "Sender name or number"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "accessKey",
-          "originator"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_MessageBirdSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_MessageBirdSMSConfig.Exclude_keyofMessageBirdSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "MessageBirdSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_MessageBirdSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthSMSClients.TXTLOCAL": {
-        "enum": [
-          "txtlocal"
-        ],
-        "type": "string"
-      },
-      "Pick_TxtLocalSMSConfig.Exclude_keyofTxtLocalSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.TXTLOCAL"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "apiKey": {
-            "type": "string",
-            "description": "TxtLocal API Key"
-          },
-          "sender": {
-            "type": "string",
-            "description": "Sender name"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "apiKey",
-          "sender"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_TxtLocalSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_TxtLocalSMSConfig.Exclude_keyofTxtLocalSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "TxtLocalSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_TxtLocalSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthSMSClients.VONAGE": {
-        "enum": [
-          "vonage"
-        ],
-        "type": "string"
-      },
-      "Pick_VonageSMSConfig.Exclude_keyofVonageSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.VONAGE"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "apiKey": {
-            "type": "string",
-            "description": "Vonage API Key"
-          },
-          "apiSecret": {
-            "type": "string",
-            "description": "Vonage API Secret"
-          },
-          "from": {
-            "type": "string",
-            "description": "Sender ID or phone number"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "apiKey",
-          "apiSecret",
-          "from"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_VonageSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_VonageSMSConfig.Exclude_keyofVonageSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "VonageSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_VonageSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthSMSClients.SMS_API": {
-        "enum": [
-          "sms_api"
-        ],
-        "type": "string"
-      },
-      "Pick_SmsApiSMSConfig.Exclude_keyofSmsApiSMSConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthSMSClients.SMS_API"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "from": {
-            "type": "string",
-            "description": "Sender name"
-          },
-          "token": {
-            "type": "string",
-            "description": "SMSAPI OAuth token"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "from",
-          "token"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_SmsApiSMSConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_SmsApiSMSConfig.Exclude_keyofSmsApiSMSConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "SmsApiSMSParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_SmsApiSMSConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "BetterAuthEmailClients": {
-        "enum": [
-          "brevo"
-        ],
-        "type": "string"
-      },
-      "Pick_BetterAuthEmailOTPConfig.Exclude_keyofBetterAuthEmailOTPConfig.provider__": {
-        "properties": {
-          "senderClient": {
-            "$ref": "#/components/schemas/BetterAuthEmailClients",
-            "description": "Client API will use in order to send Emails"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "apiKey": {
-            "type": "string",
-            "description": "Key for client API will use"
-          }
-        },
-        "required": [
-          "senderClient",
-          "enabled",
-          "apiKey"
-        ],
-        "type": "object",
-        "description": "From T, pick a set of properties whose keys are in the union K"
-      },
-      "Omit_BetterAuthEmailOTPConfig.provider_": {
-        "$ref": "#/components/schemas/Pick_BetterAuthEmailOTPConfig.Exclude_keyofBetterAuthEmailOTPConfig.provider__",
-        "description": "Construct a type with the properties of T except for those in type K."
-      },
-      "BetterAuthEmailOTPParameters": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Omit_BetterAuthEmailOTPConfig.provider_"
-          },
-          {
-            "properties": {
-              "provider": {
-                "$ref": "#/components/schemas/BetterAuthProvidersReqParams"
-              }
-            },
-            "required": [
-              "provider"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "OAuthParametersV2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/TwilioSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/MessageBirdSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/TxtLocalSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/VonageSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/SmsApiSMSParameters"
-          },
-          {
-            "$ref": "#/components/schemas/BetterAuthEmailOTPParameters"
-          }
-        ]
-      },
-      "AuthUserResponse": {
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "number",
-            "format": "double"
-          },
-          "email": {
-            "type": "string"
-          },
-          "emailVerified": {
-            "type": "boolean"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "phoneVerified": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "createdAt",
-          "email",
-          "emailVerified",
-          "phone",
-          "phoneVerified"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "BaseEntityListResponse_AuthUserResponse_": {
-        "properties": {
-          "object": {
-            "$ref": "#/components/schemas/ResponseType.LIST"
-          },
-          "url": {
-            "type": "string"
-          },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/AuthUserResponse"
-            },
-            "type": "array"
-          },
-          "start": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "end": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "required": [
-          "object",
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "AuthUserListResponse": {
-        "$ref": "#/components/schemas/BaseEntityListResponse_AuthUserResponse_"
-      },
       "User": {
         "type": "object",
         "properties": {
@@ -28311,6 +27684,32 @@
           "publicKey",
           "privateKey",
           "createdAt"
+        ]
+      },
+      "OtpVerificationResponse": {
+        "type": "object",
+        "description": "Response from OTP verification check",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the OTP verification was successful"
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "SignOutResponse": {
+        "type": "object",
+        "description": "Response from sign out operation",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates whether the sign out was successful"
+          }
+        },
+        "required": [
+          "success"
         ]
       }
     },

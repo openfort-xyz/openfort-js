@@ -7,10 +7,8 @@ common.ts
 configuration.ts
 domain/accounts-api.ts
 domain/admin-authentication-api.ts
-domain/admin-authentication-v2-api.ts
 domain/anonymous-api.ts
 domain/authentication-api.ts
-domain/authentication-v2-api.ts
 domain/contracts-api.ts
 domain/default-api.ts
 domain/email-otp-api.ts
@@ -19,7 +17,6 @@ domain/exchange-api.ts
 domain/forwarder-contract-api.ts
 domain/graph-qlapi.ts
 domain/inventories-api.ts
-domain/jwt-api.ts
 domain/onramp-api.ts
 domain/paymaster-api.ts
 domain/phone-number-api.ts
@@ -29,6 +26,7 @@ domain/policy-rules-api.ts
 domain/rpcapi.ts
 domain/sessions-api.ts
 domain/settings-api.ts
+domain/siweapi.ts
 domain/subscriptions-api.ts
 domain/transaction-intents-api.ts
 git_push.sh
@@ -84,7 +82,6 @@ models/auth-provider-with-type-response.ts
 models/auth-provider.ts
 models/auth-response.ts
 models/auth-session-response.ts
-models/auth-user-response.ts
 models/authenticate-oauth-request-provider.ts
 models/authenticate-oauth-request.ts
 models/authenticated-player-response.ts
@@ -101,7 +98,6 @@ models/authorized-origins-response.ts
 models/balance-event-response.ts
 models/balance-response.ts
 models/base-entity-list-response-account-v2-response.ts
-models/base-entity-list-response-auth-user-response.ts
 models/base-entity-list-response-device-response.ts
 models/base-entity-list-response-email-sample-response.ts
 models/base-entity-list-response-log-response.ts
@@ -109,15 +105,7 @@ models/base-entity-list-response-trigger-response.ts
 models/basic-auth-provider-email.ts
 models/basic-auth-provider.ts
 models/better-auth-config.ts
-models/better-auth-email-clients.ts
-models/better-auth-email-otpparameters.ts
-models/better-auth-providers-req-params.ts
 models/better-auth-providers.ts
-models/better-auth-smsclients-messagebird.ts
-models/better-auth-smsclients-smsapi.ts
-models/better-auth-smsclients-twilio.ts
-models/better-auth-smsclients-txtlocal.ts
-models/better-auth-smsclients-vonage.ts
 models/billing-subscription-response-plan.ts
 models/billing-subscription-response.ts
 models/cancel-transfer-ownership-request.ts
@@ -126,6 +114,7 @@ models/change-email-post200-response.ts
 models/change-password-post-request.ts
 models/change-password-post200-response.ts
 models/charge-custom-token-policy-strategy.ts
+models/check-verification-otp-request.ts
 models/checkout-request.ts
 models/checkout-response.ts
 models/checkout-subscription-request.ts
@@ -187,7 +176,6 @@ models/device-response.ts
 models/discord-oauth-config.ts
 models/ecosystem-configuration-response.ts
 models/email-auth-config.ts
-models/email-otp-check-verification-otp-post-request.ts
 models/email-otp-reset-password-post-request.ts
 models/email-otp-send-verification-otp-post-request.ts
 models/email-otp-verify-email-post-request.ts
@@ -264,8 +252,6 @@ models/json-rpc-request.ts
 models/json-rpc-response.ts
 models/json-rpc-success-response-any-id.ts
 models/json-rpc-success-response-any.ts
-models/jwks-get200-response-keys-inner.ts
-models/jwks-get200-response.ts
 models/jwks.ts
 models/jwt-key-response.ts
 models/jwt-key.ts
@@ -287,7 +273,6 @@ models/login-with-id-token-request.ts
 models/logout-request.ts
 models/loot-locker-oauth-config.ts
 models/mapping-strategy.ts
-models/message-bird-smsparameters.ts
 models/money.ts
 models/month-range.ts
 models/my-ecosystem-response.ts
@@ -297,7 +282,6 @@ models/next-action-type.ts
 models/oauth-config-list-response.ts
 models/oauth-init-request-options.ts
 models/oauth-init-request.ts
-models/oauth-parameters-v2.ts
 models/oauth-provider-apple.ts
 models/oauth-provider-discord.ts
 models/oauth-provider-epicgames.ts
@@ -317,6 +301,7 @@ models/onramp-quotes-response.ts
 models/onramp-session-request.ts
 models/onramp-session-response-quote.ts
 models/onramp-session-response.ts
+models/otp-verification-response.ts
 models/paging-queries.ts
 models/passkey-env.ts
 models/pay-for-user-policy-strategy.ts
@@ -331,16 +316,10 @@ models/phone-number-send-otp-post-request.ts
 models/phone-number-verify-post-request.ts
 models/phone-number-verify-post200-response-user.ts
 models/phone-number-verify-post200-response.ts
-models/pick-better-auth-email-otpconfig-exclude-keyof-better-auth-email-otpconfig-provider.ts
 models/pick-contract-response-id.ts
 models/pick-json-fragment-exclude-keyof-json-fragment-inputs-or-outputs.ts
 models/pick-json-fragment-type-exclude-keyof-json-fragment-type-components.ts
-models/pick-message-bird-smsconfig-exclude-keyof-message-bird-smsconfig-provider.ts
 models/pick-player-response-id.ts
-models/pick-sms-api-smsconfig-exclude-keyof-sms-api-smsconfig-provider.ts
-models/pick-twilio-smsconfig-exclude-keyof-twilio-smsconfig-provider.ts
-models/pick-txt-local-smsconfig-exclude-keyof-txt-local-smsconfig-provider.ts
-models/pick-vonage-smsconfig-exclude-keyof-vonage-smsconfig-provider.ts
 models/plan.ts
 models/plans-response.ts
 models/play-fab-oauth-config.ts
@@ -423,10 +402,9 @@ models/sign-in-anonymous-post200-response.ts
 models/sign-in-email-otp-post-request.ts
 models/sign-in-email-otp-post200-response.ts
 models/sign-in-email-post-request.ts
-models/sign-in-email-post200-response-user.ts
-models/sign-in-email-post200-response.ts
 models/sign-in-phone-number-post-request.ts
 models/sign-out-post200-response.ts
+models/sign-out-response.ts
 models/sign-payload-request.ts
 models/sign-payload-response.ts
 models/sign-up-email-post-request.ts
@@ -436,14 +414,20 @@ models/signature-request.ts
 models/signer-id-response.ts
 models/signup-email-password201-response.ts
 models/signup-request.ts
+models/siwe-nonce-post-request.ts
+models/siwe-nonce-post200-response.ts
+models/siwe-verify-post-request.ts
+models/siwe-verify-post200-response-user.ts
+models/siwe-verify-post200-response.ts
+models/siwe-verify-post401-response.ts
 models/siweauthenticate-request.ts
 models/siweinit-response.ts
 models/siwerequest.ts
 models/smart-account-data.ts
-models/sms-api-smsparameters.ts
 models/smtpconfig-response.ts
 models/social-sign-in-request-id-token.ts
 models/social-sign-in-request.ts
+models/social-sign-in200-response-user.ts
 models/social-sign-in200-response.ts
 models/social-sign-in400-response.ts
 models/social-sign-in403-response.ts
@@ -495,10 +479,7 @@ models/transfer-ownership-request.ts
 models/transition.ts
 models/trigger-delete-response.ts
 models/trigger-response.ts
-models/twilio-smsparameters-all-of.ts
-models/twilio-smsparameters.ts
 models/twitter-oauth-config.ts
-models/txt-local-smsparameters.ts
 models/typed-data-field.ts
 models/typed-domain-data.ts
 models/unlink-account-post-request.ts
@@ -535,7 +516,6 @@ models/verification.ts
 models/verify-email-get200-response-user.ts
 models/verify-email-get200-response.ts
 models/verify-email-request.ts
-models/vonage-smsparameters.ts
 models/webhook-response.ts
 models/withdrawal-policy-request.ts
 models/zksync-details.ts

@@ -3,7 +3,7 @@ import { debugLog } from 'utils/debug'
 import { singlePromise } from 'utils/promiseUtils'
 import type { AuthManager } from '../auth/authManager'
 import type { IStorage } from '../storage/istorage'
-import { type Auth, type OpenfortEventMap, OpenfortEvents, TokenType } from '../types/types'
+import { type AuthResponse, type OpenfortEventMap, OpenfortEvents, TokenType } from '../types/types'
 import type TypedEventEmitter from '../utils/typedEventEmitter'
 import { Authentication } from './configuration/authentication'
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError'
@@ -36,14 +36,14 @@ export class OpenfortInternal {
       throw new OpenfortError('Could not get access token', OpenfortErrorType.AUTHENTICATION_ERROR)
     }
 
-    let player = (await Authentication.fromStorage(this.storage))?.player
+    let userId = (await Authentication.fromStorage(this.storage))?.userId
 
-    if (!player) {
+    if (!userId) {
       const result = await this.authManager.authenticateThirdParty(provider, token, TokenType.ID_TOKEN)
-      player = result?.id
+      userId = result?.id
     }
 
-    new Authentication('third_party', token, player, null, provider, TokenType.ID_TOKEN).save(this.storage)
+    new Authentication('third_party', token, userId, provider, TokenType.ID_TOKEN).save(this.storage)
 
     return token
   }
@@ -77,7 +77,7 @@ export class OpenfortInternal {
         )
       }
       debugLog('validating credentials...')
-      let credentials: Auth
+      let credentials: AuthResponse
       try {
         credentials = await this.authManager.validateCredentials(auth, forceRefresh)
       } catch (error) {
@@ -85,15 +85,13 @@ export class OpenfortInternal {
         this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
         throw error
       }
-      if (!credentials.player) {
+      if (!credentials.user?.id) {
         throw new OpenfortError('No user found in credentials', OpenfortErrorType.INTERNAL_ERROR)
       }
-      if (credentials.accessToken === auth.token) return
+      if (credentials.token === auth.token) return
       debugLog('tokens refreshed')
 
-      new Authentication('jwt', credentials.accessToken, credentials.player, credentials.refreshToken).save(
-        this.storage
-      )
+      new Authentication('session', credentials.token, credentials.user.id).save(this.storage)
     }, 'openfort.validateAndRefreshToken')
   }
 }

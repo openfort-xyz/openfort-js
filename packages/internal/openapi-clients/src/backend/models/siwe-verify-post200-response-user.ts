@@ -13,27 +13,30 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { User } from './user';
 
 /**
  * 
  * @export
- * @interface SignInAnonymousPost200Response
+ * @interface SiweVerifyPost200ResponseUser
  */
-export interface SignInAnonymousPost200Response {
+export interface SiweVerifyPost200ResponseUser {
     /**
-     * Session token
+     * User ID
      * @type {string}
-     * @memberof SignInAnonymousPost200Response
+     * @memberof SiweVerifyPost200ResponseUser
      */
-    'token': string;
+    'id': string;
     /**
-     * 
-     * @type {User}
-     * @memberof SignInAnonymousPost200Response
+     * Ethereum wallet address
+     * @type {string}
+     * @memberof SiweVerifyPost200ResponseUser
      */
-    'user': User;
+    'walletAddress': string;
+    /**
+     * Chain ID used for authentication
+     * @type {number}
+     * @memberof SiweVerifyPost200ResponseUser
+     */
+    'chainId': number;
 }
 

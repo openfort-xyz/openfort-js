@@ -2,10 +2,9 @@ import { type IStorage, StorageKeys } from '../../storage/istorage'
 
 export class Authentication {
   constructor(
-    public readonly type: 'jwt' | 'third_party',
+    public readonly type: 'session' | 'third_party',
     public readonly token: string,
-    public readonly player: string,
-    public readonly refreshToken: string | null,
+    public readonly userId: string,
     public readonly thirdPartyProvider?: string,
     public readonly thirdPartyTokenType?: string
   ) {}
@@ -32,8 +31,7 @@ export class Authentication {
       JSON.stringify({
         type: this.type,
         token: isThirdParty ? undefined : this.token,
-        player: this.player,
-        refreshToken: this.refreshToken,
+        userId: this.userId,
         thirdPartyProvider: this.thirdPartyProvider,
         thirdPartyTokenType: this.thirdPartyTokenType,
       })
@@ -60,8 +58,7 @@ export class Authentication {
       return new Authentication(
         parsed.type,
         parsed.token,
-        parsed.player,
-        parsed.refreshToken,
+        parsed.userId || parsed.player,
         parsed.thirdPartyProvider,
         parsed.thirdPartyTokenType
       )

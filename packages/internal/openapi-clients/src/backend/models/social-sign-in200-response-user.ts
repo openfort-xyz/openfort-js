@@ -17,49 +17,49 @@
 /**
  * 
  * @export
- * @interface SignInEmailPost200ResponseUser
+ * @interface SocialSignIn200ResponseUser
  */
-export interface SignInEmailPost200ResponseUser {
+export interface SocialSignIn200ResponseUser {
     /**
      * 
      * @type {string}
-     * @memberof SignInEmailPost200ResponseUser
+     * @memberof SocialSignIn200ResponseUser
      */
     'id': string;
     /**
      * 
      * @type {string}
-     * @memberof SignInEmailPost200ResponseUser
+     * @memberof SocialSignIn200ResponseUser
      */
     'email': string;
     /**
      * 
      * @type {string}
-     * @memberof SignInEmailPost200ResponseUser
+     * @memberof SocialSignIn200ResponseUser
      */
     'name'?: string | null;
     /**
      * 
      * @type {string}
-     * @memberof SignInEmailPost200ResponseUser
+     * @memberof SocialSignIn200ResponseUser
      */
     'image'?: string | null;
     /**
      * 
      * @type {boolean}
-     * @memberof SignInEmailPost200ResponseUser
+     * @memberof SocialSignIn200ResponseUser
      */
     'emailVerified': boolean;
     /**
      * 
      * @type {string}
-     * @memberof SignInEmailPost200ResponseUser
+     * @memberof SocialSignIn200ResponseUser
      */
     'createdAt': string;
     /**
      * 
      * @type {string}
-     * @memberof SignInEmailPost200ResponseUser
+     * @memberof SocialSignIn200ResponseUser
      */
     'updatedAt': string;
 }

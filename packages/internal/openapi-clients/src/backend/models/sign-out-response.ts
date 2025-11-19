@@ -13,21 +13,18 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { JwksGet200ResponseKeysInner } from './jwks-get200-response-keys-inner';
 
 /**
- * 
+ * Response from sign out operation
  * @export
- * @interface JwksGet200Response
+ * @interface SignOutResponse
  */
-export interface JwksGet200Response {
+export interface SignOutResponse {
     /**
-     * Array of public JSON Web Keys
-     * @type {Array<JwksGet200ResponseKeysInner>}
-     * @memberof JwksGet200Response
+     * Indicates whether the sign out was successful
+     * @type {boolean}
+     * @memberof SignOutResponse
      */
-    'keys': Array<JwksGet200ResponseKeysInner>;
+    'success': boolean;
 }
 
