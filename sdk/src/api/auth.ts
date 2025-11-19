@@ -3,9 +3,7 @@ import { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 import {
-  type AuthPlayerResponse,
   type AuthResponse,
-  type InitAuthResponse,
   type InitializeOAuthOptions,
   type OAuthProvider,
   type OpenfortEventMap,
@@ -272,7 +270,7 @@ export class AuthApi {
     provider: OAuthProvider
     authToken: string
     options?: InitializeOAuthOptions
-  }): Promise<InitAuthResponse> {
+  }): Promise<string> {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
@@ -338,20 +336,32 @@ export class AuthApi {
     walletClientType,
     connectorType,
     authToken,
+    address,
+    chainId,
   }: {
     signature: string
     message: string
     walletClientType: string
     connectorType: string
     authToken: string
-  }): Promise<AuthPlayerResponse> {
+    address: string
+    chainId: number
+  }) {
     await this.validateAndRefreshToken()
-    return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken)
+    return await this.authManager.linkWallet(
+      signature,
+      message,
+      walletClientType,
+      connectorType,
+      address,
+      chainId,
+      authToken
+    )
   }
 
-  async unlinkWallet({ address, authToken }: { address: string; authToken: string }): Promise<AuthPlayerResponse> {
+  async unlinkWallet({ address, chainId, authToken }: { address: string; chainId: number; authToken: string }) {
     await this.validateAndRefreshToken()
-    return await this.authManager.unlinkWallet(address, authToken)
+    return await this.authManager.unlinkWallet(address, chainId, authToken)
   }
 
   async unlinkEmail({ authToken }: { authToken: string }) {

@@ -1,6 +1,18 @@
 import axios, { type AxiosInstance, type AxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
-import { AccountsApi, EmailOtpApi, RPCApi, PhoneNumberApi, SessionsApi, AuthenticationApi, SIWEApi, TransactionIntentsApi, DefaultApi, AnonymousApi } from './backend'
+import {
+  AccountsApi,
+  EmailOtpApi,
+  RPCApi,
+  PhoneNumberApi,
+  SessionsApi,
+  AuthenticationApi,
+  SIWEApi,
+  TransactionIntentsApi,
+  DefaultApi,
+  AnonymousApi,
+  AuthenticationV2Api
+} from './backend'
 import { createConfig, type OpenfortAPIConfiguration, type OpenfortAPIConfigurationOptions } from './config'
 
 export interface IStorage {
@@ -30,6 +42,8 @@ export class BackendApiClients {
   public sessionsApi: SessionsApi
 
   public emailOTPApi: EmailOtpApi
+
+  public userApi: AuthenticationV2Api
 
   public anonymousApi: AnonymousApi
 
@@ -84,10 +98,11 @@ export class BackendApiClients {
     this.emailOTPApi = new EmailOtpApi(authConfig, undefined, this.axiosInstance)
     this.smsOTPApi = new PhoneNumberApi(authConfig, undefined, this.axiosInstance)
     this.anonymousApi = new AnonymousApi(authConfig, undefined, this.axiosInstance)
+
     this.authenticationV2Api = new DefaultApi(authConfig, undefined, this.axiosInstance)
     this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, this.axiosInstance)
     this.siweApi = new SIWEApi(this.config.backend, undefined, this.axiosInstance)
-
+    this.userApi = new AuthenticationV2Api(this.config.backend, undefined, this.axiosInstance)
     this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend, undefined, this.axiosInstance)
     this.accountsApi = new AccountsApi(this.config.backend, undefined, this.axiosInstance)
     this.sessionsApi = new SessionsApi(this.config.backend, undefined, this.axiosInstance)

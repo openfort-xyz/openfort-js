@@ -17,68 +17,44 @@
 /**
  * 
  * @export
- * @interface User
+ * @interface UserResponse
  */
-export interface User {
+export interface UserResponse {
     /**
      * 
      * @type {string}
-     * @memberof User
+     * @memberof UserResponse
      */
-    'id'?: string;
+    'id': string;
     /**
      * 
      * @type {string}
-     * @memberof User
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
-     */
-    'email': string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof User
-     */
-    'emailVerified'?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
-     */
-    'image'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
+     * @memberof UserResponse
      */
     'createdAt': string;
     /**
      * 
      * @type {string}
-     * @memberof User
+     * @memberof UserResponse
      */
-    'updatedAt': string;
+    'email': string;
     /**
      * 
      * @type {boolean}
-     * @memberof User
+     * @memberof UserResponse
      */
-    'isAnonymous'?: boolean;
+    'emailVerified': boolean;
     /**
      * 
      * @type {string}
-     * @memberof User
+     * @memberof UserResponse
      */
-    'phoneNumber'?: string;
+    'phone': string;
     /**
      * 
      * @type {boolean}
-     * @memberof User
+     * @memberof UserResponse
      */
-    'phoneNumberVerified'?: boolean;
+    'phoneVerified': boolean;
 }
 

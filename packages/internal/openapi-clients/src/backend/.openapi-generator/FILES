@@ -9,6 +9,7 @@ domain/accounts-api.ts
 domain/admin-authentication-api.ts
 domain/anonymous-api.ts
 domain/authentication-api.ts
+domain/authentication-v2-api.ts
 domain/contracts-api.ts
 domain/default-api.ts
 domain/email-otp-api.ts
@@ -257,6 +258,15 @@ models/jwt-key-response.ts
 models/jwt-key.ts
 models/line-oauth-config.ts
 models/link-email200-response.ts
+models/link-siwe-list-wallets-get200-response-inner.ts
+models/link-siwe-nonce-post200-response.ts
+models/link-siwe-unlink-post-request.ts
+models/link-siwe-unlink-post200-response.ts
+models/link-siwe-unlink-post400-response.ts
+models/link-siwe-verify-post-request.ts
+models/link-siwe-verify-post200-response.ts
+models/link-siwe-verify-post400-response.ts
+models/link-siwe-verify-post401-response.ts
 models/link-social-post-request-id-token.ts
 models/link-social-post-request.ts
 models/link-social-post200-response.ts
@@ -311,7 +321,6 @@ models/phone-number-forget-password-post-request.ts
 models/phone-number-forget-password-post200-response.ts
 models/phone-number-request-password-reset-post-request.ts
 models/phone-number-reset-password-post-request.ts
-models/phone-number-reset-password-post200-response.ts
 models/phone-number-send-otp-post-request.ts
 models/phone-number-verify-post-request.ts
 models/phone-number-verify-post200-response-user.ts
@@ -380,8 +389,8 @@ models/register-embedded-v2-request.ts
 models/request-reset-password-request.ts
 models/request-verify-email-request.ts
 models/reset-password-post-request.ts
-models/reset-password-post200-response.ts
 models/reset-password-request.ts
+models/reset-password-response.ts
 models/reset-password-token-get200-response.ts
 models/response-response.ts
 models/response-type-list.ts
@@ -483,6 +492,7 @@ models/twitter-oauth-config.ts
 models/typed-data-field.ts
 models/typed-domain-data.ts
 models/unlink-account-post-request.ts
+models/unlink-account-response.ts
 models/unlink-email-request.ts
 models/unlink-oauth-request.ts
 models/update-authorized-apps-request.ts
@@ -511,6 +521,7 @@ models/user-project-role-member.ts
 models/user-project-role.ts
 models/user-project-update-request-role.ts
 models/user-project-update-request.ts
+models/user-response.ts
 models/user.ts
 models/verification.ts
 models/verify-email-get200-response-user.ts

@@ -1,4 +1,4 @@
-import { type AuthPlayerResponse, OAuthProvider } from '@openfort/openfort-js'
+import { OAuthProvider, type User } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useId, useState } from 'react'
@@ -17,7 +17,7 @@ import openfort from '../utils/openfortConfig'
 function LoginPage() {
   const router = useRouter()
   const [status, setStatus] = useState<StatusType>(null)
-  const [user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [guestLoading, setGuestLoading] = useState(false)
   const emailId = useId()
   const passwordId = useId()
@@ -32,45 +32,45 @@ function LoginPage() {
   const [isOTPLoading, setIsOTPLoading] = useState(false)
 
   // check if "state" exists in url query param and if it does make an api call:
-  useEffect(() => {
-    const verifyEmail = async () => {
-      try {
-        const email = localStorage.getItem('email')
-        if (email && router.query.state) {
-          await openfort.auth.verifyEmail({
-            email: email,
-            state: router.query.state as string,
-          })
-          localStorage.removeItem('email')
-          setStatus({
-            type: 'success',
-            title: 'Email verified! You can now sign in.',
-          })
-        }
-      } catch (_error) {
-        setStatus({
-          type: 'error',
-          title: 'Error verifying email',
-        })
-      }
-    }
-    verifyEmail()
-  }, [router])
+  // useEffect(() => {
+  //   const verifyEmail = async () => {
+  //     try {
+  //       const email = localStorage.getItem('email')
+  //       if (email && router.query.state) {
+  //         await openfort.auth.verifyEmail({
+  //           email: email,
+  //           state: router.query.state as string,
+  //         })
+  //         localStorage.removeItem('email')
+  //         setStatus({
+  //           type: 'success',
+  //           title: 'Email verified! You can now sign in.',
+  //         })
+  //       }
+  //     } catch (_error) {
+  //       setStatus({
+  //         type: 'error',
+  //         title: 'Error verifying email',
+  //       })
+  //     }
+  //   }
+  //   verifyEmail()
+  // }, [router])
 
-  useEffect(() => {
-    if (router.query.access_token && router.query.refresh_token && router.query.player_id) {
-      setStatus({
-        type: 'loading',
-        title: 'Signing in...',
-      })
-      openfort.auth.storeCredentials({
-        player: router.query.player_id as string,
-        accessToken: router.query.access_token as string,
-        refreshToken: router.query.refresh_token as string,
-      })
-      location.href = '/'
-    }
-  }, [router.query])
+  // useEffect(() => {
+  //   if (router.query.access_token && router.query.refresh_token && router.query.player_id) {
+  //     setStatus({
+  //       type: 'loading',
+  //       title: 'Signing in...',
+  //     })
+  //     openfort.auth.storeCredentials({
+  //       player: router.query.player_id as string,
+  //       accessToken: router.query.access_token as string,
+  //       refreshToken: router.query.refresh_token as string,
+  //     })
+  //     location.href = '/'
+  //   }
+  // }, [router.query])
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -353,11 +353,9 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.GOOGLE,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}
@@ -370,11 +368,9 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.TWITTER,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}
@@ -387,11 +383,9 @@ function LoginPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.FACEBOOK,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}

@@ -10624,9 +10624,6 @@
           },
           {
             "pk_third_party": []
-          },
-          {
-            "better_auth": []
           }
         ],
         "parameters": []
@@ -10698,6 +10695,50 @@
             }
           }
         }
+      }
+    },
+    "/iam/v2/me": {
+      "get": {
+        "operationId": "Me1",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_",
+                      "email": "",
+                      "phone": "null",
+                      "phoneVerified": false,
+                      "createdAt": "2025-11-19T11:39:25.537Z",
+                      "emailVerified": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "tags": [
+          "AuthenticationV2"
+        ],
+        "security": [
+          {
+            "pk_third_party": []
+          },
+          {
+            "better_auth": []
+          }
+        ],
+        "parameters": []
       }
     },
     "/sign-in/social": {
@@ -10981,7 +11022,17 @@
             "bearerAuth": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "disableCookieCache",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Disable cookie cache and fetch session from database"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -11884,12 +11935,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ResetPasswordResponse"
                 }
               }
             }
@@ -14454,12 +14500,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean"
-                    }
-                  }
+                  "$ref": "#/components/schemas/UnlinkAccountResponse"
                 }
               }
             }
@@ -16308,19 +16349,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "description": "Indicates if the password was reset successfully",
-                      "enum": [
-                        true
-                      ]
-                    }
-                  },
-                  "required": [
-                    "status"
-                  ]
+                  "$ref": "#/components/schemas/ResetPasswordResponse"
                 }
               }
             }
@@ -17258,12 +17287,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ResetPasswordResponse"
                 }
               }
             }
@@ -17642,6 +17666,512 @@
               }
             },
             "description": "Internal Server Error. This is a problem with the server that you cannot fix."
+          }
+        }
+      }
+    },
+    "/link-siwe/nonce": {
+      "post": {
+        "tags": [
+          "SIWE"
+        ],
+        "summary": "Get nonce for linking SIWE wallet",
+        "description": "Generates a cryptographically secure nonce for creating a SIWE message to link a wallet to the current authenticated user. Requires active session.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "walletAddress": {
+                    "type": "string",
+                    "description": "Ethereum wallet address (must be 42 characters starting with 0x)",
+                    "pattern": "^0[xX][a-fA-F0-9]{40}$",
+                    "minLength": 42,
+                    "maxLength": 42
+                  },
+                  "chainId": {
+                    "type": "number",
+                    "description": "Blockchain network chain ID (default: 1 for Ethereum mainnet)",
+                    "default": 1,
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "walletAddress"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nonce generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nonce": {
+                      "type": "string",
+                      "description": "Cryptographically secure nonce to use in SIWE message"
+                    }
+                  },
+                  "required": [
+                    "nonce"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Bad Request. Invalid wallet address format or parameters."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized. User must be logged in to link a wallet."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/link-siwe/verify": {
+      "post": {
+        "tags": [
+          "SIWE"
+        ],
+        "summary": "Verify and link SIWE wallet",
+        "description": "Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The SIWE message string that was signed",
+                    "minLength": 1
+                  },
+                  "signature": {
+                    "type": "string",
+                    "description": "The signature from the user's wallet",
+                    "minLength": 1
+                  },
+                  "walletAddress": {
+                    "type": "string",
+                    "description": "Ethereum wallet address (must be 42 characters starting with 0x)",
+                    "pattern": "^0[xX][a-fA-F0-9]{40}$",
+                    "minLength": 42,
+                    "maxLength": 42
+                  },
+                  "chainId": {
+                    "type": "number",
+                    "description": "Blockchain network chain ID (must match the Chain ID in SIWE message, default: 1)",
+                    "default": 1,
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "message",
+                  "signature",
+                  "walletAddress"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wallet linked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether the wallet was successfully linked"
+                    },
+                    "walletAddress": {
+                      "type": "string",
+                      "description": "The checksummed Ethereum address that was linked"
+                    },
+                    "chainId": {
+                      "type": "number",
+                      "description": "The blockchain network chain ID"
+                    },
+                    "isPrimary": {
+                      "type": "boolean",
+                      "description": "Whether this is the user's primary wallet (first wallet linked)"
+                    },
+                    "ensName": {
+                      "type": "string",
+                      "description": "ENS name associated with the wallet (if available)"
+                    },
+                    "ensAvatar": {
+                      "type": "string",
+                      "description": "ENS avatar URL (if available)"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Optional informational message"
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "walletAddress",
+                    "chainId",
+                    "isPrimary"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "WALLET_ALREADY_LINKED",
+                        "BAD_REQUEST"
+                      ],
+                      "description": "Error code indicating the type of error"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Bad Request. Wallet already linked to another account or invalid parameters."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED",
+                        "INVALID_OR_EXPIRED_NONCE",
+                        "INVALID_SIGNATURE"
+                      ],
+                      "description": "Error code indicating the authentication failure reason"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Unauthorized. User not logged in, invalid/expired nonce, or invalid signature."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal Server Error. Failed to link wallet."
+          }
+        }
+      }
+    },
+    "/link-siwe/list-wallets": {
+      "get": {
+        "tags": [
+          "SIWE"
+        ],
+        "summary": "List linked wallets",
+        "description": "Get all SIWE wallets linked to the authenticated user with full wallet metadata including primary status and chain information. Requires active session.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Wallets retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Unique identifier for this wallet record"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "description": "User ID this wallet is linked to"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Checksummed Ethereum wallet address",
+                        "pattern": "^0[xX][a-fA-F0-9]{40}$"
+                      },
+                      "chainId": {
+                        "type": "number",
+                        "description": "Blockchain network chain ID"
+                      },
+                      "isPrimary": {
+                        "type": "boolean",
+                        "description": "Whether this is the user's primary wallet"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the wallet was linked"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "userId",
+                      "address",
+                      "chainId",
+                      "isPrimary",
+                      "createdAt"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Unauthorized. User is not authenticated."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/link-siwe/unlink": {
+      "post": {
+        "tags": [
+          "SIWE"
+        ],
+        "summary": "Unlink SIWE wallet",
+        "description": "Remove a linked wallet from the authenticated user account. If the wallet being unlinked is the primary wallet, another wallet will be automatically promoted to primary. Requires active session.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "walletAddress": {
+                    "type": "string",
+                    "description": "Ethereum wallet address to unlink (must be 42 characters starting with 0x)",
+                    "pattern": "^0[xX][a-fA-F0-9]{40}$",
+                    "minLength": 42,
+                    "maxLength": 42
+                  },
+                  "chainId": {
+                    "type": "number",
+                    "description": "Blockchain network chain ID (default: 1 for Ethereum mainnet)",
+                    "default": 1,
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "walletAddress"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wallet unlinked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indicates successful wallet unlinking"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "BAD_REQUEST",
+                        "CANNOT_UNLINK_LAST_ACCOUNT",
+                        "WALLET_NOT_FOUND"
+                      ],
+                      "description": "Error code indicating the type of error"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            },
+            "description": "Bad Request. Cannot unlink last authentication method, wallet not found, or invalid parameters."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Unauthorized. User is not authenticated."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal Server Error. Failed to unlink wallet."
           }
         }
       }
@@ -27491,6 +28021,38 @@
         "type": "object",
         "additionalProperties": false
       },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "phoneVerified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "email",
+          "emailVerified",
+          "phone",
+          "phoneVerified"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -27528,12 +28090,6 @@
           "phoneNumberVerified": {
             "type": "boolean",
             "readOnly": true
-          },
-          "playerId": {
-            "type": "number"
-          },
-          "projectEnvId": {
-            "type": "number"
           }
         },
         "required": [
@@ -27710,6 +28266,32 @@
         },
         "required": [
           "success"
+        ]
+      },
+      "UnlinkAccountResponse": {
+        "type": "object",
+        "description": "Response from unlink account operation",
+        "properties": {
+          "status": {
+            "type": "boolean",
+            "description": "Indicates whether the account was successfully unlinked"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ResetPasswordResponse": {
+        "type": "object",
+        "description": "Response from reset password operation",
+        "properties": {
+          "status": {
+            "type": "boolean",
+            "description": "Indicates whether the password was successfully reset"
+          }
+        },
+        "required": [
+          "status"
         ]
       }
     },

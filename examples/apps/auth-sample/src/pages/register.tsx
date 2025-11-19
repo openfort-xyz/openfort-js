@@ -1,5 +1,5 @@
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
-import { type AuthPlayerResponse, OAuthProvider } from '@openfort/openfort-js'
+import { OAuthProvider, type User } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useId, useState } from 'react'
@@ -21,7 +21,7 @@ function checkPassword(str: string) {
 function RegisterPage() {
   const [show, setShow] = useState(false)
   const [emailConfirmation, setEmailConfirmation] = useState(false)
-  const [_user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [_user, setUser] = useState<User | null>(null)
   const router = useRouter()
   const firstNameId = useId()
   const lastNameId = useId()
@@ -65,11 +65,7 @@ function RegisterPage() {
       .signUpWithEmailPassword({
         email: email,
         password: password,
-        options: {
-          data: {
-            name: `${first_name} ${last_name}`,
-          },
-        },
+        name: `${first_name} ${last_name}`,
       })
       .catch((_error) => {
         setStatus({
@@ -86,7 +82,7 @@ function RegisterPage() {
       setEmailConfirmation(true)
     }
     if (data && 'player' in data) {
-      setUser(data.player)
+      // setUser(data)
     }
     setStatus({
       type: 'success',
@@ -204,11 +200,9 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.GOOGLE,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}
@@ -221,11 +215,9 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.TWITTER,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}
@@ -238,11 +230,9 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.FACEBOOK,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}

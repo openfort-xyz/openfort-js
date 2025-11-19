@@ -17,14 +17,14 @@
 /**
  * 
  * @export
- * @interface ResetPasswordPost200Response
+ * @interface LinkSiweUnlinkPost200Response
  */
-export interface ResetPasswordPost200Response {
+export interface LinkSiweUnlinkPost200Response {
     /**
-     * 
+     * Indicates successful wallet unlinking
      * @type {boolean}
-     * @memberof ResetPasswordPost200Response
+     * @memberof LinkSiweUnlinkPost200Response
      */
-    'status'?: boolean;
+    'success': boolean;
 }
 

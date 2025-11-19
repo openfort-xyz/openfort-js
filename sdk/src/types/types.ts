@@ -98,11 +98,6 @@ export enum AuthType {
   THIRD_PARTY = 'thirdParty',
 }
 
-export type InitAuthResponse = {
-  url: string
-  key: string
-}
-
 export type SIWEInitResponse = {
   address: string
   nonce: string
@@ -140,27 +135,6 @@ export enum BasicAuthProvider {
   EMAIL = 'email',
   WALLET = 'wallet',
 }
-
-const AUTH_PROVIDER = {
-  email: 'email',
-  wallet: 'wallet',
-  apple: 'apple',
-  google: 'google',
-  twitter: 'twitter',
-  discord: 'discord',
-  facebook: 'facebook',
-  epicGames: 'epic_games',
-  accelbyte: 'accelbyte',
-  firebase: 'firebase',
-  betterAuth: 'better-auth',
-  lootlocker: 'lootlocker',
-  playfab: 'playfab',
-  supabase: 'supabase',
-  custom: 'custom',
-  oidc: 'oidc',
-} as const
-
-type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER]
 
 export enum OAuthProvider {
   GOOGLE = 'google',
@@ -368,58 +342,6 @@ export interface EstimateTransactionIntentGasResult {
 }
 
 type PlayerMetadataValue = unknown
-
-interface PlayerResponseAccountsInner {
-  id: string
-  object: 'account'
-  createdAt: number
-  address: string
-  ownerAddress: string
-  deployed: boolean
-  custodial: boolean
-  embeddedSigner: boolean
-  chainId: number
-  accountType: string
-  pendingOwnerAddress?: string
-  transactionIntents?: EntityIdResponse[]
-  player: EntityIdResponse
-}
-
-interface AuthPlayerResponsePlayer {
-  id: string
-  object: 'player'
-  createdAt: number
-  name: string
-  description?: string
-  metadata?: {
-    [key: string]: PlayerMetadataValue
-  }
-  transactionIntents?: TransactionIntentResponse[]
-  accounts?: PlayerResponseAccountsInner[]
-}
-
-interface LinkedAccountResponse {
-  provider: AuthProvider
-  email?: string
-  externalUserId?: string
-  verified?: boolean
-  disabled: boolean
-  walletClientType?: string
-  connectorType?: string
-  updatedAt?: number
-  address?: string
-  metadata?: {
-    [key: string]: PlayerMetadataValue
-  }
-}
-
-export interface AuthPlayerResponse {
-  player?: AuthPlayerResponsePlayer
-  id: string
-  object: 'player'
-  createdAt: number
-  linkedAccounts: LinkedAccountResponse[]
-}
 
 /**
  * User profile information

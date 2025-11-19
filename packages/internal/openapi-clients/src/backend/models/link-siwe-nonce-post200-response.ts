@@ -17,14 +17,14 @@
 /**
  * 
  * @export
- * @interface PhoneNumberResetPasswordPost200Response
+ * @interface LinkSiweNoncePost200Response
  */
-export interface PhoneNumberResetPasswordPost200Response {
+export interface LinkSiweNoncePost200Response {
     /**
-     * Indicates if the password was reset successfully
-     * @type {boolean}
-     * @memberof PhoneNumberResetPasswordPost200Response
+     * Cryptographically secure nonce to use in SIWE message
+     * @type {string}
+     * @memberof LinkSiweNoncePost200Response
      */
-    'status': boolean;
+    'nonce': string;
 }
 

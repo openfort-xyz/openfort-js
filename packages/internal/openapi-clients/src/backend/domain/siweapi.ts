@@ -22,6 +22,24 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { LinkSiweListWalletsGet200ResponseInner } from '../models';
+// @ts-ignore
+import { LinkSiweNoncePost200Response } from '../models';
+// @ts-ignore
+import { LinkSiweUnlinkPost200Response } from '../models';
+// @ts-ignore
+import { LinkSiweUnlinkPost400Response } from '../models';
+// @ts-ignore
+import { LinkSiweUnlinkPostRequest } from '../models';
+// @ts-ignore
+import { LinkSiweVerifyPost200Response } from '../models';
+// @ts-ignore
+import { LinkSiweVerifyPost400Response } from '../models';
+// @ts-ignore
+import { LinkSiweVerifyPost401Response } from '../models';
+// @ts-ignore
+import { LinkSiweVerifyPostRequest } from '../models';
+// @ts-ignore
 import { SiweNoncePost200Response } from '../models';
 // @ts-ignore
 import { SiweNoncePostRequest } from '../models';
@@ -41,6 +59,144 @@ import { SocialSignIn403Response } from '../models';
  */
 export const SIWEApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * Get all SIWE wallets linked to the authenticated user with full wallet metadata including primary status and chain information. Requires active session.
+         * @summary List linked wallets
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSiweListWalletsGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/link-siwe/list-wallets`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Generates a cryptographically secure nonce for creating a SIWE message to link a wallet to the current authenticated user. Requires active session.
+         * @summary Get nonce for linking SIWE wallet
+         * @param {SiweNoncePostRequest} siweNoncePostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSiweNoncePost: async (siweNoncePostRequest: SiweNoncePostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'siweNoncePostRequest' is not null or undefined
+            assertParamExists('linkSiweNoncePost', 'siweNoncePostRequest', siweNoncePostRequest)
+            const localVarPath = `/link-siwe/nonce`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(siweNoncePostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Remove a linked wallet from the authenticated user account. If the wallet being unlinked is the primary wallet, another wallet will be automatically promoted to primary. Requires active session.
+         * @summary Unlink SIWE wallet
+         * @param {LinkSiweUnlinkPostRequest} linkSiweUnlinkPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSiweUnlinkPost: async (linkSiweUnlinkPostRequest: LinkSiweUnlinkPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'linkSiweUnlinkPostRequest' is not null or undefined
+            assertParamExists('linkSiweUnlinkPost', 'linkSiweUnlinkPostRequest', linkSiweUnlinkPostRequest)
+            const localVarPath = `/link-siwe/unlink`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(linkSiweUnlinkPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.
+         * @summary Verify and link SIWE wallet
+         * @param {LinkSiweVerifyPostRequest} linkSiweVerifyPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSiweVerifyPost: async (linkSiweVerifyPostRequest: LinkSiweVerifyPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'linkSiweVerifyPostRequest' is not null or undefined
+            assertParamExists('linkSiweVerifyPost', 'linkSiweVerifyPostRequest', linkSiweVerifyPostRequest)
+            const localVarPath = `/link-siwe/verify`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(linkSiweVerifyPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * Generate a nonce for Sign-In With Ethereum (SIWE) authentication
          * @param {SiweNoncePostRequest} siweNoncePostRequest 
@@ -122,6 +278,49 @@ export const SIWEApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SIWEApiAxiosParamCreator(configuration)
     return {
         /**
+         * Get all SIWE wallets linked to the authenticated user with full wallet metadata including primary status and chain information. Requires active session.
+         * @summary List linked wallets
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkSiweListWalletsGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<LinkSiweListWalletsGet200ResponseInner>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkSiweListWalletsGet(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Generates a cryptographically secure nonce for creating a SIWE message to link a wallet to the current authenticated user. Requires active session.
+         * @summary Get nonce for linking SIWE wallet
+         * @param {SiweNoncePostRequest} siweNoncePostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkSiweNoncePost(siweNoncePostRequest: SiweNoncePostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkSiweNoncePost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkSiweNoncePost(siweNoncePostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Remove a linked wallet from the authenticated user account. If the wallet being unlinked is the primary wallet, another wallet will be automatically promoted to primary. Requires active session.
+         * @summary Unlink SIWE wallet
+         * @param {LinkSiweUnlinkPostRequest} linkSiweUnlinkPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkSiweUnlinkPost(linkSiweUnlinkPostRequest: LinkSiweUnlinkPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkSiweUnlinkPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkSiweUnlinkPost(linkSiweUnlinkPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.
+         * @summary Verify and link SIWE wallet
+         * @param {LinkSiweVerifyPostRequest} linkSiweVerifyPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async linkSiweVerifyPost(linkSiweVerifyPostRequest: LinkSiweVerifyPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkSiweVerifyPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkSiweVerifyPost(linkSiweVerifyPostRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Generate a nonce for Sign-In With Ethereum (SIWE) authentication
          * @param {SiweNoncePostRequest} siweNoncePostRequest 
          * @param {*} [options] Override http request option.
@@ -152,6 +351,45 @@ export const SIWEApiFactory = function (configuration?: Configuration, basePath?
     const localVarFp = SIWEApiFp(configuration)
     return {
         /**
+         * Get all SIWE wallets linked to the authenticated user with full wallet metadata including primary status and chain information. Requires active session.
+         * @summary List linked wallets
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSiweListWalletsGet(options?: AxiosRequestConfig): AxiosPromise<Array<LinkSiweListWalletsGet200ResponseInner>> {
+            return localVarFp.linkSiweListWalletsGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Generates a cryptographically secure nonce for creating a SIWE message to link a wallet to the current authenticated user. Requires active session.
+         * @summary Get nonce for linking SIWE wallet
+         * @param {SIWEApiLinkSiweNoncePostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSiweNoncePost(requestParameters: SIWEApiLinkSiweNoncePostRequest, options?: AxiosRequestConfig): AxiosPromise<LinkSiweNoncePost200Response> {
+            return localVarFp.linkSiweNoncePost(requestParameters.siweNoncePostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Remove a linked wallet from the authenticated user account. If the wallet being unlinked is the primary wallet, another wallet will be automatically promoted to primary. Requires active session.
+         * @summary Unlink SIWE wallet
+         * @param {SIWEApiLinkSiweUnlinkPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSiweUnlinkPost(requestParameters: SIWEApiLinkSiweUnlinkPostRequest, options?: AxiosRequestConfig): AxiosPromise<LinkSiweUnlinkPost200Response> {
+            return localVarFp.linkSiweUnlinkPost(requestParameters.linkSiweUnlinkPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.
+         * @summary Verify and link SIWE wallet
+         * @param {SIWEApiLinkSiweVerifyPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        linkSiweVerifyPost(requestParameters: SIWEApiLinkSiweVerifyPostRequest, options?: AxiosRequestConfig): AxiosPromise<LinkSiweVerifyPost200Response> {
+            return localVarFp.linkSiweVerifyPost(requestParameters.linkSiweVerifyPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Generate a nonce for Sign-In With Ethereum (SIWE) authentication
          * @param {SIWEApiSiweNoncePostRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -171,6 +409,48 @@ export const SIWEApiFactory = function (configuration?: Configuration, basePath?
         },
     };
 };
+
+/**
+ * Request parameters for linkSiweNoncePost operation in SIWEApi.
+ * @export
+ * @interface SIWEApiLinkSiweNoncePostRequest
+ */
+export interface SIWEApiLinkSiweNoncePostRequest {
+    /**
+     * 
+     * @type {SiweNoncePostRequest}
+     * @memberof SIWEApiLinkSiweNoncePost
+     */
+    readonly siweNoncePostRequest: SiweNoncePostRequest
+}
+
+/**
+ * Request parameters for linkSiweUnlinkPost operation in SIWEApi.
+ * @export
+ * @interface SIWEApiLinkSiweUnlinkPostRequest
+ */
+export interface SIWEApiLinkSiweUnlinkPostRequest {
+    /**
+     * 
+     * @type {LinkSiweUnlinkPostRequest}
+     * @memberof SIWEApiLinkSiweUnlinkPost
+     */
+    readonly linkSiweUnlinkPostRequest: LinkSiweUnlinkPostRequest
+}
+
+/**
+ * Request parameters for linkSiweVerifyPost operation in SIWEApi.
+ * @export
+ * @interface SIWEApiLinkSiweVerifyPostRequest
+ */
+export interface SIWEApiLinkSiweVerifyPostRequest {
+    /**
+     * 
+     * @type {LinkSiweVerifyPostRequest}
+     * @memberof SIWEApiLinkSiweVerifyPost
+     */
+    readonly linkSiweVerifyPostRequest: LinkSiweVerifyPostRequest
+}
 
 /**
  * Request parameters for siweNoncePost operation in SIWEApi.
@@ -207,6 +487,53 @@ export interface SIWEApiSiweVerifyPostRequest {
  * @extends {BaseAPI}
  */
 export class SIWEApi extends BaseAPI {
+    /**
+     * Get all SIWE wallets linked to the authenticated user with full wallet metadata including primary status and chain information. Requires active session.
+     * @summary List linked wallets
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SIWEApi
+     */
+    public linkSiweListWalletsGet(options?: AxiosRequestConfig) {
+        return SIWEApiFp(this.configuration).linkSiweListWalletsGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Generates a cryptographically secure nonce for creating a SIWE message to link a wallet to the current authenticated user. Requires active session.
+     * @summary Get nonce for linking SIWE wallet
+     * @param {SIWEApiLinkSiweNoncePostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SIWEApi
+     */
+    public linkSiweNoncePost(requestParameters: SIWEApiLinkSiweNoncePostRequest, options?: AxiosRequestConfig) {
+        return SIWEApiFp(this.configuration).linkSiweNoncePost(requestParameters.siweNoncePostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Remove a linked wallet from the authenticated user account. If the wallet being unlinked is the primary wallet, another wallet will be automatically promoted to primary. Requires active session.
+     * @summary Unlink SIWE wallet
+     * @param {SIWEApiLinkSiweUnlinkPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SIWEApi
+     */
+    public linkSiweUnlinkPost(requestParameters: SIWEApiLinkSiweUnlinkPostRequest, options?: AxiosRequestConfig) {
+        return SIWEApiFp(this.configuration).linkSiweUnlinkPost(requestParameters.linkSiweUnlinkPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.
+     * @summary Verify and link SIWE wallet
+     * @param {SIWEApiLinkSiweVerifyPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SIWEApi
+     */
+    public linkSiweVerifyPost(requestParameters: SIWEApiLinkSiweVerifyPostRequest, options?: AxiosRequestConfig) {
+        return SIWEApiFp(this.configuration).linkSiweVerifyPost(requestParameters.linkSiweVerifyPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Generate a nonce for Sign-In With Ethereum (SIWE) authentication
      * @param {SIWEApiSiweNoncePostRequest} requestParameters Request parameters.

@@ -58,9 +58,9 @@ import { RefreshTokenPost200Response } from '../models';
 // @ts-ignore
 import { RefreshTokenPostRequest } from '../models';
 // @ts-ignore
-import { ResetPasswordPost200Response } from '../models';
-// @ts-ignore
 import { ResetPasswordPostRequest } from '../models';
+// @ts-ignore
+import { ResetPasswordResponse } from '../models';
 // @ts-ignore
 import { ResetPasswordTokenGet200Response } from '../models';
 // @ts-ignore
@@ -97,6 +97,8 @@ import { SocialSignIn403Response } from '../models';
 import { SocialSignInRequest } from '../models';
 // @ts-ignore
 import { UnlinkAccountPostRequest } from '../models';
+// @ts-ignore
+import { UnlinkAccountResponse } from '../models';
 // @ts-ignore
 import { UpdateUserPost200Response } from '../models';
 // @ts-ignore
@@ -389,10 +391,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * Get the current session
+         * @param {boolean} [disableCookieCache] Disable cookie cache and fetch session from database
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSessionGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getSessionGet: async (disableCookieCache?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/get-session`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -404,6 +407,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (disableCookieCache !== undefined) {
+                localVarQueryParameter['disableCookieCache'] = disableCookieCache;
+            }
 
 
     
@@ -1146,11 +1153,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * Get the current session
+         * @param {boolean} [disableCookieCache] Disable cookie cache and fetch session from database
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSessionGet(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSessionGet200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getSessionGet(options);
+        async getSessionGet(disableCookieCache?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSessionGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSessionGet(disableCookieCache, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1216,7 +1224,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async resetPasswordPost(resetPasswordPostRequest: ResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordPost200Response>> {
+        async resetPasswordPost(resetPasswordPostRequest: ResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.resetPasswordPost(resetPasswordPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1316,7 +1324,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async unlinkAccountPost(unlinkAccountPostRequest: UnlinkAccountPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordPost200Response>> {
+        async unlinkAccountPost(unlinkAccountPostRequest: UnlinkAccountPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UnlinkAccountResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.unlinkAccountPost(unlinkAccountPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1424,11 +1432,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * Get the current session
+         * @param {DefaultApiGetSessionGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSessionGet(options?: AxiosRequestConfig): AxiosPromise<GetSessionGet200Response> {
-            return localVarFp.getSessionGet(options).then((request) => request(axios, basePath));
+        getSessionGet(requestParameters: DefaultApiGetSessionGetRequest = {}, options?: AxiosRequestConfig): AxiosPromise<GetSessionGet200Response> {
+            return localVarFp.getSessionGet(requestParameters.disableCookieCache, options).then((request) => request(axios, basePath));
         },
         /**
          * Link a social account to the user
@@ -1487,7 +1496,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        resetPasswordPost(requestParameters: DefaultApiResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordPost200Response> {
+        resetPasswordPost(requestParameters: DefaultApiResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordResponse> {
             return localVarFp.resetPasswordPost(requestParameters.resetPasswordPostRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1577,7 +1586,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        unlinkAccountPost(requestParameters: DefaultApiUnlinkAccountPostRequest, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordPost200Response> {
+        unlinkAccountPost(requestParameters: DefaultApiUnlinkAccountPostRequest, options?: AxiosRequestConfig): AxiosPromise<UnlinkAccountResponse> {
             return localVarFp.unlinkAccountPost(requestParameters.unlinkAccountPostRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1704,6 +1713,20 @@ export interface DefaultApiGetAccessTokenPostRequest {
      * @memberof DefaultApiGetAccessTokenPost
      */
     readonly refreshTokenPostRequest: RefreshTokenPostRequest
+}
+
+/**
+ * Request parameters for getSessionGet operation in DefaultApi.
+ * @export
+ * @interface DefaultApiGetSessionGetRequest
+ */
+export interface DefaultApiGetSessionGetRequest {
+    /**
+     * Disable cookie cache and fetch session from database
+     * @type {boolean}
+     * @memberof DefaultApiGetSessionGet
+     */
+    readonly disableCookieCache?: boolean
 }
 
 /**
@@ -2033,12 +2056,13 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * Get the current session
+     * @param {DefaultApiGetSessionGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getSessionGet(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getSessionGet(options).then((request) => request(this.axios, this.basePath));
+    public getSessionGet(requestParameters: DefaultApiGetSessionGetRequest = {}, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getSessionGet(requestParameters.disableCookieCache, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -1,4 +1,4 @@
-import type { AuthPlayerResponse } from '@openfort/openfort-js'
+import type { User } from '@openfort/openfort-js'
 import { EmbeddedState, OAuthProvider } from '@openfort/openfort-js'
 import { Wallet } from 'lucide-react'
 import type { NextPage } from 'next'
@@ -27,7 +27,7 @@ import openfort from '../utils/openfortConfig'
 
 const HomePage: NextPage = () => {
   const { state } = useOpenfort()
-  const [user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
   const [message, setMessage] = useState<string>('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -93,7 +93,7 @@ const HomePage: NextPage = () => {
           <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
             <div className="-mx-4 flex-auto bg-white py-10 px-8 sm:mx-0 sm:flex-none sm:rounded-md sm:p-14 sm:shadow-2xl">
               <h1>Set up your embedded signer</h1>
-              <p className="text-gray-400 mb-4">Welcome, {user?.player?.name ?? user?.id}!</p>
+              <p className="text-gray-400 mb-4">Welcome, {user?.name ?? user?.id}!</p>
               <div className="mt-8">
                 <AccountRecovery />
               </div>

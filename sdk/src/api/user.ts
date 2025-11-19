@@ -1,3 +1,4 @@
+import type { User } from 'types'
 import type { AuthManager } from '../auth/authManager'
 import { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
@@ -10,7 +11,7 @@ export class UserApi {
     private validateAndRefreshToken: () => Promise<void>
   ) {}
 
-  async get() {
+  async get(): Promise<User> {
     await this.validateAndRefreshToken()
     const authentication = await Authentication.fromStorage(this.storage)
     if (!authentication) {

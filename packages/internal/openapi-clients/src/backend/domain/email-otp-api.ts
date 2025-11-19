@@ -36,6 +36,8 @@ import { ForgetPasswordEmailOtpPost200Response } from '../models';
 // @ts-ignore
 import { ForgetPasswordEmailOtpPostRequest } from '../models';
 // @ts-ignore
+import { ResetPasswordResponse } from '../models';
+// @ts-ignore
 import { SignInEmailOtpPost200Response } from '../models';
 // @ts-ignore
 import { SignInEmailOtpPostRequest } from '../models';
@@ -287,7 +289,7 @@ export const EmailOtpApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async emailOtpResetPasswordPost(emailOtpResetPasswordPostRequest: EmailOtpResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignOutPost200Response>> {
+        async emailOtpResetPasswordPost(emailOtpResetPasswordPostRequest: EmailOtpResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.emailOtpResetPasswordPost(emailOtpResetPasswordPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -356,7 +358,7 @@ export const EmailOtpApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        emailOtpResetPasswordPost(requestParameters: EmailOtpApiEmailOtpResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<SignOutPost200Response> {
+        emailOtpResetPasswordPost(requestParameters: EmailOtpApiEmailOtpResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordResponse> {
             return localVarFp.emailOtpResetPasswordPost(requestParameters.emailOtpResetPasswordPostRequest, options).then((request) => request(axios, basePath));
         },
         /**

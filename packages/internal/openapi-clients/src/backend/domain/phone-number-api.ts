@@ -28,8 +28,6 @@ import { PhoneNumberForgetPasswordPostRequest } from '../models';
 // @ts-ignore
 import { PhoneNumberRequestPasswordResetPostRequest } from '../models';
 // @ts-ignore
-import { PhoneNumberResetPasswordPost200Response } from '../models';
-// @ts-ignore
 import { PhoneNumberResetPasswordPostRequest } from '../models';
 // @ts-ignore
 import { PhoneNumberSendOtpPostRequest } from '../models';
@@ -37,6 +35,8 @@ import { PhoneNumberSendOtpPostRequest } from '../models';
 import { PhoneNumberVerifyPost200Response } from '../models';
 // @ts-ignore
 import { PhoneNumberVerifyPostRequest } from '../models';
+// @ts-ignore
+import { ResetPasswordResponse } from '../models';
 // @ts-ignore
 import { SignInAnonymousPost200Response } from '../models';
 // @ts-ignore
@@ -297,7 +297,7 @@ export const PhoneNumberApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async phoneNumberResetPasswordPost(phoneNumberResetPasswordPostRequest: PhoneNumberResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhoneNumberResetPasswordPost200Response>> {
+        async phoneNumberResetPasswordPost(phoneNumberResetPasswordPostRequest: PhoneNumberResetPasswordPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.phoneNumberResetPasswordPost(phoneNumberResetPasswordPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -365,7 +365,7 @@ export const PhoneNumberApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        phoneNumberResetPasswordPost(requestParameters: PhoneNumberApiPhoneNumberResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<PhoneNumberResetPasswordPost200Response> {
+        phoneNumberResetPasswordPost(requestParameters: PhoneNumberApiPhoneNumberResetPasswordPostRequest, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordResponse> {
             return localVarFp.phoneNumberResetPasswordPost(requestParameters.phoneNumberResetPasswordPostRequest, options).then((request) => request(axios, basePath));
         },
         /**

@@ -1,13 +1,11 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import type { SocialSignIn200Response } from '@openfort/openapi-clients/dist/backend'
+import type { GetSessionGet200Response, SocialSignIn200Response } from '@openfort/openapi-clients/dist/backend'
 import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError'
 import { sentry } from '../core/errors/sentry'
 import type {
-  AuthPlayerResponse,
   AuthResponse,
-  InitAuthResponse,
   InitializeOAuthOptions,
   OAuthProvider,
   Session,
@@ -189,7 +187,7 @@ export class AuthManager {
     provider: ThirdPartyAuthProvider,
     token: string,
     tokenType: TokenType
-  ): Promise<AuthPlayerResponse> {
+  ): Promise<{ userId: string }> {
     const request = {
       thirdPartyOAuthRequest: {
         provider,
@@ -197,14 +195,14 @@ export class AuthManager {
         tokenType,
       },
     }
-    return withOpenfortError<AuthPlayerResponse>(
+    return withOpenfortError<{ userId: string }>(
       async () => {
         const response = await this.backendApiClients.authenticationApi.thirdParty(request, {
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
           },
         })
-        return response.data
+        return { userId: response.data.id }
       },
       {
         defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
@@ -219,15 +217,16 @@ export class AuthManager {
     )
   }
 
-  public async initSIWE(address: string): Promise<SIWEInitResponse> {
+  public async initSIWE(address: string, chainId?: number): Promise<SIWEInitResponse> {
     const request = {
       siweNoncePostRequest: {
         walletAddress: address,
+        chainId: chainId || 1,
       },
     }
     const result = await withOpenfortError(
       async () =>
-        this.backendApiClients.siweApi.siweNoncePost(request, {
+        this.backendApiClients.siweApi.linkSiweNoncePost(request, {
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
           },
@@ -462,19 +461,22 @@ export class AuthManager {
   public async validateCredentials(authentication: Authentication, _forceRefresh?: boolean): Promise<AuthResponse> {
     debugLog('Validating credentials with token:', authentication.token)
 
-    // Always validate with the server to get current session data
-    // Sessions are automatically extended when calling /get-session if they're due for update
-    return await this.getSessionWithToken(authentication.token)
+    const sessionData = await this.getSessionWithToken(authentication.token, _forceRefresh)
+    return {
+      token: sessionData.session.token,
+      user: mapUser(sessionData.user),
+      session: mapSession(sessionData.session),
+    }
   }
 
-  public async logout(accessToken: string): Promise<void> {
+  public async logout(token: string): Promise<void> {
     return withOpenfortError<void>(
       async () => {
         await this.backendApiClients.authenticationV2Api.signOutPost(undefined, {
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': accessToken,
+            'x-auth-token': token,
           },
         })
       },
@@ -491,7 +493,7 @@ export class AuthManager {
   public async getUser(auth: Authentication) {
     return withOpenfortError(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.getSessionGet({
+        const response = await this.backendApiClients.userApi.me1({
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -514,7 +516,7 @@ export class AuthManager {
     auth: Authentication,
     provider: OAuthProvider,
     options?: InitializeOAuthOptions
-  ): Promise<InitAuthResponse> {
+  ): Promise<string> {
     const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
     const request = {
       linkSocialPostRequest: {
@@ -528,9 +530,7 @@ export class AuthManager {
       async () =>
         this.backendApiClients.authenticationV2Api.linkSocialPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': auth.token,
+            authorization: `Bearer ${auth.token}`,
           },
         }),
       {
@@ -545,13 +545,10 @@ export class AuthManager {
     if (typeof window !== 'undefined' && !skipBrowserRedirect && result.data.url) {
       window.location.assign(result.data.url)
     }
-    return {
-      url: result.data.url || '',
-      key: '',
-    }
+    return result.data.url || ''
   }
 
-  public async unlinkOAuth(provider: OAuthProvider, accessToken: string) {
+  public async unlinkOAuth(provider: OAuthProvider, token: string) {
     const request = {
       unlinkAccountPostRequest: {
         providerId: provider,
@@ -561,9 +558,7 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': accessToken,
+            authorization: `Bearer ${token}`,
           },
         })
         return response.data
@@ -578,7 +573,7 @@ export class AuthManager {
     )
   }
 
-  public async unlinkEmail(accessToken: string) {
+  public async unlinkEmail(token: string) {
     const request = {
       unlinkAccountPostRequest: {
         providerId: 'credential',
@@ -588,9 +583,7 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': accessToken,
+            authorization: `Bearer ${token}`,
           },
         })
         return response.data
@@ -605,19 +598,18 @@ export class AuthManager {
     )
   }
 
-  public async unlinkWallet(address: string, accessToken: string): Promise<AuthPlayerResponse> {
+  public async unlinkWallet(address: string, chainId: number, token: string) {
     const request = {
-      sIWERequest: {
-        address,
+      linkSiweUnlinkPostRequest: {
+        walletAddress: address,
+        chaindId: chainId,
       },
     }
-    return withOpenfortError<AuthPlayerResponse>(
+    return withOpenfortError(
       async () => {
-        const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkSIWE(request, {
+        const authPlayerResponse = await this.backendApiClients.siweApi.linkSiweUnlinkPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': accessToken,
+            authorization: `Bearer ${token}`,
           },
         })
         return authPlayerResponse.data
@@ -635,28 +627,28 @@ export class AuthManager {
   public async linkWallet(
     signature: string,
     message: string,
-    walletClientType: string,
-    connectorType: string,
-    accessToken: string
-  ): Promise<AuthPlayerResponse> {
+    _walletClientType: string,
+    _connectorType: string,
+    address: string,
+    chainId: number,
+    token: string
+  ) {
     const request = {
-      sIWEAuthenticateRequest: {
+      linkSiweVerifyPostRequest: {
         signature,
         message,
-        walletClientType,
-        connectorType,
+        walletAddress: address,
+        chainId,
       },
     }
-    return withOpenfortError<AuthPlayerResponse>(
+    return withOpenfortError(
       async () => {
-        const authPlayerResponse = await this.backendApiClients.authenticationApi.linkSIWE(request, {
+        const response = await this.backendApiClients.siweApi.linkSiweVerifyPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': accessToken,
+            authorization: `Bearer ${token}`,
           },
         })
-        return authPlayerResponse.data
+        return response.data
       },
       {
         defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
@@ -718,7 +710,7 @@ export class AuthManager {
         // but the actual Better Auth response includes it
         const data = response.data as unknown as AuthResponse & { user: User; session: Session }
         return {
-          token: data.token || '',
+          token: data.token,
           user: mapUser(data.user),
         }
       },
@@ -801,21 +793,18 @@ export class AuthManager {
     )
   }
 
-  public async getSessionWithToken(accessToken: string): Promise<AuthResponse> {
-    return await withOpenfortError<AuthResponse>(
+  private async getSessionWithToken(token: string, forceRefresh?: boolean): Promise<GetSessionGet200Response> {
+    return await withOpenfortError<GetSessionGet200Response>(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.getSessionGet({
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': accessToken,
+        const response = await this.backendApiClients.authenticationV2Api.getSessionGet(
+          {
+            disableCookieCache: forceRefresh,
           },
-        })
-        return {
-          token: response.data.session?.token || accessToken,
-          user: mapUser(response.data.user),
-          session: mapSession(response.data.session),
-        }
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        )
+        return response.data
       },
       {
         defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
