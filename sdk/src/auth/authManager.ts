@@ -617,7 +617,7 @@ export class AuthManager {
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': accessToken,
+            'x-auth-token': accessToken,
           },
         })
         return authPlayerResponse.data
@@ -653,7 +653,7 @@ export class AuthManager {
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': accessToken,
+            'x-auth-token': accessToken,
           },
         })
         return authPlayerResponse.data
@@ -806,7 +806,7 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.getSessionGet({
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            authorization: `Bearer ${accessToken}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'x-auth-token': accessToken,
           },

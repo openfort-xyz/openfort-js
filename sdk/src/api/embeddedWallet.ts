@@ -587,7 +587,7 @@ export class EmbeddedWalletApi {
           headers: {
             authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': auth.token,
+            'x-auth-token': auth.token,
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'x-auth-provider': auth.thirdPartyProvider,
             // eslint-disable-next-line @typescript-eslint/naming-convention
