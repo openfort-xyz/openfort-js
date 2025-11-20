@@ -65,6 +65,7 @@ function RegisterPage() {
       .signUpWithEmailPassword({
         email: email,
         password: password,
+        callbackURL: `${getURL()}/login`,
         name: `${first_name} ${last_name}`,
       })
       .catch((_error) => {

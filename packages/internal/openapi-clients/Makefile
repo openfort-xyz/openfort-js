@@ -1,4 +1,4 @@
-API_DOCS_URL ?= https://api.openfort.io
+API_DOCS_URL ?= http://localhost:3000
 
 .PHONY: generate-backend-openapi
 generate-backend-openapi: get-backend-openapi get-auth-openapi merge-openapi-specs generate-backend-api-client clean-openapi
