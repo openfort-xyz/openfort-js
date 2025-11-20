@@ -305,7 +305,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
       const user = await openfort.user.get()
       if (!user) throw new Error('User not found')
 
-      if (user.linkedAccounts.some((la) => la.email === 'testing@fort.dev')) {
+      if (user.email === 'testing@fort.dev') {
         throw new Error('Test user should not create wallets.')
       }
 

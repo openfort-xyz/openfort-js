@@ -77,14 +77,16 @@ const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectBut
               const signature = await signMessage(SIWEMessage)
               link
                 ? await openfort.auth.linkWallet({
-                    authToken: (await openfort.getAccessToken()) as string,
                     signature,
                     message: SIWEMessage,
                     connectorType: connector?.type,
                     walletClientType: connector?.name,
+                    address,
+                    chainId,
                   })
                 : await openfort.auth.authenticateWithSIWE({
                     signature,
+                    address,
                     message: SIWEMessage,
                     connectorType: connector?.type,
                     walletClientType: connector?.name,

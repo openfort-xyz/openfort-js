@@ -512,6 +512,26 @@ export class AuthManager {
     )
   }
 
+  public async listAccounts(auth: Authentication) {
+    return withOpenfortError(
+      async () => {
+        const response = await this.backendApiClients.authenticationV2Api.listAccountsGet({
+          headers: {
+            authorization: `Bearer ${auth.token}`,
+          },
+        })
+        return response.data
+      },
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'listAccounts',
+        onError: (error) => {
+          sentry.captureError('listAccounts', error)
+        },
+      }
+    )
+  }
+
   public async linkOAuth(
     auth: Authentication,
     provider: OAuthProvider,

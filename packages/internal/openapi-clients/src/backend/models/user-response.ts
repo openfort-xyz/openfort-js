@@ -49,7 +49,7 @@ export interface UserResponse {
      * @type {string}
      * @memberof UserResponse
      */
-    'phone': string;
+    'phone': string | null;
     /**
      * 
      * @type {boolean}

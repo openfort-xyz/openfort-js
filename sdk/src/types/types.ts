@@ -343,6 +343,15 @@ export interface EstimateTransactionIntentGasResult {
 
 type PlayerMetadataValue = unknown
 
+export interface UserAccountResponse {
+  id: string
+  providerId: string
+  createdAt: string
+  updatedAt: string
+  accountId: string
+  scopes: string[]
+}
+
 /**
  * User profile information
  */

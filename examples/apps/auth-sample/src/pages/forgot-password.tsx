@@ -1,4 +1,4 @@
-import type { AuthPlayerResponse } from '@openfort/openfort-js'
+import type { User } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useId, useState } from 'react'
@@ -14,7 +14,7 @@ function ForgotPasswordPage() {
   const router = useRouter()
   const [status, setStatus] = useState<StatusType>(null)
 
-  const [user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const emailId = useId()
 
   useEffect(() => {

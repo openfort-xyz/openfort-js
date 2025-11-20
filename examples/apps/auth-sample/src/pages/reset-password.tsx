@@ -50,8 +50,7 @@ function ResetPasswordPage() {
     await openfort.auth
       .resetPassword({
         password: password,
-        email: email as string,
-        state: router.query.state as string,
+        token: router.query.token as string,
       })
       .catch((_error) => {
         setStatus({

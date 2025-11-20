@@ -10,6 +10,7 @@ import Assets from '@/components/Assets/Assets'
 import Authorizations7702 from '@/components/Authorizations7702/Authorizations7702'
 import EventMonitor from '@/components/EventMonitor/EventMonitor'
 import { type StatusType, Toast } from '@/components/Toasts'
+import GetUserAccountsButton from '@/components/User/GetUserAccountsButton'
 import { Button } from '@/components/ui/button'
 import Wallets from '@/components/Wallet/Wallet'
 import { useOpenfort } from '@/contexts/OpenfortContext'
@@ -205,9 +206,10 @@ const HomePage: NextPage = () => {
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
             <h2 className="flex justify-left font-medium text-xl pb-4">Linked socials</h2>
 
-            <div>
-              <span className="font-medium text-black">Get user: </span>
+            <div className="space-y-2">
+              <span className="font-medium text-black">User methods: </span>
               <GetUserButton handleSetMessage={handleSetMessage} />
+              <GetUserAccountsButton handleSetMessage={handleSetMessage} />
             </div>
             <div>
               <span className="font-medium text-black">{'OAuth methods'}</span>

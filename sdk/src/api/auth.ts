@@ -268,7 +268,6 @@ export class AuthApi {
     options,
   }: {
     provider: OAuthProvider
-    authToken: string
     options?: InitializeOAuthOptions
   }): Promise<string> {
     await this.validateAndRefreshToken()
@@ -282,9 +281,13 @@ export class AuthApi {
     return await this.authManager.linkOAuth(auth, provider, options)
   }
 
-  async unlinkOAuth({ provider, authToken }: { provider: OAuthProvider; authToken: string }) {
+  async unlinkOAuth({ provider }: { provider: OAuthProvider }) {
     await this.validateAndRefreshToken()
-    return await this.authManager.unlinkOAuth(provider, authToken)
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+    return await this.authManager.unlinkOAuth(provider, auth.token)
   }
 
   async initSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
@@ -335,7 +338,6 @@ export class AuthApi {
     message,
     walletClientType,
     connectorType,
-    authToken,
     address,
     chainId,
   }: {
@@ -343,11 +345,14 @@ export class AuthApi {
     message: string
     walletClientType: string
     connectorType: string
-    authToken: string
     address: string
     chainId: number
   }) {
     await this.validateAndRefreshToken()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
     return await this.authManager.linkWallet(
       signature,
       message,
@@ -355,17 +360,25 @@ export class AuthApi {
       connectorType,
       address,
       chainId,
-      authToken
+      auth.token
     )
   }
 
-  async unlinkWallet({ address, chainId, authToken }: { address: string; chainId: number; authToken: string }) {
+  async unlinkWallet({ address, chainId }: { address: string; chainId: number }) {
     await this.validateAndRefreshToken()
-    return await this.authManager.unlinkWallet(address, chainId, authToken)
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+    return await this.authManager.unlinkWallet(address, chainId, auth.token)
   }
 
-  async unlinkEmail({ authToken }: { authToken: string }) {
+  async unlinkEmail() {
     await this.validateAndRefreshToken()
-    return await this.authManager.unlinkEmail(authToken)
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+    return await this.authManager.unlinkEmail(auth.token)
   }
 }
