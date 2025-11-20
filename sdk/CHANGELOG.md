@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.36
+
+### Patch Changes
+
+- [#182](https://github.com/openfort-xyz/openfort-js/pull/182) [`abbcc97`](https://github.com/openfort-xyz/openfort-js/commit/abbcc97e062e3794cf4a3d0c4107d7ae09c85587) Thanks [@jamalavedra](https://github.com/jamalavedra)! - chore: release
+
 ## 0.10.35
 
 ### Patch Changes
