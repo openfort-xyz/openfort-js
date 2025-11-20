@@ -37,7 +37,7 @@ jobs:
         run: pnpm audit
       
       - name: sherif
-        run: check:repo
+        run: pnpm check:repo
 
       - name: Code check (Biome)
         run: pnpm biome check
