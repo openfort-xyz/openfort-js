@@ -11,7 +11,7 @@ export default function Header(_props: any) {
             <Logo className="h-8 w-auto md:flex hidden" />
           </Link>
           <span className="text-gray-300 md:flex hidden">-</span>
-          <p className="font-mono text-orange-600 font-medium pt-2">Embedded Smart Wallet</p>
+          <p className="font-mono text-orange-600 font-medium pt-2">Embedded Wallets</p>
         </div>
         <div className="space-x-2 flex">
           <a

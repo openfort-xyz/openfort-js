@@ -25,9 +25,7 @@ export function Layout({ sidebar, children }: { sidebar: React.ReactNode; childr
               <Logo className="h-8 w-auto md:flex hidden" />
             </Link>
             <span className="text-gray-300 md:flex hidden md:pt-2">-</span>
-            <p className="font-mono text-orange-600 font-medium md:pt-2 whitespace-nowrap truncate">
-              Embedded Smart Wallet
-            </p>
+            <p className="font-mono text-orange-600 font-medium md:pt-2 whitespace-nowrap truncate">Embedded Wallets</p>
           </div>
           <div className="space-x-2 flex">
             <a

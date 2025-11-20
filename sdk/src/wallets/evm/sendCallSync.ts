@@ -1,8 +1,17 @@
+import type { StaticJsonRpcProvider } from '@ethersproject/providers'
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
-import type { Interaction, TransactionIntentResponse, TransactionReceipt, TransactionType } from '../../types/types'
+import {
+  AccountType,
+  AccountTypeEnum,
+  type Interaction,
+  type TransactionIntentResponse,
+  type TransactionReceipt,
+  type TransactionType,
+} from '../../types/types'
+import { prepareAndSignAuthorization, serializeSignedAuthorization } from '../../utils/authorization'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
@@ -11,6 +20,7 @@ type WalletSendCallsParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication
+  rpcProvider: StaticJsonRpcProvider
   policyId?: string
   params: any[]
 }
@@ -48,7 +58,8 @@ const buildOpenfortTransactions = async (
   backendApiClients: BackendApiClients,
   account: Account,
   authentication: Authentication,
-  policyId?: string
+  policyId?: string,
+  signedAuthorization?: string
 ): Promise<TransactionIntentResponse> => {
   const interactions: Interaction[] = calls.map((call) => {
     if (!call.to) {
@@ -68,6 +79,7 @@ const buildOpenfortTransactions = async (
           createTransactionIntentRequest: {
             account: account.id,
             policy: policyId,
+            signedAuthorization: signedAuthorization,
             chainId: account.chainId!,
             interactions,
           },
@@ -91,24 +103,65 @@ const buildOpenfortTransactions = async (
   )
 }
 
+/**
+ * Checks if an account has code (i.e., is already delegated)
+ * @param rpcProvider - RPC provider to query the chain
+ * @param address - Account address to check
+ * @returns true if the account has code, false otherwise
+ */
+async function hasAccountCode(rpcProvider: StaticJsonRpcProvider, address: string): Promise<boolean> {
+  try {
+    const code = await rpcProvider.getCode(address)
+    // Code exists if it's not '0x' (empty)
+    return code !== '0x' && code.length > 2
+  } catch {
+    // If there's an error checking code, assume no code exists
+    return false
+  }
+}
+
 export const sendCallsSync = async ({
   params,
   signer,
   account,
   authentication,
   backendClient,
+  rpcProvider,
   policyId,
 }: WalletSendCallsParams): Promise<{
   id: string
   receipt: TransactionReceipt<string, number, 'success' | 'reverted', TransactionType>
 }> => {
   const policy = params[0]?.capabilities?.paymasterService?.policy ?? policyId
+  let signedAuthorization: string | undefined
+
+  if (account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
+    // Parallelize RPC calls: check delegation status and fetch nonce simultaneously
+    const [alreadyDelegated, nonce] = await Promise.all([
+      hasAccountCode(rpcProvider, account.address!),
+      rpcProvider.getTransactionCount(account.address!),
+    ])
+
+    if (!alreadyDelegated) {
+      // Account not yet delegated, create authorization using pre-fetched nonce
+      const _signedAuthorization = await prepareAndSignAuthorization({
+        signer,
+        accountAddress: account.address!,
+        contractAddress: account.implementationAddress!,
+        chainId: account.chainId!,
+        nonce,
+      })
+      signedAuthorization = serializeSignedAuthorization(_signedAuthorization)
+    }
+    // If already delegated, signedAuthorization remains undefined (no authorization needed)
+  }
   const openfortTransaction = await buildOpenfortTransactions(
     params,
     backendClient,
     account,
     authentication,
-    policy
+    policy,
+    signedAuthorization
   ).catch((error) => {
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
   })
@@ -119,8 +172,11 @@ export const sendCallsSync = async ({
 
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature: string
-    // zkSync based chains need a different signature
-    if ([300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId!)) {
+    // zkSync based chains don't need hashMessage
+    if (
+      [300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId!) ||
+      (account.implementationType && [AccountType.CALIBUR].includes(account.implementationType as AccountType))
+    ) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)

@@ -9,6 +9,15 @@ export { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
 export { Openfort } from '../core/openfort'
 export { OpenfortInternal } from '../core/openfortInternal'
 export { IStorage as Storage } from '../storage/istorage'
+export {
+  type Authorization,
+  type PrepareAuthorizationParams,
+  prepareAndSignAuthorization,
+  type SignAuthorizationParams,
+  type SignedAuthorization,
+  serializeSignedAuthorization,
+  signAuthorization,
+} from '../utils/authorization'
 export { RevokePermissionsRequestParams } from '../wallets/evm/revokeSession'
 export {
   GrantPermissionsParameters,
