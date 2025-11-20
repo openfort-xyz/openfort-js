@@ -5,6 +5,7 @@ import type { IStorage } from '../storage/istorage'
 import {
   type AuthResponse,
   type InitializeOAuthOptions,
+  type LinkEmailResponse,
   type OAuthProvider,
   type OpenfortEventMap,
   OpenfortEvents,
@@ -365,6 +366,26 @@ export class AuthApi {
   }
 
   async unlinkEmail({ authToken }: { authToken: string }) {
+    await this.validateAndRefreshToken()
+    return await this.authManager.unlinkEmail(authToken)
+  }
+
+  async linkEmailPassword({
+    name,
+    email,
+    password,
+    authToken,
+  }: {
+    name: string
+    email: string
+    password: string
+    authToken: string
+  }): Promise<LinkEmailResponse> {
+    await this.validateAndRefreshToken()
+    return await this.authManager.linkEmail(name, email, password, authToken)
+  }
+
+  async unlinkEmailPassword({ authToken }: { authToken: string }): Promise<boolean | undefined> {
     await this.validateAndRefreshToken()
     return await this.authManager.unlinkEmail(authToken)
   }

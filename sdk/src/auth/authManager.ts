@@ -573,7 +573,36 @@ export class AuthManager {
     )
   }
 
-  public async unlinkEmail(token: string) {
+  public async linkEmail(name: string, email: string, password: string, accessToken: string) {
+    const request = {
+      signUpEmailPostRequest: {
+        name,
+        email,
+        password,
+      },
+    }
+    return withOpenfortError(
+      async () => {
+        const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(request, {
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'x-auth-token': accessToken,
+          },
+        })
+        return response.data
+      },
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'linkEmail',
+        onError: (error) => {
+          sentry.captureError('linkEmail', error)
+        },
+      }
+    )
+  }
+
+  public async unlinkEmail(accessToken: string) {
     const request = {
       unlinkAccountPostRequest: {
         providerId: 'credential',
@@ -583,10 +612,10 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
           headers: {
-            authorization: `Bearer ${token}`,
+            authorization: `Bearer ${accessToken}`,
           },
         })
-        return response.data
+        return response.data.status
       },
       {
         defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,

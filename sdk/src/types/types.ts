@@ -394,6 +394,16 @@ export interface AuthResponse {
   session?: Session
 }
 
+/**
+ * Link Email response returned by API on linking Email to anonymous user
+ */
+export interface LinkEmailResponse {
+  /** Session token for authentication */
+  token?: string | null
+  /** Full user profile information */
+  user?: User
+}
+
 export enum AuthActionRequiredActions {
   ACTION_VERIFY_EMAIL = 'verify_email',
 }
