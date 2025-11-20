@@ -1,60 +1,52 @@
-name: Verify
+name: Run pnpm build
 on:
-  workflow_call:
-  workflow_dispatch:
-  pull_request:
+    pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  audit:
-    name: Audit Dependencies
+  pnpm-build:
+    name: pnpm build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
-
-      - name: Run security audit
-        run: pnpm audit --audit-level=moderate
-
-      - name: Check repo
-        run: pnpm check:repo
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
     env:
       NODE_OPTIONS: --max-old-space-size=14366
+      
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm build
+      - name: Security audit
+        run: pnpm audit
+      
+      - name: sherif
+        run: check:repo
+
+      - name: Code check (Biome)
+        run: pnpm biome check
+
+      # - name: Check TypeScript types
+      #   run: pnpm check:types
 
       - name: Check for unused files, dependencies, and exports
         run: pnpm knip --production
 
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
-
-      - name: Check
-        run: pnpm check
+      - name: Build project
+        run: pnpm build

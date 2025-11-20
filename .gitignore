@@ -29,3 +29,11 @@ docs/
 /examples/apps/auth-sample/playwright/.cache/
 /examples/apps/auth-sample/playwright/.auth/
 .claude/
+
+*.7z
+*.zip
+*.gz
+*.tar
+*.tgz
+*.rar
+*.bz2
