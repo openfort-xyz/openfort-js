@@ -361,7 +361,7 @@ export interface User {
   /** User's display name */
   name?: string | null
   /** URL to user's profile image */
-  image?: string | null
+  image: string | null
   /** Whether the user's email has been verified */
   emailVerified?: boolean
   /** ISO timestamp when the user was created */
@@ -394,9 +394,9 @@ export interface Session {
  */
 export interface AuthResponse {
   /** Session token for authentication */
-  token: string
+  token: string | null
   /** Full user profile information */
-  user?: User
+  user: User
   /** Session details */
   session?: Session
 }

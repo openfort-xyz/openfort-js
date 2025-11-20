@@ -10712,8 +10712,9 @@
                   "Example 1": {
                     "value": {
                       "id": "pla_",
-                      "email": "",
-                      "phone": "null",
+                      "email": "joan@openfort.xyz",
+                      "name": "joan",
+                      "phone": null,
                       "phoneVerified": false,
                       "createdAt": "2025-11-19T11:39:25.537Z",
                       "emailVerified": false
@@ -28029,6 +28030,9 @@
           "createdAt": {
             "type": "string"
           },
+          "name": {
+            "type": "string"
+          },
           "email": {
             "type": "string"
           },
@@ -28046,6 +28050,7 @@
         "required": [
           "id",
           "createdAt",
+          "name",
           "email",
           "emailVerified",
           "phone",

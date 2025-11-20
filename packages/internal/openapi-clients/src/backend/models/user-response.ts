@@ -37,6 +37,12 @@ export interface UserResponse {
      * @type {string}
      * @memberof UserResponse
      */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserResponse
+     */
     'email': string;
     /**
      * 

@@ -32,8 +32,10 @@ function mapUser(
       }
     | undefined
     | null
-): User | undefined {
-  if (!user) return undefined
+): User {
+  if (!user) {
+    throw new OpenfortError('User data is missing', OpenfortErrorType.INTERNAL_ERROR)
+  }
   return {
     id: user.id || '',
     email: user.email,
@@ -269,9 +271,10 @@ export class AuthManager {
             authorization: `Bearer ${this.publishableKey}`,
           },
         })
+        const userData = response.data.user as unknown as User
         return {
           token: response.data.token,
-          user: response.data.user,
+          user: mapUser(userData),
         }
       },
       {
@@ -307,7 +310,7 @@ export class AuthManager {
         // but the actual Better Auth response includes it
         const data = response.data as unknown as AuthResponse & { user: User; session: Session }
         return {
-          token: data.token || '',
+          token: data.token,
           user: mapUser(data.user),
         }
       },
@@ -420,7 +423,12 @@ export class AuthManager {
     )
   }
 
-  public async signupEmailPassword(email: string, password: string, name: string): Promise<AuthResponse> {
+  public async signupEmailPassword(
+    email: string,
+    password: string,
+    name: string,
+    callbackURL?: string
+  ): Promise<AuthResponse> {
     return withOpenfortError<AuthResponse>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(
@@ -429,6 +437,7 @@ export class AuthManager {
               email,
               password,
               name,
+              callbackURL,
             },
           },
           {
@@ -441,7 +450,7 @@ export class AuthManager {
         // but the actual Better Auth response includes it
         const data = response.data as unknown as AuthResponse & { user: User; session: Session }
         return {
-          token: data.token || '',
+          token: data.token,
           user: mapUser(data.user),
         }
       },
@@ -500,7 +509,8 @@ export class AuthManager {
             'x-auth-token': auth.token,
           },
         })
-        return response.data
+        const userData = response.data as unknown as User
+        return mapUser(userData)
       },
       {
         defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
@@ -825,7 +835,7 @@ export class AuthManager {
         // but the actual response has { token, user, session } structure from Better Auth
         const data = response.data as unknown as AuthResponse & { user: User; session: Session }
         return {
-          token: data.token || '',
+          token: data.token,
           user: mapUser(data.user),
         }
       },

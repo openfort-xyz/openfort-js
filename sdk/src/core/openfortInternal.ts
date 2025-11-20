@@ -91,7 +91,7 @@ export class OpenfortInternal {
       if (credentials.token === auth.token) return
       debugLog('tokens refreshed')
 
-      new Authentication('session', credentials.token, credentials.user.id).save(this.storage)
+      new Authentication('session', credentials.token!, credentials.user.id).save(this.storage)
     }, 'openfort.validateAndRefreshToken')
   }
 }

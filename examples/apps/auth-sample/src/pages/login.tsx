@@ -355,8 +355,9 @@ function LoginPage() {
                     onClick={async () => {
                       const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.GOOGLE,
-                        redirectTo: `${getURL()}/login`,
+                        redirectTo: '/',
                       })
+                      console.log('url', url)
                       window.location.href = url
                     }}
                     variant="outline"

@@ -33,10 +33,10 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.loginEmailPassword(email, password)
-      if ('action' in result) {
+      if (result?.token === null) {
         return result
       }
-      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token, result.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -56,8 +56,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.registerGuest()
-      console.log('Guest signup result:', result)
-      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -70,10 +69,12 @@ export class AuthApi {
     email,
     password,
     name,
+    callbackURL,
   }: {
     email: string
     password: string
     name?: string
+    callbackURL?: string
   }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
@@ -86,8 +87,9 @@ export class AuthApi {
     try {
       const n = name ? name : email
 
-      const result = await this.authManager.signupEmailPassword(email, password, n)
-      if ('action' in result) {
+      const result = await this.authManager.signupEmailPassword(email, password, n, callbackURL)
+      console.log('Signup result:', result)
+      if (result?.token === null) {
         return result
       }
       new Authentication('session', result.token, result?.user!.id).save(this.storage)
@@ -128,7 +130,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.loginWithIdToken(provider, token)
-      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -192,7 +194,9 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.loginWithEmailOTP(email, otp)
-
+      if (result?.token === null) {
+        return result
+      }
       new Authentication('session', result.token, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
 
@@ -233,7 +237,9 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.loginWithSMSOTP(phoneNumber, otp)
-
+      if (result?.token === null) {
+        return result
+      }
       new Authentication('session', result.token, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
 
@@ -325,7 +331,7 @@ export class AuthApi {
         connectorType,
         address
       )
-      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -395,6 +401,7 @@ export class AuthApi {
     authToken: string
   }): Promise<LinkEmailResponse> {
     await this.validateAndRefreshToken()
+    // @ts-expect-error // TODO: Fix ts-ignore
     return await this.authManager.linkEmail(name, email, password, authToken)
   }
 

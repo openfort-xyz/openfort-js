@@ -585,11 +585,11 @@ export class EmbeddedWalletApi {
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
     }
-    await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
     }
+    await this.validateAndRefreshToken()
     return withOpenfortError<EmbeddedAccount[]>(
       async () => {
         const response = await this.backendApiClients.accountsApi.getAccountsV2(params, {

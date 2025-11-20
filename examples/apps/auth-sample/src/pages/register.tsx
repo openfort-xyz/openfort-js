@@ -73,16 +73,10 @@ function RegisterPage() {
           title: 'Error signing up',
         })
       })
-    if (data && 'action' in data && data.action === 'verify_email') {
-      await openfort.auth.requestEmailVerification({
-        email: email,
-        redirectUrl: `${getURL()}/login`,
-      })
-      localStorage.setItem('email', email)
-      setEmailConfirmation(true)
-    }
-    if (data && 'player' in data) {
-      // setUser(data)
+
+    if (data?.user) {
+      if (data.token === null) setEmailConfirmation(true)
+      setUser(data.user)
     }
     setStatus({
       type: 'success',
