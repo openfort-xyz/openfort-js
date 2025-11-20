@@ -3,12 +3,9 @@ import { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 import {
-  type Auth,
-  type AuthActionRequiredResponse,
-  type AuthPlayerResponse,
   type AuthResponse,
-  type InitAuthResponse,
   type InitializeOAuthOptions,
+  type LinkEmailResponse,
   type OAuthProvider,
   type OpenfortEventMap,
   OpenfortEvents,
@@ -25,15 +22,7 @@ export class AuthApi {
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>
   ) {}
 
-  async logInWithEmailPassword({
-    email,
-    password,
-    ecosystemGame,
-  }: {
-    email: string
-    password: string
-    ecosystemGame?: string
-  }): Promise<AuthResponse | AuthActionRequiredResponse> {
+  async logInWithEmailPassword({ email, password }: { email: string; password: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -43,11 +32,11 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
 
     try {
-      const result = await this.authManager.loginEmailPassword(email, password, ecosystemGame)
-      if ('action' in result) {
+      const result = await this.authManager.loginEmailPassword(email, password)
+      if (result?.token === null) {
         return result
       }
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      new Authentication('session', result.token, result.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -67,7 +56,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.registerGuest()
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -79,14 +68,14 @@ export class AuthApi {
   async signUpWithEmailPassword({
     email,
     password,
-    options,
-    ecosystemGame,
+    name,
+    callbackURL,
   }: {
     email: string
     password: string
-    options?: { data: { name: string } }
-    ecosystemGame?: string
-  }): Promise<AuthResponse | AuthActionRequiredResponse> {
+    name?: string
+    callbackURL?: string
+  }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -96,11 +85,14 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
 
     try {
-      const result = await this.authManager.signupEmailPassword(email, password, options?.data.name, ecosystemGame)
-      if ('action' in result) {
+      const n = name ? name : email
+
+      const result = await this.authManager.signupEmailPassword(email, password, n, callbackURL)
+      console.log('Signup result:', result)
+      if (result?.token === null) {
         return result
       }
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -109,56 +101,9 @@ export class AuthApi {
     }
   }
 
-  async linkEmailPassword({
-    email,
-    password,
-    authToken,
-    ecosystemGame,
-  }: {
-    email: string
-    password: string
-    authToken: string
-    ecosystemGame?: string
-  }): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.linkEmail(email, password, authToken, ecosystemGame)
-  }
-
-  async unlinkEmailPassword({ email, authToken }: { email: string; authToken: string }): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.unlinkEmail(email, authToken)
-  }
-
-  async requestEmailVerification({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
+  async initOAuth({ provider, redirectTo }: { provider: OAuthProvider; redirectTo: string }): Promise<string> {
     await this.ensureInitialized()
-    await this.authManager.requestEmailVerification(email, redirectUrl)
-  }
 
-  async resetPassword({ email, password, state }: { email: string; password: string; state: string }): Promise<void> {
-    await this.ensureInitialized()
-    await this.authManager.resetPassword(email, password, state)
-  }
-
-  async requestResetPassword({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
-    await this.ensureInitialized()
-    await this.authManager.requestResetPassword(email, redirectUrl)
-  }
-
-  async verifyEmail({ email, state }: { email: string; state: string }): Promise<void> {
-    await this.ensureInitialized()
-    await this.authManager.verifyEmail(email, state)
-  }
-
-  async initOAuth({
-    provider,
-    options,
-    ecosystemGame,
-  }: {
-    provider: OAuthProvider
-    options?: InitializeOAuthOptions
-    ecosystemGame?: string
-  }): Promise<InitAuthResponse> {
-    await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
       throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
@@ -166,64 +111,15 @@ export class AuthApi {
 
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
 
-    return await this.authManager.initOAuth(provider, options, ecosystemGame)
-  }
-
-  async initLinkOAuth({
-    provider,
-    options,
-    ecosystemGame,
-  }: {
-    provider: OAuthProvider
-    authToken: string
-    options?: InitializeOAuthOptions
-    ecosystemGame?: string
-  }): Promise<InitAuthResponse> {
-    await this.validateAndRefreshToken()
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
-    }
-
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
-
-    return await this.authManager.linkOAuth(auth, provider, options, ecosystemGame)
-  }
-
-  async unlinkOAuth({
-    provider,
-    authToken,
-  }: {
-    provider: OAuthProvider
-    authToken: string
-  }): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.unlinkOAuth(provider, authToken)
-  }
-
-  async poolOAuth(key: string): Promise<AuthResponse> {
-    await this.ensureInitialized()
-
     try {
-      const response = await this.authManager.poolOAuth(key)
-      new Authentication('jwt', response.token, response.player.id, response.refreshToken).save(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, response)
-      return response
+      return await this.authManager.initOAuth(provider, redirectTo)
     } catch (error) {
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      console.log(`Got an error calling API for Google login: ${JSON.stringify(error)}`)
       throw error
     }
   }
 
-  async loginWithIdToken({
-    provider,
-    token,
-    ecosystemGame,
-  }: {
-    provider: OAuthProvider
-    token: string
-    ecosystemGame?: string
-  }): Promise<AuthResponse> {
+  async logInWithIdToken({ provider, token }: { provider: OAuthProvider; token: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
@@ -233,8 +129,8 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'idToken', provider })
 
     try {
-      const result = await this.authManager.loginWithIdToken(provider, token, ecosystemGame)
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      const result = await this.authManager.loginWithIdToken(provider, token)
+      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -243,9 +139,167 @@ export class AuthApi {
     }
   }
 
-  async initSIWE({ address, ecosystemGame }: { address: string; ecosystemGame?: string }): Promise<SIWEInitResponse> {
+  async storeCredentials({ token, userId }: { token: string; userId: string }): Promise<void> {
     await this.ensureInitialized()
-    return await this.authManager.initSIWE(address, ecosystemGame)
+    if (!userId) {
+      throw new OpenfortError('User ID is required to store credentials', OpenfortErrorType.INVALID_CONFIGURATION)
+    }
+    new Authentication('session', token, userId).save(this.storage)
+  }
+
+  /**
+   * Logs the user out by flushing the signer and removing credentials.
+   */
+  async logout(): Promise<void> {
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) return
+    try {
+      if (auth.type !== 'third_party') {
+        await this.authManager.logout(auth.token)
+      }
+    } catch (_error) {
+      // Ignoring logout errors as we're clearing local state anyway
+    }
+    Authentication.clear(this.storage)
+    this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
+  }
+
+  async requestEmailOtp({ email }: { email: string }): Promise<void> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'email', provider: 'email' })
+
+    try {
+      await this.authManager.requestEmailOTP(email)
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async logInWithEmailOtp({ email, otp }: { email: string; otp: string }): Promise<AuthResponse> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
+
+    try {
+      const result = await this.authManager.loginWithEmailOTP(email, otp)
+      if (result?.token === null) {
+        return result
+      }
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
+
+      return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async requestPhoneOtp({ phoneNumber }: { phoneNumber: string }): Promise<void> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'phone', provider: 'phone' })
+
+    try {
+      await this.authManager.requestPhoneOtp(phoneNumber)
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async logInWithPhoneOtp({ phoneNumber, otp }: { phoneNumber: string; otp: string }): Promise<AuthResponse> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (auth) {
+      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'phone', provider: 'phone' })
+
+    try {
+      const result = await this.authManager.loginWithSMSOTP(phoneNumber, otp)
+      if (result?.token === null) {
+        return result
+      }
+      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
+
+      return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async requestResetPassword({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.requestResetPassword(email, redirectUrl)
+  }
+
+  async resetPassword({ password, token }: { password: string; token: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.resetPassword(password, token)
+  }
+
+  async requestEmailVerification({ email, redirectUrl }: { email: string; redirectUrl: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.requestEmailVerification(email, redirectUrl)
+  }
+
+  async verifyEmail({ token, callbackURL }: { token: string; callbackURL?: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.verifyEmail(token, callbackURL)
+  }
+
+  async initLinkOAuth({
+    provider,
+    options,
+  }: {
+    provider: OAuthProvider
+    options?: InitializeOAuthOptions
+  }): Promise<string> {
+    await this.validateAndRefreshToken()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
+
+    return await this.authManager.linkOAuth(auth, provider, options)
+  }
+
+  async unlinkOAuth({ provider }: { provider: OAuthProvider }) {
+    await this.validateAndRefreshToken()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+    return await this.authManager.unlinkOAuth(provider, auth.token)
+  }
+
+  async initSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
+    await this.ensureInitialized()
+    return await this.authManager.initSIWE(address)
   }
 
   async authenticateWithSIWE({
@@ -253,11 +307,13 @@ export class AuthApi {
     message,
     walletClientType,
     connectorType,
+    address,
   }: {
     signature: string
     message: string
     walletClientType: string
     connectorType: string
+    address: string
   }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
@@ -268,8 +324,14 @@ export class AuthApi {
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'siwe', provider: 'wallet' })
 
     try {
-      const result = await this.authManager.authenticateSIWE(signature, message, walletClientType, connectorType)
-      new Authentication('jwt', result.token, result.player.id, result.refreshToken).save(this.storage)
+      const result = await this.authManager.authenticateSIWE(
+        signature,
+        message,
+        walletClientType,
+        connectorType,
+        address
+      )
+      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -283,45 +345,68 @@ export class AuthApi {
     message,
     walletClientType,
     connectorType,
-    authToken,
+    address,
+    chainId,
   }: {
     signature: string
     message: string
     walletClientType: string
     connectorType: string
-    authToken: string
-  }): Promise<AuthPlayerResponse> {
+    address: string
+    chainId: number
+  }) {
     await this.validateAndRefreshToken()
-    return await this.authManager.linkWallet(signature, message, walletClientType, connectorType, authToken)
-  }
-
-  async unlinkWallet({ address, authToken }: { address: string; authToken: string }): Promise<AuthPlayerResponse> {
-    await this.validateAndRefreshToken()
-    return await this.authManager.unlinkWallet(address, authToken)
-  }
-
-  async storeCredentials(auth: Auth): Promise<void> {
-    await this.ensureInitialized()
-    if (!auth.player) {
-      throw new OpenfortError('Player ID is required to store credentials', OpenfortErrorType.INVALID_CONFIGURATION)
-    }
-    new Authentication('jwt', auth.accessToken, auth.player, auth.refreshToken).save(this.storage)
-  }
-
-  /**
-   * Logs the user out by flushing the signer and removing credentials.
-   */
-  async logout(): Promise<void> {
     const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) return
-    try {
-      if (auth.type !== 'third_party') {
-        await this.authManager.logout(auth.token, auth?.refreshToken!)
-      }
-    } catch (_error) {
-      // Ignoring logout errors as we're clearing local state anyway
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
     }
-    Authentication.clear(this.storage)
-    this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
+    return await this.authManager.linkWallet(
+      signature,
+      message,
+      walletClientType,
+      connectorType,
+      address,
+      chainId,
+      auth.token
+    )
+  }
+
+  async unlinkWallet({ address, chainId }: { address: string; chainId: number }) {
+    await this.validateAndRefreshToken()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+    return await this.authManager.unlinkWallet(address, chainId, auth.token)
+  }
+
+  async unlinkEmail() {
+    await this.validateAndRefreshToken()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+    return await this.authManager.unlinkEmail(auth.token)
+  }
+
+  async linkEmailPassword({
+    name,
+    email,
+    password,
+    authToken,
+  }: {
+    name: string
+    email: string
+    password: string
+    authToken: string
+  }): Promise<LinkEmailResponse> {
+    await this.validateAndRefreshToken()
+    // @ts-expect-error // TODO: Fix ts-ignore
+    return await this.authManager.linkEmail(name, email, password, authToken)
+  }
+
+  async unlinkEmailPassword({ authToken }: { authToken: string }): Promise<boolean | undefined> {
+    await this.validateAndRefreshToken()
+    return await this.authManager.unlinkEmail(authToken)
   }
 }

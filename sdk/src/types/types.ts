@@ -17,6 +17,10 @@ export enum OpenfortEvents {
   ON_AUTH_INIT = 'onAuthInit',
   /** Called after the user successfully authenticates */
   ON_AUTH_SUCCESS = 'onAuthSuccess',
+  /** Called when an OTP for login was requested */
+  ON_OTP_REQUEST = 'onOtpRequest',
+  /** Called when an OTP for login wasn't sent successfully */
+  ON_OTP_FAILURE = 'onOtpFailure',
   /** Called when authentication fails */
   ON_AUTH_FAILURE = 'onAuthFailure',
   /** Called after the user logs out */
@@ -35,7 +39,7 @@ export enum OpenfortEvents {
  * Authentication initialization payload
  */
 export type AuthInitPayload = {
-  method: 'email' | 'oauth' | 'siwe' | 'idToken' | 'guest'
+  method: 'email' | 'oauth' | 'siwe' | 'idToken' | 'guest' | 'phone'
   provider?: string
 }
 
@@ -92,21 +96,9 @@ export enum AuthType {
   THIRD_PARTY = 'thirdParty',
 }
 
-export type Auth = {
-  player?: string
-  accessToken: string
-  refreshToken: string
-}
-
-export type InitAuthResponse = {
-  url: string
-  key: string
-}
-
 export type SIWEInitResponse = {
   address: string
   nonce: string
-  expiresAt: number
 }
 
 export type InitializeOAuthOptions = {
@@ -141,27 +133,6 @@ export enum BasicAuthProvider {
   EMAIL = 'email',
   WALLET = 'wallet',
 }
-
-const AUTH_PROVIDER = {
-  email: 'email',
-  wallet: 'wallet',
-  apple: 'apple',
-  google: 'google',
-  twitter: 'twitter',
-  discord: 'discord',
-  facebook: 'facebook',
-  epicGames: 'epic_games',
-  accelbyte: 'accelbyte',
-  firebase: 'firebase',
-  betterAuth: 'better-auth',
-  lootlocker: 'lootlocker',
-  playfab: 'playfab',
-  supabase: 'supabase',
-  custom: 'custom',
-  oidc: 'oidc',
-} as const
-
-type AuthProvider = (typeof AUTH_PROVIDER)[keyof typeof AUTH_PROVIDER]
 
 export enum OAuthProvider {
   GOOGLE = 'google',
@@ -370,62 +341,74 @@ export interface EstimateTransactionIntentGasResult {
 
 type PlayerMetadataValue = unknown
 
-interface PlayerResponseAccountsInner {
+export interface UserAccountResponse {
   id: string
-  object: 'account'
-  createdAt: number
-  address: string
-  ownerAddress: string
-  deployed: boolean
-  custodial: boolean
-  embeddedSigner: boolean
-  chainId: number
-  accountType: string
-  pendingOwnerAddress?: string
-  transactionIntents?: EntityIdResponse[]
-  player: EntityIdResponse
+  providerId: string
+  createdAt: string
+  updatedAt: string
+  accountId: string
+  scopes: string[]
 }
 
-interface AuthPlayerResponsePlayer {
+/**
+ * User profile information
+ */
+export interface User {
+  /** Unique user identifier */
   id: string
-  object: 'player'
-  createdAt: number
-  name: string
-  description?: string
-  metadata?: {
-    [key: string]: PlayerMetadataValue
-  }
-  transactionIntents?: TransactionIntentResponse[]
-  accounts?: PlayerResponseAccountsInner[]
-}
-
-interface LinkedAccountResponse {
-  provider: AuthProvider
+  /** User's email address */
   email?: string
-  externalUserId?: string
-  verified?: boolean
-  disabled: boolean
-  walletClientType?: string
-  connectorType?: string
-  updatedAt?: number
-  address?: string
-  metadata?: {
-    [key: string]: PlayerMetadataValue
-  }
+  /** User's display name */
+  name?: string | null
+  /** URL to user's profile image */
+  image: string | null
+  /** Whether the user's email has been verified */
+  emailVerified?: boolean
+  /** ISO timestamp when the user was created */
+  createdAt?: string
+  /** ISO timestamp when the user was last updated */
+  updatedAt?: string
 }
 
-export interface AuthPlayerResponse {
-  player?: AuthPlayerResponsePlayer
-  id: string
-  object: 'player'
-  createdAt: number
-  linkedAccounts: LinkedAccountResponse[]
-}
-
-export interface AuthResponse {
-  player: AuthPlayerResponse
+/**
+ * Session information
+ */
+export interface Session {
+  /** Session identifier */
+  id?: string
+  /** Session token for authentication */
   token: string
-  refreshToken: string
+  /** User ID associated with this session */
+  userId: string
+  /** ISO timestamp when the session expires */
+  expiresAt?: string
+  /** ISO timestamp when the session was created */
+  createdAt?: string
+  /** ISO timestamp when the session was last updated */
+  updatedAt?: string
+}
+
+/**
+ * Authentication response returned by SDK auth methods
+ * Contains session token and user/session details
+ */
+export interface AuthResponse {
+  /** Session token for authentication */
+  token: string | null
+  /** Full user profile information */
+  user: User
+  /** Session details */
+  session?: Session
+}
+
+/**
+ * Link Email response returned by API on linking Email to anonymous user
+ */
+export interface LinkEmailResponse {
+  /** Session token for authentication */
+  token?: string | null
+  /** Full user profile information */
+  user?: User
 }
 
 export enum AuthActionRequiredActions {
@@ -500,15 +483,6 @@ interface StandardDetails {
   maxFeePerGas: string
   maxPriorityFeePerGas: string
   value?: string
-}
-
-export type PKCEData = {
-  state: string
-  verifier: string
-}
-
-export enum CodeChallengeMethodEnum {
-  S256 = 'S256',
 }
 
 export enum AccountTypeEnum {

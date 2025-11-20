@@ -9,6 +9,7 @@ declare module '@sentry/core' {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   interface Client {
     captureAxiosError: (name: string, error: unknown, hint?: EventHint, scope?: Scope) => void
+    captureError: (context: string, error: Error, hint?: EventHint, scope?: Scope) => void
   }
 }
 
@@ -67,6 +68,33 @@ export class InternalSentry {
       } else {
         sentry.captureException(error, hint, scope)
       }
+    }
+
+    // eslint-disable-next-line no-param-reassign
+    sentry.captureError = (context: string, error: Error, hint?: EventHint, _scope?: Scope) => {
+      // Skip Sentry notification for 400 and 401 errors if statusCode is available
+      const statusCode = (error as any).details?.statusCode
+      if (statusCode === 400 || statusCode === 401) {
+        return
+      }
+
+      const captureContext = hint?.captureContext as any
+      sentry.captureException(error, {
+        ...hint,
+        captureContext: {
+          ...captureContext,
+          extra: {
+            ...captureContext?.extra,
+            errorType: (error as any).type,
+            errorCode: (error as any).code,
+            errorDetails: (error as any).details,
+          },
+          tags: {
+            ...InternalSentry.baseTags,
+            context,
+          },
+        },
+      })
     }
 
     InternalSentry.sentryInstance = sentry

@@ -313,7 +313,7 @@ export class IframeManager {
       thirdPartyTokenType: authentication.thirdPartyTokenType ?? null,
       thirdPartyProvider: authentication.thirdPartyProvider ?? null,
       accessToken: authentication.token,
-      playerID: authentication.player,
+      playerID: authentication.userId,
       recovery: shieldAuthentication,
       chainId: null,
       password: null,

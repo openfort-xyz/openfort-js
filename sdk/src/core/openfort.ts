@@ -87,8 +87,8 @@ export class Openfort {
 
   private initializeSynchronously(): void {
     try {
-      // Initialize auth manager with storage
-      this.iAuthManager = new AuthManager(this.storage)
+      // Initialize auth manager
+      this.iAuthManager = new AuthManager()
 
       // Initialize internal helper
       this.openfortInternal = new OpenfortInternal(this.storage, this.authManager, this.eventEmitter)

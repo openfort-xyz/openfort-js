@@ -238,7 +238,7 @@ export class EmbeddedWalletApi {
     const auth = await Authentication.fromStorage(this.storage)
     const derivedKey = await this.passkeyHandler.deriveAndExportKey({
       id,
-      seed: auth!.player,
+      seed: auth!.userId,
     })
     return derivedKey
   }
@@ -296,7 +296,7 @@ export class EmbeddedWalletApi {
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth!.player,
+      user: auth!.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -325,7 +325,7 @@ export class EmbeddedWalletApi {
       const passkeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
-        seed: auth?.player!,
+        seed: auth?.userId!,
       })
       recoveryParams.passkeyInfo = {
         passkeyId: passkeyDetails.id,
@@ -343,7 +343,7 @@ export class EmbeddedWalletApi {
     const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
-      user: auth!.player,
+      user: auth!.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -393,10 +393,7 @@ export class EmbeddedWalletApi {
     const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
-      implementationAddress: account.implementationAddress,
-      factoryAddress: account.factoryAddress,
-      salt: account.salt,
-      user: auth!.player,
+      user: auth!.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -499,14 +496,14 @@ export class EmbeddedWalletApi {
         passkeyId,
         passkeyKey: await this.passkeyHandler.deriveAndExportKey({
           id: passkeyId,
-          seed: auth.player,
+          seed: auth.userId,
         }),
       }
     } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
       const newPasskeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
-        seed: auth.player!,
+        seed: auth.userId!,
       })
       passkeyInfo = {
         passkeyId: newPasskeyDetails.id,
@@ -564,7 +561,7 @@ export class EmbeddedWalletApi {
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth.player,
+      user: auth.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       factoryAddress: account.factoryAddress,
@@ -588,18 +585,18 @@ export class EmbeddedWalletApi {
     if (!configuration) {
       throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
     }
-    await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
       throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
     }
+    await this.validateAndRefreshToken()
     return withOpenfortError<EmbeddedAccount[]>(
       async () => {
         const response = await this.backendApiClients.accountsApi.getAccountsV2(params, {
           headers: {
             authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': auth.token,
+            'x-auth-token': auth.token,
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'x-auth-provider': auth.thirdPartyProvider,
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -711,7 +708,7 @@ export class EmbeddedWalletApi {
       const auth = await Authentication.fromStorage(this.storage)
       if (auth) {
         try {
-          await iframeManager.getCurrentDevice(auth.player)
+          await iframeManager.getCurrentDevice(auth.userId)
           return true
         } catch (_error) {
           return false

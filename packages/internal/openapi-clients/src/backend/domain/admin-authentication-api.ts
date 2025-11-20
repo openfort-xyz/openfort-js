@@ -30,6 +30,8 @@ import { AuthPlayerResponse } from '../models';
 // @ts-ignore
 import { AuthPlayerResponseWithRecoveryShare } from '../models';
 // @ts-ignore
+import { AuthProviderListResponse } from '../models';
+// @ts-ignore
 import { AuthSessionResponse } from '../models';
 // @ts-ignore
 import { AuthenticateOAuthRequest } from '../models';
@@ -427,6 +429,45 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             };
         },
         /**
+         * List configured auth methods for the current project environment.
+         * @summary List of auth configurations.
+         * @param {boolean} [enabled] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        list: async (enabled?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v1/config`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (enabled !== undefined) {
+                localVarQueryParameter['enabled'] = enabled;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * List configured OAuth methods for the current project environment.
          * @summary List of oauth configurations.
          * @param {*} [options] Override http request option.
@@ -658,6 +699,17 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * List configured auth methods for the current project environment.
+         * @summary List of auth configurations.
+         * @param {boolean} [enabled] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async list(enabled?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthProviderListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.list(enabled, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * List configured OAuth methods for the current project environment.
          * @summary List of oauth configurations.
          * @param {*} [options] Override http request option.
@@ -791,6 +843,16 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
          */
         getOAuthConfig(requestParameters: AdminAuthenticationApiGetOAuthConfigRequest, options?: AxiosRequestConfig): AxiosPromise<AuthConfig> {
             return localVarFp.getOAuthConfig(requestParameters.provider, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * List configured auth methods for the current project environment.
+         * @summary List of auth configurations.
+         * @param {AdminAuthenticationApiListRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        list(requestParameters: AdminAuthenticationApiListRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AuthProviderListResponse> {
+            return localVarFp.list(requestParameters.enabled, options).then((request) => request(axios, basePath));
         },
         /**
          * List configured OAuth methods for the current project environment.
@@ -980,6 +1042,20 @@ export interface AdminAuthenticationApiGetOAuthConfigRequest {
 }
 
 /**
+ * Request parameters for list operation in AdminAuthenticationApi.
+ * @export
+ * @interface AdminAuthenticationApiListRequest
+ */
+export interface AdminAuthenticationApiListRequest {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AdminAuthenticationApiList
+     */
+    readonly enabled?: boolean
+}
+
+/**
  * Request parameters for verifyAuthToken operation in AdminAuthenticationApi.
  * @export
  * @interface AdminAuthenticationApiVerifyAuthTokenRequest
@@ -1122,6 +1198,18 @@ export class AdminAuthenticationApi extends BaseAPI {
      */
     public getOAuthConfig(requestParameters: AdminAuthenticationApiGetOAuthConfigRequest, options?: AxiosRequestConfig) {
         return AdminAuthenticationApiFp(this.configuration).getOAuthConfig(requestParameters.provider, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * List configured auth methods for the current project environment.
+     * @summary List of auth configurations.
+     * @param {AdminAuthenticationApiListRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public list(requestParameters: AdminAuthenticationApiListRequest = {}, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).list(requestParameters.enabled, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

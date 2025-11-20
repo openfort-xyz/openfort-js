@@ -76,7 +76,7 @@ export class EmbeddedSigner implements Signer {
     } else {
       const response = await this.backendApiClients.accountsApi.getAccountsV2(
         {
-          user: auth.player,
+          user: auth.userId,
           accountType: params.accountType,
           // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
           chainType: params.chainType,
@@ -85,7 +85,7 @@ export class EmbeddedSigner implements Signer {
           headers: {
             authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': auth.token,
+            'x-auth-token': auth.token,
             // eslint-disable-next-line @typescript-eslint/naming-convention
             'x-auth-provider': auth.thirdPartyProvider,
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -95,7 +95,7 @@ export class EmbeddedSigner implements Signer {
       )
 
       if (response.data.data.length === 0) {
-        const passkeyDetails = params.entropy?.passkey ? await this.createPasskey(auth.player) : undefined
+        const passkeyDetails = params.entropy?.passkey ? await this.createPasskey(auth.userId) : undefined
 
         const createParams: SignerCreateRequest = {
           accountType: params.accountType,
@@ -154,7 +154,7 @@ export class EmbeddedSigner implements Signer {
             headers: {
               authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
               // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-player-token': auth.token,
+              'x-auth-token': auth.token,
               // eslint-disable-next-line @typescript-eslint/naming-convention
               'x-auth-provider': auth.thirdPartyProvider,
               // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -232,7 +232,7 @@ export class EmbeddedSigner implements Signer {
             headers: {
               authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
               // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-player-token': auth.token,
+              'x-auth-token': auth.token,
               // eslint-disable-next-line @typescript-eslint/naming-convention
               'x-auth-provider': auth.thirdPartyProvider,
               // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -285,7 +285,7 @@ export class EmbeddedSigner implements Signer {
             headers: {
               authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
               // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-player-token': auth.token,
+              'x-auth-token': auth.token,
               // eslint-disable-next-line @typescript-eslint/naming-convention
               'x-auth-provider': auth.thirdPartyProvider,
               // eslint-disable-next-line @typescript-eslint/naming-convention

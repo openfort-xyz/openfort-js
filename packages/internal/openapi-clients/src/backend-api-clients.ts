@@ -1,6 +1,18 @@
 import axios, { type AxiosInstance, type AxiosError } from 'axios'
 import axiosRetry from 'axios-retry'
-import { AccountsApi, AuthenticationApi, RPCApi, SessionsApi, TransactionIntentsApi } from './backend'
+import {
+  AccountsApi,
+  EmailOtpApi,
+  RPCApi,
+  PhoneNumberApi,
+  SessionsApi,
+  AuthenticationApi,
+  SIWEApi,
+  TransactionIntentsApi,
+  DefaultApi,
+  AnonymousApi,
+  AuthenticationV2Api
+} from './backend'
 import { createConfig, type OpenfortAPIConfiguration, type OpenfortAPIConfigurationOptions } from './config'
 
 export interface IStorage {
@@ -29,7 +41,19 @@ export class BackendApiClients {
 
   public sessionsApi: SessionsApi
 
+  public emailOTPApi: EmailOtpApi
+
+  public userApi: AuthenticationV2Api
+
+  public anonymousApi: AnonymousApi
+
+  public siweApi: SIWEApi
+
+  public smsOTPApi: PhoneNumberApi
+
   public authenticationApi: AuthenticationApi
+
+  public authenticationV2Api: DefaultApi
 
   private storage?: IStorage
 
@@ -63,11 +87,26 @@ export class BackendApiClients {
     }
 
     // Pass the custom axios instance to all API constructors
+    const authConfigOptions: OpenfortAPIConfigurationOptions = {
+      basePath: `${options.basePath}/iam/v2/auth`,
+      accessToken: options.accessToken,
+      nativeAppIdentifier: options.nativeAppIdentifier,
+    }
+
+    const authConfig = createConfig(authConfigOptions)
+
+    this.emailOTPApi = new EmailOtpApi(authConfig, undefined, this.axiosInstance)
+    this.smsOTPApi = new PhoneNumberApi(authConfig, undefined, this.axiosInstance)
+    this.anonymousApi = new AnonymousApi(authConfig, undefined, this.axiosInstance)
+
+    this.authenticationV2Api = new DefaultApi(authConfig, undefined, this.axiosInstance)
+    this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, this.axiosInstance)
+    this.siweApi = new SIWEApi(this.config.backend, undefined, this.axiosInstance)
+    this.userApi = new AuthenticationV2Api(this.config.backend, undefined, this.axiosInstance)
     this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend, undefined, this.axiosInstance)
     this.accountsApi = new AccountsApi(this.config.backend, undefined, this.axiosInstance)
     this.sessionsApi = new SessionsApi(this.config.backend, undefined, this.axiosInstance)
     this.rpcApi = new RPCApi(this.config.backend, undefined, this.axiosInstance)
-    this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, this.axiosInstance)
   }
 
   /**

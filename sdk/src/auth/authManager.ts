@@ -1,125 +1,84 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import type { AxiosRequestConfig } from 'axios'
-import { base64url, decodeJwt } from 'jose'
+import type { GetSessionGet200Response, SocialSignIn200Response } from '@openfort/openapi-clients/dist/backend'
 import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
 import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError'
 import { sentry } from '../core/errors/sentry'
-import { type IStorage, StorageKeys } from '../storage/istorage'
-import {
-  type Auth,
-  type AuthActionRequiredResponse,
-  type AuthPlayerResponse,
-  type AuthResponse,
-  CodeChallengeMethodEnum,
-  type InitAuthResponse,
-  type InitializeOAuthOptions,
-  type OAuthProvider,
-  type PKCEData,
-  type SIWEInitResponse,
-  type ThirdPartyAuthProvider,
-  type TokenType,
+import type {
+  AuthResponse,
+  InitializeOAuthOptions,
+  OAuthProvider,
+  Session,
+  SIWEInitResponse,
+  ThirdPartyAuthProvider,
+  TokenType,
+  User,
 } from '../types/types'
-import { cryptoDigest } from '../utils/crypto'
 
-// Modern crypto implementation using Web Crypto API
-async function createHashBuffer(input: string): Promise<Uint8Array> {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(input)
-  const hashBuffer = await cryptoDigest('SHA-256', data)
-  return new Uint8Array(hashBuffer)
-}
-
-// Generate cryptographically secure random bytes
-function getRandomBytes(length: number): Uint8Array {
-  const bytes = new Uint8Array(length)
-  crypto.getRandomValues(bytes)
-  return bytes
-}
-
-class TokenDecoder {
-  private decodedPayload: any
-
-  public value: string
-
-  constructor(token: string) {
-    this.value = token
-    try {
-      this.decodedPayload = decodeJwt(token)
-    } catch (_error) {
-      throw new OpenfortError('Invalid token format', OpenfortErrorType.AUTHENTICATION_ERROR)
-    }
+/**
+ * Maps backend user to SDK user type
+ * Accepts any user-like object with the necessary fields
+ */
+function mapUser(
+  user:
+    | {
+        id?: string
+        email?: string
+        name?: string | null
+        image?: string | null
+        emailVerified?: boolean
+        createdAt?: string
+        updatedAt?: string
+      }
+    | undefined
+    | null
+): User {
+  if (!user) {
+    throw new OpenfortError('User data is missing', OpenfortErrorType.INTERNAL_ERROR)
   }
-
-  get subject(): string | undefined {
-    return this.decodedPayload.sub
-  }
-
-  get expiration(): number | undefined {
-    return this.decodedPayload.exp
-  }
-
-  get issuer(): string | undefined {
-    return this.decodedPayload.iss
-  }
-
-  isExpired(bufferSeconds: number = 30): boolean {
-    if (!this.expiration) {
-      return true
-    }
-    debugLog('Token expiration:', (this.expiration - bufferSeconds) * 1000, 'Current time:', Date.now())
-    return Date.now() >= (this.expiration - bufferSeconds) * 1000
-  }
-
-  static parse(token: string): TokenDecoder | null {
-    try {
-      return new TokenDecoder(token)
-    } catch {
-      return null
-    }
+  return {
+    id: user.id || '',
+    email: user.email,
+    name: user.name ?? null,
+    image: user.image ?? null,
+    emailVerified: user.emailVerified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   }
 }
 
-// Simple device credentials manager
-class DeviceCredentialsManager {
-  private storage: IStorage
-
-  constructor(storage: IStorage) {
-    this.storage = storage
-  }
-
-  async savePKCEData(data: PKCEData): Promise<void> {
-    this.storage.save(StorageKeys.PKCE_STATE, data.state)
-    this.storage.save(StorageKeys.PKCE_VERIFIER, data.verifier)
-  }
-
-  async getPKCEData(): Promise<PKCEData | null> {
-    const state = await this.storage.get(StorageKeys.PKCE_STATE)
-    const verifier = await this.storage.get(StorageKeys.PKCE_VERIFIER)
-
-    if (!state || !verifier) {
-      return null
-    }
-
-    return { state, verifier }
-  }
-
-  async clearPKCEData(): Promise<void> {
-    this.storage.remove(StorageKeys.PKCE_STATE)
-    this.storage.remove(StorageKeys.PKCE_VERIFIER)
+/**
+ * Maps backend session to SDK session type
+ * Accepts any session-like object with the necessary fields
+ */
+function mapSession(
+  session:
+    | {
+        id?: string
+        token: string
+        userId: string
+        expiresAt?: string
+        createdAt?: string
+        updatedAt?: string
+      }
+    | undefined
+    | null
+): Session | undefined {
+  if (!session) return undefined
+  return {
+    id: session.id,
+    token: session.token,
+    userId: session.userId,
+    expiresAt: session.expiresAt,
+    createdAt: session.createdAt,
+    updatedAt: session.updatedAt,
   }
 }
 
 export class AuthManager {
-  private deviceCredentialsManager: DeviceCredentialsManager
-
   private backendApiClientsInstance?: BackendApiClients
 
   private publishableKeyInstance?: string
-
-  constructor(storage: IStorage) {
-    this.deviceCredentialsManager = new DeviceCredentialsManager(storage)
-  }
 
   public setBackendApiClients(backendApiClients: BackendApiClients, publishableKey: string): void {
     this.backendApiClientsInstance = backendApiClients
@@ -140,116 +99,97 @@ export class AuthManager {
     return this.publishableKeyInstance
   }
 
-  public async initOAuth(
-    provider: OAuthProvider,
-    options?: InitializeOAuthOptions,
-    ecosystemGame?: string
-  ): Promise<InitAuthResponse> {
-    const usePooling = options?.usePooling ?? false
-    const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { usePooling: _usePooling, skipBrowserRedirect: _skipBrowserRedirect, ...restOptions } = options || {}
-    const request = {
-      oAuthInitRequest: {
-        provider,
-        options: restOptions,
-        usePooling,
+  public async initOAuth(provider: OAuthProvider, redirectUrl: string): Promise<string> {
+    return await withOpenfortError<string>(
+      async () => {
+        const response = await this.backendApiClients.authenticationV2Api.socialSignIn(
+          {
+            socialSignInRequest: {
+              provider,
+              callbackURL: redirectUrl,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
+        return response.data.url || ''
       },
-    }
-    const result = await withOpenfortError(
-      async () =>
-        this.backendApiClients.authenticationApi.initOAuth(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
-        ),
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'initOAuth',
+        onError: (error) => {
+          sentry.captureError('initOAuth', error)
+        },
+      }
     )
-
-    if (typeof window !== 'undefined' && !skipBrowserRedirect) {
-      window.location.assign(result.data.url)
-    }
-    return {
-      url: result.data.url,
-      key: result.data.key,
-    }
   }
 
   public async registerGuest(): Promise<AuthResponse> {
-    const request = {}
     return withOpenfortError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.registerGuest(request)
-        return response.data
+        const response = await this.backendApiClients.anonymousApi.signInAnonymousPost({
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
+        return {
+          token: response.data.token,
+          user: mapUser(response.data.user),
+        }
       },
-      { default: OpenfortErrorType.USER_REGISTRATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.USER_REGISTRATION_ERROR,
+        context: 'registerGuest',
+        onError: (error) => {
+          sentry.captureError('registerGuest', error)
+        },
+      }
     )
   }
 
-  public async poolOAuth(key: string): Promise<AuthResponse> {
+  public async loginWithIdToken(provider: OAuthProvider, token: string): Promise<AuthResponse> {
     const request = {
-      key,
-    }
-    for (let i = 0; i < 600; i++) {
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        const response = await withOpenfortError(
-          async () => this.backendApiClients.authenticationApi.poolOAuth(request),
-          { default: OpenfortErrorType.AUTHENTICATION_ERROR }
-        )
-        if (response.status === 200) {
-          return response.data
-        }
-      } catch (error) {
-        // @ts-expect-error
-        if (error.response && error.response.status === 404) {
-          // eslint-disable-next-line no-await-in-loop
-          await new Promise((resolve) => {
-            setTimeout(resolve, 500)
-          })
-          // eslint-disable-next-line no-continue
-          continue
-        }
-        throw error
-      }
-    }
-
-    throw new Error('Failed to pool OAuth, try again later')
-  }
-
-  public async loginWithIdToken(provider: OAuthProvider, token: string, ecosystemGame?: string): Promise<AuthResponse> {
-    const request = {
-      loginWithIdTokenRequest: {
-        provider,
+      socialSignInRequest: {
+        provider: provider,
         token,
       },
     }
-    return withOpenfortError<AuthResponse>(
+    const response = await withOpenfortError<SocialSignIn200Response>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.loginWithIdToken(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
-        )
+        const response = await this.backendApiClients.authenticationV2Api.socialSignIn(request)
         return response.data
       },
       {
-        default: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        401: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-      },
-      (error) => {
-        sentry.captureAxiosError('loginWithIdToken', error)
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'loginWithIdToken',
+        onError: (error) => {
+          sentry.captureError('loginWithIdToken', error)
+        },
       }
     )
+    // NOTE: The OpenAPI spec doesn't include session field for SocialSignIn200Response
+    // but the actual Better Auth response includes it
+    const data = response as unknown as AuthResponse & { user: User; session: Session }
+    return {
+      token: data.token,
+      user: mapUser(data.user),
+    }
   }
 
   public async authenticateThirdParty(
     provider: ThirdPartyAuthProvider,
     token: string,
-    tokenType: TokenType,
-    ecosystemGame?: string
-  ): Promise<AuthPlayerResponse> {
+    tokenType: TokenType
+  ): Promise<{ userId: string }> {
     const request = {
       thirdPartyOAuthRequest: {
         provider,
@@ -257,46 +197,54 @@ export class AuthManager {
         tokenType,
       },
     }
-    return withOpenfortError<AuthPlayerResponse>(
+    return withOpenfortError<{ userId: string }>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.thirdParty(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
-        )
-        return response.data
+        const response = await this.backendApiClients.authenticationApi.thirdParty(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
+        return { userId: response.data.id }
       },
       {
-        default: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        401: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-      },
-      (error) => {
-        sentry.captureAxiosError('authenticateThirdParty', error)
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'authenticateThirdParty',
+        onError: (error) => {
+          sentry.captureError('authenticateThirdParty', error)
+        },
       }
     )
   }
 
-  public async initSIWE(address: string, ecosystemGame?: string): Promise<SIWEInitResponse> {
+  public async initSIWE(address: string, chainId?: number): Promise<SIWEInitResponse> {
     const request = {
-      sIWERequest: {
-        address,
+      siweNoncePostRequest: {
+        walletAddress: address,
+        chainId: chainId || 1,
       },
     }
     const result = await withOpenfortError(
       async () =>
-        this.backendApiClients.authenticationApi.initSIWE(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
-        ),
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+        this.backendApiClients.siweApi.linkSiweNoncePost(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        }),
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'initSIWE',
+        onError: (error) => {
+          sentry.captureError('initSIWE', error)
+        },
+      }
     )
 
     return {
-      address: result.data.address,
+      address: address,
       nonce: result.data.nonce,
-      expiresAt: result.data.expiresAt,
     }
   }
 
@@ -304,11 +252,13 @@ export class AuthManager {
     signature: string,
     message: string,
     walletClientType: string,
-    connectorType: string
+    connectorType: string,
+    address: string
   ): Promise<AuthResponse> {
     const request = {
-      sIWEAuthenticateRequest: {
+      siweVerifyPostRequest: {
         signature,
+        walletAddress: address,
         message,
         walletClientType,
         connectorType,
@@ -316,502 +266,615 @@ export class AuthManager {
     }
     return withOpenfortError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.authenticateSIWE(request)
-        return response.data
+        const response = await this.backendApiClients.siweApi.siweVerifyPost(request, {
+          headers: {
+            authorization: `Bearer ${this.publishableKey}`,
+          },
+        })
+        const userData = response.data.user as unknown as User
+        return {
+          token: response.data.token,
+          user: mapUser(userData),
+        }
       },
       {
-        default: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        401: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-      },
-      (error) => {
-        sentry.captureAxiosError('authenticateSIWE', error)
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'authenticateSIWE',
+        onError: (error) => {
+          sentry.captureError('authenticateSIWE', error)
+        },
       }
     )
   }
 
-  private static getEcosystemGameOptsOrUndefined(ecosystemGame?: string): AxiosRequestConfig | undefined {
-    if (ecosystemGame) {
-      return {
-        headers: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          'x-game': ecosystemGame,
-        },
-      }
-    }
-    return undefined
-  }
-
-  public async loginEmailPassword(
-    email: string,
-    password: string,
-    ecosystemGame?: string
-  ): Promise<AuthResponse | AuthActionRequiredResponse> {
-    const request = {
-      loginRequest: {
-        email,
-        password,
-      },
-    }
-
+  public async loginEmailPassword(email: string, password: string): Promise<AuthResponse> {
     return withOpenfortError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.loginEmailPassword(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
+        const response = await this.backendApiClients.authenticationV2Api.signInEmailPost(
+          {
+            signInEmailPostRequest: {
+              email,
+              password,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
         )
-        return response.data
+        // NOTE: The OpenAPI spec doesn't include session field for SocialSignIn200Response
+        // but the actual Better Auth response includes it
+        const data = response.data as unknown as AuthResponse & { user: User; session: Session }
+        return {
+          token: data.token,
+          user: mapUser(data.user),
+        }
       },
       {
-        default: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        401: OpenfortErrorType.AUTHENTICATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-      },
-      (error) => {
-        sentry.captureAxiosError('loginEmailPassword', error)
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'loginEmailPassword',
+        onError: (error) => {
+          sentry.captureError('loginEmailPassword', error)
+        },
       }
     )
   }
 
   public async requestResetPassword(email: string, redirectUrl: string): Promise<void> {
-    const verifierBytes = getRandomBytes(32)
-    const verifier = base64url.encode(verifierBytes)
-    const challengeBytes = await createHashBuffer(verifier)
-    const challenge = base64url.encode(challengeBytes)
-
-    const stateBytes = getRandomBytes(32)
-    const state = base64url.encode(stateBytes)
-
-    await this.deviceCredentialsManager.savePKCEData({ state, verifier })
-
-    const request = {
-      requestResetPasswordRequest: {
-        email,
-        redirectUrl,
-        challenge: {
-          codeChallenge: challenge,
-          method: CodeChallengeMethodEnum.S256,
-        },
-      },
-    }
     await withOpenfortError<void>(
       async () => {
-        await this.backendApiClients.authenticationApi.requestResetPassword(request)
+        await this.backendApiClients.authenticationV2Api.forgetPasswordPost(
+          {
+            forgetPasswordPostRequest: {
+              email,
+              redirectTo: redirectUrl,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'requestResetPassword',
+        onError: (error) => {
+          sentry.captureError('requestResetPassword', error)
+        },
+      }
     )
   }
 
-  public async resetPassword(email: string, password: string, state: string): Promise<void> {
+  public async resetPassword(password: string, token: string): Promise<void> {
     return withOpenfortError<void>(
       async () => {
-        const pkceData = await this.deviceCredentialsManager.getPKCEData()
-        if (!pkceData) {
-          throw new Error('No code verifier or state for PKCE')
-        }
-
-        const request = {
-          resetPasswordRequest: {
-            email,
-            password,
-            state,
-            challenge: {
-              codeVerifier: pkceData.verifier,
+        await this.backendApiClients.authenticationV2Api.resetPasswordPost(
+          {
+            resetPasswordPostRequest: {
+              newPassword: password,
+              token,
             },
           },
-        }
-        await this.backendApiClients.authenticationApi.resetPassword(request)
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'resetPassword',
+        onError: (error) => {
+          sentry.captureError('resetPassword', error)
+        },
+      }
     )
   }
 
   public async requestEmailVerification(email: string, redirectUrl: string): Promise<void> {
-    const verifierBytes = getRandomBytes(32)
-    const verifier = base64url.encode(verifierBytes)
-    const challengeBytes = await createHashBuffer(verifier)
-    const challenge = base64url.encode(challengeBytes)
-
-    const stateBytes = getRandomBytes(32)
-    const state = base64url.encode(stateBytes)
-
-    await this.deviceCredentialsManager.savePKCEData({ state, verifier })
-
-    const request = {
-      requestVerifyEmailRequest: {
-        email,
-        redirectUrl,
-        challenge: {
-          codeChallenge: challenge,
-          method: CodeChallengeMethodEnum.S256,
-        },
-      },
-    }
     await withOpenfortError<void>(
       async () => {
-        await this.backendApiClients.authenticationApi.requestEmailVerification(request)
+        await this.backendApiClients.authenticationV2Api.sendVerificationEmailPost(
+          {
+            sendVerificationEmailPostRequest: {
+              email,
+              callbackURL: redirectUrl,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'requestEmailVerification',
+        onError: (error) => {
+          sentry.captureError('requestEmailVerification', error)
+        },
+      }
     )
   }
 
-  public async verifyEmail(email: string, state: string): Promise<void> {
+  public async verifyEmail(token: string, callbackURL?: string): Promise<void> {
     return withOpenfortError<void>(
       async () => {
-        const pkceData = await this.deviceCredentialsManager.getPKCEData()
-        if (!pkceData) {
-          throw new Error('No code verifier or state for PKCE')
-        }
-
-        const request = {
-          verifyEmailRequest: {
-            email,
-            token: state,
-            challenge: {
-              codeVerifier: pkceData.verifier,
-            },
-          },
-        }
-        await this.backendApiClients.authenticationApi.verifyEmail(request)
+        await this.backendApiClients.authenticationV2Api.verifyEmailGet({ token, callbackURL })
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'verifyEmail',
+        onError: (error) => {
+          sentry.captureError('verifyEmail', error)
+        },
+      }
     )
   }
 
   public async signupEmailPassword(
     email: string,
     password: string,
-    name?: string,
-    ecosystemGame?: string
-  ): Promise<AuthResponse | AuthActionRequiredResponse> {
-    const request = {
-      signupRequest: {
-        email,
-        password,
-        name,
-      },
-    }
-
+    name: string,
+    callbackURL?: string
+  ): Promise<AuthResponse> {
     return withOpenfortError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.signupEmailPassword(
-          request,
-          AuthManager.getEcosystemGameOptsOrUndefined(ecosystemGame)
+        const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(
+          {
+            signUpEmailPostRequest: {
+              email,
+              password,
+              name,
+              callbackURL,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
         )
-        return response.data
+        // NOTE: The OpenAPI spec doesn't include session field for SignUpEmailPost200Response
+        // but the actual Better Auth response includes it
+        const data = response.data as unknown as AuthResponse & { user: User; session: Session }
+        return {
+          token: data.token,
+          user: mapUser(data.user),
+        }
       },
       {
-        default: OpenfortErrorType.USER_REGISTRATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        401: OpenfortErrorType.USER_REGISTRATION_ERROR,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-      },
-      (error) => {
-        sentry.captureAxiosError('signupEmailPassword', error)
+        defaultType: OpenfortErrorType.USER_REGISTRATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'signupEmailPassword',
+        onError: (error) => {
+          sentry.captureError('signupEmailPassword', error)
+        },
       }
     )
   }
 
-  public async validateCredentials(authentication: Authentication, forceRefresh?: boolean): Promise<Auth> {
-    if (!authentication.refreshToken) {
-      throw new OpenfortError('No refresh token provided', OpenfortErrorType.AUTHENTICATION_ERROR)
-    }
-
-    // Force refresh if requested
-    if (forceRefresh) {
-      return this.refreshTokens(authentication.refreshToken, forceRefresh)
-    }
+  public async validateCredentials(authentication: Authentication, _forceRefresh?: boolean): Promise<AuthResponse> {
     debugLog('Validating credentials with token:', authentication.token)
-    // Try to decode the token (no verification)
-    const decodedToken = TokenDecoder.parse(authentication.token)
 
-    if (!decodedToken) {
-      // Token is malformed, try to refresh
-      return this.refreshTokens(authentication.refreshToken)
-    }
-
-    // Check if token is expired
-    if (decodedToken.isExpired()) {
-      debugLog('Token expired, refreshing...')
-      return this.refreshTokens(authentication.refreshToken)
-    }
-
-    // Token appears valid (not expired), return it
-    // The server will verify it on the next API call
+    const sessionData = await this.getSessionWithToken(authentication.token, _forceRefresh)
     return {
-      player: decodedToken.subject,
-      accessToken: authentication.token,
-      refreshToken: authentication.refreshToken,
+      token: sessionData.session.token,
+      user: mapUser(sessionData.user),
+      session: mapSession(sessionData.session),
     }
   }
 
-  /**
-   * Refresh tokens with the server
-   * Server will verify the refresh token and issue new tokens
-   */
-  private async refreshTokens(refreshToken: string, forceRefresh?: boolean): Promise<Auth> {
-    const request = {
-      refreshTokenRequest: {
-        refreshToken,
-        forceRefresh,
-      },
-    }
-    return withOpenfortError<Auth>(
-      async () => {
-        const response = await this.backendApiClients.authenticationApi.refresh(request)
-        return {
-          player: response.data.player.id,
-          accessToken: response.data.token,
-          refreshToken: response.data.refreshToken,
-        }
-      },
-      { default: OpenfortErrorType.REFRESH_TOKEN_ERROR }
-    )
-  }
-
-  public async logout(accessToken: string, refreshToken: string): Promise<void> {
-    const request = {
-      logoutRequest: {
-        refreshToken,
-      },
-    }
+  public async logout(token: string): Promise<void> {
     return withOpenfortError<void>(
       async () => {
-        await this.backendApiClients.authenticationApi.logout(request, {
+        await this.backendApiClients.authenticationV2Api.signOutPost(undefined, {
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': accessToken,
+            'x-auth-token': token,
           },
         })
       },
-      { default: OpenfortErrorType.LOGOUT_ERROR }
+      {
+        defaultType: OpenfortErrorType.LOGOUT_ERROR,
+        context: 'logout',
+        onError: (error) => {
+          sentry.captureError('logout', error)
+        },
+      }
     )
   }
 
-  public async getUser(auth: Authentication): Promise<AuthPlayerResponse> {
-    return withOpenfortError<AuthPlayerResponse>(
+  public async getUser(auth: Authentication) {
+    return withOpenfortError(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.me({
+        const response = await this.backendApiClients.userApi.me1({
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': auth.token,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-provider': auth.thirdPartyProvider,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-token-type': auth.thirdPartyTokenType,
+            'x-auth-token': auth.token,
           },
         })
-        return response.data
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+        const userData = response.data as unknown as User
+        return mapUser(userData)
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'getUser',
+        onError: (error) => {
+          sentry.captureError('getUser', error)
+        },
+      }
     )
   }
 
-  public async linkThirdParty(
-    auth: Authentication,
-    provider: ThirdPartyAuthProvider,
-    playerToken: string,
-    tokenType: TokenType,
-    ecosystemGame?: string
-  ): Promise<AuthPlayerResponse> {
-    const request = {
-      thirdPartyLinkRequest: {
-        provider,
-        token: playerToken,
-        tokenType,
-      },
-    }
-    return withOpenfortError<AuthPlayerResponse>(
+  public async listAccounts(auth: Authentication) {
+    return withOpenfortError(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.linkThirdParty(request, {
+        const response = await this.backendApiClients.authenticationV2Api.listAccountsGet({
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': auth.token,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-provider': auth.thirdPartyProvider || undefined,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-token-type': auth.thirdPartyTokenType || undefined,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-game': ecosystemGame || undefined,
+            authorization: `Bearer ${auth.token}`,
           },
         })
         return response.data
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'listAccounts',
+        onError: (error) => {
+          sentry.captureError('listAccounts', error)
+        },
+      }
     )
   }
 
   public async linkOAuth(
     auth: Authentication,
     provider: OAuthProvider,
-    options?: InitializeOAuthOptions,
-    ecosystemGame?: string
-  ): Promise<InitAuthResponse> {
+    options?: InitializeOAuthOptions
+  ): Promise<string> {
     const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
-    // eslint-disable-next-line no-param-reassign
-    delete options?.skipBrowserRedirect
     const request = {
-      oAuthInitRequest: {
+      linkSocialPostRequest: {
         provider,
-        options,
-        usePooling: options?.usePooling || false,
+        callbackURL: options?.redirectTo,
+        scopes: options?.scopes?.split(' '),
+        disableRedirect: skipBrowserRedirect,
       },
     }
     const result = await withOpenfortError(
       async () =>
-        this.backendApiClients.authenticationApi.linkOAuth(request, {
+        this.backendApiClients.authenticationV2Api.linkSocialPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': auth.token,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-provider': auth.thirdPartyProvider || undefined,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-token-type': auth.thirdPartyTokenType || undefined,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-game': ecosystemGame || undefined,
+            authorization: `Bearer ${auth.token}`,
           },
         }),
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'linkOAuth',
+        onError: (error) => {
+          sentry.captureError('linkOAuth', error)
+        },
+      }
     )
 
-    if (typeof window !== 'undefined' && !skipBrowserRedirect) {
+    if (typeof window !== 'undefined' && !skipBrowserRedirect && result.data.url) {
       window.location.assign(result.data.url)
     }
-    return {
-      url: result.data.url,
-      key: result.data.key,
-    }
+    return result.data.url || ''
   }
 
-  public async unlinkOAuth(provider: OAuthProvider, accessToken: string): Promise<AuthPlayerResponse> {
+  public async unlinkOAuth(provider: OAuthProvider, token: string) {
     const request = {
-      unlinkOAuthRequest: {
-        provider,
+      unlinkAccountPostRequest: {
+        providerId: provider,
       },
     }
-    return withOpenfortError<AuthPlayerResponse>(
+    return withOpenfortError(
       async () => {
-        const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkOAuth(request, {
+        const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': accessToken,
+            authorization: `Bearer ${token}`,
           },
         })
-        return authPlayerResponse.data
+        return response.data
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'unlinkOAuth',
+        onError: (error) => {
+          sentry.captureError('unlinkOAuth', error)
+        },
+      }
     )
   }
 
-  public async unlinkWallet(address: string, accessToken: string): Promise<AuthPlayerResponse> {
+  public async linkEmail(name: string, email: string, password: string, accessToken: string) {
     const request = {
-      sIWERequest: {
-        address,
+      signUpEmailPostRequest: {
+        name,
+        email,
+        password,
       },
     }
-    return withOpenfortError<AuthPlayerResponse>(
+    return withOpenfortError(
       async () => {
-        const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkSIWE(request, {
+        const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            authorization: `Bearer ${accessToken}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': accessToken,
+            'x-auth-token': accessToken,
+          },
+        })
+        return response.data
+      },
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'linkEmail',
+        onError: (error) => {
+          sentry.captureError('linkEmail', error)
+        },
+      }
+    )
+  }
+
+  public async unlinkEmail(accessToken: string) {
+    const request = {
+      unlinkAccountPostRequest: {
+        providerId: 'credential',
+      },
+    }
+    return withOpenfortError(
+      async () => {
+        const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        })
+        return response.data.status
+      },
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'unlinkEmail',
+        onError: (error) => {
+          sentry.captureError('unlinkEmail', error)
+        },
+      }
+    )
+  }
+
+  public async unlinkWallet(address: string, chainId: number, token: string) {
+    const request = {
+      linkSiweUnlinkPostRequest: {
+        walletAddress: address,
+        chaindId: chainId,
+      },
+    }
+    return withOpenfortError(
+      async () => {
+        const authPlayerResponse = await this.backendApiClients.siweApi.linkSiweUnlinkPost(request, {
+          headers: {
+            authorization: `Bearer ${token}`,
           },
         })
         return authPlayerResponse.data
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'unlinkWallet',
+        onError: (error) => {
+          sentry.captureError('unlinkWallet', error)
+        },
+      }
     )
   }
 
   public async linkWallet(
     signature: string,
     message: string,
-    walletClientType: string,
-    connectorType: string,
-    accessToken: string
-  ): Promise<AuthPlayerResponse> {
+    _walletClientType: string,
+    _connectorType: string,
+    address: string,
+    chainId: number,
+    token: string
+  ) {
     const request = {
-      sIWEAuthenticateRequest: {
+      linkSiweVerifyPostRequest: {
         signature,
         message,
-        walletClientType,
-        connectorType,
+        walletAddress: address,
+        chainId,
       },
     }
-    return withOpenfortError<AuthPlayerResponse>(
+    return withOpenfortError(
       async () => {
-        const authPlayerResponse = await this.backendApiClients.authenticationApi.linkSIWE(request, {
+        const response = await this.backendApiClients.siweApi.linkSiweVerifyPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': accessToken,
+            authorization: `Bearer ${token}`,
           },
         })
-        return authPlayerResponse.data
+        return response.data
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        context: 'linkWallet',
+        onError: (error) => {
+          sentry.captureError('linkWallet', error)
+        },
+      }
     )
   }
 
-  public async unlinkEmail(email: string, accessToken: string): Promise<AuthPlayerResponse> {
+  public async requestEmailOTP(email: string): Promise<void> {
     const request = {
-      unlinkEmailRequest: {
+      emailOtpSendVerificationOtpPostRequest: {
         email,
+        type: 'sign-in',
       },
     }
-    return withOpenfortError<AuthPlayerResponse>(
+
+    await withOpenfortError(
       async () => {
-        const authPlayerResponse = await this.backendApiClients.authenticationApi.unlinkEmail(request, {
+        const response = await this.backendApiClients.emailOTPApi.emailOtpSendVerificationOtpPost(request, {
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': accessToken,
           },
         })
-        return authPlayerResponse.data
+        return response.data
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.REQUEST_EMAIL_OTP_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'requestEmailOTP',
+        onError: (error) => {
+          sentry.captureError('requestEmailOTP', error)
+        },
+      }
     )
   }
 
-  public async linkEmail(
-    email: string,
-    password: string,
-    accessToken: string,
-    ecosystemGame?: string
-  ): Promise<AuthPlayerResponse | AuthActionRequiredResponse> {
+  public async loginWithEmailOTP(email: string, otp: string): Promise<AuthResponse> {
+    return await withOpenfortError<AuthResponse>(
+      async () => {
+        const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(
+          {
+            signInEmailOtpPostRequest: {
+              email,
+              otp,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
+        // NOTE: The OpenAPI spec returns SocialSignIn200Response which doesn't include session
+        // but the actual Better Auth response includes it
+        const data = response.data as unknown as AuthResponse & { user: User; session: Session }
+        return {
+          token: data.token,
+          user: mapUser(data.user),
+        }
+      },
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'loginWithEmailOTP',
+        onError: (error) => {
+          sentry.captureError('loginWithEmailOTP', error)
+        },
+      }
+    )
+  }
+
+  public async requestPhoneOtp(phoneNumber: string): Promise<void> {
     const request = {
-      loginRequest: {
-        email,
-        password,
+      phoneNumberSendOtpPostRequest: {
+        phoneNumber,
       },
     }
-    return withOpenfortError<AuthPlayerResponse | AuthActionRequiredResponse>(
+
+    await withOpenfortError(
       async () => {
-        const authPlayerResponse = await this.backendApiClients.authenticationApi.linkEmail(request, {
+        const response = await this.backendApiClients.smsOTPApi.phoneNumberSendOtpPost(request, {
           headers: {
             authorization: `Bearer ${this.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': accessToken,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-game': ecosystemGame || undefined,
           },
         })
-        return authPlayerResponse.data
+        return response.data
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      {
+        defaultType: OpenfortErrorType.REQUEST_SMS_OTP_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'requestPhoneOtp',
+        onError: (error) => {
+          sentry.captureError('requestPhoneOtp', error)
+        },
+      }
+    )
+  }
+
+  public async loginWithSMSOTP(phoneNumber: string, code: string): Promise<AuthResponse> {
+    return await withOpenfortError<AuthResponse>(
+      async () => {
+        const response = await this.backendApiClients.smsOTPApi.phoneNumberVerifyPost(
+          {
+            phoneNumberVerifyPostRequest: {
+              code,
+              phoneNumber,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${this.publishableKey}`,
+            },
+          }
+        )
+        // NOTE: The OpenAPI spec incorrectly types this response as PhoneNumberVerifyPost200Response
+        // but the actual response has { token, user, session } structure from Better Auth
+        const data = response.data as unknown as AuthResponse & { user: User; session: Session }
+        return {
+          token: data.token,
+          user: mapUser(data.user),
+        }
+      },
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'loginWithSMSOTP',
+        onError: (error) => {
+          sentry.captureError('loginWithSMSOTP', error)
+        },
+      }
+    )
+  }
+
+  private async getSessionWithToken(token: string, forceRefresh?: boolean): Promise<GetSessionGet200Response> {
+    return await withOpenfortError<GetSessionGet200Response>(
+      async () => {
+        const response = await this.backendApiClients.authenticationV2Api.getSessionGet(
+          {
+            disableCookieCache: forceRefresh,
+          },
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        )
+        return response.data
+      },
+      {
+        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
+        statusCodeMapping: {
+          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
+        },
+        context: 'getSessionWithToken',
+        onError: (error) => {
+          sentry.captureError('getSessionWithToken', error)
+        },
+      }
     )
   }
 }
