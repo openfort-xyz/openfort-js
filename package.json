@@ -56,7 +56,7 @@
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "events": "^3.1.0",
-    "knip": "^5.64.0",
+    "knip": "^5.70.1",
     "sherif": "^0.8.4",
     "simple-git-hooks": "^2.13.1",
     "stream-browserify": "^3.0.0",
@@ -84,6 +84,12 @@
       "@metamask/sdk-communication-layer@>=0.16.0 <=0.33.0": ">=0.33.1",
       "@metamask/sdk@>=0.16.0 <=0.33.0": ">=0.33.1",
       "glob@>=10.3.7 <=11.0.3": ">=11.1.0"
+    },
+    "auditConfig": {
+      "ignoreCves": [
+        "GHSA-ffrw-9mx8-89p8",
+        "CVE-2025-57319"
+      ]
     }
   },
   "knip": {
