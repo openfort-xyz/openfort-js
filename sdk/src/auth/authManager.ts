@@ -111,7 +111,7 @@ export class AuthManager {
           },
           {
             headers: {
-              authorization: `Bearer ${this.publishableKey}`,
+              'x-project-key': `${this.publishableKey}`,
             },
           }
         )
@@ -135,7 +135,7 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.anonymousApi.signInAnonymousPost({
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return {
@@ -201,7 +201,7 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.authenticationApi.thirdParty(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return { userId: response.data.id }
@@ -230,7 +230,7 @@ export class AuthManager {
       async () =>
         this.backendApiClients.siweApi.linkSiweNoncePost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         }),
       {
@@ -268,7 +268,7 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.siweApi.siweVerifyPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         const userData = response.data.user as unknown as User
@@ -302,7 +302,7 @@ export class AuthManager {
           },
           {
             headers: {
-              authorization: `Bearer ${this.publishableKey}`,
+              'x-project-key': `${this.publishableKey}`,
             },
           }
         )
@@ -339,7 +339,7 @@ export class AuthManager {
           },
           {
             headers: {
-              authorization: `Bearer ${this.publishableKey}`,
+              'x-project-key': `${this.publishableKey}`,
             },
           }
         )
@@ -366,7 +366,7 @@ export class AuthManager {
           },
           {
             headers: {
-              authorization: `Bearer ${this.publishableKey}`,
+              'x-project-key': `${this.publishableKey}`,
             },
           }
         )
@@ -393,7 +393,7 @@ export class AuthManager {
           },
           {
             headers: {
-              authorization: `Bearer ${this.publishableKey}`,
+              'x-project-key': `${this.publishableKey}`,
             },
           }
         )
@@ -442,7 +442,7 @@ export class AuthManager {
           },
           {
             headers: {
-              authorization: `Bearer ${this.publishableKey}`,
+              'x-project-key': `${this.publishableKey}`,
             },
           }
         )
@@ -483,9 +483,9 @@ export class AuthManager {
       async () => {
         await this.backendApiClients.authenticationV2Api.signOutPost(undefined, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            authorization: `Bearer ${token}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': token,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
       },
@@ -504,9 +504,9 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.userApi.me1({
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            authorization: `Bearer ${auth.token}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': auth.token,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         const userData = response.data as unknown as User
@@ -528,6 +528,7 @@ export class AuthManager {
         const response = await this.backendApiClients.authenticationV2Api.listAccountsGet({
           headers: {
             authorization: `Bearer ${auth.token}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return response.data
@@ -561,6 +562,7 @@ export class AuthManager {
         this.backendApiClients.authenticationV2Api.linkSocialPost(request, {
           headers: {
             authorization: `Bearer ${auth.token}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         }),
       {
@@ -589,6 +591,7 @@ export class AuthManager {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
           headers: {
             authorization: `Bearer ${token}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return response.data
@@ -617,7 +620,7 @@ export class AuthManager {
           headers: {
             authorization: `Bearer ${accessToken}`,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': accessToken,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return response.data
@@ -643,6 +646,7 @@ export class AuthManager {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
           headers: {
             authorization: `Bearer ${accessToken}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return response.data.status
@@ -669,6 +673,7 @@ export class AuthManager {
         const authPlayerResponse = await this.backendApiClients.siweApi.linkSiweUnlinkPost(request, {
           headers: {
             authorization: `Bearer ${token}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return authPlayerResponse.data
@@ -705,6 +710,7 @@ export class AuthManager {
         const response = await this.backendApiClients.siweApi.linkSiweVerifyPost(request, {
           headers: {
             authorization: `Bearer ${token}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return response.data
@@ -731,7 +737,7 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.emailOTPApi.emailOtpSendVerificationOtpPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return response.data
@@ -761,7 +767,7 @@ export class AuthManager {
           },
           {
             headers: {
-              authorization: `Bearer ${this.publishableKey}`,
+              'x-project-key': `${this.publishableKey}`,
             },
           }
         )
@@ -797,7 +803,7 @@ export class AuthManager {
       async () => {
         const response = await this.backendApiClients.smsOTPApi.phoneNumberSendOtpPost(request, {
           headers: {
-            authorization: `Bearer ${this.publishableKey}`,
+            'x-project-key': `${this.publishableKey}`,
           },
         })
         return response.data
@@ -827,7 +833,7 @@ export class AuthManager {
           },
           {
             headers: {
-              authorization: `Bearer ${this.publishableKey}`,
+              'x-project-key': `${this.publishableKey}`,
             },
           }
         )
@@ -860,7 +866,10 @@ export class AuthManager {
             disableCookieCache: forceRefresh,
           },
           {
-            headers: { authorization: `Bearer ${token}` },
+            headers: {
+              authorization: `Bearer ${token}`,
+              'x-project-key': `${this.publishableKey}`,
+            },
           }
         )
         return response.data
