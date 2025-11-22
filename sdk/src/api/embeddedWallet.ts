@@ -593,15 +593,19 @@ export class EmbeddedWalletApi {
     return withOpenfortError<EmbeddedAccount[]>(
       async () => {
         const response = await this.backendApiClients.accountsApi.getAccountsV2(params, {
-          headers: {
-            authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': auth.token,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-provider': auth.thirdPartyProvider,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-token-type': auth.thirdPartyTokenType,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': configuration.baseConfiguration.publishableKey,
+              },
         })
 
         return response.data.data.map((account) => ({

@@ -82,15 +82,19 @@ export class EmbeddedSigner implements Signer {
           chainType: params.chainType,
         },
         {
-          headers: {
-            authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-token': auth.token,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-provider': auth.thirdPartyProvider,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-token-type': auth.thirdPartyTokenType,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': configuration.baseConfiguration.publishableKey,
+              },
         }
       )
 
@@ -151,15 +155,19 @@ export class EmbeddedSigner implements Signer {
             id: accountId,
           },
           {
-            headers: {
-              authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-token': auth.token,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-provider': auth.thirdPartyProvider,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-token-type': auth.thirdPartyTokenType,
-            },
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : {
+                  authorization: `Bearer ${auth.token}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-project-key': configuration.baseConfiguration.publishableKey,
+                },
           }
         )
 
@@ -229,15 +237,19 @@ export class EmbeddedSigner implements Signer {
             id: iframeResponse.account,
           },
           {
-            headers: {
-              authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-token': auth.token,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-provider': auth.thirdPartyProvider,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-token-type': auth.thirdPartyTokenType,
-            },
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : {
+                  authorization: `Bearer ${auth.token}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-project-key': configuration.baseConfiguration.publishableKey,
+                },
           }
         )
 
@@ -282,15 +294,19 @@ export class EmbeddedSigner implements Signer {
             id: iframeResponse.account,
           },
           {
-            headers: {
-              authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-token': auth.token,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-provider': auth.thirdPartyProvider,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-token-type': auth.thirdPartyTokenType,
-            },
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : {
+                  authorization: `Bearer ${auth.token}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-project-key': configuration.baseConfiguration.publishableKey,
+                },
           }
         )
 

@@ -155,7 +155,7 @@ export class AuthApi {
     if (!auth) return
     try {
       if (auth.type !== 'third_party') {
-        await this.authManager.logout(auth.token)
+        await this.authManager.logout(auth)
       }
     } catch (_error) {
       // Ignoring logout errors as we're clearing local state anyway
@@ -294,7 +294,7 @@ export class AuthApi {
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
     }
-    return await this.authManager.unlinkOAuth(provider, auth.token)
+    return await this.authManager.unlinkOAuth(provider, auth)
   }
 
   async initSIWE({ address, chainId }: { address: string; chainId?: number }): Promise<SIWEInitResponse> {
@@ -370,7 +370,7 @@ export class AuthApi {
       connectorType,
       address,
       chainId,
-      auth.token
+      auth
     )
   }
 
@@ -380,7 +380,7 @@ export class AuthApi {
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
     }
-    return await this.authManager.unlinkWallet(address, chainId, auth.token)
+    return await this.authManager.unlinkWallet(address, chainId, auth)
   }
 
   async unlinkEmail() {
@@ -389,27 +389,33 @@ export class AuthApi {
     if (!auth) {
       throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
     }
-    return await this.authManager.unlinkEmail(auth.token)
+    return await this.authManager.unlinkEmail(auth)
   }
 
   async linkEmailPassword({
     name,
     email,
     password,
-    authToken,
   }: {
     name: string
     email: string
     password: string
-    authToken: string
   }): Promise<LinkEmailResponse> {
     await this.validateAndRefreshToken()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
     // @ts-expect-error // TODO: Fix ts-ignore
-    return await this.authManager.linkEmail(name, email, password, authToken)
+    return await this.authManager.linkEmail(name, email, password, auth)
   }
 
-  async unlinkEmailPassword({ authToken }: { authToken: string }): Promise<boolean | undefined> {
+  async unlinkEmailPassword(): Promise<boolean | undefined> {
     await this.validateAndRefreshToken()
-    return await this.authManager.unlinkEmail(authToken)
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+    }
+    return await this.authManager.unlinkEmail(auth)
   }
 }

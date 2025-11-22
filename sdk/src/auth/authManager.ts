@@ -472,7 +472,7 @@ export class AuthManager {
   public async validateCredentials(authentication: Authentication, _forceRefresh?: boolean): Promise<AuthResponse> {
     debugLog('Validating credentials with token:', authentication.token)
 
-    const sessionData = await this.getSessionWithToken(authentication.token, _forceRefresh)
+    const sessionData = await this.getSessionWithToken(authentication, _forceRefresh)
     return {
       token: sessionData.session.token,
       user: mapUser(sessionData.user),
@@ -480,15 +480,23 @@ export class AuthManager {
     }
   }
 
-  public async logout(token: string): Promise<void> {
+  public async logout(auth: Authentication): Promise<void> {
     return withOpenfortError<void>(
       async () => {
         await this.backendApiClients.authenticationV2Api.signOutPost(undefined, {
-          headers: {
-            authorization: `Bearer ${token}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         })
       },
       {
@@ -505,11 +513,19 @@ export class AuthManager {
     return withOpenfortError(
       async () => {
         const response = await this.backendApiClients.userApi.me1({
-          headers: {
-            authorization: `Bearer ${auth.token}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         })
         const userData = response.data as unknown as User
         return mapUser(userData)
@@ -528,10 +544,19 @@ export class AuthManager {
     return withOpenfortError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.listAccountsGet({
-          headers: {
-            authorization: `Bearer ${auth.token}`,
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         })
         return response.data
       },
@@ -562,10 +587,19 @@ export class AuthManager {
     const result = await withOpenfortError(
       async () =>
         this.backendApiClients.authenticationV2Api.linkSocialPost(request, {
-          headers: {
-            authorization: `Bearer ${auth.token}`,
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         }),
       {
         defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
@@ -582,7 +616,7 @@ export class AuthManager {
     return result.data.url || ''
   }
 
-  public async unlinkOAuth(provider: OAuthProvider, token: string) {
+  public async unlinkOAuth(provider: OAuthProvider, auth: Authentication) {
     const request = {
       unlinkAccountPostRequest: {
         providerId: provider,
@@ -591,10 +625,19 @@ export class AuthManager {
     return withOpenfortError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
-          headers: {
-            authorization: `Bearer ${token}`,
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         })
         return response.data
       },
@@ -608,7 +651,7 @@ export class AuthManager {
     )
   }
 
-  public async linkEmail(name: string, email: string, password: string, accessToken: string) {
+  public async linkEmail(name: string, email: string, password: string, auth: Authentication) {
     const request = {
       signUpEmailPostRequest: {
         name,
@@ -619,11 +662,19 @@ export class AuthManager {
     return withOpenfortError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(request, {
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         })
         return response.data
       },
@@ -637,7 +688,7 @@ export class AuthManager {
     )
   }
 
-  public async unlinkEmail(accessToken: string) {
+  public async unlinkEmail(auth: Authentication) {
     const request = {
       unlinkAccountPostRequest: {
         providerId: 'credential',
@@ -646,10 +697,19 @@ export class AuthManager {
     return withOpenfortError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         })
         return response.data.status
       },
@@ -663,7 +723,7 @@ export class AuthManager {
     )
   }
 
-  public async unlinkWallet(address: string, chainId: number, token: string) {
+  public async unlinkWallet(address: string, chainId: number, auth: Authentication) {
     const request = {
       linkSiweUnlinkPostRequest: {
         walletAddress: address,
@@ -673,10 +733,19 @@ export class AuthManager {
     return withOpenfortError(
       async () => {
         const authPlayerResponse = await this.backendApiClients.siweApi.linkSiweUnlinkPost(request, {
-          headers: {
-            authorization: `Bearer ${token}`,
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         })
         return authPlayerResponse.data
       },
@@ -697,7 +766,7 @@ export class AuthManager {
     _connectorType: string,
     address: string,
     chainId: number,
-    token: string
+    auth: Authentication
   ) {
     const request = {
       linkSiweVerifyPostRequest: {
@@ -710,10 +779,19 @@ export class AuthManager {
     return withOpenfortError(
       async () => {
         const response = await this.backendApiClients.siweApi.linkSiweVerifyPost(request, {
-          headers: {
-            authorization: `Bearer ${token}`,
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': `${this.publishableKey}`,
+              },
         })
         return response.data
       },
@@ -860,7 +938,7 @@ export class AuthManager {
     )
   }
 
-  private async getSessionWithToken(token: string, forceRefresh?: boolean): Promise<GetSessionGet200Response> {
+  private async getSessionWithToken(auth: Authentication, forceRefresh?: boolean): Promise<GetSessionGet200Response> {
     return await withOpenfortError<GetSessionGet200Response>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.getSessionGet(
@@ -868,10 +946,19 @@ export class AuthManager {
             disableCookieCache: forceRefresh,
           },
           {
-            headers: {
-              authorization: `Bearer ${token}`,
-              'x-project-key': `${this.publishableKey}`,
-            },
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${this.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : {
+                  authorization: `Bearer ${auth.token}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-project-key': `${this.publishableKey}`,
+                },
           }
         )
         return response.data
