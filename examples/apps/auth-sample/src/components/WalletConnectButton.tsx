@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { type FunctionComponent, useState } from 'react'
+import { useState } from 'react'
 import { type Connector, createConfig, http, useChainId, useConnect, useSignMessage } from 'wagmi'
 import type { Chain as WagmiChain } from 'wagmi/chains'
 import { baseSepolia, polygonAmoy } from 'wagmi/chains'

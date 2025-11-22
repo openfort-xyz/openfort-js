@@ -22,14 +22,14 @@ import type {
 function mapUser(
   user:
     | {
-      id?: string
-      email?: string
-      name?: string | null
-      image?: string | null
-      emailVerified?: boolean
-      createdAt?: string
-      updatedAt?: string
-    }
+        id?: string
+        email?: string
+        name?: string | null
+        image?: string | null
+        emailVerified?: boolean
+        createdAt?: string
+        updatedAt?: string
+      }
     | undefined
     | null
 ): User {
@@ -54,13 +54,13 @@ function mapUser(
 function mapSession(
   session:
     | {
-      id?: string
-      token: string
-      userId: string
-      expiresAt?: string
-      createdAt?: string
-      updatedAt?: string
-    }
+        id?: string
+        token: string
+        userId: string
+        expiresAt?: string
+        createdAt?: string
+        updatedAt?: string
+      }
     | undefined
     | null
 ): Session | undefined {

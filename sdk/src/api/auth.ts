@@ -20,7 +20,7 @@ export class AuthApi {
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>
-  ) { }
+  ) {}
 
   async logInWithEmailPassword({ email, password }: { email: string; password: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
@@ -297,7 +297,7 @@ export class AuthApi {
     return await this.authManager.unlinkOAuth(provider, auth.token)
   }
 
-  async initSIWE({ address, chainId }: { address: string, chainId?: number }): Promise<SIWEInitResponse> {
+  async initSIWE({ address, chainId }: { address: string; chainId?: number }): Promise<SIWEInitResponse> {
     await this.ensureInitialized()
     return await this.authManager.initSIWE(address, chainId)
   }
@@ -308,7 +308,7 @@ export class AuthApi {
     walletClientType,
     connectorType,
     address,
-    chainId
+    chainId,
   }: {
     signature: string
     message: string
