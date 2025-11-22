@@ -1,13 +1,13 @@
 import Image from 'next/image'
 import { type FunctionComponent, useState } from 'react'
-import { type Connector, createConfig, http, useChainId, useConnect } from 'wagmi'
+import { type Connector, createConfig, http, useChainId, useConnect, useSignMessage } from 'wagmi'
 import type { Chain as WagmiChain } from 'wagmi/chains'
 import { baseSepolia, polygonAmoy } from 'wagmi/chains'
 import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors'
 import { Chain, WalletConnector } from '../utils/constants'
 import { createSIWEMessage } from '../utils/create-siwe-message'
 import openfort from '../utils/openfortConfig'
-import type { OnSuccess, SignMessageFunction } from '../utils/types'
+import type { OnSuccess } from '../utils/types'
 import { withWagmi } from './wagmiProvider'
 
 type GetWalletButtonsParams = {
@@ -16,13 +16,9 @@ type GetWalletButtonsParams = {
   walletConnectProjectId?: string
 }
 
-type WalletConnectButtonsOwnProps = {
+type WalletConnectButtonsProps = {
   onSuccess: OnSuccess
   link: boolean
-}
-
-type WalletConnectButtonsProps = WalletConnectButtonsOwnProps & {
-  signMessage: SignMessageFunction
 }
 
 type WalletConnectButtonProps = {
@@ -40,7 +36,7 @@ const WalletConnectButton = ({ title, isLoading, icon, initConnect }: WalletConn
       className="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 mb-2"
     >
       <Image
-        src={isLoading ? 'spinner.svg' : icon}
+        src={isLoading ? '/spinner.svg' : icon}
         width={24}
         height={24}
         className={isLoading ? 'inline me-3 text-gray-200 animate-spin' : 'inline me-3 text-gray-200'}
@@ -51,9 +47,10 @@ const WalletConnectButton = ({ title, isLoading, icon, initConnect }: WalletConn
   )
 }
 
-const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectButtonsProps) => {
+const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) => {
   const { connectors, connect } = useConnect()
   const chainId = useChainId()
+  const { signMessageAsync } = useSignMessage()
   const [loading, setLoading] = useState<string>(null!)
 
   const initConnect = async (connector: Connector) => {
@@ -72,9 +69,9 @@ const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectBut
           if (connector.name === 'Openfort') onSuccess()
           if (address) {
             try {
-              const { nonce } = await openfort.auth.initSIWE({ address })
+              const { nonce } = await openfort.auth.initSIWE({ address, chainId })
               const SIWEMessage = createSIWEMessage(address, nonce, chainId)
-              const signature = await signMessage(SIWEMessage)
+              const signature = await signMessageAsync({ message: SIWEMessage })
               link
                 ? await openfort.auth.linkWallet({
                     signature,
@@ -86,6 +83,7 @@ const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectBut
                   })
                 : await openfort.auth.authenticateWithSIWE({
                     signature,
+                    chainId,
                     address,
                     message: SIWEMessage,
                     connectorType: connector?.type,
@@ -111,7 +109,7 @@ const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectBut
           key={connector.uid}
           initConnect={() => initConnect(connector)}
           isLoading={loading === connector.id}
-          icon={`${connector.type.toLowerCase()}.${connector.type === 'injected' ? 'webp' : 'svg'}`}
+          icon={`/${connector.type.toLowerCase()}.${connector.type === 'injected' ? 'webp' : 'svg'}`}
           title={connector.name}
         />
       ))}
@@ -149,8 +147,5 @@ export const getWalletButtons = (params: GetWalletButtonsParams) => {
     ssr: true,
     transports,
   })
-  return withWagmi<WalletConnectButtonsOwnProps>(
-    WalletConnectButtons as FunctionComponent<WalletConnectButtonsOwnProps>,
-    config
-  )
+  return withWagmi<WalletConnectButtonsProps>(WalletConnectButtons, config)
 }

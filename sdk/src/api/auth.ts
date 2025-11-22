@@ -20,7 +20,7 @@ export class AuthApi {
     private validateAndRefreshToken: () => Promise<void>,
     private ensureInitialized: () => Promise<void>,
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>
-  ) {}
+  ) { }
 
   async logInWithEmailPassword({ email, password }: { email: string; password: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
@@ -297,9 +297,9 @@ export class AuthApi {
     return await this.authManager.unlinkOAuth(provider, auth.token)
   }
 
-  async initSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
+  async initSIWE({ address, chainId }: { address: string, chainId?: number }): Promise<SIWEInitResponse> {
     await this.ensureInitialized()
-    return await this.authManager.initSIWE(address)
+    return await this.authManager.initSIWE(address, chainId)
   }
 
   async authenticateWithSIWE({
@@ -308,12 +308,14 @@ export class AuthApi {
     walletClientType,
     connectorType,
     address,
+    chainId
   }: {
     signature: string
     message: string
     walletClientType: string
     connectorType: string
     address: string
+    chainId?: number
   }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
@@ -329,7 +331,8 @@ export class AuthApi {
         message,
         walletClientType,
         connectorType,
-        address
+        address,
+        chainId
       )
       new Authentication('session', result.token!, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)

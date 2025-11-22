@@ -101,7 +101,7 @@ export class BackendApiClients {
 
     this.authenticationV2Api = new DefaultApi(authConfig, undefined, this.axiosInstance)
     this.authenticationApi = new AuthenticationApi(this.config.backend, undefined, this.axiosInstance)
-    this.siweApi = new SIWEApi(this.config.backend, undefined, this.axiosInstance)
+    this.siweApi = new SIWEApi(authConfig, undefined, this.axiosInstance)
     this.userApi = new AuthenticationV2Api(this.config.backend, undefined, this.axiosInstance)
     this.transactionIntentsApi = new TransactionIntentsApi(this.config.backend, undefined, this.axiosInstance)
     this.accountsApi = new AccountsApi(this.config.backend, undefined, this.axiosInstance)
