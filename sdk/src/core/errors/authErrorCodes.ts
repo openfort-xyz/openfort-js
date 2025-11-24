@@ -25,6 +25,11 @@ export const OPENFORT_AUTH_ERROR_CODES = {
   // ============================================================================
 
   /**
+   * Provider configuration
+   */
+  PROVIDER_DISABLED: 'PROVIDER_DISABLED',
+
+  /**
    * Invalid email or password provided during login
    */
   INVALID_CREDENTIALS: 'INVALID_EMAIL_OR_PASSWORD',
@@ -192,9 +197,125 @@ export const OPENFORT_AUTH_ERROR_CODES = {
    * Failed to send OTP code
    */
   OTP_SEND_FAILED: 'OTP_SEND_FAILED',
+
+  // ============================================================================
+  // SDK-Level Errors (Configuration, Signer, etc.)
+  // ============================================================================
+
+  /**
+   * SDK configuration is invalid or incomplete
+   */
+  INVALID_CONFIGURATION: 'INVALID_CONFIGURATION',
+
+  /**
+   * No active session found, user needs to log in
+   */
+  NOT_LOGGED_IN: 'NOT_LOGGED_IN',
+
+  /**
+   * User is already logged in
+   */
+  ALREADY_LOGGED_IN: 'ALREADY_LOGGED_IN',
+
+  /**
+   * Failed to refresh authentication token
+   */
+  REFRESH_TOKEN_ERROR: 'REFRESH_TOKEN_ERROR',
+
+  /**
+   * Embedded signer is not available or initialized
+   */
+  MISSING_SIGNER: 'MISSING_SIGNER',
+
+  /**
+   * Signer is not configured
+   */
+  NOT_CONFIGURED: 'NOT_CONFIGURED',
+
+  /**
+   * Recovery password is required but not provided
+   */
+  MISSING_RECOVERY_PASSWORD: 'MISSING_RECOVERY_PASSWORD',
+
+  /**
+   * Wrong recovery password for this embedded signer
+   */
+  WRONG_RECOVERY_PASSWORD: 'WRONG_RECOVERY_PASSWORD',
+
+  /**
+   * Passkey is required but not provided
+   */
+  MISSING_PASSKEY: 'MISSING_PASSKEY',
+
+  /**
+   * Incorrect passkey for this embedded signer
+   */
+  INCORRECT_PASSKEY: 'INCORRECT_PASSKEY',
+
+  /**
+   * Project entropy is missing
+   */
+  MISSING_PROJECT_ENTROPY: 'MISSING_PROJECT_ENTROPY',
+
+  /**
+   * User entropy is missing
+   */
+  MISSING_USER_ENTROPY: 'MISSING_USER_ENTROPY',
+
+  /**
+   * Incorrect user entropy provided
+   */
+  INCORRECT_USER_ENTROPY: 'INCORRECT_USER_ENTROPY',
+
+  /**
+   * User not authorized to access this ecosystem or resource
+   */
+  USER_NOT_AUTHORIZED: 'USER_NOT_AUTHORIZED',
+
+  /**
+   * OTP verification required to proceed
+   */
+  OTP_REQUIRED: 'OTP_REQUIRED',
+
+  /**
+   * Internal SDK error occurred
+   */
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+
+  /**
+   * Network or HTTP request error
+   */
+  REQUEST_ERROR: 'REQUEST_ERROR',
+
+  /**
+   * Operation not supported in current context
+   */
+  OPERATION_NOT_SUPPORTED: 'OPERATION_NOT_SUPPORTED',
+
+  /**
+   * Logout operation failed
+   */
+  LOGOUT_ERROR: 'LOGOUT_ERROR',
+
+  /**
+   * Unknown error occurred
+   */
+  UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const
 
 /**
- * Type representing valid Openfort Auth error codes
+ * Convenient alias for error codes
+ * Use this for cleaner imports
  */
-export type OpenfortAuthErrorCode = (typeof OPENFORT_AUTH_ERROR_CODES)[keyof typeof OPENFORT_AUTH_ERROR_CODES]
+export const OPENFORT_ERROR_CODES = OPENFORT_AUTH_ERROR_CODES
+
+/**
+ * Type representing valid Openfort error codes
+ */
+export type OpenfortErrorCode = (typeof OPENFORT_AUTH_ERROR_CODES)[keyof typeof OPENFORT_AUTH_ERROR_CODES]
+
+/**
+ * Alias for backward compatibility
+ * @deprecated Use OpenfortErrorCode instead
+ */
+export type OpenfortAuthErrorCode = OpenfortErrorCode

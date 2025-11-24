@@ -1,5 +1,6 @@
 import type React from 'react'
 import { useState } from 'react'
+import { getErrorMessage } from '../../utils/errorHandler'
 import openfort from '../../utils/openfortConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
@@ -12,18 +13,13 @@ const GetUserAccountsButton: React.FC<{
   const handleUserMessage = async () => {
     try {
       setLoading(true)
-      const user = await openfort.user.list().catch((error: Error) => {
-        console.log('error', error)
-      })
+      const user = await openfort.user.list()
       setLoading(false)
-      if (!user) {
-        throw new Error('Failed to get user')
-      }
       handleSetMessage(JSON.stringify(user, null, 2))
-    } catch (err) {
-      // Handle errors from minting process
-      console.error('Failed to get user:', err)
-      alert('Failed to get user. Please try again.')
+    } catch (error) {
+      setLoading(false)
+      console.error('Failed to get user accounts:', error)
+      alert(`Failed to get user accounts: ${getErrorMessage(error)}`)
     }
   }
 

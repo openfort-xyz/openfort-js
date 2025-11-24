@@ -3,7 +3,7 @@ import type { RevokeSessionRequest } from '@openfort/openapi-clients/dist/backen
 import type { Hex } from 'wallets/evm/types'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
-import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
+import { withApiError } from '../../core/errors/withApiError'
 import { AccountType, type SessionResponse } from '../../types/types'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
@@ -55,7 +55,7 @@ const buildOpenfortTransactions = async (
     account.id
   )
 
-  return withOpenfortError<SessionResponse>(
+  return withApiError<SessionResponse>(
     async () => {
       const response = await backendApiClients.sessionsApi.revokeSession(
         {
@@ -81,7 +81,7 @@ const buildOpenfortTransactions = async (
       return response.data
       // eslint-disable-next-line @typescript-eslint/naming-convention
     },
-    { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+    { context: 'operation' }
   )
 }
 

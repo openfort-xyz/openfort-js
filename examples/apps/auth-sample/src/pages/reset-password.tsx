@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { TextField } from '../components/Fields'
 import { Layout } from '../components/Layouts/Layout'
 import { type StatusType, Toast } from '../components/Toasts'
+import { getErrorMessage } from '../utils/errorHandler'
 import openfort from '../utils/openfortConfig'
 
 function checkPassword(str: string) {
@@ -44,27 +45,30 @@ function ResetPasswordPage() {
       setStatus({
         type: 'error',
         title: 'Error updating password',
+        description: 'Email not found. Please request a new password reset.',
       })
       return
     }
-    await openfort.auth
-      .resetPassword({
+
+    try {
+      await openfort.auth.resetPassword({
         password: password,
         token: router.query.token as string,
       })
-      .catch((_error) => {
-        setStatus({
-          type: 'error',
-          title: 'Error updating password',
-        })
-        return
-      })
 
-    setStatus({
-      type: 'success',
-      title: 'Successfully updated password',
-    })
-    router.push('/login')
+      setStatus({
+        type: 'success',
+        title: 'Successfully updated password',
+      })
+      router.push('/login')
+    } catch (error) {
+      console.error('Password reset error:', error)
+      setStatus({
+        type: 'error',
+        title: 'Password reset failed',
+        description: getErrorMessage(error),
+      })
+    }
   }
 
   return (

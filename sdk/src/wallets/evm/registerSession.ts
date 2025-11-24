@@ -2,7 +2,7 @@ import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { CreateSessionRequest } from '@openfort/openapi-clients/dist/backend'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
-import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
+import { withApiError } from '../../core/errors/withApiError'
 import { AccountType, type SessionResponse } from '../../types/types'
 import type { Signer as OpenfortSigner } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
@@ -160,7 +160,7 @@ const buildOpenfortTransactions = async (
     limit,
     account.id
   )
-  return withOpenfortError<SessionResponse>(
+  return withApiError<SessionResponse>(
     async () => {
       const response = await backendApiClients.sessionsApi.createSession(
         {
@@ -185,7 +185,7 @@ const buildOpenfortTransactions = async (
       return response.data
       // eslint-disable-next-line @typescript-eslint/naming-convention
     },
-    { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+    { context: 'operation' }
   )
 }
 
@@ -241,7 +241,7 @@ export const registerSession = async ({
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)
     }
-    const openfortSignatureResponse = await withOpenfortError<SessionResponse>(
+    const openfortSignatureResponse = await withApiError<SessionResponse>(
       async () => {
         const response = await backendClient.sessionsApi.signatureSession({
           id: openfortTransaction.id,
@@ -249,7 +249,7 @@ export const registerSession = async ({
         })
         return response.data
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      { context: 'operation' }
     ).catch((error) => {
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
     })

@@ -1,280 +1,248 @@
-import { isAxiosError } from 'axios'
-import type { OpenfortAuthErrorCode } from './authErrorCodes'
-
-export enum OpenfortErrorType {
-  AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR',
-  REQUEST_EMAIL_OTP_ERROR = 'REQUEST_EMAIL_OTP_ERROR',
-  REQUEST_SMS_OTP_ERROR = 'REQUEST_SMS_OTP_ERROR',
-  INVALID_CONFIGURATION = 'INVALID_CONFIGURATION',
-  NOT_LOGGED_IN_ERROR = 'NOT_LOGGED_IN_ERROR',
-  ALREADY_LOGGED_IN_ERROR = 'ALREADY_LOGGED_IN_ERROR',
-  REFRESH_TOKEN_ERROR = 'REFRESH_TOKEN_ERROR',
-  USER_REGISTRATION_ERROR = 'USER_REGISTRATION_ERROR',
-  LOGOUT_ERROR = 'LOGOUT_ERROR',
-  OPERATION_NOT_SUPPORTED_ERROR = 'OPERATION_NOT_SUPPORTED_ERROR',
-  MISSING_SIGNER_ERROR = 'MISSING_SIGNER_ERROR',
-  USER_NOT_AUTHORIZED_ON_ECOSYSTEM = 'USER_NOT_AUTHORIZED_ON_ECOSYSTEM',
-  INTERNAL_ERROR = 'INTERNAL_ERROR',
-}
-
 /**
- * @deprecated Use OpenfortErrorDetails instead
- */
-export interface Data {
-  [key: string]: any
-}
-
-/**
- * Additional context and details about an Openfort error
- */
-export interface OpenfortErrorDetails {
-  /** Specific error code from Openfort Auth API */
-  code?: OpenfortAuthErrorCode | string
-  /** HTTP status code */
-  statusCode?: number
-  /** Context where error occurred (method name, operation, etc.) */
-  context?: string
-  /** Original error object for debugging */
-  originalError?: unknown
-  /** Additional arbitrary data */
-  [key: string]: any
-}
-
-/**
- * Openfort SDK Error
+ * Openfort SDK Error Classes
  *
- * Contains detailed information about errors from Openfort APIs.
- * Provides both high-level error types and specific error codes for
- * programmatic error handling.
+ * Modern error handling pattern with:
+ * - Base OpenfortError class with `error` (code) + `error_description` (message)
+ * - Domain-specific error subclasses with contextual properties
+ * - Static factory methods for creating errors from API payloads
+ */
+
+/**
+ * Base error class for all Openfort SDK errors
  *
  * @example
  * ```typescript
- * import { OPENFORT_AUTH_ERROR_CODES, OpenfortError } from '@openfort/openfort-js'
+ * import { OpenfortError, OPENFORT_ERROR_CODES } from '@openfort/openfort-js'
  *
  * try {
  *   await openfort.logInWithEmailPassword({ email, password })
  * } catch (error) {
  *   if (error instanceof OpenfortError) {
- *     // Check high-level error type
- *     if (error.type === OpenfortErrorType.AUTHENTICATION_ERROR) {
- *       // Check specific error code
- *       if (error.code === OPENFORT_AUTH_ERROR_CODES.INVALID_CREDENTIALS) {
- *         console.error('Wrong email or password')
- *       }
- *     }
+ *     console.error(`Error: ${error.error}`)
+ *     console.error(`Description: ${error.error_description}`)
  *   }
  * }
  * ```
  */
 export class OpenfortError extends Error {
-  /** High-level error category */
-  public type: OpenfortErrorType
-
-  /** Specific error code for programmatic error handling */
-  public code?: OpenfortAuthErrorCode | string
-
-  /** Additional error context and details */
-  public details: OpenfortErrorDetails
+  /**
+   * Machine-readable error code for programmatic handling
+   * @example "invalid_credentials", "session_expired", "missing_signer"
+   */
+  public readonly error: string
 
   /**
-   * @deprecated Use details property instead
+   * Human-readable error description
    */
-  public data: Data
+  public readonly error_description: string
 
-  /**
-   * Creates a new OpenfortError
-   *
-   * @param message - Human-readable error message
-   * @param type - High-level error category
-   * @param code - Specific error code (optional)
-   * @param details - Additional error context (optional)
-   */
-  constructor(
-    message: string,
-    type: OpenfortErrorType,
-    code?: OpenfortAuthErrorCode | string | Data,
-    details: OpenfortErrorDetails = {}
-  ) {
-    super(message)
+  constructor(error: string, error_description: string) {
+    super(error_description)
     this.name = 'OpenfortError'
-    this.type = type
+    this.error = error
+    this.error_description = error_description
 
-    // Handle backward compatibility with old 3-param signature
-    // Old: new OpenfortError(message, type, data)
-    // New: new OpenfortError(message, type, code, details)
-    if (typeof code === 'object' && code !== null) {
-      // Old signature: third param is data object
-      this.data = code as Data
-      this.details = code as OpenfortErrorDetails
-      this.code = undefined
+    // Fix prototype chain for instanceof checks
+    Object.setPrototypeOf(this, OpenfortError.prototype)
+  }
+
+  /**
+   * Create error from API response payload
+   * Handles both nested and flat error response formats
+   */
+  static fromPayload({
+    error,
+    error_description,
+    message,
+    code,
+  }: {
+    error?: string | { message?: string; code?: string }
+    error_description?: string
+    message?: string
+    code?: string
+  }): OpenfortError {
+    let errorCode: string
+    let errorMessage: string
+
+    // Handle nested error object
+    if (typeof error === 'object' && error !== null) {
+      errorCode = error.code || 'unknown_error'
+      errorMessage = error.message || message || error_description || 'An unknown error occurred'
     } else {
-      // New signature: third param is code string
-      this.code = code as OpenfortAuthErrorCode | string | undefined
-      this.details = details
-      this.data = details // For backward compatibility
+      errorCode = code || (error as string) || 'unknown_error'
+      errorMessage = error_description || message || 'An unknown error occurred'
     }
+
+    return new OpenfortError(errorCode, errorMessage)
   }
 }
 
-import { OPENFORT_AUTH_ERROR_CODES } from './authErrorCodes'
-import { extractAuthError } from './internal/extractAuthError'
-
-interface StatusCodeOpenfortError {
-  default: OpenfortErrorType
-  [statusCode: number]: OpenfortErrorType
-}
-
 /**
- * Configuration for enhanced error handler
- */
-export interface ErrorHandlerConfig {
-  /** Default error type if no mapping found */
-  defaultType: OpenfortErrorType
-  /** Additional status code mappings (e.g., 403 → USER_NOT_AUTHORIZED) */
-  statusCodeMapping?: Record<number, OpenfortErrorType>
-  /** Method/context name for logging */
-  context?: string
-  /** Callback for additional error handling (e.g., Sentry) */
-  onError?: (error: OpenfortError) => void
-}
-
-/**
- * Maps Openfort Auth error codes to high-level error types
- * @internal
- */
-const ERROR_CODE_TO_TYPE_MAP: Partial<Record<string, OpenfortErrorType>> = {
-  // Authentication & Credentials
-  [OPENFORT_AUTH_ERROR_CODES.INVALID_CREDENTIALS]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.INVALID_EMAIL]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.INVALID_PASSWORD]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.INVALID_TOKEN]: OpenfortErrorType.AUTHENTICATION_ERROR,
-
-  // User Management
-  [OPENFORT_AUTH_ERROR_CODES.USER_NOT_FOUND]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.USER_ALREADY_EXISTS]: OpenfortErrorType.USER_REGISTRATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.USER_EMAIL_NOT_FOUND]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.FAILED_TO_CREATE_USER]: OpenfortErrorType.USER_REGISTRATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.FAILED_TO_UPDATE_USER]: OpenfortErrorType.AUTHENTICATION_ERROR,
-
-  // Password Requirements
-  [OPENFORT_AUTH_ERROR_CODES.PASSWORD_TOO_SHORT]: OpenfortErrorType.USER_REGISTRATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.PASSWORD_TOO_LONG]: OpenfortErrorType.USER_REGISTRATION_ERROR,
-
-  // Email Verification
-  [OPENFORT_AUTH_ERROR_CODES.EMAIL_NOT_VERIFIED]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.EMAIL_CANNOT_BE_UPDATED]: OpenfortErrorType.AUTHENTICATION_ERROR,
-
-  // Session Management
-  [OPENFORT_AUTH_ERROR_CODES.SESSION_EXPIRED]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.SESSION_CREATION_FAILED]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.SESSION_RETRIEVAL_FAILED]: OpenfortErrorType.AUTHENTICATION_ERROR,
-
-  // OAuth / Social Login
-  [OPENFORT_AUTH_ERROR_CODES.SOCIAL_ACCOUNT_ALREADY_LINKED]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.OAUTH_PROVIDER_NOT_FOUND]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.OAUTH_TOKEN_INVALID]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.OAUTH_USER_INFO_FAILED]: OpenfortErrorType.AUTHENTICATION_ERROR,
-
-  // Account Linking
-  [OPENFORT_AUTH_ERROR_CODES.CANNOT_UNLINK_LAST_ACCOUNT]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.ACCOUNT_NOT_FOUND]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.CREDENTIAL_ACCOUNT_NOT_FOUND]: OpenfortErrorType.AUTHENTICATION_ERROR,
-
-  // OTP
-  [OPENFORT_AUTH_ERROR_CODES.OTP_INVALID]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.OTP_EXPIRED]: OpenfortErrorType.AUTHENTICATION_ERROR,
-  [OPENFORT_AUTH_ERROR_CODES.OTP_SEND_FAILED]: OpenfortErrorType.REQUEST_EMAIL_OTP_ERROR,
-}
-
-/**
- * Enhanced error handler with specific error code extraction
+ * Authentication-related errors (login, signup, OAuth)
  *
- * Wraps async functions to catch and enhance errors with:
- * - Specific error codes from Openfort Auth API
- * - Appropriate error type mapping
- * - Additional context for debugging
- *
- * Supports both old and new call signatures for backward compatibility.
- *
- * @example New signature (recommended):
+ * @example
  * ```typescript
- * await withOpenfortError(
- *   async () => { ... },
- *   {
- *     defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
- *     statusCodeMapping: { 403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM },
- *     context: 'loginEmailPassword',
- *     onError: (error) => sentry.captureError('auth', error)
+ * if (error instanceof AuthenticationError) {
+ *   if (error.statusCode === 401) {
+ *     console.log('Invalid credentials')
  *   }
- * )
- * ```
- *
- * @example Old signature (still supported):
- * ```typescript
- * await withOpenfortError(
- *   async () => { ... },
- *   {
- *     default: OpenfortErrorType.AUTHENTICATION_ERROR,
- *     401: OpenfortErrorType.AUTHENTICATION_ERROR
- *   },
- *   (error, openfortError) => sentry.captureAxiosError('method', error)
- * )
+ * }
  * ```
  */
-export const withOpenfortError = async <T>(
-  fn: () => Promise<T>,
-  config: ErrorHandlerConfig | StatusCodeOpenfortError,
-  onUnexpectedError?: (error: unknown, openfortError: OpenfortError) => void
-): Promise<T> => {
-  // Detect old vs new signature
-  const isOldSignature = 'default' in config
-  const actualConfig: ErrorHandlerConfig = isOldSignature
-    ? {
-        defaultType: (config as StatusCodeOpenfortError).default,
-        statusCodeMapping: config as Record<number, OpenfortErrorType>,
-        onError: onUnexpectedError ? (err) => onUnexpectedError(err.details.originalError, err) : undefined,
-      }
-    : (config as ErrorHandlerConfig)
+export class AuthenticationError extends OpenfortError {
+  constructor(
+    error: string,
+    error_description: string,
+    public readonly statusCode?: number
+  ) {
+    super(error, error_description)
+    this.name = 'AuthenticationError'
+    Object.setPrototypeOf(this, AuthenticationError.prototype)
+  }
+}
 
-  try {
-    return await fn()
-  } catch (error) {
-    let errorMessage: string
-    let errorCode: OpenfortAuthErrorCode | undefined
-    let statusCode: number | undefined
+/**
+ * Session management errors (token refresh, expiration)
+ *
+ * @example
+ * ```typescript
+ * if (error instanceof SessionError) {
+ *   if (error.error === OPENFORT_ERROR_CODES.SESSION_EXPIRED) {
+ *     console.log('Please log in again')
+ *   }
+ * }
+ * ```
+ */
+export class SessionError extends OpenfortError {
+  constructor(
+    error: string,
+    error_description: string,
+    public readonly audience?: string,
+    public readonly scope?: string
+  ) {
+    super(error, error_description)
+    this.name = 'SessionError'
+    Object.setPrototypeOf(this, SessionError.prototype)
+  }
+}
 
-    // Extract error details from Openfort API response
-    if (isAxiosError(error)) {
-      const extracted = extractAuthError(error)
-      errorMessage = extracted.message
-      errorCode = extracted.code
-      statusCode = extracted.statusCode
-    } else {
-      errorMessage = (error as Error).message
-    }
+/**
+ * Configuration errors (missing keys, invalid config)
+ */
+export class ConfigurationError extends OpenfortError {
+  constructor(error_description: string) {
+    super('invalid_configuration', error_description)
+    this.name = 'ConfigurationError'
+    Object.setPrototypeOf(this, ConfigurationError.prototype)
+  }
+}
 
-    // Determine error type (priority: error code > status code > default)
-    let errorType = actualConfig.defaultType
+/**
+ * Embedded wallet/signer errors
+ *
+ * @example
+ * ```typescript
+ * if (error instanceof SignerError) {
+ *   console.log(`Signer error for account: ${error.accountId}`)
+ * }
+ * ```
+ */
+export class SignerError extends OpenfortError {
+  constructor(
+    error: string,
+    error_description: string,
+    public readonly accountId?: string
+  ) {
+    super(error, error_description)
+    this.name = 'SignerError'
+    Object.setPrototypeOf(this, SignerError.prototype)
+  }
+}
 
-    // First try error code mapping (most specific)
-    if (errorCode && ERROR_CODE_TO_TYPE_MAP[errorCode]) {
-      errorType = ERROR_CODE_TO_TYPE_MAP[errorCode]!
-    }
-    // Then try status code mapping
-    else if (statusCode && actualConfig.statusCodeMapping?.[statusCode]) {
-      errorType = actualConfig.statusCodeMapping[statusCode]
-    }
+/**
+ * User registration/profile errors
+ */
+export class UserError extends OpenfortError {
+  constructor(
+    error: string,
+    error_description: string,
+    public readonly userId?: string
+  ) {
+    super(error, error_description)
+    this.name = 'UserError'
+    Object.setPrototypeOf(this, UserError.prototype)
+  }
+}
 
-    // Create enhanced OpenfortError with code and context
-    const openfortError = new OpenfortError(errorMessage, errorType, errorCode, {
-      statusCode,
-      context: actualConfig.context,
-      originalError: error,
-    })
+/**
+ * OTP verification errors
+ */
+export class OTPError extends OpenfortError {
+  constructor(error: string, error_description: string) {
+    super(error, error_description)
+    this.name = 'OTPError'
+    Object.setPrototypeOf(this, OTPError.prototype)
+  }
+}
 
-    // Call error handler callback
-    actualConfig.onError?.(openfortError)
+/**
+ * OAuth/Social login errors
+ *
+ * @example
+ * ```typescript
+ * if (error instanceof OAuthError) {
+ *   console.log(`OAuth error with provider: ${error.provider}`)
+ * }
+ * ```
+ */
+export class OAuthError extends OpenfortError {
+  constructor(
+    error: string,
+    error_description: string,
+    public readonly provider?: string
+  ) {
+    super(error, error_description)
+    this.name = 'OAuthError'
+    Object.setPrototypeOf(this, OAuthError.prototype)
+  }
+}
 
-    throw openfortError
+/**
+ * Ecosystem authorization errors (403)
+ */
+export class AuthorizationError extends OpenfortError {
+  constructor(error_description: string = 'User not authorized to access this ecosystem') {
+    super('user_not_authorized', error_description)
+    this.name = 'AuthorizationError'
+    Object.setPrototypeOf(this, AuthorizationError.prototype)
+  }
+}
+
+/**
+ * Recovery method errors (passkey, password recovery)
+ */
+export class RecoveryError extends OpenfortError {
+  constructor(
+    error: string,
+    error_description: string,
+    public readonly recoveryMethod?: string
+  ) {
+    super(error, error_description)
+    this.name = 'RecoveryError'
+    Object.setPrototypeOf(this, RecoveryError.prototype)
+  }
+}
+
+/**
+ * Network/request errors
+ */
+export class RequestError extends OpenfortError {
+  constructor(
+    error_description: string,
+    public readonly statusCode?: number
+  ) {
+    super('request_error', error_description)
+    this.name = 'RequestError'
+    Object.setPrototypeOf(this, RequestError.prototype)
   }
 }

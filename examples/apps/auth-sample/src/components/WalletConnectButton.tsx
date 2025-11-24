@@ -6,6 +6,7 @@ import { baseSepolia, polygonAmoy } from 'wagmi/chains'
 import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors'
 import { Chain, WalletConnector } from '../utils/constants'
 import { createSIWEMessage } from '../utils/create-siwe-message'
+import { getErrorMessage } from '../utils/errorHandler'
 import openfort from '../utils/openfortConfig'
 import type { OnSuccess } from '../utils/types'
 import { withWagmi } from './wagmiProvider'
@@ -91,7 +92,9 @@ const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) =>
                   })
               onSuccess()
             } catch (error) {
-              console.error('Openfort request failed.', error)
+              const errorMessage = getErrorMessage(error)
+              console.error('Wallet authentication failed:', errorMessage, error)
+              alert(`Wallet authentication failed: ${errorMessage}`)
               throw error
             } finally {
               setLoading(null!)

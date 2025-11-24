@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { TextField } from '../components/Fields'
 import { Layout } from '../components/Layouts/Layout'
 import { type StatusType, Toast } from '../components/Toasts'
+import { getErrorMessage } from '../utils/errorHandler'
 import { getURL } from '../utils/getUrl'
 import openfort from '../utils/openfortConfig'
 
@@ -36,33 +37,35 @@ function ForgotPasswordPage() {
   }, [user, router.push])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
     setStatus({
       type: 'loading',
       title: 'Sending password reset email...',
     })
 
     const formData = new FormData(event.currentTarget)
-
     const email = formData.get('email') as string
 
-    event.preventDefault()
-    localStorage.setItem('openfort:email', email)
-    await openfort.auth
-      .requestResetPassword({
+    try {
+      localStorage.setItem('openfort:email', email)
+      await openfort.auth.requestResetPassword({
         email: email,
         redirectUrl: `${getURL()}/reset-password`,
       })
-      .catch((_error) => {
-        setStatus({
-          type: 'error',
-          title: 'Error sending email',
-        })
-      })
 
-    setStatus({
-      type: 'success',
-      title: 'Successfully sent email',
-    })
+      setStatus({
+        type: 'success',
+        title: 'Successfully sent email',
+      })
+    } catch (error) {
+      console.error('Password reset error:', error)
+      setStatus({
+        type: 'error',
+        title: 'Error sending reset email',
+        description: getErrorMessage(error),
+      })
+    }
   }
 
   return (

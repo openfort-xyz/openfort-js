@@ -72,11 +72,17 @@ export class InternalSentry {
 
     // eslint-disable-next-line no-param-reassign
     sentry.captureError = (context: string, error: Error, hint?: EventHint, _scope?: Scope) => {
-      // Skip Sentry notification for 400 and 401 errors if statusCode is available
-      const statusCode = (error as any).details?.statusCode
+      // Skip Sentry notification for 400 and 401 errors
+      // Check both AuthenticationError.statusCode and RequestError.statusCode
+      const statusCode = (error as any).statusCode
       if (statusCode === 400 || statusCode === 401) {
         return
       }
+
+      // Extract error properties for OpenfortError instances
+      const openfortError = error as any
+      const errorCode = openfortError.error
+      const errorDescription = openfortError.error_description
 
       const captureContext = hint?.captureContext as any
       sentry.captureException(error, {
@@ -85,13 +91,22 @@ export class InternalSentry {
           ...captureContext,
           extra: {
             ...captureContext?.extra,
-            errorType: (error as any).type,
-            errorCode: (error as any).code,
-            errorDetails: (error as any).details,
+            errorCode,
+            errorDescription,
+            errorClass: error.constructor.name,
+            // Include specific error properties based on type
+            ...(openfortError.statusCode && { statusCode: openfortError.statusCode }),
+            ...(openfortError.audience && { audience: openfortError.audience }),
+            ...(openfortError.scope && { scope: openfortError.scope }),
+            ...(openfortError.accountId && { accountId: openfortError.accountId }),
+            ...(openfortError.userId && { userId: openfortError.userId }),
+            ...(openfortError.provider && { provider: openfortError.provider }),
+            ...(openfortError.recoveryMethod && { recoveryMethod: openfortError.recoveryMethod }),
           },
           tags: {
             ...InternalSentry.baseTags,
             context,
+            errorClass: error.constructor.name,
           },
         },
       })

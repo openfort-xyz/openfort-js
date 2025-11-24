@@ -3,7 +3,9 @@ import { PasskeyHandler } from 'core/configuration/passkey'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
 import { Authentication } from '../core/configuration/authentication'
-import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError'
+import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
+import { ConfigurationError, SessionError, SignerError } from '../core/errors/openfortError'
+import { withApiError } from '../core/errors/withApiError'
 import type { IStorage } from '../storage/istorage'
 import {
   AccountTypeEnum,
@@ -65,7 +67,7 @@ export class EmbeddedWalletApi {
   private get backendApiClients(): BackendApiClients {
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration not found')
     }
     return new BackendApiClients({
       basePath: configuration.backendUrl,
@@ -131,7 +133,7 @@ export class EmbeddedWalletApi {
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
       debugLog('[HANDSHAKE DEBUG] Configuration not found')
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration not found')
     }
     debugLog('[HANDSHAKE DEBUG] Configuration found')
 
@@ -212,9 +214,8 @@ export class EmbeddedWalletApi {
 
   private createIframe(url: string): HTMLIFrameElement {
     if (typeof document === 'undefined') {
-      throw new OpenfortError(
-        'Document is not available. Please provide a message poster for non-browser environments.',
-        OpenfortErrorType.INVALID_CONFIGURATION
+      throw new ConfigurationError(
+        'Document is not available. Please provide a message poster for non-browser environments.'
       )
     }
 
@@ -266,7 +267,7 @@ export class EmbeddedWalletApi {
             : {},
         }
       default:
-        throw new OpenfortError('Invalid recovery method', OpenfortErrorType.INVALID_CONFIGURATION)
+        throw new ConfigurationError('Invalid recovery method')
     }
   }
 
@@ -318,7 +319,7 @@ export class EmbeddedWalletApi {
     }
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('missing authentication', OpenfortErrorType.AUTHENTICATION_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'missing authentication')
     }
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
@@ -371,10 +372,7 @@ export class EmbeddedWalletApi {
 
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
       if (!recoveryParams.passkeyInfo?.passkeyId) {
-        throw new OpenfortError(
-          'Passkey ID must be provided for passkey recovery',
-          OpenfortErrorType.INVALID_CONFIGURATION
-        )
+        throw new ConfigurationError('Passkey ID must be provided for passkey recovery')
       }
       recoveryParams.passkeyInfo = {
         passkeyId: recoveryParams.passkeyInfo.passkeyId,
@@ -439,7 +437,7 @@ export class EmbeddedWalletApi {
     const signer = await this.ensureSigner()
     const account = await Account.fromStorage(this.storage)
     if (!account) {
-      throw new OpenfortError('No account found', OpenfortErrorType.MISSING_SIGNER_ERROR)
+      throw new SignerError(OPENFORT_AUTH_ERROR_CODES.MISSING_SIGNER, 'No account found')
     }
     // Hash the EIP712 payload and generate the complete payload
     const typesWithoutDomain = { ...types }
@@ -475,7 +473,7 @@ export class EmbeddedWalletApi {
     const auth = await Authentication.fromStorage(this.storage)
 
     if (!auth) {
-      throw new OpenfortError('missing authentication', OpenfortErrorType.AUTHENTICATION_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'missing authentication')
     }
 
     let recoveryPassword: string | undefined
@@ -486,11 +484,11 @@ export class EmbeddedWalletApi {
     if (previousRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
       const acc = await Account.fromStorage(this.storage)
       if (!acc) {
-        throw new OpenfortError('missing account', OpenfortErrorType.INVALID_CONFIGURATION)
+        throw new ConfigurationError('missing account')
       }
       const passkeyId = acc?.recoveryMethodDetails?.passkeyId
       if (!passkeyId) {
-        throw new OpenfortError('missing passkey id for account', OpenfortErrorType.INVALID_CONFIGURATION)
+        throw new ConfigurationError('missing passkey id for account')
       }
       passkeyInfo = {
         passkeyId,
@@ -527,7 +525,7 @@ export class EmbeddedWalletApi {
     }
 
     if (!recoveryPassword && !encryptionSession) {
-      throw new OpenfortError('Password or encryption session is not provided', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Password or encryption session is not provided')
     }
 
     await signer.setRecoveryMethod({
@@ -550,12 +548,12 @@ export class EmbeddedWalletApi {
   async get(): Promise<EmbeddedAccount> {
     const account = await Account.fromStorage(this.storage)
     if (!account) {
-      throw new OpenfortError('No signer configured', OpenfortErrorType.MISSING_SIGNER_ERROR)
+      throw new SignerError(OPENFORT_AUTH_ERROR_CODES.MISSING_SIGNER, 'No signer configured')
     }
 
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No access token found')
     }
 
     return {
@@ -583,19 +581,21 @@ export class EmbeddedWalletApi {
     }
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration not found')
     }
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No access token found')
     }
     await this.validateAndRefreshToken()
-    return withOpenfortError<EmbeddedAccount[]>(
+    return withApiError<EmbeddedAccount[]>(
       async () => {
         const response = await this.backendApiClients.accountsApi.getAccountsV2(params, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -626,7 +626,7 @@ export class EmbeddedWalletApi {
           recoveryMethodDetails: account.recoveryMethodDetails,
         }))
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      { context: 'list' }
     )
   }
 
@@ -729,14 +729,14 @@ export class EmbeddedWalletApi {
   getURL(): string {
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration not found')
     }
     return configuration.iframeUrl
   }
 
   async setMessagePoster(poster: MessagePoster): Promise<void> {
     if (!poster || typeof poster.postMessage !== 'function') {
-      throw new OpenfortError('Invalid message poster', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Invalid message poster')
     }
 
     this.messagePoster = poster

@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { TextField } from '../components/Fields'
 import { Layout } from '../components/Layouts/Layout'
 import { type StatusType, Toast } from '../components/Toasts'
+import { getErrorMessage } from '../utils/errorHandler'
 import { getURL } from '../utils/getUrl'
 import openfort from '../utils/openfortConfig'
 
@@ -57,20 +58,19 @@ function LoginPage() {
   //   verifyEmail()
   // }, [router])
 
-  // useEffect(() => {
-  //   if (router.query.access_token && router.query.refresh_token && router.query.player_id) {
-  //     setStatus({
-  //       type: 'loading',
-  //       title: 'Signing in...',
-  //     })
-  //     openfort.auth.storeCredentials({
-  //       player: router.query.player_id as string,
-  //       accessToken: router.query.access_token as string,
-  //       refreshToken: router.query.refresh_token as string,
-  //     })
-  //     location.href = '/'
-  //   }
-  // }, [router.query])
+  useEffect(() => {
+    if (router.query.access_token && router.query.user_id) {
+      setStatus({
+        type: 'loading',
+        title: 'Signing in...',
+      })
+      openfort.auth.storeCredentials({
+        userId: router.query.user_id as string,
+        token: router.query.access_token as string,
+      })
+      location.href = '/'
+    }
+  }, [router.query])
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -104,52 +104,57 @@ function LoginPage() {
       title: 'Signing in...',
     })
 
-    const data = await openfort.auth.signUpGuest().catch((error) => {
-      console.log('error', error)
-      setStatus({
-        type: 'error',
-        title: 'Error signing in',
-      })
-      setGuestLoading(false)
-    })
-    if (data) {
+    try {
+      await openfort.auth.signUpGuest()
       setStatus({
         type: 'success',
         title: 'Successfully signed in',
       })
       router.push('/')
+    } catch (error) {
+      console.error('Guest signup error:', error)
+      setStatus({
+        type: 'error',
+        title: 'Sign in failed',
+        description: getErrorMessage(error),
+      })
+      setGuestLoading(false)
     }
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
     setStatus({
       type: 'loading',
       title: 'Signing in...',
     })
+
     const formData = new FormData(event.currentTarget)
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
-    event.preventDefault()
+    try {
+      const data = await openfort.auth.logInWithEmailPassword({
+        email,
+        password,
+      })
 
-    const data = await openfort.auth
-      .logInWithEmailPassword({
-        email: email,
-        password: password,
-      })
-      .catch((_error) => {
+      if (data) {
+        localStorage.setItem('userEmail', email)
         setStatus({
-          type: 'error',
-          title: 'Error signing in',
+          type: 'success',
+          title: 'Successfully signed in',
         })
-      })
-    if (data) {
-      localStorage.setItem('userEmail', email)
+        router.push('/')
+      }
+    } catch (error) {
+      console.error('Login error:', error)
       setStatus({
-        type: 'success',
-        title: 'Successfully signed in',
+        type: 'error',
+        title: 'Sign in failed',
+        description: getErrorMessage(error),
       })
-      router.push('/')
     }
   }
 
@@ -355,7 +360,7 @@ function LoginPage() {
                     onClick={async () => {
                       const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.GOOGLE,
-                        redirectTo: '/',
+                        redirectTo: `${getURL()}/login`,
                       })
                       console.log('url', url)
                       window.location.href = url

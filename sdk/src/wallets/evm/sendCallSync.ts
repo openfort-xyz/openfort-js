@@ -2,7 +2,7 @@ import type { StaticJsonRpcProvider } from '@ethersproject/providers'
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
-import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
+import { withApiError } from '../../core/errors/withApiError'
 import {
   AccountType,
   AccountTypeEnum,
@@ -72,7 +72,7 @@ const buildOpenfortTransactions = async (
     }
   })
 
-  return withOpenfortError<TransactionIntentResponse>(
+  return withApiError<TransactionIntentResponse>(
     async () => {
       const response = await backendApiClients.transactionIntentsApi.createTransactionIntent(
         {
@@ -103,7 +103,7 @@ const buildOpenfortTransactions = async (
       return response.data
       // eslint-disable-next-line @typescript-eslint/naming-convention
     },
-    { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+    { context: 'operation' }
   )
 }
 
@@ -185,13 +185,13 @@ export const sendCallsSync = async ({
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)
     }
-    const response = await withOpenfortError(
+    const response = await withApiError(
       async () =>
         await backendClient.transactionIntentsApi.signature({
           id: openfortTransaction.id,
           signatureRequest: { signature },
         }),
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      { context: 'operation' }
     ).catch((error) => {
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
     })

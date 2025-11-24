@@ -1,47 +1,47 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import type { GetSessionGet200Response, SocialSignIn200Response } from '@openfort/openapi-clients/dist/backend'
+import type { GetSessionGet200Response } from '@openfort/openapi-clients/dist/backend'
 import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
-import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError'
-import { sentry } from '../core/errors/sentry'
-import type {
-  AuthResponse,
-  InitializeOAuthOptions,
-  OAuthProvider,
-  Session,
-  SIWEInitResponse,
-  ThirdPartyAuthProvider,
-  TokenType,
-  User,
+import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
+import { ConfigurationError, OpenfortError } from '../core/errors/openfortError'
+import { withApiError } from '../core/errors/withApiError'
+import {
+  AuthActionRequiredActions,
+  type AuthActionRequiredResponse,
+  type AuthResponse,
+  type InitializeOAuthOptions,
+  type OAuthProvider,
+  type Session,
+  type SIWEInitResponse,
+  type ThirdPartyAuthProvider,
+  type TokenType,
+  type User,
 } from '../types/types'
 
 /**
  * Maps backend user to SDK user type
  * Accepts any user-like object with the necessary fields
  */
-function mapUser(
-  user:
-    | {
-        id?: string
-        email?: string
-        name?: string | null
-        image?: string | null
-        emailVerified?: boolean
-        createdAt?: string
-        updatedAt?: string
-      }
-    | undefined
-    | null
-): User {
+function mapUser(user: {
+  id?: string
+  email?: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: boolean
+  createdAt?: string
+  isAnonymous?: boolean
+  updatedAt?: string
+}): User {
   if (!user) {
-    throw new OpenfortError('User data is missing', OpenfortErrorType.INTERNAL_ERROR)
+    throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'User data is missing')
   }
   return {
     id: user.id || '',
     email: user.email,
-    name: user.name ?? null,
-    image: user.image ?? null,
+    name: user.name ?? undefined,
+    image: user.image ?? undefined,
     emailVerified: user.emailVerified,
+    isAnonymous: user.isAnonymous,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   }
@@ -87,20 +87,20 @@ export class AuthManager {
 
   private get backendApiClients(): BackendApiClients {
     if (!this.backendApiClientsInstance) {
-      throw new OpenfortError('Backend API clients not initialized', OpenfortErrorType.INTERNAL_ERROR)
+      throw new ConfigurationError('Backend API clients not initialized')
     }
     return this.backendApiClientsInstance
   }
 
   private get publishableKey(): string {
     if (!this.publishableKeyInstance) {
-      throw new OpenfortError('Publishable key not initialized', OpenfortErrorType.INTERNAL_ERROR)
+      throw new ConfigurationError('Publishable key not initialized')
     }
     return this.publishableKeyInstance
   }
 
   public async initOAuth(provider: OAuthProvider, redirectUrl: string): Promise<string> {
-    return await withOpenfortError<string>(
+    return await withApiError<string>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.socialSignIn(
           {
@@ -117,21 +117,12 @@ export class AuthManager {
         )
         return response.data.url || ''
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'initOAuth',
-        onError: (error) => {
-          sentry.captureError('initOAuth', error)
-        },
-      }
+      { context: 'initOAuth' }
     )
   }
 
   public async registerGuest(): Promise<AuthResponse> {
-    return withOpenfortError<AuthResponse>(
+    return withApiError<AuthResponse>(
       async () => {
         const response = await this.backendApiClients.anonymousApi.signInAnonymousPost({
           headers: {
@@ -143,13 +134,7 @@ export class AuthManager {
           user: mapUser(response.data.user),
         }
       },
-      {
-        defaultType: OpenfortErrorType.USER_REGISTRATION_ERROR,
-        context: 'registerGuest',
-        onError: (error) => {
-          sentry.captureError('registerGuest', error)
-        },
-      }
+      { context: 'registerGuest' }
     )
   }
 
@@ -160,29 +145,16 @@ export class AuthManager {
         token,
       },
     }
-    const response = await withOpenfortError<SocialSignIn200Response>(
+    return await withApiError<AuthResponse>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.socialSignIn(request)
-        return response.data
+        return {
+          token: response.data.token,
+          user: mapUser(response.data.user),
+        }
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'loginWithIdToken',
-        onError: (error) => {
-          sentry.captureError('loginWithIdToken', error)
-        },
-      }
+      { context: 'loginWithIdToken' }
     )
-    // NOTE: The OpenAPI spec doesn't include session field for SocialSignIn200Response
-    // but the actual Better Auth response includes it
-    const data = response as unknown as AuthResponse & { user: User; session: Session }
-    return {
-      token: data.token,
-      user: mapUser(data.user),
-    }
   }
 
   public async authenticateThirdParty(
@@ -197,7 +169,7 @@ export class AuthManager {
         tokenType,
       },
     }
-    return withOpenfortError<{ userId: string }>(
+    return withApiError<{ userId: string }>(
       async () => {
         const response = await this.backendApiClients.authenticationApi.thirdParty(request, {
           headers: {
@@ -206,16 +178,7 @@ export class AuthManager {
         })
         return { userId: response.data.id }
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'authenticateThirdParty',
-        onError: (error) => {
-          sentry.captureError('authenticateThirdParty', error)
-        },
-      }
+      { context: 'authenticateThirdParty' }
     )
   }
 
@@ -226,20 +189,14 @@ export class AuthManager {
         chainId: chainId || 1,
       },
     }
-    const result = await withOpenfortError(
+    const result = await withApiError(
       async () =>
         this.backendApiClients.siweApi.siweNoncePost(request, {
           headers: {
             'x-project-key': `${this.publishableKey}`,
           },
         }),
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'initSIWE',
-        onError: (error) => {
-          sentry.captureError('initSIWE', error)
-        },
-      }
+      { context: 'initSIWE' }
     )
 
     return {
@@ -266,7 +223,7 @@ export class AuthManager {
         connectorType,
       },
     }
-    return withOpenfortError<AuthResponse>(
+    return withApiError<AuthResponse>(
       async () => {
         const response = await this.backendApiClients.siweApi.siweVerifyPost(request, {
           headers: {
@@ -279,21 +236,12 @@ export class AuthManager {
           user: mapUser(userData),
         }
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'authenticateSIWE',
-        onError: (error) => {
-          sentry.captureError('authenticateSIWE', error)
-        },
-      }
+      { context: 'authenticateSIWE' }
     )
   }
 
   public async loginEmailPassword(email: string, password: string): Promise<AuthResponse> {
-    return withOpenfortError<AuthResponse>(
+    return withApiError<AuthResponse>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.signInEmailPost(
           {
@@ -308,29 +256,18 @@ export class AuthManager {
             },
           }
         )
-        // NOTE: The OpenAPI spec doesn't include session field for SocialSignIn200Response
-        // but the actual Better Auth response includes it
-        const data = response.data as unknown as AuthResponse & { user: User; session: Session }
+        const data = response.data
         return {
           token: data.token,
           user: mapUser(data.user),
         }
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'loginEmailPassword',
-        onError: (error) => {
-          sentry.captureError('loginEmailPassword', error)
-        },
-      }
+      { context: 'loginEmailPassword' }
     )
   }
 
   public async requestResetPassword(email: string, redirectUrl: string): Promise<void> {
-    await withOpenfortError<void>(
+    await withApiError<void>(
       async () => {
         await this.backendApiClients.authenticationV2Api.forgetPasswordPost(
           {
@@ -346,18 +283,12 @@ export class AuthManager {
           }
         )
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'requestResetPassword',
-        onError: (error) => {
-          sentry.captureError('requestResetPassword', error)
-        },
-      }
+      { context: 'requestResetPassword' }
     )
   }
 
   public async resetPassword(password: string, token: string): Promise<void> {
-    return withOpenfortError<void>(
+    return withApiError<void>(
       async () => {
         await this.backendApiClients.authenticationV2Api.resetPasswordPost(
           {
@@ -373,18 +304,12 @@ export class AuthManager {
           }
         )
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'resetPassword',
-        onError: (error) => {
-          sentry.captureError('resetPassword', error)
-        },
-      }
+      { context: 'resetPassword' }
     )
   }
 
   public async requestEmailVerification(email: string, redirectUrl: string): Promise<void> {
-    await withOpenfortError<void>(
+    await withApiError<void>(
       async () => {
         await this.backendApiClients.authenticationV2Api.sendVerificationEmailPost(
           {
@@ -400,28 +325,16 @@ export class AuthManager {
           }
         )
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'requestEmailVerification',
-        onError: (error) => {
-          sentry.captureError('requestEmailVerification', error)
-        },
-      }
+      { context: 'requestEmailVerification' }
     )
   }
 
   public async verifyEmail(token: string, callbackURL?: string): Promise<void> {
-    return withOpenfortError<void>(
+    return withApiError<void>(
       async () => {
         await this.backendApiClients.authenticationV2Api.verifyEmailGet({ token, callbackURL })
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'verifyEmail',
-        onError: (error) => {
-          sentry.captureError('verifyEmail', error)
-        },
-      }
+      { context: 'verifyEmail' }
     )
   }
 
@@ -430,8 +343,8 @@ export class AuthManager {
     password: string,
     name: string,
     callbackURL?: string
-  ): Promise<AuthResponse> {
-    return withOpenfortError<AuthResponse>(
+  ): Promise<AuthResponse | AuthActionRequiredResponse> {
+    return withApiError<AuthResponse | AuthActionRequiredResponse>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(
           {
@@ -448,24 +361,18 @@ export class AuthManager {
             },
           }
         )
-        // NOTE: The OpenAPI spec doesn't include session field for SignUpEmailPost200Response
-        // but the actual Better Auth response includes it
-        const data = response.data as unknown as AuthResponse & { user: User; session: Session }
+        const data = response.data
+        if (!data.token) {
+          return {
+            action: AuthActionRequiredActions.ACTION_VERIFY_EMAIL,
+          }
+        }
         return {
           token: data.token,
           user: mapUser(data.user),
         }
       },
-      {
-        defaultType: OpenfortErrorType.USER_REGISTRATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'signupEmailPassword',
-        onError: (error) => {
-          sentry.captureError('signupEmailPassword', error)
-        },
-      }
+      { context: 'signupEmailPassword' }
     )
   }
 
@@ -481,12 +388,14 @@ export class AuthManager {
   }
 
   public async logout(auth: Authentication): Promise<void> {
-    return withOpenfortError<void>(
+    return withApiError<void>(
       async () => {
         await this.backendApiClients.authenticationV2Api.signOutPost(undefined, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -499,23 +408,19 @@ export class AuthManager {
               },
         })
       },
-      {
-        defaultType: OpenfortErrorType.LOGOUT_ERROR,
-        context: 'logout',
-        onError: (error) => {
-          sentry.captureError('logout', error)
-        },
-      }
+      { context: 'logout' }
     )
   }
 
   public async getUser(auth: Authentication) {
-    return withOpenfortError(
+    return withApiError(
       async () => {
         const response = await this.backendApiClients.userApi.me1({
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -530,23 +435,19 @@ export class AuthManager {
         const userData = response.data as unknown as User
         return mapUser(userData)
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'getUser',
-        onError: (error) => {
-          sentry.captureError('getUser', error)
-        },
-      }
+      { context: 'getUser' }
     )
   }
 
   public async listAccounts(auth: Authentication) {
-    return withOpenfortError(
+    return withApiError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.listAccountsGet({
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -560,13 +461,7 @@ export class AuthManager {
         })
         return response.data
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'listAccounts',
-        onError: (error) => {
-          sentry.captureError('listAccounts', error)
-        },
-      }
+      { context: 'listAccounts' }
     )
   }
 
@@ -584,12 +479,14 @@ export class AuthManager {
         disableRedirect: skipBrowserRedirect,
       },
     }
-    const result = await withOpenfortError(
+    const result = await withApiError(
       async () =>
         this.backendApiClients.authenticationV2Api.linkSocialPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -601,13 +498,7 @@ export class AuthManager {
                 'x-project-key': `${this.publishableKey}`,
               },
         }),
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'linkOAuth',
-        onError: (error) => {
-          sentry.captureError('linkOAuth', error)
-        },
-      }
+      { context: 'linkOAuth' }
     )
 
     if (typeof window !== 'undefined' && !skipBrowserRedirect && result.data.url) {
@@ -622,12 +513,14 @@ export class AuthManager {
         providerId: provider,
       },
     }
-    return withOpenfortError(
+    return withApiError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -641,13 +534,7 @@ export class AuthManager {
         })
         return response.data
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'unlinkOAuth',
-        onError: (error) => {
-          sentry.captureError('unlinkOAuth', error)
-        },
-      }
+      { context: 'unlinkOAuth' }
     )
   }
 
@@ -659,12 +546,14 @@ export class AuthManager {
         password,
       },
     }
-    return withOpenfortError(
+    return withApiError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -678,13 +567,7 @@ export class AuthManager {
         })
         return response.data
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'linkEmail',
-        onError: (error) => {
-          sentry.captureError('linkEmail', error)
-        },
-      }
+      { context: 'linkEmail' }
     )
   }
 
@@ -694,12 +577,14 @@ export class AuthManager {
         providerId: 'credential',
       },
     }
-    return withOpenfortError(
+    return withApiError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -713,13 +598,7 @@ export class AuthManager {
         })
         return response.data.status
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'unlinkEmail',
-        onError: (error) => {
-          sentry.captureError('unlinkEmail', error)
-        },
-      }
+      { context: 'unlinkEmail' }
     )
   }
 
@@ -730,12 +609,14 @@ export class AuthManager {
         chaindId: chainId,
       },
     }
-    return withOpenfortError(
+    return withApiError(
       async () => {
         const authPlayerResponse = await this.backendApiClients.siweApi.linkSiweUnlinkPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -749,13 +630,7 @@ export class AuthManager {
         })
         return authPlayerResponse.data
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'unlinkWallet',
-        onError: (error) => {
-          sentry.captureError('unlinkWallet', error)
-        },
-      }
+      { context: 'unlinkWallet' }
     )
   }
 
@@ -776,12 +651,14 @@ export class AuthManager {
         chainId,
       },
     }
-    return withOpenfortError(
+    return withApiError(
       async () => {
         const response = await this.backendApiClients.siweApi.linkSiweVerifyPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': auth.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -795,13 +672,7 @@ export class AuthManager {
         })
         return response.data
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        context: 'linkWallet',
-        onError: (error) => {
-          sentry.captureError('linkWallet', error)
-        },
-      }
+      { context: 'linkWallet' }
     )
   }
 
@@ -813,7 +684,7 @@ export class AuthManager {
       },
     }
 
-    await withOpenfortError(
+    await withApiError(
       async () => {
         const response = await this.backendApiClients.emailOTPApi.emailOtpSendVerificationOtpPost(request, {
           headers: {
@@ -822,21 +693,12 @@ export class AuthManager {
         })
         return response.data
       },
-      {
-        defaultType: OpenfortErrorType.REQUEST_EMAIL_OTP_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'requestEmailOTP',
-        onError: (error) => {
-          sentry.captureError('requestEmailOTP', error)
-        },
-      }
+      { context: 'requestEmailOTP' }
     )
   }
 
   public async loginWithEmailOTP(email: string, otp: string): Promise<AuthResponse> {
-    return await withOpenfortError<AuthResponse>(
+    return await withApiError<AuthResponse>(
       async () => {
         const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(
           {
@@ -851,24 +713,13 @@ export class AuthManager {
             },
           }
         )
-        // NOTE: The OpenAPI spec returns SocialSignIn200Response which doesn't include session
-        // but the actual Better Auth response includes it
-        const data = response.data as unknown as AuthResponse & { user: User; session: Session }
+        const data = response.data
         return {
           token: data.token,
           user: mapUser(data.user),
         }
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'loginWithEmailOTP',
-        onError: (error) => {
-          sentry.captureError('loginWithEmailOTP', error)
-        },
-      }
+      { context: 'loginWithEmailOTP' }
     )
   }
 
@@ -879,7 +730,7 @@ export class AuthManager {
       },
     }
 
-    await withOpenfortError(
+    await withApiError(
       async () => {
         const response = await this.backendApiClients.smsOTPApi.phoneNumberSendOtpPost(request, {
           headers: {
@@ -888,21 +739,12 @@ export class AuthManager {
         })
         return response.data
       },
-      {
-        defaultType: OpenfortErrorType.REQUEST_SMS_OTP_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'requestPhoneOtp',
-        onError: (error) => {
-          sentry.captureError('requestPhoneOtp', error)
-        },
-      }
+      { context: 'requestPhoneOtp' }
     )
   }
 
   public async loginWithSMSOTP(phoneNumber: string, code: string): Promise<AuthResponse> {
-    return await withOpenfortError<AuthResponse>(
+    return await withApiError<AuthResponse>(
       async () => {
         const response = await this.backendApiClients.smsOTPApi.phoneNumberVerifyPost(
           {
@@ -917,29 +759,18 @@ export class AuthManager {
             },
           }
         )
-        // NOTE: The OpenAPI spec incorrectly types this response as PhoneNumberVerifyPost200Response
-        // but the actual response has { token, user, session } structure from Better Auth
-        const data = response.data as unknown as AuthResponse & { user: User; session: Session }
+        const data = response.data as AuthResponse & { user: User; status: boolean }
         return {
           token: data.token,
           user: mapUser(data.user),
         }
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'loginWithSMSOTP',
-        onError: (error) => {
-          sentry.captureError('loginWithSMSOTP', error)
-        },
-      }
+      { context: 'loginWithSMSOTP' }
     )
   }
 
   private async getSessionWithToken(auth: Authentication, forceRefresh?: boolean): Promise<GetSessionGet200Response> {
-    return await withOpenfortError<GetSessionGet200Response>(
+    return await withApiError<GetSessionGet200Response>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.getSessionGet(
           {
@@ -949,6 +780,8 @@ export class AuthManager {
             headers: auth.thirdPartyProvider
               ? {
                   authorization: `Bearer ${this.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-player-token': auth.token,
                   // eslint-disable-next-line @typescript-eslint/naming-convention
                   'x-auth-provider': auth.thirdPartyProvider,
                   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -963,16 +796,7 @@ export class AuthManager {
         )
         return response.data
       },
-      {
-        defaultType: OpenfortErrorType.AUTHENTICATION_ERROR,
-        statusCodeMapping: {
-          403: OpenfortErrorType.USER_NOT_AUTHORIZED_ON_ECOSYSTEM,
-        },
-        context: 'getSessionWithToken',
-        onError: (error) => {
-          sentry.captureError('getSessionWithToken', error)
-        },
-      }
+      { context: 'getSessionWithToken' }
     )
   }
 }

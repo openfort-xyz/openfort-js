@@ -102,8 +102,6 @@ export type SIWEInitResponse = {
 }
 
 export type InitializeOAuthOptions = {
-  usePooling?: boolean
-  /** A URL to send the user to after they are confirmed. */
   redirectTo?: string
   /** A space-separated list of scopes granted to the OAuth application. */
   scopes?: string
@@ -359,15 +357,17 @@ export interface User {
   /** User's email address */
   email?: string
   /** User's display name */
-  name?: string | null
+  name?: string
   /** URL to user's profile image */
-  image: string | null
+  image?: string
   /** Whether the user's email has been verified */
   emailVerified?: boolean
   /** ISO timestamp when the user was created */
   createdAt?: string
   /** ISO timestamp when the user was last updated */
   updatedAt?: string
+  /** Whether the user is anonymous */
+  isAnonymous?: boolean
 }
 
 /**

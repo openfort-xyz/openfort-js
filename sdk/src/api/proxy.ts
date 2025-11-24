@@ -1,6 +1,8 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import { SDKConfiguration } from '../core/config/config'
-import { OpenfortError, OpenfortErrorType, withOpenfortError } from '../core/errors/openfortError'
+import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
+import { ConfigurationError, SignerError } from '../core/errors/openfortError'
+import { withApiError } from '../core/errors/withApiError'
 import type { IStorage } from '../storage/istorage'
 import type { SessionResponse, TransactionIntentResponse } from '../types/types'
 
@@ -22,22 +24,19 @@ export class ProxyApi {
     await this.ensureInitialized()
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration not found')
     }
     await this.validateAndRefreshToken()
     let newSignature = signature
     if (!newSignature) {
       if (!signableHash) {
-        throw new OpenfortError(
-          'No signableHash or signature provided',
-          OpenfortErrorType.OPERATION_NOT_SUPPORTED_ERROR
-        )
+        throw new ConfigurationError('No signableHash or signature provided')
       }
 
       if (!this.getSignerSignFunction) {
-        throw new OpenfortError(
-          'In order to sign a transaction intent, a signer must be configured',
-          OpenfortErrorType.MISSING_SIGNER_ERROR
+        throw new SignerError(
+          OPENFORT_AUTH_ERROR_CODES.MISSING_SIGNER,
+          'In order to sign a transaction intent, a signer must be configured'
         )
       }
 
@@ -53,12 +52,12 @@ export class ProxyApi {
         optimistic,
       },
     }
-    return withOpenfortError<TransactionIntentResponse>(
+    return withApiError<TransactionIntentResponse>(
       async () => {
         const result = await this.backendApiClients.transactionIntentsApi.signature(request)
         return result.data
       },
-      { default: OpenfortErrorType.INTERNAL_ERROR }
+      { context: 'sendSignatureTransactionIntentRequest' }
     )
   }
 
@@ -76,12 +75,12 @@ export class ProxyApi {
       },
     }
 
-    return withOpenfortError<SessionResponse>(
+    return withApiError<SessionResponse>(
       async () => {
         const result = await this.backendApiClients.sessionsApi.signatureSession(request)
         return result.data
       },
-      { default: OpenfortErrorType.INTERNAL_ERROR }
+      { context: 'sendSignatureSessionRequest' }
     )
   }
 }

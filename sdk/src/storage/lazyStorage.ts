@@ -1,4 +1,4 @@
-import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
+import { ConfigurationError } from '../core/errors/openfortError'
 import type { IStorage, StorageKeys } from './istorage'
 import { StorageImplementation } from './storage'
 
@@ -27,9 +27,8 @@ export class LazyStorage implements IStorage {
       } else if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
         this.realStorage = new StorageImplementation(localStorage)
       } else {
-        throw new OpenfortError(
-          'Storage not available. Please provide custom storage or use in browser environment.',
-          OpenfortErrorType.INVALID_CONFIGURATION
+        throw new ConfigurationError(
+          'Storage not available. Please provide custom storage or use in browser environment.'
         )
       }
     }

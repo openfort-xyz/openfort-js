@@ -1,7 +1,14 @@
 import { Account } from 'core/configuration/account'
 import type { SDKConfiguration } from '../core/config/config'
 import { Authentication } from '../core/configuration/authentication'
-import { type Data, OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
+import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
+import {
+  ConfigurationError,
+  OpenfortError,
+  RecoveryError,
+  SessionError,
+  SignerError,
+} from '../core/errors/openfortError'
 import { sentry } from '../core/errors/sentry'
 import { type IStorage, StorageKeys } from '../storage/istorage'
 import type { AccountTypeEnum, ChainTypeEnum, EntropyResponse, RecoveryMethod } from '../types/types'
@@ -87,39 +94,48 @@ interface IframeAPI {
   [key: string]: (...args: any[]) => Promise<any>
 }
 
-export class MissingRecoveryPasswordError extends Error {
+// Re-export error classes for backward compatibility
+export class MissingRecoveryPasswordError extends RecoveryError {
   constructor() {
-    super('This embedded signer requires a password to be recovered')
+    super(
+      OPENFORT_AUTH_ERROR_CODES.MISSING_RECOVERY_PASSWORD,
+      'This embedded signer requires a password to be recovered',
+      'password'
+    )
   }
 }
 
-class WrongPasskeyError extends Error {
+export class WrongPasskeyError extends RecoveryError {
   constructor() {
-    super('Wrong recovery passkey for this embedded signer')
+    super(OPENFORT_AUTH_ERROR_CODES.INCORRECT_PASSKEY, 'Wrong recovery passkey for this embedded signer', 'passkey')
   }
 }
 
-export class MissingProjectEntropyError extends Error {
+export class MissingProjectEntropyError extends RecoveryError {
   constructor() {
-    super('MissingProjectEntropyError')
+    super(OPENFORT_AUTH_ERROR_CODES.MISSING_PROJECT_ENTROPY, 'Project entropy is missing', 'entropy')
   }
 }
 
-export class WrongRecoveryPasswordError extends Error {
+export class WrongRecoveryPasswordError extends RecoveryError {
   constructor() {
-    super('Wrong recovery password for this embedded signer')
+    super(
+      OPENFORT_AUTH_ERROR_CODES.WRONG_RECOVERY_PASSWORD,
+      'Wrong recovery password for this embedded signer',
+      'password'
+    )
   }
 }
 
-export class NotConfiguredError extends Error {
+export class NotConfiguredError extends SignerError {
   constructor() {
-    super('Not configured')
+    super(OPENFORT_AUTH_ERROR_CODES.NOT_CONFIGURED, 'Signer is not configured')
   }
 }
 
-export class OTPRequiredError extends Error {
+export class OTPRequiredError extends OpenfortError {
   constructor() {
-    super('OTP required')
+    super(OPENFORT_AUTH_ERROR_CODES.OTP_REQUIRED, 'OTP verification required')
   }
 }
 
@@ -142,15 +158,15 @@ export class IframeManager {
 
   constructor(configuration: SDKConfiguration, storage: IStorage, messenger: Messenger) {
     if (!configuration) {
-      throw new OpenfortError('Configuration is required for IframeManager', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration is required for IframeManager')
     }
 
     if (!storage) {
-      throw new OpenfortError('Storage is required for IframeManager', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Storage is required for IframeManager')
     }
 
     if (!messenger) {
-      throw new OpenfortError('Messenger is required for IframeManager', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Messenger is required for IframeManager')
     }
 
     this.sdkConfiguration = configuration
@@ -171,8 +187,8 @@ export class IframeManager {
     // This will trigger recreation at the parent level
     if (this.hasFailed) {
       throw new OpenfortError(
-        'Failed to establish iFrame connection: Previous connection attempt failed',
-        OpenfortErrorType.INTERNAL_ERROR
+        OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+        'Failed to establish iFrame connection: Previous connection attempt failed'
       )
     }
 
@@ -223,9 +239,8 @@ export class IframeManager {
       this.destroy()
       debugLog('Failed to establish connection:', err)
       throw new OpenfortError(
-        `Failed to establish iFrame connection: ${err.cause || err.message}`,
-        OpenfortErrorType.INTERNAL_ERROR,
-        error as Data
+        OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+        `Failed to establish iFrame connection: ${err.cause || err.message}`
       )
     }
   }
@@ -236,7 +251,7 @@ export class IframeManager {
     }
 
     if (!this.remote) {
-      throw new OpenfortError('Failed to establish connection', OpenfortErrorType.INTERNAL_ERROR)
+      throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'Failed to establish connection')
     }
 
     return this.remote
@@ -264,7 +279,7 @@ export class IframeManager {
         throw new OTPRequiredError()
       }
       this.storage.remove(StorageKeys.ACCOUNT)
-      throw new OpenfortError(`Unknown error: ${error.error}`, OpenfortErrorType.INTERNAL_ERROR)
+      throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, `Unknown error: ${error.error}`)
     }
     throw error
   }
@@ -272,7 +287,7 @@ export class IframeManager {
   private async buildRequestConfiguration(): Promise<RequestConfiguration> {
     const authentication = await Authentication.fromStorage(this.storage)
     if (!authentication) {
-      throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'Must be authenticated to create a signer')
     }
 
     const shieldAuthentication: IframeAuthentication = {
@@ -299,7 +314,7 @@ export class IframeManager {
   private async buildIFrameRequestConfiguration(): Promise<IframeConfiguration> {
     const authentication = await Authentication.fromStorage(this.storage)
     if (!authentication) {
-      throw new OpenfortError('Must be authenticated to create a signer', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'Must be authenticated to create a signer')
     }
 
     const shieldAuthentication: IframeAuthentication = {

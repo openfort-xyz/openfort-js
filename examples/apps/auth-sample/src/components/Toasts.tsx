@@ -147,6 +147,11 @@ export const SuccessToast: React.FC<SuccessToastProps> = ({ status, setStatus, a
               <ToastPrimitive.Title className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {status.title}
               </ToastPrimitive.Title>
+              {status.description && (
+                <ToastPrimitive.Description asChild>
+                  <div className="mt-1 text-sm text-gray-700 dark:text-gray-400">{status.description}</div>
+                </ToastPrimitive.Description>
+              )}
             </div>
           )}
         </div>
@@ -209,6 +214,11 @@ export const ErrorToast: React.FC<ErrorToastProps> = ({ status, setStatus }) => 
               <ToastPrimitive.Title className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {status.title}
               </ToastPrimitive.Title>
+              {status.description && (
+                <ToastPrimitive.Description asChild>
+                  <div className="mt-1 text-sm text-gray-700 dark:text-gray-400">{status.description}</div>
+                </ToastPrimitive.Description>
+              )}
             </div>
           )}
         </div>

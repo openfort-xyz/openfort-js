@@ -5,7 +5,20 @@ export { EmbeddedWalletApi } from '../api/embeddedWallet'
 export { UserApi } from '../api/user'
 // biome-ignore lint/performance/noReExportAll: Re-exporting config types for convenience
 export * from '../core/config'
-export { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
+export { OPENFORT_AUTH_ERROR_CODES, OPENFORT_ERROR_CODES } from '../core/errors/authErrorCodes'
+export {
+  AuthenticationError,
+  AuthorizationError,
+  ConfigurationError,
+  OAuthError,
+  OpenfortError,
+  OTPError,
+  RecoveryError,
+  RequestError,
+  SessionError,
+  SignerError,
+  UserError,
+} from '../core/errors/openfortError'
 export { Openfort } from '../core/openfort'
 export { OpenfortInternal } from '../core/openfortInternal'
 export { IStorage as Storage } from '../storage/istorage'

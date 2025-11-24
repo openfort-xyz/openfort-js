@@ -1,8 +1,10 @@
 import type { AuthManager } from '../auth/authManager'
 import { Authentication } from '../core/configuration/authentication'
-import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
+import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
+import { ConfigurationError, SessionError } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 import {
+  type AuthActionRequiredResponse,
   type AuthResponse,
   type InitializeOAuthOptions,
   type LinkEmailResponse,
@@ -26,10 +28,10 @@ export class AuthApi {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email' })
 
     try {
       const result = await this.authManager.loginEmailPassword(email, password)
@@ -49,7 +51,7 @@ export class AuthApi {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'guest' })
@@ -75,24 +77,24 @@ export class AuthApi {
     password: string
     name?: string
     callbackURL?: string
-  }): Promise<AuthResponse> {
+  }): Promise<AuthResponse | AuthActionRequiredResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email' })
 
     try {
       const n = name ? name : email
 
       const result = await this.authManager.signupEmailPassword(email, password, n, callbackURL)
-      console.log('Signup result:', result)
-      if (result?.token === null) {
+
+      if (result instanceof Object && 'action' in result) {
         return result
       }
-      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -106,7 +108,7 @@ export class AuthApi {
 
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
@@ -114,7 +116,7 @@ export class AuthApi {
     try {
       return await this.authManager.initOAuth(provider, redirectTo)
     } catch (error) {
-      console.log(`Got an error calling API for Google login: ${JSON.stringify(error)}`)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
       throw error
     }
   }
@@ -123,7 +125,7 @@ export class AuthApi {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'idToken', provider })
@@ -142,7 +144,7 @@ export class AuthApi {
   async storeCredentials({ token, userId }: { token: string; userId: string }): Promise<void> {
     await this.ensureInitialized()
     if (!userId) {
-      throw new OpenfortError('User ID is required to store credentials', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('User ID is required to store credentials')
     }
     new Authentication('session', token, userId).save(this.storage)
   }
@@ -169,10 +171,10 @@ export class AuthApi {
 
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'email', provider: 'email' })
+    this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'email' })
 
     try {
       await this.authManager.requestEmailOTP(email)
@@ -187,10 +189,10 @@ export class AuthApi {
 
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email', provider: 'email' })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email' })
 
     try {
       const result = await this.authManager.loginWithEmailOTP(email, otp)
@@ -212,7 +214,7 @@ export class AuthApi {
 
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
     this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'phone', provider: 'phone' })
@@ -230,10 +232,10 @@ export class AuthApi {
 
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'phone', provider: 'phone' })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'phone' })
 
     try {
       const result = await this.authManager.loginWithSMSOTP(phoneNumber, otp)
@@ -280,7 +282,7 @@ export class AuthApi {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
 
     this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
@@ -292,7 +294,7 @@ export class AuthApi {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
     return await this.authManager.unlinkOAuth(provider, auth)
   }
@@ -320,10 +322,10 @@ export class AuthApi {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (auth) {
-      throw new OpenfortError('Already logged in', OpenfortErrorType.ALREADY_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'siwe', provider: 'wallet' })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'siwe' })
 
     try {
       const result = await this.authManager.authenticateSIWE(
@@ -361,7 +363,7 @@ export class AuthApi {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
     return await this.authManager.linkWallet(
       signature,
@@ -378,7 +380,7 @@ export class AuthApi {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
     return await this.authManager.unlinkWallet(address, chainId, auth)
   }
@@ -387,7 +389,7 @@ export class AuthApi {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
     return await this.authManager.unlinkEmail(auth)
   }
@@ -404,7 +406,7 @@ export class AuthApi {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
     // @ts-expect-error // TODO: Fix ts-ignore
     return await this.authManager.linkEmail(name, email, password, auth)
@@ -414,7 +416,7 @@ export class AuthApi {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No authentication found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
     return await this.authManager.unlinkEmail(auth)
   }

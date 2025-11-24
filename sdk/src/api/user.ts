@@ -2,7 +2,8 @@ import type { User } from 'types'
 import type { UserAccountResponse } from 'types/types'
 import type { AuthManager } from '../auth/authManager'
 import { Authentication } from '../core/configuration/authentication'
-import { OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
+import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
+import { SessionError } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 
 export class UserApi {
@@ -16,7 +17,7 @@ export class UserApi {
     await this.validateAndRefreshToken()
     const authentication = await Authentication.fromStorage(this.storage)
     if (!authentication) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No access token found')
     }
     return await this.authManager.getUser(authentication)
   }
@@ -25,7 +26,7 @@ export class UserApi {
     await this.validateAndRefreshToken()
     const authentication = await Authentication.fromStorage(this.storage)
     if (!authentication) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No access token found')
     }
     return await this.authManager.listAccounts(authentication)
   }

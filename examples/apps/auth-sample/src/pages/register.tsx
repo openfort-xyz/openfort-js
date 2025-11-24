@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { TextField } from '../components/Fields'
 import { Layout } from '../components/Layouts/Layout'
 import { type StatusType, Toast } from '../components/Toasts'
+import { getErrorMessage } from '../utils/errorHandler'
 import { getURL } from '../utils/getUrl'
 import openfort from '../utils/openfortConfig'
 
@@ -61,28 +62,30 @@ function RegisterPage() {
       title: 'Signing up...',
     })
 
-    const data = await openfort.auth
-      .signUpWithEmailPassword({
+    try {
+      const data = await openfort.auth.signUpWithEmailPassword({
         email: email,
         password: password,
         callbackURL: `${getURL()}/login`,
         name: `${first_name} ${last_name}`,
       })
-      .catch((_error) => {
-        setStatus({
-          type: 'error',
-          title: 'Error signing up',
-        })
-      })
 
-    if (data?.user) {
-      if (data.token === null) setEmailConfirmation(true)
-      setUser(data.user)
+      if (data?.user) {
+        if (data.token === null) setEmailConfirmation(true)
+        setUser(data.user)
+      }
+      setStatus({
+        type: 'success',
+        title: 'Successfully signed up',
+      })
+    } catch (error) {
+      console.error('Registration error:', error)
+      setStatus({
+        type: 'error',
+        title: 'Sign up failed',
+        description: getErrorMessage(error),
+      })
     }
-    setStatus({
-      type: 'success',
-      title: 'Successfully signed up',
-    })
   }
 
   return (

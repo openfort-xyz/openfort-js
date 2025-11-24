@@ -2,7 +2,7 @@ import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { JsonRpcResponse } from '@openfort/openapi-clients/dist/backend'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
-import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
+import { withApiError } from '../../core/errors/withApiError'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import type { Hex } from './types'
 
@@ -52,7 +52,7 @@ const fetchWalletAssets = async (
   // Convert hex chainIds to integers for backend API
   const chainFilter = params?.chainFilter?.map((hexChainId) => Number.parseInt(hexChainId, 16))
 
-  return withOpenfortError<JsonRpcResponse>(
+  return withApiError<JsonRpcResponse>(
     async () => {
       const response = await backendApiClients.rpcApi.handleRpcRequest(
         {
@@ -86,7 +86,7 @@ const fetchWalletAssets = async (
       )
       return response.data
     },
-    { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+    { context: 'operation' }
   )
 }
 
