@@ -146,7 +146,10 @@ export class AuthApi {
     if (!userId) {
       throw new ConfigurationError('User ID is required to store credentials')
     }
-    new Authentication('session', token, userId).save(this.storage)
+
+    const urlEncToken = encodeURIComponent(token)
+
+    new Authentication('session', urlEncToken, userId).save(this.storage)
   }
 
   /**
