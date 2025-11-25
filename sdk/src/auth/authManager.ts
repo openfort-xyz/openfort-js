@@ -565,7 +565,10 @@ export class AuthManager {
                 'x-project-key': `${this.publishableKey}`,
               },
         })
-        return response.data
+        return {
+          token: response.data.token,
+          user: mapUser(response.data.user),
+        }
       },
       { context: 'linkEmail' }
     )

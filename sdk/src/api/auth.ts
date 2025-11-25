@@ -408,7 +408,6 @@ export class AuthApi {
     if (!auth) {
       throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
-    // @ts-expect-error // TODO: Fix ts-ignore
     return await this.authManager.linkEmail(name, email, password, auth)
   }
 

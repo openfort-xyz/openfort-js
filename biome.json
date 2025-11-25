@@ -14,7 +14,8 @@
       "!**/node_modules",
       "!**/.next",
       "!**/coverage",
-      "!examples/apps/web-betterauth/src/index.css"
+      "!examples/apps/web-betterauth/src/index.css",
+      "!**/stats.html"
     ],
     "ignoreUnknown": true
   },
@@ -46,7 +47,8 @@
       },
       "suspicious": {
         "noExplicitAny": "off",
-        "noConsole": { "level": "error", "options": { "allow": ["log", "warn", "error"] } }
+        "noConsole": { "level": "error", "options": { "allow": ["log", "warn", "error"] } },
+        "noNonNullAssertedOptionalChain": "off"
       }
     }
   },
@@ -56,6 +58,12 @@
       "trailingCommas": "es5",
       "semicolons": "asNeeded",
       "arrowParentheses": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "cssModules": true,
+      "tailwindDirectives": true
     }
   },
   "assist": {

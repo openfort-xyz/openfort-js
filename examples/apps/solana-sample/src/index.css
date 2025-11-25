@@ -5,31 +5,25 @@
 }
 
 body {
-  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply bg-gray-900 text-white min-h-screen;
 }
 
 button {
-  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply bg-gray-700 p-2 rounded px-4 text-white cursor-pointer hover:bg-gray-600 transition-colors duration-100 ease-in-out;
 }
 
 button:disabled {
-  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply opacity-50 cursor-not-allowed;
 }
 
 input {
-  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply bg-gray-800 p-2 rounded px-4 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all;
 }
 
 input.border-red-500 {
-  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply ring-2 ring-red-500 border-red-500;
 }
 
 a {
-  /* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS @apply directive */
   @apply text-blue-500 hover:text-blue-400 underline cursor-pointer transition-colors duration-100 ease-in-out;
 }

@@ -1,5 +1,6 @@
 packages:
-  - 'sdk'
-  - 'packages/**'
-  - 'examples/**'
-  - 'test'
+  - "sdk"
+  - "packages/**"
+  - "examples/**"
+  - "test"
+minimumReleaseAge: 1440
