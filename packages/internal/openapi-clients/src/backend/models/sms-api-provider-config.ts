@@ -15,25 +15,33 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { User } from './user';
+import { SmsProviderSMSAPI } from './sms-provider-smsapi';
 
 /**
- * 
+ * SMS API provider configuration
  * @export
- * @interface SignUpEmailPost200Response
+ * @interface SmsApiProviderConfig
  */
-export interface SignUpEmailPost200Response {
-    /**
-     * Authentication token for the session
-     * @type {string}
-     * @memberof SignUpEmailPost200Response
-     */
-    'token'?: string | null;
+export interface SmsApiProviderConfig {
     /**
      * 
-     * @type {User}
-     * @memberof SignUpEmailPost200Response
+     * @type {SmsProviderSMSAPI}
+     * @memberof SmsApiProviderConfig
      */
-    'user': User;
+    'provider': SmsProviderSMSAPI;
+    /**
+     * Sender name
+     * @type {string}
+     * @memberof SmsApiProviderConfig
+     */
+    'from': string;
+    /**
+     * SMSAPI OAuth token
+     * @type {string}
+     * @memberof SmsApiProviderConfig
+     */
+    'token': string;
 }
+
+
 

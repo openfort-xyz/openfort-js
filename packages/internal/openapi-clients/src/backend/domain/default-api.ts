@@ -652,12 +652,16 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * Redirects the user to the callback URL with the token
+         * @param {string} token 
          * @param {string} [callbackURL] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        resetPasswordTokenGet: async (callbackURL?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/reset-password/{token}`;
+        resetPasswordTokenGet: async (token: string, callbackURL?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'token' is not null or undefined
+            assertParamExists('resetPasswordTokenGet', 'token', token)
+            const localVarPath = `/reset-password/{token}`
+                .replace(`{${"token"}}`, encodeURIComponent(String(token)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1230,12 +1234,13 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * Redirects the user to the callback URL with the token
+         * @param {string} token 
          * @param {string} [callbackURL] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async resetPasswordTokenGet(callbackURL?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordTokenGet200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.resetPasswordTokenGet(callbackURL, options);
+        async resetPasswordTokenGet(token: string, callbackURL?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResetPasswordTokenGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.resetPasswordTokenGet(token, callbackURL, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1505,8 +1510,8 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        resetPasswordTokenGet(requestParameters: DefaultApiResetPasswordTokenGetRequest = {}, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordTokenGet200Response> {
-            return localVarFp.resetPasswordTokenGet(requestParameters.callbackURL, options).then((request) => request(axios, basePath));
+        resetPasswordTokenGet(requestParameters: DefaultApiResetPasswordTokenGetRequest, options?: AxiosRequestConfig): AxiosPromise<ResetPasswordTokenGet200Response> {
+            return localVarFp.resetPasswordTokenGet(requestParameters.token, requestParameters.callbackURL, options).then((request) => request(axios, basePath));
         },
         /**
          * Revoke all other sessions for the user except the current one
@@ -1791,6 +1796,13 @@ export interface DefaultApiResetPasswordPostRequest {
  * @interface DefaultApiResetPasswordTokenGetRequest
  */
 export interface DefaultApiResetPasswordTokenGetRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof DefaultApiResetPasswordTokenGet
+     */
+    readonly token: string
+
     /**
      * 
      * @type {string}
@@ -2146,8 +2158,8 @@ export class DefaultApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public resetPasswordTokenGet(requestParameters: DefaultApiResetPasswordTokenGetRequest = {}, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).resetPasswordTokenGet(requestParameters.callbackURL, options).then((request) => request(this.axios, this.basePath));
+    public resetPasswordTokenGet(requestParameters: DefaultApiResetPasswordTokenGetRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).resetPasswordTokenGet(requestParameters.token, requestParameters.callbackURL, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

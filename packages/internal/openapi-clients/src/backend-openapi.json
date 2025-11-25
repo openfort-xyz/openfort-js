@@ -10699,7 +10699,7 @@
     },
     "/iam/v2/me": {
       "get": {
-        "operationId": "Me1",
+        "operationId": "meV2",
         "responses": {
           "200": {
             "description": "Successful response.",
@@ -11359,50 +11359,7 @@
                       "description": "Authentication token for the session"
                     },
                     "user": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "The unique identifier of the user"
-                        },
-                        "email": {
-                          "type": "string",
-                          "format": "email",
-                          "description": "The email address of the user"
-                        },
-                        "name": {
-                          "type": "string",
-                          "description": "The name of the user"
-                        },
-                        "image": {
-                          "type": "string",
-                          "format": "uri",
-                          "nullable": true,
-                          "description": "The profile image URL of the user"
-                        },
-                        "emailVerified": {
-                          "type": "boolean",
-                          "description": "Whether the email has been verified"
-                        },
-                        "createdAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "When the user was created"
-                        },
-                        "updatedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "When the user was last updated"
-                        }
-                      },
-                      "required": [
-                        "id",
-                        "email",
-                        "name",
-                        "emailVerified",
-                        "createdAt",
-                        "updatedAt"
-                      ]
+                      "$ref": "#/components/schemas/User"
                     }
                   },
                   "required": [
@@ -12619,50 +12576,7 @@
                       "description": "New session token if other sessions were revoked"
                     },
                     "user": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "The unique identifier of the user"
-                        },
-                        "email": {
-                          "type": "string",
-                          "format": "email",
-                          "description": "The email address of the user"
-                        },
-                        "name": {
-                          "type": "string",
-                          "description": "The name of the user"
-                        },
-                        "image": {
-                          "type": "string",
-                          "format": "uri",
-                          "nullable": true,
-                          "description": "The profile image URL of the user"
-                        },
-                        "emailVerified": {
-                          "type": "boolean",
-                          "description": "Whether the email has been verified"
-                        },
-                        "createdAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "When the user was created"
-                        },
-                        "updatedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "When the user was last updated"
-                        }
-                      },
-                      "required": [
-                        "id",
-                        "email",
-                        "name",
-                        "emailVerified",
-                        "createdAt",
-                        "updatedAt"
-                      ]
+                      "$ref": "#/components/schemas/User"
                     }
                   },
                   "required": [
@@ -13098,6 +13012,15 @@
           }
         ],
         "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The reset password token"
+            }
+          },
           {
             "name": "callbackURL",
             "in": "query",
@@ -26858,7 +26781,10 @@
         "description": "Enum of the supporting Basic Auth providers.",
         "enum": [
           "email",
-          "wallet"
+          "wallet",
+          "guest",
+          "web3",
+          "phone"
         ],
         "type": "string"
       },
@@ -26895,17 +26821,326 @@
           },
           "provider": {
             "$ref": "#/components/schemas/BasicAuthProvider.EMAIL",
-            "description": "OAuth provider type"
+            "description": "Auth provider type"
           },
           "allowUnverified": {
             "type": "boolean",
             "description": "Allow unverified emails: Users will be able to sign in with unverified emails"
+          },
+          "otpExpirationTime": {
+            "type": "number",
+            "format": "double",
+            "description": "OTP expiration time in seconds (default: 3600)"
+          },
+          "otpLength": {
+            "type": "number",
+            "format": "double",
+            "description": "Length of the OTP code (default: 6)"
+          },
+          "passwordRequirements": {
+            "properties": {
+              "requireSpecialChar": {
+                "type": "boolean",
+                "description": "Require at least one special character (default: false)"
+              },
+              "requireNumber": {
+                "type": "boolean",
+                "description": "Require at least one number (default: false)"
+              },
+              "requireLowercase": {
+                "type": "boolean",
+                "description": "Require at least one lowercase letter (default: false)"
+              },
+              "requireUppercase": {
+                "type": "boolean",
+                "description": "Require at least one uppercase letter (default: false)"
+              },
+              "minLength": {
+                "type": "number",
+                "format": "double",
+                "description": "Minimum password length (default: 6)"
+              }
+            },
+            "required": [
+              "minLength"
+            ],
+            "type": "object",
+            "description": "Password requirements configuration"
           }
         },
         "required": [
           "enabled",
           "provider",
-          "allowUnverified"
+          "allowUnverified",
+          "otpExpirationTime",
+          "otpLength",
+          "passwordRequirements"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BasicAuthProvider.GUEST": {
+        "enum": [
+          "guest"
+        ],
+        "type": "string"
+      },
+      "GuestAuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/BasicAuthProvider.GUEST",
+            "description": "Auth provider type"
+          }
+        },
+        "required": [
+          "enabled",
+          "provider"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BasicAuthProvider.WEB3": {
+        "enum": [
+          "web3"
+        ],
+        "type": "string"
+      },
+      "Web3AuthConfig": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/BasicAuthProvider.WEB3",
+            "description": "Auth provider type"
+          }
+        },
+        "required": [
+          "enabled",
+          "provider"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BasicAuthProvider.PHONE": {
+        "enum": [
+          "phone"
+        ],
+        "type": "string"
+      },
+      "SmsProvider.TWILIO": {
+        "enum": [
+          "twilio"
+        ],
+        "type": "string"
+      },
+      "TwilioSmsProviderConfig": {
+        "description": "Twilio SMS provider configuration",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/SmsProvider.TWILIO"
+          },
+          "accountSid": {
+            "type": "string",
+            "description": "Twilio Account SID"
+          },
+          "authToken": {
+            "type": "string",
+            "description": "Twilio Auth Token"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Twilio phone number (from)"
+          }
+        },
+        "required": [
+          "provider",
+          "accountSid",
+          "authToken",
+          "phoneNumber"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SmsProvider.MESSAGEBIRD": {
+        "enum": [
+          "messagebird"
+        ],
+        "type": "string"
+      },
+      "MessageBirdSmsProviderConfig": {
+        "description": "MessageBird SMS provider configuration",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/SmsProvider.MESSAGEBIRD"
+          },
+          "accessKey": {
+            "type": "string",
+            "description": "MessageBird Access Key"
+          },
+          "originator": {
+            "type": "string",
+            "description": "Sender name or number"
+          }
+        },
+        "required": [
+          "provider",
+          "accessKey",
+          "originator"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SmsProvider.TXTLOCAL": {
+        "enum": [
+          "txtlocal"
+        ],
+        "type": "string"
+      },
+      "TxtLocalSmsProviderConfig": {
+        "description": "TxtLocal SMS provider configuration",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/SmsProvider.TXTLOCAL"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "TxtLocal API Key"
+          },
+          "sender": {
+            "type": "string",
+            "description": "Sender name"
+          }
+        },
+        "required": [
+          "provider",
+          "apiKey",
+          "sender"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SmsProvider.VONAGE": {
+        "enum": [
+          "vonage"
+        ],
+        "type": "string"
+      },
+      "VonageSmsProviderConfig": {
+        "description": "Vonage SMS provider configuration",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/SmsProvider.VONAGE"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "Vonage API Key"
+          },
+          "apiSecret": {
+            "type": "string",
+            "description": "Vonage API Secret"
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender ID or phone number"
+          }
+        },
+        "required": [
+          "provider",
+          "apiKey",
+          "apiSecret",
+          "from"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SmsProvider.SMS_API": {
+        "enum": [
+          "sms_api"
+        ],
+        "type": "string"
+      },
+      "SmsApiProviderConfig": {
+        "description": "SMS API provider configuration",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/SmsProvider.SMS_API"
+          },
+          "from": {
+            "type": "string",
+            "description": "Sender name"
+          },
+          "token": {
+            "type": "string",
+            "description": "SMSAPI OAuth token"
+          }
+        },
+        "required": [
+          "provider",
+          "from",
+          "token"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PhoneAuthConfig": {
+        "description": "Phone auth configuration",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Enable OAuth provider."
+          },
+          "provider": {
+            "$ref": "#/components/schemas/BasicAuthProvider.PHONE",
+            "description": "Auth provider type"
+          },
+          "smsProviderConfig": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TwilioSmsProviderConfig"
+              },
+              {
+                "$ref": "#/components/schemas/MessageBirdSmsProviderConfig"
+              },
+              {
+                "$ref": "#/components/schemas/TxtLocalSmsProviderConfig"
+              },
+              {
+                "$ref": "#/components/schemas/VonageSmsProviderConfig"
+              },
+              {
+                "$ref": "#/components/schemas/SmsApiProviderConfig"
+              }
+            ],
+            "description": "SMS provider configuration"
+          },
+          "otpExpirationTime": {
+            "type": "number",
+            "format": "double",
+            "description": "OTP expiration time in seconds (default: 60)"
+          },
+          "otpLength": {
+            "type": "number",
+            "format": "double",
+            "description": "Length of the OTP code (default: 6)"
+          },
+          "smsTemplate": {
+            "type": "string",
+            "description": "SMS message template. Use {{ .Code }} to format the OTP code (default: \"Your code is {{ .Code }}\")"
+          }
+        },
+        "required": [
+          "enabled",
+          "provider",
+          "smsProviderConfig",
+          "otpExpirationTime",
+          "otpLength",
+          "smsTemplate"
         ],
         "type": "object",
         "additionalProperties": false
@@ -27412,6 +27647,15 @@
         "anyOf": [
           {
             "$ref": "#/components/schemas/EmailAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/GuestAuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/Web3AuthConfig"
+          },
+          {
+            "$ref": "#/components/schemas/PhoneAuthConfig"
           },
           {
             "$ref": "#/components/schemas/SupabaseAuthConfig"
@@ -28135,6 +28379,7 @@
           }
         },
         "required": [
+          "id",
           "expiresAt",
           "token",
           "createdAt",

@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { SignUpEmailPost200ResponseUser } from './sign-up-email-post200-response-user';
+import { User } from './user';
 
 /**
  * 
@@ -31,9 +31,9 @@ export interface ChangePasswordPost200Response {
     'token'?: string | null;
     /**
      * 
-     * @type {SignUpEmailPost200ResponseUser}
+     * @type {User}
      * @memberof ChangePasswordPost200Response
      */
-    'user': SignUpEmailPost200ResponseUser;
+    'user': User;
 }
 

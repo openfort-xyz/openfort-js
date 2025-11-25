@@ -15,20 +15,16 @@
 
 
 /**
- * Enum of the supporting Basic Auth providers.
+ * 
  * @export
  * @enum {string}
  */
 
-export const BasicAuthProvider = {
-    Email: 'email',
-    Wallet: 'wallet',
-    Guest: 'guest',
-    Web3: 'web3',
-    Phone: 'phone'
+export const SmsProviderTXTLOCAL = {
+    Txtlocal: 'txtlocal'
 } as const;
 
-export type BasicAuthProvider = typeof BasicAuthProvider[keyof typeof BasicAuthProvider];
+export type SmsProviderTXTLOCAL = typeof SmsProviderTXTLOCAL[keyof typeof SmsProviderTXTLOCAL];
 
 
 

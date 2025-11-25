@@ -15,25 +15,27 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { User } from './user';
+import { BasicAuthProviderGUEST } from './basic-auth-provider-guest';
 
 /**
  * 
  * @export
- * @interface SignUpEmailPost200Response
+ * @interface GuestAuthConfig
  */
-export interface SignUpEmailPost200Response {
+export interface GuestAuthConfig {
     /**
-     * Authentication token for the session
-     * @type {string}
-     * @memberof SignUpEmailPost200Response
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof GuestAuthConfig
      */
-    'token'?: string | null;
+    'enabled': boolean;
     /**
      * 
-     * @type {User}
-     * @memberof SignUpEmailPost200Response
+     * @type {BasicAuthProviderGUEST}
+     * @memberof GuestAuthConfig
      */
-    'user': User;
+    'provider': BasicAuthProviderGUEST;
 }
+
+
 

@@ -415,7 +415,7 @@ export class AuthManager {
   public async getUser(auth: Authentication) {
     return withApiError(
       async () => {
-        const response = await this.backendApiClients.userApi.me1({
+        const response = await this.backendApiClients.userApi.meV2({
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,

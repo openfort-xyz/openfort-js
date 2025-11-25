@@ -15,53 +15,53 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { BasicAuthProviderEMAIL } from './basic-auth-provider-email';
+import { BasicAuthProviderPHONE } from './basic-auth-provider-phone';
 // May contain unused imports in some cases
 // @ts-ignore
-import { EmailAuthConfigPasswordRequirements } from './email-auth-config-password-requirements';
+import { PhoneAuthConfigSmsProviderConfig } from './phone-auth-config-sms-provider-config';
 
 /**
- * Email auth configuration
+ * Phone auth configuration
  * @export
- * @interface EmailAuthConfig
+ * @interface PhoneAuthConfig
  */
-export interface EmailAuthConfig {
+export interface PhoneAuthConfig {
     /**
      * Enable OAuth provider.
      * @type {boolean}
-     * @memberof EmailAuthConfig
+     * @memberof PhoneAuthConfig
      */
     'enabled': boolean;
     /**
      * 
-     * @type {BasicAuthProviderEMAIL}
-     * @memberof EmailAuthConfig
+     * @type {BasicAuthProviderPHONE}
+     * @memberof PhoneAuthConfig
      */
-    'provider': BasicAuthProviderEMAIL;
+    'provider': BasicAuthProviderPHONE;
     /**
-     * Allow unverified emails: Users will be able to sign in with unverified emails
-     * @type {boolean}
-     * @memberof EmailAuthConfig
+     * 
+     * @type {PhoneAuthConfigSmsProviderConfig}
+     * @memberof PhoneAuthConfig
      */
-    'allowUnverified': boolean;
+    'smsProviderConfig': PhoneAuthConfigSmsProviderConfig;
     /**
-     * OTP expiration time in seconds (default: 3600)
+     * OTP expiration time in seconds (default: 60)
      * @type {number}
-     * @memberof EmailAuthConfig
+     * @memberof PhoneAuthConfig
      */
     'otpExpirationTime': number;
     /**
      * Length of the OTP code (default: 6)
      * @type {number}
-     * @memberof EmailAuthConfig
+     * @memberof PhoneAuthConfig
      */
     'otpLength': number;
     /**
-     * 
-     * @type {EmailAuthConfigPasswordRequirements}
-     * @memberof EmailAuthConfig
+     * SMS message template. Use {{ .Code }} to format the OTP code (default: \"Your code is {{ .Code }}\")
+     * @type {string}
+     * @memberof PhoneAuthConfig
      */
-    'passwordRequirements': EmailAuthConfigPasswordRequirements;
+    'smsTemplate': string;
 }
 
 

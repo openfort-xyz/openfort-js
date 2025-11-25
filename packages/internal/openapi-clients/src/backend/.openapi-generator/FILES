@@ -104,6 +104,9 @@ models/base-entity-list-response-email-sample-response.ts
 models/base-entity-list-response-log-response.ts
 models/base-entity-list-response-trigger-response.ts
 models/basic-auth-provider-email.ts
+models/basic-auth-provider-guest.ts
+models/basic-auth-provider-phone.ts
+models/basic-auth-provider-web3.ts
 models/basic-auth-provider.ts
 models/better-auth-config.ts
 models/better-auth-providers.ts
@@ -176,6 +179,7 @@ models/device-list-queries.ts
 models/device-response.ts
 models/discord-oauth-config.ts
 models/ecosystem-configuration-response.ts
+models/email-auth-config-password-requirements.ts
 models/email-auth-config.ts
 models/email-otp-reset-password-post-request.ts
 models/email-otp-send-verification-otp-post-request.ts
@@ -240,6 +244,7 @@ models/get-session-get200-response.ts
 models/google-oauth-config.ts
 models/grant-callback-request.ts
 models/grant-oauth-response.ts
+models/guest-auth-config.ts
 models/index.ts
 models/init-embedded-request.ts
 models/interaction.ts
@@ -283,6 +288,7 @@ models/login-with-id-token-request.ts
 models/logout-request.ts
 models/loot-locker-oauth-config.ts
 models/mapping-strategy.ts
+models/message-bird-sms-provider-config.ts
 models/money.ts
 models/month-range.ts
 models/my-ecosystem-response.ts
@@ -317,6 +323,8 @@ models/passkey-env.ts
 models/pay-for-user-policy-strategy.ts
 models/paymaster-delete-response.ts
 models/paymaster-response.ts
+models/phone-auth-config-sms-provider-config.ts
+models/phone-auth-config.ts
 models/phone-number-forget-password-post-request.ts
 models/phone-number-forget-password-post200-response.ts
 models/phone-number-request-password-reset-post-request.ts
@@ -417,7 +425,6 @@ models/sign-out-response.ts
 models/sign-payload-request.ts
 models/sign-payload-response.ts
 models/sign-up-email-post-request.ts
-models/sign-up-email-post200-response-user.ts
 models/sign-up-email-post200-response.ts
 models/signature-request.ts
 models/signer-id-response.ts
@@ -433,6 +440,12 @@ models/siweauthenticate-request.ts
 models/siweinit-response.ts
 models/siwerequest.ts
 models/smart-account-data.ts
+models/sms-api-provider-config.ts
+models/sms-provider-messagebird.ts
+models/sms-provider-smsapi.ts
+models/sms-provider-twilio.ts
+models/sms-provider-txtlocal.ts
+models/sms-provider-vonage.ts
 models/smtpconfig-response.ts
 models/social-sign-in-request-id-token.ts
 models/social-sign-in-request.ts
@@ -488,7 +501,9 @@ models/transfer-ownership-request.ts
 models/transition.ts
 models/trigger-delete-response.ts
 models/trigger-response.ts
+models/twilio-sms-provider-config.ts
 models/twitter-oauth-config.ts
+models/txt-local-sms-provider-config.ts
 models/typed-data-field.ts
 models/typed-domain-data.ts
 models/unlink-account-post-request.ts
@@ -527,6 +542,8 @@ models/verification.ts
 models/verify-email-get200-response-user.ts
 models/verify-email-get200-response.ts
 models/verify-email-request.ts
+models/vonage-sms-provider-config.ts
+models/web3-auth-config.ts
 models/webhook-response.ts
 models/withdrawal-policy-request.ts
 models/zksync-details.ts

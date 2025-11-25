@@ -15,25 +15,33 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { User } from './user';
+import { SmsProviderTXTLOCAL } from './sms-provider-txtlocal';
 
 /**
- * 
+ * TxtLocal SMS provider configuration
  * @export
- * @interface SignUpEmailPost200Response
+ * @interface TxtLocalSmsProviderConfig
  */
-export interface SignUpEmailPost200Response {
-    /**
-     * Authentication token for the session
-     * @type {string}
-     * @memberof SignUpEmailPost200Response
-     */
-    'token'?: string | null;
+export interface TxtLocalSmsProviderConfig {
     /**
      * 
-     * @type {User}
-     * @memberof SignUpEmailPost200Response
+     * @type {SmsProviderTXTLOCAL}
+     * @memberof TxtLocalSmsProviderConfig
      */
-    'user': User;
+    'provider': SmsProviderTXTLOCAL;
+    /**
+     * TxtLocal API Key
+     * @type {string}
+     * @memberof TxtLocalSmsProviderConfig
+     */
+    'apiKey': string;
+    /**
+     * Sender name
+     * @type {string}
+     * @memberof TxtLocalSmsProviderConfig
+     */
+    'sender': string;
 }
+
+
 

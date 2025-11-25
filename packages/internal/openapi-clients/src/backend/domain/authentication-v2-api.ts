@@ -34,7 +34,7 @@ export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Co
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        me1: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        meV2: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/iam/v2/me`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -73,8 +73,8 @@ export const AuthenticationV2ApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async me1(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.me1(options);
+        async meV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.meV2(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -92,8 +92,8 @@ export const AuthenticationV2ApiFactory = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        me1(options?: AxiosRequestConfig): AxiosPromise<UserResponse> {
-            return localVarFp.me1(options).then((request) => request(axios, basePath));
+        meV2(options?: AxiosRequestConfig): AxiosPromise<UserResponse> {
+            return localVarFp.meV2(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -111,8 +111,8 @@ export class AuthenticationV2Api extends BaseAPI {
      * @throws {RequiredError}
      * @memberof AuthenticationV2Api
      */
-    public me1(options?: AxiosRequestConfig) {
-        return AuthenticationV2ApiFp(this.configuration).me1(options).then((request) => request(this.axios, this.basePath));
+    public meV2(options?: AxiosRequestConfig) {
+        return AuthenticationV2ApiFp(this.configuration).meV2(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

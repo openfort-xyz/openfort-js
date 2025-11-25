@@ -25,7 +25,7 @@ export interface Session {
      * @type {string}
      * @memberof Session
      */
-    'id'?: string;
+    'id': string;
     /**
      * 
      * @type {string}

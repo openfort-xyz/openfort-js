@@ -15,25 +15,27 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { User } from './user';
+import { BasicAuthProviderWEB3 } from './basic-auth-provider-web3';
 
 /**
  * 
  * @export
- * @interface SignUpEmailPost200Response
+ * @interface Web3AuthConfig
  */
-export interface SignUpEmailPost200Response {
+export interface Web3AuthConfig {
     /**
-     * Authentication token for the session
-     * @type {string}
-     * @memberof SignUpEmailPost200Response
+     * Enable OAuth provider.
+     * @type {boolean}
+     * @memberof Web3AuthConfig
      */
-    'token'?: string | null;
+    'enabled': boolean;
     /**
      * 
-     * @type {User}
-     * @memberof SignUpEmailPost200Response
+     * @type {BasicAuthProviderWEB3}
+     * @memberof Web3AuthConfig
      */
-    'user': User;
+    'provider': BasicAuthProviderWEB3;
 }
+
+
 

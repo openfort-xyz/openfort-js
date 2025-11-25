@@ -33,6 +33,9 @@ import { DiscordOAuthConfig } from './discord-oauth-config';
 import { EmailAuthConfig } from './email-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { EmailAuthConfigPasswordRequirements } from './email-auth-config-password-requirements';
+// May contain unused imports in some cases
+// @ts-ignore
 import { EpicGamesOAuthConfig } from './epic-games-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -45,6 +48,9 @@ import { FirebaseOAuthConfig } from './firebase-oauth-config';
 import { GoogleOAuthConfig } from './google-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { GuestAuthConfig } from './guest-auth-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { LineOAuthConfig } from './line-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -52,6 +58,12 @@ import { LootLockerOAuthConfig } from './loot-locker-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { OIDCAuthConfig } from './oidcauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
+import { PhoneAuthConfig } from './phone-auth-config';
+// May contain unused imports in some cases
+// @ts-ignore
+import { PhoneAuthConfigSmsProviderConfig } from './phone-auth-config-sms-provider-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { PlayFabOAuthConfig } from './play-fab-oauth-config';
@@ -64,6 +76,9 @@ import { ThirdPartyOAuthProviderBETTERAUTH } from './third-party-oauth-provider-
 // May contain unused imports in some cases
 // @ts-ignore
 import { TwitterOAuthConfig } from './twitter-oauth-config';
+// May contain unused imports in some cases
+// @ts-ignore
+import { Web3AuthConfig } from './web3-auth-config';
 
 /**
  * 
@@ -89,6 +104,36 @@ export interface AuthConfig {
      * @memberof AuthConfig
      */
     'allowUnverified': boolean;
+    /**
+     * OTP expiration time in seconds (default: 60)
+     * @type {number}
+     * @memberof AuthConfig
+     */
+    'otpExpirationTime': number;
+    /**
+     * Length of the OTP code (default: 6)
+     * @type {number}
+     * @memberof AuthConfig
+     */
+    'otpLength': number;
+    /**
+     * 
+     * @type {EmailAuthConfigPasswordRequirements}
+     * @memberof AuthConfig
+     */
+    'passwordRequirements': EmailAuthConfigPasswordRequirements;
+    /**
+     * 
+     * @type {PhoneAuthConfigSmsProviderConfig}
+     * @memberof AuthConfig
+     */
+    'smsProviderConfig': PhoneAuthConfigSmsProviderConfig;
+    /**
+     * SMS message template. Use {{ .Code }} to format the OTP code (default: \"Your code is {{ .Code }}\")
+     * @type {string}
+     * @memberof AuthConfig
+     */
+    'smsTemplate': string;
     /**
      * The unique Supabase URL which is supplied when you create a new project in your project dashboard.
      * @type {string}
