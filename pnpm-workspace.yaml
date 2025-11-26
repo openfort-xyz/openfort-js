@@ -4,3 +4,5 @@ packages:
   - "examples/**"
   - "test"
 minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "@openfort/shield-js"

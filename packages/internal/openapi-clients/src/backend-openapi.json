@@ -17473,10 +17473,13 @@
                     "minimum": 1,
                     "maximum": 2147483647
                   },
-                  "email": {
+                  "walletClientType": {
                     "type": "string",
-                    "format": "email",
-                    "description": "Email address (required if anonymous mode is disabled)"
+                    "description": "Type of wallet client used (e.g., 'Phantom', 'MetaMask')"
+                  },
+                  "connectorType": {
+                    "type": "string",
+                    "description": "Type of connector used (e.g., 'injected', 'walletConnect')"
                   }
                 },
                 "required": [
@@ -17753,6 +17756,14 @@
                     "default": 1,
                     "minimum": 1,
                     "maximum": 2147483647
+                  },
+                  "walletClientType": {
+                    "type": "string",
+                    "description": "Type of wallet client used (e.g., 'Phantom', 'MetaMask')"
+                  },
+                  "connectorType": {
+                    "type": "string",
+                    "description": "Type of connector used (e.g., 'injected', 'walletConnect')"
                   }
                 },
                 "required": [
@@ -17787,6 +17798,14 @@
                     "isPrimary": {
                       "type": "boolean",
                       "description": "Whether this is the user's primary wallet (first wallet linked)"
+                    },
+                    "connectorType": {
+                      "type": "string",
+                      "description": "Type of connector used (e.g., 'injected', 'walletConnect')"
+                    },
+                    "walletClientType": {
+                      "type": "string",
+                      "description": "Type of wallet client used (e.g., 'Phantom', 'MetaMask')"
                     },
                     "ensName": {
                       "type": "string",
@@ -26788,13 +26807,6 @@
         ],
         "type": "string"
       },
-      "BetterAuthProviders": {
-        "enum": [
-          "better_auth_sms",
-          "better_auth_email"
-        ],
-        "type": "string"
-      },
       "AuthProvider": {
         "anyOf": [
           {
@@ -26805,9 +26817,6 @@
           },
           {
             "$ref": "#/components/schemas/BasicAuthProvider"
-          },
-          {
-            "$ref": "#/components/schemas/BetterAuthProviders"
           }
         ],
         "description": "Enum of the supporting Auth providers."
@@ -26826,11 +26835,6 @@
           "allowUnverified": {
             "type": "boolean",
             "description": "Allow unverified emails: Users will be able to sign in with unverified emails"
-          },
-          "otpExpirationTime": {
-            "type": "number",
-            "format": "double",
-            "description": "OTP expiration time in seconds (default: 3600)"
           },
           "otpLength": {
             "type": "number",
@@ -26872,7 +26876,6 @@
           "enabled",
           "provider",
           "allowUnverified",
-          "otpExpirationTime",
           "otpLength",
           "passwordRequirements"
         ],
@@ -27119,16 +27122,6 @@
             ],
             "description": "SMS provider configuration"
           },
-          "otpExpirationTime": {
-            "type": "number",
-            "format": "double",
-            "description": "OTP expiration time in seconds (default: 60)"
-          },
-          "otpLength": {
-            "type": "number",
-            "format": "double",
-            "description": "Length of the OTP code (default: 6)"
-          },
           "smsTemplate": {
             "type": "string",
             "description": "SMS message template. Use {{ .Code }} to format the OTP code (default: \"Your code is {{ .Code }}\")"
@@ -27138,8 +27131,6 @@
           "enabled",
           "provider",
           "smsProviderConfig",
-          "otpExpirationTime",
-          "otpLength",
           "smsTemplate"
         ],
         "type": "object",

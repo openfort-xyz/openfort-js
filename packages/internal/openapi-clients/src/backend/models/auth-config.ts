@@ -105,12 +105,6 @@ export interface AuthConfig {
      */
     'allowUnverified': boolean;
     /**
-     * OTP expiration time in seconds (default: 60)
-     * @type {number}
-     * @memberof AuthConfig
-     */
-    'otpExpirationTime': number;
-    /**
      * Length of the OTP code (default: 6)
      * @type {number}
      * @memberof AuthConfig

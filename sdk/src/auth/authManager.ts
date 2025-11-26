@@ -640,18 +640,20 @@ export class AuthManager {
   public async linkWallet(
     signature: string,
     message: string,
-    _walletClientType: string,
-    _connectorType: string,
+    walletClientType: string,
+    connectorType: string,
     address: string,
     chainId: number,
     auth: Authentication
   ) {
     const request = {
-      linkSiweVerifyPostRequest: {
+      siweVerifyPostRequest: {
         signature,
         message,
         walletAddress: address,
         chainId,
+        walletClientType,
+        connectorType,
       },
     }
     return withApiError(

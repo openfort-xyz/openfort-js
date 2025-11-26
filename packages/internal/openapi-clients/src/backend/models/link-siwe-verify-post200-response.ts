@@ -45,6 +45,18 @@ export interface LinkSiweVerifyPost200Response {
      */
     'isPrimary': boolean;
     /**
+     * Type of connector used (e.g., \'injected\', \'walletConnect\')
+     * @type {string}
+     * @memberof LinkSiweVerifyPost200Response
+     */
+    'connectorType'?: string;
+    /**
+     * Type of wallet client used (e.g., \'Phantom\', \'MetaMask\')
+     * @type {string}
+     * @memberof LinkSiweVerifyPost200Response
+     */
+    'walletClientType'?: string;
+    /**
      * ENS name associated with the wallet (if available)
      * @type {string}
      * @memberof LinkSiweVerifyPost200Response

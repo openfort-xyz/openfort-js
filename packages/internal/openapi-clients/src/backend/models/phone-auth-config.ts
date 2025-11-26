@@ -45,18 +45,6 @@ export interface PhoneAuthConfig {
      */
     'smsProviderConfig': PhoneAuthConfigSmsProviderConfig;
     /**
-     * OTP expiration time in seconds (default: 60)
-     * @type {number}
-     * @memberof PhoneAuthConfig
-     */
-    'otpExpirationTime': number;
-    /**
-     * Length of the OTP code (default: 6)
-     * @type {number}
-     * @memberof PhoneAuthConfig
-     */
-    'otpLength': number;
-    /**
      * SMS message template. Use {{ .Code }} to format the OTP code (default: \"Your code is {{ .Code }}\")
      * @type {string}
      * @memberof PhoneAuthConfig

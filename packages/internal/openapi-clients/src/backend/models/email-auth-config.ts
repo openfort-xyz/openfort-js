@@ -45,12 +45,6 @@ export interface EmailAuthConfig {
      */
     'allowUnverified': boolean;
     /**
-     * OTP expiration time in seconds (default: 3600)
-     * @type {number}
-     * @memberof EmailAuthConfig
-     */
-    'otpExpirationTime': number;
-    /**
      * Length of the OTP code (default: 6)
      * @type {number}
      * @memberof EmailAuthConfig

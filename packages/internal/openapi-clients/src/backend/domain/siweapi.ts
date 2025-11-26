@@ -38,8 +38,6 @@ import { LinkSiweVerifyPost400Response } from '../models';
 // @ts-ignore
 import { LinkSiweVerifyPost401Response } from '../models';
 // @ts-ignore
-import { LinkSiweVerifyPostRequest } from '../models';
-// @ts-ignore
 import { SiweNoncePost200Response } from '../models';
 // @ts-ignore
 import { SiweNoncePostRequest } from '../models';
@@ -164,13 +162,13 @@ export const SIWEApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.
          * @summary Verify and link SIWE wallet
-         * @param {LinkSiweVerifyPostRequest} linkSiweVerifyPostRequest 
+         * @param {SiweVerifyPostRequest} siweVerifyPostRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        linkSiweVerifyPost: async (linkSiweVerifyPostRequest: LinkSiweVerifyPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'linkSiweVerifyPostRequest' is not null or undefined
-            assertParamExists('linkSiweVerifyPost', 'linkSiweVerifyPostRequest', linkSiweVerifyPostRequest)
+        linkSiweVerifyPost: async (siweVerifyPostRequest: SiweVerifyPostRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'siweVerifyPostRequest' is not null or undefined
+            assertParamExists('linkSiweVerifyPost', 'siweVerifyPostRequest', siweVerifyPostRequest)
             const localVarPath = `/link-siwe/verify`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -190,7 +188,7 @@ export const SIWEApiAxiosParamCreator = function (configuration?: Configuration)
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(linkSiweVerifyPostRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(siweVerifyPostRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -312,12 +310,12 @@ export const SIWEApiFp = function(configuration?: Configuration) {
         /**
          * Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.
          * @summary Verify and link SIWE wallet
-         * @param {LinkSiweVerifyPostRequest} linkSiweVerifyPostRequest 
+         * @param {SiweVerifyPostRequest} siweVerifyPostRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async linkSiweVerifyPost(linkSiweVerifyPostRequest: LinkSiweVerifyPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkSiweVerifyPost200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.linkSiweVerifyPost(linkSiweVerifyPostRequest, options);
+        async linkSiweVerifyPost(siweVerifyPostRequest: SiweVerifyPostRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkSiweVerifyPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.linkSiweVerifyPost(siweVerifyPostRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -387,7 +385,7 @@ export const SIWEApiFactory = function (configuration?: Configuration, basePath?
          * @throws {RequiredError}
          */
         linkSiweVerifyPost(requestParameters: SIWEApiLinkSiweVerifyPostRequest, options?: AxiosRequestConfig): AxiosPromise<LinkSiweVerifyPost200Response> {
-            return localVarFp.linkSiweVerifyPost(requestParameters.linkSiweVerifyPostRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.linkSiweVerifyPost(requestParameters.siweVerifyPostRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Generate a nonce for Sign-In With Ethereum (SIWE) authentication
@@ -446,10 +444,10 @@ export interface SIWEApiLinkSiweUnlinkPostRequest {
 export interface SIWEApiLinkSiweVerifyPostRequest {
     /**
      * 
-     * @type {LinkSiweVerifyPostRequest}
+     * @type {SiweVerifyPostRequest}
      * @memberof SIWEApiLinkSiweVerifyPost
      */
-    readonly linkSiweVerifyPostRequest: LinkSiweVerifyPostRequest
+    readonly siweVerifyPostRequest: SiweVerifyPostRequest
 }
 
 /**
@@ -531,7 +529,7 @@ export class SIWEApi extends BaseAPI {
      * @memberof SIWEApi
      */
     public linkSiweVerifyPost(requestParameters: SIWEApiLinkSiweVerifyPostRequest, options?: AxiosRequestConfig) {
-        return SIWEApiFp(this.configuration).linkSiweVerifyPost(requestParameters.linkSiweVerifyPostRequest, options).then((request) => request(this.axios, this.basePath));
+        return SIWEApiFp(this.configuration).linkSiweVerifyPost(requestParameters.siweVerifyPostRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

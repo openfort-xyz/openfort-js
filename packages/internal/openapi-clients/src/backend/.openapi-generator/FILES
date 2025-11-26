@@ -109,7 +109,6 @@ models/basic-auth-provider-phone.ts
 models/basic-auth-provider-web3.ts
 models/basic-auth-provider.ts
 models/better-auth-config.ts
-models/better-auth-providers.ts
 models/billing-subscription-response-plan.ts
 models/billing-subscription-response.ts
 models/cancel-transfer-ownership-request.ts
@@ -268,7 +267,6 @@ models/link-siwe-nonce-post200-response.ts
 models/link-siwe-unlink-post-request.ts
 models/link-siwe-unlink-post200-response.ts
 models/link-siwe-unlink-post400-response.ts
-models/link-siwe-verify-post-request.ts
 models/link-siwe-verify-post200-response.ts
 models/link-siwe-verify-post400-response.ts
 models/link-siwe-verify-post401-response.ts

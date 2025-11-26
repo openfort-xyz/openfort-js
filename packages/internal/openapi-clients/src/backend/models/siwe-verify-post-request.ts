@@ -45,10 +45,16 @@ export interface SiweVerifyPostRequest {
      */
     'chainId'?: number;
     /**
-     * Email address (required if anonymous mode is disabled)
+     * Type of wallet client used (e.g., \'Phantom\', \'MetaMask\')
      * @type {string}
      * @memberof SiweVerifyPostRequest
      */
-    'email'?: string;
+    'walletClientType'?: string;
+    /**
+     * Type of connector used (e.g., \'injected\', \'walletConnect\')
+     * @type {string}
+     * @memberof SiweVerifyPostRequest
+     */
+    'connectorType'?: string;
 }
 
