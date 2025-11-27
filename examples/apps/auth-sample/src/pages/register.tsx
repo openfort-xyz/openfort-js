@@ -70,7 +70,7 @@ function RegisterPage() {
         name: `${first_name} ${last_name}`,
       })
 
-      if (data?.user) {
+      if ('user' in data) {
         if (data.token === null) setEmailConfirmation(true)
         setUser(data.user)
       }
