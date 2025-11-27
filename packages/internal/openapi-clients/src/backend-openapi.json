@@ -8321,7 +8321,11 @@
             "name": "chainType",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "EVM",
+                "SVM"
+              ]
             },
             "example": "EVM"
           },
@@ -8331,7 +8335,12 @@
             "name": "accountType",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "Externally Owned Account",
+                "Smart Account",
+                "Delegated Account"
+              ]
             },
             "example": "Smart Account"
           },
@@ -24674,11 +24683,20 @@
           },
           "chainType": {
             "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
             "description": "The chain type. Must be either \"EVM\" or \"SVM\".",
             "example": "EVM"
           },
           "accountType": {
             "type": "string",
+            "enum": [
+              "Externally Owned Account",
+              "Smart Account",
+              "Delegated Account"
+            ],
             "description": "Specifies the type of account. Must be either \"Smart Account\" or \"Externally Owned Account\".",
             "example": "Smart Account"
           },
