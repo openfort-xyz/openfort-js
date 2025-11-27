@@ -339,7 +339,7 @@ export interface EstimateTransactionIntentGasResult {
 
 type PlayerMetadataValue = unknown
 
-export interface UserAccountResponse {
+export interface UserAccount {
   id: string
   providerId: string
   createdAt: string

@@ -70,4 +70,5 @@ export {
   TokenType,
   TransactionIntentResponse,
   User,
+  UserAccount,
 } from './types'
