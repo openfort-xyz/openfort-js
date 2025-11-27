@@ -43,7 +43,7 @@ function LinkWalletPage() {
                 {'Link with your wallet'}
               </h1>
             </div>
-            <WalletButtons onSuccess={redirect} link={false} />
+            <WalletButtons onSuccess={redirect} link={true} />
             <p className="my-5 text-left text-sm text-gray-600">
               {'Go back to '}
               <Link href="/" className="text-blue-600">
