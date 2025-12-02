@@ -269,7 +269,7 @@ export class AuthManager {
   public async requestResetPassword(email: string, redirectUrl: string): Promise<void> {
     await withApiError<void>(
       async () => {
-        await this.backendApiClients.authenticationV2Api.forgetPasswordPost(
+        await this.backendApiClients.authenticationV2Api.requestPasswordResetPost(
           {
             forgetPasswordPostRequest: {
               email,
