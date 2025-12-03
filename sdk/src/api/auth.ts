@@ -307,6 +307,15 @@ export class AuthApi {
     return await this.authManager.initSIWE(address, chainId)
   }
 
+  async linkSIWE({ address, chainId }: { address: string; chainId?: number }): Promise<SIWEInitResponse> {
+    await this.ensureInitialized()
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
+    }
+    return await this.authManager.linkSIWE(address, auth, chainId)
+  }
+
   async authenticateWithSIWE({
     signature,
     message,

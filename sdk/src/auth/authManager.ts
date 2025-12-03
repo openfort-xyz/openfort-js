@@ -205,6 +205,30 @@ export class AuthManager {
     }
   }
 
+  public async linkSIWE(address: string, auth: Authentication, chainId?: number): Promise<SIWEInitResponse> {
+    const request = {
+      siweNoncePostRequest: {
+        walletAddress: address,
+        chainId: chainId || 1,
+      },
+    }
+    const result = await withApiError(
+      async () =>
+        this.backendApiClients.siweApi.linkSiweNoncePost(request, {
+          headers: {
+            authorization: `Bearer ${auth.token}`,
+            'x-project-key': `${this.publishableKey}`,
+          },
+        }),
+      { context: 'linkSIWE' }
+    )
+
+    return {
+      address: address,
+      nonce: result.data.nonce,
+    }
+  }
+
   public async authenticateSIWE(
     signature: string,
     message: string,
