@@ -16,17 +16,15 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      uses: actions/checkout@v5
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
-      with:
-        version: 10.16.1
 
     - name: Setup Node
-      uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+      uses: actions/setup-node@v6
       with:
-        node-version-file: .nvmrc
+        node-version: 24
         cache: 'pnpm'
 
     - name: Install root dependencies
@@ -57,7 +55,7 @@ jobs:
       run: pnpm playwright test --reporter=dot --workers=5
       working-directory: examples/apps/auth-sample
 
-    - uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+    - uses: actions/upload-artifact@v5.0.0
       if: ${{ !cancelled() }}
       with:
         name: playwright-report

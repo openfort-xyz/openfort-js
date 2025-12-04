@@ -47,8 +47,7 @@
       },
       "suspicious": {
         "noExplicitAny": "off",
-        "noConsole": { "level": "error", "options": { "allow": ["log", "warn", "error"] } },
-        "noNonNullAssertedOptionalChain": "off"
+        "noConsole": { "level": "error", "options": { "allow": ["log", "warn", "error"] } }
       }
     }
   },
@@ -62,8 +61,7 @@
   },
   "css": {
     "parser": {
-      "cssModules": true,
-      "tailwindDirectives": true
+      "cssModules": true
     }
   },
   "assist": {
