@@ -1,10 +1,10 @@
-import { SDKConfiguration } from 'types'
 import { debugLog } from 'utils/debug'
 import { singlePromise } from 'utils/promiseUtils'
 import type { AuthManager } from '../auth/authManager'
 import type { IStorage } from '../storage/istorage'
 import { type Auth, type OpenfortEventMap, OpenfortEvents, TokenType } from '../types/types'
 import type TypedEventEmitter from '../utils/typedEventEmitter'
+import { SDKConfiguration } from './config/config'
 import { Authentication } from './configuration/authentication'
 import { OpenfortError, OpenfortErrorType } from './errors/openfortError'
 

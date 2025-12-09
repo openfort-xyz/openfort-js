@@ -1,9 +1,9 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import { Authentication } from 'core/configuration/authentication'
 import { PasskeyHandler } from 'core/configuration/passkey'
-import { withOpenfortError } from 'core/errors/openfortError'
-import { OpenfortError, OpenfortErrorType, SDKConfiguration } from 'types'
+import { OpenfortError, OpenfortErrorType, withOpenfortError } from 'core/errors/openfortError'
 import type TypedEventEmitter from 'utils/typedEventEmitter'
+import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
 import { type IStorage, StorageKeys } from '../storage/istorage'
 import {

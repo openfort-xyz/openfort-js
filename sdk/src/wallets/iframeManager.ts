@@ -1,5 +1,5 @@
-import { Account } from 'core/configuration/account'
 import type { SDKConfiguration } from '../core/config/config'
+import { Account } from '../core/configuration/account'
 import { Authentication } from '../core/configuration/authentication'
 import { type Data, OpenfortError, OpenfortErrorType } from '../core/errors/openfortError'
 import { sentry } from '../core/errors/sentry'

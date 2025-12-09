@@ -133,7 +133,8 @@ export class Openfort {
     this.configuration = new SDKConfiguration(sdkConfiguration)
 
     // Always create lazy storage - no localStorage access here
-    this.storage = new LazyStorage(this.configuration.storage)
+    // Pass publishable key for storage scoping (isolates data between projects)
+    this.storage = new LazyStorage(this.configuration.baseConfiguration.publishableKey, this.configuration.storage)
 
     // Create the centralized event emitter
     this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>()
