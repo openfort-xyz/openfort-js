@@ -316,7 +316,7 @@ export class AuthApi {
     if (!auth) return
     try {
       if (auth.type !== 'third_party') {
-        await this.authManager.logout(auth.token, auth?.refreshToken!)
+        await this.authManager.logout(auth.token, auth.refreshToken ?? '')
       }
     } catch (_error) {
       // Ignoring logout errors as we're clearing local state anyway

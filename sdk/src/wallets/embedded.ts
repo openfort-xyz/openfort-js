@@ -64,7 +64,7 @@ export class EmbeddedSigner implements Signer {
               passkey: {
                 id: acc.recoveryMethodDetails?.passkeyId,
                 env: acc.recoveryMethodDetails?.passkeyEnv,
-                key: await params.getPasskeyKeyFn(acc.recoveryMethodDetails?.passkeyId!),
+                key: await params.getPasskeyKeyFn(acc.recoveryMethodDetails?.passkeyId ?? ''),
               },
             }),
           },
@@ -128,7 +128,7 @@ export class EmbeddedSigner implements Signer {
                 passkey: {
                   id: account.recoveryMethodDetails?.passkeyId,
                   env: account.recoveryMethodDetails?.passkeyEnv,
-                  key: await params.getPasskeyKeyFn(account.recoveryMethodDetails?.passkeyId!),
+                  key: await params.getPasskeyKeyFn(account.recoveryMethodDetails?.passkeyId ?? ''),
                 },
               }),
             },

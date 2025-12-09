@@ -98,7 +98,7 @@ export class InternalSentry {
     })
 
     InternalSentry.baseTags = {
-      projectId: configuration?.baseConfiguration.publishableKey!,
+      projectId: configuration?.baseConfiguration.publishableKey ?? '',
       sdk: PACKAGE,
       sdkVersion: VERSION,
     }
