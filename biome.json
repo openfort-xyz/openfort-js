@@ -14,7 +14,8 @@
       "!**/node_modules",
       "!**/.next",
       "!**/coverage",
-      "!examples/apps/web-betterauth/src/index.css"
+      "!**/*.css",
+      "!**/*.html"
     ],
     "ignoreUnknown": true
   },
@@ -56,6 +57,14 @@
       "trailingCommas": "es5",
       "semicolons": "asNeeded",
       "arrowParentheses": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "cssModules": true
+    },
+    "linter": {
+      "enabled": false
     }
   },
   "assist": {

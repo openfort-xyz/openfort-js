@@ -47,7 +47,7 @@ const EIP1193CreateSessionButton: React.FC<{
           {
             type: 'contract-call',
             data: {
-              address: '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a',
+              address: '0xbabe0001489722187FbaF0689C47B2f5E97545C5',
               calls: [],
             },
             policies: [],

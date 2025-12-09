@@ -325,7 +325,7 @@ export class EmbeddedWalletApi {
       const passkeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
-        seed: auth?.player!,
+        seed: auth?.player ?? '',
       })
       recoveryParams.passkeyInfo = {
         passkeyId: passkeyDetails.id,
