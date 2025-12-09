@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.38
+
+### Patch Changes
+
+- [#190](https://github.com/openfort-xyz/openfort-js/pull/190) [`10891fa`](https://github.com/openfort-xyz/openfort-js/commit/10891fa22f9d3c4f2d9484c3838f8803f148d126) Thanks [@jamalavedra](https://github.com/jamalavedra)! - isolated storage by key
+
 ## 0.10.37
 
 ### Patch Changes
