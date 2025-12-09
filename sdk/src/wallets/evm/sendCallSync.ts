@@ -174,7 +174,7 @@ export const sendCallsSync = async ({
     let signature: string
     // zkSync based chains don't need hashMessage
     if (
-      [300, 531050104, 324, 50104, 2741, 11124].includes(account.chainId!) ||
+      [300, 324].includes(account.chainId!) ||
       (account.implementationType && [AccountType.CALIBUR].includes(account.implementationType as AccountType))
     ) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)

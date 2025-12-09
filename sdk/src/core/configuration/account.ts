@@ -1,6 +1,11 @@
-import { type AccountTypeEnum, type ChainTypeEnum, type EmbeddedAccount, RecoveryMethod } from 'types'
-import type { RecoveryMethodDetails } from 'types/types'
 import { type IStorage, StorageKeys } from '../../storage/istorage'
+import {
+  type AccountTypeEnum,
+  type ChainTypeEnum,
+  type EmbeddedAccount,
+  RecoveryMethod,
+  type RecoveryMethodDetails,
+} from '../../types/types'
 
 export class Account implements EmbeddedAccount {
   constructor(account: EmbeddedAccount) {
