@@ -53,19 +53,17 @@ export default function App() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const email = localStorage.getItem('email')
-        const state = searchParams.get('state')
-        if (email && state) {
+        const token = searchParams.get('token')
+        if (token) {
           await openfortInstance.auth.verifyEmail({
-            email: email,
-            state: state,
+            token: token,
           })
           localStorage.removeItem('email')
           setVerificationStatus('Email verified successfully! You can now sign in.')
 
           // Clear the URL parameters
           const url = new URL(window.location.href)
-          url.searchParams.delete('state')
+          url.searchParams.delete('token')
           window.history.replaceState({}, '', url.toString())
         }
       } catch (error) {
