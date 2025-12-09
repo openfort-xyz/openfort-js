@@ -4,7 +4,7 @@ import {
   type EmbeddedAccount,
   EmbeddedState,
   type RecoveryParams,
-  User,
+  type User,
 } from '@openfort/openfort-js'
 import type { Address } from '@solana/kit'
 import type React from 'react'
