@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.37
+
+### Patch Changes
+
+- [#188](https://github.com/openfort-xyz/openfort-js/pull/188) [`c4456f4`](https://github.com/openfort-xyz/openfort-js/commit/c4456f44b1d5bd232ddc97bd7976f5a3edbea27b) Thanks [@jamalavedra](https://github.com/jamalavedra)! - fix wallet_getAssets
+
 ## 0.10.36
 
 ### Patch Changes
