@@ -204,7 +204,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren> = ({ children }
     try {
       // For Solana, we need to sign the raw message bytes without hashing
       // hashMessage: false disables the default keccak256 hashing used for EVM chains
-      const signature = await openfort.embeddedWallet.signMessage(message, { hashMessage: false })
+      const signature = await openfort.embeddedWallet.signMessage(message, {
+        hashMessage: false,
+      })
       return { data: signature }
     } catch (err) {
       console.error('Error signing message:', err)

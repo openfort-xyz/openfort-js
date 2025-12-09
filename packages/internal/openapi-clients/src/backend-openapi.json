@@ -74,6 +74,54 @@
         }
       }
     },
+    "/rpc/{chainId}": {
+      "post": {
+        "operationId": "HandleChainRpcRequest",
+        "responses": {
+          "200": {
+            "description": "JSON-RPC response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Handle JSON-RPC 2.0 requests with chainId in URL path\n\nThis endpoint follows the standard ERC-4337/7677 pattern where chainId is in the URL.\nBundler and paymaster methods use standard params format without chainId.",
+        "summary": "Execute JSON-RPC method for specific chain",
+        "tags": [
+          "RPC"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chainId",
+            "required": true,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JsonRpcRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/transaction_intents": {
       "get": {
         "operationId": "GetTransactionIntents",
@@ -2272,20 +2320,7 @@
                           "nextAction": {
                             "type": "sign_with_wallet",
                             "payload": {
-                              "userOperationHash": "0x25d3...005c",
-                              "userOperation": {
-                                "sender": "0x814A...FB72",
-                                "nonce": "0x0",
-                                "initCode": "0x",
-                                "callData": "0xb61d27f6000000000000000",
-                                "callGasLimit": "0x2e84d",
-                                "verificationGasLimit": "0x1bcef",
-                                "maxFeePerGas": "0x62590091",
-                                "maxPriorityFeePerGas": "0x62590091",
-                                "paymasterAndData": "0x3210...391b",
-                                "signature": "",
-                                "preVerificationGas": "0xb80c"
-                              }
+                              "signableHash": "0x25d3...005c"
                             }
                           },
                           "transactionIntents": [
@@ -2403,20 +2438,7 @@
                       "nextAction": {
                         "type": "sign_with_wallet",
                         "payload": {
-                          "userOperationHash": "0x25d3...005c",
-                          "userOperation": {
-                            "sender": "0x814A...FB72",
-                            "nonce": "0x0",
-                            "initCode": "0x",
-                            "callData": "0xb61d27f6000000000000000",
-                            "callGasLimit": "0x2e84d",
-                            "verificationGasLimit": "0x1bcef",
-                            "maxFeePerGas": "0x62590091",
-                            "maxPriorityFeePerGas": "0x62590091",
-                            "paymasterAndData": "0x3210...391b",
-                            "signature": "",
-                            "preVerificationGas": "0xb80c"
-                          }
+                          "signableHash": "0x25d3...005c"
                         }
                       },
                       "transactionIntents": [
@@ -2508,20 +2530,7 @@
                       "nextAction": {
                         "type": "sign_with_wallet",
                         "payload": {
-                          "userOperationHash": "0x25d3...005c",
-                          "userOperation": {
-                            "sender": "0x814A...FB72",
-                            "nonce": "0x0",
-                            "initCode": "0x",
-                            "callData": "0xb61d27f6000000000000000",
-                            "callGasLimit": "0x2e84d",
-                            "verificationGasLimit": "0x1bcef",
-                            "maxFeePerGas": "0x62590091",
-                            "maxPriorityFeePerGas": "0x62590091",
-                            "paymasterAndData": "0x3210...391b",
-                            "signature": "",
-                            "preVerificationGas": "0xb80c"
-                          }
+                          "signableHash": "0x25d3...005c"
                         }
                       },
                       "transactionIntents": [
@@ -2612,20 +2621,7 @@
                       "nextAction": {
                         "type": "sign_with_wallet",
                         "payload": {
-                          "userOperationHash": "0x25d3...005c",
-                          "userOperation": {
-                            "sender": "0x814A...FB72",
-                            "nonce": "0x0",
-                            "initCode": "0x",
-                            "callData": "0xb61d27f6000000000000000",
-                            "callGasLimit": "0x2e84d",
-                            "verificationGasLimit": "0x1bcef",
-                            "maxFeePerGas": "0x62590091",
-                            "maxPriorityFeePerGas": "0x62590091",
-                            "paymasterAndData": "0x3210...391b",
-                            "signature": "",
-                            "preVerificationGas": "0xb80c"
-                          }
+                          "signableHash": "0x25d3...005c"
                         }
                       },
                       "transactionIntents": [
@@ -2715,20 +2711,7 @@
                       "nextAction": {
                         "type": "sign_with_wallet",
                         "payload": {
-                          "userOperationHash": "0x25d3...005c",
-                          "userOperation": {
-                            "sender": "0x814A...FB72",
-                            "nonce": "0x0",
-                            "initCode": "0x",
-                            "callData": "0xb61d27f6000000000000000",
-                            "callGasLimit": "0x2e84d",
-                            "verificationGasLimit": "0x1bcef",
-                            "maxFeePerGas": "0x62590091",
-                            "maxPriorityFeePerGas": "0x62590091",
-                            "paymasterAndData": "0x3210...391b",
-                            "signature": "",
-                            "preVerificationGas": "0xb80c"
-                          }
+                          "signableHash": "0x25d3...005c"
                         }
                       },
                       "transactionIntents": [
@@ -5261,585 +5244,6 @@
             }
           }
         }
-      }
-    },
-    "/v1/players/{id}/inventory/nft": {
-      "get": {
-        "operationId": "GetPlayerNftInventory",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventoryListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/players/pla_.../inventory/nft",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "assetType": "ERC1155",
-                          "amount": "1",
-                          "tokenId": 1,
-                          "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
-                          "lastTransferredAt": 1689869074
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "For development purposes only.\n\nUnder higher load scenarios, this endpoint may be rate limited.",
-        "summary": "Get NFTs list of player.",
-        "tags": [
-          "Inventories"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique player ID (starts with pla_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "description": "Filter by contract ID (starts with con_).",
-            "in": "query",
-            "name": "contract",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "example": "0x1234567890abcdef1234567890abcdef12345678"
-          },
-          {
-            "description": "Filter by chain id.",
-            "in": "query",
-            "name": "chainId",
-            "required": true,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            },
-            "example": 80002
-          }
-        ]
-      }
-    },
-    "/v1/players/{id}/inventory/cryptocurrency": {
-      "get": {
-        "operationId": "GetPlayerCryptoCurrencyInventory",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventoryListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/players/pla_.../inventory/cryptocurrency",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "assetType": "ERC20",
-                          "amount": "1000000000000000000",
-                          "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
-                          "lastTransferredAt": 1689869074
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "For development purposes only.\n\nUnder higher load scenarios, this endpoint may be rate limited.",
-        "summary": "Get cryptocurrency list of player.",
-        "tags": [
-          "Inventories"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique player ID (starts with pla_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "description": "Filter by contract ID (starts with con_).",
-            "in": "query",
-            "name": "contract",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "example": "0x1234567890abcdef1234567890abcdef12345678"
-          },
-          {
-            "description": "Filter by chain id.",
-            "in": "query",
-            "name": "chainId",
-            "required": true,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            },
-            "example": 80002
-          }
-        ]
-      }
-    },
-    "/v1/players/{id}/inventory/native": {
-      "get": {
-        "operationId": "GetPlayerNativeInventory",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventoryResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "inventory",
-                      "url": "/v1/players/pla_.../inventory/native",
-                      "data": {
-                        "assetType": "ETH",
-                        "amount": "1000000000000000000",
-                        "lastTransferredAt": 1689869074
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "For development purposes only.\n\nUnder higher load scenarios, this endpoint may be rate limited.",
-        "summary": "Get native token list of player.",
-        "tags": [
-          "Inventories"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique player ID (starts with pla_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          {
-            "description": "Filter by chain id.",
-            "in": "query",
-            "name": "chainId",
-            "required": true,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            },
-            "example": 80002
-          }
-        ]
-      }
-    },
-    "/v1/accounts/{id}/inventory/nft": {
-      "get": {
-        "operationId": "GetAccountNftInventory",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventoryListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/accounts/acc_.../inventory/nft",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "assetType": "ERC1155",
-                          "amount": "1",
-                          "tokenId": 1,
-                          "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
-                          "lastTransferredAt": 1689869074
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "For development purposes only.\n\nUnder higher load scenarios, this endpoint may be rate limited.",
-        "summary": "Retrieves the NFT assets of an existing account.",
-        "tags": [
-          "Inventories"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique account ID.",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "acc_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
-          },
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "in": "query",
-            "name": "contractId",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      }
-    },
-    "/v1/accounts/{id}/inventory/cryptocurrency": {
-      "get": {
-        "operationId": "GetAccountCryptoCurrencyInventory",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventoryListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/accounts/acc_.../inventory/cryptocurrency",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "assetType": "ERC20",
-                          "amount": "1000000000000000000",
-                          "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
-                          "lastTransferredAt": 1689869074
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "For development purposes only.\n\nUnder higher load scenarios, this endpoint may be rate limited.",
-        "summary": "Retrieves the cryptocurrency assets of an existing account.",
-        "tags": [
-          "Inventories"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique account ID.",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "acc_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
-          },
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "in": "query",
-            "name": "contractId",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      }
-    },
-    "/v1/accounts/{id}/inventory/native": {
-      "get": {
-        "operationId": "GetAccountNativeInventory",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventoryResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "inventory",
-                      "url": "/v1/accounts/acc_.../inventory/native",
-                      "data": {
-                        "assetType": "ETH",
-                        "amount": "1000000000000000000",
-                        "lastTransferredAt": 1689869074
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "For development purposes only.\n\nUnder higher load scenarios, this endpoint may be rate limited.",
-        "summary": "Retrieves the native asset of an existing account.",
-        "tags": [
-          "Inventories"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique account ID.",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "acc_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
-          }
-        ]
       }
     },
     "/v1/graphql": {
@@ -10723,8 +10127,8 @@
                       "id": "pla_",
                       "email": "joan@openfort.xyz",
                       "name": "joan",
-                      "phone": null,
-                      "phoneVerified": false,
+                      "phoneNumber": null,
+                      "phoneNumberVerified": false,
                       "createdAt": "2025-11-19T11:39:25.537Z",
                       "emailVerified": false
                     }
@@ -18734,6 +18138,7 @@
         "enum": [
           "accountAbstractionV6",
           "accountAbstractionV8",
+          "accountAbstractionV9",
           "zkSync",
           "standard"
         ],
@@ -18998,6 +18403,106 @@
         "properties": {
           "userOperation": {
             "$ref": "#/components/schemas/UserOperationV8"
+          },
+          "userOperationHash": {
+            "type": "string",
+            "description": "A User Operation hash."
+          }
+        },
+        "required": [
+          "userOperation",
+          "userOperationHash"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UserOperationV9": {
+        "description": "V9 UserOperation extends V8 with paymasterSignature field.\npaymasterSignature enables parallelizable Paymaster signing -\ndata can be passed to the Paymaster after the UserOperation is signed by the wallet.",
+        "properties": {
+          "callData": {
+            "type": "string",
+            "description": "The data to pass to the `sender` during the main execution call."
+          },
+          "callGasLimit": {
+            "type": "string",
+            "description": "The amount of gas to allocate the main execution call"
+          },
+          "factory": {
+            "type": "string",
+            "description": "Account init code. Only for new accounts."
+          },
+          "factoryData": {
+            "type": "string",
+            "description": "Factory data for account creation."
+          },
+          "maxFeePerGas": {
+            "type": "string",
+            "description": "Maximum fee per gas."
+          },
+          "maxPriorityFeePerGas": {
+            "type": "string",
+            "description": "Maximum priority fee per gas."
+          },
+          "nonce": {
+            "type": "string",
+            "description": "Anti-replay parameter."
+          },
+          "paymaster": {
+            "type": "string",
+            "description": "Paymaster address."
+          },
+          "paymasterVerificationGasLimit": {
+            "type": "string",
+            "description": "Paymaster verification gas limit."
+          },
+          "paymasterPostOpGasLimit": {
+            "type": "string",
+            "description": "Paymaster post-operation gas limit."
+          },
+          "paymasterData": {
+            "type": "string",
+            "description": "Paymaster data."
+          },
+          "preVerificationGas": {
+            "type": "string",
+            "description": "Extra gas to pay the bundler."
+          },
+          "sender": {
+            "type": "string",
+            "description": "The account making the operation."
+          },
+          "signature": {
+            "type": "string",
+            "description": "Data passed into the account to verify authorization."
+          },
+          "verificationGasLimit": {
+            "type": "string",
+            "description": "The amount of gas to allocate for the verification step."
+          },
+          "paymasterSignature": {
+            "type": "string",
+            "description": "Paymaster signature - enables parallelizable signing.\nThis field does not affect the UserOperation hash, allowing\nthe sender and paymaster to sign in parallel."
+          }
+        },
+        "required": [
+          "callData",
+          "callGasLimit",
+          "maxFeePerGas",
+          "maxPriorityFeePerGas",
+          "nonce",
+          "preVerificationGas",
+          "sender",
+          "signature",
+          "verificationGasLimit"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountAbstractionV9Details": {
+        "description": "V9 details - extends V8 with paymasterSignature for parallelizable signing",
+        "properties": {
+          "userOperation": {
+            "$ref": "#/components/schemas/UserOperationV9"
           },
           "userOperationHash": {
             "type": "string",
@@ -19317,6 +18822,9 @@
               },
               {
                 "$ref": "#/components/schemas/AccountAbstractionV8Details"
+              },
+              {
+                "$ref": "#/components/schemas/AccountAbstractionV9Details"
               },
               {
                 "$ref": "#/components/schemas/StandardDetails"
@@ -20152,6 +19660,9 @@
               },
               {
                 "$ref": "#/components/schemas/AccountAbstractionV8Details"
+              },
+              {
+                "$ref": "#/components/schemas/AccountAbstractionV9Details"
               },
               {
                 "$ref": "#/components/schemas/StandardDetails"
@@ -22662,188 +22173,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "AssetType": {
-        "enum": [
-          "ETH",
-          "ERC20",
-          "ERC721",
-          "ERC1155"
-        ],
-        "type": "string"
-      },
-      "AssetInventory": {
-        "properties": {
-          "assetType": {
-            "$ref": "#/components/schemas/AssetType"
-          },
-          "address": {
-            "type": "string"
-          },
-          "tokenId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "amount": {
-            "type": "string",
-            "description": "amount in Wei"
-          },
-          "lastTransferredAt": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "required": [
-          "assetType"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "InventoryListResponse": {
-        "properties": {
-          "object": {
-            "$ref": "#/components/schemas/ResponseType.LIST"
-          },
-          "url": {
-            "type": "string"
-          },
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/AssetInventory"
-            },
-            "type": "array"
-          },
-          "start": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "end": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "required": [
-          "object",
-          "url",
-          "data",
-          "start",
-          "end",
-          "total"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "PlayerInventoryListQueries": {
-        "properties": {
-          "limit": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specifies the maximum number of records to return.",
-            "minimum": 1
-          },
-          "skip": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specifies the offset for the first records to return.",
-            "minimum": 0
-          },
-          "order": {
-            "$ref": "#/components/schemas/Prisma.SortOrder",
-            "description": "Specifies the order in which to sort the results."
-          },
-          "contract": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "description": "Filter by contract ID (starts with con_).",
-            "example": "0x1234567890abcdef1234567890abcdef12345678"
-          },
-          "chainId": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Filter by chain id.",
-            "example": 80002
-          }
-        },
-        "required": [
-          "chainId"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "EntityType.INVENTORY": {
-        "enum": [
-          "inventory"
-        ],
-        "type": "string"
-      },
-      "InventoryResponse": {
-        "properties": {
-          "object": {
-            "$ref": "#/components/schemas/EntityType.INVENTORY"
-          },
-          "url": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/AssetInventory"
-          }
-        },
-        "required": [
-          "object",
-          "url",
-          "data"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "PlayerInventoryQueries": {
-        "properties": {
-          "chainId": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Filter by chain id.",
-            "example": 80002
-          }
-        },
-        "required": [
-          "chainId"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "AccountInventoryListQueries": {
-        "properties": {
-          "limit": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specifies the maximum number of records to return.",
-            "minimum": 1
-          },
-          "skip": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Specifies the offset for the first records to return.",
-            "minimum": 0
-          },
-          "order": {
-            "$ref": "#/components/schemas/Prisma.SortOrder",
-            "description": "Specifies the order in which to sort the results."
-          },
-          "contractId": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object",
-        "additionalProperties": false
-      },
       "EntityType.FORWARDER_CONTRACT": {
         "enum": [
           "forwarderContract"
@@ -24241,24 +23570,13 @@
           },
           "accountType": {
             "type": "string",
-            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.",
+            "description": "The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.",
             "example": "UpgradeableV6"
           },
           "defaultGuardian": {
             "type": "boolean",
             "description": "For account types that support social recovery, wether to enable Openfort as guardian or not. Defaults to false.",
             "example": "true"
-          },
-          "tokenContract": {
-            "type": "string",
-            "description": "If ERC6551, the address of the NFT contract to use",
-            "example": "0x662D24Bf7Ea2dD6a7D0135F680a6056b94fE934d"
-          },
-          "tokenId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "If ERC6551, the tokenId from the NFT contract that will serve as owner",
-            "example": 1
           },
           "player": {
             "type": "string",
@@ -24482,7 +23800,7 @@
           },
           "implementationType": {
             "type": "string",
-            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, Calibur, Simple). Defaults to UpgradeableV6 in mainnets. Must support EIP-7702 for Delegated Accounts.",
+            "description": "The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, Calibur, Simple). Defaults to UpgradeableV6 in mainnets. Must support EIP-7702 for Delegated Accounts.",
             "example": "UpgradeableV6"
           }
         },
@@ -24767,7 +24085,7 @@
           },
           "implementationType": {
             "type": "string",
-            "description": "The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, Calibur). Defaults to UpgradeableV6 in mainnets.",
+            "description": "The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, Calibur). Defaults to UpgradeableV6 in mainnets.",
             "example": "UpgradeableV6"
           },
           "chainId": {
@@ -28292,11 +27610,11 @@
           "emailVerified": {
             "type": "boolean"
           },
-          "phone": {
+          "phoneNumber": {
             "type": "string",
             "nullable": true
           },
-          "phoneVerified": {
+          "phoneNumberVerified": {
             "type": "boolean"
           }
         },
@@ -28306,8 +27624,8 @@
           "name",
           "email",
           "emailVerified",
-          "phone",
-          "phoneVerified"
+          "phoneNumber",
+          "phoneNumberVerified"
         ],
         "type": "object",
         "additionalProperties": false

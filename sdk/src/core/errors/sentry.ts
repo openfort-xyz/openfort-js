@@ -95,13 +95,19 @@ export class InternalSentry {
             errorDescription,
             errorClass: error.constructor.name,
             // Include specific error properties based on type
-            ...(openfortError.statusCode && { statusCode: openfortError.statusCode }),
+            ...(openfortError.statusCode && {
+              statusCode: openfortError.statusCode,
+            }),
             ...(openfortError.audience && { audience: openfortError.audience }),
             ...(openfortError.scope && { scope: openfortError.scope }),
-            ...(openfortError.accountId && { accountId: openfortError.accountId }),
+            ...(openfortError.accountId && {
+              accountId: openfortError.accountId,
+            }),
             ...(openfortError.userId && { userId: openfortError.userId }),
             ...(openfortError.provider && { provider: openfortError.provider }),
-            ...(openfortError.recoveryMethod && { recoveryMethod: openfortError.recoveryMethod }),
+            ...(openfortError.recoveryMethod && {
+              recoveryMethod: openfortError.recoveryMethod,
+            }),
           },
           tags: {
             ...InternalSentry.baseTags,
@@ -141,7 +147,7 @@ export class InternalSentry {
     })
 
     InternalSentry.baseTags = {
-      projectId: configuration?.baseConfiguration.publishableKey!,
+      projectId: configuration?.baseConfiguration.publishableKey ?? '',
       sdk: PACKAGE,
       sdkVersion: VERSION,
     }

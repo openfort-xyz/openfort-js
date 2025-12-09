@@ -140,7 +140,9 @@ export class EvmProvider implements Provider {
       case 'eth_requestAccounts': {
         const account = await Account.fromStorage(this.#storage)
         if (account) {
-          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, { chainId: String(account.chainId) })
+          this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, {
+            chainId: String(account.chainId),
+          })
           return [account.address]
         }
 

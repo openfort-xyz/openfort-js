@@ -118,7 +118,10 @@ export class Openfort {
           }
           const signer = this.embeddedWalletInstance
           return (message: string | Uint8Array) =>
-            signer.signMessage(message, { hashMessage: true, arrayifyMessage: true })
+            signer.signMessage(message, {
+              hashMessage: true,
+              arrayifyMessage: true,
+            })
         }
       )
     } catch (_error) {

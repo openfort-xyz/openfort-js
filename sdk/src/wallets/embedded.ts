@@ -60,13 +60,17 @@ export class EmbeddedSigner implements Signer {
         account: acc.id,
         ...(params.entropy && {
           entropy: {
-            ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
-            ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+            ...(params.entropy.recoveryPassword && {
+              recoveryPassword: params.entropy.recoveryPassword,
+            }),
+            ...(params.entropy.encryptionSession && {
+              encryptionSession: params.entropy.encryptionSession,
+            }),
             ...(acc.recoveryMethod === 'passkey' && {
               passkey: {
                 id: acc.recoveryMethodDetails?.passkeyId,
                 env: acc.recoveryMethodDetails?.passkeyEnv,
-                key: await params.getPasskeyKeyFn(acc.recoveryMethodDetails?.passkeyId!),
+                key: await params.getPasskeyKeyFn(acc.recoveryMethodDetails?.passkeyId ?? ''),
               },
             }),
           },
@@ -111,8 +115,12 @@ export class EmbeddedSigner implements Signer {
           chainId: params.chainId,
           ...(params.entropy && {
             entropy: {
-              ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
-              ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+              ...(params.entropy.recoveryPassword && {
+                recoveryPassword: params.entropy.recoveryPassword,
+              }),
+              ...(params.entropy.encryptionSession && {
+                encryptionSession: params.entropy.encryptionSession,
+              }),
               ...(params.entropy.passkey && { passkey: passkeyDetails }),
             },
           }),
@@ -130,13 +138,17 @@ export class EmbeddedSigner implements Signer {
           account: account.id,
           ...(params.entropy && {
             entropy: {
-              ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
-              ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+              ...(params.entropy.recoveryPassword && {
+                recoveryPassword: params.entropy.recoveryPassword,
+              }),
+              ...(params.entropy.encryptionSession && {
+                encryptionSession: params.entropy.encryptionSession,
+              }),
               ...(account.recoveryMethod === 'passkey' && {
                 passkey: {
                   id: account.recoveryMethodDetails?.passkeyId,
                   env: account.recoveryMethodDetails?.passkeyEnv,
-                  key: await params.getPasskeyKeyFn(account.recoveryMethodDetails?.passkeyId!),
+                  key: await params.getPasskeyKeyFn(account.recoveryMethodDetails?.passkeyId ?? ''),
                 },
               }),
             },
@@ -208,7 +220,10 @@ export class EmbeddedSigner implements Signer {
     chainType?: string
   ): Promise<string> {
     const signature = await this.iframeManager.sign(message, requireArrayify, requireHash, chainType)
-    this.eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, { message, signature })
+    this.eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, {
+      message,
+      signature,
+    })
     return signature
   }
 

@@ -79,7 +79,9 @@ const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) =>
                 nonce = resp.nonce
               }
               const SIWEMessage = createSIWEMessage(address, nonce, chainId)
-              const signature = await signMessageAsync({ message: SIWEMessage })
+              const signature = await signMessageAsync({
+                message: SIWEMessage,
+              })
               link
                 ? await openfort.auth.linkWallet({
                     signature,
@@ -149,7 +151,9 @@ export const getWalletButtons = (params: GetWalletButtonsParams) => {
       ? connectorToWagmiConnector[connector]({
           projectId: params.walletConnectProjectId as string,
         })
-      : connectorToWagmiConnector[connector]({ dappMetadata: { name: 'Openfort' } })
+      : connectorToWagmiConnector[connector]({
+          dappMetadata: { name: 'Openfort' },
+        })
   )
   const config = createConfig({
     chains: chains as any,

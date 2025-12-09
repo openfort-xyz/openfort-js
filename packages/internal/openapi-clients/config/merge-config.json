@@ -1,14 +1,14 @@
 {
-  "inputs": [
-    {
-      "inputFile": "../src/backend-openapi-main.json"
-    },
-    {
-      "inputFile": "../src/backend-openapi-auth.json",
-      "dispute": {
-        "suffix": "Auth"
-      }
-    }
-  ],
-  "output": "../src/backend-openapi.json"
+	"inputs": [
+		{
+			"inputFile": "../src/backend-openapi-main.json"
+		},
+		{
+			"inputFile": "../src/backend-openapi-auth.json",
+			"dispute": {
+				"suffix": "Auth"
+			}
+		}
+	],
+	"output": "../src/backend-openapi.json"
 }

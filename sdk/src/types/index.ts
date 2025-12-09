@@ -5,7 +5,10 @@ export { EmbeddedWalletApi } from '../api/embeddedWallet'
 export { UserApi } from '../api/user'
 // biome-ignore lint/performance/noReExportAll: Re-exporting config types for convenience
 export * from '../core/config'
-export { OPENFORT_AUTH_ERROR_CODES, OPENFORT_ERROR_CODES } from '../core/errors/authErrorCodes'
+export {
+  OPENFORT_AUTH_ERROR_CODES,
+  OPENFORT_ERROR_CODES,
+} from '../core/errors/authErrorCodes'
 export {
   AuthenticationError,
   AuthorizationError,

@@ -57,7 +57,7 @@ export interface CreateEmbeddedRequest {
      */
     'signerUuid'?: string;
     /**
-     * The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, Calibur, Simple). Defaults to UpgradeableV6 in mainnets. Must support EIP-7702 for Delegated Accounts.
+     * The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, Calibur, Simple). Defaults to UpgradeableV6 in mainnets. Must support EIP-7702 for Delegated Accounts.
      * @type {string}
      * @memberof CreateEmbeddedRequest
      */

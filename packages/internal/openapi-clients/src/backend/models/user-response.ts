@@ -55,12 +55,12 @@ export interface UserResponse {
      * @type {string}
      * @memberof UserResponse
      */
-    'phone': string | null;
+    'phoneNumber': string | null;
     /**
      * 
      * @type {boolean}
      * @memberof UserResponse
      */
-    'phoneVerified': boolean;
+    'phoneNumberVerified': boolean;
 }
 

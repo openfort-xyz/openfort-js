@@ -204,12 +204,18 @@ export const sendCallsSync = async ({
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, 'No transaction response received')
     }
 
-    return { id: openfortTransaction.id, receipt: convertToTransactionReceipt(response.data.response) }
+    return {
+      id: openfortTransaction.id,
+      receipt: convertToTransactionReceipt(response.data.response),
+    }
   }
 
   if (!openfortTransaction.response) {
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, 'No transaction response received')
   }
 
-  return { id: openfortTransaction.id, receipt: convertToTransactionReceipt(openfortTransaction.response) }
+  return {
+    id: openfortTransaction.id,
+    receipt: convertToTransactionReceipt(openfortTransaction.response),
+  }
 }

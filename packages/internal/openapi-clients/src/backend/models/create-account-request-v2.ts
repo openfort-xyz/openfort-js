@@ -39,7 +39,7 @@ export interface CreateAccountRequestV2 {
      */
     'address'?: string;
     /**
-     * The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, Calibur). Defaults to UpgradeableV6 in mainnets.
+     * The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, Calibur). Defaults to UpgradeableV6 in mainnets.
      * @type {string}
      * @memberof CreateAccountRequestV2
      */

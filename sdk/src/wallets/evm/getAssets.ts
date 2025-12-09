@@ -49,9 +49,6 @@ const fetchWalletAssets = async (
   authentication: Authentication,
   params?: WalletGetAssetsParameters
 ): Promise<JsonRpcResponse> => {
-  // Convert hex chainIds to integers for backend API
-  const chainFilter = params?.chainFilter?.map((hexChainId) => Number.parseInt(hexChainId, 16))
-
   return withApiError<JsonRpcResponse>(
     async () => {
       const response = await backendApiClients.rpcApi.handleRpcRequest(
@@ -60,7 +57,7 @@ const fetchWalletAssets = async (
             method: 'wallet_getAssets',
             params: {
               account: account.address,
-              chainFilter: chainFilter,
+              chainFilter: params?.chainFilter,
               assetFilter: params?.assetFilter,
               assetTypeFilter: params?.assetTypeFilter,
             },

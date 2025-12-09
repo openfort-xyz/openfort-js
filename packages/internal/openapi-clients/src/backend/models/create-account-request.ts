@@ -33,7 +33,7 @@ export interface CreateAccountRequest {
      */
     'externalOwnerAddress'?: string;
     /**
-     * The type of smart account that will be created (e.g. ERC6551V1, UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.
+     * The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.
      * @type {string}
      * @memberof CreateAccountRequest
      */
@@ -44,18 +44,6 @@ export interface CreateAccountRequest {
      * @memberof CreateAccountRequest
      */
     'defaultGuardian'?: boolean;
-    /**
-     * If ERC6551, the address of the NFT contract to use
-     * @type {string}
-     * @memberof CreateAccountRequest
-     */
-    'tokenContract'?: string;
-    /**
-     * If ERC6551, the tokenId from the NFT contract that will serve as owner
-     * @type {number}
-     * @memberof CreateAccountRequest
-     */
-    'tokenId'?: number;
     /**
      * ID of the player this account belongs to (starts with `pla_`). If none is provided, a new player will be created.
      * @type {string}

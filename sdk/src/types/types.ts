@@ -143,8 +143,6 @@ export enum OAuthProvider {
 }
 
 interface NextActionPayload {
-  userOperation?: any
-  userOperationHash?: string
   signableHash?: string
 }
 
@@ -307,6 +305,7 @@ interface TransactionIntentResponsePlayer {
 const TRANSACTION_ABSTRACTION_TYPE = {
   accountAbstractionV6: 'accountAbstractionV6',
   accountAbstractionV8: 'accountAbstractionV8',
+  accountAbstractionV9: 'accountAbstractionV9',
   zksync: 'zkSync',
   standard: 'standard',
 } as const
@@ -319,7 +318,12 @@ export interface TransactionIntentResponse {
   createdAt: number
   updatedAt: number
   abstractionType: TransactionAbstractionType
-  details?: AccountAbstractionV6Details | AccountAbstractionV8Details | ZKSyncDetails | StandardDetails
+  details?:
+    | AccountAbstractionV6Details
+    | AccountAbstractionV8Details
+    | AccountAbstractionV9Details
+    | ZKSyncDetails
+    | StandardDetails
   chainId: number
   response?: ResponseResponse
   interactions?: Interaction[]
@@ -441,6 +445,29 @@ interface UserOperationV6 {
 interface AccountAbstractionV8Details {
   userOperation: UserOperationV8
   userOperationHash: string
+}
+
+interface AccountAbstractionV9Details {
+  userOperation: UserOperationV9
+  userOperationHash: string
+}
+
+interface UserOperationV9 {
+  callData: string
+  callGasLimit: string
+  factory?: string
+  factoryData?: string
+  maxFeePerGas: string
+  maxPriorityFeePerGas: string
+  nonce: string
+  paymaster?: string
+  paymasterVerificationGasLimit?: string
+  paymasterPostOpGasLimit?: string
+  paymasterData?: string
+  preVerificationGas: string
+  sender: string
+  signature: string
+  verificationGasLimit: string
 }
 
 interface UserOperationV8 {

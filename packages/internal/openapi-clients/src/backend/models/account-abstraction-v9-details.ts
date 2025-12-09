@@ -15,36 +15,25 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { AssetInventory } from './asset-inventory';
-// May contain unused imports in some cases
-// @ts-ignore
-import { EntityTypeINVENTORY } from './entity-type-inventory';
+import { UserOperationV9 } from './user-operation-v9';
 
 /**
- * 
+ * V9 details - extends V8 with paymasterSignature for parallelizable signing
  * @export
- * @interface InventoryResponse
+ * @interface AccountAbstractionV9Details
  */
-export interface InventoryResponse {
+export interface AccountAbstractionV9Details {
     /**
      * 
-     * @type {EntityTypeINVENTORY}
-     * @memberof InventoryResponse
+     * @type {UserOperationV9}
+     * @memberof AccountAbstractionV9Details
      */
-    'object': EntityTypeINVENTORY;
+    'userOperation': UserOperationV9;
     /**
-     * 
+     * A User Operation hash.
      * @type {string}
-     * @memberof InventoryResponse
+     * @memberof AccountAbstractionV9Details
      */
-    'url': string;
-    /**
-     * 
-     * @type {AssetInventory}
-     * @memberof InventoryResponse
-     */
-    'data': AssetInventory;
+    'userOperationHash': string;
 }
-
-
 

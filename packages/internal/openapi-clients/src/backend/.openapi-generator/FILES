@@ -17,7 +17,6 @@ domain/events-api.ts
 domain/exchange-api.ts
 domain/forwarder-contract-api.ts
 domain/graph-qlapi.ts
-domain/inventories-api.ts
 domain/onramp-api.ts
 domain/paymaster-api.ts
 domain/phone-number-api.ts
@@ -37,12 +36,12 @@ models/abi.ts
 models/accelbyte-oauth-config.ts
 models/account-abstraction-v6-details.ts
 models/account-abstraction-v8-details.ts
+models/account-abstraction-v9-details.ts
 models/account-auth.ts
 models/account-event-response.ts
 models/account-info-post-request.ts
 models/account-info-post200-response-user.ts
 models/account-info-post200-response.ts
-models/account-inventory-list-queries.ts
 models/account-list-queries-v2.ts
 models/account-list-queries.ts
 models/account-list-response.ts
@@ -66,8 +65,6 @@ models/apitopic-transactionsuccessful.ts
 models/apitopic.ts
 models/apitrigger-type.ts
 models/apple-oauth-config.ts
-models/asset-inventory.ts
-models/asset-type.ts
 models/auth-config.ts
 models/auth-migration-list-response.ts
 models/auth-migration-response.ts
@@ -199,7 +196,6 @@ models/entity-type-device.ts
 models/entity-type-emailsample.ts
 models/entity-type-event.ts
 models/entity-type-forwardercontract.ts
-models/entity-type-inventory.ts
 models/entity-type-log.ts
 models/entity-type-paymaster.ts
 models/entity-type-player.ts
@@ -249,8 +245,6 @@ models/init-embedded-request.ts
 models/interaction.ts
 models/invalid-request-error-response.ts
 models/invalid-request-error.ts
-models/inventory-list-response.ts
-models/inventory-response.ts
 models/json-rpc-error-response.ts
 models/json-rpc-error.ts
 models/json-rpc-request.ts
@@ -341,8 +335,6 @@ models/play-fab-oauth-config.ts
 models/player-cancel-transfer-ownership-request.ts
 models/player-create-request.ts
 models/player-delete-response.ts
-models/player-inventory-list-queries.ts
-models/player-inventory-queries.ts
 models/player-list-queries.ts
 models/player-list-response.ts
 models/player-metadata-value.ts
@@ -524,6 +516,7 @@ models/update-user-post200-response.ts
 models/upsert-smtpconfig-request.ts
 models/user-operation-v6.ts
 models/user-operation-v8.ts
+models/user-operation-v9.ts
 models/user-project-create-request-role.ts
 models/user-project-create-request.ts
 models/user-project-delete-response.ts

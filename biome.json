@@ -14,8 +14,8 @@
       "!**/node_modules",
       "!**/.next",
       "!**/coverage",
-      "!examples/apps/web-betterauth/src/index.css",
-      "!**/stats.html"
+      "!**/*.css",
+      "!**/*.html"
     ],
     "ignoreUnknown": true
   },
@@ -62,6 +62,9 @@
   "css": {
     "parser": {
       "cssModules": true
+    },
+    "linter": {
+      "enabled": false
     }
   },
   "assist": {

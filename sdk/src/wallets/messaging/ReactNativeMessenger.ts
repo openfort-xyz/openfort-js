@@ -169,20 +169,26 @@ export class ReactNativeMessenger implements Messenger {
       }
 
       case 'ACK1':
-        debugLog('React Native: Converting ACK1 to deprecated format', { originalMessage: message })
+        debugLog('React Native: Converting ACK1 to deprecated format', {
+          originalMessage: message,
+        })
         return {
           penpal: 'synAck',
           methodNames: message.methodPaths || [],
         }
 
       case 'ACK2':
-        debugLog('React Native: Converting ACK2 to deprecated format', { originalMessage: message })
+        debugLog('React Native: Converting ACK2 to deprecated format', {
+          originalMessage: message,
+        })
         return {
           penpal: 'ack',
         }
 
       case 'REPLY': {
-        debugLog('React Native: Converting REPLY to deprecated format', { originalMessage: message })
+        debugLog('React Native: Converting REPLY to deprecated format', {
+          originalMessage: message,
+        })
         const replyNumericId = this.getNumericId(message.callId)
         if (message.isError) {
           return {
@@ -202,7 +208,9 @@ export class ReactNativeMessenger implements Messenger {
       }
 
       case 'CALL': {
-        debugLog('React Native: Converting CALL to deprecated format', { originalMessage: message })
+        debugLog('React Native: Converting CALL to deprecated format', {
+          originalMessage: message,
+        })
         const callNumericId = this.getNumericId(message.id)
         return {
           penpal: 'call',

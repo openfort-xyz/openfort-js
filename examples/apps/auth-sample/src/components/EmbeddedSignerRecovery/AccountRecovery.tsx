@@ -384,7 +384,8 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
               style={{ transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
             />
             <p className="text-sm">
-              {account.address.substring(0, 6)}...{account.address.substring(account.address.length - 4)}
+              {account.address.substring(0, 6)}...
+              {account.address.substring(account.address.length - 4)}
             </p>
           </button>
           <span

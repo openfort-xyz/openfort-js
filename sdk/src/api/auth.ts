@@ -38,7 +38,7 @@ export class AuthApi {
       if (result?.token === null) {
         return result
       }
-      new Authentication('session', result.token, result.user!.id).save(this.storage)
+      new Authentication('session', result.token, result.user?.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -58,7 +58,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.registerGuest()
-      new Authentication('session', result.token!, result.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result.user?.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -94,7 +94,7 @@ export class AuthApi {
       if (result instanceof Object && 'action' in result) {
         return result
       }
-      new Authentication('session', result.token!, result.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result.user?.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -111,7 +111,10 @@ export class AuthApi {
       throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, {
+      method: 'oauth',
+      provider,
+    })
 
     try {
       return await this.authManager.initOAuth(provider, redirectTo)
@@ -135,7 +138,10 @@ export class AuthApi {
       throw new Error('Must be signed in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, {
+      method: 'oauth',
+      provider,
+    })
 
     try {
       return await this.authManager.linkOAuthToAnonymous(auth, provider, redirectTo)
@@ -152,11 +158,14 @@ export class AuthApi {
       throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'idToken', provider })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, {
+      method: 'idToken',
+      provider,
+    })
 
     try {
       const result = await this.authManager.loginWithIdToken(provider, token)
-      new Authentication('session', result.token!, result.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result.user?.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -226,7 +235,7 @@ export class AuthApi {
       if (result?.token === null) {
         return result
       }
-      new Authentication('session', result.token, result.user!.id).save(this.storage)
+      new Authentication('session', result.token, result.user?.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
 
       return result
@@ -244,7 +253,10 @@ export class AuthApi {
       throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'phone', provider: 'phone' })
+    this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, {
+      method: 'phone',
+      provider: 'phone',
+    })
 
     try {
       await this.authManager.requestPhoneOtp(phoneNumber)
@@ -269,7 +281,7 @@ export class AuthApi {
       if (result?.token === null) {
         return result
       }
-      new Authentication('session', result.token, result.user!.id).save(this.storage)
+      new Authentication('session', result.token, result.user?.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
 
       return result
@@ -312,7 +324,10 @@ export class AuthApi {
       throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
 
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, {
+      method: 'oauth',
+      provider,
+    })
 
     return await this.authManager.linkOAuth(auth, provider, options)
   }
@@ -372,7 +387,7 @@ export class AuthApi {
         address,
         chainId
       )
-      new Authentication('session', result.token!, result.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result.user?.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {

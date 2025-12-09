@@ -199,7 +199,10 @@ function LoginPage() {
     })
 
     try {
-      const data = await openfort.auth.logInWithEmailOtp({ email: otpEmail, otp })
+      const data = await openfort.auth.logInWithEmailOtp({
+        email: otpEmail,
+        otp,
+      })
       if (data) {
         setStatus({
           type: 'success',
@@ -261,7 +264,10 @@ function LoginPage() {
     })
 
     try {
-      const data = await openfort.auth.logInWithPhoneOtp({ phoneNumber: otpPhone, otp: otp })
+      const data = await openfort.auth.logInWithPhoneOtp({
+        phoneNumber: otpPhone,
+        otp: otp,
+      })
       if (data) {
         setStatus({
           type: 'success',

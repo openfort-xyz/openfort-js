@@ -383,7 +383,10 @@ export class AuthManager {
   public async verifyEmail(token: string, callbackURL?: string): Promise<void> {
     return withApiError<void>(
       async () => {
-        await this.backendApiClients.authenticationV2Api.verifyEmailGet({ token, callbackURL })
+        await this.backendApiClients.authenticationV2Api.verifyEmailGet({
+          token,
+          callbackURL,
+        })
       },
       { context: 'verifyEmail' }
     )
@@ -815,7 +818,10 @@ export class AuthManager {
             },
           }
         )
-        const data = response.data as AuthResponse & { user: User; status: boolean }
+        const data = response.data as AuthResponse & {
+          user: User
+          status: boolean
+        }
         return {
           token: data.token,
           user: mapUser(data.user),
