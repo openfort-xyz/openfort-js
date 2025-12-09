@@ -121,6 +121,33 @@ export class AuthManager {
     )
   }
 
+  public async linkOAuthToAnonymous(
+    auth: Authentication,
+    provider: OAuthProvider,
+    redirectUrl: string
+  ): Promise<string> {
+    return await withApiError<string>(
+      async () => {
+        const response = await this.backendApiClients.authenticationV2Api.socialSignIn(
+          {
+            socialSignInRequest: {
+              provider,
+              callbackURL: redirectUrl,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${auth.token}`,
+              'x-project-key': `${this.publishableKey}`,
+            },
+          }
+        )
+        return response.data.url || ''
+      },
+      { context: 'initOAuth' }
+    )
+  }
+
   public async registerGuest(): Promise<AuthResponse> {
     return withApiError<AuthResponse>(
       async () => {

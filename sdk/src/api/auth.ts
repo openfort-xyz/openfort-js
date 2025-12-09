@@ -58,7 +58,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.registerGuest()
-      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -94,7 +94,7 @@ export class AuthApi {
       if (result instanceof Object && 'action' in result) {
         return result
       }
-      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -121,6 +121,30 @@ export class AuthApi {
     }
   }
 
+  async linkOAuthToAnonymous({
+    provider,
+    redirectTo,
+  }: {
+    provider: OAuthProvider
+    redirectTo: string
+  }): Promise<string> {
+    await this.ensureInitialized()
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new Error('Must be signed in')
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'oauth', provider })
+
+    try {
+      return await this.authManager.linkOAuthToAnonymous(auth, provider, redirectTo)
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
+  }
+
   async logInWithIdToken({ provider, token }: { provider: OAuthProvider; token: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
@@ -132,7 +156,7 @@ export class AuthApi {
 
     try {
       const result = await this.authManager.loginWithIdToken(provider, token)
-      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
@@ -202,7 +226,7 @@ export class AuthApi {
       if (result?.token === null) {
         return result
       }
-      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token, result.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
 
       return result
@@ -245,7 +269,7 @@ export class AuthApi {
       if (result?.token === null) {
         return result
       }
-      new Authentication('session', result.token, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token, result.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
 
       return result
@@ -348,7 +372,7 @@ export class AuthApi {
         address,
         chainId
       )
-      new Authentication('session', result.token!, result?.user!.id).save(this.storage)
+      new Authentication('session', result.token!, result.user!.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
       return result
     } catch (error) {
