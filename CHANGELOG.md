@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 0.10.39
+
+### Patch Changes
+
+- [#192](https://github.com/openfort-xyz/openfort-js/pull/192) [`26927e6`](https://github.com/openfort-xyz/openfort-js/commit/26927e6c5a75fc096809c91c5b26c363f63db416) Thanks [@jamalavedra](https://github.com/jamalavedra)! - error propagation init
+
 ## 0.10.38
 
 ### Patch Changes
