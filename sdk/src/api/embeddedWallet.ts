@@ -278,11 +278,7 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     }
 
-    const [auth, signer, entropy] = await Promise.all([
-      Authentication.fromStorage(this.storage),
-      this.ensureSigner(),
-      this.getEntropy(recoveryParams),
-    ])
+    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
 
     const configureParams: SignerConfigureRequest = {
       chainId: params.chainId,
@@ -297,7 +293,7 @@ export class EmbeddedWalletApi {
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth?.userId ?? '',
+      user: account.user,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -379,11 +375,7 @@ export class EmbeddedWalletApi {
       }
     }
 
-    const [signer, entropy, auth] = await Promise.all([
-      this.ensureSigner(),
-      this.getEntropy(recoveryParams),
-      Authentication.fromStorage(this.storage),
-    ])
+    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
     const account = await signer.recover({
       account: params.account,
       entropy,
@@ -391,7 +383,10 @@ export class EmbeddedWalletApi {
     const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
-      user: auth?.userId ?? '',
+      implementationAddress: account.implementationAddress,
+      factoryAddress: account.factoryAddress,
+      salt: account.salt,
+      user: account.user,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,

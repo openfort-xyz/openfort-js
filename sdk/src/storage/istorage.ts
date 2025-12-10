@@ -7,8 +7,8 @@ export enum StorageKeys {
 }
 
 export interface IStorage {
-  get(key: StorageKeys): Promise<string | null>
-  save(key: StorageKeys, value: string): void
-  remove(key: StorageKeys): void
+  get(key: StorageKeys | string): Promise<string | null>
+  save(key: StorageKeys | string, value: string): void
+  remove(key: StorageKeys | string): void
   flush(): void
 }

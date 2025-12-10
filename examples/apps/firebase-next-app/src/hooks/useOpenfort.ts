@@ -22,7 +22,7 @@ export const useOpenfort = () => {
 
     // Start polling only if not ready
     if (!pollingRef.current) {
-      pollingRef.current = setInterval(pollEmbeddedState, 300)
+      pollingRef.current = setInterval(pollEmbeddedState, 800)
     }
 
     return () => {

@@ -10,8 +10,8 @@ import type { OpenfortEventMap } from '../types/types'
 import TypedEventEmitter from '../utils/typedEventEmitter'
 import { type OpenfortSDKConfiguration, SDKConfiguration } from './config/config'
 import { PasskeyHandler } from './configuration/passkey'
-import { OPENFORT_AUTH_ERROR_CODES } from './errors/authErrorCodes'
-import { ConfigurationError, RequestError, SignerError } from './errors/openfortError'
+import { OPENFORT_AUTH_ERROR_CODES, OPENFORT_ERROR_CODES } from './errors/authErrorCodes'
+import { ConfigurationError, OpenfortError, RequestError, SignerError } from './errors/openfortError'
 import { InternalSentry } from './errors/sentry'
 import { OpenfortInternal } from './openfortInternal'
 
@@ -133,7 +133,8 @@ export class Openfort {
     this.configuration = new SDKConfiguration(sdkConfiguration)
 
     // Always create lazy storage - no localStorage access here
-    this.storage = new LazyStorage(this.configuration.storage)
+    // Pass publishable key for storage scoping (isolates data between projects)
+    this.storage = new LazyStorage(this.configuration.baseConfiguration.publishableKey, this.configuration.storage)
 
     // Create the centralized event emitter
     this.eventEmitter = new TypedEventEmitter<OpenfortEventMap>()
@@ -267,17 +268,11 @@ export class Openfort {
    * @private
    */
   private async initializeAsync(): Promise<void> {
-    try {
-      // Validate storage accessibility
-      if (!(await Openfort.isStorageAccessible(this.storage))) {
-        throw new ConfigurationError('Storage is not accessible')
-      }
-
-      // Set up auth manager with backend clients
-      this.authManager.setBackendApiClients(this.backendApiClients, this.configuration.baseConfiguration.publishableKey)
-    } catch (_error) {
-      throw new RequestError('Openfort SDK async initialization failed')
+    if (!(await Openfort.isStorageAccessible(this.storage))) {
+      throw new OpenfortError('Storage is not accessible', OPENFORT_ERROR_CODES.INVALID_CONFIGURATION)
     }
+
+    this.authManager.setBackendApiClients(this.backendApiClients, this.configuration.baseConfiguration.publishableKey)
   }
 
   /**

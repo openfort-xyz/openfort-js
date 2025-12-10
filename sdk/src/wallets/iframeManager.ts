@@ -1,5 +1,5 @@
-import { Account } from 'core/configuration/account'
 import type { SDKConfiguration } from '../core/config/config'
+import { Account } from '../core/configuration/account'
 import { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
 import {
