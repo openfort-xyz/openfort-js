@@ -1,6 +1,6 @@
-import type { AuthPlayerResponse, OAuthProvider } from '@openfort/openfort-js'
+import type { OAuthProvider, User } from '@openfort/openfort-js'
 import type React from 'react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useOpenfort } from '@/contexts/OpenfortContext'
 import { getURL } from '../../utils/getUrl'
 import openfort from '../../utils/openfortConfig'
@@ -9,21 +9,30 @@ import { Button } from '../ui/button'
 
 const LinkOAuthButton: React.FC<{
   provider: OAuthProvider
-  user: AuthPlayerResponse | null
+  user: User | null
 }> = ({ provider, user }) => {
   const { state: _state } = useOpenfort()
   const [loading, setLoading] = useState(false)
   const handleLinkOAuth = async () => {
     try {
       setLoading(true)
-      const accessToken = (await openfort.getAccessToken()) as string
-      const { url } = await openfort.auth.initLinkOAuth({
-        authToken: accessToken,
-        provider: provider,
-        options: {
+
+      let url: string
+
+      if (user?.isAnonymous) {
+        url = await openfort.auth.linkOAuthToAnonymous({
+          provider: provider,
           redirectTo: `${getURL()}/login`,
-        },
-      })
+        })
+      } else {
+        url = await openfort.auth.initLinkOAuth({
+          provider: provider,
+          options: {
+            redirectTo: `${getURL()}/login`,
+          },
+        })
+      }
+
       setLoading(false)
       window.location.href = url
     } catch (err) {
@@ -32,15 +41,10 @@ const LinkOAuthButton: React.FC<{
     }
   }
 
-  const isLinked = useMemo(() => {
-    if (!user) return false
-    return user.linkedAccounts.some((account) => account.provider === provider)
-  }, [user, provider])
-
   return (
     <div className="my-2">
-      <Button className="w-full" onClick={handleLinkOAuth} disabled={isLinked} variant="outline">
-        {loading ? <Loading /> : `${isLinked ? 'Linked' : 'Link'} ${provider}`}
+      <Button className="w-full" onClick={handleLinkOAuth} variant="outline">
+        {loading ? <Loading /> : `Link ${provider}`}
       </Button>
     </div>
   )

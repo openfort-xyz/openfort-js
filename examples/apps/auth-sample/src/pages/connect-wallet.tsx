@@ -1,4 +1,4 @@
-import type { AuthPlayerResponse } from '@openfort/openfort-js'
+import type { User } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -9,7 +9,7 @@ import { Chain, WalletConnector } from '../utils/constants'
 import openfort from '../utils/openfortConfig'
 
 function ConnectWalletPage() {
-  const [_user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [_user, setUser] = useState<User | null>(null)
   const router = useRouter()
 
   useEffect(() => {

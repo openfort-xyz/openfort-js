@@ -30,7 +30,7 @@ function Authenticate() {
       // This application is using the backend of another sample in this repository.
       // You can find the source code for the backend in the https://github.com/openfort-xyz/openfort-js/blob/main/examples/apps/auth-sample/src/pages/api/protected-create-encryption-session.ts
       const response = await axios.post<{ session: string }>(
-        'https://openfort-auth-non-custodial.vercel.app/api/protected-create-encryption-session',
+        'https://create-next-app.openfort.io/api/protected-create-encryption-session',
         {},
         { headers: { 'Content-Type': 'application/json' } }
       )
@@ -51,8 +51,8 @@ function Authenticate() {
         },
       })
     } catch (error) {
-      console.error('Error configuring embedded signer:', error)
-      setError('Failed to configure embedded signer. Please try again.')
+      console.error('Error configuring embedded wallet:', error)
+      setError('Failed to configure embedded wallet. Please try again.')
       hasConfiguredSigner.current = false
     }
   }, [getEncryptionSession])
