@@ -268,17 +268,11 @@ export class Openfort {
    * @private
    */
   private async initializeAsync(): Promise<void> {
-    try {
-      // Validate storage accessibility
-      if (!(await Openfort.isStorageAccessible(this.storage))) {
-        throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION)
-      }
-
-      // Set up auth manager with backend clients
-      this.authManager.setBackendApiClients(this.backendApiClients, this.configuration.baseConfiguration.publishableKey)
-    } catch (_error) {
-      throw new OpenfortError('Openfort SDK async initialization failed', OpenfortErrorType.INTERNAL_ERROR)
+    if (!(await Openfort.isStorageAccessible(this.storage))) {
+      throw new OpenfortError('Storage is not accessible', OpenfortErrorType.INVALID_CONFIGURATION)
     }
+
+    this.authManager.setBackendApiClients(this.backendApiClients, this.configuration.baseConfiguration.publishableKey)
   }
 
   /**
