@@ -13,60 +13,69 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { LinkedAccountResponseV2 } from './linked-account-response-v2';
 
 /**
  * 
  * @export
- * @interface UserResponse
+ * @interface AuthUserResponse
  */
-export interface UserResponse {
+export interface AuthUserResponse {
     /**
      * 
      * @type {string}
-     * @memberof UserResponse
+     * @memberof AuthUserResponse
      */
     'id': string;
     /**
      * 
      * @type {number}
-     * @memberof UserResponse
+     * @memberof AuthUserResponse
      */
     'createdAt': number;
     /**
      * 
      * @type {string}
-     * @memberof UserResponse
+     * @memberof AuthUserResponse
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof UserResponse
+     * @memberof AuthUserResponse
      */
     'email': string;
     /**
      * 
      * @type {boolean}
-     * @memberof UserResponse
+     * @memberof AuthUserResponse
      */
     'emailVerified': boolean;
     /**
      * 
      * @type {string}
-     * @memberof UserResponse
+     * @memberof AuthUserResponse
      */
     'phoneNumber': string | null;
     /**
      * 
      * @type {boolean}
-     * @memberof UserResponse
+     * @memberof AuthUserResponse
      */
     'phoneNumberVerified': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UserResponse
+     * @memberof AuthUserResponse
      */
     'isAnonymous'?: boolean;
+    /**
+     * 
+     * @type {Array<LinkedAccountResponseV2>}
+     * @memberof AuthUserResponse
+     */
+    'linkedAccounts': Array<LinkedAccountResponseV2>;
 }
 

@@ -23,12 +23,12 @@ domain/phone-number-api.ts
 domain/players-api.ts
 domain/policies-api.ts
 domain/policy-rules-api.ts
-domain/rpcapi.ts
 domain/sessions-api.ts
 domain/settings-api.ts
 domain/siweapi.ts
 domain/subscriptions-api.ts
 domain/transaction-intents-api.ts
+domain/users-api.ts
 git_push.sh
 index.ts
 models/abi-type.ts
@@ -75,11 +75,13 @@ models/auth-player-response-player.ts
 models/auth-player-response-with-recovery-share.ts
 models/auth-player-response.ts
 models/auth-provider-list-response.ts
+models/auth-provider-response-v2.ts
 models/auth-provider-response.ts
 models/auth-provider-with-type-response.ts
 models/auth-provider.ts
 models/auth-response.ts
 models/auth-session-response.ts
+models/auth-user-response.ts
 models/authenticate-oauth-request-provider.ts
 models/authenticate-oauth-request.ts
 models/authenticated-player-response.ts
@@ -96,6 +98,7 @@ models/authorized-origins-response.ts
 models/balance-event-response.ts
 models/balance-response.ts
 models/base-entity-list-response-account-v2-response.ts
+models/base-entity-list-response-auth-user-response.ts
 models/base-entity-list-response-device-response.ts
 models/base-entity-list-response-email-sample-response.ts
 models/base-entity-list-response-log-response.ts
@@ -267,6 +270,7 @@ models/link-siwe-verify-post401-response.ts
 models/link-social-post-request-id-token.ts
 models/link-social-post-request.ts
 models/link-social-post200-response.ts
+models/linked-account-response-v2.ts
 models/linked-account-response.ts
 models/list-accounts-get200-response-inner.ts
 models/list-config-request.ts
@@ -514,6 +518,7 @@ models/update-project-request.ts
 models/update-user-post-request.ts
 models/update-user-post200-response.ts
 models/upsert-smtpconfig-request.ts
+models/user-list-queries.ts
 models/user-operation-v6.ts
 models/user-operation-v8.ts
 models/user-operation-v9.ts

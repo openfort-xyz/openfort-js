@@ -30,98 +30,6 @@
     }
   ],
   "paths": {
-    "/rpc": {
-      "post": {
-        "operationId": "HandleRpcRequest",
-        "responses": {
-          "200": {
-            "description": "JSON-RPC response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonRpcResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Handle JSON-RPC 2.0 requests\n\nAccepts standard JSON-RPC 2.0 requests and routes them to appropriate method handlers.\n\nSupported methods:\n- wallet_getAssets: Get wallet assets across multiple chains",
-        "summary": "Execute JSON-RPC method",
-        "tags": [
-          "RPC"
-        ],
-        "security": [
-          {
-            "pk_access_token": []
-          },
-          {
-            "pk_third_party": []
-          },
-          {
-            "better_auth": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JsonRpcRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/rpc/{chainId}": {
-      "post": {
-        "operationId": "HandleChainRpcRequest",
-        "responses": {
-          "200": {
-            "description": "JSON-RPC response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JsonRpcResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Handle JSON-RPC 2.0 requests with chainId in URL path\n\nThis endpoint follows the standard ERC-4337/7677 pattern where chainId is in the URL.\nBundler and paymaster methods use standard params format without chainId.",
-        "summary": "Execute JSON-RPC method for specific chain",
-        "tags": [
-          "RPC"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "chainId",
-            "required": true,
-            "schema": {
-              "format": "double",
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JsonRpcRequest"
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/transaction_intents": {
       "get": {
         "operationId": "GetTransactionIntents",
@@ -7626,6 +7534,206 @@
         }
       }
     },
+    "/v2/users": {
+      "get": {
+        "operationId": "GetAuthUsers",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "http://localhost:3000",
+                      "data": [
+                        {
+                          "id": "pla_***",
+                          "createdAt": 123456789,
+                          "name": "Satoshi",
+                          "email": "satoshi@openfort.io",
+                          "emailVerified": true,
+                          "phoneNumber": null,
+                          "phoneNumberVerified": false,
+                          "isAnonymous": false,
+                          "linkedAccounts": [
+                            {
+                              "provider": "google",
+                              "createdAt": 12346789,
+                              "updatedAt": 12346789,
+                              "accountId": "123456789"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "pla_***",
+                          "createdAt": 123456789,
+                          "name": "Nakamoto",
+                          "email": "nakamoto@openfort.io",
+                          "emailVerified": true,
+                          "phoneNumber": null,
+                          "phoneNumberVerified": false,
+                          "isAnonymous": false,
+                          "linkedAccounts": [
+                            {
+                              "provider": "google",
+                              "createdAt": 12346789,
+                              "updatedAt": 12346789,
+                              "accountId": "123456789"
+                            }
+                          ]
+                        }
+                      ],
+                      "start": 0,
+                      "end": 2,
+                      "total": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieves an authenticated users.\n\nUsers have linked accounts and are authenticated with a provider.",
+        "summary": "Authenticated user.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          },
+          {
+            "description": "Filter by user name.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "John"
+          },
+          {
+            "description": "Filter by external user ID.",
+            "in": "query",
+            "name": "externalUserId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123454456687897"
+          }
+        ]
+      }
+    },
+    "/v2/users/{id}": {
+      "get": {
+        "operationId": "GetAuthUser",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_***",
+                      "createdAt": 123456789,
+                      "name": "Satoshi",
+                      "email": "satoshi@openfort.io",
+                      "emailVerified": true,
+                      "phoneNumber": null,
+                      "phoneNumberVerified": false,
+                      "isAnonymous": false,
+                      "linkedAccounts": [
+                        {
+                          "provider": "google",
+                          "createdAt": 12346789,
+                          "updatedAt": 12346789,
+                          "accountId": "123456789"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieves an authenticated user.\n\nUsers have linked accounts and are authenticated with a provider.",
+        "summary": "Authenticated user.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
     "/v2/accounts": {
       "get": {
         "operationId": "getAccountsV2",
@@ -10129,7 +10237,7 @@
                       "name": "joan",
                       "phoneNumber": null,
                       "phoneNumberVerified": false,
-                      "createdAt": "2025-11-19T11:39:25.537Z",
+                      "createdAt": 123467890,
                       "emailVerified": false
                     }
                   }
@@ -10153,6 +10261,71 @@
           }
         ],
         "parameters": []
+      }
+    },
+    "/iam/v2/user/third_party": {
+      "post": {
+        "operationId": "ThirdPartyV2",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_***",
+                      "createdAt": 123456789,
+                      "name": "Satoshi",
+                      "email": "satoshi@openfort.io",
+                      "emailVerified": true,
+                      "phoneNumber": null,
+                      "phoneNumberVerified": false,
+                      "isAnonymous": false,
+                      "linkedAccounts": [
+                        {
+                          "provider": "google",
+                          "createdAt": 12346789,
+                          "updatedAt": 12346789,
+                          "accountId": "123456789"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "summary": "Verify oauth token of a third party auth provider.",
+        "tags": [
+          "AuthenticationV2"
+        ],
+        "security": [
+          {
+            "pk": []
+          },
+          {
+            "pk_third_party": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThirdPartyOAuthRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/sign-in/social": {
@@ -23689,6 +23862,181 @@
         "type": "object",
         "additionalProperties": false
       },
+      "AuthProviderResponseV2": {
+        "type": "string",
+        "enum": [
+          "email",
+          "wallet",
+          "google",
+          "apple",
+          "twitter",
+          "discord",
+          "facebook",
+          "custom",
+          "oidc",
+          "siwe"
+        ]
+      },
+      "LinkedAccountResponseV2": {
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/AuthProviderResponseV2"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "updatedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "accountId": {
+            "type": "string"
+          },
+          "chainType": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "connectorType": {
+            "type": "string"
+          },
+          "walletClientType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "createdAt",
+          "updatedAt",
+          "accountId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthUserResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumberVerified": {
+            "type": "boolean"
+          },
+          "isAnonymous": {
+            "type": "boolean"
+          },
+          "linkedAccounts": {
+            "items": {
+              "$ref": "#/components/schemas/LinkedAccountResponseV2"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "name",
+          "email",
+          "emailVerified",
+          "phoneNumber",
+          "phoneNumberVerified",
+          "linkedAccounts"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BaseEntityListResponse_AuthUserResponse_": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AuthUserResponse"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UserListResponse": {
+        "$ref": "#/components/schemas/BaseEntityListResponse_AuthUserResponse_"
+      },
+      "UserListQueries": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the maximum number of records to return.",
+            "minimum": 1
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the offset for the first records to return.",
+            "minimum": 0
+          },
+          "order": {
+            "$ref": "#/components/schemas/Prisma.SortOrder",
+            "description": "Specifies the order in which to sort the results."
+          },
+          "name": {
+            "type": "string",
+            "description": "Filter by user name.",
+            "example": "John"
+          },
+          "externalUserId": {
+            "type": "string",
+            "description": "Filter by external user ID.",
+            "example": "123454456687897"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
       "RecoverV2Response": {
         "properties": {
           "id": {
@@ -26055,15 +26403,12 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
           },
           "tokenType": {
-            "$ref": "#/components/schemas/TokenType",
-            "description": "Type of the token.",
-            "example": "idToken"
+            "$ref": "#/components/schemas/TokenType"
           }
         },
         "required": [
           "provider",
-          "token",
-          "tokenType"
+          "token"
         ],
         "type": "object",
         "additionalProperties": false
@@ -27599,7 +27944,8 @@
             "type": "string"
           },
           "createdAt": {
-            "type": "string"
+            "type": "number",
+            "format": "double"
           },
           "name": {
             "type": "string"
@@ -27615,6 +27961,9 @@
             "nullable": true
           },
           "phoneNumberVerified": {
+            "type": "boolean"
+          },
+          "isAnonymous": {
             "type": "boolean"
           }
         },
