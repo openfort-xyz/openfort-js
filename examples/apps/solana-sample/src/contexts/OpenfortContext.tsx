@@ -69,8 +69,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren> = ({ children }
 
   const getEncryptionSession = useCallback(async (): Promise<string> => {
     try {
-      // This application is using the backend of another sample in this repository.
-      // You can find the source code for the backend in the auth-sample
+      // This application is using the backend of another sample in this repository to host the automatic recovery endpoint: https://www.openfort.io/docs/configuration/recovery-methods#automatic-recovery
+      // You can find the source code for the backend in the auth-sample: https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/auth-sample
+      // or you can use the following backend quickstart https://github.com/openfort-xyz/openfort-backend-quickstart
       const response = await fetch('https://create-next-app.openfort.io/api/protected-create-encryption-session', {
         method: 'POST',
         headers: {
@@ -99,23 +100,8 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren> = ({ children }
       const fetchedAccount = await openfort.embeddedWallet.get()
       setAccount(fetchedAccount)
 
-      // Derive the Solana address from the private key
-      // This is necessary because Openfort's address format doesn't directly map to Solana's base58 format
       if (fetchedAccount?.address) {
-        try {
-          const privateKey = await openfort.embeddedWallet.exportPrivateKey()
-          const { Base58 } = await import('ox')
-          const privateKeyBytes = Base58.toBytes(privateKey)
-
-          // Create a Kit signer from the private key to derive the correct Solana address
-          const { createKeyPairSignerFromPrivateKeyBytes } = await import('@solana/kit')
-          const kitSigner = await createKeyPairSignerFromPrivateKeyBytes(privateKeyBytes.slice(0, 32))
-
-          setSolanaAddress(kitSigner.address)
-        } catch (error) {
-          console.error('Error deriving address from private key:', error)
-          setSolanaAddress(null)
-        }
+        setSolanaAddress(fetchedAccount?.address as Address)
       }
     } catch (error) {
       console.error('Error fetching account:', error)

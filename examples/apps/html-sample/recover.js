@@ -25,8 +25,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   })
 
   const getEncryptionSession = async () => {
-    // This application is using the backend of another sample in this repository.
-    // You can find the source code for the backend in the https://github.com/openfort-xyz/openfort-js/blob/main/examples/apps/auth-sample/src/pages/api/protected-create-encryption-session.ts
+    // This application is using the backend of another sample in this repository to host the automatic recovery endpoint: https://www.openfort.io/docs/configuration/recovery-methods#automatic-recovery
+    // You can find the source code for the backend in the auth-sample: https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/auth-sample
+    // or you can use the following backend quickstart https://github.com/openfort-xyz/openfort-backend-quickstart
     const response = await fetch('https://create-next-app.openfort.io/api/protected-create-encryption-session', {
       method: 'POST',
       headers: {
