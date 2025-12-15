@@ -39,11 +39,11 @@ export class OpenfortInternal {
     let userId = (await Authentication.fromStorage(this.storage))?.userId
 
     if (!userId) {
-      const result = await this.authManager.authenticateThirdParty(provider, token, TokenType.ID_TOKEN)
+      const result = await this.authManager.authenticateThirdParty(provider, token)
       userId = result.userId
     }
 
-    new Authentication('third_party', token, userId, provider, TokenType.ID_TOKEN).save(this.storage)
+    new Authentication('third_party', token, userId, provider).save(this.storage)
 
     return token
   }

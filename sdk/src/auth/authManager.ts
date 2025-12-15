@@ -184,21 +184,16 @@ export class AuthManager {
     )
   }
 
-  public async authenticateThirdParty(
-    provider: ThirdPartyAuthProvider,
-    token: string,
-    tokenType: TokenType
-  ): Promise<{ userId: string }> {
+  public async authenticateThirdParty(provider: ThirdPartyAuthProvider, token: string): Promise<{ userId: string }> {
     const request = {
       thirdPartyOAuthRequest: {
         provider,
         token,
-        tokenType,
       },
     }
     return withApiError<{ userId: string }>(
       async () => {
-        const response = await this.backendApiClients.authenticationApi.thirdParty(request, {
+        const response = await this.backendApiClients.userApi.thirdPartyV2(request, {
           headers: {
             'x-project-key': `${this.publishableKey}`,
           },
