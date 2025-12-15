@@ -23,6 +23,7 @@ domain/phone-number-api.ts
 domain/players-api.ts
 domain/policies-api.ts
 domain/policy-rules-api.ts
+domain/rpcapi.ts
 domain/sessions-api.ts
 domain/settings-api.ts
 domain/siweapi.ts

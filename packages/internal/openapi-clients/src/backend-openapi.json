@@ -30,6 +30,98 @@
     }
   ],
   "paths": {
+    "/rpc": {
+      "post": {
+        "operationId": "HandleRpcRequest",
+        "responses": {
+          "200": {
+            "description": "JSON-RPC response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Execute JSON-RPC 2.0 wallet methods\n\nThis endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification.\nIt supports EIP-7811 wallet methods that operate across multiple chains.\n\n**Supported methods:**\n- `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering\n\n**Authentication:**\nSupports multiple authentication methods including public key access tokens, third-party tokens, and Better Auth.",
+        "summary": "Execute wallet JSON-RPC methods",
+        "tags": [
+          "RPC"
+        ],
+        "security": [
+          {
+            "pk_access_token": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "better_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JsonRpcRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rpc/{chainId}": {
+      "post": {
+        "operationId": "HandleChainRpcRequest",
+        "responses": {
+          "200": {
+            "description": "JSON-RPC response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)\n\nThis endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations.\nThe chainId is specified in the URL path following the standard pattern.\n\n**Supported namespaces:**\n- `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints)\n- `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus)\n- `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData)\n- `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)\n\n**Origin validation:**\nRequests are validated against configured allowed origins for security. Localhost is always allowed for development.",
+        "summary": "Execute chain-specific bundler and paymaster JSON-RPC methods",
+        "tags": [
+          "RPC"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chainId",
+            "required": true,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JsonRpcRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/transaction_intents": {
       "get": {
         "operationId": "GetTransactionIntents",
