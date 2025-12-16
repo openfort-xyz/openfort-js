@@ -32,7 +32,7 @@ import { JsonRpcResponse } from '../models';
 export const RPCApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)  **Origin validation:** Requests are validated against configured allowed origins for security. Localhost is always allowed for development.
+         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
          * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
          * @param {number} chainId 
          * @param {JsonRpcRequest} jsonRpcRequest 
@@ -76,7 +76,7 @@ export const RPCApiAxiosParamCreator = function (configuration?: Configuration) 
             };
         },
         /**
-         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens, third-party tokens, and Better Auth.
+         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens and third-party tokens
          * @summary Execute wallet JSON-RPC methods
          * @param {JsonRpcRequest} jsonRpcRequest 
          * @param {*} [options] Override http request option.
@@ -122,7 +122,7 @@ export const RPCApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = RPCApiAxiosParamCreator(configuration)
     return {
         /**
-         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)  **Origin validation:** Requests are validated against configured allowed origins for security. Localhost is always allowed for development.
+         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
          * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
          * @param {number} chainId 
          * @param {JsonRpcRequest} jsonRpcRequest 
@@ -134,7 +134,7 @@ export const RPCApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens, third-party tokens, and Better Auth.
+         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens and third-party tokens
          * @summary Execute wallet JSON-RPC methods
          * @param {JsonRpcRequest} jsonRpcRequest 
          * @param {*} [options] Override http request option.
@@ -155,7 +155,7 @@ export const RPCApiFactory = function (configuration?: Configuration, basePath?:
     const localVarFp = RPCApiFp(configuration)
     return {
         /**
-         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)  **Origin validation:** Requests are validated against configured allowed origins for security. Localhost is always allowed for development.
+         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
          * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
          * @param {RPCApiHandleChainRpcRequestRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -165,7 +165,7 @@ export const RPCApiFactory = function (configuration?: Configuration, basePath?:
             return localVarFp.handleChainRpcRequest(requestParameters.chainId, requestParameters.jsonRpcRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens, third-party tokens, and Better Auth.
+         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens and third-party tokens
          * @summary Execute wallet JSON-RPC methods
          * @param {RPCApiHandleRpcRequestRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -220,7 +220,7 @@ export interface RPCApiHandleRpcRequestRequest {
  */
 export class RPCApi extends BaseAPI {
     /**
-     * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)  **Origin validation:** Requests are validated against configured allowed origins for security. Localhost is always allowed for development.
+     * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
      * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
      * @param {RPCApiHandleChainRpcRequestRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -232,7 +232,7 @@ export class RPCApi extends BaseAPI {
     }
 
     /**
-     * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens, third-party tokens, and Better Auth.
+     * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens and third-party tokens
      * @summary Execute wallet JSON-RPC methods
      * @param {RPCApiHandleRpcRequestRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
