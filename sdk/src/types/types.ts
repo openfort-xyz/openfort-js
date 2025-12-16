@@ -1,3 +1,4 @@
+import { ListAccountsGet200ResponseInner } from '@openfort/openapi-clients/dist/backend'
 import type { PasskeyDetails } from 'wallets/types'
 
 export enum EmbeddedState {
@@ -343,14 +344,7 @@ export interface EstimateTransactionIntentGasResult {
 
 type PlayerMetadataValue = unknown
 
-export interface UserAccount {
-  id: string
-  providerId: string
-  createdAt: string
-  updatedAt: string
-  accountId: string
-  scopes: string[]
-}
+export { ListAccountsGet200ResponseInner as UserAccount }
 
 /**
  * User profile information
