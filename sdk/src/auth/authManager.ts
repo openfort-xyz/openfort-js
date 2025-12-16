@@ -517,13 +517,14 @@ export class AuthManager {
   public async linkOAuth(
     auth: Authentication,
     provider: OAuthProvider,
+    redirectTo: string,
     options?: InitializeOAuthOptions
   ): Promise<string> {
     const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
     const request = {
       linkSocialPostRequest: {
         provider,
-        callbackURL: options?.redirectTo,
+        callbackURL: redirectTo,
         scopes: options?.scopes?.split(' '),
         disableRedirect: skipBrowserRedirect,
       },

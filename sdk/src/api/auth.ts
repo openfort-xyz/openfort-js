@@ -313,9 +313,11 @@ export class AuthApi {
 
   async initLinkOAuth({
     provider,
+    redirectTo,
     options,
   }: {
     provider: OAuthProvider
+    redirectTo: string
     options?: InitializeOAuthOptions
   }): Promise<string> {
     await this.validateAndRefreshToken()
@@ -329,7 +331,7 @@ export class AuthApi {
       provider,
     })
 
-    return await this.authManager.linkOAuth(auth, provider, options)
+    return await this.authManager.linkOAuth(auth, provider, redirectTo, options)
   }
 
   async unlinkOAuth({ provider }: { provider: OAuthProvider }) {

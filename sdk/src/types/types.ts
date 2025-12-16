@@ -103,7 +103,6 @@ export type SIWEInitResponse = {
 }
 
 export type InitializeOAuthOptions = {
-  redirectTo?: string
   /** A space-separated list of scopes granted to the OAuth application. */
   scopes?: string
   /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
