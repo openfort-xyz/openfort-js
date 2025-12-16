@@ -106,8 +106,6 @@ export type InitializeOAuthOptions = {
   redirectTo?: string
   /** A space-separated list of scopes granted to the OAuth application. */
   scopes?: string
-  /** An object of query params */
-  queryParams?: { [key: string]: string }
   /** If set to true does not immediately redirect the current browser context to visit the OAuth authorization page for the provider. */
   skipBrowserRedirect?: boolean
 }

@@ -24912,6 +24912,9 @@
           },
           "childProjects": {
             "$ref": "#/components/schemas/ChildProjectListResponse"
+          },
+          "isV2": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -24919,7 +24922,8 @@
           "object",
           "createdAt",
           "updatedAt",
-          "name"
+          "name",
+          "isV2"
         ],
         "type": "object",
         "additionalProperties": false
