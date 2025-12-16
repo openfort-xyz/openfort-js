@@ -10319,18 +10319,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserResponse"
+                  "$ref": "#/components/schemas/AuthUserResponse"
                 },
                 "examples": {
                   "Example 1": {
                     "value": {
-                      "id": "pla_",
-                      "email": "joan@openfort.xyz",
-                      "name": "joan",
+                      "id": "pla_***",
+                      "createdAt": 123456789,
+                      "name": "Satoshi",
+                      "email": "satoshi@openfort.io",
+                      "emailVerified": true,
                       "phoneNumber": null,
                       "phoneNumberVerified": false,
-                      "createdAt": 123467890,
-                      "emailVerified": false
+                      "isAnonymous": false,
+                      "linkedAccounts": [
+                        {
+                          "provider": "google",
+                          "createdAt": 12346789,
+                          "updatedAt": 12346789,
+                          "accountId": "123456789"
+                        }
+                      ]
                     }
                   }
                 }
@@ -13769,37 +13778,42 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "providerId": {
+                      "provider": {
                         "type": "string"
                       },
                       "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "format": "int64"
                       },
                       "updatedAt": {
-                        "type": "string",
-                        "format": "date-time"
+                        "type": "integer",
+                        "format": "int64"
                       },
                       "accountId": {
                         "type": "string"
                       },
-                      "scopes": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
+                      "chainType": {
+                        "type": "string"
+                      },
+                      "chainId": {
+                        "type": "string"
+                      },
+                      "connectorType": {
+                        "type": "string"
+                      },
+                      "walletClientType": {
+                        "type": "string"
                       }
                     },
                     "required": [
-                      "id",
-                      "providerId",
+                      "provider",
                       "createdAt",
                       "updatedAt",
                       "accountId",
-                      "scopes"
+                      "chainType",
+                      "chainId",
+                      "connectorType",
+                      "walletClientType"
                     ]
                   }
                 }
@@ -28026,47 +28040,6 @@
         },
         "required": [
           "authorizationCode"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "UserResponse": {
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "number",
-            "format": "double"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "emailVerified": {
-            "type": "boolean"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumberVerified": {
-            "type": "boolean"
-          },
-          "isAnonymous": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "createdAt",
-          "name",
-          "email",
-          "emailVerified",
-          "phoneNumber",
-          "phoneNumberVerified"
         ],
         "type": "object",
         "additionalProperties": false

@@ -533,7 +533,6 @@ models/user-project-role-member.ts
 models/user-project-role.ts
 models/user-project-update-request-role.ts
 models/user-project-update-request.ts
-models/user-response.ts
 models/user.ts
 models/verification.ts
 models/verify-email-get200-response-user.ts

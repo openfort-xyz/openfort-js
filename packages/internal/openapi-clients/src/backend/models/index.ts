@@ -499,7 +499,6 @@ export * from './user-project-role-admin';
 export * from './user-project-role-member';
 export * from './user-project-update-request';
 export * from './user-project-update-request-role';
-export * from './user-response';
 export * from './verification';
 export * from './verify-email-get200-response';
 export * from './verify-email-get200-response-user';

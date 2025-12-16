@@ -25,25 +25,19 @@ export interface ListAccountsGet200ResponseInner {
      * @type {string}
      * @memberof ListAccountsGet200ResponseInner
      */
-    'id': string;
+    'provider': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ListAccountsGet200ResponseInner
      */
-    'providerId': string;
+    'createdAt': number;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof ListAccountsGet200ResponseInner
      */
-    'createdAt': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ListAccountsGet200ResponseInner
-     */
-    'updatedAt': string;
+    'updatedAt': number;
     /**
      * 
      * @type {string}
@@ -52,9 +46,27 @@ export interface ListAccountsGet200ResponseInner {
     'accountId': string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {string}
      * @memberof ListAccountsGet200ResponseInner
      */
-    'scopes': Array<string>;
+    'chainType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListAccountsGet200ResponseInner
+     */
+    'chainId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListAccountsGet200ResponseInner
+     */
+    'connectorType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ListAccountsGet200ResponseInner
+     */
+    'walletClientType': string;
 }
 

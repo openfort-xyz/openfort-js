@@ -25,8 +25,6 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 import { AuthUserResponse } from '../models';
 // @ts-ignore
 import { ThirdPartyOAuthRequest } from '../models';
-// @ts-ignore
-import { UserResponse } from '../models';
 /**
  * AuthenticationV2Api - axios parameter creator
  * @export
@@ -117,7 +115,7 @@ export const AuthenticationV2ApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async meV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+        async meV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.meV2(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -147,7 +145,7 @@ export const AuthenticationV2ApiFactory = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        meV2(options?: AxiosRequestConfig): AxiosPromise<UserResponse> {
+        meV2(options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
             return localVarFp.meV2(options).then((request) => request(axios, basePath));
         },
         /**
