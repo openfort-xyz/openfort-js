@@ -203,11 +203,10 @@ export class AuthManager {
     )
   }
 
-  public async initSIWE(address: string, chainId?: number): Promise<SIWEInitResponse> {
+  public async initSIWE(address: string): Promise<SIWEInitResponse> {
     const request = {
       siweNoncePostRequest: {
         walletAddress: address,
-        chainId: chainId || 1,
       },
     }
     const result = await withApiError(
@@ -226,11 +225,10 @@ export class AuthManager {
     }
   }
 
-  public async linkSIWE(address: string, auth: Authentication, chainId?: number): Promise<SIWEInitResponse> {
+  public async linkSIWE(address: string, auth: Authentication): Promise<SIWEInitResponse> {
     const request = {
       siweNoncePostRequest: {
         walletAddress: address,
-        chainId: chainId || 1,
       },
     }
     const result = await withApiError(
@@ -255,14 +253,12 @@ export class AuthManager {
     message: string,
     walletClientType: string,
     connectorType: string,
-    address: string,
-    chainId?: number
+    address: string
   ): Promise<AuthResponse> {
     const request = {
       siweVerifyPostRequest: {
         signature,
         walletAddress: address,
-        chainId: chainId || 1,
         message,
         walletClientType,
         connectorType,

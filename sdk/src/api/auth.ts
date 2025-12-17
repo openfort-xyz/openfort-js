@@ -383,18 +383,18 @@ export class AuthApi {
     return await this.authManager.unlinkOAuth(provider, auth)
   }
 
-  async initSIWE({ address, chainId }: { address: string; chainId?: number }): Promise<SIWEInitResponse> {
+  async initSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
     await this.ensureInitialized()
-    return await this.authManager.initSIWE(address, chainId)
+    return await this.authManager.initSIWE(address)
   }
 
-  async linkSIWE({ address, chainId }: { address: string; chainId?: number }): Promise<SIWEInitResponse> {
+  async linkSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
       throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
-    return await this.authManager.linkSIWE(address, auth, chainId)
+    return await this.authManager.linkSIWE(address, auth)
   }
 
   async authenticateWithSIWE({
@@ -403,14 +403,12 @@ export class AuthApi {
     walletClientType,
     connectorType,
     address,
-    chainId,
   }: {
     signature: string
     message: string
     walletClientType: string
     connectorType: string
     address: string
-    chainId?: number
   }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
@@ -426,8 +424,7 @@ export class AuthApi {
         message,
         walletClientType,
         connectorType,
-        address,
-        chainId
+        address
       )
       new Authentication('session', result.token!, result.user?.id).save(this.storage)
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
