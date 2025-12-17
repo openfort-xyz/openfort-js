@@ -27,9 +27,7 @@ const LinkOAuthButton: React.FC<{
       } else {
         url = await openfort.auth.initLinkOAuth({
           provider: provider,
-          options: {
-            redirectTo: `${getURL()}/login`,
-          },
+          redirectTo: `${getURL()}/login`,
         })
       }
 

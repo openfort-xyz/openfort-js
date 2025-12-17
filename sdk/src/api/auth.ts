@@ -205,11 +205,6 @@ export class AuthApi {
   async requestEmailOtp({ email }: { email: string }): Promise<void> {
     await this.ensureInitialized()
 
-    const auth = await Authentication.fromStorage(this.storage)
-    if (auth) {
-      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
-    }
-
     this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'email' })
 
     try {
@@ -245,13 +240,33 @@ export class AuthApi {
     }
   }
 
-  async requestPhoneOtp({ phoneNumber }: { phoneNumber: string }): Promise<void> {
+  async linkEmailOtp({ email, otp }: { email: string; otp: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
-    if (auth) {
-      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN, 'Already logged in')
+    if (!auth) {
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email' })
+
+    try {
+      const result = await this.authManager.linkEmailOTP(email, otp, auth)
+      if (result?.token === null) {
+        return result
+      }
+      new Authentication('session', result.token, result.user?.id).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
+
+      return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async requestPhoneOtp({ phoneNumber }: { phoneNumber: string }): Promise<void> {
+    await this.ensureInitialized()
 
     this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, {
       method: 'phone',
@@ -262,6 +277,31 @@ export class AuthApi {
       await this.authManager.requestPhoneOtp(phoneNumber)
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
+      throw error
+    }
+  }
+
+  async linkPhoneOtp({ phoneNumber, otp }: { phoneNumber: string; otp: string }): Promise<AuthResponse> {
+    await this.ensureInitialized()
+
+    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'phone' })
+
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
+    }
+
+    try {
+      const result = await this.authManager.linkSMSOTP(phoneNumber, otp, auth)
+      if (result?.token === null) {
+        return result
+      }
+      new Authentication('session', result.token, result.user?.id).save(this.storage)
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
+
+      return result
+    } catch (error) {
+      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
       throw error
     }
   }

@@ -9,6 +9,8 @@ import AccountActions from '@/components/AccountActions/AccountActions'
 import Assets from '@/components/Assets/Assets'
 import Authorizations7702 from '@/components/Authorizations7702/Authorizations7702'
 import EventMonitor from '@/components/EventMonitor/EventMonitor'
+import { LinkEmailOTPButton } from '@/components/LinkButtons/LinkEmail'
+import { LinkPhoneButton } from '@/components/LinkButtons/LinkPhoneButton'
 import { type StatusType, Toast } from '@/components/Toasts'
 import GetUserAccountsButton from '@/components/User/GetUserAccountsButton'
 import { Button } from '@/components/ui/button'
@@ -17,9 +19,9 @@ import { useOpenfort } from '@/contexts/OpenfortContext'
 import AccountRecovery from '../components/EmbeddedSignerRecovery/AccountRecovery'
 import AddFunds from '../components/Funding/AddFunds'
 import { Layout } from '../components/Layouts/Layout'
+import LinkOAuthButton from '../components/LinkButtons/LinkOAuthButton'
 import Loading from '../components/Loading'
 import LogoutButton from '../components/Logout'
-import LinkOAuthButton from '../components/OAuth/LinkOAuthButton'
 import SignMessageButton from '../components/Signatures/SignMessageButton'
 import SignTypedDataButton from '../components/Signatures/SignTypedDataButton'
 import GetUserButton from '../components/User/GetUserButton'
@@ -207,7 +209,7 @@ const HomePage: NextPage = () => {
             <h2 className="flex justify-left font-medium text-xl pb-4">Linked socials</h2>
 
             <div className="space-y-2">
-              <span className="font-medium text-black">User methods: </span>
+              <span className="font-medium text-black">User methods</span>
               <GetUserButton handleSetMessage={handleSetMessage} />
               <GetUserAccountsButton handleSetMessage={handleSetMessage} />
             </div>
@@ -219,7 +221,10 @@ const HomePage: NextPage = () => {
                 </div>
               ))}
             </div>
-            <div>
+            <div className="space-y-2">
+              <span className="font-medium text-black">Other methods</span>
+              <LinkPhoneButton user={user} />
+              <LinkEmailOTPButton user={user} />
               <Button
                 className="w-full"
                 onClick={() => {

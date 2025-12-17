@@ -14,7 +14,6 @@ import {
   type Session,
   type SIWEInitResponse,
   type ThirdPartyAuthProvider,
-  type TokenType,
   type User,
 } from '../types/types'
 
@@ -778,6 +777,33 @@ export class AuthManager {
     )
   }
 
+  public async linkEmailOTP(email: string, otp: string, auth: Authentication): Promise<AuthResponse> {
+    return await withApiError<AuthResponse>(
+      async () => {
+        const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(
+          {
+            signInEmailOtpPostRequest: {
+              email,
+              otp,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${auth.token}`,
+              'x-project-key': `${this.publishableKey}`,
+            },
+          }
+        )
+        const data = response.data
+        return {
+          token: data.token,
+          user: mapUser(data.user),
+        }
+      },
+      { context: 'loginWithEmailOTP' }
+    )
+  }
+
   public async requestPhoneOtp(phoneNumber: string): Promise<void> {
     const request = {
       phoneNumberSendOtpPostRequest: {
@@ -810,6 +836,37 @@ export class AuthManager {
           },
           {
             headers: {
+              'x-project-key': `${this.publishableKey}`,
+            },
+          }
+        )
+        const data = response.data as AuthResponse & {
+          user: User
+          status: boolean
+        }
+        return {
+          token: data.token,
+          user: mapUser(data.user),
+        }
+      },
+      { context: 'loginWithSMSOTP' }
+    )
+  }
+
+  public async linkSMSOTP(phoneNumber: string, code: string, auth: Authentication): Promise<AuthResponse> {
+    return await withApiError<AuthResponse>(
+      async () => {
+        const response = await this.backendApiClients.smsOTPApi.phoneNumberVerifyPost(
+          {
+            phoneNumberVerifyPostRequest: {
+              code,
+              phoneNumber,
+              updatePhoneNumber: true,
+            },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${auth.token}`,
               'x-project-key': `${this.publishableKey}`,
             },
           }

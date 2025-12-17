@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { useState } from 'react'
-import { type Connector, createConfig, http, useChainId, useConnect, useSignMessage } from 'wagmi'
+import { type Connector, createConfig, http, useChainId, useConnect, useDisconnect, useSignMessage } from 'wagmi'
 import type { Chain as WagmiChain } from 'wagmi/chains'
 import { baseSepolia, polygonAmoy } from 'wagmi/chains'
 import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors'
@@ -9,7 +9,7 @@ import { createSIWEMessage } from '../utils/create-siwe-message'
 import { getErrorMessage } from '../utils/errorHandler'
 import openfort from '../utils/openfortConfig'
 import type { OnSuccess } from '../utils/types'
-import { withWagmi } from './wagmiProvider'
+import { WagmiProvider } from './wagmiProvider'
 
 type GetWalletButtonsParams = {
   chains: (typeof Chain)[keyof typeof Chain][]
@@ -50,12 +50,14 @@ const WalletConnectButton = ({ title, isLoading, icon, initConnect }: WalletConn
 
 const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) => {
   const { connectors, connect } = useConnect()
+  const { disconnectAsync } = useDisconnect()
   const chainId = useChainId()
   const { signMessageAsync } = useSignMessage()
   const [loading, setLoading] = useState<string>(null!)
 
   const initConnect = async (connector: Connector) => {
     setLoading(connector.id)
+    await disconnectAsync()
     connect(
       { connector },
       {
@@ -161,5 +163,9 @@ export const getWalletButtons = (params: GetWalletButtonsParams) => {
     ssr: true,
     transports,
   })
-  return withWagmi<WalletConnectButtonsProps>(WalletConnectButtons, config)
+  return (props: any) => (
+    <WagmiProvider wagmiConfig={config}>
+      <WalletConnectButtons {...props} />
+    </WagmiProvider>
+  )
 }
