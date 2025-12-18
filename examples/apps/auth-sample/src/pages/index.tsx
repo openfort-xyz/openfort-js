@@ -9,7 +9,8 @@ import AccountActions from '@/components/AccountActions/AccountActions'
 import Assets from '@/components/Assets/Assets'
 import Authorizations7702 from '@/components/Authorizations7702/Authorizations7702'
 import EventMonitor from '@/components/EventMonitor/EventMonitor'
-import { LinkEmailOTPButton } from '@/components/LinkButtons/LinkEmail'
+import { LinkEmailOTPButton } from '@/components/LinkButtons/LinkEmailOTPButton'
+import { LinkEmailPasswordButton } from '@/components/LinkButtons/LinkEmailPasswordButton'
 import { LinkPhoneButton } from '@/components/LinkButtons/LinkPhoneButton'
 import { type StatusType, Toast } from '@/components/Toasts'
 import GetUserAccountsButton from '@/components/User/GetUserAccountsButton'
@@ -217,14 +218,15 @@ const HomePage: NextPage = () => {
               <span className="font-medium text-black">{'OAuth methods'}</span>
               {[OAuthProvider.GOOGLE, OAuthProvider.TWITTER, OAuthProvider.FACEBOOK].map((provider) => (
                 <div key={provider}>
-                  <LinkOAuthButton provider={provider} user={user} />
+                  <LinkOAuthButton provider={provider} />
                 </div>
               ))}
             </div>
             <div className="space-y-2">
               <span className="font-medium text-black">Other methods</span>
-              <LinkPhoneButton user={user} />
-              <LinkEmailOTPButton user={user} />
+              <LinkPhoneButton />
+              <LinkEmailOTPButton />
+              <LinkEmailPasswordButton />
               <Button
                 className="w-full"
                 onClick={() => {

@@ -124,33 +124,6 @@ export class AuthApi {
     }
   }
 
-  async linkOAuthToAnonymous({
-    provider,
-    redirectTo,
-  }: {
-    provider: OAuthProvider
-    redirectTo: string
-  }): Promise<string> {
-    await this.ensureInitialized()
-
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) {
-      throw new Error('Must be signed in')
-    }
-
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, {
-      method: 'oauth',
-      provider,
-    })
-
-    try {
-      return await this.authManager.linkOAuthToAnonymous(auth, provider, redirectTo)
-    } catch (error) {
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
-      throw error
-    }
-  }
-
   async logInWithIdToken({ provider, token }: { provider: OAuthProvider; token: string }): Promise<AuthResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)

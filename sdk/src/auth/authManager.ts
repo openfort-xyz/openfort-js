@@ -98,6 +98,11 @@ export class AuthManager {
     return this.publishableKeyInstance
   }
 
+  async isAnonymousUser(auth: Authentication): Promise<boolean> {
+    const user = await this.getUser(auth)
+    return user.isAnonymous === true
+  }
+
   public async initOAuth(provider: OAuthProvider, redirectUrl: string): Promise<string> {
     return await withApiError<string>(
       async () => {
@@ -120,11 +125,7 @@ export class AuthManager {
     )
   }
 
-  public async linkOAuthToAnonymous(
-    auth: Authentication,
-    provider: OAuthProvider,
-    redirectUrl: string
-  ): Promise<string> {
+  async linkOAuthToAnonymous(auth: Authentication, provider: OAuthProvider, redirectUrl: string): Promise<string> {
     return await withApiError<string>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.socialSignIn(
@@ -515,6 +516,9 @@ export class AuthManager {
     redirectTo: string,
     options?: InitializeOAuthOptions
   ): Promise<string> {
+    if (await this.isAnonymousUser(auth)) {
+      return this.linkOAuthToAnonymous(auth, provider, redirectTo)
+    }
     const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
     const request = {
       linkSocialPostRequest: {
@@ -774,30 +778,57 @@ export class AuthManager {
   }
 
   public async linkEmailOTP(email: string, otp: string, auth: Authentication): Promise<AuthResponse> {
-    return await withApiError<AuthResponse>(
-      async () => {
-        const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(
-          {
-            signInEmailOtpPostRequest: {
-              email,
-              otp,
+    if (await this.isAnonymousUser(auth)) {
+      return await withApiError<AuthResponse>(
+        async () => {
+          const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(
+            {
+              signInEmailOtpPostRequest: {
+                email,
+                otp,
+              },
             },
-          },
-          {
-            headers: {
-              authorization: `Bearer ${auth.token}`,
-              'x-project-key': `${this.publishableKey}`,
-            },
+            {
+              headers: {
+                authorization: `Bearer ${auth.token}`,
+                'x-project-key': `${this.publishableKey}`,
+              },
+            }
+          )
+          const data = response.data
+          return {
+            token: data.token,
+            user: mapUser(data.user),
           }
-        )
-        const data = response.data
-        return {
-          token: data.token,
-          user: mapUser(data.user),
-        }
-      },
-      { context: 'loginWithEmailOTP' }
-    )
+        },
+        { context: 'loginWithEmailOTP' }
+      )
+    } else {
+      return await withApiError<AuthResponse>(
+        async () => {
+          const response = await this.backendApiClients.emailOTPApi.emailOtpVerifyEmailPost(
+            {
+              emailOtpVerifyEmailPostRequest: {
+                email,
+                otp,
+              },
+            },
+            {
+              headers: {
+                authorization: `Bearer ${auth.token}`,
+                'x-project-key': `${this.publishableKey}`,
+              },
+            }
+          )
+          const data = response.data
+          return {
+            token: data.token,
+            user: mapUser(data.user),
+          }
+        },
+        { context: 'loginWithEmailOTP' }
+      )
+    }
   }
 
   public async requestPhoneOtp(phoneNumber: string): Promise<void> {
@@ -876,7 +907,7 @@ export class AuthManager {
           user: mapUser(data.user),
         }
       },
-      { context: 'loginWithSMSOTP' }
+      { context: 'linkSMSOTP' }
     )
   }
 

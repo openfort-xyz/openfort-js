@@ -1,4 +1,4 @@
-import type { OAuthProvider, User } from '@openfort/openfort-js'
+import type { OAuthProvider } from '@openfort/openfort-js'
 import type React from 'react'
 import { useState } from 'react'
 import { useOpenfort } from '@/contexts/OpenfortContext'
@@ -9,27 +9,17 @@ import { Button } from '../ui/button'
 
 const LinkOAuthButton: React.FC<{
   provider: OAuthProvider
-  user: User | null
-}> = ({ provider, user }) => {
+}> = ({ provider }) => {
   const { state: _state } = useOpenfort()
   const [loading, setLoading] = useState(false)
   const handleLinkOAuth = async () => {
     try {
       setLoading(true)
 
-      let url: string
-
-      if (user?.isAnonymous) {
-        url = await openfort.auth.linkOAuthToAnonymous({
-          provider: provider,
-          redirectTo: `${getURL()}/login`,
-        })
-      } else {
-        url = await openfort.auth.initLinkOAuth({
-          provider: provider,
-          redirectTo: `${getURL()}/login`,
-        })
-      }
+      const url = await openfort.auth.initLinkOAuth({
+        provider: provider,
+        redirectTo: `${getURL()}/login`,
+      })
 
       setLoading(false)
       window.location.href = url

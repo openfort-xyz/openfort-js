@@ -84,7 +84,7 @@ export const LinkEmailOTPButton = () => {
   return (
     <div className="my-2">
       <Button className="w-full" onClick={() => setShowSMSOTPRequestModal(true)} variant="outline">
-        {isOTPLoading ? <Loading /> : `Link Email`}
+        {isOTPLoading ? <Loading /> : `Link Email with OTP`}
       </Button>
 
       <EmailOTPRequestModal
