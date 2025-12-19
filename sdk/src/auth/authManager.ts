@@ -685,7 +685,7 @@ export class AuthManager {
     )
   }
 
-  public async verifyEmailOtp(email: string, otp: string): Promise<void> {
+  public async verifyEmailOtp(email: string, otp: string, anonymousAuthToken?: string): Promise<void> {
     await withApiError(
       async () => {
         const response = await this.backendApiClients.emailOTPApi.emailOtpVerifyEmailPost(
@@ -696,7 +696,7 @@ export class AuthManager {
             },
           },
           {
-            headers: this.buildAuthHeaders(),
+            headers: this.buildAuthHeaders(anonymousAuthToken),
           }
         )
         return response.data

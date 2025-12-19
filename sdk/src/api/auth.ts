@@ -499,7 +499,7 @@ export class AuthApi {
 
     if (options.method === 'otp') {
       const addEmailResponse = await this.authManager.addEmail(options.email, auth)
-      await this.authManager.verifyEmailOtp(options.email, options.otp)
+      await this.authManager.verifyEmailOtp(options.email, options.otp, auth.token)
       return { status: 'email_added', result: addEmailResponse }
     }
 
