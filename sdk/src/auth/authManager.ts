@@ -664,11 +664,11 @@ export class AuthManager {
     )
   }
 
-  public async requestEmailOTP(email: string): Promise<void> {
+  public async requestEmailOTP(email: string, type: 'sign-in' | 'email-verification'): Promise<void> {
     const request = {
       emailOtpSendVerificationOtpPostRequest: {
         email,
-        type: 'sign-in',
+        type,
       },
     }
 

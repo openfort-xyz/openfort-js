@@ -12,17 +12,21 @@ interface EmailOTPRequestModalProps {
   isLoading?: boolean
   title?: string
   description?: string
+  canEditEmail?: boolean
+  defaultEmail?: string
 }
 
 export function EmailOTPRequestModal({
   isOpen,
   onClose,
   onSubmit,
+  defaultEmail,
+  canEditEmail = true,
   isLoading = false,
   title = 'Continue with Email OTP',
   description = 'Enter your email address to receive a verification code.',
 }: EmailOTPRequestModalProps) {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(defaultEmail || '')
   const [error, setError] = useState('')
   const emailId = useId()
 
@@ -66,6 +70,7 @@ export function EmailOTPRequestModal({
           <div className="space-y-2">
             <Label htmlFor={emailId}>Email Address</Label>
             <Input
+              readOnly={!canEditEmail}
               id={emailId}
               type="email"
               placeholder="Enter your email address"

@@ -15,6 +15,7 @@ import { LinkPhoneButton } from '@/components/LinkButtons/LinkPhoneButton'
 import { type StatusType, Toast } from '@/components/Toasts'
 import GetUserAccountsButton from '@/components/User/GetUserAccountsButton'
 import { Button } from '@/components/ui/button'
+import { VerifyEmailWithOTP } from '@/components/VerifyEmailWithOTP'
 import Wallets from '@/components/Wallet/Wallet'
 import { useOpenfort } from '@/contexts/OpenfortContext'
 import AccountRecovery from '../components/EmbeddedSignerRecovery/AccountRecovery'
@@ -227,6 +228,7 @@ const HomePage: NextPage = () => {
               <LinkPhoneButton />
               <AddEmailOTPButton />
               <LinkEmailPasswordButton />
+              <VerifyEmailWithOTP userEmail={user?.email} />
               <Button
                 className="w-full"
                 onClick={() => {

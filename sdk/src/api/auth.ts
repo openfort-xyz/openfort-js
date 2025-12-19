@@ -179,11 +179,12 @@ export class AuthApi {
 
   async requestEmailOtp({ email }: { email: string }): Promise<void> {
     await this.ensureInitialized()
+    const auth = await Authentication.fromStorage(this.storage)
 
     this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'email' })
 
     try {
-      await this.authManager.requestEmailOTP(email)
+      await this.authManager.requestEmailOTP(email, auth?.token ? 'email-verification' : 'sign-in')
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
       throw error
