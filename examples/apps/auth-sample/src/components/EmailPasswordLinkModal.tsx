@@ -1,14 +1,13 @@
 import type React from 'react'
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import { TextField } from '@/components/Fields'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
 
 interface EmailOTPRequestModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (email: string) => Promise<void>
+  onSubmit: (params: { email: string; password: string }) => Promise<void>
   isLoading?: boolean
   title?: string
   description?: string
@@ -22,9 +21,9 @@ export function EmailPasswordRequestModal({
   title = 'Continue with Email OTP',
   description = 'Enter your email address to receive a verification code.',
 }: EmailOTPRequestModalProps) {
+  const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
-  const emailId = useId()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,14 +40,15 @@ export function EmailPasswordRequestModal({
 
     try {
       setError('')
-      await onSubmit(email.trim())
-      setEmail('')
+      await onSubmit({ password: password.trim(), email: email })
+      setPassword('')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to request OTP')
     }
   }
 
   const handleClose = () => {
+    setPassword('')
     setEmail('')
     setError('')
     onClose()
@@ -65,8 +65,19 @@ export function EmailPasswordRequestModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor={emailId}>Password</Label>
             <TextField
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              id="emailId"
+              label="Email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+            />
+            <TextField
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               id="passwordId"
               label="Password"
               name="password"

@@ -7,7 +7,7 @@ import openfort from '../../utils/openfortConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 
-export const LinkEmailOTPButton = () => {
+export const AddEmailOTPButton = () => {
   const { state: _state } = useOpenfort()
   const [showSMSOTPRequestModal, setShowSMSOTPRequestModal] = useState(false)
   const [isOTPLoading, setIsOTPLoading] = useState(false)
@@ -51,7 +51,8 @@ export const LinkEmailOTPButton = () => {
     })
 
     try {
-      await openfort.auth.linkEmailOtp({ email: otpEmail, otp })
+      await openfort.auth.addEmail({ email: otpEmail, otp, method: 'otp' })
+
       setShowOTPModal(false)
       setStatus({
         type: 'success',

@@ -4,10 +4,12 @@ import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
 import { ConfigurationError, SessionError } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 import {
+  type AddEmailOptions,
+  type AddEmailResult,
+  type AuthActionRequiredActions,
   type AuthActionRequiredResponse,
   type AuthResponse,
   type InitializeOAuthOptions,
-  type LinkEmailResponse,
   type OAuthProvider,
   type OpenfortEventMap,
   OpenfortEvents,
@@ -213,31 +215,6 @@ export class AuthApi {
     }
   }
 
-  async linkEmailOtp({ email, otp }: { email: string; otp: string }): Promise<AuthResponse> {
-    await this.ensureInitialized()
-
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) {
-      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
-    }
-
-    this.eventEmitter.emit(OpenfortEvents.ON_AUTH_INIT, { method: 'email' })
-
-    try {
-      const result = await this.authManager.linkEmailOTP(email, otp, auth)
-      if (result?.token === null) {
-        return result
-      }
-      new Authentication('session', result.token, result.user?.id).save(this.storage)
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_SUCCESS, result)
-
-      return result
-    } catch (error) {
-      this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
-      throw error
-    }
-  }
-
   async requestPhoneOtp({ phoneNumber }: { phoneNumber: string }): Promise<void> {
     await this.ensureInitialized()
 
@@ -323,6 +300,10 @@ export class AuthApi {
     await this.ensureInitialized()
     await this.authManager.verifyEmail(token, callbackURL)
   }
+  async verifyEmailOtp({ email, otp }: { email: string; otp: string }): Promise<void> {
+    await this.ensureInitialized()
+    await this.authManager.verifyEmailOtp(email, otp)
+  }
 
   async initLinkOAuth({
     provider,
@@ -343,6 +324,10 @@ export class AuthApi {
       method: 'oauth',
       provider,
     })
+
+    if ((await this.authManager.getUser(auth)).isAnonymous) {
+      return this.authManager.linkOAuthToAnonymous(auth, provider, redirectTo)
+    }
 
     return await this.authManager.linkOAuth(auth, provider, redirectTo, options)
   }
@@ -448,38 +433,84 @@ export class AuthApi {
     return await this.authManager.unlinkWallet(address, chainId, auth)
   }
 
-  async unlinkEmail() {
-    await this.validateAndRefreshToken()
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) {
-      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
-    }
-    return await this.authManager.unlinkEmail(auth)
+  private isAuthActionRequiredResponse(
+    result: AuthResponse | AuthActionRequiredResponse
+  ): result is AuthActionRequiredResponse {
+    return 'action' in result
   }
 
-  async linkEmailPassword({
-    name,
-    email,
-    password,
-  }: {
-    name: string
-    email: string
-    password: string
-  }): Promise<LinkEmailResponse> {
-    await this.validateAndRefreshToken()
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) {
-      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
+  private normalizeAuthResult(
+    result: AuthResponse | AuthActionRequiredResponse
+  ):
+    | { status: 'authenticated'; auth: AuthResponse }
+    | { status: 'action_required'; action: AuthActionRequiredActions } {
+    if (this.isAuthActionRequiredResponse(result)) {
+      return {
+        status: 'action_required',
+        action: result.action,
+      }
     }
-    return await this.authManager.linkEmail(name, email, password, auth)
+
+    return {
+      status: 'authenticated',
+      auth: result,
+    }
   }
 
-  async unlinkEmailPassword(): Promise<boolean | undefined> {
+  async addEmail(options: AddEmailOptions): Promise<AddEmailResult> {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
       throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No authentication found')
     }
-    return await this.authManager.unlinkEmail(auth)
+
+    const user = await this.authManager.getUser(auth)
+    if (user.email) {
+      throw new ConfigurationError('User already has an email')
+    }
+
+    if (user.isAnonymous) {
+      if (options.method === 'password') {
+        const res = await this.authManager.signupEmailPassword(
+          options.email,
+          options.password,
+          options.name || options.email,
+          options.callbackURL,
+          auth.token
+        )
+        return this.normalizeAuthResult(res)
+      }
+
+      if (options.method === 'otp') {
+        const res = await this.authManager.loginWithEmailOTP(options.email, options.otp, auth.token)
+        return this.normalizeAuthResult(res)
+      }
+
+      throw new ConfigurationError('Anonymous users must use password or otp method')
+    }
+
+    // non-anonymous
+
+    if (options.method === 'link' && options.callbackURL) {
+      const addEmailResponse = await this.authManager.addEmail(options.email, auth)
+      await this.authManager.verifyEmail(auth.token, options.callbackURL)
+      return { status: 'email_added', result: addEmailResponse }
+    }
+
+    if (options.method === 'otp') {
+      const addEmailResponse = await this.authManager.addEmail(options.email, auth)
+      await this.authManager.verifyEmailOtp(options.email, options.otp)
+      return { status: 'email_added', result: addEmailResponse }
+    }
+
+    if (options.method === 'password' && options.callbackURL) {
+      const addEmailResponse = await this.authManager.addEmail(options.email, auth)
+      // await this.authManager.addPassword(options.password)
+      return { status: 'email_added', result: addEmailResponse }
+    }
+
+    throw new ConfigurationError(
+      'Non-anonymous users must use link with callbackURL, otp, or password with callbackURL method'
+    )
   }
 }

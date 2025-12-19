@@ -98,9 +98,13 @@ export class AuthManager {
     return this.publishableKeyInstance
   }
 
-  async isAnonymousUser(auth: Authentication): Promise<boolean> {
-    const user = await this.getUser(auth)
-    return user.isAnonymous === true
+  private buildAuthHeaders(anonymousAuthToken?: string) {
+    return {
+      'x-project-key': this.publishableKey,
+      ...(anonymousAuthToken && {
+        authorization: `Bearer ${anonymousAuthToken}`,
+      }),
+    }
   }
 
   public async initOAuth(provider: OAuthProvider, redirectUrl: string): Promise<string> {
@@ -387,7 +391,8 @@ export class AuthManager {
     email: string,
     password: string,
     name: string,
-    callbackURL?: string
+    callbackURL?: string,
+    anonymousAuthToken?: string
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
     return withApiError<AuthResponse | AuthActionRequiredResponse>(
       async () => {
@@ -401,9 +406,7 @@ export class AuthManager {
             },
           },
           {
-            headers: {
-              'x-project-key': `${this.publishableKey}`,
-            },
+            headers: this.buildAuthHeaders(anonymousAuthToken),
           }
         )
         const data = response.data
@@ -446,11 +449,7 @@ export class AuthManager {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': auth.thirdPartyTokenType,
               }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
+            : this.buildAuthHeaders(auth.token),
         })
       },
       { context: 'logout' }
@@ -471,11 +470,7 @@ export class AuthManager {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': auth.thirdPartyTokenType,
               }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
+            : this.buildAuthHeaders(auth.token),
         })
         const userData = response.data as unknown as User
         return mapUser(userData)
@@ -498,11 +493,7 @@ export class AuthManager {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': auth.thirdPartyTokenType,
               }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
+            : this.buildAuthHeaders(auth.token),
         })
         return response.data
       },
@@ -516,9 +507,6 @@ export class AuthManager {
     redirectTo: string,
     options?: InitializeOAuthOptions
   ): Promise<string> {
-    if (await this.isAnonymousUser(auth)) {
-      return this.linkOAuthToAnonymous(auth, provider, redirectTo)
-    }
     const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
     const request = {
       linkSocialPostRequest: {
@@ -541,11 +529,7 @@ export class AuthManager {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': auth.thirdPartyTokenType,
               }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
+            : this.buildAuthHeaders(auth.token),
         }),
       { context: 'linkOAuth' }
     )
@@ -557,7 +541,7 @@ export class AuthManager {
   }
 
   public async unlinkOAuth(provider: OAuthProvider, auth: Authentication) {
-    const request = {
+    const request: Parameters<typeof this.backendApiClients.authenticationV2Api.unlinkAccountPost>[0] = {
       unlinkAccountPostRequest: {
         providerId: provider,
       },
@@ -575,11 +559,7 @@ export class AuthManager {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': auth.thirdPartyTokenType,
               }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
+            : this.buildAuthHeaders(auth.token),
         })
         return response.data
       },
@@ -587,70 +567,32 @@ export class AuthManager {
     )
   }
 
-  public async linkEmail(name: string, email: string, password: string, auth: Authentication) {
-    const request = {
-      signUpEmailPostRequest: {
-        name,
-        email,
-        password,
-      },
-    }
+  public async addEmail(email: string, auth: Authentication) {
     return withApiError(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(request, {
-          headers: auth.thirdPartyProvider
-            ? {
-                authorization: `Bearer ${this.publishableKey}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-player-token': auth.token,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-auth-provider': auth.thirdPartyProvider,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-token-type': auth.thirdPartyTokenType,
-              }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
-        })
-        return {
-          token: response.data.token,
-          user: mapUser(response.data.user),
-        }
+        const response = await this.backendApiClients.authenticationV2Api.changeEmailPost(
+          {
+            changeEmailPostRequest: {
+              newEmail: email,
+            },
+          },
+          {
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${this.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-player-token': auth.token,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : this.buildAuthHeaders(auth.token),
+          }
+        )
+        return response.data
       },
-      { context: 'linkEmail' }
-    )
-  }
-
-  public async unlinkEmail(auth: Authentication) {
-    const request = {
-      unlinkAccountPostRequest: {
-        providerId: 'credential',
-      },
-    }
-    return withApiError(
-      async () => {
-        const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
-          headers: auth.thirdPartyProvider
-            ? {
-                authorization: `Bearer ${this.publishableKey}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-player-token': auth.token,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-auth-provider': auth.thirdPartyProvider,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-token-type': auth.thirdPartyTokenType,
-              }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
-        })
-        return response.data.status
-      },
-      { context: 'unlinkEmail' }
+      { context: 'addEmail' }
     )
   }
 
@@ -674,11 +616,7 @@ export class AuthManager {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': auth.thirdPartyTokenType,
               }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
+            : this.buildAuthHeaders(auth.token),
         })
         return authPlayerResponse.data
       },
@@ -718,11 +656,7 @@ export class AuthManager {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': auth.thirdPartyTokenType,
               }
-            : {
-                authorization: `Bearer ${auth.token}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-project-key': `${this.publishableKey}`,
-              },
+            : this.buildAuthHeaders(auth.token),
         })
         return response.data
       },
@@ -751,7 +685,27 @@ export class AuthManager {
     )
   }
 
-  public async loginWithEmailOTP(email: string, otp: string): Promise<AuthResponse> {
+  public async verifyEmailOtp(email: string, otp: string): Promise<void> {
+    await withApiError(
+      async () => {
+        const response = await this.backendApiClients.emailOTPApi.emailOtpVerifyEmailPost(
+          {
+            emailOtpVerifyEmailPostRequest: {
+              email,
+              otp,
+            },
+          },
+          {
+            headers: this.buildAuthHeaders(),
+          }
+        )
+        return response.data
+      },
+      { context: 'verifyEmailOtp' }
+    )
+  }
+
+  public async loginWithEmailOTP(email: string, otp: string, anonymousAuthToken?: string): Promise<AuthResponse> {
     return await withApiError<AuthResponse>(
       async () => {
         const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(
@@ -762,9 +716,7 @@ export class AuthManager {
             },
           },
           {
-            headers: {
-              'x-project-key': `${this.publishableKey}`,
-            },
+            headers: this.buildAuthHeaders(anonymousAuthToken),
           }
         )
         const data = response.data
@@ -775,60 +727,6 @@ export class AuthManager {
       },
       { context: 'loginWithEmailOTP' }
     )
-  }
-
-  public async linkEmailOTP(email: string, otp: string, auth: Authentication): Promise<AuthResponse> {
-    if (await this.isAnonymousUser(auth)) {
-      return await withApiError<AuthResponse>(
-        async () => {
-          const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(
-            {
-              signInEmailOtpPostRequest: {
-                email,
-                otp,
-              },
-            },
-            {
-              headers: {
-                authorization: `Bearer ${auth.token}`,
-                'x-project-key': `${this.publishableKey}`,
-              },
-            }
-          )
-          const data = response.data
-          return {
-            token: data.token,
-            user: mapUser(data.user),
-          }
-        },
-        { context: 'loginWithEmailOTP' }
-      )
-    } else {
-      return await withApiError<AuthResponse>(
-        async () => {
-          const response = await this.backendApiClients.emailOTPApi.emailOtpVerifyEmailPost(
-            {
-              emailOtpVerifyEmailPostRequest: {
-                email,
-                otp,
-              },
-            },
-            {
-              headers: {
-                authorization: `Bearer ${auth.token}`,
-                'x-project-key': `${this.publishableKey}`,
-              },
-            }
-          )
-          const data = response.data
-          return {
-            token: data.token,
-            user: mapUser(data.user),
-          }
-        },
-        { context: 'loginWithEmailOTP' }
-      )
-    }
   }
 
   public async requestPhoneOtp(phoneNumber: string): Promise<void> {
@@ -929,11 +827,7 @@ export class AuthManager {
                   // eslint-disable-next-line @typescript-eslint/naming-convention
                   'x-token-type': auth.thirdPartyTokenType,
                 }
-              : {
-                  authorization: `Bearer ${auth.token}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-project-key': `${this.publishableKey}`,
-                },
+              : this.buildAuthHeaders(auth.token),
           }
         )
         return response.data

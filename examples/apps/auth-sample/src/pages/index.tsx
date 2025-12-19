@@ -9,7 +9,7 @@ import AccountActions from '@/components/AccountActions/AccountActions'
 import Assets from '@/components/Assets/Assets'
 import Authorizations7702 from '@/components/Authorizations7702/Authorizations7702'
 import EventMonitor from '@/components/EventMonitor/EventMonitor'
-import { LinkEmailOTPButton } from '@/components/LinkButtons/LinkEmailOTPButton'
+import { AddEmailOTPButton } from '@/components/LinkButtons/AddEmailOTPButton'
 import { LinkEmailPasswordButton } from '@/components/LinkButtons/LinkEmailPasswordButton'
 import { LinkPhoneButton } from '@/components/LinkButtons/LinkPhoneButton'
 import { type StatusType, Toast } from '@/components/Toasts'
@@ -225,7 +225,7 @@ const HomePage: NextPage = () => {
             <div className="space-y-2">
               <span className="font-medium text-black">Other methods</span>
               <LinkPhoneButton />
-              <LinkEmailOTPButton />
+              <AddEmailOTPButton />
               <LinkEmailPasswordButton />
               <Button
                 className="w-full"
