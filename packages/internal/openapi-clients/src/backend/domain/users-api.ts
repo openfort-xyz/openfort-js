@@ -59,16 +59,13 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             // authentication sk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
+                options: { ...baseOptions, ...localVarRequestOptions},
             };
         },
         /**

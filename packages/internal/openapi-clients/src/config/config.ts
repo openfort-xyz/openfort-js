@@ -34,6 +34,7 @@ export const createConfig = ({
 			headers: {
 				"x-native-app-identifier": nativeAppIdentifier,
 			},
+			withCredentials: false,
 		};
 	}
 
