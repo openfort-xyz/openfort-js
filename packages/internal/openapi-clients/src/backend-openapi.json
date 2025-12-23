@@ -7824,6 +7824,61 @@
             }
           }
         ]
+      },
+      "delete": {
+        "operationId": "DeleteUser",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_00000000-0000-0000-0000-000000000000",
+                      "object": "player",
+                      "deleted": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "It will delete all linked accounts the user is authenticated with.\nIf the user has a linked embedded signer, it will be deleted as well.",
+        "summary": "Deletes a user object.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique user ID (starts with pla_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          }
+        ]
       }
     },
     "/v2/accounts": {
@@ -23971,6 +24026,7 @@
       "AuthProviderResponseV2": {
         "type": "string",
         "enum": [
+          "credential",
           "email",
           "wallet",
           "google",
@@ -24002,10 +24058,6 @@
           "chainType": {
             "type": "string"
           },
-          "chainId": {
-            "type": "number",
-            "format": "double"
-          },
           "connectorType": {
             "type": "string"
           },
@@ -24016,8 +24068,7 @@
         "required": [
           "provider",
           "createdAt",
-          "updatedAt",
-          "accountId"
+          "updatedAt"
         ],
         "type": "object",
         "additionalProperties": false
@@ -24035,7 +24086,8 @@
             "type": "string"
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "emailVerified": {
             "type": "boolean"
@@ -24142,6 +24194,29 @@
         },
         "type": "object",
         "additionalProperties": false
+      },
+      "BaseDeleteEntityResponse_EntityType.PLAYER_": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.PLAYER"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "deleted"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UserDeleteResponse": {
+        "$ref": "#/components/schemas/BaseDeleteEntityResponse_EntityType.PLAYER_"
       },
       "RecoverV2Response": {
         "properties": {

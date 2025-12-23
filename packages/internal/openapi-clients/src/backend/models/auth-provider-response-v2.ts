@@ -21,6 +21,7 @@
  */
 
 export const AuthProviderResponseV2 = {
+    Credential: 'credential',
     Email: 'email',
     Wallet: 'wallet',
     Google: 'google',

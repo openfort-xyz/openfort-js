@@ -64,6 +64,7 @@ export * from './authorized-networks-response-authorized-networks-inner';
 export * from './authorized-origins-response';
 export * from './balance-event-response';
 export * from './balance-response';
+export * from './base-delete-entity-response-entity-type-player';
 export * from './base-entity-list-response-account-v2-response';
 export * from './base-entity-list-response-auth-user-response';
 export * from './base-entity-list-response-device-response';

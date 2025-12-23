@@ -46,19 +46,13 @@ export interface LinkedAccountResponseV2 {
      * @type {string}
      * @memberof LinkedAccountResponseV2
      */
-    'accountId': string;
+    'accountId'?: string;
     /**
      * 
      * @type {string}
      * @memberof LinkedAccountResponseV2
      */
     'chainType'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof LinkedAccountResponseV2
-     */
-    'chainId'?: number;
     /**
      * 
      * @type {string}

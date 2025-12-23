@@ -98,6 +98,7 @@ models/authorized-networks-response.ts
 models/authorized-origins-response.ts
 models/balance-event-response.ts
 models/balance-response.ts
+models/base-delete-entity-response-entity-type-player.ts
 models/base-entity-list-response-account-v2-response.ts
 models/base-entity-list-response-auth-user-response.ts
 models/base-entity-list-response-device-response.ts

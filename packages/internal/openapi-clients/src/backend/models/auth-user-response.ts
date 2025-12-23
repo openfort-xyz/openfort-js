@@ -46,7 +46,7 @@ export interface AuthUserResponse {
      * @type {string}
      * @memberof AuthUserResponse
      */
-    'email': string;
+    'email': string | null;
     /**
      * 
      * @type {boolean}

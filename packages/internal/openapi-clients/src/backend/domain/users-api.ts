@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { AuthUserResponse } from '../models';
 // @ts-ignore
+import { BaseDeleteEntityResponseEntityTypePLAYER } from '../models';
+// @ts-ignore
 import { BaseEntityListResponseAuthUserResponse } from '../models';
 // @ts-ignore
 import { PrismaSortOrder } from '../models';
@@ -33,6 +35,44 @@ import { PrismaSortOrder } from '../models';
  */
 export const UsersApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * It will delete all linked accounts the user is authenticated with. If the user has a linked embedded signer, it will be deleted as well.
+         * @summary Deletes a user object.
+         * @param {string} id Specifies the unique user ID (starts with pla_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteUser: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteUser', 'id', id)
+            const localVarPath = `/v2/users/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * Retrieves an authenticated user.  Users have linked accounts and are authenticated with a provider.
          * @summary Authenticated user.
@@ -59,13 +99,16 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             // authentication sk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...options.headers};
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
-                options: { ...baseOptions, ...localVarRequestOptions},
+                options: localVarRequestOptions,
             };
         },
         /**
@@ -138,6 +181,17 @@ export const UsersApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = UsersApiAxiosParamCreator(configuration)
     return {
         /**
+         * It will delete all linked accounts the user is authenticated with. If the user has a linked embedded signer, it will be deleted as well.
+         * @summary Deletes a user object.
+         * @param {string} id Specifies the unique user ID (starts with pla_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteUser(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseDeleteEntityResponseEntityTypePLAYER>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUser(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Retrieves an authenticated user.  Users have linked accounts and are authenticated with a provider.
          * @summary Authenticated user.
          * @param {string} id 
@@ -174,6 +228,16 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
     const localVarFp = UsersApiFp(configuration)
     return {
         /**
+         * It will delete all linked accounts the user is authenticated with. If the user has a linked embedded signer, it will be deleted as well.
+         * @summary Deletes a user object.
+         * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteUser(requestParameters: UsersApiDeleteUserRequest, options?: AxiosRequestConfig): AxiosPromise<BaseDeleteEntityResponseEntityTypePLAYER> {
+            return localVarFp.deleteUser(requestParameters.id, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves an authenticated user.  Users have linked accounts and are authenticated with a provider.
          * @summary Authenticated user.
          * @param {UsersApiGetAuthUserRequest} requestParameters Request parameters.
@@ -195,6 +259,20 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
         },
     };
 };
+
+/**
+ * Request parameters for deleteUser operation in UsersApi.
+ * @export
+ * @interface UsersApiDeleteUserRequest
+ */
+export interface UsersApiDeleteUserRequest {
+    /**
+     * Specifies the unique user ID (starts with pla_).
+     * @type {string}
+     * @memberof UsersApiDeleteUser
+     */
+    readonly id: string
+}
 
 /**
  * Request parameters for getAuthUser operation in UsersApi.
@@ -259,6 +337,18 @@ export interface UsersApiGetAuthUsersRequest {
  * @extends {BaseAPI}
  */
 export class UsersApi extends BaseAPI {
+    /**
+     * It will delete all linked accounts the user is authenticated with. If the user has a linked embedded signer, it will be deleted as well.
+     * @summary Deletes a user object.
+     * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UsersApi
+     */
+    public deleteUser(requestParameters: UsersApiDeleteUserRequest, options?: AxiosRequestConfig) {
+        return UsersApiFp(this.configuration).deleteUser(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Retrieves an authenticated user.  Users have linked accounts and are authenticated with a provider.
      * @summary Authenticated user.
