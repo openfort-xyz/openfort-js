@@ -1,5 +1,5 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import type { GetSessionGet200Response } from '@openfort/openapi-clients/dist/backend'
+import type { DefaultApiLinkSocialPostRequest, GetSessionGet200Response } from '@openfort/openapi-clients/dist/backend'
 import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
@@ -107,7 +107,11 @@ export class AuthManager {
     }
   }
 
-  public async initOAuth(provider: OAuthProvider, redirectUrl: string): Promise<string> {
+  public async initOAuth(
+    provider: OAuthProvider,
+    redirectUrl: string,
+    options?: InitializeOAuthOptions
+  ): Promise<string> {
     return await withApiError<string>(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.socialSignIn(
@@ -115,6 +119,8 @@ export class AuthManager {
             socialSignInRequest: {
               provider,
               callbackURL: redirectUrl,
+              scopes: options?.scopes?.split(' '),
+              disableRedirect: options?.skipBrowserRedirect ?? false,
             },
           },
           {
@@ -508,7 +514,7 @@ export class AuthManager {
     options?: InitializeOAuthOptions
   ): Promise<string> {
     const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
-    const request = {
+    const request: DefaultApiLinkSocialPostRequest = {
       linkSocialPostRequest: {
         provider,
         callbackURL: redirectTo,

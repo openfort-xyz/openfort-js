@@ -105,7 +105,15 @@ export class AuthApi {
     }
   }
 
-  async initOAuth({ provider, redirectTo }: { provider: OAuthProvider; redirectTo: string }): Promise<string> {
+  async initOAuth({
+    provider,
+    redirectTo,
+    options,
+  }: {
+    provider: OAuthProvider
+    redirectTo: string
+    options?: InitializeOAuthOptions
+  }): Promise<string> {
     await this.ensureInitialized()
 
     const auth = await Authentication.fromStorage(this.storage)
@@ -119,7 +127,7 @@ export class AuthApi {
     })
 
     try {
-      return await this.authManager.initOAuth(provider, redirectTo)
+      return await this.authManager.initOAuth(provider, redirectTo, options)
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_AUTH_FAILURE, error as Error)
       throw error
@@ -183,8 +191,10 @@ export class AuthApi {
 
     this.eventEmitter.emit(OpenfortEvents.ON_OTP_REQUEST, { method: 'email' })
 
+    const anonymous = auth ? (await this.authManager.getUser(auth)).isAnonymous : false
+
     try {
-      await this.authManager.requestEmailOTP(email, auth?.token ? 'email-verification' : 'sign-in')
+      await this.authManager.requestEmailOTP(email, auth?.token && !anonymous ? 'email-verification' : 'sign-in')
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
       throw error
