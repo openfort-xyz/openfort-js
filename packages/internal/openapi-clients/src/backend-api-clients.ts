@@ -71,14 +71,25 @@ export class BackendApiClients {
   }
 
   /**
-   * Setup Axios response interceptor to handle 401 errors
+   * Setup Axios response interceptor to handle 401 and 404 errors
    */
   private setupInterceptors(): void {
     this.axiosInstance.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
+        const status = error.response?.status
+
         // Check if this is a 401 Unauthorized error
-        if (error.response?.status === 401) {
+        if (status === 401) {
+          // Clear authentication state silently (no redirect)
+          await this.clearAuthenticationState()
+
+          // Emit logout event so SDK can notify application
+          this.emitLogoutEvent()
+        }
+
+        // Check if this is a 404 Not Found error for user-related endpoints
+        if (status === 404 && this.isUserRelatedRequest(error)) {
           // Clear authentication state silently (no redirect)
           await this.clearAuthenticationState()
 
@@ -90,6 +101,26 @@ export class BackendApiClients {
         return Promise.reject(error)
       }
     )
+  }
+
+  /**
+   * Check if the failed request is user-related (contains user ID in path or query)
+   */
+  private isUserRelatedRequest(error: AxiosError): boolean {
+    const url = error.config?.url || ''
+    const params = error.config?.params
+
+    // Check for /v2/accounts with user parameter
+    if (url.includes('/accounts') && params?.user) {
+      return true
+    }
+
+    // Check for /v1/players/{id} or /iam/v1/players/{id} endpoints
+    if (url.includes('/players')) {
+      return true
+    }
+
+    return false
   }
 
   /**

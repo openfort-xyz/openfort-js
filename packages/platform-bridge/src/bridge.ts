@@ -460,6 +460,8 @@ window.callFunction = async (jsonData: string) => {
         await openfortClient.embeddedWallet.configure({
           chainId: request.chainId,
           recoveryParams: request.recoveryParams,
+          chainType: request.chainType,
+          accountType: request.accountType,
         })
 
         callbackToGame({
