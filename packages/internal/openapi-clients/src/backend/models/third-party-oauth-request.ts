@@ -43,7 +43,7 @@ export interface ThirdPartyOAuthRequest {
      * @type {TokenType}
      * @memberof ThirdPartyOAuthRequest
      */
-    'tokenType': TokenType;
+    'tokenType'?: TokenType;
 }
 
 

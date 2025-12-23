@@ -46,7 +46,9 @@ test('Multiple wallets', async ({ page }) => {
     const createWalletButton = page.getByRole('button', { name: '+ Create wallet' }).first()
     createWalletButton.click()
 
-    const createAutomaticButton = page.getByRole('button', { name: 'Create with Automatic Recovery' })
+    const createAutomaticButton = page.getByRole('button', {
+      name: 'Create with Automatic Recovery',
+    })
     await expect(createAutomaticButton).toBeInViewport()
     createAutomaticButton.click()
 
@@ -73,7 +75,9 @@ test('Multiple wallets', async ({ page }) => {
 
   await test.step('Change wallet', async () => {
     page.getByRole('button', { name: 'Change wallet' }).first().click()
-    const useThisWalletButton = page.getByRole('button', { name: 'Use this wallet' })
+    const useThisWalletButton = page.getByRole('button', {
+      name: 'Use this wallet',
+    })
     await useThisWalletButton.waitFor({ timeout: 5000 })
     useThisWalletButton.click()
 

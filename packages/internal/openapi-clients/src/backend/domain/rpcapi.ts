@@ -32,8 +32,52 @@ import { JsonRpcResponse } from '../models';
 export const RPCApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Handle JSON-RPC 2.0 requests  Accepts standard JSON-RPC 2.0 requests and routes them to appropriate method handlers.  Supported methods: - wallet_getAssets: Get wallet assets across multiple chains
-         * @summary Execute JSON-RPC method
+         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
+         * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
+         * @param {number} chainId 
+         * @param {JsonRpcRequest} jsonRpcRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        handleChainRpcRequest: async (chainId: number, jsonRpcRequest: JsonRpcRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'chainId' is not null or undefined
+            assertParamExists('handleChainRpcRequest', 'chainId', chainId)
+            // verify required parameter 'jsonRpcRequest' is not null or undefined
+            assertParamExists('handleChainRpcRequest', 'jsonRpcRequest', jsonRpcRequest)
+            const localVarPath = `/rpc/{chainId}`
+                .replace(`{${"chainId"}}`, encodeURIComponent(String(chainId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(jsonRpcRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens and third-party tokens
+         * @summary Execute wallet JSON-RPC methods
          * @param {JsonRpcRequest} jsonRpcRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -78,8 +122,20 @@ export const RPCApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = RPCApiAxiosParamCreator(configuration)
     return {
         /**
-         * Handle JSON-RPC 2.0 requests  Accepts standard JSON-RPC 2.0 requests and routes them to appropriate method handlers.  Supported methods: - wallet_getAssets: Get wallet assets across multiple chains
-         * @summary Execute JSON-RPC method
+         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
+         * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
+         * @param {number} chainId 
+         * @param {JsonRpcRequest} jsonRpcRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async handleChainRpcRequest(chainId: number, jsonRpcRequest: JsonRpcRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JsonRpcResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.handleChainRpcRequest(chainId, jsonRpcRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens and third-party tokens
+         * @summary Execute wallet JSON-RPC methods
          * @param {JsonRpcRequest} jsonRpcRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -99,8 +155,18 @@ export const RPCApiFactory = function (configuration?: Configuration, basePath?:
     const localVarFp = RPCApiFp(configuration)
     return {
         /**
-         * Handle JSON-RPC 2.0 requests  Accepts standard JSON-RPC 2.0 requests and routes them to appropriate method handlers.  Supported methods: - wallet_getAssets: Get wallet assets across multiple chains
-         * @summary Execute JSON-RPC method
+         * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
+         * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
+         * @param {RPCApiHandleChainRpcRequestRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        handleChainRpcRequest(requestParameters: RPCApiHandleChainRpcRequestRequest, options?: AxiosRequestConfig): AxiosPromise<JsonRpcResponse> {
+            return localVarFp.handleChainRpcRequest(requestParameters.chainId, requestParameters.jsonRpcRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens and third-party tokens
+         * @summary Execute wallet JSON-RPC methods
          * @param {RPCApiHandleRpcRequestRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -110,6 +176,27 @@ export const RPCApiFactory = function (configuration?: Configuration, basePath?:
         },
     };
 };
+
+/**
+ * Request parameters for handleChainRpcRequest operation in RPCApi.
+ * @export
+ * @interface RPCApiHandleChainRpcRequestRequest
+ */
+export interface RPCApiHandleChainRpcRequestRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof RPCApiHandleChainRpcRequest
+     */
+    readonly chainId: number
+
+    /**
+     * 
+     * @type {JsonRpcRequest}
+     * @memberof RPCApiHandleChainRpcRequest
+     */
+    readonly jsonRpcRequest: JsonRpcRequest
+}
 
 /**
  * Request parameters for handleRpcRequest operation in RPCApi.
@@ -133,8 +220,20 @@ export interface RPCApiHandleRpcRequestRequest {
  */
 export class RPCApi extends BaseAPI {
     /**
-     * Handle JSON-RPC 2.0 requests  Accepts standard JSON-RPC 2.0 requests and routes them to appropriate method handlers.  Supported methods: - wallet_getAssets: Get wallet assets across multiple chains
-     * @summary Execute JSON-RPC method
+     * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
+     * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
+     * @param {RPCApiHandleChainRpcRequestRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof RPCApi
+     */
+    public handleChainRpcRequest(requestParameters: RPCApiHandleChainRpcRequestRequest, options?: AxiosRequestConfig) {
+        return RPCApiFp(this.configuration).handleChainRpcRequest(requestParameters.chainId, requestParameters.jsonRpcRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Execute JSON-RPC 2.0 wallet methods  This endpoint handles wallet-namespace JSON-RPC 2.0 requests following the specification at https://www.jsonrpc.org/specification. It supports EIP-7811 wallet methods that operate across multiple chains.  **Supported methods:** - `wallet_getAssets`: Retrieve wallet assets across multiple chains with optional filtering  **Authentication:** Supports multiple authentication methods including public key access tokens and third-party tokens
+     * @summary Execute wallet JSON-RPC methods
      * @param {RPCApiHandleRpcRequestRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
