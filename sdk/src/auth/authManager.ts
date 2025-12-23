@@ -573,13 +573,14 @@ export class AuthManager {
     )
   }
 
-  public async addEmail(email: string, auth: Authentication) {
+  public async addEmail(email: string, callbackURL: string, auth: Authentication) {
     return withApiError(
       async () => {
         const response = await this.backendApiClients.authenticationV2Api.changeEmailPost(
           {
             changeEmailPostRequest: {
               newEmail: email,
+              callbackURL,
             },
           },
           {

@@ -1,48 +1,41 @@
 import { useState } from 'react'
-import { EmailPasswordRequestModal } from '@/components/EmailPasswordLinkModal'
+import { EmailOTPRequestModal } from '@/components/EmailOTPRequestModal'
+import { EmailSentModal } from '@/components/EmailSentModal'
 import { type StatusType, Toast } from '@/components/Toasts'
 import { useOpenfort } from '@/contexts/OpenfortContext'
-import { getURL } from '@/utils/getUrl'
 import openfort from '../../utils/openfortConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 
-export const LinkEmailPasswordButton = () => {
+export const AddEmailButton = () => {
   const { state: _state } = useOpenfort()
   const [showSMSOTPRequestModal, setShowSMSOTPRequestModal] = useState(false)
   const [isOTPLoading, setIsOTPLoading] = useState(false)
   const [status, setStatus] = useState<StatusType>(null)
+  const [showOTPModal, setShowOTPModal] = useState(false)
+  const [otpEmail, setOtpEmail] = useState('')
 
-  const handleSMSOTPRequest = async ({ email, password }: { email: string; password: string }) => {
+  const handleSMSOTPRequest = async (email: string) => {
     setIsOTPLoading(true)
     setStatus({
       type: 'loading',
-      title: 'Verifying password...',
+      title: 'Sending OTP...',
     })
 
     try {
-      const user = await openfort.user.get()
-      console.log(user)
-
-      const res = await openfort.auth.addEmail({
-        email,
-        password,
-        method: 'password',
-        callbackURL: `${getURL()}/login`,
-      })
-
-      if (res.status === 'action_required') {
-        alert(`Additional action required to link email: ${res.action}`)
-      }
+      await openfort.auth.addEmail({ email: email, callbackURL: `http://localhost:42938` })
+      setOtpEmail(email)
+      setShowSMSOTPRequestModal(false)
+      setShowOTPModal(true)
       setStatus({
         type: 'success',
-        title: 'Email linked successfully',
+        title: 'OTP sent to your email',
       })
     } catch (error) {
       console.log('error', error)
       setStatus({
         type: 'error',
-        title: 'Error verifying password',
+        title: 'Error sending OTP',
       })
       throw error
     } finally {
@@ -50,9 +43,9 @@ export const LinkEmailPasswordButton = () => {
     }
   }
 
-  const handleSMSOTPRequestSubmit = async ({ email, password }: { email: string; password: string }) => {
+  const handleSMSOTPRequestSubmit = async (email: string) => {
     try {
-      await handleSMSOTPRequest({ email, password })
+      await handleSMSOTPRequest(email)
       setIsOTPLoading(true)
     } catch (err) {
       console.error('Failed to request SMS OTP:', err)
@@ -65,18 +58,23 @@ export const LinkEmailPasswordButton = () => {
   return (
     <div className="my-2">
       <Button className="w-full" onClick={() => setShowSMSOTPRequestModal(true)} variant="outline">
-        {isOTPLoading ? <Loading /> : `Link Email with Password`}
+        {isOTPLoading ? <Loading /> : `Link email`}
       </Button>
 
-      <EmailPasswordRequestModal
+      <EmailOTPRequestModal
         isOpen={showSMSOTPRequestModal}
         onClose={() => setShowSMSOTPRequestModal(false)}
         onSubmit={handleSMSOTPRequestSubmit}
         isLoading={isOTPLoading}
-        title="Continue with Email and Password"
-        description="Enter your email address and password to link your account."
+        title="Continue with Email OTP"
+        description="You will receive a verification code at this email address."
       />
-
+      <EmailSentModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onResendEmail={() => handleSMSOTPRequest(otpEmail)}
+        email={otpEmail}
+      />
       <Toast status={status} setStatus={setStatus} />
     </div>
   )

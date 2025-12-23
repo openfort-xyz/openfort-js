@@ -9,13 +9,11 @@ import AccountActions from '@/components/AccountActions/AccountActions'
 import Assets from '@/components/Assets/Assets'
 import Authorizations7702 from '@/components/Authorizations7702/Authorizations7702'
 import EventMonitor from '@/components/EventMonitor/EventMonitor'
-import { AddEmailOTPButton } from '@/components/LinkButtons/AddEmailOTPButton'
-import { LinkEmailPasswordButton } from '@/components/LinkButtons/LinkEmailPasswordButton'
+import { AddEmailButton } from '@/components/LinkButtons/AddEmailButton'
 import { LinkPhoneButton } from '@/components/LinkButtons/LinkPhoneButton'
 import { type StatusType, Toast } from '@/components/Toasts'
 import GetUserAccountsButton from '@/components/User/GetUserAccountsButton'
 import { Button } from '@/components/ui/button'
-import { VerifyEmailWithOTP } from '@/components/VerifyEmailWithOTP'
 import Wallets from '@/components/Wallet/Wallet'
 import { useOpenfort } from '@/contexts/OpenfortContext'
 import AccountRecovery from '../components/EmbeddedSignerRecovery/AccountRecovery'
@@ -226,9 +224,7 @@ const HomePage: NextPage = () => {
             <div className="space-y-2">
               <span className="font-medium text-black">Other methods</span>
               <LinkPhoneButton />
-              <AddEmailOTPButton />
-              <LinkEmailPasswordButton />
-              <VerifyEmailWithOTP userEmail={user?.email} />
+              <AddEmailButton />
               <Button
                 className="w-full"
                 onClick={() => {

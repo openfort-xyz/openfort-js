@@ -105,29 +105,12 @@ export type SIWEInitResponse = {
   nonce: string
 }
 
-export type AddEmailOptions =
-  | {
-      email: string
-      method: 'password'
-      password: string
-      name?: string
-      callbackURL?: string
-    }
-  | {
-      email: string
-      method: 'otp'
-      otp: string
-    }
-  | {
-      email: string
-      method: 'link'
-      callbackURL?: string
-    }
+export type AddEmailOptions = {
+  email: string
+  callbackURL: string
+}
 
-export type AddEmailResult =
-  | { status: 'authenticated'; auth: AuthResponse }
-  | { status: 'action_required'; action: AuthActionRequiredActions }
-  | { status: 'email_added'; result: ChangeEmailPost200Response | LinkEmailResponse }
+export type AddEmailResult = ChangeEmailPost200Response
 
 export type InitializeOAuthOptions = {
   /** A space-separated list of scopes granted to the OAuth application. */

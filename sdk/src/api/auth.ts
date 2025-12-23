@@ -6,7 +6,6 @@ import type { IStorage } from '../storage/istorage'
 import {
   type AddEmailOptions,
   type AddEmailResult,
-  type AuthActionRequiredActions,
   type AuthActionRequiredResponse,
   type AuthResponse,
   type InitializeOAuthOptions,
@@ -444,30 +443,6 @@ export class AuthApi {
     return await this.authManager.unlinkWallet(address, chainId, auth)
   }
 
-  private isAuthActionRequiredResponse(
-    result: AuthResponse | AuthActionRequiredResponse
-  ): result is AuthActionRequiredResponse {
-    return 'action' in result
-  }
-
-  private normalizeAuthResult(
-    result: AuthResponse | AuthActionRequiredResponse
-  ):
-    | { status: 'authenticated'; auth: AuthResponse }
-    | { status: 'action_required'; action: AuthActionRequiredActions } {
-    if (this.isAuthActionRequiredResponse(result)) {
-      return {
-        status: 'action_required',
-        action: result.action,
-      }
-    }
-
-    return {
-      status: 'authenticated',
-      auth: result,
-    }
-  }
-
   async addEmail(options: AddEmailOptions): Promise<AddEmailResult> {
     await this.validateAndRefreshToken()
     const auth = await Authentication.fromStorage(this.storage)
@@ -480,48 +455,6 @@ export class AuthApi {
       throw new ConfigurationError('User already has an email')
     }
 
-    if (user.isAnonymous) {
-      if (options.method === 'password') {
-        const res = await this.authManager.signupEmailPassword(
-          options.email,
-          options.password,
-          options.name || options.email,
-          options.callbackURL,
-          auth.token
-        )
-        return this.normalizeAuthResult(res)
-      }
-
-      if (options.method === 'otp') {
-        const res = await this.authManager.loginWithEmailOTP(options.email, options.otp, auth.token)
-        return this.normalizeAuthResult(res)
-      }
-
-      throw new ConfigurationError('Anonymous users must use password or otp method')
-    }
-
-    // non-anonymous
-
-    if (options.method === 'link' && options.callbackURL) {
-      const addEmailResponse = await this.authManager.addEmail(options.email, auth)
-      await this.authManager.verifyEmail(auth.token, options.callbackURL)
-      return { status: 'email_added', result: addEmailResponse }
-    }
-
-    if (options.method === 'otp') {
-      const addEmailResponse = await this.authManager.addEmail(options.email, auth)
-      await this.authManager.verifyEmailOtp(options.email, options.otp, auth.token)
-      return { status: 'email_added', result: addEmailResponse }
-    }
-
-    if (options.method === 'password' && options.callbackURL) {
-      const addEmailResponse = await this.authManager.addEmail(options.email, auth)
-      // await this.authManager.addPassword(options.password)
-      return { status: 'email_added', result: addEmailResponse }
-    }
-
-    throw new ConfigurationError(
-      'Non-anonymous users must use link with callbackURL, otp, or password with callbackURL method'
-    )
+    return await this.authManager.addEmail(options.email, options.callbackURL, auth)
   }
 }
