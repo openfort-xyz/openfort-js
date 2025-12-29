@@ -4,8 +4,6 @@ export enum StorageKeys {
   ACCOUNT = 'openfort.account',
   TEST = 'openfort.test',
   SESSION = 'openfort.session',
-  PKCE_STATE = 'openfort.pkce_state',
-  PKCE_VERIFIER = 'openfort.pkce_verifier',
 }
 
 export interface IStorage {

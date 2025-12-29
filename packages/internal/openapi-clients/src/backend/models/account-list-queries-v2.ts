@@ -58,13 +58,13 @@ export interface AccountListQueriesV2 {
      * @type {string}
      * @memberof AccountListQueriesV2
      */
-    'chainType'?: string;
+    'chainType'?: AccountListQueriesV2ChainTypeEnum;
     /**
      * Specifies the type of account. Must be either \"Smart Account\" or \"Externally Owned Account\".
      * @type {string}
      * @memberof AccountListQueriesV2
      */
-    'accountType'?: string;
+    'accountType'?: AccountListQueriesV2AccountTypeEnum;
     /**
      * Specifies the account address
      * @type {string}
@@ -73,5 +73,18 @@ export interface AccountListQueriesV2 {
     'address'?: string;
 }
 
+export const AccountListQueriesV2ChainTypeEnum = {
+    Evm: 'EVM',
+    Svm: 'SVM'
+} as const;
+
+export type AccountListQueriesV2ChainTypeEnum = typeof AccountListQueriesV2ChainTypeEnum[keyof typeof AccountListQueriesV2ChainTypeEnum];
+export const AccountListQueriesV2AccountTypeEnum = {
+    ExternallyOwnedAccount: 'Externally Owned Account',
+    SmartAccount: 'Smart Account',
+    DelegatedAccount: 'Delegated Account'
+} as const;
+
+export type AccountListQueriesV2AccountTypeEnum = typeof AccountListQueriesV2AccountTypeEnum[keyof typeof AccountListQueriesV2AccountTypeEnum];
 
 

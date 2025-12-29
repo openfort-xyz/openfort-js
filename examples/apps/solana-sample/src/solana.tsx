@@ -26,7 +26,10 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
   const [transactionSignature, setTransactionSignature] = useState<string | null>(null)
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
-  const [validationErrors, setValidationErrors] = useState<{ recipient?: string; amount?: string }>({})
+  const [validationErrors, setValidationErrors] = useState<{
+    recipient?: string
+    amount?: string
+  }>({})
 
   const fetchBalance = useCallback(async (publicKey: Address) => {
     try {
@@ -171,7 +174,10 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                     value={recipient}
                     onChange={(e) => {
                       setRecipient(e.target.value)
-                      setValidationErrors({ ...validationErrors, recipient: undefined })
+                      setValidationErrors({
+                        ...validationErrors,
+                        recipient: undefined,
+                      })
                     }}
                     className={`w-full ${validationErrors.recipient ? 'border-red-500' : ''}`}
                     disabled={sendingTransaction}
@@ -192,7 +198,10 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                     value={amount}
                     onChange={(e) => {
                       setAmount(e.target.value)
-                      setValidationErrors({ ...validationErrors, amount: undefined })
+                      setValidationErrors({
+                        ...validationErrors,
+                        amount: undefined,
+                      })
                     }}
                     className={`w-full ${validationErrors.amount ? 'border-red-500' : ''}`}
                     disabled={sendingTransaction}

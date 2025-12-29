@@ -21,31 +21,31 @@
  */
 export interface CreateEmbeddedRequest {
     /**
-     * 
+     * The type of smart account that will be created. \"Externally Owned Account\", \"Smart Account\" or \"Delegated Account\".
      * @type {string}
      * @memberof CreateEmbeddedRequest
      */
-    'accountType': string;
+    'accountType': CreateEmbeddedRequestAccountTypeEnum;
     /**
-     * 
+     * The chain type. \"EVM\" or \"SVM\".
      * @type {string}
      * @memberof CreateEmbeddedRequest
      */
-    'chainType': string;
+    'chainType': CreateEmbeddedRequestChainTypeEnum;
     /**
-     * 
+     * The wallet address. For EOA: the EOA address. For Smart Account: the owner address (EOA will be created with this address). For Delegated Account: the address for both EOA and Delegated Account.
      * @type {string}
      * @memberof CreateEmbeddedRequest
      */
     'address': string;
     /**
-     * 
+     * The chain ID. Must be a [supported chain](/development/chains). Required for Smart Account and Delegated Account types.
      * @type {number}
      * @memberof CreateEmbeddedRequest
      */
     'chainId'?: number;
     /**
-     * 
+     * Specifies the share repositories. Required for creating embedded accounts.
      * @type {string}
      * @memberof CreateEmbeddedRequest
      */
@@ -56,5 +56,26 @@ export interface CreateEmbeddedRequest {
      * @memberof CreateEmbeddedRequest
      */
     'signerUuid'?: string;
+    /**
+     * The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, Calibur, Simple). Defaults to UpgradeableV6 in mainnets. Must support EIP-7702 for Delegated Accounts.
+     * @type {string}
+     * @memberof CreateEmbeddedRequest
+     */
+    'implementationType'?: string;
 }
+
+export const CreateEmbeddedRequestAccountTypeEnum = {
+    ExternallyOwnedAccount: 'Externally Owned Account',
+    SmartAccount: 'Smart Account',
+    DelegatedAccount: 'Delegated Account'
+} as const;
+
+export type CreateEmbeddedRequestAccountTypeEnum = typeof CreateEmbeddedRequestAccountTypeEnum[keyof typeof CreateEmbeddedRequestAccountTypeEnum];
+export const CreateEmbeddedRequestChainTypeEnum = {
+    Evm: 'EVM',
+    Svm: 'SVM'
+} as const;
+
+export type CreateEmbeddedRequestChainTypeEnum = typeof CreateEmbeddedRequestChainTypeEnum[keyof typeof CreateEmbeddedRequestChainTypeEnum];
+
 

@@ -55,7 +55,9 @@ function createOpenfortSigner(
             )
           }
 
-          return Object.freeze({ [signerAddress]: signatureBytes as SignatureBytes })
+          return Object.freeze({
+            [signerAddress]: signatureBytes as SignatureBytes,
+          })
         })
       )
     },
@@ -92,8 +94,13 @@ export async function sendSolanaTransaction({
     const signedTransaction = await signTransactionMessageWithSigners(transactionMessage)
     assertIsTransactionWithBlockhashLifetime(signedTransaction)
 
-    const sendAndConfirmTransaction = sendAndConfirmTransactionFactory({ rpc, rpcSubscriptions })
-    await sendAndConfirmTransaction(signedTransaction, { commitment: 'confirmed' })
+    const sendAndConfirmTransaction = sendAndConfirmTransactionFactory({
+      rpc,
+      rpcSubscriptions,
+    })
+    await sendAndConfirmTransaction(signedTransaction, {
+      commitment: 'confirmed',
+    })
 
     const signature = Object.keys(signedTransaction.signatures)[0]
 

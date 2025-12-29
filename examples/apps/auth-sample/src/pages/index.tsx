@@ -1,4 +1,4 @@
-import type { AuthPlayerResponse } from '@openfort/openfort-js'
+import type { User } from '@openfort/openfort-js'
 import { EmbeddedState, OAuthProvider } from '@openfort/openfort-js'
 import { Wallet } from 'lucide-react'
 import type { NextPage } from 'next'
@@ -9,16 +9,19 @@ import AccountActions from '@/components/AccountActions/AccountActions'
 import Assets from '@/components/Assets/Assets'
 import Authorizations7702 from '@/components/Authorizations7702/Authorizations7702'
 import EventMonitor from '@/components/EventMonitor/EventMonitor'
+import { AddEmailButton } from '@/components/LinkButtons/AddEmailButton'
+import { LinkPhoneButton } from '@/components/LinkButtons/LinkPhoneButton'
 import { type StatusType, Toast } from '@/components/Toasts'
+import GetUserAccountsButton from '@/components/User/GetUserAccountsButton'
 import { Button } from '@/components/ui/button'
 import Wallets from '@/components/Wallet/Wallet'
 import { useOpenfort } from '@/contexts/OpenfortContext'
 import AccountRecovery from '../components/EmbeddedSignerRecovery/AccountRecovery'
 import AddFunds from '../components/Funding/AddFunds'
 import { Layout } from '../components/Layouts/Layout'
+import LinkOAuthButton from '../components/LinkButtons/LinkOAuthButton'
 import Loading from '../components/Loading'
 import LogoutButton from '../components/Logout'
-import LinkOAuthButton from '../components/OAuth/LinkOAuthButton'
 import SignMessageButton from '../components/Signatures/SignMessageButton'
 import SignTypedDataButton from '../components/Signatures/SignTypedDataButton'
 import GetUserButton from '../components/User/GetUserButton'
@@ -27,7 +30,7 @@ import openfort from '../utils/openfortConfig'
 
 const HomePage: NextPage = () => {
   const { state } = useOpenfort()
-  const [user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
   const [message, setMessage] = useState<string>('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -93,7 +96,7 @@ const HomePage: NextPage = () => {
           <div className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
             <div className="-mx-4 flex-auto bg-white py-10 px-8 sm:mx-0 sm:flex-none sm:rounded-md sm:p-14 sm:shadow-2xl">
               <h1>Set up your embedded signer</h1>
-              <p className="text-gray-400 mb-4">Welcome, {user?.player?.name ?? user?.id}!</p>
+              <p className="text-gray-400 mb-4">Welcome, {user?.name ?? user?.id}!</p>
               <div className="mt-8">
                 <AccountRecovery />
               </div>
@@ -205,19 +208,23 @@ const HomePage: NextPage = () => {
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">
             <h2 className="flex justify-left font-medium text-xl pb-4">Linked socials</h2>
 
-            <div>
-              <span className="font-medium text-black">Get user: </span>
+            <div className="space-y-2">
+              <span className="font-medium text-black">User methods</span>
               <GetUserButton handleSetMessage={handleSetMessage} />
+              <GetUserAccountsButton handleSetMessage={handleSetMessage} />
             </div>
             <div>
               <span className="font-medium text-black">{'OAuth methods'}</span>
               {[OAuthProvider.GOOGLE, OAuthProvider.TWITTER, OAuthProvider.FACEBOOK].map((provider) => (
                 <div key={provider}>
-                  <LinkOAuthButton provider={provider} user={user} />
+                  <LinkOAuthButton provider={provider} />
                 </div>
               ))}
             </div>
-            <div>
+            <div className="space-y-2">
+              <span className="font-medium text-black">Other methods</span>
+              <LinkPhoneButton />
+              <AddEmailButton />
               <Button
                 className="w-full"
                 onClick={() => {

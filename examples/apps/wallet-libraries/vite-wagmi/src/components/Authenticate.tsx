@@ -52,8 +52,8 @@ function Authenticate() {
         },
       })
     } catch (error) {
-      console.error('Error configuring embedded signer:', error)
-      setError('Failed to configure embedded signer. Please try again.')
+      console.error('Error configuring embedded wallet:', error)
+      setError('Failed to configure embedded wallet. Please try again.')
       hasConfiguredSigner.current = false
     }
   }, [getEncryptionSession])

@@ -1,14 +1,15 @@
 import Image from 'next/image'
-import { type FunctionComponent, useState } from 'react'
-import { type Connector, createConfig, http, useChainId, useConnect } from 'wagmi'
+import { useState } from 'react'
+import { type Connector, createConfig, http, useChainId, useConnect, useDisconnect, useSignMessage } from 'wagmi'
 import type { Chain as WagmiChain } from 'wagmi/chains'
 import { baseSepolia, polygonAmoy } from 'wagmi/chains'
 import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors'
 import { Chain, WalletConnector } from '../utils/constants'
 import { createSIWEMessage } from '../utils/create-siwe-message'
+import { getErrorMessage } from '../utils/errorHandler'
 import openfort from '../utils/openfortConfig'
-import type { OnSuccess, SignMessageFunction } from '../utils/types'
-import { withWagmi } from './wagmiProvider'
+import type { OnSuccess } from '../utils/types'
+import { WagmiProvider } from './wagmiProvider'
 
 type GetWalletButtonsParams = {
   chains: (typeof Chain)[keyof typeof Chain][]
@@ -16,13 +17,9 @@ type GetWalletButtonsParams = {
   walletConnectProjectId?: string
 }
 
-type WalletConnectButtonsOwnProps = {
+type WalletConnectButtonsProps = {
   onSuccess: OnSuccess
   link: boolean
-}
-
-type WalletConnectButtonsProps = WalletConnectButtonsOwnProps & {
-  signMessage: SignMessageFunction
 }
 
 type WalletConnectButtonProps = {
@@ -40,7 +37,7 @@ const WalletConnectButton = ({ title, isLoading, icon, initConnect }: WalletConn
       className="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 mb-2"
     >
       <Image
-        src={isLoading ? 'spinner.svg' : icon}
+        src={isLoading ? '/spinner.svg' : icon}
         width={24}
         height={24}
         className={isLoading ? 'inline me-3 text-gray-200 animate-spin' : 'inline me-3 text-gray-200'}
@@ -51,13 +48,16 @@ const WalletConnectButton = ({ title, isLoading, icon, initConnect }: WalletConn
   )
 }
 
-const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectButtonsProps) => {
+const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) => {
   const { connectors, connect } = useConnect()
+  const { disconnectAsync } = useDisconnect()
   const chainId = useChainId()
+  const { signMessageAsync } = useSignMessage()
   const [loading, setLoading] = useState<string>(null!)
 
   const initConnect = async (connector: Connector) => {
     setLoading(connector.id)
+    await disconnectAsync()
     connect(
       { connector },
       {
@@ -72,26 +72,39 @@ const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectBut
           if (connector.name === 'Openfort') onSuccess()
           if (address) {
             try {
-              const { nonce } = await openfort.auth.initSIWE({ address })
+              let nonce: string
+              if (link) {
+                const resp = await openfort.auth.linkSIWE({ address })
+                nonce = resp.nonce
+              } else {
+                const resp = await openfort.auth.initSIWE({ address })
+                nonce = resp.nonce
+              }
               const SIWEMessage = createSIWEMessage(address, nonce, chainId)
-              const signature = await signMessage(SIWEMessage)
+              const signature = await signMessageAsync({
+                message: SIWEMessage,
+              })
               link
                 ? await openfort.auth.linkWallet({
-                    authToken: (await openfort.getAccessToken()) as string,
                     signature,
                     message: SIWEMessage,
                     connectorType: connector?.type,
                     walletClientType: connector?.name,
+                    address,
+                    chainId,
                   })
                 : await openfort.auth.authenticateWithSIWE({
                     signature,
+                    address,
                     message: SIWEMessage,
                     connectorType: connector?.type,
                     walletClientType: connector?.name,
                   })
               onSuccess()
             } catch (error) {
-              console.error('Openfort request failed.', error)
+              const errorMessage = getErrorMessage(error)
+              console.error('Wallet authentication failed:', errorMessage, error)
+              alert(`Wallet authentication failed: ${errorMessage}`)
               throw error
             } finally {
               setLoading(null!)
@@ -109,7 +122,7 @@ const WalletConnectButtons = ({ onSuccess, link, signMessage }: WalletConnectBut
           key={connector.uid}
           initConnect={() => initConnect(connector)}
           isLoading={loading === connector.id}
-          icon={`${connector.type.toLowerCase()}.${connector.type === 'injected' ? 'webp' : 'svg'}`}
+          icon={`/${connector.type.toLowerCase()}.${connector.type === 'injected' ? 'webp' : 'svg'}`}
           title={connector.name}
         />
       ))}
@@ -139,7 +152,9 @@ export const getWalletButtons = (params: GetWalletButtonsParams) => {
       ? connectorToWagmiConnector[connector]({
           projectId: params.walletConnectProjectId as string,
         })
-      : connectorToWagmiConnector[connector]({ dappMetadata: { name: 'Openfort' } })
+      : connectorToWagmiConnector[connector]({
+          dappMetadata: { name: 'Openfort' },
+        })
   )
   const config = createConfig({
     chains: chains as any,
@@ -147,8 +162,9 @@ export const getWalletButtons = (params: GetWalletButtonsParams) => {
     ssr: true,
     transports,
   })
-  return withWagmi<WalletConnectButtonsOwnProps>(
-    WalletConnectButtons as FunctionComponent<WalletConnectButtonsOwnProps>,
-    config
+  return (props: any) => (
+    <WagmiProvider wagmiConfig={config}>
+      <WalletConnectButtons {...props} />
+    </WagmiProvider>
   )
 }

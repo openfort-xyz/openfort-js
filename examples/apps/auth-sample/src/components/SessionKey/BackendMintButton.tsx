@@ -36,7 +36,9 @@ const BackendMintButton: React.FC<{
       chain: polygonAmoy,
       transport: http(),
     })
-    const signature = await walletClient.signMessage({ message: { raw: collectResponseJSON.userOperationHash } })
+    const signature = await walletClient.signMessage({
+      message: { raw: collectResponseJSON.userOperationHash },
+    })
     if (!signature) {
       throw new Error('Failed to sign message with session key')
     }
