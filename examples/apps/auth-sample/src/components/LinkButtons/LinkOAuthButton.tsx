@@ -24,8 +24,8 @@ const LinkOAuthButton: React.FC<{
       setLoading(false)
       window.location.href = url
     } catch (err) {
-      console.error('Failed to sign message:', err)
-      alert('Failed to sign message. Please try again.')
+      console.error('Failed link to identity:', err)
+      alert(`Failed to link identity with ${provider}. Please try again.`)
     }
   }
 
