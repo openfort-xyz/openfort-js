@@ -19,7 +19,7 @@
  * }
  * ```
  */
-export const OPENFORT_AUTH_ERROR_CODES = {
+const ERROR_CODES = {
   // ============================================================================
   // Authentication & Credentials
   // ============================================================================
@@ -304,15 +304,20 @@ export const OPENFORT_AUTH_ERROR_CODES = {
 } as const
 
 /**
+ * Full name for error codes
+ */
+export const OPENFORT_AUTH_ERROR_CODES = ERROR_CODES
+
+/**
  * Convenient alias for error codes
  * Use this for cleaner imports
  */
-export const OPENFORT_ERROR_CODES = OPENFORT_AUTH_ERROR_CODES
+export const OPENFORT_ERROR_CODES = ERROR_CODES
 
 /**
  * Type representing valid Openfort error codes
  */
-export type OpenfortErrorCode = (typeof OPENFORT_AUTH_ERROR_CODES)[keyof typeof OPENFORT_AUTH_ERROR_CODES]
+export type OpenfortErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]
 
 /**
  * Alias for backward compatibility

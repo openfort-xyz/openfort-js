@@ -16,6 +16,7 @@ export {
   OPENFORT_AUTH_ERROR_CODES,
   OPENFORT_ERROR_CODES,
   type OpenfortAuthErrorCode,
+  type OpenfortErrorCode,
 } from './core/errors/authErrorCodes'
 export {
   AuthenticationError,
@@ -34,6 +35,8 @@ export {
 export { IStorage as Storage } from './storage/istorage'
 // biome-ignore lint/performance/noReExportAll: Main SDK entry point needs to re-export all types
 export * from './types'
+// Export crypto utilities
+export { cryptoDigest } from './utils/crypto'
 
 /**
  * Global event emitter for subscribing to Openfort SDK events

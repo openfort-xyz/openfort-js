@@ -102,31 +102,12 @@
       ".parcel-cache/**",
       "**/.next/**",
       "**/dist/**",
-      "**/stats.html",
-      "sdk/copyVersion.cjs",
-      "sdk/scripts/**",
-      "test/**",
-      "**/next-env.d.ts",
-      "**/vite-env.d.ts"
+      "**/stats.html"
     ],
     "ignoreBinaries": [
-      "dev",
-      "only-allow",
-      "printf",
-      "open",
-      "simple-git-hooks",
-      "parcel"
+      "open"
     ],
     "ignoreDependencies": [
-      "@biomejs/biome",
-      "@changesets/changelog-github",
-      "@changesets/cli",
-      "simple-git-hooks",
-      "sherif",
-      "knip",
-      "typedoc",
-      "tslib",
-      "@rollup/plugin-typescript",
       "buffer",
       "crypto-browserify",
       "events",
@@ -135,12 +116,15 @@
     ],
     "ignoreWorkspaces": [
       "examples/**",
-      "test",
+      "test/**",
       "packages/platform-bridge"
     ],
-    "jest": {
+    "vitest": {
+      "config": [
+        "sdk/vitest.config.ts"
+      ],
       "entry": [
-        "**/*.{test,spec}.{js,ts,tsx}"
+        "**/*.{test,spec}.?(c|m)[jt]s?(x)"
       ]
     },
     "workspaces": {
@@ -148,9 +132,6 @@
         "entry": [
           "rollup.config.js!",
           "typedoc.json!"
-        ],
-        "ignoreDependencies": [
-          "typescript"
         ]
       },
       "sdk": {
@@ -158,7 +139,10 @@
           "src/index.ts!"
         ],
         "ignore": [
-          "version.ts"
+          "version.ts",
+          "copyVersion.cjs",
+          "scripts/**",
+          "src/__tests__/**"
         ],
         "ignoreDependencies": [
           "axios-retry"
@@ -170,7 +154,8 @@
           "src/backend/index.ts!"
         ],
         "ignore": [
-          "src/backend-openapi.json"
+          "src/backend-openapi.json",
+          "scripts/**"
         ]
       }
     }
