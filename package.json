@@ -103,7 +103,8 @@
       "**/stats.html"
     ],
     "ignoreBinaries": [
-      "open"
+      "open",
+      "simple-git-hooks"
     ],
     "ignoreDependencies": [
       "buffer",
@@ -139,6 +140,7 @@
         "ignore": [
           "version.ts",
           "copyVersion.cjs",
+          "vitest.config.ts",
           "scripts/**",
           "src/__tests__/**"
         ],
