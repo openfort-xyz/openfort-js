@@ -28,7 +28,7 @@ export class AuthApi {
   /**
    * Logs in a user with email and password credentials.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * @param params.email - The user's email address.
    * @param params.password - The user's password.
@@ -68,7 +68,7 @@ export class AuthApi {
   /**
    * Creates an anonymous guest account.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/guest
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/guest
    *
    * Guest accounts can later be upgraded to full accounts by linking an email,
    * OAuth provider, or wallet.
@@ -103,7 +103,7 @@ export class AuthApi {
   /**
    * Registers a new user with email and password.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * If email verification is required, returns an {@link AuthActionRequiredResponse}
    * indicating the user must verify their email before logging in.
@@ -167,7 +167,7 @@ export class AuthApi {
   /**
    * Initiates OAuth authentication flow with a social provider.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/social
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/oauth-login
    *
    * Returns the OAuth authorization URL. By default, redirects the browser
    * to the provider's login page. Use `options.skipBrowserRedirect` to get
@@ -228,7 +228,7 @@ export class AuthApi {
   /**
    * Logs in a user using an OAuth ID token obtained from a provider.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/social
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/oauth-login
    *
    * Use this method when you've already obtained an ID token from an OAuth
    * provider (e.g., from a native mobile SDK or custom OAuth flow).
@@ -300,7 +300,7 @@ export class AuthApi {
   /**
    * Logs the user out by invalidating the session and removing local credentials.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/sessions
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/user-sessions
    *
    * Clears the session on the server (for non-third-party auth) and removes
    * all stored credentials from local storage. Emits the `onLogout` event.
@@ -326,7 +326,7 @@ export class AuthApi {
   /**
    * Requests a one-time password (OTP) to be sent to an email address.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email-otp
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * The OTP can be used to log in with {@link logInWithEmailOtp} or verify
    * an email with {@link verifyEmailOtp}. The type of OTP sent depends on
@@ -359,7 +359,7 @@ export class AuthApi {
   /**
    * Logs in a user using an email OTP code.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email-otp
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * First request an OTP using {@link requestEmailOtp}, then use this method
    * to complete the authentication.
@@ -407,7 +407,7 @@ export class AuthApi {
   /**
    * Requests a one-time password (OTP) to be sent via SMS.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/phone
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/phone-login
    *
    * The OTP can be used to log in with {@link logInWithPhoneOtp} or link
    * a phone number with {@link linkPhoneOtp}.
@@ -439,7 +439,7 @@ export class AuthApi {
   /**
    * Links a phone number to the current user's account using an OTP.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/phone
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/user-management/linking
    *
    * First request an OTP using {@link requestPhoneOtp}, then use this method
    * to link the phone number to the authenticated user.
@@ -487,7 +487,7 @@ export class AuthApi {
   /**
    * Logs in a user using a phone number and OTP code.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/phone
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/phone-login
    *
    * First request an OTP using {@link requestPhoneOtp}, then use this method
    * to complete the authentication.
@@ -535,7 +535,7 @@ export class AuthApi {
   /**
    * Requests a password reset email to be sent.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * The user will receive an email with a link containing a reset token.
    * Use {@link resetPassword} with the token to complete the password reset.
@@ -557,7 +557,7 @@ export class AuthApi {
   /**
    * Resets a user's password using a reset token.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * Use this method after the user clicks the link from {@link requestResetPassword}.
    * The token is typically extracted from the URL query parameters.
@@ -582,7 +582,7 @@ export class AuthApi {
   /**
    * Requests an email verification link to be sent.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * The user will receive an email with a verification link. Use {@link verifyEmail}
    * to complete the verification after the user clicks the link.
@@ -604,7 +604,7 @@ export class AuthApi {
   /**
    * Verifies an email address using a verification token.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * Use this method after the user clicks the link from {@link requestEmailVerification}.
    * The token is typically extracted from the URL query parameters.
@@ -625,7 +625,7 @@ export class AuthApi {
   /**
    * Verifies an email address using an OTP code.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email-otp
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/password
    *
    * First request an OTP using {@link requestEmailOtp}, then use this method
    * to verify the email address.
@@ -651,7 +651,7 @@ export class AuthApi {
   /**
    * Links an OAuth provider to the current user's account.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/social
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/user-management/linking
    *
    * Allows authenticated users to add additional login methods. For anonymous
    * users, this upgrades them to a full account linked with the OAuth provider.
@@ -698,7 +698,7 @@ export class AuthApi {
   /**
    * Unlinks an OAuth provider from the current user's account.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/social
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/user-management/linking
    *
    * Removes the specified OAuth provider as a login method. The user must have
    * at least one other authentication method remaining.
@@ -721,7 +721,7 @@ export class AuthApi {
   /**
    * Initiates Sign-In with Ethereum (SIWE) authentication.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/siwe
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/external-wallet
    *
    * Returns a nonce that must be included in the SIWE message for the user
    * to sign. Use {@link authenticateWithSIWE} to complete authentication.
@@ -749,7 +749,7 @@ export class AuthApi {
   /**
    * Initiates SIWE wallet linking for an authenticated user.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/siwe
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/user-management/linking
    *
    * Returns a nonce for the SIWE message. Use {@link linkWallet} to complete
    * the wallet linking after the user signs the message.
@@ -779,7 +779,7 @@ export class AuthApi {
   /**
    * Authenticates a user with a signed SIWE message.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/siwe
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/external-wallet
    *
    * Complete the SIWE authentication flow after obtaining a signature from
    * the user's wallet. First call {@link initSIWE} to get the nonce.
@@ -842,7 +842,7 @@ export class AuthApi {
   /**
    * Links a wallet to the current user's account using a signed SIWE message.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/siwe
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/user-management/linking
    *
    * Complete the wallet linking flow after obtaining a signature. First call
    * {@link linkSIWE} to get the nonce for the SIWE message.
@@ -899,7 +899,7 @@ export class AuthApi {
   /**
    * Unlinks a wallet from the current user's account.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/siwe
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/user-management/linking
    *
    * Removes the specified wallet as a login method. The user must have at
    * least one other authentication method remaining.
@@ -926,7 +926,7 @@ export class AuthApi {
   /**
    * Adds an email address to the current user's account.
    *
-   * - Docs: https://www.openfort.xyz/docs/guides/auth/email
+   * - Docs: https://openfort.io/docs/products/embedded-wallet/javascript/auth/user-management/linking
    *
    * Use this method to add an email to accounts created via social login
    * or wallet authentication. A verification email will be sent to confirm
