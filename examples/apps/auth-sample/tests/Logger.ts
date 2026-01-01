@@ -15,7 +15,9 @@ export class Logger {
 
     await this.textArea.textContent()
 
-    await expect(this.textArea).toHaveValue(/.*> Current account/, { timeout: 10000 })
+    await expect(this.textArea).toHaveValue(/.*> Current account/, {
+      timeout: 10000,
+    })
 
     await new Promise((r) => setTimeout(r, 500)) // wait a bit more to ensure all init logs are captured
 

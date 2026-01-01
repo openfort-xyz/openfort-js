@@ -6,7 +6,9 @@ const chainId = baseSepolia.id
 
 class OpenfortService {
   async getEvmProvider(): Promise<Provider> {
-    return openfort.embeddedWallet.getEthereumProvider({ policy: process.env.NEXT_PUBLIC_POLICY_ID })
+    return openfort.embeddedWallet.getEthereumProvider({
+      policy: process.env.NEXT_PUBLIC_POLICY_ID,
+    })
   }
 
   async getEmbeddedState() {

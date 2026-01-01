@@ -84,7 +84,7 @@
       "@metamask/sdk-communication-layer@>=0.16.0 <=0.33.0": ">=0.33.1",
       "@metamask/sdk@>=0.16.0 <=0.33.0": ">=0.33.1",
       "glob@>=10.3.7 <=11.0.3": ">=11.1.0",
-      "node-forge@<1.3.2": ">=1.3.2"
+      "esbuild@<=0.24.2": ">=0.25.0"
     },
     "auditConfig": {
       "ignoreCves": [
@@ -100,31 +100,13 @@
       ".parcel-cache/**",
       "**/.next/**",
       "**/dist/**",
-      "**/stats.html",
-      "sdk/copyVersion.cjs",
-      "sdk/scripts/**",
-      "test/**",
-      "**/next-env.d.ts",
-      "**/vite-env.d.ts"
+      "**/stats.html"
     ],
     "ignoreBinaries": [
-      "dev",
-      "only-allow",
-      "printf",
       "open",
-      "simple-git-hooks",
-      "parcel"
+      "simple-git-hooks"
     ],
     "ignoreDependencies": [
-      "@biomejs/biome",
-      "@changesets/changelog-github",
-      "@changesets/cli",
-      "simple-git-hooks",
-      "sherif",
-      "knip",
-      "typedoc",
-      "tslib",
-      "@rollup/plugin-typescript",
       "buffer",
       "crypto-browserify",
       "events",
@@ -133,12 +115,15 @@
     ],
     "ignoreWorkspaces": [
       "examples/**",
-      "test",
+      "test/**",
       "packages/platform-bridge"
     ],
-    "jest": {
+    "vitest": {
+      "config": [
+        "sdk/vitest.config.ts"
+      ],
       "entry": [
-        "**/*.{test,spec}.{js,ts,tsx}"
+        "**/*.{test,spec}.?(c|m)[jt]s?(x)"
       ]
     },
     "workspaces": {
@@ -146,9 +131,6 @@
         "entry": [
           "rollup.config.js!",
           "typedoc.json!"
-        ],
-        "ignoreDependencies": [
-          "typescript"
         ]
       },
       "sdk": {
@@ -156,7 +138,11 @@
           "src/index.ts!"
         ],
         "ignore": [
-          "version.ts"
+          "version.ts",
+          "copyVersion.cjs",
+          "vitest.config.ts",
+          "scripts/**",
+          "src/__tests__/**"
         ],
         "ignoreDependencies": [
           "axios-retry"
@@ -168,7 +154,8 @@
           "src/backend/index.ts!"
         ],
         "ignore": [
-          "src/backend-openapi.json"
+          "src/backend-openapi.json",
+          "scripts/**"
         ]
       }
     }

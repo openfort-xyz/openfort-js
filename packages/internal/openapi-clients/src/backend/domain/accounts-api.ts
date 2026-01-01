@@ -470,13 +470,13 @@ export const AccountsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [user] Specifies the unique user ID (starts with pla_)
-         * @param {string} [chainType] The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
-         * @param {string} [accountType] Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
+         * @param {GetAccountsV2ChainTypeEnum} [chainType] The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
+         * @param {GetAccountsV2AccountTypeEnum} [accountType] Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
          * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountsV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, chainId?: number, user?: string, chainType?: string, accountType?: string, address?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountsV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, chainId?: number, user?: string, chainType?: GetAccountsV2ChainTypeEnum, accountType?: GetAccountsV2AccountTypeEnum, address?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -946,13 +946,13 @@ export const AccountsApiFp = function(configuration?: Configuration) {
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
          * @param {string} [user] Specifies the unique user ID (starts with pla_)
-         * @param {string} [chainType] The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
-         * @param {string} [accountType] Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
+         * @param {GetAccountsV2ChainTypeEnum} [chainType] The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
+         * @param {GetAccountsV2AccountTypeEnum} [accountType] Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
          * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountsV2(limit?: number, skip?: number, order?: PrismaSortOrder, chainId?: number, user?: string, chainType?: string, accountType?: string, address?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAccountV2Response>> {
+        async getAccountsV2(limit?: number, skip?: number, order?: PrismaSortOrder, chainId?: number, user?: string, chainType?: GetAccountsV2ChainTypeEnum, accountType?: GetAccountsV2AccountTypeEnum, address?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAccountV2Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountsV2(limit, skip, order, chainId, user, chainType, accountType, address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1449,17 +1449,17 @@ export interface AccountsApiGetAccountsV2Request {
 
     /**
      * The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
-     * @type {string}
+     * @type {'EVM' | 'SVM'}
      * @memberof AccountsApiGetAccountsV2
      */
-    readonly chainType?: string
+    readonly chainType?: GetAccountsV2ChainTypeEnum
 
     /**
      * Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
-     * @type {string}
+     * @type {'Externally Owned Account' | 'Smart Account' | 'Delegated Account'}
      * @memberof AccountsApiGetAccountsV2
      */
-    readonly accountType?: string
+    readonly accountType?: GetAccountsV2AccountTypeEnum
 
     /**
      * Specifies the account address
@@ -1794,3 +1794,20 @@ export class AccountsApi extends BaseAPI {
     }
 }
 
+/**
+ * @export
+ */
+export const GetAccountsV2ChainTypeEnum = {
+    Evm: 'EVM',
+    Svm: 'SVM'
+} as const;
+export type GetAccountsV2ChainTypeEnum = typeof GetAccountsV2ChainTypeEnum[keyof typeof GetAccountsV2ChainTypeEnum];
+/**
+ * @export
+ */
+export const GetAccountsV2AccountTypeEnum = {
+    ExternallyOwnedAccount: 'Externally Owned Account',
+    SmartAccount: 'Smart Account',
+    DelegatedAccount: 'Delegated Account'
+} as const;
+export type GetAccountsV2AccountTypeEnum = typeof GetAccountsV2AccountTypeEnum[keyof typeof GetAccountsV2AccountTypeEnum];

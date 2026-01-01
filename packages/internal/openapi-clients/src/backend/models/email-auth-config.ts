@@ -16,6 +16,9 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import { BasicAuthProviderEMAIL } from './basic-auth-provider-email';
+// May contain unused imports in some cases
+// @ts-ignore
+import { EmailAuthConfigPasswordRequirements } from './email-auth-config-password-requirements';
 
 /**
  * Email auth configuration
@@ -41,6 +44,18 @@ export interface EmailAuthConfig {
      * @memberof EmailAuthConfig
      */
     'allowUnverified': boolean;
+    /**
+     * Length of the OTP code (default: 6)
+     * @type {number}
+     * @memberof EmailAuthConfig
+     */
+    'otpLength': number;
+    /**
+     * 
+     * @type {EmailAuthConfigPasswordRequirements}
+     * @memberof EmailAuthConfig
+     */
+    'passwordRequirements': EmailAuthConfigPasswordRequirements;
 }
 
 

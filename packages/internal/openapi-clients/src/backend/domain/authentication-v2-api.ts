@@ -24,63 +24,13 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { AuthUserResponse } from '../models';
 // @ts-ignore
-import { BaseEntityListResponseAuthUserResponse } from '../models';
-// @ts-ignore
-import { PrismaSortOrder } from '../models';
+import { ThirdPartyOAuthRequest } from '../models';
 /**
  * AuthenticationV2Api - axios parameter creator
  * @export
  */
 export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * 
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAuthPlayersV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v2/users`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
-            }
-
-            if (order !== undefined) {
-                localVarQueryParameter['order'] = order;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * 
          * @param {*} [options] Override http request option.
@@ -110,6 +60,46 @@ export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Co
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        thirdPartyV2: async (thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'thirdPartyOAuthRequest' is not null or undefined
+            assertParamExists('thirdPartyV2', 'thirdPartyOAuthRequest', thirdPartyOAuthRequest)
+            const localVarPath = `/iam/v2/user/third_party`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(thirdPartyOAuthRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -122,23 +112,22 @@ export const AuthenticationV2ApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getAuthPlayersV2(limit?: number, skip?: number, order?: PrismaSortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAuthUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthPlayersV2(limit, skip, order, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         async meV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.meV2(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async thirdPartyV2(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.thirdPartyV2(thirdPartyOAuthRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -153,50 +142,37 @@ export const AuthenticationV2ApiFactory = function (configuration?: Configuratio
     return {
         /**
          * 
-         * @param {AuthenticationV2ApiGetAuthPlayersV2Request} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAuthPlayersV2(requestParameters: AuthenticationV2ApiGetAuthPlayersV2Request = {}, options?: AxiosRequestConfig): AxiosPromise<BaseEntityListResponseAuthUserResponse> {
-            return localVarFp.getAuthPlayersV2(requestParameters.limit, requestParameters.skip, requestParameters.order, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         meV2(options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
             return localVarFp.meV2(options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {AuthenticationV2ApiThirdPartyV2Request} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        thirdPartyV2(requestParameters: AuthenticationV2ApiThirdPartyV2Request, options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
+            return localVarFp.thirdPartyV2(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
 /**
- * Request parameters for getAuthPlayersV2 operation in AuthenticationV2Api.
+ * Request parameters for thirdPartyV2 operation in AuthenticationV2Api.
  * @export
- * @interface AuthenticationV2ApiGetAuthPlayersV2Request
+ * @interface AuthenticationV2ApiThirdPartyV2Request
  */
-export interface AuthenticationV2ApiGetAuthPlayersV2Request {
+export interface AuthenticationV2ApiThirdPartyV2Request {
     /**
-     * Specifies the maximum number of records to return.
-     * @type {number}
-     * @memberof AuthenticationV2ApiGetAuthPlayersV2
+     * 
+     * @type {ThirdPartyOAuthRequest}
+     * @memberof AuthenticationV2ApiThirdPartyV2
      */
-    readonly limit?: number
-
-    /**
-     * Specifies the offset for the first records to return.
-     * @type {number}
-     * @memberof AuthenticationV2ApiGetAuthPlayersV2
-     */
-    readonly skip?: number
-
-    /**
-     * Specifies the order in which to sort the results.
-     * @type {PrismaSortOrder}
-     * @memberof AuthenticationV2ApiGetAuthPlayersV2
-     */
-    readonly order?: PrismaSortOrder
+    readonly thirdPartyOAuthRequest: ThirdPartyOAuthRequest
 }
 
 /**
@@ -208,23 +184,24 @@ export interface AuthenticationV2ApiGetAuthPlayersV2Request {
 export class AuthenticationV2Api extends BaseAPI {
     /**
      * 
-     * @param {AuthenticationV2ApiGetAuthPlayersV2Request} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AuthenticationV2Api
-     */
-    public getAuthPlayersV2(requestParameters: AuthenticationV2ApiGetAuthPlayersV2Request = {}, options?: AxiosRequestConfig) {
-        return AuthenticationV2ApiFp(this.configuration).getAuthPlayersV2(requestParameters.limit, requestParameters.skip, requestParameters.order, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthenticationV2Api
      */
     public meV2(options?: AxiosRequestConfig) {
         return AuthenticationV2ApiFp(this.configuration).meV2(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Verify oauth token of a third party auth provider.
+     * @param {AuthenticationV2ApiThirdPartyV2Request} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthenticationV2Api
+     */
+    public thirdPartyV2(requestParameters: AuthenticationV2ApiThirdPartyV2Request, options?: AxiosRequestConfig) {
+        return AuthenticationV2ApiFp(this.configuration).thirdPartyV2(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
