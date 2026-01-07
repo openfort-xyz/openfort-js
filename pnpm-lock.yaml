@@ -609,6 +609,9 @@ importers:
       '@types/jest':
         specifier: ^29.4.3
         version: 29.5.14
+      '@types/node':
+        specifier: ^22.7.5
+        version: 22.19.1
       jest:
         specifier: ^29.4.3
         version: 29.7.0(@types/node@22.19.1)
