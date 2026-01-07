@@ -184,7 +184,11 @@ export class AuthManager {
     }
     return await withApiError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.socialSignIn(request)
+        const response = await this.backendApiClients.authenticationV2Api.socialSignIn(request, {
+          headers: {
+            'x-project-key': `${this.publishableKey}`,
+          },
+        })
         return {
           token: response.data.token,
           user: mapUser(response.data.user),
