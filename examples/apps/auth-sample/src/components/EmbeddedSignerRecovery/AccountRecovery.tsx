@@ -356,7 +356,7 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
               await handleRecoverWallet(account.id, {
                 recoveryMethod: RecoveryMethod.PASSKEY,
                 passkeyInfo: {
-                  passkeyId: account.recoveryMethodDetails?.passkeyId!,
+                  passkeyId: account.recoveryMethodDetails?.passkeyId ?? '',
                 },
               })
               setLoading(false)

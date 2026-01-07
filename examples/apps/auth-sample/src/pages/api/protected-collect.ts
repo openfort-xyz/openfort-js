@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const interaction_mint = {
       contract: contract_id,
       functionName: 'mint',
-      functionArgs: [playerId],
+      functionArgs: [playerId, 1],
     }
 
     const transactionIntent = await openfort.transactionIntents.create({

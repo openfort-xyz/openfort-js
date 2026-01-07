@@ -54,7 +54,7 @@ const EIP1193MintButton: React.FC<{
         transport: custom(provider),
       })
 
-      const erc721Address = '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a'
+      const erc721Address = '0xbabe0001489722187FbaF0689C47B2f5E97545C5'
 
       // Read more about [ABI Formats](https://docs.soliditylang.org/en/latest/abi-spec.html#json).
       const abi = [
@@ -62,8 +62,13 @@ const EIP1193MintButton: React.FC<{
           inputs: [
             {
               internalType: 'address',
-              name: '_to',
+              name: 'to',
               type: 'address',
+            },
+            {
+              internalType: 'uint256',
+              name: 'amount',
+              type: 'uint256',
             },
           ],
           name: 'mint',
@@ -81,7 +86,7 @@ const EIP1193MintButton: React.FC<{
         address: erc721Address,
         abi: abi,
         functionName: 'mint',
-        args: ['0x64452Dff1180b21dc50033e1680bB64CDd492582'],
+        args: ['0x64452Dff1180b21dc50033e1680bB64CDd492582', '1'],
       })
 
       let tx: `0x${string}`
@@ -112,7 +117,7 @@ const EIP1193MintButton: React.FC<{
         transport: custom(provider),
       })
 
-      const erc721Address = '0x2522f4fc9af2e1954a3d13f7a5b2683a00a4543a'
+      const erc721Address = '0xbabe0001489722187FbaF0689C47B2f5E97545C5'
 
       // Read more about [ABI Formats](https://docs.soliditylang.org/en/latest/abi-spec.html#json).
       const abi = [
@@ -120,8 +125,13 @@ const EIP1193MintButton: React.FC<{
           inputs: [
             {
               internalType: 'address',
-              name: '_to',
+              name: 'to',
               type: 'address',
+            },
+            {
+              internalType: 'uint256',
+              name: 'amount',
+              type: 'uint256',
             },
           ],
           name: 'mint',
@@ -142,7 +152,7 @@ const EIP1193MintButton: React.FC<{
               data: encodeFunctionData({
                 abi,
                 functionName: 'mint',
-                args: ['0x64452Dff1180b21dc50033e1680bB64CDd492582'],
+                args: ['0x64452Dff1180b21dc50033e1680bB64CDd492582', '1'],
               }),
             },
             {
@@ -150,7 +160,7 @@ const EIP1193MintButton: React.FC<{
               data: encodeFunctionData({
                 abi,
                 functionName: 'mint',
-                args: ['0x64452Dff1180b21dc50033e1680bB64CDd492582'],
+                args: ['0x64452Dff1180b21dc50033e1680bB64CDd492582', '1'],
               }),
             },
           ],

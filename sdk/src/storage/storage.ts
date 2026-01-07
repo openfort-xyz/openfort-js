@@ -7,15 +7,15 @@ export class StorageImplementation implements IStorage {
     this.storage = storage
   }
 
-  public async get(key: StorageKeys): Promise<string | null> {
+  public async get(key: StorageKeys | string): Promise<string | null> {
     return Promise.resolve(this.storage.getItem(key))
   }
 
-  public save(key: StorageKeys, value: string): void {
+  public save(key: StorageKeys | string, value: string): void {
     this.storage.setItem(key, value)
   }
 
-  public remove(key: StorageKeys): void {
+  public remove(key: StorageKeys | string): void {
     this.storage.removeItem(key)
   }
 

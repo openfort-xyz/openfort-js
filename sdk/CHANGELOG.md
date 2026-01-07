@@ -1,5 +1,23 @@
 # @openfort/openfort-js
 
+## 0.10.39
+
+### Patch Changes
+
+- [#192](https://github.com/openfort-xyz/openfort-js/pull/192) [`26927e6`](https://github.com/openfort-xyz/openfort-js/commit/26927e6c5a75fc096809c91c5b26c363f63db416) Thanks [@jamalavedra](https://github.com/jamalavedra)! - error propagation init
+
+## 0.10.38
+
+### Patch Changes
+
+- [#190](https://github.com/openfort-xyz/openfort-js/pull/190) [`10891fa`](https://github.com/openfort-xyz/openfort-js/commit/10891fa22f9d3c4f2d9484c3838f8803f148d126) Thanks [@jamalavedra](https://github.com/jamalavedra)! - isolated storage by key
+
+## 0.10.37
+
+### Patch Changes
+
+- [#188](https://github.com/openfort-xyz/openfort-js/pull/188) [`c4456f4`](https://github.com/openfort-xyz/openfort-js/commit/c4456f44b1d5bd232ddc97bd7976f5a3edbea27b) Thanks [@jamalavedra](https://github.com/jamalavedra)! - fix wallet_getAssets
+
 ## 0.10.36
 
 ### Patch Changes
