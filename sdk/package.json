@@ -22,7 +22,7 @@
     "dev": "NODE_ENV=development pnpm rollup --config rollup.config.js --watch",
     "check": "biome check --write src",
     "format": "biome format --write src",
-    "build": "pnpm packageList && node copyVersion.cjs && NODE_ENV=production pnpm rollup --config rollup.config.js && rm -rf dist/types",
+    "build": "pnpm packageList && node copyVersion.cjs && NODE_ENV=production pnpm rollup --config rollup.config.js && rm -rf dist/types && cp dist/index.d.ts dist/index.d.cts",
     "stats": "open ./stats.html"
   },
   "publishConfig": {
@@ -47,9 +47,14 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/sdk/src/index.js",
-      "require": "./dist/cjs/sdk/src/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/sdk/src/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/cjs/sdk/src/index.cjs"
+      }
     }
   },
   "devDependencies": {
@@ -67,7 +72,7 @@
     "rollup-plugin-visualizer": "^5.14.0",
     "typescript": "^5.8.3"
   },
-  "main": "./dist/cjs/sdk/src/index.js",
+  "main": "./dist/cjs/sdk/src/index.cjs",
   "module": "./dist/sdk/src/index.js",
   "type": "module",
   "types": "./dist/index.d.ts",

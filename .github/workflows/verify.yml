@@ -50,3 +50,6 @@ jobs:
 
       - name: Build project
         run: pnpm build
+
+      - name: Verify package exports
+        run: pnpm test:build
