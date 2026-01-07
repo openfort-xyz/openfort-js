@@ -62,6 +62,8 @@ const cjs = {
     dir: 'dist/cjs',
     format: 'cjs',
     preserveModules: true,
+    entryFileNames: '[name].cjs',
+    chunkFileNames: '[name].cjs',
   },
   plugins: [
     nodeResolve({

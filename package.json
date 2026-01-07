@@ -39,7 +39,8 @@
     "changeset": "changeset",
     "changeset:version": "pnpm install --lockfile-only && changeset version && cp sdk/CHANGELOG.md CHANGELOG.md && cd sdk && node copyVersion.cjs",
     "changeset:publish": "pnpm build && changeset publish",
-    "changeset:prepublish": "pnpm build"
+    "changeset:prepublish": "pnpm build",
+    "test:build": "publint ./sdk && attw --pack ./sdk"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -56,7 +57,9 @@
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "events": "^3.1.0",
+    "@arethetypeswrong/cli": "^0.17.4",
     "knip": "^5.70.1",
+    "publint": "^0.3.12",
     "sherif": "^0.8.4",
     "simple-git-hooks": "^2.13.1",
     "stream-browserify": "^3.0.0",
@@ -121,7 +124,9 @@
       "@changesets/cli",
       "simple-git-hooks",
       "sherif",
+      "@arethetypeswrong/cli",
       "knip",
+      "publint",
       "typedoc",
       "tslib",
       "@rollup/plugin-typescript",

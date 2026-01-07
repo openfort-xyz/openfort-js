@@ -7,7 +7,7 @@
     }
   ],
   "snapshot": {
-    "prereleaseTemplate": "{tag}-{datetime}"
+    "useCalculatedVersion": true
   },
   "commit": false,
   "access": "public",
