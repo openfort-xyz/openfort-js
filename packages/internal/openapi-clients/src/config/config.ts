@@ -33,6 +33,7 @@ export const createConfig = ({
 		apiConfigOptions.baseOptions = {
 			headers: {
 				"x-native-app-identifier": nativeAppIdentifier,
+				"Cookie": null,
 			},
 			withCredentials: false,
 		};
