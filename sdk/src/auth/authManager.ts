@@ -30,6 +30,8 @@ function mapUser(user: {
   createdAt?: string
   isAnonymous?: boolean
   updatedAt?: string
+  phoneNumber?: string
+  phoneNumberVerified?: boolean
 }): User {
   if (!user) {
     throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'User data is missing')
@@ -43,6 +45,8 @@ function mapUser(user: {
     isAnonymous: user.isAnonymous,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    phoneNumber: user.phoneNumber,
+    phoneNumberVerified: user.phoneNumberVerified,
   }
 }
 

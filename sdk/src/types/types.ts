@@ -373,6 +373,10 @@ export interface User {
   updatedAt?: string
   /** Whether the user is anonymous */
   isAnonymous?: boolean
+  /** User's phone number */
+  phoneNumber?: string
+  /** Whether the user's phone number has been verified */
+  phoneNumberVerified?: boolean
 }
 
 /**
