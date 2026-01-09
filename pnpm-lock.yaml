@@ -12,6 +12,7 @@ overrides:
   '@metamask/sdk@>=0.16.0 <=0.33.0': '>=0.33.1'
   glob@>=10.3.7 <=11.0.3: '>=11.1.0'
   esbuild@<=0.24.2: '>=0.25.0'
+  '@remix-run/router@<=1.23.1': '>=1.23.2'
 
 importers:
 
@@ -2416,8 +2417,8 @@ packages:
       viem: 2.x
       wagmi: ^2.9.0
 
-  '@remix-run/router@1.23.1':
-    resolution: {integrity: sha512-vDbaOzF7yT2Qs4vO6XV1MHcJv+3dgR1sT+l3B8xxOVhUC336prMvqrvsLL/9Dnw2xr6Qhz4J0dmS0llNAbnUmQ==}
+  '@remix-run/router@1.23.2':
+    resolution: {integrity: sha512-Ic6m2U/rMjTkhERIa/0ZtXJP17QUi2CbWE7cqx4J58M8aA3QTfW+2UlQ4psvTX9IO1RfNVhK3pcpdjej7L+t2w==}
     engines: {node: '>=14.0.0'}
 
   '@reown/appkit-common@1.7.3':
@@ -9927,7 +9928,7 @@ snapshots:
       - babel-plugin-macros
       - typescript
 
-  '@remix-run/router@1.23.1': {}
+  '@remix-run/router@1.23.2': {}
 
   '@reown/appkit-common@1.7.3(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.22.4)':
     dependencies:
@@ -16508,14 +16509,14 @@ snapshots:
 
   react-router-dom@6.30.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@remix-run/router': 1.23.1
+      '@remix-run/router': 1.23.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-router: 6.30.2(react@18.3.1)
 
   react-router@6.30.2(react@18.3.1):
     dependencies:
-      '@remix-run/router': 1.23.1
+      '@remix-run/router': 1.23.2
       react: 18.3.1
 
   react-style-singleton@2.2.3(@types/react@18.3.27)(react@18.3.1):
