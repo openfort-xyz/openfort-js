@@ -1,5 +1,13 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import type { DefaultApiLinkSocialPostRequest, GetSessionGet200Response } from '@openfort/openapi-clients/dist/backend'
+import type {
+  AuthenticationV2ApiThirdPartyV2Request,
+  DefaultApiLinkSocialPostRequest,
+  DefaultApiSocialSignInRequest,
+  GetSessionGet200Response,
+  SIWEApiLinkSiweNoncePostRequest,
+  SIWEApiSiweNoncePostRequest,
+  SIWEApiSiweVerifyPostRequest,
+} from '@openfort/openapi-clients/dist/backend'
 import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
@@ -180,10 +188,12 @@ export class AuthManager {
   }
 
   public async loginWithIdToken(provider: OAuthProvider, token: string): Promise<AuthResponse> {
-    const request = {
+    const request: DefaultApiSocialSignInRequest = {
       socialSignInRequest: {
         provider: provider,
-        token,
+        idToken: {
+          token,
+        },
       },
     }
     return await withApiError<AuthResponse>(
@@ -203,7 +213,7 @@ export class AuthManager {
   }
 
   public async authenticateThirdParty(provider: ThirdPartyAuthProvider, token: string): Promise<{ userId: string }> {
-    const request = {
+    const request: AuthenticationV2ApiThirdPartyV2Request = {
       thirdPartyOAuthRequest: {
         provider,
         token,
@@ -223,7 +233,7 @@ export class AuthManager {
   }
 
   public async initSIWE(address: string): Promise<SIWEInitResponse> {
-    const request = {
+    const request: SIWEApiSiweNoncePostRequest = {
       siweNoncePostRequest: {
         walletAddress: address,
       },
@@ -245,7 +255,7 @@ export class AuthManager {
   }
 
   public async linkSIWE(address: string, auth: Authentication): Promise<SIWEInitResponse> {
-    const request = {
+    const request: SIWEApiLinkSiweNoncePostRequest = {
       siweNoncePostRequest: {
         walletAddress: address,
       },
@@ -274,7 +284,7 @@ export class AuthManager {
     connectorType: string,
     address: string
   ): Promise<AuthResponse> {
-    const request = {
+    const request: SIWEApiSiweVerifyPostRequest = {
       siweVerifyPostRequest: {
         signature,
         walletAddress: address,
