@@ -23,7 +23,7 @@ export const AddEmailButton = () => {
     })
 
     try {
-      await openfort.auth.addEmail({ email: email, callbackURL: `http://localhost:42938` })
+      await openfort.auth.addEmail({ email: email, callbackURL: location.href })
       setOtpEmail(email)
       setShowSMSOTPRequestModal(false)
       setShowOTPModal(true)

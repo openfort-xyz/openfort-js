@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const response = await openfort.iam.verifyAuthToken(accessToken)
+    const response = await openfort.iam.getSession({ token: accessToken })
 
     if (!response?.playerId) {
       return res.status(401).send({
