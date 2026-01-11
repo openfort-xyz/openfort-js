@@ -81,8 +81,8 @@ importers:
         specifier: workspace:sdk
         version: link:../../../sdk
       '@openfort/openfort-node':
-        specifier: https://pkg.pr.new/openfort-xyz/openfort-node/@openfort/openfort-node@80f61d6
-        version: https://pkg.pr.new/openfort-xyz/openfort-node/@openfort/openfort-node@80f61d6(encoding@0.1.13)
+        specifier: https://pkg.pr.new/@openfort/openfort-node@39
+        version: https://pkg.pr.new/@openfort/openfort-node@39(encoding@0.1.13)
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1962,8 +1962,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@openfort/openfort-node@https://pkg.pr.new/openfort-xyz/openfort-node/@openfort/openfort-node@80f61d6':
-    resolution: {tarball: https://pkg.pr.new/openfort-xyz/openfort-node/@openfort/openfort-node@80f61d6}
+  '@openfort/openfort-node@https://pkg.pr.new/@openfort/openfort-node@39':
+    resolution: {tarball: https://pkg.pr.new/@openfort/openfort-node@39}
     version: 0.6.78
 
   '@openfort/shield-js@0.1.32':
@@ -9556,7 +9556,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
 
-  '@openfort/openfort-node@https://pkg.pr.new/openfort-xyz/openfort-node/@openfort/openfort-node@80f61d6(encoding@0.1.13)':
+  '@openfort/openfort-node@https://pkg.pr.new/@openfort/openfort-node@39(encoding@0.1.13)':
     dependencies:
       '@openfort/shield-js': 0.1.33
       '@types/node': 22.19.1
