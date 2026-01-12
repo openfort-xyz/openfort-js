@@ -82,7 +82,6 @@ export class EmbeddedSigner implements Signer {
     } else {
       const response = await this.backendApiClients.accountsApi.getAccountsV2(
         {
-          user: auth.userId,
           accountType: params.accountType,
           // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
           chainType: params.chainType,
