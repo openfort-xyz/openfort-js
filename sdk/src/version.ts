@@ -1,2 +1,2 @@
-export const VERSION = '0.10.36-beta.3'
+export const VERSION = '1.0.0'
 export const PACKAGE = '@openfort/openfort-js'
