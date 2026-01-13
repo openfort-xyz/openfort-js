@@ -43,7 +43,7 @@ export class OpenfortInternal {
       userId = result.userId
     }
 
-    new Authentication('third_party', token, userId, provider).save(this.storage)
+    new Authentication('third_party', token, userId, provider, 'idToken').save(this.storage)
 
     return token
   }
