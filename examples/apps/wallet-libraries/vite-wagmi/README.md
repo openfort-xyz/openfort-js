@@ -7,10 +7,10 @@
 git clone https://github.com/openfort-xyz/openfort-js.git
 ```
 
-2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `yarn`.
+2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `pnpm`.
 ```sh
-yarn install
-yarn build
+pnpm install
+pnpm build
 ```
 
 3. Initialize your environment variables by copying the `.env.example` file to an `.env` file. Then, in `.env`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
@@ -25,4 +25,4 @@ VITE_APP_SHIELD_PUBLISHABLE_KEY=
 
 ## Building locally
 
-In your openfort-js project root, run `yarn dev:wagmi-vite`. 
+In your openfort-js project root, run `pnpm dev:wagmi-vite`. 
