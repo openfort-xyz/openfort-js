@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.0.0
+
+### Major Changes
+
+- [#160](https://github.com/openfort-xyz/openfort-js/pull/160) [`dc8c0c2`](https://github.com/openfort-xyz/openfort-js/commit/dc8c0c2da920bfe4d157d22264140b999d95bcf2) Thanks [@n00m4d](https://github.com/n00m4d)! - V2 authentication
+
 ## 0.10.39
 
 ### Patch Changes
