@@ -1,5 +1,5 @@
 import { CheckCircleIcon } from '@heroicons/react/24/outline'
-import { type AuthPlayerResponse, OAuthProvider } from '@openfort/openfort-js'
+import { OAuthProvider, type User } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useId, useState } from 'react'
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { TextField } from '../components/Fields'
 import { Layout } from '../components/Layouts/Layout'
 import { type StatusType, Toast } from '../components/Toasts'
+import { getErrorMessage } from '../utils/errorHandler'
 import { getURL } from '../utils/getUrl'
 import openfort from '../utils/openfortConfig'
 
@@ -21,7 +22,7 @@ function checkPassword(str: string) {
 function RegisterPage() {
   const [show, setShow] = useState(false)
   const [emailConfirmation, setEmailConfirmation] = useState(false)
-  const [_user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [_user, setUser] = useState<User | null>(null)
   const router = useRouter()
   const firstNameId = useId()
   const lastNameId = useId()
@@ -61,37 +62,30 @@ function RegisterPage() {
       title: 'Signing up...',
     })
 
-    const data = await openfort.auth
-      .signUpWithEmailPassword({
+    try {
+      const data = await openfort.auth.signUpWithEmailPassword({
         email: email,
         password: password,
-        options: {
-          data: {
-            name: `${first_name} ${last_name}`,
-          },
-        },
+        callbackURL: `${getURL()}/login`,
+        name: `${first_name} ${last_name}`,
       })
-      .catch((_error) => {
-        setStatus({
-          type: 'error',
-          title: 'Error signing up',
-        })
+
+      if ('user' in data) {
+        if (data.token === null) setEmailConfirmation(true)
+        setUser(data.user)
+      }
+      setStatus({
+        type: 'success',
+        title: 'Successfully signed up',
       })
-    if (data && 'action' in data && data.action === 'verify_email') {
-      await openfort.auth.requestEmailVerification({
-        email: email,
-        redirectUrl: `${getURL()}/login`,
+    } catch (error) {
+      console.error('Registration error:', error)
+      setStatus({
+        type: 'error',
+        title: 'Sign up failed',
+        description: getErrorMessage(error),
       })
-      localStorage.setItem('email', email)
-      setEmailConfirmation(true)
     }
-    if (data && 'player' in data) {
-      setUser(data.player)
-    }
-    setStatus({
-      type: 'success',
-      title: 'Successfully signed up',
-    })
   }
 
   return (
@@ -204,11 +198,9 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.GOOGLE,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}
@@ -221,11 +213,9 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.TWITTER,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}
@@ -238,11 +228,9 @@ function RegisterPage() {
                 <div>
                   <Button
                     onClick={async () => {
-                      const { url } = await openfort.auth.initOAuth({
+                      const url = await openfort.auth.initOAuth({
                         provider: OAuthProvider.FACEBOOK,
-                        options: {
-                          redirectTo: `${getURL()}/login`,
-                        },
+                        redirectTo: `${getURL()}/login`,
                       })
                       window.location.href = url
                     }}

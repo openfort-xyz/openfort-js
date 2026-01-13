@@ -13,9 +13,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const response = await openfort.iam.verifyAuthToken(accessToken)
+    const response = await openfort.iam.getSession({ accessToken })
 
-    if (!response?.playerId) {
+    if (!response?.user.id) {
       return res.status(401).send({
         error: 'Invalid token or unable to verify user.',
       })
@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // The unix timestamp in seconds when the session key becomes invalid in number format (where session duration is 1hour, 1day, 1month).
     const validUntil = Math.floor(new Date(Date.now() + sessionDurationNumber[sessionDuration]).getTime() / 1000)
 
-    const playerId = response.playerId
+    const playerId = response.user.id
 
     const sessionRegistration = await openfort.sessions.create({
       player: playerId,

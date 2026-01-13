@@ -22,7 +22,10 @@
 
 export const BasicAuthProvider = {
     Email: 'email',
-    Wallet: 'wallet'
+    Wallet: 'wallet',
+    Guest: 'guest',
+    Web3: 'web3',
+    Phone: 'phone'
 } as const;
 
 export type BasicAuthProvider = typeof BasicAuthProvider[keyof typeof BasicAuthProvider];

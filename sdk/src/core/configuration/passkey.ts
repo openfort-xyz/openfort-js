@@ -132,7 +132,9 @@ export class PasskeyHandler {
       attestation: 'direct',
     }
 
-    const credential = (await navigator.credentials.create({ publicKey })) as PublicKeyCredential
+    const credential = (await navigator.credentials.create({
+      publicKey,
+    })) as PublicKeyCredential
 
     if (credential) {
       const passkeyId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)))

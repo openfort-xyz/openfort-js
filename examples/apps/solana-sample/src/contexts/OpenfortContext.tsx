@@ -1,10 +1,10 @@
 import {
   AccountTypeEnum,
-  type AuthPlayerResponse,
   ChainTypeEnum,
   type EmbeddedAccount,
   EmbeddedState,
   type RecoveryParams,
+  type User,
 } from '@openfort/openfort-js'
 import type { Address } from '@solana/kit'
 import type React from 'react'
@@ -15,7 +15,7 @@ interface ContextType {
   state: EmbeddedState
   account: EmbeddedAccount | null
   accounts: EmbeddedAccount[]
-  user: AuthPlayerResponse | null
+  user: User | null
   isLoadingAccounts: boolean
   solanaAddress: Address | null
   refetchAccount: () => Promise<void>
@@ -43,7 +43,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren> = ({ children }
   const [state, setState] = useState<EmbeddedState>(EmbeddedState.NONE)
   const [account, setAccount] = useState<EmbeddedAccount | null>(null)
   const [accounts, setAccounts] = useState<EmbeddedAccount[]>([])
-  const [user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false)
   const [solanaAddress, setSolanaAddress] = useState<Address | null>(null)
   const poller = useRef<NodeJS.Timeout | null>(null)
@@ -190,7 +190,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren> = ({ children }
     try {
       // For Solana, we need to sign the raw message bytes without hashing
       // hashMessage: false disables the default keccak256 hashing used for EVM chains
-      const signature = await openfort.embeddedWallet.signMessage(message, { hashMessage: false })
+      const signature = await openfort.embeddedWallet.signMessage(message, {
+        hashMessage: false,
+      })
       return { data: signature }
     } catch (err) {
       console.error('Error signing message:', err)

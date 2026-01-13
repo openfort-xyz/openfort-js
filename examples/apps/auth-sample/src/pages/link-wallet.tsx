@@ -1,4 +1,4 @@
-import type { AuthPlayerResponse } from '@openfort/openfort-js'
+import type { User } from '@openfort/openfort-js'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -9,7 +9,7 @@ import { Chain, WalletConnector } from '../utils/constants'
 import openfort from '../utils/openfortConfig'
 
 function LinkWalletPage() {
-  const [_user, setUser] = useState<AuthPlayerResponse | null>(null)
+  const [_user, setUser] = useState<User | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -43,7 +43,7 @@ function LinkWalletPage() {
                 {'Link with your wallet'}
               </h1>
             </div>
-            <WalletButtons onSuccess={redirect} link={false} />
+            <WalletButtons onSuccess={redirect} link={true} />
             <p className="my-5 text-left text-sm text-gray-600">
               {'Go back to '}
               <Link href="/" className="text-blue-600">

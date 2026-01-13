@@ -12,10 +12,10 @@ This demo uses NextJS's [Pages Router](https://nextjs.org/docs/pages/building-yo
 git clone https://github.com/openfort-xyz/openfort-js.git
 ```
 
-2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `yarn`.
+2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `pnpm`.
 ```sh
-yarn install
-yarn build
+pnpm install
+pnpm build
 ```
 
 3. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
@@ -36,7 +36,7 @@ NEXTAUTH_SHIELD_SECRET_KEY=
 
 ## Building locally
 
-In your openfort-js project root, run `yarn dev:nextjs`. You can now visit http://localhost:3000 to see your app and login with Openfort!
+In your openfort-js project root, run `pnpm dev:nextjs`. You can now visit http://localhost:3000 to see your app and login with Openfort!
 
 ## Check out:
 - `components/AccountActions/AccountActions.tsx` for how to send transactions.

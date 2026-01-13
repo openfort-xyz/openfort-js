@@ -351,16 +351,22 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
                 setLoading(false)
               }
               break
-            case RecoveryMethod.PASSKEY:
+            case RecoveryMethod.PASSKEY: {
+              const passkeyId = account.recoveryMethodDetails?.passkeyId
+              if (!passkeyId) {
+                alert('Passkey ID not found for recovery')
+                return
+              }
               setLoading(true)
               await handleRecoverWallet(account.id, {
                 recoveryMethod: RecoveryMethod.PASSKEY,
                 passkeyInfo: {
-                  passkeyId: account.recoveryMethodDetails?.passkeyId ?? '',
+                  passkeyId,
                 },
               })
               setLoading(false)
               break
+            }
             default:
               alert(`Recovery method ${account.recoveryMethod} not supported yet.`)
               return
@@ -378,7 +384,8 @@ const RecoverWalletButton = ({ account }: { account: EmbeddedAccount }) => {
               style={{ transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
             />
             <p className="text-sm">
-              {account.address.substring(0, 6)}...{account.address.substring(account.address.length - 4)}
+              {account.address.substring(0, 6)}...
+              {account.address.substring(account.address.length - 4)}
             </p>
           </button>
           <span
@@ -454,7 +461,7 @@ const AccountRecovery: React.FC = () => {
       <>
         <h2 className="text-left font-semibold text-2xl">Create a new account</h2>
         <p className="mt-2 text-sm text-gray-600">
-          You don't have any accounts yet. Please create a new account to get started with the embedded signer.
+          You don't have any accounts yet. Please create a new account to get started with the embedded wallet.
         </p>
         <div className="mt-10 space-y-6">
           <CreateWalletPasswordForm />

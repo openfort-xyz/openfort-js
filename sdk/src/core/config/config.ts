@@ -22,7 +22,10 @@ export class OpenfortConfiguration {
 
   readonly nativeAppIdentifier?: string
 
-  constructor(options: { publishableKey: string; nativeAppIdentifier?: string }) {
+  constructor(options: {
+    publishableKey: string
+    nativeAppIdentifier?: string
+  }) {
     this.publishableKey = options.publishableKey
     this.nativeAppIdentifier = options.nativeAppIdentifier
   }

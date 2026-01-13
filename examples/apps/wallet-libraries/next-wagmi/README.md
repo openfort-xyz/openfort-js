@@ -9,10 +9,10 @@ Check out the deployed app [here](https://wagmi.openfort.io/)!
 git clone https://github.com/openfort-xyz/openfort-js.git
 ```
 
-2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `yarn`.
+2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `pnpm`.
 ```sh
-yarn install
-yarn build
+pnpm install
+pnpm build
 ```
 
 3. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
@@ -41,4 +41,4 @@ NEXT_PUBLIC_POLICY_BASE_SEPOLIA=
 
 ## Building locally
 
-In your openfort-js project root, run `yarn dev:wagmi`. You can now visit http://localhost:3000 to see your app and login with Openfort!
+In your openfort-js project root, run `pnpm dev:wagmi`. You can now visit http://localhost:3000 to see your app and login with Openfort!

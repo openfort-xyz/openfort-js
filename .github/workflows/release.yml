@@ -49,14 +49,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    # we need this for PRs
           NPM_TOKEN: '' # bug in changesets/action - https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
 
-      - name: Publish canary release
-        if: steps.changesets.outputs.published != 'true'
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          git reset --hard origin/main
-          pnpm changeset version --no-git-tag --snapshot canary
-          pnpm changeset:prepublish
-          pnpm changeset publish --no-git-tag --snapshot canary --tag canary

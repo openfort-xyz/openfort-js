@@ -8,8 +8,8 @@ This project demonstrates a simple web application that integrates Openfort with
 
 ## Prerequisites
 
-- Node.js v16+
-- Yarn or npm
+- Node.js v22.9+
+- pnpm
 - [Openfort Project](https://openfort.io)
 
 ## Getting Started
@@ -19,10 +19,10 @@ This project demonstrates a simple web application that integrates Openfort with
 git clone https://github.com/openfort-xyz/openfort-js.git
 ```
 
-2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `yarn`.
+2. Install the necessary dependencies (including [Openfort JS](https://www.npmjs.com/package/@openfort/openfort-js)) with `pnpm`.
 ```sh
-yarn install
-yarn build
+pnpm install
+pnpm build
 ```
 
 3. Initialize your environment variables by copying the `.env.example` file to an `.env.local` file. Then, in `.env.local`, [paste your Openfort ID from the dashboard](https://www.openfort.io/docs/configuration/api-keys).
@@ -32,7 +32,7 @@ yarn build
   Fill in your Openfort API key and other required variables
 
 ## Building locally
-In your openfort-js project root, run `yarn dev:solana`.
+In your openfort-js project root, run `pnpm dev:solana`.
 ## Dependencies
 
 The project relies on the following key dependencies:

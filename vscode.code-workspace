@@ -1,19 +1,19 @@
 {
-  "folders": [
-    {
-      "path": "."
-    },
-    {
-      "path": "examples/apps/html-sample"
-    },
-    {
-      "path": "examples/apps/auth-sample"
-    },
-    {
-      "path": "examples/apps/wallet-libraries/vite-wagmi"
-    },
-    {
-      "path": "examples/apps/wallet-libraries/next-wagmi"
-    }
-  ]
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "examples/apps/html-sample"
+		},
+		{
+			"path": "examples/apps/auth-sample"
+		},
+		{
+			"path": "examples/apps/wallet-libraries/vite-wagmi"
+		},
+		{
+			"path": "examples/apps/wallet-libraries/next-wagmi"
+		}
+	]
 }

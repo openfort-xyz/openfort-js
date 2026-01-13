@@ -13,7 +13,7 @@ Copy the .env.local.example file into a file named .env.local in the folder of t
 
 You will need an Openfort account in order to run the demo. Once you set up your account, go to the Openfort [developer dashboard](https://www.openfort.io/docs/configuration/api-keys) to find your API keys.
 
-To create non-csutodial wallets, you can follow the instructions [here](https://www.openfort.io/docs/products/embedded-wallet/javascript/signer/recovery).
+To create non-custodial wallets, you can follow the instructions [here](https://www.openfort.io/docs/products/embedded-wallet/javascript/signer/recovery).
 
 ```sh
 # In your terminal, create .env.local from .env.example
@@ -76,11 +76,11 @@ To set up Firebase to authenticate players with Openfort, visit your [dashboard 
 Install & Run:
 
 ```sh
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
-In your project directory, run `npm run dev`. You can now visit http://localhost:3000 to see your app and login with Openfort!
+In your project directory, run `pnpm dev`. You can now visit http://localhost:3000 to see your app and login with Openfort!
 
 
 ## Get support

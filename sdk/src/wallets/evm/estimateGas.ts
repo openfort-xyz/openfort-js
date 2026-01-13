@@ -1,7 +1,7 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
-import { OpenfortErrorType, withOpenfortError } from '../../core/errors/openfortError'
+import { withApiError } from '../../core/errors/withApiError'
 import type { EstimateTransactionIntentGasResult, Interaction } from '../../types/types'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
@@ -33,7 +33,7 @@ const buildOpenfortTransactions = async (
     }
   })
 
-  return withOpenfortError<EstimateTransactionIntentGasResult>(
+  return withApiError<EstimateTransactionIntentGasResult>(
     async () => {
       const response = await backendApiClients.transactionIntentsApi.estimateTransactionIntentCost(
         {
@@ -44,21 +44,25 @@ const buildOpenfortTransactions = async (
           },
         },
         {
-          headers: {
-            authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': authentication.token,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-provider': authentication.thirdPartyProvider,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-token-type': authentication.thirdPartyTokenType,
-          },
+          headers: authentication.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': authentication.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': authentication.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${authentication.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': String(backendApiClients.config.backend.accessToken),
+              },
         }
       )
       return response.data
       // eslint-disable-next-line @typescript-eslint/naming-convention
     },
-    { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+    { context: 'operation' }
   )
 }
 

@@ -13,9 +13,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const response = await openfort.iam.verifyAuthToken(accessToken)
+    const response = await openfort.iam.getSession({ accessToken })
 
-    if (!response?.playerId) {
+    if (!response?.user.id) {
       return res.status(401).send({
         error: 'Invalid token or unable to verify user.',
       })
@@ -28,10 +28,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     }
 
-    const playerId = response.playerId
+    const userId = response?.user.id
 
     const sessionRevoke = await openfort.sessions.revoke({
-      player: playerId,
+      player: userId,
       policy: policy_id,
       chainId,
       address: sessionAddress,

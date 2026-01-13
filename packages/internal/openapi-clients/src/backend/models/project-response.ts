@@ -86,6 +86,12 @@ export interface ProjectResponse {
      * @memberof ProjectResponse
      */
     'childProjects'?: ChildProjectListResponse;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ProjectResponse
+     */
+    'isV2': boolean;
 }
 
 

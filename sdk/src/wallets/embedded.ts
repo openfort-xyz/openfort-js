@@ -1,7 +1,9 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import { Authentication } from 'core/configuration/authentication'
 import { PasskeyHandler } from 'core/configuration/passkey'
-import { OpenfortError, OpenfortErrorType, withOpenfortError } from 'core/errors/openfortError'
+import { OPENFORT_AUTH_ERROR_CODES } from 'core/errors/authErrorCodes'
+import { ConfigurationError, SessionError } from 'core/errors/openfortError'
+import { withApiError } from 'core/errors/withApiError'
 import type TypedEventEmitter from 'utils/typedEventEmitter'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
@@ -42,11 +44,11 @@ export class EmbeddedSigner implements Signer {
   async configure(params: SignerConfigureRequest): Promise<Account> {
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No access token found')
     }
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration not found')
     }
 
     const acc = await Account.fromStorage(this.storage)
@@ -58,8 +60,12 @@ export class EmbeddedSigner implements Signer {
         account: acc.id,
         ...(params.entropy && {
           entropy: {
-            ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
-            ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+            ...(params.entropy.recoveryPassword && {
+              recoveryPassword: params.entropy.recoveryPassword,
+            }),
+            ...(params.entropy.encryptionSession && {
+              encryptionSession: params.entropy.encryptionSession,
+            }),
             ...(acc.recoveryMethod === 'passkey' && {
               passkey: {
                 id: acc.recoveryMethodDetails?.passkeyId,
@@ -76,26 +82,31 @@ export class EmbeddedSigner implements Signer {
     } else {
       const response = await this.backendApiClients.accountsApi.getAccountsV2(
         {
-          user: auth.player,
           accountType: params.accountType,
           // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
           chainType: params.chainType,
         },
         {
-          headers: {
-            authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-player-token': auth.token,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-auth-provider': auth.thirdPartyProvider,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            'x-token-type': auth.thirdPartyTokenType,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${auth.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': configuration.baseConfiguration.publishableKey,
+              },
         }
       )
 
       if (response.data.data.length === 0) {
-        const passkeyDetails = params.entropy?.passkey ? await this.createPasskey(auth.player) : undefined
+        const passkeyDetails = params.entropy?.passkey ? await this.createPasskey(auth.userId) : undefined
 
         const createParams: SignerCreateRequest = {
           accountType: params.accountType,
@@ -103,8 +114,12 @@ export class EmbeddedSigner implements Signer {
           chainId: params.chainId,
           ...(params.entropy && {
             entropy: {
-              ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
-              ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+              ...(params.entropy.recoveryPassword && {
+                recoveryPassword: params.entropy.recoveryPassword,
+              }),
+              ...(params.entropy.encryptionSession && {
+                encryptionSession: params.entropy.encryptionSession,
+              }),
               ...(params.entropy.passkey && { passkey: passkeyDetails }),
             },
           }),
@@ -122,8 +137,12 @@ export class EmbeddedSigner implements Signer {
           account: account.id,
           ...(params.entropy && {
             entropy: {
-              ...(params.entropy.recoveryPassword && { recoveryPassword: params.entropy.recoveryPassword }),
-              ...(params.entropy.encryptionSession && { encryptionSession: params.entropy.encryptionSession }),
+              ...(params.entropy.recoveryPassword && {
+                recoveryPassword: params.entropy.recoveryPassword,
+              }),
+              ...(params.entropy.encryptionSession && {
+                encryptionSession: params.entropy.encryptionSession,
+              }),
               ...(account.recoveryMethod === 'passkey' && {
                 passkey: {
                   id: account.recoveryMethodDetails?.passkeyId,
@@ -144,22 +163,28 @@ export class EmbeddedSigner implements Signer {
       }
     }
 
-    return withOpenfortError<Account>(
+    return withApiError<Account>(
       async () => {
         const response = await this.backendApiClients.accountsApi.getAccountV2(
           {
             id: accountId,
           },
           {
-            headers: {
-              authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-player-token': auth.token,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-provider': auth.thirdPartyProvider,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-token-type': auth.thirdPartyTokenType,
-            },
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-player-token': auth.token,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : {
+                  authorization: `Bearer ${auth.token}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-project-key': configuration.baseConfiguration.publishableKey,
+                },
           }
         )
 
@@ -183,7 +208,7 @@ export class EmbeddedSigner implements Signer {
         this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, response.data.address)
         return account
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      { context: 'configure' }
     )
   }
 
@@ -194,7 +219,10 @@ export class EmbeddedSigner implements Signer {
     chainType?: string
   ): Promise<string> {
     const signature = await this.iframeManager.sign(message, requireArrayify, requireHash, chainType)
-    this.eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, { message, signature })
+    this.eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, {
+      message,
+      signature,
+    })
     return signature
   }
 
@@ -216,28 +244,34 @@ export class EmbeddedSigner implements Signer {
     const iframeResponse = await this.iframeManager.create(params)
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No access token found')
     }
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration not found')
     }
-    return withOpenfortError<Account>(
+    return withApiError<Account>(
       async () => {
         const response = await this.backendApiClients.accountsApi.getAccountV2(
           {
             id: iframeResponse.account,
           },
           {
-            headers: {
-              authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-player-token': auth.token,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-provider': auth.thirdPartyProvider,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-token-type': auth.thirdPartyTokenType,
-            },
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-player-token': auth.token,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : {
+                  authorization: `Bearer ${auth.token}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-project-key': configuration.baseConfiguration.publishableKey,
+                },
           }
         )
 
@@ -261,7 +295,7 @@ export class EmbeddedSigner implements Signer {
         this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, response.data.address)
         return account
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      { context: 'create' }
     )
   }
 
@@ -269,28 +303,34 @@ export class EmbeddedSigner implements Signer {
     const iframeResponse = await this.iframeManager.recover(params)
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
-      throw new OpenfortError('No access token found', OpenfortErrorType.NOT_LOGGED_IN_ERROR)
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No access token found')
     }
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
-      throw new OpenfortError('Configuration not found', OpenfortErrorType.INVALID_CONFIGURATION)
+      throw new ConfigurationError('Configuration not found')
     }
-    return withOpenfortError<Account>(
+    return withApiError<Account>(
       async () => {
         const response = await this.backendApiClients.accountsApi.getAccountV2(
           {
             id: iframeResponse.account,
           },
           {
-            headers: {
-              authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-player-token': auth.token,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-auth-provider': auth.thirdPartyProvider,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              'x-token-type': auth.thirdPartyTokenType,
-            },
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-player-token': auth.token,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : {
+                  authorization: `Bearer ${auth.token}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-project-key': configuration.baseConfiguration.publishableKey,
+                },
           }
         )
 
@@ -314,7 +354,7 @@ export class EmbeddedSigner implements Signer {
         this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, response.data.address)
         return account
       },
-      { default: OpenfortErrorType.AUTHENTICATION_ERROR }
+      { context: 'recover' }
     )
   }
 

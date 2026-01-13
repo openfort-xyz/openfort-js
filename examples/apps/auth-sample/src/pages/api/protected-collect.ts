@@ -18,15 +18,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const response = await openfort.iam.verifyAuthToken(accessToken)
+    const response = await openfort.iam.getSession({ accessToken })
 
-    if (!response?.playerId) {
+    if (!response?.user.id) {
       return res.status(401).send({
         error: 'Invalid token or unable to verify user.',
       })
     }
 
-    const playerId = response.playerId
+    const playerId = response?.user.id
     const interaction_mint = {
       contract: contract_id,
       functionName: 'mint',

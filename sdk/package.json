@@ -1,6 +1,6 @@
 {
   "name": "@openfort/openfort-js",
-  "version": "0.10.39",
+  "version": "0.10.36",
   "author": "Openfort (https://www.openfort.io)",
   "bugs": "https://github.com/openfort-xyz/openfort-js/issues",
   "repository": "openfort-xyz/openfort-js.git",
@@ -16,8 +16,9 @@
   ],
   "scripts": {
     "test": "pnpm check && pnpm test:unit",
-    "test:unit": "jest --passWithNoTests",
-    "test:watch": "jest --watch",
+    "test:unit": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "packageList": "./scripts/generate-package-list.sh",
     "dev": "NODE_ENV=development pnpm rollup --config rollup.config.js --watch",
     "check": "biome check --write src",
@@ -41,8 +42,7 @@
     "axios": "^1.12.2",
     "axios-retry": "^4.5.0",
     "eventemitter3": "5.0.1",
-    "human-id": "^4.1.1",
-    "jose": "^5.2.2"
+    "human-id": "^4.1.1"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -65,13 +65,16 @@
     "@rollup/plugin-replace": "^5.0.2",
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.0",
+    "@vitest/coverage-v8": "^2.1.8",
+    "jsdom": "^25.0.1",
     "@types/jest": "^29.4.3",
     "@types/node": "^22.7.5",
     "jest": "^29.4.3",
     "rollup": "^4.0.0",
     "rollup-plugin-dts": "^5.3.0",
     "rollup-plugin-visualizer": "^5.14.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.8"
   },
   "main": "./dist/cjs/sdk/src/index.cjs",
   "module": "./dist/sdk/src/index.js",
