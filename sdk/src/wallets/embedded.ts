@@ -80,7 +80,7 @@ export class EmbeddedSigner implements Signer {
 
       accountId = iframeResponse.account
     } else {
-      const response = await this.backendApiClients.accountsApi.getAccountsV2(
+      const response = await this.backendApiClients.accountsV2Api.getAccountsV2(
         {
           accountType: params.accountType,
           // fine to hardcode here because configure is a legacy method from the time where there were only EVM accounts
@@ -165,7 +165,7 @@ export class EmbeddedSigner implements Signer {
 
     return withApiError<Account>(
       async () => {
-        const response = await this.backendApiClients.accountsApi.getAccountV2(
+        const response = await this.backendApiClients.accountsV2Api.getAccountV2(
           {
             id: accountId,
           },
@@ -252,7 +252,7 @@ export class EmbeddedSigner implements Signer {
     }
     return withApiError<Account>(
       async () => {
-        const response = await this.backendApiClients.accountsApi.getAccountV2(
+        const response = await this.backendApiClients.accountsV2Api.getAccountV2(
           {
             id: iframeResponse.account,
           },
@@ -311,7 +311,7 @@ export class EmbeddedSigner implements Signer {
     }
     return withApiError<Account>(
       async () => {
-        const response = await this.backendApiClients.accountsApi.getAccountV2(
+        const response = await this.backendApiClients.accountsV2Api.getAccountV2(
           {
             id: iframeResponse.account,
           },

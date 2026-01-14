@@ -14,28 +14,15 @@
 
 
 
-export * from './domain/accounts-api';
-export * from './domain/admin-authentication-api';
-export * from './domain/anonymous-api';
-export * from './domain/authentication-api';
-export * from './domain/authentication-v2-api';
-export * from './domain/contracts-api';
-export * from './domain/default-api';
-export * from './domain/email-otp-api';
-export * from './domain/events-api';
-export * from './domain/exchange-api';
+export * from './domain/accs-v1-api';
+export * from './domain/accs-v2-api';
+export * from './domain/auth-v1-api';
+export * from './domain/auth-v2-api';
 export * from './domain/forwarder-contract-api';
 export * from './domain/graph-qlapi';
-export * from './domain/onramp-api';
-export * from './domain/paymaster-api';
-export * from './domain/phone-number-api';
-export * from './domain/players-api';
 export * from './domain/policies-api';
-export * from './domain/policy-rules-api';
 export * from './domain/rpcapi';
-export * from './domain/siweapi';
 export * from './domain/sessions-api';
-export * from './domain/settings-api';
 export * from './domain/subscriptions-api';
 export * from './domain/transaction-intents-api';
 export * from './domain/users-api';

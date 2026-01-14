@@ -15,22 +15,16 @@
 
 
 /**
- * 
+ * Request to revoke a wallet secret (authentication key).
  * @export
- * @interface UpdateUserPostRequest
+ * @interface RevokeWalletSecretRequest
  */
-export interface UpdateUserPostRequest {
+export interface RevokeWalletSecretRequest {
     /**
-     * The name of the user
+     * Key identifier of the secret to revoke.
      * @type {string}
-     * @memberof UpdateUserPostRequest
+     * @memberof RevokeWalletSecretRequest
      */
-    'name'?: string;
-    /**
-     * The image of the user
-     * @type {string}
-     * @memberof UpdateUserPostRequest
-     */
-    'image'?: string;
+    'keyId': string;
 }
 

@@ -28,6 +28,10 @@ import { BaseDeleteEntityResponseEntityTypePLAYER } from '../models';
 // @ts-ignore
 import { BaseEntityListResponseAuthUserResponse } from '../models';
 // @ts-ignore
+import { PregenerateAccountResponse } from '../models';
+// @ts-ignore
+import { PregenerateUserRequestV2 } from '../models';
+// @ts-ignore
 import { PrismaSortOrder } from '../models';
 /**
  * UsersApi - axios parameter creator
@@ -37,7 +41,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     return {
         /**
          * It will delete all linked accounts the user is authenticated with. If the user has a linked embedded signer, it will be deleted as well.
-         * @summary Deletes a user object.
+         * @summary Delete user by id.
          * @param {string} id Specifies the unique user ID (starts with pla_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -75,7 +79,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * Retrieves an authenticated user.  Users have linked accounts and are authenticated with a provider.
-         * @summary Authenticated user.
+         * @summary Get authenticated user by id.
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -113,7 +117,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * Retrieves an authenticated users.  Users have linked accounts and are authenticated with a provider.
-         * @summary Authenticated user.
+         * @summary List authenticated users.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
@@ -170,6 +174,46 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
+         * @summary Pre-generate a user with an embedded account.
+         * @param {PregenerateUserRequestV2} pregenerateUserRequestV2 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        pregenerateUserV2: async (pregenerateUserRequestV2: PregenerateUserRequestV2, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'pregenerateUserRequestV2' is not null or undefined
+            assertParamExists('pregenerateUserV2', 'pregenerateUserRequestV2', pregenerateUserRequestV2)
+            const localVarPath = `/v2/users/pregenerate`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(pregenerateUserRequestV2, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -182,7 +226,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
     return {
         /**
          * It will delete all linked accounts the user is authenticated with. If the user has a linked embedded signer, it will be deleted as well.
-         * @summary Deletes a user object.
+         * @summary Delete user by id.
          * @param {string} id Specifies the unique user ID (starts with pla_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -193,7 +237,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
         },
         /**
          * Retrieves an authenticated user.  Users have linked accounts and are authenticated with a provider.
-         * @summary Authenticated user.
+         * @summary Get authenticated user by id.
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -204,7 +248,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
         },
         /**
          * Retrieves an authenticated users.  Users have linked accounts and are authenticated with a provider.
-         * @summary Authenticated user.
+         * @summary List authenticated users.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
@@ -215,6 +259,17 @@ export const UsersApiFp = function(configuration?: Configuration) {
          */
         async getAuthUsers(limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, externalUserId?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAuthUserResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthUsers(limit, skip, order, name, externalUserId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
+         * @summary Pre-generate a user with an embedded account.
+         * @param {PregenerateUserRequestV2} pregenerateUserRequestV2 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async pregenerateUserV2(pregenerateUserRequestV2: PregenerateUserRequestV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PregenerateAccountResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.pregenerateUserV2(pregenerateUserRequestV2, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -229,7 +284,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
     return {
         /**
          * It will delete all linked accounts the user is authenticated with. If the user has a linked embedded signer, it will be deleted as well.
-         * @summary Deletes a user object.
+         * @summary Delete user by id.
          * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -239,7 +294,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * Retrieves an authenticated user.  Users have linked accounts and are authenticated with a provider.
-         * @summary Authenticated user.
+         * @summary Get authenticated user by id.
          * @param {UsersApiGetAuthUserRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -249,13 +304,23 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * Retrieves an authenticated users.  Users have linked accounts and are authenticated with a provider.
-         * @summary Authenticated user.
+         * @summary List authenticated users.
          * @param {UsersApiGetAuthUsersRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getAuthUsers(requestParameters: UsersApiGetAuthUsersRequest = {}, options?: AxiosRequestConfig): AxiosPromise<BaseEntityListResponseAuthUserResponse> {
             return localVarFp.getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
+         * @summary Pre-generate a user with an embedded account.
+         * @param {UsersApiPregenerateUserV2Request} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        pregenerateUserV2(requestParameters: UsersApiPregenerateUserV2Request, options?: AxiosRequestConfig): AxiosPromise<PregenerateAccountResponse> {
+            return localVarFp.pregenerateUserV2(requestParameters.pregenerateUserRequestV2, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -331,6 +396,20 @@ export interface UsersApiGetAuthUsersRequest {
 }
 
 /**
+ * Request parameters for pregenerateUserV2 operation in UsersApi.
+ * @export
+ * @interface UsersApiPregenerateUserV2Request
+ */
+export interface UsersApiPregenerateUserV2Request {
+    /**
+     * 
+     * @type {PregenerateUserRequestV2}
+     * @memberof UsersApiPregenerateUserV2
+     */
+    readonly pregenerateUserRequestV2: PregenerateUserRequestV2
+}
+
+/**
  * UsersApi - object-oriented interface
  * @export
  * @class UsersApi
@@ -339,7 +418,7 @@ export interface UsersApiGetAuthUsersRequest {
 export class UsersApi extends BaseAPI {
     /**
      * It will delete all linked accounts the user is authenticated with. If the user has a linked embedded signer, it will be deleted as well.
-     * @summary Deletes a user object.
+     * @summary Delete user by id.
      * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -351,7 +430,7 @@ export class UsersApi extends BaseAPI {
 
     /**
      * Retrieves an authenticated user.  Users have linked accounts and are authenticated with a provider.
-     * @summary Authenticated user.
+     * @summary Get authenticated user by id.
      * @param {UsersApiGetAuthUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -363,7 +442,7 @@ export class UsersApi extends BaseAPI {
 
     /**
      * Retrieves an authenticated users.  Users have linked accounts and are authenticated with a provider.
-     * @summary Authenticated user.
+     * @summary List authenticated users.
      * @param {UsersApiGetAuthUsersRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -371,6 +450,18 @@ export class UsersApi extends BaseAPI {
      */
     public getAuthUsers(requestParameters: UsersApiGetAuthUsersRequest = {}, options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
+     * @summary Pre-generate a user with an embedded account.
+     * @param {UsersApiPregenerateUserV2Request} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UsersApi
+     */
+    public pregenerateUserV2(requestParameters: UsersApiPregenerateUserV2Request, options?: AxiosRequestConfig) {
+        return UsersApiFp(this.configuration).pregenerateUserV2(requestParameters.pregenerateUserRequestV2, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

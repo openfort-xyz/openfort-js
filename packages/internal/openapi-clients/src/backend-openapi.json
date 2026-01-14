@@ -23,12 +23,6 @@
       "bearerAuth": []
     }
   ],
-  "tags": [
-    {
-      "name": "Default",
-      "description": "Authentication endpoints."
-    }
-  ],
   "paths": {
     "/rpc": {
       "post": {
@@ -1780,510 +1774,6 @@
         "parameters": []
       }
     },
-    "/v1/settings/developer_accounts": {
-      "get": {
-        "operationId": "GetDeveloperAccounts",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeveloperAccountListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "url": "/v1/settings/developer_accounts",
-                      "object": "list",
-                      "data": [
-                        {
-                          "id": "dac_00000000-0000-0000-0000-000000000000",
-                          "address": "0x0000000000000000000000000000000000000000",
-                          "name": "Escrow Account",
-                          "custodial": true,
-                          "createdAt": 1609459200,
-                          "object": "developerAccount",
-                          "transactionIntents": [
-                            {
-                              "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
-                            }
-                          ]
-                        },
-                        {
-                          "id": "dac_88888888-8888-8888-8888-888888888888",
-                          "address": "0x8888888888888888888888888888888888888888",
-                          "name": "Escrow Account 2",
-                          "custodial": true,
-                          "createdAt": 1609459200,
-                          "object": "developerAccount"
-                        }
-                      ],
-                      "start": 0,
-                      "end": 2,
-                      "total": 2
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Retrieve the list of the developer accounts for the current project.\n\nReturns the latest 10 transaction intents that were created with each developer account.\n\nBy default, a maximum of 10 accounts are shown per page.",
-        "summary": "List of developer accounts.",
-        "tags": [
-          "Settings"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "description": "Specifies the fields to expand in the response.",
-            "in": "query",
-            "name": "expand",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/DeveloperAccountResponseExpandable"
-              }
-            },
-            "example": [
-              "transactionIntents"
-            ]
-          },
-          {
-            "description": "Specifies whether to include deleted dev accounts.",
-            "in": "query",
-            "name": "deleted",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            },
-            "example": false
-          }
-        ]
-      },
-      "post": {
-        "operationId": "CreateDeveloperAccount",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeveloperAccountResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "dac_00000000-0000-0000-0000-000000000000",
-                      "address": "0x0000000000000000000000000000000000000000",
-                      "name": "Escrow Account",
-                      "custodial": true,
-                      "createdAt": 1609459200,
-                      "object": "developerAccount",
-                      "transactionIntents": [
-                        {
-                          "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Create or add a developer account.\nTo add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor",
-        "summary": "Create a developer account.",
-        "tags": [
-          "Settings"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDeveloperAccountCreateRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/settings/developer_accounts/{id}/sign_payload": {
-      "post": {
-        "operationId": "SignPayloadDeveloperAccount",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SignPayloadResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.",
-        "summary": "Sign a given payload",
-        "tags": [
-          "Settings"
-        ],
-        "security": [
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique developer account ID (starts with dac_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "dac_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignPayloadRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/settings/developer_accounts/{id}": {
-      "post": {
-        "operationId": "UpdateDeveloperAccount",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeveloperAccountResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "dac_00000000-0000-0000-0000-000000000000",
-                      "address": "0x0000000000000000000000000000000000000000",
-                      "name": "Escrow Account",
-                      "custodial": true,
-                      "createdAt": 1609459200,
-                      "object": "developerAccount",
-                      "transactionIntents": [
-                        {
-                          "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Update a developer account.",
-        "summary": "Update a developer account.",
-        "tags": [
-          "Settings"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDeveloperAccountCreateRequest"
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "GetDeveloperAccount",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeveloperAccountResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "dac_00000000-0000-0000-0000-000000000000",
-                      "address": "0x0000000000000000000000000000000000000000",
-                      "name": "Escrow Account",
-                      "custodial": true,
-                      "createdAt": 1609459200,
-                      "object": "developerAccount",
-                      "transactionIntents": [
-                        {
-                          "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Retrieve a developer account.\n\nReturns the latest 10 transaction intents that were created with each developer account.",
-        "summary": "Get existing developer account.",
-        "tags": [
-          "Settings"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique developer account ID (starts with dac_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "dac_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
-          },
-          {
-            "in": "query",
-            "name": "expand",
-            "required": false,
-            "schema": {
-              "default": [],
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/DeveloperAccountResponseExpandable"
-              }
-            }
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "DeleteDeveloperAccount",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeveloperAccountDeleteResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "dac_00000000-0000-0000-0000-000000000000",
-                      "object": "developerAccount",
-                      "deleted": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Delete a developer account from the current project.",
-        "summary": "Delete a developer account.",
-        "tags": [
-          "Settings"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies a unique developer account (starts with dac_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "dac_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
-          }
-        ]
-      }
-    },
-    "/v1/settings/developer_accounts/message_to_sign": {
-      "get": {
-        "operationId": "GetVerificationPayload",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeveloperAccountGetMessageResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "message": "I want to register 0x0000000000000000000000000000000000000000 to the project 33333333-3333-3333-3333-333333333333 for mainnets on 20231231",
-                      "address": "0x0000000000000000000000000000000000000000"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Generate message, which should be signed by the account your want to add as a developer account.",
-        "summary": "Generate message to sign",
-        "tags": [
-          "Settings"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the address",
-            "in": "query",
-            "name": "address",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
-          }
-        ]
-      }
-    },
     "/v1/sessions": {
       "get": {
         "operationId": "GetPlayerSessions",
@@ -2477,6 +1967,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -2568,6 +2061,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -2656,6 +2152,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -2775,348 +2274,6 @@
             "example": [
               "transactionIntents"
             ]
-          }
-        ]
-      }
-    },
-    "/v1/policy_rules": {
-      "get": {
-        "operationId": "GetPolicyRules",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PolicyRuleListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/policy_rules",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "createdAt": 1689869074,
-                          "id": "afu_...",
-                          "wildcard": false,
-                          "object": "policyRule",
-                          "type": "contract_functions",
-                          "contract": {
-                            "id": "con_..."
-                          },
-                          "functionName": "mint"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Returns a list of policy rules of a policy.\n\nThe policy rules are returned sorted by creation date, with the most recently created policy rules appearing first.\n\nBy default, a maximum of 10 policy rules are shown per page.",
-        "summary": "List policy rules of a policy.",
-        "tags": [
-          "PolicyRules"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "description": "Specifies the fields to expand in the response.",
-            "in": "query",
-            "name": "expand",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "contract"
-                ],
-                "nullable": false
-              }
-            }
-          },
-          {
-            "description": "Specifies the unique policy ID (starts with pol_).",
-            "in": "query",
-            "name": "policy",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          }
-        ]
-      },
-      "post": {
-        "operationId": "CreatePolicyRule",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PolicyRuleResponse"
-                },
-                "examples": {
-                  "Limit contract sponsorship": {
-                    "value": {
-                      "createdAt": 1689869074,
-                      "id": "afu_...",
-                      "wildcard": false,
-                      "object": "policyRule",
-                      "type": "contract_functions",
-                      "contract": {
-                        "id": "con_..."
-                      },
-                      "functionName": "mint"
-                    }
-                  },
-                  "Limit number of sponsored txns": {
-                    "value": {
-                      "createdAt": 1689869074,
-                      "id": "afu_...",
-                      "object": "policyRule",
-                      "type": "rate_limit",
-                      "functionName": "count_per_interval",
-                      "countLimit": 100,
-                      "timeIntervalType": "day",
-                      "timeIntervalValue": 1
-                    }
-                  },
-                  "Limit gas sponsored in interval": {
-                    "value": {
-                      "createdAt": 1689869074,
-                      "id": "afu_...",
-                      "object": "policyRule",
-                      "type": "rate_limit",
-                      "functionName": "gas_per_interval",
-                      "gasLimit": "1000000000000000000",
-                      "timeIntervalType": "day",
-                      "timeIntervalValue": 1
-                    }
-                  },
-                  "Limit gas spent per txn": {
-                    "value": {
-                      "createdAt": 1689869074,
-                      "id": "afu_...",
-                      "object": "policyRule",
-                      "type": "rate_limit",
-                      "functionName": "gas_per_transaction",
-                      "gasLimit": "1000000000000000000"
-                    }
-                  },
-                  "Allow self account sponsorship": {
-                    "value": {
-                      "createdAt": 1689869074,
-                      "id": "afu_...",
-                      "object": "policyRule",
-                      "type": "account_functions"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "summary": "Create a policy rule object.",
-        "tags": [
-          "PolicyRules"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePolicyRuleRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/policy_rules/{id}": {
-      "post": {
-        "operationId": "UpdatePolicyRule",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PolicyRuleResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "createdAt": 1689869074,
-                      "id": "afu_...",
-                      "object": "policyRule",
-                      "type": "rate_limit",
-                      "functionName": "count_per_interval",
-                      "countLimit": 100,
-                      "timeIntervalType": "day",
-                      "timeIntervalValue": 1
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "summary": "Update a policy rule object.",
-        "tags": [
-          "PolicyRules"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique policy rule ID (starts with afu_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "afu_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePolicyRuleRequest"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "DeletePolicyRule",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PolicyRuleDeleteResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "afu_...",
-                      "object": "policyRule",
-                      "deleted": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "summary": "Deletes a policy rule object.",
-        "tags": [
-          "PolicyRules"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique policy rule ID (starts with afu_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "afu_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
           }
         ]
       }
@@ -4167,1085 +3324,6 @@
         }
       }
     },
-    "/v1/players": {
-      "get": {
-        "operationId": "GetPlayers",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlayerListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/players",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "id": "pla_00000000-0000-0000-0000-000000000000",
-                          "createdAt": 1689869074,
-                          "object": "player",
-                          "description": "John Smith",
-                          "metadata": {
-                            "firstName": "John",
-                            "lastName": "Smith"
-                          },
-                          "name": "My Player",
-                          "accounts": [
-                            {
-                              "id": "acc_8888888888-8888-8888-8888-888888888888"
-                            }
-                          ],
-                          "transactionIntents": [
-                            {
-                              "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "By default, a maximum of 10 players are shown.\n\nReturns the latest 10 transaction intents that were created with each player.",
-        "summary": "List players.",
-        "tags": [
-          "Players"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "description": "Specifies the fields to expand in the response.",
-            "in": "query",
-            "name": "expand",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PlayerResponseExpandable"
-              }
-            }
-          },
-          {
-            "description": "Filter by player name.",
-            "in": "query",
-            "name": "name",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "John"
-          }
-        ]
-      },
-      "post": {
-        "operationId": "CreatePlayer",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlayerResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_00000000-0000-0000-0000-000000000000",
-                      "createdAt": 1689869074,
-                      "object": "player",
-                      "description": "John Smith",
-                      "metadata": {
-                        "firstName": "John",
-                        "lastName": "Smith"
-                      },
-                      "name": "My Player",
-                      "accounts": [
-                        {
-                          "id": "acc_8888888888-8888-8888-8888-888888888888"
-                        }
-                      ],
-                      "transactionIntents": [
-                        {
-                          "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Creates a player.",
-        "summary": "Create a player object.",
-        "tags": [
-          "Players"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlayerCreateRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/players/{id}": {
-      "get": {
-        "operationId": "GetPlayer",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlayerResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_00000000-0000-0000-0000-000000000000",
-                      "createdAt": 1689869074,
-                      "object": "player",
-                      "description": "John Smith",
-                      "metadata": {
-                        "firstName": "John",
-                        "lastName": "Smith"
-                      },
-                      "name": "My Player",
-                      "accounts": [
-                        {
-                          "id": "acc_8888888888-8888-8888-8888-888888888888"
-                        }
-                      ],
-                      "transactionIntents": [
-                        {
-                          "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Retrieves the details of a player that has previously been created.\n\nReturns the latest 10 transaction intents that were created with this player.",
-        "summary": "Retrieves the details of an existing player.",
-        "tags": [
-          "Players"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique player ID (starts with pla_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          {
-            "description": "Specifies the expandable fields.",
-            "in": "query",
-            "name": "expand",
-            "required": false,
-            "schema": {
-              "default": [],
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PlayerResponseExpandable"
-              }
-            },
-            "example": [
-              "accounts"
-            ]
-          }
-        ]
-      },
-      "post": {
-        "operationId": "UpdatePlayer",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlayerResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_00000000-0000-0000-0000-000000000000",
-                      "createdAt": 1689869074,
-                      "object": "player",
-                      "description": "John Smith",
-                      "metadata": {
-                        "firstName": "John",
-                        "lastName": "Smith"
-                      },
-                      "name": "My Player",
-                      "accounts": [
-                        {
-                          "id": "acc_8888888888-8888-8888-8888-888888888888"
-                        }
-                      ],
-                      "transactionIntents": [
-                        {
-                          "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Updates the specified player by setting the values of the parameters passed.",
-        "summary": "Updates a player object.",
-        "tags": [
-          "Players"
-        ],
-        "security": [
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique player ID (starts with pla_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlayerUpdateRequest"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "DeletePlayer",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlayerDeleteResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_00000000-0000-0000-0000-000000000000",
-                      "object": "player",
-                      "deleted": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "It will delete all linked accounts the player is authenticated with.\nIf the player has a linked embedded signer, it will be deleted as well.",
-        "summary": "Deletes a player object.",
-        "tags": [
-          "Players"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique player ID (starts with pla_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          }
-        ]
-      }
-    },
-    "/v1/players/{id}/request_transfer_ownership": {
-      "post": {
-        "operationId": "RequestTransferAccountOwnership",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TransactionIntentResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                      "createdAt": 1689869074,
-                      "object": "transactionIntent",
-                      "details": {
-                        "userOperationHash": "0x25d3...005c",
-                        "userOperation": {
-                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                          "nonce": "0x2",
-                          "initCode": "0x",
-                          "callData": "0xb61d...0000",
-                          "callGasLimit": "0x27863",
-                          "verificationGasLimit": "0x16001",
-                          "preVerificationGas": "0xb818",
-                          "maxFeePerGas": "0x62590091",
-                          "maxPriorityFeePerGas": "0x62590091",
-                          "paymasterAndData": "0x3210...b51c",
-                          "signature": "0x6202...3d1b"
-                        }
-                      },
-                      "chainId": 80002,
-                      "abstractionType": "accountAbstractionV6",
-                      "updatedAt": 1689869074,
-                      "policy": {
-                        "id": "pol_..."
-                      },
-                      "player": {
-                        "id": "pla_..."
-                      },
-                      "account": {
-                        "id": "acc_..."
-                      },
-                      "response": {
-                        "createdAt": 1689869074,
-                        "logs": [
-                          {
-                            "removed": false,
-                            "transactionIndex": 0,
-                            "blockNumber": 44904492,
-                            "transactionHash": "0x25d3...005c",
-                            "address": "0x5FF1...2789",
-                            "topics": [
-                              "0xbb47...f972"
-                            ],
-                            "data": "0x",
-                            "logIndex": 0,
-                            "blockHash": "0x8a69...6d59"
-                          }
-                        ],
-                        "blockNumber": 8789286,
-                        "transactionHash": "0x25d3...005c",
-                        "to": "0x0576...1B57",
-                        "gasUsed": "336730",
-                        "status": 1
-                      },
-                      "interactions": [
-                        {
-                          "functionName": "mint",
-                          "contract": "con_...",
-                          "functionArgs": [
-                            "0x63B7...484f"
-                          ]
-                        }
-                      ],
-                      "transitions": [
-                        {
-                          "fromStatus": "none",
-                          "toStatus": "new",
-                          "at": 1750154762
-                        },
-                        {
-                          "fromStatus": "new",
-                          "toStatus": "sent",
-                          "at": 1750154762
-                        },
-                        {
-                          "fromStatus": "sent",
-                          "toStatus": "indexed",
-                          "at": 1750154762
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "This endpoint allows you to perform a request to change the owner of an account.\nTo perform an update on the owner of an account, first you must provide a new owner address.\nOnce requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.",
-        "summary": "Request transfer ownership of a player.",
-        "tags": [
-          "Players"
-        ],
-        "security": [
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique player ID (starts with pla_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlayerTransferOwnershipRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/players/{id}/cancel_transfer_ownership": {
-      "post": {
-        "operationId": "CancelTransferAccountOwnership",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TransactionIntentResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                      "createdAt": 1689869074,
-                      "object": "transactionIntent",
-                      "details": {
-                        "userOperationHash": "0x25d3...005c",
-                        "userOperation": {
-                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                          "nonce": "0x2",
-                          "initCode": "0x",
-                          "callData": "0xb61d...0000",
-                          "callGasLimit": "0x27863",
-                          "verificationGasLimit": "0x16001",
-                          "preVerificationGas": "0xb818",
-                          "maxFeePerGas": "0x62590091",
-                          "maxPriorityFeePerGas": "0x62590091",
-                          "paymasterAndData": "0x3210...b51c",
-                          "signature": "0x6202...3d1b"
-                        }
-                      },
-                      "chainId": 80002,
-                      "abstractionType": "accountAbstractionV6",
-                      "updatedAt": 1689869074,
-                      "policy": {
-                        "id": "pol_..."
-                      },
-                      "player": {
-                        "id": "pla_..."
-                      },
-                      "account": {
-                        "id": "acc_..."
-                      },
-                      "response": {
-                        "createdAt": 1689869074,
-                        "logs": [
-                          {
-                            "removed": false,
-                            "transactionIndex": 0,
-                            "blockNumber": 44904492,
-                            "transactionHash": "0x25d3...005c",
-                            "address": "0x5FF1...2789",
-                            "topics": [
-                              "0xbb47...f972"
-                            ],
-                            "data": "0x",
-                            "logIndex": 0,
-                            "blockHash": "0x8a69...6d59"
-                          }
-                        ],
-                        "blockNumber": 8789286,
-                        "transactionHash": "0x25d3...005c",
-                        "to": "0x0576...1B57",
-                        "gasUsed": "336730",
-                        "status": 1
-                      },
-                      "interactions": [
-                        {
-                          "functionName": "mint",
-                          "contract": "con_...",
-                          "functionArgs": [
-                            "0x63B7...484f"
-                          ]
-                        }
-                      ],
-                      "transitions": [
-                        {
-                          "fromStatus": "none",
-                          "toStatus": "new",
-                          "at": 1750154762
-                        },
-                        {
-                          "fromStatus": "new",
-                          "toStatus": "sent",
-                          "at": 1750154762
-                        },
-                        {
-                          "fromStatus": "sent",
-                          "toStatus": "indexed",
-                          "at": 1750154762
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "This endpoint allows you to cancel a pending transfer of ownership.",
-        "summary": "Cancel request to transfer ownership of a player.",
-        "tags": [
-          "Players"
-        ],
-        "security": [
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlayerCancelTransferOwnershipRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/paymasters": {
-      "post": {
-        "operationId": "CreatePaymaster",
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreatePaymasterResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pay_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "paymaster",
-                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
-                      "url": "https://rpc.mypaymaster.xyz",
-                      "context": {
-                        "key": "value"
-                      },
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Create a new paymaster.\n\nThis object represents the paymaster that will be used to pay the gas fees of the transactions.",
-        "summary": "Create a new paymaster.",
-        "tags": [
-          "Paymaster"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePaymasterRequest"
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "ListPaymasters",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/CreatePaymasterResponse"
-                  },
-                  "type": "array"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Returns a list of paymasters.\n\nThis object represents the paymasters that will be used to pay the gas fees for the transactions.\n\nBy default, a maximum of 10 paymasters are shown per page.",
-        "summary": "List paymasters.",
-        "tags": [
-          "Paymaster"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          }
-        ]
-      }
-    },
-    "/v1/paymasters/{id}": {
-      "post": {
-        "operationId": "UpdatePaymaster",
-        "responses": {
-          "201": {
-            "description": "Updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreatePaymasterResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pay_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "paymaster",
-                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
-                      "url": "https://rpc.mypaymaster.xyz",
-                      "context": {
-                        "key": "value"
-                      },
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Update a paymaster.\n\nThis object represents the paymaster that will be used to pay the gas fees of the transactions.",
-        "summary": "Update a paymaster.",
-        "tags": [
-          "Paymaster"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePaymasterRequest"
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "GetPaymaster",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreatePaymasterResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pay_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "paymaster",
-                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
-                      "url": "https://rpc.mypaymaster.xyz",
-                      "context": {
-                        "key": "value"
-                      },
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "404": {
-            "description": "Error response."
-          }
-        },
-        "description": "Returns the paymaster with the given id.\n\nThis object represents the paymaster that will be used to pay the gas fees for the transactions.",
-        "summary": "Get paymaster by id.",
-        "tags": [
-          "Paymaster"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "DeletePaymaster",
-        "responses": {
-          "204": {
-            "description": "Deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymasterDeleteResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "404": {
-            "description": "Error response."
-          }
-        },
-        "description": "Delete the paymaster with the given id.\n\nThis object represents the paymaster that will be used to pay the gas fees for the transactions.",
-        "summary": "Delete paymaster by id.",
-        "tags": [
-          "Paymaster"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v1/onramp/sessions": {
-      "post": {
-        "operationId": "createOnrampSession",
-        "responses": {
-          "200": {
-            "description": "Onramp session created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampSessionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "description": "Creates an onramp session for the selected provider.\n\nThe provider is selected via the `provider` field. All request and response formats are unified\nand provider-agnostic. The service layer handles translation between the common format and\nprovider-specific APIs.",
-        "summary": "Create onramp session",
-        "tags": [
-          "Onramp"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnrampSessionRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/onramp/quotes": {
-      "post": {
-        "operationId": "getOnrampQuote",
-        "responses": {
-          "200": {
-            "description": "Onramp quote(s) retrieved successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampQuotesResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "description": "Retrieves onramp quote(s) without creating an actual transaction.\n\nIf provider is specified, returns a single quote for that provider.\nIf provider is not specified, returns quotes from all available providers.\n\nAll request and response formats are unified and provider-agnostic.",
-        "summary": "Get onramp quote(s)",
-        "tags": [
-          "Onramp"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnrampQuoteRequest"
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/graphql": {
       "post": {
         "operationId": "Query",
@@ -5572,1008 +3650,6 @@
         ]
       }
     },
-    "/v1/exchange": {
-      "post": {
-        "operationId": "CreateSwap",
-        "responses": {
-          "200": {
-            "description": "OK.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TransactionIntentResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                      "createdAt": 1689869074,
-                      "object": "transactionIntent",
-                      "details": {
-                        "userOperationHash": "0x25d3...005c",
-                        "userOperation": {
-                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
-                          "nonce": "0x2",
-                          "initCode": "0x",
-                          "callData": "0xb61d...0000",
-                          "callGasLimit": "0x27863",
-                          "verificationGasLimit": "0x16001",
-                          "preVerificationGas": "0xb818",
-                          "maxFeePerGas": "0x62590091",
-                          "maxPriorityFeePerGas": "0x62590091",
-                          "paymasterAndData": "0x3210...b51c",
-                          "signature": "0x6202...3d1b"
-                        }
-                      },
-                      "chainId": 80002,
-                      "abstractionType": "accountAbstractionV6",
-                      "updatedAt": 1689869074,
-                      "policy": {
-                        "id": "pol_..."
-                      },
-                      "player": {
-                        "id": "pla_..."
-                      },
-                      "account": {
-                        "id": "acc_..."
-                      },
-                      "response": {
-                        "createdAt": 1689869074,
-                        "logs": [
-                          {
-                            "removed": false,
-                            "transactionIndex": 0,
-                            "blockNumber": 44904492,
-                            "transactionHash": "0x25d3...005c",
-                            "address": "0x5FF1...2789",
-                            "topics": [
-                              "0xbb47...f972"
-                            ],
-                            "data": "0x",
-                            "logIndex": 0,
-                            "blockHash": "0x8a69...6d59"
-                          }
-                        ],
-                        "blockNumber": 8789286,
-                        "transactionHash": "0x25d3...005c",
-                        "to": "0x0576...1B57",
-                        "gasUsed": "336730",
-                        "status": 1
-                      },
-                      "interactions": [
-                        {
-                          "functionName": "mint",
-                          "contract": "con_...",
-                          "functionArgs": [
-                            "0x63B7...484f"
-                          ]
-                        }
-                      ],
-                      "transitions": [
-                        {
-                          "fromStatus": "none",
-                          "toStatus": "new",
-                          "at": 1750154762
-                        },
-                        {
-                          "fromStatus": "new",
-                          "toStatus": "sent",
-                          "at": 1750154762
-                        },
-                        {
-                          "fromStatus": "sent",
-                          "toStatus": "indexed",
-                          "at": 1750154762
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Creates token swap.",
-        "summary": "Create token swap.",
-        "tags": [
-          "Exchange"
-        ],
-        "security": [
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateExchangeRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/exchange/quote": {
-      "post": {
-        "operationId": "QuoteSwap",
-        "responses": {
-          "200": {
-            "description": "OK.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuoteExchangeResult"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "amount": {
-                        "token": {
-                          "address": "0x008518e76FAD03f592Bbb7E394C762d5FD54cb97",
-                          "chainId": 4337,
-                          "decimals": 18,
-                          "name": "TOKEN",
-                          "symbol": "TKN"
-                        },
-                        "value": "1000000000000000000"
-                      },
-                      "slippage": 0.5,
-                      "fees": [
-                        {
-                          "recipient": "0x008518e76FAD03f592Bbb7E394C762d5FD54cb97",
-                          "basisPoints": 100,
-                          "amount": {
-                            "token": {
-                              "address": "0x008518e76FAD03f592Bbb7E394C762d5FD54cb97",
-                              "chainId": 4337,
-                              "decimals": 18,
-                              "name": "TOKEN",
-                              "symbol": "TKN"
-                            },
-                            "value": "1000000000000000000"
-                          }
-                        }
-                      ],
-                      "amountWithMaxSlippage": {
-                        "token": {
-                          "address": "0x008518e76FAD03f592Bbb7E394C762d5FD54cb97",
-                          "chainId": 4337,
-                          "decimals": 18,
-                          "name": "TOKEN",
-                          "symbol": "TKN"
-                        },
-                        "value": "1000000000000000000"
-                      },
-                      "estimatedTXGasFee": "1000000000000000000",
-                      "estimatedTXGasFeeToken": "12000",
-                      "estimatedTXGasFeeUSD": "1"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Quote token swap.",
-        "summary": "Quote token swap.",
-        "tags": [
-          "Exchange"
-        ],
-        "security": [
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateExchangeRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/events": {
-      "get": {
-        "operationId": "GetEvents",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/events",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "id": "eve_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                          "object": "event",
-                          "topic": "balance.project",
-                          "threshold": "100",
-                          "createdAt": 1617226800
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Returns a list of events.\n\nBy default, a maximum of 10 events are shown per page.",
-        "summary": "List events.",
-        "tags": [
-          "Events"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "description": "Specifies the name of the event",
-            "in": "query",
-            "name": "name",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "Event Name"
-          },
-          {
-            "description": "Specifies if display deleted events",
-            "in": "query",
-            "name": "deleted",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            },
-            "example": false
-          }
-        ]
-      },
-      "post": {
-        "operationId": "CreateEvent",
-        "responses": {
-          "201": {
-            "description": "Event created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateEventResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "eve_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "event",
-                      "topic": "balance.project",
-                      "threshold": "100",
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Create a new event.",
-        "summary": "Create a new event.",
-        "tags": [
-          "Events"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEventRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/events/{id}": {
-      "get": {
-        "operationId": "GetEvent",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetEventResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "eve_f0f89cf2-c185-40f4-beef-2a250d7a472b",
-                      "object": "event",
-                      "topic": "balance.project",
-                      "threshold": "100",
-                      "createdAt": 1617226800
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "404": {
-            "description": "Event not found."
-          }
-        },
-        "description": "Get a single event.",
-        "summary": "Get a single event.",
-        "tags": [
-          "Events"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique event ID (starts with eve_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "eve_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "DeleteEvent",
-        "responses": {
-          "204": {
-            "description": "Event deleted.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventDeleteResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "eve_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
-                      "deleted": true,
-                      "object": "event"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "404": {
-            "description": "Event not found."
-          }
-        },
-        "description": "Delete an event.",
-        "summary": "Delete an event.",
-        "tags": [
-          "Events"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique event ID (starts with eve_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "eve_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
-          }
-        ]
-      }
-    },
-    "/v1/contracts": {
-      "get": {
-        "operationId": "GetContracts",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContractListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/v1/contracts",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
-                          "createdAt": 1689869074,
-                          "object": "contract",
-                          "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
-                          "chainId": 80002,
-                          "deleted": false,
-                          "name": "MyContract",
-                          "publicVerification": true,
-                          "abi": [
-                            {
-                              "constant": false,
-                              "inputs": [
-                                {
-                                  "name": "addr",
-                                  "type": "address"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "List of all contracts per project.\nBy default, a maximum of ten contracts are shown.",
-        "summary": "List contracts.",
-        "tags": [
-          "Contracts"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "description": "Specifies the name of the contract.",
-            "in": "query",
-            "name": "name",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "NFT Contract"
-          },
-          {
-            "description": "Specifies whether to include deleted contracts.",
-            "in": "query",
-            "name": "deleted",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            },
-            "example": false
-          },
-          {
-            "description": "The chain ID of the contract.",
-            "in": "query",
-            "name": "chainId",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            },
-            "example": 80002
-          },
-          {
-            "description": "Specifies the address of the contract.",
-            "in": "query",
-            "name": "address",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "0x742e6e61d760164d56f44801054bcf40fa821d97"
-          }
-        ]
-      },
-      "post": {
-        "operationId": "CreateContract",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContractResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
-                      "createdAt": 1689869074,
-                      "object": "contract",
-                      "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
-                      "chainId": 80002,
-                      "deleted": false,
-                      "name": "MyContract",
-                      "publicVerification": true,
-                      "abi": [
-                        {
-                          "constant": false,
-                          "inputs": [
-                            {
-                              "name": "addr",
-                              "type": "address"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Add a new contract to your project in Openfort",
-        "summary": "Create contract object.",
-        "tags": [
-          "Contracts"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateContractRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/contracts/{id}": {
-      "get": {
-        "operationId": "GetContract",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContractResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
-                      "createdAt": 1689869074,
-                      "object": "contract",
-                      "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
-                      "chainId": 80002,
-                      "deleted": false,
-                      "name": "MyContract",
-                      "publicVerification": true,
-                      "abi": [
-                        {
-                          "constant": false,
-                          "inputs": [
-                            {
-                              "name": "addr",
-                              "type": "address"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Retrieve a contract by providing their contract id.",
-        "summary": "Get a contract.",
-        "tags": [
-          "Contracts"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique contract ID (starts with con_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
-          }
-        ]
-      },
-      "post": {
-        "operationId": "UpdateContract",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContractResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
-                      "createdAt": 1689869074,
-                      "object": "contract",
-                      "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
-                      "chainId": 80002,
-                      "deleted": false,
-                      "name": "MyContract",
-                      "publicVerification": true,
-                      "abi": [
-                        {
-                          "constant": false,
-                          "inputs": [
-                            {
-                              "name": "addr",
-                              "type": "address"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "summary": "Updates a contract object.",
-        "tags": [
-          "Contracts"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique contract ID (starts with con_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateContractRequest"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "DeleteContract",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContractDeleteResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
-                      "deleted": true,
-                      "object": "contract"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Delete a contract from the project by providing its contract id.",
-        "summary": "Deletes a contract object.",
-        "tags": [
-          "Contracts"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique contract ID (starts with con_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
-          }
-        ]
-      }
-    },
-    "/v1/contracts/{id}/read": {
-      "get": {
-        "operationId": "ReadContract",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContractReadResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
-                      "createdAt": 1689869074,
-                      "object": "readContract",
-                      "functionName": "balanceOf",
-                      "result": {
-                        "type": "BigNumber",
-                        "hex": "0x00"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Using this endpoint, you can get the repositories returned by any readable\nfunction listed in a contracts ABI. This could be things like querying\nthe totalSupply of a currency contract, the number of owners of an items\ncontract, and more.",
-        "summary": "Read on chain contract repositories.",
-        "tags": [
-          "Contracts"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique contract ID (starts with con_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
-          },
-          {
-            "description": "The function name of the contract.",
-            "in": "query",
-            "name": "functionName",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "mint"
-          },
-          {
-            "description": "The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.",
-            "in": "query",
-            "name": "functionArgs",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {}
-            },
-            "example": [
-              "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
-            ]
-          }
-        ]
-      }
-    },
     "/v1/accounts": {
       "get": {
         "operationId": "GetAccounts",
@@ -6628,7 +3704,7 @@
         "description": "Returns a list of accounts for the given player.\n\nThis object represents a player's account, which is a blockchain smart account that can be used to interact with the blockchain.\n\nThe accounts are returned sorted by creation date, with the most recently created accounts appearing first.\n\nReturns the latest 10 transaction intents for each account.\n\nBy default, a maximum of 10 accounts are shown per page.",
         "summary": "List accounts of a player.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -6774,7 +3850,7 @@
         "description": "Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.\n\nAccount creation does not consume any gas. All accounts of a player will use the same address across blockchains.\n\nEach player can only have one account per chain.",
         "summary": "Create an account object.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -6851,7 +3927,7 @@
         "description": "Retrieves the details of an existing account.\n\nSupply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.\n\nReturns the latest 10 transaction intents created by this account.",
         "summary": "Get existing account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -6901,8 +3977,10 @@
             "description": "Error response."
           }
         },
+        "description": "Disables an account.\n\nAccounts won't be shown for user and won't be accessible for transactions.",
+        "summary": "Disable account by id.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7020,7 +4098,7 @@
         "description": "Perform a request to change the owner of an account.\n\nTo perform an update on the owner of an account, first you must provide a new owner address.\nOnce requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.",
         "summary": "Request transfer ownership of account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7138,7 +4216,7 @@
         "description": "Cancel a pending transfer of ownership.",
         "summary": "Cancel request to transfer ownership of an account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7204,7 +4282,7 @@
         "description": "**Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.",
         "summary": "Sign a given payload",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7286,7 +4364,7 @@
         "description": "Synchronize the account state with the blockchain.\nSpecifically, it updates the account owner and whether its deployed or not.",
         "summary": "Sync account state with the blockchain",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7358,7 +4436,7 @@
         "description": "This endpoint can be used to deploy a smart contract account that was counterfactually generated.",
         "summary": "Deploy an account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7478,7 +4556,7 @@
         },
         "summary": "Start a recovery process of a recoverable account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7595,7 +4673,7 @@
         },
         "summary": "Complete a recovery process of a recoverable account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7694,7 +4772,7 @@
           }
         },
         "description": "Retrieves an authenticated users.\n\nUsers have linked accounts and are authenticated with a provider.",
-        "summary": "Authenticated user.",
+        "summary": "List authenticated users.",
         "tags": [
           "Users"
         ],
@@ -7802,7 +4880,7 @@
           }
         },
         "description": "Retrieves an authenticated user.\n\nUsers have linked accounts and are authenticated with a provider.",
-        "summary": "Authenticated user.",
+        "summary": "Get authenticated user by id.",
         "tags": [
           "Users"
         ],
@@ -7855,7 +4933,7 @@
           }
         },
         "description": "It will delete all linked accounts the user is authenticated with.\nIf the user has a linked embedded signer, it will be deleted as well.",
-        "summary": "Deletes a user object.",
+        "summary": "Delete user by id.",
         "tags": [
           "Users"
         ],
@@ -7881,6 +4959,53 @@
         ]
       }
     },
+    "/v2/users/pregenerate": {
+      "post": {
+        "operationId": "pregenerateUserV2",
+        "responses": {
+          "200": {
+            "description": "User and account pre-generated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PregenerateAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters."
+          },
+          "401": {
+            "description": "Unauthorized - invalid API key."
+          },
+          "409": {
+            "description": "Conflict - user with this identifier already exists."
+          }
+        },
+        "description": "Pre-generate a user with an embedded account before they authenticate.\nCreates a user record and an embedded account using the provided SSS key shares.\nWhen the user later authenticates (via email, OAuth, third-party auth, etc.)\nwith the same identifier, they will be linked to this pre-generated account.\n\nYou can pregenerate using either:\n- `email`: User will be linked when they authenticate with the same email\n- `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider",
+        "summary": "Pre-generate a user with an embedded account.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PregenerateUserRequestV2"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/accounts": {
       "get": {
         "operationId": "getAccountsV2",
@@ -7899,10 +5024,10 @@
             "description": "Error response."
           }
         },
-        "description": "Returns a list of accounts for the given user.\n\nThis object represents a user's account, which is a blockchain smart account that can be used to interact with the blockchain.\n\nThe accounts are returned sorted by creation date, with the most recently created accounts appearing first.\n\nReturns the latest 10 transaction intents for each account.\n\nBy default, a maximum of 10 accounts are shown per page.",
-        "summary": "List accounts of a user.",
+        "description": "Returns a list of accounts for the given user.\n\nThis object represents a user's account, which is a blockchain smart account that can be used to interact with the blockchain.\n\nThe accounts are returned sorted by creation date, with the most recently created accounts appearing first.",
+        "summary": "List user accounts.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8032,8 +5157,10 @@
             "description": "Error response."
           }
         },
+        "description": "Creates a new blockchain account for a user.\n\nAccount creation does not consume any gas. The account can be used to interact with the blockchain.",
+        "summary": "Create new account.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8071,8 +5198,10 @@
             "description": "Error response."
           }
         },
+        "description": "Retrieves the signer ID associated with a given blockchain address.",
+        "summary": "Get signer ID by address.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8121,8 +5250,10 @@
             "description": "Error response."
           }
         },
+        "description": "Retrieves the details of an existing account.\n\nSupply the unique account ID and Openfort will return the corresponding account information.",
+        "summary": "Get existing account.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8173,8 +5304,9 @@
           }
         },
         "description": "Removes an account from a project.",
+        "summary": "Delete account.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8214,8 +5346,10 @@
             "description": "Error response."
           }
         },
+        "description": "Switches the blockchain network for an existing account.\n\nThis allows moving an account between different blockchain networks while maintaining the same account identity.",
+        "summary": "Switch account blockchain.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8285,7 +5419,7 @@
         "description": "Get or create a new session for the player based on the refresh token.",
         "summary": "Refresh or create auth session.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8319,7 +5453,7 @@
         "description": "When using Openfort Auth, the endpoint logs out the player.",
         "summary": "Log out a player.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8369,7 +5503,7 @@
         "description": "Create a challenge to link external wallet to the player.",
         "summary": "Initialize SIWE.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8441,7 +5575,7 @@
         },
         "summary": "Authenticate player with SIWE",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8484,7 +5618,7 @@
         },
         "summary": "Unlink external wallet.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8530,7 +5664,7 @@
         },
         "summary": "Link external wallet.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8604,7 +5738,7 @@
         "description": "Create and authenticate a player based on email and password.",
         "summary": "Email and password signup.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8681,7 +5815,7 @@
         "description": "Authenticate a player based on email and password.",
         "summary": "Email and password login.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8724,7 +5858,7 @@
         "description": "Start the Email Verification process for a player.",
         "summary": "Request an Email Verification.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8758,7 +5892,7 @@
         "description": "Verify a player's email address.",
         "summary": "Verify an email.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8792,7 +5926,7 @@
         "description": "Start the Reset process for a player's password.",
         "summary": "Request a Reset password.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8826,7 +5960,7 @@
         "description": "Reset a player's password.",
         "summary": "Reset a password.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8872,7 +6006,7 @@
           }
         },
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8923,7 +6057,7 @@
           }
         },
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8987,7 +6121,7 @@
         "description": "Authenticate a player from an identity token.",
         "summary": "OIDC Identity token.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9036,7 +6170,7 @@
         },
         "summary": "Initialize OAuth.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9085,7 +6219,7 @@
         },
         "summary": "Initialize Link OAuth.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9137,7 +6271,7 @@
         },
         "summary": "Initialize Link OAuth.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9189,7 +6323,7 @@
         },
         "summary": "Initialize OAuth.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9248,7 +6382,7 @@
         },
         "summary": "Authenticate player with oauth token.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9311,7 +6445,7 @@
         },
         "summary": "Verify oauth token of a third party auth provider.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9337,73 +6471,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ThirdPartyOAuthRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/iam/v1/oauth/verify": {
-      "post": {
-        "operationId": "VerifyOAuthToken",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlayerResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_00000000-0000-0000-0000-000000000000",
-                      "createdAt": 1689869074,
-                      "object": "player",
-                      "description": "John Smith",
-                      "metadata": {
-                        "firstName": "John",
-                        "lastName": "Smith"
-                      },
-                      "name": "My Player",
-                      "accounts": [
-                        {
-                          "id": "acc_8888888888-8888-8888-8888-888888888888"
-                        }
-                      ],
-                      "transactionIntents": [
-                        {
-                          "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          }
-        },
-        "description": "The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.\n\nReturns the latest 10 transaction intents for the player.",
-        "summary": "Retrieve player by oauth token.",
-        "tags": [
-          "AdminAuthentication",
-          "Authentication"
-        ],
-        "security": [
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AuthenticateOAuthRequest"
               }
             }
           }
@@ -9446,7 +6513,7 @@
         },
         "summary": "Unlink OAuth account",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9467,204 +6534,6 @@
             }
           }
         }
-      }
-    },
-    "/iam/v1/oauth": {
-      "get": {
-        "operationId": "ListOAuthConfig",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OAuthConfigListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "data": [
-                        {
-                          "enabled": true,
-                          "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
-                          "clientId": "1234567890abcdef1234567890abcdef",
-                          "clientSecret": "abcdef1234567890abcdef1234567890",
-                          "provider": "accelbyte"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          }
-        },
-        "description": "List configured OAuth methods for the current project environment.",
-        "summary": "List of oauth configurations.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "deprecated": true,
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": []
-      },
-      "post": {
-        "operationId": "CreateOAuthConfig",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OAuthConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "enabled": true,
-                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
-                      "clientId": "1234567890abcdef1234567890abcdef",
-                      "clientSecret": "abcdef1234567890abcdef1234567890",
-                      "provider": "accelbyte"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "The endpoint creates oauth configuration for the current project environment.",
-        "summary": "Create oauth configuration.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "deprecated": true,
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "description": "Specifies the oauth provider specific configuration.",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OAuthConfigRequest",
-                "description": "Specifies the oauth provider specific configuration."
-              }
-            }
-          }
-        }
-      }
-    },
-    "/iam/v1/oauth/{provider}": {
-      "get": {
-        "operationId": "GetOAuthConfig",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OAuthConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "enabled": true,
-                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
-                      "clientId": "1234567890abcdef1234567890abcdef",
-                      "clientSecret": "abcdef1234567890abcdef1234567890",
-                      "provider": "accelbyte"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          }
-        },
-        "description": "The endpoint retrieves oauth configuration for specified provider for the current project environment.",
-        "summary": "Get oauth configuration.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "deprecated": true,
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the oauth provider type.",
-            "in": "path",
-            "name": "provider",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/OAuthProvider"
-            }
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "DeleteOAuthConfig",
-        "responses": {
-          "204": {
-            "description": "No content"
-          },
-          "401": {
-            "description": ""
-          }
-        },
-        "description": "The endpoint deletes oauth configuration for specified provider for the current project environment.",
-        "summary": "Delete oauth configuration.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "deprecated": true,
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the oauth provider type.",
-            "in": "path",
-            "name": "provider",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/OAuthProvider"
-            }
-          }
-        ]
       }
     },
     "/iam/v1/guest": {
@@ -9711,7 +6580,7 @@
         "description": "Create a guest player.",
         "summary": "Create a guest player.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9726,464 +6595,6 @@
             "schema": {
               "type": "string"
             }
-          }
-        ]
-      }
-    },
-    "/iam/v1/config": {
-      "get": {
-        "operationId": "List",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthProviderListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "data": [
-                        {
-                          "provider": "firebase",
-                          "type": "third_party"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          }
-        },
-        "description": "List configured auth methods for the current project environment.",
-        "summary": "List of auth configurations.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "security": [
-          {
-            "pk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "enabled",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ]
-      },
-      "post": {
-        "operationId": "Create",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OAuthConfigResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "enabled": true,
-                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
-                      "clientId": "1234567890abcdef1234567890abcdef",
-                      "clientSecret": "abcdef1234567890abcdef1234567890",
-                      "provider": "accelbyte"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "The endpoint creates oauth configuration for the current project environment.",
-        "summary": "Create oauth configuration.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "description": "Specifies the oauth provider specific configuration.",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OAuthConfigRequest",
-                "description": "Specifies the oauth provider specific configuration."
-              }
-            }
-          }
-        }
-      }
-    },
-    "/iam/v1/players": {
-      "post": {
-        "operationId": "CreateAuthPlayer",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthPlayerResponseWithRecoveryShare"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
-                      "object": "player",
-                      "createdAt": 1691658234,
-                      "linkedAccounts": [
-                        {
-                          "email": "jaume@openfort.xyz",
-                          "disabled": false,
-                          "updatedAt": 1691658234
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Creates an authenticated player.\n\nThe player will be authenticated with the provider and an embedded account can be pre generated.",
-        "summary": "Create an authenticated player.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAuthPlayerRequest"
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "operationId": "GetAuthPlayers",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthPlayerListResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "object": "list",
-                      "url": "/iam/v1/players",
-                      "start": 0,
-                      "end": 1,
-                      "total": 1,
-                      "data": [
-                        {
-                          "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
-                          "object": "player",
-                          "createdAt": 1691658234,
-                          "linkedAccounts": [
-                            {
-                              "email": "jaume@openfort.xyz",
-                              "disabled": false,
-                              "updatedAt": 1691658234
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Retrieves a list of authenticated players.\n\nPlayers have linked accounts and are authenticated with a provider.",
-        "summary": "List authenticated players.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the maximum number of records to return.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "description": "Specifies the offset for the first records to return.",
-            "in": "query",
-            "name": "skip",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer",
-              "minimum": 0
-            }
-          },
-          {
-            "description": "Specifies the order in which to sort the results.",
-            "in": "query",
-            "name": "order",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/Prisma.SortOrder"
-            }
-          },
-          {
-            "description": "Specifies the email address of the user.",
-            "in": "query",
-            "name": "email",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "user@email.com"
-          },
-          {
-            "description": "Specifies the external user ID.",
-            "in": "query",
-            "name": "externalUserId",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "externalUserId"
-          }
-        ]
-      }
-    },
-    "/iam/v1/players/{id}": {
-      "get": {
-        "operationId": "GetAuthPlayer",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthPlayerResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
-                      "object": "player",
-                      "createdAt": 1691658234,
-                      "linkedAccounts": [
-                        {
-                          "email": "jaume@openfort.xyz",
-                          "disabled": false,
-                          "updatedAt": 1691658234
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          }
-        },
-        "description": "Retrieves an authenticated player.\n\nPlayers have linked accounts and are authenticated with a provider.",
-        "summary": "Authenticated player.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "DeleteAuthPlayer",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthPlayerResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
-                      "object": "player",
-                      "createdAt": 1691658234,
-                      "linkedAccounts": [
-                        {
-                          "email": "jaume@openfort.xyz",
-                          "disabled": false,
-                          "updatedAt": 1691658234
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Error response."
-          },
-          "409": {
-            "description": "Error response."
-          }
-        },
-        "description": "Deletes a player auth object.\n\nIt will delete all linked accounts the player is authenticated with.\nIf the player has a linked embedded signer, it will be deleted as well.",
-        "summary": "Deletes a player auth object.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "user_project": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the unique player ID (starts with pla_).",
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          }
-        ]
-      }
-    },
-    "/iam/v1/verify": {
-      "get": {
-        "operationId": "VerifyAuthToken",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthSessionResponse"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "projectId": "pro_...",
-                      "expiration": 1234567890,
-                      "issuedAt": 1234567890,
-                      "issuer": "openfort.xyz",
-                      "sessionId": "...",
-                      "playerId": "pla_...",
-                      "livemode": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": ""
-          }
-        },
-        "description": "Verifies the token generated by Openfort Auth.",
-        "summary": "Verify auth token.",
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "security": [
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "Specifies the auth token.",
-            "in": "query",
-            "name": "token",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0SWQiOiJwcm9qZWN0XzQ4ZWViYTU3LTJjZDUtNDE1OS1hMmNiLTA1N2EyM2EzNWU2NSIsInVzZXJJZCI6InVzZXJfNDhlZWI1Ny0yY2Q1LTQxNTktYTJjYi0wNTdhMjNhMzVlNjUiLCJpYXQiOjE2MjY0NjY0NzcsImV4cCI6MTYyN"
           }
         ]
       }
@@ -10232,7 +6643,7 @@
         "description": "Get the jwks.json file.\n\nYou can use the jwks.json file to verify the signature of a JWT token issued by Openfort Auth.",
         "summary": "Get the jwks.json file.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [],
         "parameters": [
@@ -10284,7 +6695,7 @@
           }
         },
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -10295,74 +6706,6 @@
           }
         ],
         "parameters": []
-      }
-    },
-    "/iam/v1/authorize": {
-      "post": {
-        "operationId": "Authorize",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/AuthPlayerResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/AuthenticatedPlayerResponse"
-                    }
-                  ]
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "id": "pla_...",
-                      "object": "player",
-                      "createdAt": 1234567890,
-                      "linkedAccounts": [
-                        {
-                          "provider": "email",
-                          "email": "jaume@openfort.xyz",
-                          "disabled": false
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Player not found."
-          }
-        },
-        "tags": [
-          "AdminAuthentication"
-        ],
-        "security": [
-          {
-            "sk": []
-          },
-          {
-            "pk_guardian_gate": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AuthorizePlayerRequest"
-              }
-            }
-          }
-        }
       }
     },
     "/iam/v2/me": {
@@ -10405,8 +6748,9 @@
             "description": "Error response."
           }
         },
+        "summary": "Get user information.",
         "tags": [
-          "AuthenticationV2"
+          "auth v2"
         ],
         "security": [
           {
@@ -10461,7 +6805,7 @@
         },
         "summary": "Verify oauth token of a third party auth provider.",
         "tags": [
-          "AuthenticationV2"
+          "auth v2"
         ],
         "security": [
           {
@@ -10487,9 +6831,10 @@
     "/sign-in/social": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Sign in with a social provider",
+        "summary": "Sign in with a social provider.",
         "operationId": "socialSignIn",
         "security": [
           {
@@ -10757,15 +7102,25 @@
     "/get-session": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Get the current session",
+        "summary": "Get the current session.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "parameters": [
+          {
+            "name": "x-project-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project public key (format: pk_{mode}_{uuid}). Required for authentication but typically provided via middleware."
+          },
           {
             "name": "disableCookieCache",
             "in": "query",
@@ -10901,9 +7256,10 @@
     "/sign-out": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Sign out the current user",
+        "summary": "Sign out.",
         "security": [
           {
             "bearerAuth": []
@@ -11038,9 +7394,10 @@
     "/sign-up/email": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Sign up a user using email and password",
+        "summary": "Sign up with email and password.",
         "security": [
           {
             "bearerAuth": []
@@ -11228,9 +7585,10 @@
     "/sign-in/email": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Sign in with email and password",
+        "summary": "Sign in with email and password.",
         "security": [
           {
             "bearerAuth": []
@@ -11442,9 +7800,10 @@
     "/forget-password": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Send a password reset email to the user",
+        "summary": "Forget password.",
         "security": [
           {
             "bearerAuth": []
@@ -11596,9 +7955,10 @@
     "/reset-password": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Reset the password for a user",
+        "summary": "Reset password.",
         "security": [
           {
             "bearerAuth": []
@@ -11742,9 +8102,10 @@
     "/verify-email": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
-        "description": "Verify the email of the user",
+        "description": "Verify the email of the user.\nUsually this endpoint is called when user clicks 'Verify email' link from the letter.",
+        "summary": "Verify email.",
         "security": [
           {
             "bearerAuth": []
@@ -11935,9 +8296,10 @@
     "/send-verification-email": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Send a verification email to the user",
+        "summary": "Send verification email.",
         "security": [
           {
             "bearerAuth": []
@@ -12087,8 +8449,10 @@
     },
     "/change-email": {
       "post": {
+        "description": "Change user's email",
+        "summary": "Change email.",
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "security": [
           {
@@ -12266,9 +8630,10 @@
     "/change-password": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Change the password of the user",
+        "summary": "Change password.",
         "security": [
           {
             "bearerAuth": []
@@ -12427,327 +8792,13 @@
         }
       }
     },
-    "/update-user": {
-      "post": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Update the current user",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "The name of the user"
-                  },
-                  "image": {
-                    "type": "string",
-                    "description": "The image of the user"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "description": "Indicates if the update was successful"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
-    "/delete-user": {
-      "post": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Delete the user",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "callbackURL": {
-                    "type": "string",
-                    "description": "The callback URL to redirect to after the user is deleted",
-                    "nullable": true
-                  },
-                  "password": {
-                    "type": "string",
-                    "description": "The password of the user is required to delete the user",
-                    "nullable": true
-                  },
-                  "token": {
-                    "type": "string",
-                    "description": "The token to delete the user is required",
-                    "nullable": true
-                  }
-                },
-                "required": []
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User deletion processed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "description": "Indicates if the operation was successful"
-                    },
-                    "message": {
-                      "type": "string",
-                      "enum": [
-                        "User deleted",
-                        "Verification email sent"
-                      ],
-                      "description": "Status message of the deletion process"
-                    }
-                  },
-                  "required": [
-                    "success",
-                    "message"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
     "/reset-password/{token}": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Redirects the user to the callback URL with the token",
+        "summary": "Reset password callback.",
         "security": [
           {
             "bearerAuth": []
@@ -12890,9 +8941,10 @@
     "/request-password-reset": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Send a password reset email to the user",
+        "summary": "Request password reset.",
         "security": [
           {
             "bearerAuth": []
@@ -13044,9 +9096,10 @@
     "/list-sessions": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "List all active sessions for the user",
+        "summary": "List sessions.",
         "security": [
           {
             "bearerAuth": []
@@ -13169,9 +9222,10 @@
     "/revoke-session": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Revoke a single session",
+        "summary": "Revoke session.",
         "security": [
           {
             "bearerAuth": []
@@ -13318,9 +9372,10 @@
     "/revoke-sessions": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Revoke all sessions for the user",
+        "summary": "Revoke sessions.",
         "security": [
           {
             "bearerAuth": []
@@ -13459,9 +9514,10 @@
     "/revoke-other-sessions": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Revoke all other sessions for the user except the current one",
+        "summary": "Revoke other sessions.",
         "security": [
           {
             "bearerAuth": []
@@ -13600,9 +9656,10 @@
     "/link-social": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Link a social account to the user",
+        "summary": "Link social account.",
         "security": [
           {
             "bearerAuth": []
@@ -13814,9 +9871,10 @@
     "/list-accounts": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "List all accounts linked to the user",
+        "summary": "List lined accounts.",
         "security": [
           {
             "bearerAuth": []
@@ -13974,169 +10032,13 @@
         }
       }
     },
-    "/delete-user/callback": {
-      "get": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Callback to complete user deletion with verification token",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "token",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "description": "The token to verify the deletion request"
-            }
-          },
-          {
-            "name": "callbackURL",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "description": "The URL to redirect to after deletion",
-              "nullable": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User successfully deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "description": "Indicates if the deletion was successful"
-                    },
-                    "message": {
-                      "type": "string",
-                      "enum": [
-                        "User deleted"
-                      ],
-                      "description": "Confirmation message"
-                    }
-                  },
-                  "required": [
-                    "success",
-                    "message"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
     "/unlink-account": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Unlink an account",
+        "summary": "Unlink account.",
         "security": [
           {
             "bearerAuth": []
@@ -14278,9 +10180,10 @@
     "/refresh-token": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Refresh the access token using a refresh token",
+        "summary": "Refresh access token.",
         "security": [
           {
             "bearerAuth": []
@@ -14436,9 +10339,10 @@
     "/get-access-token": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Get a valid access token, doing a refresh if needed",
+        "summary": "Get access token.",
         "security": [
           {
             "bearerAuth": []
@@ -14594,9 +10498,10 @@
     "/account-info": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Get the account info provided by the provider",
+        "summary": "Get account info.",
         "security": [
           {
             "bearerAuth": []
@@ -14768,266 +10673,13 @@
         }
       }
     },
-    "/ok": {
-      "get": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Check if the API is working",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "API is working",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "description": "Indicates if the API is working"
-                    }
-                  },
-                  "required": [
-                    "ok"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
-    "/error": {
-      "get": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Displays an error page",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string",
-                  "description": "The HTML content of the error page"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
     "/sign-in/anonymous": {
       "post": {
         "tags": [
-          "Anonymous"
+          "auth v2"
         ],
         "description": "Sign in anonymously",
+        "summary": "Anonymous sign in.",
         "security": [
           {
             "bearerAuth": []
@@ -15160,9 +10812,10 @@
     "/sign-in/phone-number": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Use this endpoint to sign in with phone number",
+        "summary": "Sign in with phone.",
         "security": [
           {
             "bearerAuth": []
@@ -15309,9 +10962,10 @@
     "/phone-number/send-otp": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Use this endpoint to send OTP to phone number",
+        "summary": "Send OTP to phone number.",
         "security": [
           {
             "bearerAuth": []
@@ -15455,9 +11109,10 @@
     "/phone-number/verify": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Use this endpoint to verify phone number",
+        "summary": "Verify phone OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -15671,9 +11326,10 @@
     "/phone-number/forget-password": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Request OTP for password reset via phone number",
+        "summary": "Reset password reset with phone(forget password flow).",
         "security": [
           {
             "bearerAuth": []
@@ -15824,9 +11480,10 @@
     "/phone-number/request-password-reset": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Request OTP for password reset via phone number",
+        "summary": "Request password reset with phone.",
         "security": [
           {
             "bearerAuth": []
@@ -15976,9 +11633,10 @@
     "/phone-number/reset-password": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Reset password using phone number OTP",
+        "summary": "Reset password with phone OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16127,9 +11785,10 @@
     "/email-otp/send-verification-otp": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Send verification OTP",
+        "summary": "Request email verification with OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16279,9 +11938,10 @@
       "post": {
         "operationId": "checkVerificationOtp",
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Check if a verification OTP is valid",
+        "summary": "Check email OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16440,9 +12100,10 @@
     "/email-otp/verify-email": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Verify email with OTP",
+        "summary": "Verify email with OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16608,9 +12269,10 @@
     "/sign-in/email-otp": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Sign in with OTP",
+        "summary": "Sign in with email OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16767,9 +12429,10 @@
     "/forget-password/email-otp": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Send a password reset OTP to the user",
+        "summary": "Request password reset with email OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16914,9 +12577,10 @@
     "/email-otp/reset-password": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Reset user password with OTP",
+        "summary": "Reset password with email OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -17065,9 +12729,10 @@
     "/siwe/nonce": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
         "description": "Generate a nonce for Sign-In With Ethereum (SIWE) authentication",
+        "summary": "Initialize SIWE login.",
         "security": [
           {
             "bearerAuth": []
@@ -17180,9 +12845,10 @@
     "/siwe/verify": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
         "description": "Verify a signed SIWE message and authenticate the user",
+        "summary": "Login with SIWE.",
         "security": [
           {
             "bearerAuth": []
@@ -17347,9 +13013,9 @@
     "/link-siwe/nonce": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
-        "summary": "Get nonce for linking SIWE wallet",
+        "summary": "Initialize SIWE link.",
         "description": "Generates a cryptographically secure nonce for creating a SIWE message to link a wallet to the current authenticated user. Requires active session.",
         "security": [
           {
@@ -17463,9 +13129,9 @@
     "/link-siwe/verify": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
-        "summary": "Verify and link SIWE wallet",
+        "summary": "Verify and link SIWE wallet.",
         "description": "Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.",
         "security": [
           {
@@ -17651,9 +13317,9 @@
     "/link-siwe/list-wallets": {
       "get": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
-        "summary": "List linked wallets",
+        "summary": "List linked wallets.",
         "description": "Get all SIWE wallets linked to the authenticated user with full wallet metadata including primary status and chain information. Requires active session.",
         "security": [
           {
@@ -17747,9 +13413,9 @@
     "/link-siwe/unlink": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
-        "summary": "Unlink SIWE wallet",
+        "summary": "Unlink SIWE wallet.",
         "description": "Remove a linked wallet from the authenticated user account. If the wallet being unlinked is the primary wallet, another wallet will be automatically promoted to primary. Requires active session.",
         "security": [
           {
@@ -24218,6 +19884,193 @@
       "UserDeleteResponse": {
         "$ref": "#/components/schemas/BaseDeleteEntityResponse_EntityType.PLAYER_"
       },
+      "SmartAccountData": {
+        "properties": {
+          "implementationType": {
+            "type": "string"
+          },
+          "factoryAddress": {
+            "type": "string"
+          },
+          "implementationAddress": {
+            "type": "string"
+          },
+          "salt": {
+            "type": "string"
+          },
+          "deployedTx": {
+            "type": "string"
+          },
+          "deployedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "implementationType",
+          "implementationAddress",
+          "active"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PasskeyEnv": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "os": {
+            "type": "string"
+          },
+          "osVersion": {
+            "type": "string"
+          },
+          "device": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RecoveryMethodDetails": {
+        "properties": {
+          "passkeyId": {
+            "type": "string"
+          },
+          "passkeyEnv": {
+            "$ref": "#/components/schemas/PasskeyEnv"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PregenerateAccountResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "accountType": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "ownerAddress": {
+            "type": "string"
+          },
+          "chainType": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "updatedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "smartAccount": {
+            "$ref": "#/components/schemas/SmartAccountData"
+          },
+          "recoveryMethod": {
+            "type": "string"
+          },
+          "recoveryMethodDetails": {
+            "$ref": "#/components/schemas/RecoveryMethodDetails"
+          },
+          "recoveryShare": {
+            "type": "string",
+            "description": "The recovery share for the user's embedded signer.\nThis should be stored securely and provided to the user for account recovery."
+          }
+        },
+        "required": [
+          "id",
+          "user",
+          "accountType",
+          "address",
+          "chainType",
+          "createdAt",
+          "updatedAt",
+          "recoveryShare"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ThirdPartyOAuthProvider": {
+        "description": "Enum of the supporting third party auth providers.",
+        "enum": [
+          "accelbyte",
+          "firebase",
+          "lootlocker",
+          "playfab",
+          "supabase",
+          "custom",
+          "oidc",
+          "better-auth"
+        ],
+        "type": "string"
+      },
+      "PregenerateUserRequestV2": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user to pregenerate.\nRequired if thirdPartyUserId is not provided.",
+            "example": "user@example.com"
+          },
+          "thirdPartyUserId": {
+            "type": "string",
+            "description": "The third-party user ID from an external auth provider (Firebase, Supabase, etc.).\nRequired if email is not provided.",
+            "example": "firebase_uid_abc123"
+          },
+          "thirdPartyProvider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider",
+            "description": "The third-party auth provider. Required when thirdPartyUserId is provided.",
+            "example": "firebase"
+          },
+          "accountType": {
+            "type": "string",
+            "enum": [
+              "Externally Owned Account",
+              "Smart Account",
+              "Delegated Account"
+            ],
+            "description": "The type of account to pregenerate. \"Externally Owned Account\", \"Smart Account\" or \"Delegated Account\".\nDefaults to \"Smart Account\".",
+            "example": "Smart Account"
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type. \"EVM\" or \"SVM\". Defaults to \"EVM\".",
+            "example": "EVM"
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Required for Smart Account and Delegated Account types.\nMust be a [supported chain](/development/chains).",
+            "example": 137
+          },
+          "implementationType": {
+            "type": "string",
+            "description": "The implementation type for Smart Account or Delegated Account (e.g. Calibur, UpgradeableV6).\nRequired for Smart Account and Delegated Account types.",
+            "example": "Calibur"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
       "RecoverV2Response": {
         "properties": {
           "id": {
@@ -24341,66 +20194,568 @@
         "type": "object",
         "additionalProperties": false
       },
-      "SmartAccountData": {
+      "BackendWalletResponse": {
+        "description": "Backend wallet details response.",
         "properties": {
-          "implementationType": {
-            "type": "string"
+          "object": {
+            "type": "string",
+            "enum": [
+              "backendWallet"
+            ],
+            "nullable": false,
+            "description": "The type of object."
           },
-          "factoryAddress": {
-            "type": "string"
+          "id": {
+            "type": "string",
+            "description": "The wallet ID (starts with `acc_`).",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
           },
-          "implementationAddress": {
-            "type": "string"
+          "address": {
+            "type": "string",
+            "description": "The wallet address.",
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
           },
-          "salt": {
-            "type": "string"
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type the wallet is associated with.",
+            "example": "EVM"
           },
-          "deployedTx": {
-            "type": "string"
+          "name": {
+            "type": "string",
+            "description": "Optional name for the wallet.",
+            "example": "Treasury Wallet"
           },
-          "deployedAt": {
-            "type": "number",
-            "format": "double"
+          "createdAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Creation timestamp (Unix epoch seconds)."
           },
-          "active": {
-            "type": "boolean"
+          "updatedAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Last updated timestamp (Unix epoch seconds)."
           }
         },
         "required": [
-          "implementationType",
-          "implementationAddress",
-          "active"
+          "object",
+          "id",
+          "address",
+          "chainType",
+          "createdAt",
+          "updatedAt"
         ],
         "type": "object",
         "additionalProperties": false
       },
-      "PasskeyEnv": {
+      "BackendWalletListResponse": {
+        "description": "List of backend wallets response.",
         "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "url": {
+            "type": "string",
+            "description": "API endpoint URL."
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/BackendWalletResponse"
+            },
+            "type": "array",
+            "description": "List of backend wallets."
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Starting index."
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Ending index."
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Total number of wallets."
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BackendWalletListQueries": {
+        "description": "Query parameters for listing backend wallets.",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of wallets to return (default: 10, max: 100).",
+            "example": 10
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of wallets to skip (for pagination).",
+            "example": 0
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "Filter by chain type.",
+            "example": "EVM"
+          },
+          "address": {
+            "type": "string",
+            "description": "Filter by wallet address.",
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+          },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Filter by wallet name.",
+            "example": "Treasury Wallet"
           },
-          "os": {
-            "type": "string"
-          },
-          "osVersion": {
-            "type": "string"
-          },
-          "device": {
-            "type": "string"
+          "wallet": {
+            "type": "string",
+            "description": "Filter by associated wallet ID (starts with `pla_`).",
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
           }
         },
         "type": "object",
         "additionalProperties": false
       },
-      "RecoveryMethodDetails": {
+      "CreateBackendWalletResponse": {
+        "description": "Response from creating a new backend wallet account.",
         "properties": {
-          "passkeyId": {
-            "type": "string"
+          "object": {
+            "type": "string",
+            "enum": [
+              "account"
+            ],
+            "nullable": false,
+            "description": "The type of object."
           },
-          "passkeyEnv": {
-            "$ref": "#/components/schemas/PasskeyEnv"
+          "id": {
+            "type": "string",
+            "description": "The created account ID (starts with `acc_`).",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "address": {
+            "type": "string",
+            "description": "The wallet address generated for this account.",
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type the wallet is associated with.",
+            "example": "EVM"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Creation timestamp (Unix epoch seconds)."
           }
         },
+        "required": [
+          "object",
+          "id",
+          "address",
+          "chainType",
+          "createdAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateBackendWalletRequest": {
+        "description": "Request to create a new backend wallet account.",
+        "properties": {
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type for the new wallet.",
+            "example": "EVM"
+          },
+          "wallet": {
+            "type": "string",
+            "description": "The wallet ID to associate with this wallet (starts with `pla_`).",
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional name for the wallet.",
+            "example": "Treasury Wallet"
+          }
+        },
+        "required": [
+          "chainType"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "DeleteBackendWalletResponse": {
+        "description": "Response from deleting a backend wallet.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "backendWallet"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "id": {
+            "type": "string",
+            "description": "The deleted wallet ID.",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Whether the wallet was deleted."
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "deleted"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SignResponse": {
+        "description": "Response from signing data via backend wallet.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "signature"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "account": {
+            "type": "string",
+            "description": "The account ID that signed the data (starts with `acc_`).",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "signature": {
+            "type": "string",
+            "description": "The signature bytes (hex-encoded).",
+            "example": "0x1234567890abcdef..."
+          }
+        },
+        "required": [
+          "object",
+          "account",
+          "signature"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SignRequest": {
+        "description": "Request to sign data via backend wallet.",
+        "properties": {
+          "data": {
+            "type": "string",
+            "description": "The data to sign (hex-encoded transaction data or message hash).",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ExportPrivateKeyResponse": {
+        "description": "Response from exporting a private key with E2E encryption.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "exportedKey"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "encryptedPrivateKey": {
+            "type": "string",
+            "description": "The private key encrypted with RSA-OAEP SHA-256 using your ephemeral public key (base64-encoded).\nDecrypt using your ephemeral RSA private key.",
+            "example": "base64_encrypted_data..."
+          }
+        },
+        "required": [
+          "object",
+          "encryptedPrivateKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ExportPrivateKeyRequest": {
+        "description": "Request to export private key with E2E encryption.",
+        "properties": {
+          "encryptionKey": {
+            "type": "string",
+            "description": "Client's ephemeral RSA-4096 public key for end-to-end encryption (base64 SPKI DER format).\nThe backend wallet will encrypt the private key using RSA-OAEP SHA-256.",
+            "example": "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA..."
+          }
+        },
+        "required": [
+          "encryptionKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ImportPrivateKeyResponse": {
+        "description": "Response from importing a private key with E2E encryption.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "account"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "id": {
+            "type": "string",
+            "description": "The created account ID (starts with `acc_`).",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "address": {
+            "type": "string",
+            "description": "The wallet address derived from the imported private key.",
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type the wallet is associated with.",
+            "example": "EVM"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Creation timestamp (Unix epoch seconds)."
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "address",
+          "createdAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ImportPrivateKeyRequest": {
+        "description": "Request to import private key with E2E encryption.",
+        "properties": {
+          "encryptedPrivateKey": {
+            "type": "string",
+            "description": "The private key encrypted with RSA-OAEP SHA-256 using the server's static import public key.\nObtain the server's import public key out-of-band (e.g., from SDK or documentation).",
+            "example": "base64_encrypted_data..."
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type for the imported wallet.",
+            "example": "EVM"
+          },
+          "wallet": {
+            "type": "string",
+            "description": "The wallet ID to associate with this wallet (starts with `pla_`).",
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional name for the imported wallet.",
+            "example": "Treasury Wallet"
+          }
+        },
+        "required": [
+          "encryptedPrivateKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RegisterWalletSecretResponse": {
+        "description": "Response from registering a new wallet secret.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "walletSecret"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "keyId": {
+            "type": "string",
+            "description": "The key ID for the registered secret.",
+            "example": "ws_1234567890"
+          },
+          "registeredAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Timestamp when the secret was registered (Unix epoch seconds)."
+          }
+        },
+        "required": [
+          "object",
+          "keyId",
+          "registeredAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RegisterWalletSecretRequest": {
+        "description": "Request to register a new wallet secret (authentication key).",
+        "properties": {
+          "publicKey": {
+            "type": "string",
+            "description": "ECDSA P-256 public key for wallet authentication (PEM or raw hex format).\nThis will be used to verify X-Wallet-Auth JWT signatures.",
+            "example": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE..."
+          },
+          "keyId": {
+            "type": "string",
+            "description": "Key identifier for the secret.\nUsed to identify this key in X-Wallet-Auth JWT headers.",
+            "example": "ws_1234567890"
+          }
+        },
+        "required": [
+          "publicKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RevokeWalletSecretResponse": {
+        "description": "Response from revoking a wallet secret.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "walletSecretRevocation"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "keyId": {
+            "type": "string",
+            "description": "The key ID of the revoked secret.",
+            "example": "ws_1234567890"
+          },
+          "revoked": {
+            "type": "boolean",
+            "description": "Whether the secret was successfully revoked."
+          },
+          "revokedAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Timestamp when the secret was revoked (Unix epoch seconds)."
+          }
+        },
+        "required": [
+          "object",
+          "keyId",
+          "revoked",
+          "revokedAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RevokeWalletSecretRequest": {
+        "description": "Request to revoke a wallet secret (authentication key).",
+        "properties": {
+          "keyId": {
+            "type": "string",
+            "description": "Key identifier of the secret to revoke.",
+            "example": "ws_1234567890"
+          }
+        },
+        "required": [
+          "keyId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RotateWalletSecretResponse": {
+        "description": "Response from rotating a wallet secret.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "walletSecretRotation"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the rotation was successful."
+          },
+          "rotatedAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Timestamp when the rotation occurred (Unix epoch seconds)."
+          }
+        },
+        "required": [
+          "object",
+          "success",
+          "rotatedAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RotateWalletSecretRequest": {
+        "description": "Request to rotate wallet secret (authentication key).",
+        "properties": {
+          "newSecretPublicKey": {
+            "type": "string",
+            "description": "New ECDSA P-256 public key for wallet authentication.\nThis will replace the current wallet secret used for X-Wallet-Auth JWT signing.",
+            "example": "04abc123def456..."
+          },
+          "newKeyId": {
+            "type": "string",
+            "description": "Key identifier for the new secret.\nUsed to identify this key in X-Wallet-Auth JWT headers.",
+            "example": "ws_1234567890"
+          }
+        },
+        "required": [
+          "newSecretPublicKey"
+        ],
         "type": "object",
         "additionalProperties": false
       },
@@ -26513,20 +22868,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "ThirdPartyOAuthProvider": {
-        "description": "Enum of the supporting third party auth providers.",
-        "enum": [
-          "accelbyte",
-          "firebase",
-          "lootlocker",
-          "playfab",
-          "supabase",
-          "custom",
-          "oidc",
-          "better-auth"
-        ],
-        "type": "string"
-      },
       "ThirdPartyLinkRequest": {
         "properties": {
           "provider": {
@@ -28163,6 +24504,7 @@
           }
         },
         "required": [
+          "id",
           "name",
           "email",
           "createdAt",
@@ -28381,5 +24723,45 @@
         "scheme": "bearer"
       }
     }
-  }
+  },
+  "x-tagGroups": [
+    {
+      "name": "Users",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "name": "Accounts",
+      "tags": [
+        "accs v1",
+        "accs v2"
+      ]
+    },
+    {
+      "name": "Transactions",
+      "tags": [
+        "TransactionIntents"
+      ]
+    },
+    {
+      "name": "Authentication",
+      "tags": [
+        "auth v1",
+        "auth v2"
+      ]
+    },
+    {
+      "name": "Session keys",
+      "tags": [
+        "Sessions"
+      ]
+    },
+    {
+      "name": "Sponsor transactions & Models",
+      "tags": [
+        "Policies"
+      ]
+    }
+  ]
 }

@@ -25,7 +25,7 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    'id'?: string;
+    'id': string;
     /**
      * 
      * @type {string}

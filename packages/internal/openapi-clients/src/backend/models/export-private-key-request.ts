@@ -15,16 +15,16 @@
 
 
 /**
- * 
+ * Request to export private key with E2E encryption.
  * @export
- * @interface UpdateUserPost200Response
+ * @interface ExportPrivateKeyRequest
  */
-export interface UpdateUserPost200Response {
+export interface ExportPrivateKeyRequest {
     /**
-     * Indicates if the update was successful
-     * @type {boolean}
-     * @memberof UpdateUserPost200Response
+     * Client\'s ephemeral RSA-4096 public key for end-to-end encryption (base64 SPKI DER format). The backend wallet will encrypt the private key using RSA-OAEP SHA-256.
+     * @type {string}
+     * @memberof ExportPrivateKeyRequest
      */
-    'status'?: boolean;
+    'encryptionKey': string;
 }
 
