@@ -1,12 +1,12 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type {
-  AuthV2ApiThirdPartyV2Request as AuthenticationV2ApiThirdPartyV2Request,
-  LinkSocialPostRequest as DefaultApiLinkSocialPostRequest,
-  SocialSignInRequest as DefaultApiSocialSignInRequest,
+  AuthV2ApiThirdPartyV2Request,
   GetSessionGet200Response,
+  LinkSocialPostRequest,
   AuthV2ApiLinkSiweNoncePostRequest as SIWEApiLinkSiweNoncePostRequest,
   AuthV2ApiSiweNoncePostRequest as SIWEApiSiweNoncePostRequest,
   AuthV2ApiSiweVerifyPostRequest as SIWEApiSiweVerifyPostRequest,
+  SocialSignInRequest,
 } from '@openfort/openapi-clients/dist/backend'
 import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
@@ -188,7 +188,7 @@ export class AuthManager {
   }
 
   public async loginWithIdToken(provider: OAuthProvider, token: string): Promise<AuthResponse> {
-    const request: { socialSignInRequest: DefaultApiSocialSignInRequest } = {
+    const request: { socialSignInRequest: SocialSignInRequest } = {
       socialSignInRequest: {
         provider: provider,
         idToken: {
@@ -213,7 +213,7 @@ export class AuthManager {
   }
 
   public async authenticateThirdParty(provider: ThirdPartyAuthProvider, token: string): Promise<{ userId: string }> {
-    const request: AuthenticationV2ApiThirdPartyV2Request = {
+    const request: AuthV2ApiThirdPartyV2Request = {
       thirdPartyOAuthRequest: {
         provider,
         token,
@@ -532,7 +532,7 @@ export class AuthManager {
     options?: InitializeOAuthOptions
   ): Promise<string> {
     const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
-    const request: { linkSocialPostRequest: DefaultApiLinkSocialPostRequest } = {
+    const request: { linkSocialPostRequest: LinkSocialPostRequest } = {
       linkSocialPostRequest: {
         provider,
         callbackURL: redirectTo,
