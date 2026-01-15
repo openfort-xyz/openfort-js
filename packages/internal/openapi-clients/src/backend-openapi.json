@@ -1774,6 +1774,510 @@
         "parameters": []
       }
     },
+    "/v1/settings/developer_accounts": {
+      "get": {
+        "operationId": "GetDeveloperAccounts",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperAccountListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "url": "/v1/settings/developer_accounts",
+                      "object": "list",
+                      "data": [
+                        {
+                          "id": "dac_00000000-0000-0000-0000-000000000000",
+                          "address": "0x0000000000000000000000000000000000000000",
+                          "name": "Escrow Account",
+                          "custodial": true,
+                          "createdAt": 1609459200,
+                          "object": "developerAccount",
+                          "transactionIntents": [
+                            {
+                              "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "dac_88888888-8888-8888-8888-888888888888",
+                          "address": "0x8888888888888888888888888888888888888888",
+                          "name": "Escrow Account 2",
+                          "custodial": true,
+                          "createdAt": 1609459200,
+                          "object": "developerAccount"
+                        }
+                      ],
+                      "start": 0,
+                      "end": 2,
+                      "total": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieve the list of the developer accounts for the current project.\n\nReturns the latest 10 transaction intents that were created with each developer account.\n\nBy default, a maximum of 10 accounts are shown per page.",
+        "summary": "List of developer accounts.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          },
+          {
+            "description": "Specifies the fields to expand in the response.",
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DeveloperAccountResponseExpandable"
+              }
+            },
+            "example": [
+              "transactionIntents"
+            ]
+          },
+          {
+            "description": "Specifies whether to include deleted dev accounts.",
+            "in": "query",
+            "name": "deleted",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": false
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreateDeveloperAccount",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperAccountResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "dac_00000000-0000-0000-0000-000000000000",
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "name": "Escrow Account",
+                      "custodial": true,
+                      "createdAt": 1609459200,
+                      "object": "developerAccount",
+                      "transactionIntents": [
+                        {
+                          "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Create or add a developer account.\nTo add your own external account, add a signature and the address of the account. This verified account can then be used as a verified depositor",
+        "summary": "Create a developer account.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDeveloperAccountCreateRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/settings/developer_accounts/{id}/sign_payload": {
+      "post": {
+        "operationId": "SignPayloadDeveloperAccount",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignPayloadResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.",
+        "summary": "Sign a given payload",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique developer account ID (starts with dac_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "dac_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignPayloadRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/settings/developer_accounts/{id}": {
+      "post": {
+        "operationId": "UpdateDeveloperAccount",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperAccountResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "dac_00000000-0000-0000-0000-000000000000",
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "name": "Escrow Account",
+                      "custodial": true,
+                      "createdAt": 1609459200,
+                      "object": "developerAccount",
+                      "transactionIntents": [
+                        {
+                          "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Update a developer account.",
+        "summary": "Update a developer account.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDeveloperAccountCreateRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "GetDeveloperAccount",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperAccountResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "dac_00000000-0000-0000-0000-000000000000",
+                      "address": "0x0000000000000000000000000000000000000000",
+                      "name": "Escrow Account",
+                      "custodial": true,
+                      "createdAt": 1609459200,
+                      "object": "developerAccount",
+                      "transactionIntents": [
+                        {
+                          "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieve a developer account.\n\nReturns the latest 10 transaction intents that were created with each developer account.",
+        "summary": "Get existing developer account.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique developer account ID (starts with dac_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "dac_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
+          },
+          {
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "schema": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DeveloperAccountResponseExpandable"
+              }
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteDeveloperAccount",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperAccountDeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "dac_00000000-0000-0000-0000-000000000000",
+                      "object": "developerAccount",
+                      "deleted": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Delete a developer account from the current project.",
+        "summary": "Delete a developer account.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies a unique developer account (starts with dac_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "dac_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
+          }
+        ]
+      }
+    },
+    "/v1/settings/developer_accounts/message_to_sign": {
+      "get": {
+        "operationId": "GetVerificationPayload",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperAccountGetMessageResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "message": "I want to register 0x0000000000000000000000000000000000000000 to the project 33333333-3333-3333-3333-333333333333 for mainnets on 20231231",
+                      "address": "0x0000000000000000000000000000000000000000"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Generate message, which should be signed by the account your want to add as a developer account.",
+        "summary": "Generate message to sign",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the address",
+            "in": "query",
+            "name": "address",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+          }
+        ]
+      }
+    },
     "/v1/sessions": {
       "get": {
         "operationId": "GetPlayerSessions",
@@ -2274,6 +2778,348 @@
             "example": [
               "transactionIntents"
             ]
+          }
+        ]
+      }
+    },
+    "/v1/policy_rules": {
+      "get": {
+        "operationId": "GetPolicyRules",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyRuleListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/v1/policy_rules",
+                      "start": 0,
+                      "end": 1,
+                      "total": 1,
+                      "data": [
+                        {
+                          "createdAt": 1689869074,
+                          "id": "afu_...",
+                          "wildcard": false,
+                          "object": "policyRule",
+                          "type": "contract_functions",
+                          "contract": {
+                            "id": "con_..."
+                          },
+                          "functionName": "mint"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Returns a list of policy rules of a policy.\n\nThe policy rules are returned sorted by creation date, with the most recently created policy rules appearing first.\n\nBy default, a maximum of 10 policy rules are shown per page.",
+        "summary": "List policy rules of a policy.",
+        "tags": [
+          "PolicyRules"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          },
+          {
+            "description": "Specifies the fields to expand in the response.",
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "contract"
+                ],
+                "nullable": false
+              }
+            }
+          },
+          {
+            "description": "Specifies the unique policy ID (starts with pol_).",
+            "in": "query",
+            "name": "policy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreatePolicyRule",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyRuleResponse"
+                },
+                "examples": {
+                  "Limit contract sponsorship": {
+                    "value": {
+                      "createdAt": 1689869074,
+                      "id": "afu_...",
+                      "wildcard": false,
+                      "object": "policyRule",
+                      "type": "contract_functions",
+                      "contract": {
+                        "id": "con_..."
+                      },
+                      "functionName": "mint"
+                    }
+                  },
+                  "Limit number of sponsored txns": {
+                    "value": {
+                      "createdAt": 1689869074,
+                      "id": "afu_...",
+                      "object": "policyRule",
+                      "type": "rate_limit",
+                      "functionName": "count_per_interval",
+                      "countLimit": 100,
+                      "timeIntervalType": "day",
+                      "timeIntervalValue": 1
+                    }
+                  },
+                  "Limit gas sponsored in interval": {
+                    "value": {
+                      "createdAt": 1689869074,
+                      "id": "afu_...",
+                      "object": "policyRule",
+                      "type": "rate_limit",
+                      "functionName": "gas_per_interval",
+                      "gasLimit": "1000000000000000000",
+                      "timeIntervalType": "day",
+                      "timeIntervalValue": 1
+                    }
+                  },
+                  "Limit gas spent per txn": {
+                    "value": {
+                      "createdAt": 1689869074,
+                      "id": "afu_...",
+                      "object": "policyRule",
+                      "type": "rate_limit",
+                      "functionName": "gas_per_transaction",
+                      "gasLimit": "1000000000000000000"
+                    }
+                  },
+                  "Allow self account sponsorship": {
+                    "value": {
+                      "createdAt": 1689869074,
+                      "id": "afu_...",
+                      "object": "policyRule",
+                      "type": "account_functions"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "summary": "Create a policy rule object.",
+        "tags": [
+          "PolicyRules"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePolicyRuleRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/policy_rules/{id}": {
+      "post": {
+        "operationId": "UpdatePolicyRule",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyRuleResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "createdAt": 1689869074,
+                      "id": "afu_...",
+                      "object": "policyRule",
+                      "type": "rate_limit",
+                      "functionName": "count_per_interval",
+                      "countLimit": 100,
+                      "timeIntervalType": "day",
+                      "timeIntervalValue": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "summary": "Update a policy rule object.",
+        "tags": [
+          "PolicyRules"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique policy rule ID (starts with afu_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "afu_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePolicyRuleRequest"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeletePolicyRule",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyRuleDeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "afu_...",
+                      "object": "policyRule",
+                      "deleted": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "summary": "Deletes a policy rule object.",
+        "tags": [
+          "PolicyRules"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique policy rule ID (starts with afu_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "afu_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
           }
         ]
       }
@@ -3324,6 +4170,1173 @@
         }
       }
     },
+    "/v1/players": {
+      "get": {
+        "operationId": "GetPlayers",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/v1/players",
+                      "start": 0,
+                      "end": 1,
+                      "total": 1,
+                      "data": [
+                        {
+                          "id": "pla_00000000-0000-0000-0000-000000000000",
+                          "createdAt": 1689869074,
+                          "object": "player",
+                          "description": "John Smith",
+                          "metadata": {
+                            "firstName": "John",
+                            "lastName": "Smith"
+                          },
+                          "name": "My Player",
+                          "accounts": [
+                            {
+                              "id": "acc_8888888888-8888-8888-8888-888888888888"
+                            }
+                          ],
+                          "transactionIntents": [
+                            {
+                              "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "By default, a maximum of 10 players are shown.\n\nReturns the latest 10 transaction intents that were created with each player.",
+        "summary": "List players.",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          },
+          {
+            "description": "Specifies the fields to expand in the response.",
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PlayerResponseExpandable"
+              }
+            }
+          },
+          {
+            "description": "Filter by player name.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "John"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreatePlayer",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_00000000-0000-0000-0000-000000000000",
+                      "createdAt": 1689869074,
+                      "object": "player",
+                      "description": "John Smith",
+                      "metadata": {
+                        "firstName": "John",
+                        "lastName": "Smith"
+                      },
+                      "name": "My Player",
+                      "accounts": [
+                        {
+                          "id": "acc_8888888888-8888-8888-8888-888888888888"
+                        }
+                      ],
+                      "transactionIntents": [
+                        {
+                          "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Creates a player.",
+        "summary": "Create a player object.",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerCreateRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/players/{id}": {
+      "get": {
+        "operationId": "GetPlayer",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_00000000-0000-0000-0000-000000000000",
+                      "createdAt": 1689869074,
+                      "object": "player",
+                      "description": "John Smith",
+                      "metadata": {
+                        "firstName": "John",
+                        "lastName": "Smith"
+                      },
+                      "name": "My Player",
+                      "accounts": [
+                        {
+                          "id": "acc_8888888888-8888-8888-8888-888888888888"
+                        }
+                      ],
+                      "transactionIntents": [
+                        {
+                          "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieves the details of a player that has previously been created.\n\nReturns the latest 10 transaction intents that were created with this player.",
+        "summary": "Retrieves the details of an existing player.",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique player ID (starts with pla_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          },
+          {
+            "description": "Specifies the expandable fields.",
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "schema": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PlayerResponseExpandable"
+              }
+            },
+            "example": [
+              "accounts"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "operationId": "UpdatePlayer",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_00000000-0000-0000-0000-000000000000",
+                      "createdAt": 1689869074,
+                      "object": "player",
+                      "description": "John Smith",
+                      "metadata": {
+                        "firstName": "John",
+                        "lastName": "Smith"
+                      },
+                      "name": "My Player",
+                      "accounts": [
+                        {
+                          "id": "acc_8888888888-8888-8888-8888-888888888888"
+                        }
+                      ],
+                      "transactionIntents": [
+                        {
+                          "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Updates the specified player by setting the values of the parameters passed.",
+        "summary": "Updates a player object.",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique player ID (starts with pla_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerUpdateRequest"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeletePlayer",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerDeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_00000000-0000-0000-0000-000000000000",
+                      "object": "player",
+                      "deleted": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "It will delete all linked accounts the player is authenticated with.\nIf the player has a linked embedded signer, it will be deleted as well.",
+        "summary": "Deletes a player object.",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique player ID (starts with pla_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          }
+        ]
+      }
+    },
+    "/v1/players/{id}/request_transfer_ownership": {
+      "post": {
+        "operationId": "RequestTransferAccountOwnership",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionIntentResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
+                      "createdAt": 1689869074,
+                      "object": "transactionIntent",
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
+                      },
+                      "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
+                      "updatedAt": 1689869074,
+                      "policy": {
+                        "id": "pol_..."
+                      },
+                      "player": {
+                        "id": "pla_..."
+                      },
+                      "account": {
+                        "id": "acc_..."
+                      },
+                      "response": {
+                        "createdAt": 1689869074,
+                        "logs": [
+                          {
+                            "removed": false,
+                            "transactionIndex": 0,
+                            "blockNumber": 44904492,
+                            "transactionHash": "0x25d3...005c",
+                            "address": "0x5FF1...2789",
+                            "topics": [
+                              "0xbb47...f972"
+                            ],
+                            "data": "0x",
+                            "logIndex": 0,
+                            "blockHash": "0x8a69...6d59"
+                          }
+                        ],
+                        "blockNumber": 8789286,
+                        "transactionHash": "0x25d3...005c",
+                        "to": "0x0576...1B57",
+                        "gasUsed": "336730",
+                        "status": 1
+                      },
+                      "interactions": [
+                        {
+                          "functionName": "mint",
+                          "contract": "con_...",
+                          "functionArgs": [
+                            "0x63B7...484f"
+                          ]
+                        }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "This endpoint allows you to perform a request to change the owner of an account.\nTo perform an update on the owner of an account, first you must provide a new owner address.\nOnce requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.",
+        "summary": "Request transfer ownership of a player.",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique player ID (starts with pla_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerTransferOwnershipRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/players/{id}/cancel_transfer_ownership": {
+      "post": {
+        "operationId": "CancelTransferAccountOwnership",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionIntentResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
+                      "createdAt": 1689869074,
+                      "object": "transactionIntent",
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
+                      },
+                      "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
+                      "updatedAt": 1689869074,
+                      "policy": {
+                        "id": "pol_..."
+                      },
+                      "player": {
+                        "id": "pla_..."
+                      },
+                      "account": {
+                        "id": "acc_..."
+                      },
+                      "response": {
+                        "createdAt": 1689869074,
+                        "logs": [
+                          {
+                            "removed": false,
+                            "transactionIndex": 0,
+                            "blockNumber": 44904492,
+                            "transactionHash": "0x25d3...005c",
+                            "address": "0x5FF1...2789",
+                            "topics": [
+                              "0xbb47...f972"
+                            ],
+                            "data": "0x",
+                            "logIndex": 0,
+                            "blockHash": "0x8a69...6d59"
+                          }
+                        ],
+                        "blockNumber": 8789286,
+                        "transactionHash": "0x25d3...005c",
+                        "to": "0x0576...1B57",
+                        "gasUsed": "336730",
+                        "status": 1
+                      },
+                      "interactions": [
+                        {
+                          "functionName": "mint",
+                          "contract": "con_...",
+                          "functionArgs": [
+                            "0x63B7...484f"
+                          ]
+                        }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "This endpoint allows you to cancel a pending transfer of ownership.",
+        "summary": "Cancel request to transfer ownership of a player.",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerCancelTransferOwnershipRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/paymasters": {
+      "post": {
+        "operationId": "CreatePaymaster",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePaymasterResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pay_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "paymaster",
+                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
+                      "url": "https://rpc.mypaymaster.xyz",
+                      "context": {
+                        "key": "value"
+                      },
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Create a new paymaster.\n\nThis object represents the paymaster that will be used to pay the gas fees of the transactions.",
+        "summary": "Create a new paymaster.",
+        "tags": [
+          "Paymaster"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymasterRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "ListPaymasters",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CreatePaymasterResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Returns a list of paymasters.\n\nThis object represents the paymasters that will be used to pay the gas fees for the transactions.\n\nBy default, a maximum of 10 paymasters are shown per page.",
+        "summary": "List paymasters.",
+        "tags": [
+          "Paymaster"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/paymasters/{id}": {
+      "post": {
+        "operationId": "UpdatePaymaster",
+        "responses": {
+          "201": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePaymasterResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pay_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "paymaster",
+                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
+                      "url": "https://rpc.mypaymaster.xyz",
+                      "context": {
+                        "key": "value"
+                      },
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Update a paymaster.\n\nThis object represents the paymaster that will be used to pay the gas fees of the transactions.",
+        "summary": "Update a paymaster.",
+        "tags": [
+          "Paymaster"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymasterRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "GetPaymaster",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePaymasterResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pay_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "paymaster",
+                      "address": "0x7b9f89cf2c18540f4beef2a250d7a472b",
+                      "url": "https://rpc.mypaymaster.xyz",
+                      "context": {
+                        "key": "value"
+                      },
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Error response."
+          }
+        },
+        "description": "Returns the paymaster with the given id.\n\nThis object represents the paymaster that will be used to pay the gas fees for the transactions.",
+        "summary": "Get paymaster by id.",
+        "tags": [
+          "Paymaster"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "DeletePaymaster",
+        "responses": {
+          "204": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymasterDeleteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Error response."
+          }
+        },
+        "description": "Delete the paymaster with the given id.\n\nThis object represents the paymaster that will be used to pay the gas fees for the transactions.",
+        "summary": "Delete paymaster by id.",
+        "tags": [
+          "Paymaster"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/onramp/sessions": {
+      "post": {
+        "operationId": "createOnrampSession",
+        "responses": {
+          "200": {
+            "description": "Onramp session created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "description": "Creates an onramp session for the selected provider.\n\nThe provider is selected via the `provider` field. All request and response formats are unified\nand provider-agnostic. The service layer handles translation between the common format and\nprovider-specific APIs.",
+        "summary": "Create onramp session",
+        "tags": [
+          "Onramp"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnrampSessionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/onramp/quotes": {
+      "post": {
+        "operationId": "getOnrampQuote",
+        "responses": {
+          "200": {
+            "description": "Onramp quote(s) retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampQuotesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        },
+        "description": "Retrieves onramp quote(s) without creating an actual transaction.\n\nIf provider is specified, returns a single quote for that provider.\nIf provider is not specified, returns quotes from all available providers.\n\nAll request and response formats are unified and provider-agnostic.",
+        "summary": "Get onramp quote(s)",
+        "tags": [
+          "Onramp"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnrampQuoteRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logs": {
+      "get": {
+        "operationId": "GetProjectLogs",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectLogs"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "summary": "Get logs for a project.",
+        "tags": [
+          "Logs"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": ".",
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "description": "Specifies the unique project ID.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/logs/webhook": {
+      "get": {
+        "operationId": "GetWebhookLogsByProjectId",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectLogs"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "summary": "Get webhook logs for a project.",
+        "tags": [
+          "Logs"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": []
+      }
+    },
     "/v1/graphql": {
       "post": {
         "operationId": "Query",
@@ -3646,6 +5659,1008 @@
             "schema": {
               "type": "string"
             }
+          }
+        ]
+      }
+    },
+    "/v1/exchange": {
+      "post": {
+        "operationId": "CreateSwap",
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionIntentResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
+                      "createdAt": 1689869074,
+                      "object": "transactionIntent",
+                      "details": {
+                        "userOperationHash": "0x25d3...005c",
+                        "userOperation": {
+                          "sender": "0x48930Cd730652bf0B18Ef8c80cD0Fa1Cc72A233E",
+                          "nonce": "0x2",
+                          "initCode": "0x",
+                          "callData": "0xb61d...0000",
+                          "callGasLimit": "0x27863",
+                          "verificationGasLimit": "0x16001",
+                          "preVerificationGas": "0xb818",
+                          "maxFeePerGas": "0x62590091",
+                          "maxPriorityFeePerGas": "0x62590091",
+                          "paymasterAndData": "0x3210...b51c",
+                          "signature": "0x6202...3d1b"
+                        }
+                      },
+                      "chainId": 80002,
+                      "abstractionType": "accountAbstractionV6",
+                      "updatedAt": 1689869074,
+                      "policy": {
+                        "id": "pol_..."
+                      },
+                      "player": {
+                        "id": "pla_..."
+                      },
+                      "account": {
+                        "id": "acc_..."
+                      },
+                      "response": {
+                        "createdAt": 1689869074,
+                        "logs": [
+                          {
+                            "removed": false,
+                            "transactionIndex": 0,
+                            "blockNumber": 44904492,
+                            "transactionHash": "0x25d3...005c",
+                            "address": "0x5FF1...2789",
+                            "topics": [
+                              "0xbb47...f972"
+                            ],
+                            "data": "0x",
+                            "logIndex": 0,
+                            "blockHash": "0x8a69...6d59"
+                          }
+                        ],
+                        "blockNumber": 8789286,
+                        "transactionHash": "0x25d3...005c",
+                        "to": "0x0576...1B57",
+                        "gasUsed": "336730",
+                        "status": 1
+                      },
+                      "interactions": [
+                        {
+                          "functionName": "mint",
+                          "contract": "con_...",
+                          "functionArgs": [
+                            "0x63B7...484f"
+                          ]
+                        }
+                      ],
+                      "transitions": [
+                        {
+                          "fromStatus": "none",
+                          "toStatus": "new",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "new",
+                          "toStatus": "sent",
+                          "at": 1750154762
+                        },
+                        {
+                          "fromStatus": "sent",
+                          "toStatus": "indexed",
+                          "at": 1750154762
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Creates token swap.",
+        "summary": "Create token swap.",
+        "tags": [
+          "Exchange"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExchangeRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exchange/quote": {
+      "post": {
+        "operationId": "QuoteSwap",
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteExchangeResult"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "amount": {
+                        "token": {
+                          "address": "0x008518e76FAD03f592Bbb7E394C762d5FD54cb97",
+                          "chainId": 4337,
+                          "decimals": 18,
+                          "name": "TOKEN",
+                          "symbol": "TKN"
+                        },
+                        "value": "1000000000000000000"
+                      },
+                      "slippage": 0.5,
+                      "fees": [
+                        {
+                          "recipient": "0x008518e76FAD03f592Bbb7E394C762d5FD54cb97",
+                          "basisPoints": 100,
+                          "amount": {
+                            "token": {
+                              "address": "0x008518e76FAD03f592Bbb7E394C762d5FD54cb97",
+                              "chainId": 4337,
+                              "decimals": 18,
+                              "name": "TOKEN",
+                              "symbol": "TKN"
+                            },
+                            "value": "1000000000000000000"
+                          }
+                        }
+                      ],
+                      "amountWithMaxSlippage": {
+                        "token": {
+                          "address": "0x008518e76FAD03f592Bbb7E394C762d5FD54cb97",
+                          "chainId": 4337,
+                          "decimals": 18,
+                          "name": "TOKEN",
+                          "symbol": "TKN"
+                        },
+                        "value": "1000000000000000000"
+                      },
+                      "estimatedTXGasFee": "1000000000000000000",
+                      "estimatedTXGasFeeToken": "12000",
+                      "estimatedTXGasFeeUSD": "1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Quote token swap.",
+        "summary": "Quote token swap.",
+        "tags": [
+          "Exchange"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExchangeRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events": {
+      "get": {
+        "operationId": "GetEvents",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/v1/events",
+                      "start": 0,
+                      "end": 1,
+                      "total": 1,
+                      "data": [
+                        {
+                          "id": "eve_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                          "object": "event",
+                          "topic": "balance.project",
+                          "threshold": "100",
+                          "createdAt": 1617226800
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Returns a list of events.\n\nBy default, a maximum of 10 events are shown per page.",
+        "summary": "List events.",
+        "tags": [
+          "Events"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          },
+          {
+            "description": "Specifies the name of the event",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Event Name"
+          },
+          {
+            "description": "Specifies if display deleted events",
+            "in": "query",
+            "name": "deleted",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": false
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreateEvent",
+        "responses": {
+          "201": {
+            "description": "Event created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateEventResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "eve_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "event",
+                      "topic": "balance.project",
+                      "threshold": "100",
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Create a new event.",
+        "summary": "Create a new event.",
+        "tags": [
+          "Events"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEventRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{id}": {
+      "get": {
+        "operationId": "GetEvent",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetEventResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "eve_f0f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "event",
+                      "topic": "balance.project",
+                      "threshold": "100",
+                      "createdAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Event not found."
+          }
+        },
+        "description": "Get a single event.",
+        "summary": "Get a single event.",
+        "tags": [
+          "Events"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique event ID (starts with eve_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "eve_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteEvent",
+        "responses": {
+          "204": {
+            "description": "Event deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "eve_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
+                      "deleted": true,
+                      "object": "event"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Event not found."
+          }
+        },
+        "description": "Delete an event.",
+        "summary": "Delete an event.",
+        "tags": [
+          "Events"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique event ID (starts with eve_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "eve_4194ad24-c818-4e5c-b003-9cc2aa7df53b"
+          }
+        ]
+      }
+    },
+    "/v1/contracts": {
+      "get": {
+        "operationId": "GetContracts",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/v1/contracts",
+                      "start": 0,
+                      "end": 1,
+                      "total": 1,
+                      "data": [
+                        {
+                          "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
+                          "createdAt": 1689869074,
+                          "object": "contract",
+                          "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
+                          "chainId": 80002,
+                          "deleted": false,
+                          "name": "MyContract",
+                          "publicVerification": true,
+                          "abi": [
+                            {
+                              "constant": false,
+                              "inputs": [
+                                {
+                                  "name": "addr",
+                                  "type": "address"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "List of all contracts per project.\nBy default, a maximum of ten contracts are shown.",
+        "summary": "List contracts.",
+        "tags": [
+          "Contracts"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          },
+          {
+            "description": "Specifies the name of the contract.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "NFT Contract"
+          },
+          {
+            "description": "Specifies whether to include deleted contracts.",
+            "in": "query",
+            "name": "deleted",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "example": false
+          },
+          {
+            "description": "The chain ID of the contract.",
+            "in": "query",
+            "name": "chainId",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": 80002
+          },
+          {
+            "description": "Specifies the address of the contract.",
+            "in": "query",
+            "name": "address",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x742e6e61d760164d56f44801054bcf40fa821d97"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreateContract",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
+                      "createdAt": 1689869074,
+                      "object": "contract",
+                      "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
+                      "chainId": 80002,
+                      "deleted": false,
+                      "name": "MyContract",
+                      "publicVerification": true,
+                      "abi": [
+                        {
+                          "constant": false,
+                          "inputs": [
+                            {
+                              "name": "addr",
+                              "type": "address"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Add a new contract to your project in Openfort",
+        "summary": "Create contract object.",
+        "tags": [
+          "Contracts"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContractRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/contracts/{id}": {
+      "get": {
+        "operationId": "GetContract",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
+                      "createdAt": 1689869074,
+                      "object": "contract",
+                      "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
+                      "chainId": 80002,
+                      "deleted": false,
+                      "name": "MyContract",
+                      "publicVerification": true,
+                      "abi": [
+                        {
+                          "constant": false,
+                          "inputs": [
+                            {
+                              "name": "addr",
+                              "type": "address"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieve a contract by providing their contract id.",
+        "summary": "Get a contract.",
+        "tags": [
+          "Contracts"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique contract ID (starts with con_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "UpdateContract",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
+                      "createdAt": 1689869074,
+                      "object": "contract",
+                      "address": "0x8C5cedA46A26214A52A9D7BF036Ad2F6255BdBEa",
+                      "chainId": 80002,
+                      "deleted": false,
+                      "name": "MyContract",
+                      "publicVerification": true,
+                      "abi": [
+                        {
+                          "constant": false,
+                          "inputs": [
+                            {
+                              "name": "addr",
+                              "type": "address"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "summary": "Updates a contract object.",
+        "tags": [
+          "Contracts"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique contract ID (starts with con_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateContractRequest"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteContract",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractDeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
+                      "deleted": true,
+                      "object": "contract"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Delete a contract from the project by providing its contract id.",
+        "summary": "Deletes a contract object.",
+        "tags": [
+          "Contracts"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique contract ID (starts with con_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
+          }
+        ]
+      }
+    },
+    "/v1/contracts/{id}/read": {
+      "get": {
+        "operationId": "ReadContract",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractReadResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "con_c502d628-5bb3-42f2-b8d5-62ba46717f3a",
+                      "createdAt": 1689869074,
+                      "object": "readContract",
+                      "functionName": "balanceOf",
+                      "result": {
+                        "type": "BigNumber",
+                        "hex": "0x00"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Using this endpoint, you can get the repositories returned by any readable\nfunction listed in a contracts ABI. This could be things like querying\nthe totalSupply of a currency contract, the number of owners of an items\ncontract, and more.",
+        "summary": "Read on chain contract repositories.",
+        "tags": [
+          "Contracts"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique contract ID (starts with con_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
+          },
+          {
+            "description": "The function name of the contract.",
+            "in": "query",
+            "name": "functionName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "mint"
+          },
+          {
+            "description": "The function arguments of the contract, in string format. Accepts pla_, con_ and acc_ IDs.",
+            "in": "query",
+            "name": "functionArgs",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {}
+            },
+            "example": [
+              "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+            ]
           }
         ]
       }
@@ -5000,6 +8015,507 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PregenerateUserRequestV2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend": {
+      "get": {
+        "operationId": "listBackendWallets",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackendWalletListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "List backend wallets.\n\nReturns a paginated list of backend wallets for the project.",
+        "summary": "List backend wallets.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Number of wallets to return (default: 10, max: 100).",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": 10
+          },
+          {
+            "description": "Number of wallets to skip (for pagination).",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": 0
+          },
+          {
+            "description": "Filter by chain type.",
+            "in": "query",
+            "name": "chainType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "EVM",
+                "SVM"
+              ]
+            },
+            "example": "EVM"
+          },
+          {
+            "description": "Filter by wallet address.",
+            "in": "query",
+            "name": "address",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+          },
+          {
+            "description": "Filter by wallet name.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Treasury Wallet"
+          },
+          {
+            "description": "Filter by associated wallet ID (starts with `pla_`).",
+            "in": "query",
+            "name": "wallet",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createBackendWallet",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateBackendWalletResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Create a new backend wallet account.\n\nGenerates a new keypair securely in the backend wallet system.\nThe private key is stored encrypted and never exposed.",
+        "summary": "Create backend wallet.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackendWalletRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/{id}": {
+      "get": {
+        "operationId": "getBackendWallet",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackendWalletResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Wallet not found."
+          }
+        },
+        "description": "Get backend wallet details.\n\nReturns details for a specific backend wallet.",
+        "summary": "Get backend wallet.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The wallet ID (starts with acc_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteBackendWallet",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteBackendWalletResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Wallet not found."
+          }
+        },
+        "description": "Delete a backend wallet.\n\nPermanently deletes a backend wallet and its associated private key.",
+        "summary": "Delete backend wallet.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The wallet ID (starts with acc_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/accounts/backend/{id}/sign": {
+      "post": {
+        "operationId": "sign",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Account not found."
+          }
+        },
+        "description": "Sign data via backend wallet.\n\nSigns the provided data using the account's private key managed by the backend wallet.\nThe private key is securely stored and never exposed.",
+        "summary": "Sign data via backend wallet.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The account ID (starts with acc_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/{id}/export": {
+      "post": {
+        "operationId": "exportPrivateKey",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportPrivateKeyResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Account not found."
+          }
+        },
+        "description": "Export private key with E2E encryption via backend wallet.\n\nExports the account's private key encrypted using RSA-4096 OAEP SHA-256.\nThe client must provide their ephemeral RSA-4096 public key (base64 SPKI DER format).\nThe response contains the encrypted private key that can be decrypted with the client's private key.",
+        "summary": "Export private key (E2E encrypted).",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The account ID (starts with acc_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportPrivateKeyRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/import": {
+      "post": {
+        "operationId": "importPrivateKey",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportPrivateKeyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid key material."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Import private key with E2E encryption via backend wallet.\n\nImports a private key into the backend wallet system.\nThe private key must be encrypted using RSA-4096 OAEP SHA-256 with the server's\nstatic import public key (obtain out-of-band from SDK or documentation).",
+        "summary": "Import private key (E2E encrypted).",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportPrivateKeyRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/register-secret": {
+      "post": {
+        "operationId": "registerWalletSecret",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterWalletSecretResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Register a new wallet secret (authentication key).\n\nRegisters an ECDSA P-256 public key that will be used to verify\nX-Wallet-Auth JWT signatures. This is required before using WALLET_AUTH\nfor other backend wallet operations.",
+        "summary": "Register wallet secret.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterWalletSecretRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/revoke-secret": {
+      "post": {
+        "operationId": "revokeWalletSecret",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokeWalletSecretResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Secret not found."
+          }
+        },
+        "description": "Revoke a wallet secret (authentication key).\n\nPermanently revokes a wallet secret so it can no longer be used\nfor X-Wallet-Auth JWT signing.",
+        "summary": "Revoke wallet secret.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeWalletSecretRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/rotate-secrets": {
+      "post": {
+        "operationId": "rotateWalletSecret",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotateWalletSecretResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Rotate wallet secret (authentication key).\n\nReplaces the current wallet secret (ECDSA P-256 public key) used for\nX-Wallet-Auth JWT signing. The old secret will be revoked.",
+        "summary": "Rotate wallet secret.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RotateWalletSecretRequest"
               }
             }
           }
@@ -6477,6 +9993,73 @@
         }
       }
     },
+    "/iam/v1/oauth/verify": {
+      "post": {
+        "operationId": "VerifyOAuthToken",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_00000000-0000-0000-0000-000000000000",
+                      "createdAt": 1689869074,
+                      "object": "player",
+                      "description": "John Smith",
+                      "metadata": {
+                        "firstName": "John",
+                        "lastName": "Smith"
+                      },
+                      "name": "My Player",
+                      "accounts": [
+                        {
+                          "id": "acc_8888888888-8888-8888-8888-888888888888"
+                        }
+                      ],
+                      "transactionIntents": [
+                        {
+                          "id": "tin_AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "The endpoint verifies the token generated by OAuth provider and retrieves a corresponding player.\n\nReturns the latest 10 transaction intents for the player.",
+        "summary": "Retrieve player by oauth token.",
+        "tags": [
+          "AdminAuthentication",
+          "auth v1"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticateOAuthRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "/iam/v1/oauth/unlink": {
       "post": {
         "operationId": "UnlinkOAuth",
@@ -6534,6 +10117,350 @@
             }
           }
         }
+      }
+    },
+    "/iam/v1/oauth": {
+      "get": {
+        "operationId": "ListOAuthConfig",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthConfigListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "data": [
+                        {
+                          "enabled": true,
+                          "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
+                          "clientId": "1234567890abcdef1234567890abcdef",
+                          "clientSecret": "abcdef1234567890abcdef1234567890",
+                          "provider": "accelbyte"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "List configured OAuth methods for the current project environment.",
+        "summary": "List of oauth configurations.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "deprecated": true,
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": []
+      },
+      "post": {
+        "operationId": "CreateOAuthConfig",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "enabled": true,
+                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
+                      "clientId": "1234567890abcdef1234567890abcdef",
+                      "clientSecret": "abcdef1234567890abcdef1234567890",
+                      "provider": "accelbyte"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "The endpoint creates oauth configuration for the current project environment.",
+        "summary": "Create oauth configuration.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "deprecated": true,
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "description": "Specifies the oauth provider specific configuration.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthConfigRequest",
+                "description": "Specifies the oauth provider specific configuration."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/oauth/callback": {
+      "get": {
+        "operationId": "DeprecatedCallbackOAuth",
+        "responses": {
+          "302": {
+            "description": "Redirect",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists"
+          }
+        },
+        "summary": "oauth callback.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "deprecated": true,
+        "security": [],
+        "parameters": [
+          {
+            "description": "Specifies the oauth code.",
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the oauth state.",
+            "in": "query",
+            "name": "state",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/iam/v1/oauth/grant/{provider}": {
+      "post": {
+        "operationId": "GrantOAuth",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrantOAuthResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists"
+          }
+        },
+        "summary": "oauth grant.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the oauth provider.",
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OAuthProvider"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrantCallbackRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/oauth/callback/{provider}": {
+      "get": {
+        "operationId": "CallbackOAuth",
+        "responses": {
+          "302": {
+            "description": "Redirect",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists"
+          }
+        },
+        "summary": "oauth callback.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "description": "Specifies the oauth code.",
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the oauth state.",
+            "in": "query",
+            "name": "state",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the oauth provider.",
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OAuthProvider"
+            }
+          }
+        ]
+      }
+    },
+    "/iam/v1/oauth/{provider}": {
+      "get": {
+        "operationId": "GetOAuthConfig",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "enabled": true,
+                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
+                      "clientId": "1234567890abcdef1234567890abcdef",
+                      "clientSecret": "abcdef1234567890abcdef1234567890",
+                      "provider": "accelbyte"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "The endpoint retrieves oauth configuration for specified provider for the current project environment.",
+        "summary": "Get oauth configuration.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "deprecated": true,
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the oauth provider type.",
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OAuthProvider"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteOAuthConfig",
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "The endpoint deletes oauth configuration for specified provider for the current project environment.",
+        "summary": "Delete oauth configuration.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "deprecated": true,
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the oauth provider type.",
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OAuthProvider"
+            }
+          }
+        ]
       }
     },
     "/iam/v1/guest": {
@@ -6595,6 +10522,464 @@
             "schema": {
               "type": "string"
             }
+          }
+        ]
+      }
+    },
+    "/iam/v1/config": {
+      "get": {
+        "operationId": "List",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthProviderListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "data": [
+                        {
+                          "provider": "firebase",
+                          "type": "third_party"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "List configured auth methods for the current project environment.",
+        "summary": "List of auth configurations.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "enabled",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "Create",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthConfigResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "enabled": true,
+                      "baseUrl": "https://mygame.dev.gamingservices.accelbyte.io/",
+                      "clientId": "1234567890abcdef1234567890abcdef",
+                      "clientSecret": "abcdef1234567890abcdef1234567890",
+                      "provider": "accelbyte"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "The endpoint creates oauth configuration for the current project environment.",
+        "summary": "Create oauth configuration.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "description": "Specifies the oauth provider specific configuration.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OAuthConfigRequest",
+                "description": "Specifies the oauth provider specific configuration."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/players": {
+      "post": {
+        "operationId": "CreateAuthPlayer",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthPlayerResponseWithRecoveryShare"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
+                      "object": "player",
+                      "createdAt": 1691658234,
+                      "linkedAccounts": [
+                        {
+                          "email": "jaume@openfort.xyz",
+                          "disabled": false,
+                          "updatedAt": 1691658234
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Creates an authenticated player.\n\nThe player will be authenticated with the provider and an embedded account can be pre generated.",
+        "summary": "Create an authenticated player.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAuthPlayerRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "GetAuthPlayers",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthPlayerListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/iam/v1/players",
+                      "start": 0,
+                      "end": 1,
+                      "total": 1,
+                      "data": [
+                        {
+                          "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
+                          "object": "player",
+                          "createdAt": 1691658234,
+                          "linkedAccounts": [
+                            {
+                              "email": "jaume@openfort.xyz",
+                              "disabled": false,
+                              "updatedAt": 1691658234
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieves a list of authenticated players.\n\nPlayers have linked accounts and are authenticated with a provider.",
+        "summary": "List authenticated players.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          },
+          {
+            "description": "Specifies the email address of the user.",
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "user@email.com"
+          },
+          {
+            "description": "Specifies the external user ID.",
+            "in": "query",
+            "name": "externalUserId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "externalUserId"
+          }
+        ]
+      }
+    },
+    "/iam/v1/players/{id}": {
+      "get": {
+        "operationId": "GetAuthPlayer",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthPlayerResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
+                      "object": "player",
+                      "createdAt": 1691658234,
+                      "linkedAccounts": [
+                        {
+                          "email": "jaume@openfort.xyz",
+                          "disabled": false,
+                          "updatedAt": 1691658234
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "description": "Retrieves an authenticated player.\n\nPlayers have linked accounts and are authenticated with a provider.",
+        "summary": "Authenticated player.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteAuthPlayer",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthPlayerResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_ff54b031-a878-4ca2-9cf5-ae190f921e9b",
+                      "object": "player",
+                      "createdAt": 1691658234,
+                      "linkedAccounts": [
+                        {
+                          "email": "jaume@openfort.xyz",
+                          "disabled": false,
+                          "updatedAt": 1691658234
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "409": {
+            "description": "Error response."
+          }
+        },
+        "description": "Deletes a player auth object.\n\nIt will delete all linked accounts the player is authenticated with.\nIf the player has a linked embedded signer, it will be deleted as well.",
+        "summary": "Deletes a player auth object.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique player ID (starts with pla_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          }
+        ]
+      }
+    },
+    "/iam/v1/verify": {
+      "get": {
+        "operationId": "VerifyAuthToken",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "projectId": "pro_...",
+                      "expiration": 1234567890,
+                      "issuedAt": 1234567890,
+                      "issuer": "openfort.xyz",
+                      "sessionId": "...",
+                      "playerId": "pla_...",
+                      "livemode": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "description": "Verifies the token generated by Openfort Auth.",
+        "summary": "Verify auth token.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the auth token.",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0SWQiOiJwcm9qZWN0XzQ4ZWViYTU3LTJjZDUtNDE1OS1hMmNiLTA1N2EyM2EzNWU2NSIsInVzZXJJZCI6InVzZXJfNDhlZWI1Ny0yY2Q1LTQxNTktYTJjYi0wNTdhMjNhMzVlNjUiLCJpYXQiOjE2MjY0NjY0NzcsImV4cCI6MTYyN"
           }
         ]
       }
@@ -6706,6 +11091,74 @@
           }
         ],
         "parameters": []
+      }
+    },
+    "/iam/v1/authorize": {
+      "post": {
+        "operationId": "Authorize",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AuthPlayerResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AuthenticatedPlayerResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_...",
+                      "object": "player",
+                      "createdAt": 1234567890,
+                      "linkedAccounts": [
+                        {
+                          "provider": "email",
+                          "email": "jaume@openfort.xyz",
+                          "disabled": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Player not found."
+          }
+        },
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "pk_guardian_gate": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorizePlayerRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/iam/v2/me": {

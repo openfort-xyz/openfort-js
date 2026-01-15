@@ -53,6 +53,7 @@ export * from './authenticate-oauth-request';
 export * from './authenticate-oauth-request-provider';
 export * from './authenticated-player-response';
 export * from './authentication-type';
+export * from './authorize200-response';
 export * from './authorize-player-request';
 export * from './authorized-app';
 export * from './authorized-apps-response';
