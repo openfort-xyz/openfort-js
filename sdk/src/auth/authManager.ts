@@ -434,13 +434,13 @@ export class AuthManager {
           }
         )
         const data = response.data
-        if (!data.token) {
+        if (data.token === null) {
           return {
             action: AuthActionRequiredActions.ACTION_VERIFY_EMAIL,
           }
         }
         return {
-          token: data.token,
+          token: data.token as string,
           user: mapUser(data.user),
         }
       },

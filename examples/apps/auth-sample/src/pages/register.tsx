@@ -70,14 +70,11 @@ function RegisterPage() {
         name: `${first_name} ${last_name}`,
       })
 
-      if ('user' in data) {
-        if (data.token === null) setEmailConfirmation(true)
+      if ('action' in data) {
+        setEmailConfirmation(true)
+      } else {
         setUser(data.user)
       }
-      setStatus({
-        type: 'success',
-        title: 'Successfully signed up',
-      })
     } catch (error) {
       console.error('Registration error:', error)
       setStatus({
