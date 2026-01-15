@@ -3,6 +3,7 @@ import {
   ListAccountsGet200ResponseInner,
 } from '@openfort/openapi-clients/dist/backend'
 import type { PasskeyDetails } from 'wallets/types'
+import type { UserAccount } from './types'
 
 export enum EmbeddedState {
   NONE,
@@ -377,6 +378,8 @@ export interface User {
   phoneNumber?: string
   /** Whether the user's phone number has been verified */
   phoneNumberVerified?: boolean
+  /** List of user linked accounts */
+  linkedAccounts?: UserAccount[]
 }
 
 /**
