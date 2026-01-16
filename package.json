@@ -81,6 +81,8 @@
   },
   "pnpm": {
     "overrides": {
+      "@types/react": "^18.3.0",
+      "@types/react-dom": "^18.3.0",
       "@vanilla-extract/sprinkles": "1.6.4",
       "micromatch@<4.0.8": ">=4.0.8",
       "cookie@<0.7.0": ">=0.7.0",
@@ -89,7 +91,8 @@
       "glob@>=10.3.7 <=11.0.3": ">=11.1.0",
       "esbuild@<=0.24.2": ">=0.25.0",
       "@remix-run/router@<=1.23.1": ">=1.23.2",
-      "hono@<4.11.4": ">=4.11.4"
+      "hono@<4.11.4": ">=4.11.4",
+      "h3@<=1.15.4": ">=1.15.5"
     },
     "auditConfig": {
       "ignoreCves": [
