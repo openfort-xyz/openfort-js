@@ -91,7 +91,7 @@ export default function TransactionHistory({ address }: TransactionHistoryProps)
                         {tx.signature}
                       </a>
                     </div>
-                    {tx.blockTime && (
+                    {tx.blockTime != null && (
                       <div className="col-span-1 md:col-span-2">
                         <span className="text-gray-400">Time:</span>{' '}
                         <span className="text-xs">{new Date(Number(tx.blockTime) * 1000).toLocaleString()}</span>

@@ -23,6 +23,7 @@ import {
   type SIWEInitResponse,
   type ThirdPartyAuthProvider,
   type User,
+  type UserAccount,
 } from '../types/types'
 
 /**
@@ -40,6 +41,7 @@ function mapUser(user: {
   updatedAt?: string
   phoneNumber?: string
   phoneNumberVerified?: boolean
+  linkedAccounts?: UserAccount[]
 }): User {
   if (!user) {
     throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'User data is missing')
@@ -55,6 +57,7 @@ function mapUser(user: {
     updatedAt: user.updatedAt,
     phoneNumber: user.phoneNumber,
     phoneNumberVerified: user.phoneNumberVerified,
+    linkedAccounts: user.linkedAccounts,
   }
 }
 
@@ -500,28 +503,6 @@ export class AuthManager {
         return mapUser(userData)
       },
       { context: 'getUser' }
-    )
-  }
-
-  public async listAccounts(auth: Authentication) {
-    return withApiError(
-      async () => {
-        const response = await this.backendApiClients.authenticationV2Api.listAccountsGet({
-          headers: auth.thirdPartyProvider
-            ? {
-                authorization: `Bearer ${this.publishableKey}`,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-player-token': auth.token,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-auth-provider': auth.thirdPartyProvider,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'x-token-type': auth.thirdPartyTokenType,
-              }
-            : this.buildAuthHeaders(auth.token),
-        })
-        return response.data
-      },
-      { context: 'listAccounts' }
     )
   }
 

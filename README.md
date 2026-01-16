@@ -54,7 +54,3 @@ npm install @openfort/openfort-js
 - [Openfort Auth + Embedded Wallet - Next.js](https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/auth-sample)
 - [Embedded Wallet Wagmi Next.js](https://github.com/openfort-xyz/openfort-js/tree/main/examples/apps/wallet-libraries/next-wagmi)
 - [Third-party auth + Embedded Wallet - Next.js Firebase](https://github.com/openfort-xyz/embedded-wallet-firebase-auth-sample-nextjs)
-
-<!--
-# vim: set tw=79:
--->

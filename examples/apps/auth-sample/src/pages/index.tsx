@@ -12,7 +12,6 @@ import EventMonitor from '@/components/EventMonitor/EventMonitor'
 import { AddEmailButton } from '@/components/LinkButtons/AddEmailButton'
 import { LinkPhoneButton } from '@/components/LinkButtons/LinkPhoneButton'
 import { type StatusType, Toast } from '@/components/Toasts'
-import GetUserAccountsButton from '@/components/User/GetUserAccountsButton'
 import { Button } from '@/components/ui/button'
 import Wallets from '@/components/Wallet/Wallet'
 import { useOpenfort } from '@/contexts/OpenfortContext'
@@ -211,7 +210,6 @@ const HomePage: NextPage = () => {
             <div className="space-y-2">
               <span className="font-medium text-black">User methods</span>
               <GetUserButton handleSetMessage={handleSetMessage} />
-              <GetUserAccountsButton handleSetMessage={handleSetMessage} />
             </div>
             <div>
               <span className="font-medium text-black">{'OAuth methods'}</span>

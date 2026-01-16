@@ -1,6 +1,6 @@
-import type { ComponentProps } from 'react'
+import type { SVGProps } from 'react'
 
-export function Logo(props: ComponentProps<'svg'>) {
+export function Logo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 39 11" aria-hidden="true" {...props}>
       <path
