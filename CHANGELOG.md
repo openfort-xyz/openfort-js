@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.0.3
+
+### Patch Changes
+
+- [#206](https://github.com/openfort-xyz/openfort-js/pull/206) [`c203b97`](https://github.com/openfort-xyz/openfort-js/commit/c203b975ef5ca0a2d1e50155bfc3b9988213b2e2) Thanks [@jamalavedra](https://github.com/jamalavedra)! - improve error handling and session validation
+
 ## 1.0.2
 
 ### Patch Changes
