@@ -33,6 +33,8 @@ import { PregenerateAccountResponse } from '../models';
 import { PregenerateUserRequestV2 } from '../models';
 // @ts-ignore
 import { PrismaSortOrder } from '../models';
+// @ts-ignore
+import { ThirdPartyOAuthRequest } from '../models';
 /**
  * UsersApi - axios parameter creator
  * @export
@@ -175,6 +177,36 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
+         * 
+         * @summary Get user information.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        meV2: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/iam/v2/me`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
          * @summary Pre-generate a user with an embedded account.
          * @param {PregenerateUserRequestV2} pregenerateUserRequestV2 
@@ -208,6 +240,46 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(pregenerateUserRequestV2, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        thirdPartyV2: async (thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'thirdPartyOAuthRequest' is not null or undefined
+            assertParamExists('thirdPartyV2', 'thirdPartyOAuthRequest', thirdPartyOAuthRequest)
+            const localVarPath = `/iam/v2/user/third_party`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(thirdPartyOAuthRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -262,6 +334,16 @@ export const UsersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 
+         * @summary Get user information.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async meV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.meV2(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
          * @summary Pre-generate a user with an embedded account.
          * @param {PregenerateUserRequestV2} pregenerateUserRequestV2 
@@ -270,6 +352,17 @@ export const UsersApiFp = function(configuration?: Configuration) {
          */
         async pregenerateUserV2(pregenerateUserRequestV2: PregenerateUserRequestV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PregenerateAccountResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.pregenerateUserV2(pregenerateUserRequestV2, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async thirdPartyV2(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.thirdPartyV2(thirdPartyOAuthRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -313,6 +406,15 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @summary Get user information.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        meV2(options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
+            return localVarFp.meV2(options).then((request) => request(axios, basePath));
+        },
+        /**
          * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
          * @summary Pre-generate a user with an embedded account.
          * @param {UsersApiPregenerateUserV2Request} requestParameters Request parameters.
@@ -321,6 +423,16 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          */
         pregenerateUserV2(requestParameters: UsersApiPregenerateUserV2Request, options?: AxiosRequestConfig): AxiosPromise<PregenerateAccountResponse> {
             return localVarFp.pregenerateUserV2(requestParameters.pregenerateUserRequestV2, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Verify oauth token of a third party auth provider.
+         * @param {UsersApiThirdPartyV2Request} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        thirdPartyV2(requestParameters: UsersApiThirdPartyV2Request, options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
+            return localVarFp.thirdPartyV2(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -410,6 +522,20 @@ export interface UsersApiPregenerateUserV2Request {
 }
 
 /**
+ * Request parameters for thirdPartyV2 operation in UsersApi.
+ * @export
+ * @interface UsersApiThirdPartyV2Request
+ */
+export interface UsersApiThirdPartyV2Request {
+    /**
+     * 
+     * @type {ThirdPartyOAuthRequest}
+     * @memberof UsersApiThirdPartyV2
+     */
+    readonly thirdPartyOAuthRequest: ThirdPartyOAuthRequest
+}
+
+/**
  * UsersApi - object-oriented interface
  * @export
  * @class UsersApi
@@ -453,6 +579,17 @@ export class UsersApi extends BaseAPI {
     }
 
     /**
+     * 
+     * @summary Get user information.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UsersApi
+     */
+    public meV2(options?: AxiosRequestConfig) {
+        return UsersApiFp(this.configuration).meV2(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
      * @summary Pre-generate a user with an embedded account.
      * @param {UsersApiPregenerateUserV2Request} requestParameters Request parameters.
@@ -462,6 +599,18 @@ export class UsersApi extends BaseAPI {
      */
     public pregenerateUserV2(requestParameters: UsersApiPregenerateUserV2Request, options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).pregenerateUserV2(requestParameters.pregenerateUserRequestV2, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Verify oauth token of a third party auth provider.
+     * @param {UsersApiThirdPartyV2Request} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UsersApi
+     */
+    public thirdPartyV2(requestParameters: UsersApiThirdPartyV2Request, options?: AxiosRequestConfig) {
+        return UsersApiFp(this.configuration).thirdPartyV2(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

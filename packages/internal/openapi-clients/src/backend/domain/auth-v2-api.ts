@@ -26,8 +26,6 @@ import { AccountInfoPost200Response } from '../models';
 // @ts-ignore
 import { AccountInfoPostRequest } from '../models';
 // @ts-ignore
-import { AuthUserResponse } from '../models';
-// @ts-ignore
 import { ChangeEmailPost200Response } from '../models';
 // @ts-ignore
 import { ChangeEmailPostRequest } from '../models';
@@ -151,8 +149,6 @@ import { SocialSignIn400Response } from '../models';
 import { SocialSignIn403Response } from '../models';
 // @ts-ignore
 import { SocialSignInRequest } from '../models';
-// @ts-ignore
-import { ThirdPartyOAuthRequest } from '../models';
 // @ts-ignore
 import { UnlinkAccountPostRequest } from '../models';
 // @ts-ignore
@@ -777,36 +773,6 @@ export const AuthV2ApiAxiosParamCreator = function (configuration?: Configuratio
          */
         listSessionsGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/list-sessions`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get user information.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        meV2: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v2/me`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1607,46 +1573,6 @@ export const AuthV2ApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * 
-         * @summary Verify oauth token of a third party auth provider.
-         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        thirdPartyV2: async (thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'thirdPartyOAuthRequest' is not null or undefined
-            assertParamExists('thirdPartyV2', 'thirdPartyOAuthRequest', thirdPartyOAuthRequest)
-            const localVarPath = `/iam/v2/user/third_party`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication pk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(thirdPartyOAuthRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * Unlink an account
          * @summary Unlink account.
          * @param {UnlinkAccountPostRequest} unlinkAccountPostRequest 
@@ -1931,16 +1857,6 @@ export const AuthV2ApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Get user information.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async meV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.meV2(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * Request OTP for password reset via phone number
          * @summary Reset password reset with phone(forget password flow).
          * @param {PhoneNumberForgetPasswordPostRequest} phoneNumberForgetPasswordPostRequest 
@@ -2183,17 +2099,6 @@ export const AuthV2ApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Verify oauth token of a third party auth provider.
-         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async thirdPartyV2(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.thirdPartyV2(thirdPartyOAuthRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * Unlink an account
          * @summary Unlink account.
          * @param {UnlinkAccountPostRequest} unlinkAccountPostRequest 
@@ -2402,15 +2307,6 @@ export const AuthV2ApiFactory = function (configuration?: Configuration, basePat
          */
         listSessionsGet(options?: AxiosRequestConfig): AxiosPromise<Array<Session>> {
             return localVarFp.listSessionsGet(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get user information.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        meV2(options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
-            return localVarFp.meV2(options).then((request) => request(axios, basePath));
         },
         /**
          * Request OTP for password reset via phone number
@@ -2630,16 +2526,6 @@ export const AuthV2ApiFactory = function (configuration?: Configuration, basePat
          */
         socialSignIn(requestParameters: AuthV2ApiSocialSignInRequest, options?: AxiosRequestConfig): AxiosPromise<SocialSignIn200Response> {
             return localVarFp.socialSignIn(requestParameters.socialSignInRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Verify oauth token of a third party auth provider.
-         * @param {AuthV2ApiThirdPartyV2Request} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        thirdPartyV2(requestParameters: AuthV2ApiThirdPartyV2Request, options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
-            return localVarFp.thirdPartyV2(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Unlink an account
@@ -3183,20 +3069,6 @@ export interface AuthV2ApiSocialSignInRequest {
 }
 
 /**
- * Request parameters for thirdPartyV2 operation in AuthV2Api.
- * @export
- * @interface AuthV2ApiThirdPartyV2Request
- */
-export interface AuthV2ApiThirdPartyV2Request {
-    /**
-     * 
-     * @type {ThirdPartyOAuthRequest}
-     * @memberof AuthV2ApiThirdPartyV2
-     */
-    readonly thirdPartyOAuthRequest: ThirdPartyOAuthRequest
-}
-
-/**
  * Request parameters for unlinkAccountPost operation in AuthV2Api.
  * @export
  * @interface AuthV2ApiUnlinkAccountPostRequest
@@ -3449,17 +3321,6 @@ export class AuthV2Api extends BaseAPI {
      */
     public listSessionsGet(options?: AxiosRequestConfig) {
         return AuthV2ApiFp(this.configuration).listSessionsGet(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get user information.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AuthV2Api
-     */
-    public meV2(options?: AxiosRequestConfig) {
-        return AuthV2ApiFp(this.configuration).meV2(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3723,18 +3584,6 @@ export class AuthV2Api extends BaseAPI {
      */
     public socialSignIn(requestParameters: AuthV2ApiSocialSignInRequest, options?: AxiosRequestConfig) {
         return AuthV2ApiFp(this.configuration).socialSignIn(requestParameters.socialSignInRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Verify oauth token of a third party auth provider.
-     * @param {AuthV2ApiThirdPartyV2Request} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AuthV2Api
-     */
-    public thirdPartyV2(requestParameters: AuthV2ApiThirdPartyV2Request, options?: AxiosRequestConfig) {
-        return AuthV2ApiFp(this.configuration).thirdPartyV2(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
