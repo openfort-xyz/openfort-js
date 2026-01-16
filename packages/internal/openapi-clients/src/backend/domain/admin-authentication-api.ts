@@ -42,6 +42,10 @@ import { AuthorizePlayerRequest } from '../models';
 // @ts-ignore
 import { CreateAuthPlayerRequest } from '../models';
 // @ts-ignore
+import { GrantCallbackRequest } from '../models';
+// @ts-ignore
+import { GrantOAuthResponse } from '../models';
+// @ts-ignore
 import { OAuthConfigListResponse } from '../models';
 // @ts-ignore
 import { OAuthProvider } from '../models';
@@ -88,6 +92,54 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(authorizePlayerRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary oauth callback.
+         * @param {string} code Specifies the oauth code.
+         * @param {string} state Specifies the oauth state.
+         * @param {OAuthProvider} provider Specifies the oauth provider.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        callbackOAuth: async (code: string, state: string, provider: OAuthProvider, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'code' is not null or undefined
+            assertParamExists('callbackOAuth', 'code', code)
+            // verify required parameter 'state' is not null or undefined
+            assertParamExists('callbackOAuth', 'state', state)
+            // verify required parameter 'provider' is not null or undefined
+            assertParamExists('callbackOAuth', 'provider', provider)
+            const localVarPath = `/iam/v1/oauth/callback/{provider}`
+                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (code !== undefined) {
+                localVarQueryParameter['code'] = code;
+            }
+
+            if (state !== undefined) {
+                localVarQueryParameter['state'] = state;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -293,6 +345,51 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             };
         },
         /**
+         * 
+         * @summary oauth callback.
+         * @param {string} code Specifies the oauth code.
+         * @param {string} state Specifies the oauth state.
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        deprecatedCallbackOAuth: async (code: string, state: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'code' is not null or undefined
+            assertParamExists('deprecatedCallbackOAuth', 'code', code)
+            // verify required parameter 'state' is not null or undefined
+            assertParamExists('deprecatedCallbackOAuth', 'state', state)
+            const localVarPath = `/iam/v1/oauth/callback`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (code !== undefined) {
+                localVarQueryParameter['code'] = code;
+            }
+
+            if (state !== undefined) {
+                localVarQueryParameter['state'] = state;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Retrieves an authenticated player.  Players have linked accounts and are authenticated with a provider.
          * @summary Authenticated player.
          * @param {string} id 
@@ -422,6 +519,50 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary oauth grant.
+         * @param {OAuthProvider} provider Specifies the oauth provider.
+         * @param {GrantCallbackRequest} grantCallbackRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        grantOAuth: async (provider: OAuthProvider, grantCallbackRequest: GrantCallbackRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'provider' is not null or undefined
+            assertParamExists('grantOAuth', 'provider', provider)
+            // verify required parameter 'grantCallbackRequest' is not null or undefined
+            assertParamExists('grantOAuth', 'grantCallbackRequest', grantCallbackRequest)
+            const localVarPath = `/iam/v1/oauth/grant/{provider}`
+                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(grantCallbackRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -604,6 +745,19 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 
+         * @summary oauth callback.
+         * @param {string} code Specifies the oauth code.
+         * @param {string} state Specifies the oauth state.
+         * @param {OAuthProvider} provider Specifies the oauth provider.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async callbackOAuth(code: string, state: string, provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.callbackOAuth(code, state, provider, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
          * @param {AuthConfig} body Specifies the oauth provider specific configuration.
@@ -661,6 +815,19 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * 
+         * @summary oauth callback.
+         * @param {string} code Specifies the oauth code.
+         * @param {string} state Specifies the oauth state.
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        async deprecatedCallbackOAuth(code: string, state: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deprecatedCallbackOAuth(code, state, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Retrieves an authenticated player.  Players have linked accounts and are authenticated with a provider.
          * @summary Authenticated player.
          * @param {string} id 
@@ -696,6 +863,18 @@ export const AdminAuthenticationApiFp = function(configuration?: Configuration) 
          */
         async getOAuthConfig(provider: OAuthProvider, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthConfig>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOAuthConfig(provider, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary oauth grant.
+         * @param {OAuthProvider} provider Specifies the oauth provider.
+         * @param {GrantCallbackRequest} grantCallbackRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async grantOAuth(provider: OAuthProvider, grantCallbackRequest: GrantCallbackRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GrantOAuthResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.grantOAuth(provider, grantCallbackRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -762,6 +941,16 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
             return localVarFp.authorize(requestParameters.authorizePlayerRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @summary oauth callback.
+         * @param {AdminAuthenticationApiCallbackOAuthRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        callbackOAuth(requestParameters: AdminAuthenticationApiCallbackOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.callbackOAuth(requestParameters.code, requestParameters.state, requestParameters.provider, options).then((request) => request(axios, basePath));
+        },
+        /**
          * The endpoint creates oauth configuration for the current project environment.
          * @summary Create oauth configuration.
          * @param {AdminAuthenticationApiCreateRequest} requestParameters Request parameters.
@@ -814,6 +1003,17 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
             return localVarFp.deleteOAuthConfig(requestParameters.provider, options).then((request) => request(axios, basePath));
         },
         /**
+         * 
+         * @summary oauth callback.
+         * @param {AdminAuthenticationApiDeprecatedCallbackOAuthRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        deprecatedCallbackOAuth(requestParameters: AdminAuthenticationApiDeprecatedCallbackOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deprecatedCallbackOAuth(requestParameters.code, requestParameters.state, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves an authenticated player.  Players have linked accounts and are authenticated with a provider.
          * @summary Authenticated player.
          * @param {AdminAuthenticationApiGetAuthPlayerRequest} requestParameters Request parameters.
@@ -843,6 +1043,16 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
          */
         getOAuthConfig(requestParameters: AdminAuthenticationApiGetOAuthConfigRequest, options?: AxiosRequestConfig): AxiosPromise<AuthConfig> {
             return localVarFp.getOAuthConfig(requestParameters.provider, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary oauth grant.
+         * @param {AdminAuthenticationApiGrantOAuthRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        grantOAuth(requestParameters: AdminAuthenticationApiGrantOAuthRequest, options?: AxiosRequestConfig): AxiosPromise<GrantOAuthResponse> {
+            return localVarFp.grantOAuth(requestParameters.provider, requestParameters.grantCallbackRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * List configured auth methods for the current project environment.
@@ -899,6 +1109,34 @@ export interface AdminAuthenticationApiAuthorizeRequest {
      * @memberof AdminAuthenticationApiAuthorize
      */
     readonly authorizePlayerRequest: AuthorizePlayerRequest
+}
+
+/**
+ * Request parameters for callbackOAuth operation in AdminAuthenticationApi.
+ * @export
+ * @interface AdminAuthenticationApiCallbackOAuthRequest
+ */
+export interface AdminAuthenticationApiCallbackOAuthRequest {
+    /**
+     * Specifies the oauth code.
+     * @type {string}
+     * @memberof AdminAuthenticationApiCallbackOAuth
+     */
+    readonly code: string
+
+    /**
+     * Specifies the oauth state.
+     * @type {string}
+     * @memberof AdminAuthenticationApiCallbackOAuth
+     */
+    readonly state: string
+
+    /**
+     * Specifies the oauth provider.
+     * @type {OAuthProvider}
+     * @memberof AdminAuthenticationApiCallbackOAuth
+     */
+    readonly provider: OAuthProvider
 }
 
 /**
@@ -972,6 +1210,27 @@ export interface AdminAuthenticationApiDeleteOAuthConfigRequest {
 }
 
 /**
+ * Request parameters for deprecatedCallbackOAuth operation in AdminAuthenticationApi.
+ * @export
+ * @interface AdminAuthenticationApiDeprecatedCallbackOAuthRequest
+ */
+export interface AdminAuthenticationApiDeprecatedCallbackOAuthRequest {
+    /**
+     * Specifies the oauth code.
+     * @type {string}
+     * @memberof AdminAuthenticationApiDeprecatedCallbackOAuth
+     */
+    readonly code: string
+
+    /**
+     * Specifies the oauth state.
+     * @type {string}
+     * @memberof AdminAuthenticationApiDeprecatedCallbackOAuth
+     */
+    readonly state: string
+}
+
+/**
  * Request parameters for getAuthPlayer operation in AdminAuthenticationApi.
  * @export
  * @interface AdminAuthenticationApiGetAuthPlayerRequest
@@ -1042,6 +1301,27 @@ export interface AdminAuthenticationApiGetOAuthConfigRequest {
 }
 
 /**
+ * Request parameters for grantOAuth operation in AdminAuthenticationApi.
+ * @export
+ * @interface AdminAuthenticationApiGrantOAuthRequest
+ */
+export interface AdminAuthenticationApiGrantOAuthRequest {
+    /**
+     * Specifies the oauth provider.
+     * @type {OAuthProvider}
+     * @memberof AdminAuthenticationApiGrantOAuth
+     */
+    readonly provider: OAuthProvider
+
+    /**
+     * 
+     * @type {GrantCallbackRequest}
+     * @memberof AdminAuthenticationApiGrantOAuth
+     */
+    readonly grantCallbackRequest: GrantCallbackRequest
+}
+
+/**
  * Request parameters for list operation in AdminAuthenticationApi.
  * @export
  * @interface AdminAuthenticationApiListRequest
@@ -1099,6 +1379,18 @@ export class AdminAuthenticationApi extends BaseAPI {
      */
     public authorize(requestParameters: AdminAuthenticationApiAuthorizeRequest, options?: AxiosRequestConfig) {
         return AdminAuthenticationApiFp(this.configuration).authorize(requestParameters.authorizePlayerRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary oauth callback.
+     * @param {AdminAuthenticationApiCallbackOAuthRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public callbackOAuth(requestParameters: AdminAuthenticationApiCallbackOAuthRequest, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).callbackOAuth(requestParameters.code, requestParameters.state, requestParameters.provider, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1164,6 +1456,19 @@ export class AdminAuthenticationApi extends BaseAPI {
     }
 
     /**
+     * 
+     * @summary oauth callback.
+     * @param {AdminAuthenticationApiDeprecatedCallbackOAuthRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public deprecatedCallbackOAuth(requestParameters: AdminAuthenticationApiDeprecatedCallbackOAuthRequest, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).deprecatedCallbackOAuth(requestParameters.code, requestParameters.state, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Retrieves an authenticated player.  Players have linked accounts and are authenticated with a provider.
      * @summary Authenticated player.
      * @param {AdminAuthenticationApiGetAuthPlayerRequest} requestParameters Request parameters.
@@ -1198,6 +1503,18 @@ export class AdminAuthenticationApi extends BaseAPI {
      */
     public getOAuthConfig(requestParameters: AdminAuthenticationApiGetOAuthConfigRequest, options?: AxiosRequestConfig) {
         return AdminAuthenticationApiFp(this.configuration).getOAuthConfig(requestParameters.provider, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary oauth grant.
+     * @param {AdminAuthenticationApiGrantOAuthRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminAuthenticationApi
+     */
+    public grantOAuth(requestParameters: AdminAuthenticationApiGrantOAuthRequest, options?: AxiosRequestConfig) {
+        return AdminAuthenticationApiFp(this.configuration).grantOAuth(requestParameters.provider, requestParameters.grantCallbackRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -1,16 +1,12 @@
 import axios, { type AxiosError, type AxiosInstance } from "axios";
 import axiosRetry from "axios-retry";
 import {
-	AccountsApi,
-	AnonymousApi,
-	AuthenticationApi,
-	AuthenticationV2Api,
-	DefaultApi,
-	EmailOtpApi,
-	PhoneNumberApi,
+	AccsV1Api,
+	AccsV2Api,
+	AuthV1Api as AuthenticationApi,
+	AuthV2Api as AuthenticationV2Api,
 	RPCApi,
 	SessionsApi,
-	SIWEApi,
 	TransactionIntentsApi,
 } from "./backend";
 import {
@@ -39,25 +35,22 @@ export class BackendApiClients {
 
 	public transactionIntentsApi: TransactionIntentsApi;
 
-	public accountsApi: AccountsApi;
+	public accountsApi: AccsV1Api;
+
+	public accountsV2Api: AccsV2Api;
 
 	public rpcApi: RPCApi;
 
 	public sessionsApi: SessionsApi;
 
-	public emailOTPApi: EmailOtpApi;
 
 	public userApi: AuthenticationV2Api;
 
-	public anonymousApi: AnonymousApi;
 
-	public siweApi: SIWEApi;
 
-	public smsOTPApi: PhoneNumberApi;
 
 	public authenticationApi: AuthenticationApi;
 
-	public authenticationV2Api: DefaultApi;
 
 	private storage?: IStorage;
 
@@ -99,35 +92,14 @@ export class BackendApiClients {
 
 		const authConfig = createConfig(authConfigOptions);
 
-		this.emailOTPApi = new EmailOtpApi(
-			authConfig,
-			undefined,
-			this.axiosInstance,
-		);
-		this.smsOTPApi = new PhoneNumberApi(
-			authConfig,
-			undefined,
-			this.axiosInstance,
-		);
-		this.anonymousApi = new AnonymousApi(
-			authConfig,
-			undefined,
-			this.axiosInstance,
-		);
-
-		this.authenticationV2Api = new DefaultApi(
-			authConfig,
-			undefined,
-			this.axiosInstance,
-		);
 		this.authenticationApi = new AuthenticationApi(
 			this.config.backend,
 			undefined,
 			this.axiosInstance,
 		);
-		this.siweApi = new SIWEApi(authConfig, undefined, this.axiosInstance);
+
 		this.userApi = new AuthenticationV2Api(
-			this.config.backend,
+			authConfig,
 			undefined,
 			this.axiosInstance,
 		);
@@ -136,7 +108,12 @@ export class BackendApiClients {
 			undefined,
 			this.axiosInstance,
 		);
-		this.accountsApi = new AccountsApi(
+		this.accountsApi = new AccsV1Api(
+			this.config.backend,
+			undefined,
+			this.axiosInstance,
+		);
+		this.accountsV2Api = new AccsV2Api(
 			this.config.backend,
 			undefined,
 			this.axiosInstance,

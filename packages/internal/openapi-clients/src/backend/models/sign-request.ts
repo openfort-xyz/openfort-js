@@ -15,16 +15,16 @@
 
 
 /**
- * 
+ * Request to sign data via backend wallet.
  * @export
- * @interface OkGet200Response
+ * @interface SignRequest
  */
-export interface OkGet200Response {
+export interface SignRequest {
     /**
-     * Indicates if the API is working
-     * @type {boolean}
-     * @memberof OkGet200Response
+     * The data to sign (hex-encoded transaction data or message hash).
+     * @type {string}
+     * @memberof SignRequest
      */
-    'ok': boolean;
+    'data': string;
 }
 

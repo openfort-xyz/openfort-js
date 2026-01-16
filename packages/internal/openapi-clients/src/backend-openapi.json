@@ -23,12 +23,6 @@
       "bearerAuth": []
     }
   ],
-  "tags": [
-    {
-      "name": "Default",
-      "description": "Authentication endpoints."
-    }
-  ],
   "paths": {
     "/rpc": {
       "post": {
@@ -2477,6 +2471,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -2568,6 +2565,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -2656,6 +2656,9 @@
           },
           {
             "pk_identity_token": []
+          },
+          {
+            "better_auth": []
           }
         ],
         "parameters": [
@@ -5246,6 +5249,94 @@
         }
       }
     },
+    "/v1/logs": {
+      "get": {
+        "operationId": "GetProjectLogs",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectLogs"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "summary": "Get logs for a project.",
+        "tags": [
+          "Logs"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": ".",
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "description": "Specifies the unique project ID.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/logs/webhook": {
+      "get": {
+        "operationId": "GetWebhookLogsByProjectId",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectLogs"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          }
+        },
+        "summary": "Get webhook logs for a project.",
+        "tags": [
+          "Logs"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": []
+      }
+    },
     "/v1/graphql": {
       "post": {
         "operationId": "Query",
@@ -6628,7 +6719,7 @@
         "description": "Returns a list of accounts for the given player.\n\nThis object represents a player's account, which is a blockchain smart account that can be used to interact with the blockchain.\n\nThe accounts are returned sorted by creation date, with the most recently created accounts appearing first.\n\nReturns the latest 10 transaction intents for each account.\n\nBy default, a maximum of 10 accounts are shown per page.",
         "summary": "List accounts of a player.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -6774,7 +6865,7 @@
         "description": "Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.\n\nAccount creation does not consume any gas. All accounts of a player will use the same address across blockchains.\n\nEach player can only have one account per chain.",
         "summary": "Create an account object.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -6851,7 +6942,7 @@
         "description": "Retrieves the details of an existing account.\n\nSupply the unique account ID from either a account creation request or the account list, and Openfort will return the corresponding account information.\n\nReturns the latest 10 transaction intents created by this account.",
         "summary": "Get existing account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -6901,8 +6992,10 @@
             "description": "Error response."
           }
         },
+        "description": "Disables an account.\n\nAccounts won't be shown for user and won't be accessible for transactions.",
+        "summary": "Disable account by id.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7020,7 +7113,7 @@
         "description": "Perform a request to change the owner of an account.\n\nTo perform an update on the owner of an account, first you must provide a new owner address.\nOnce requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.",
         "summary": "Request transfer ownership of account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7138,7 +7231,7 @@
         "description": "Cancel a pending transfer of ownership.",
         "summary": "Cancel request to transfer ownership of an account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7204,7 +7297,7 @@
         "description": "**Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.",
         "summary": "Sign a given payload",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7286,7 +7379,7 @@
         "description": "Synchronize the account state with the blockchain.\nSpecifically, it updates the account owner and whether its deployed or not.",
         "summary": "Sync account state with the blockchain",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7358,7 +7451,7 @@
         "description": "This endpoint can be used to deploy a smart contract account that was counterfactually generated.",
         "summary": "Deploy an account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7478,7 +7571,7 @@
         },
         "summary": "Start a recovery process of a recoverable account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7595,7 +7688,7 @@
         },
         "summary": "Complete a recovery process of a recoverable account.",
         "tags": [
-          "Accounts"
+          "accs v1"
         ],
         "security": [
           {
@@ -7694,7 +7787,7 @@
           }
         },
         "description": "Retrieves an authenticated users.\n\nUsers have linked accounts and are authenticated with a provider.",
-        "summary": "Authenticated user.",
+        "summary": "List authenticated users.",
         "tags": [
           "Users"
         ],
@@ -7802,7 +7895,7 @@
           }
         },
         "description": "Retrieves an authenticated user.\n\nUsers have linked accounts and are authenticated with a provider.",
-        "summary": "Authenticated user.",
+        "summary": "Get authenticated user by id.",
         "tags": [
           "Users"
         ],
@@ -7855,7 +7948,7 @@
           }
         },
         "description": "It will delete all linked accounts the user is authenticated with.\nIf the user has a linked embedded signer, it will be deleted as well.",
-        "summary": "Deletes a user object.",
+        "summary": "Delete user by id.",
         "tags": [
           "Users"
         ],
@@ -7881,6 +7974,554 @@
         ]
       }
     },
+    "/v2/users/pregenerate": {
+      "post": {
+        "operationId": "pregenerateUserV2",
+        "responses": {
+          "200": {
+            "description": "User and account pre-generated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PregenerateAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters."
+          },
+          "401": {
+            "description": "Unauthorized - invalid API key."
+          },
+          "409": {
+            "description": "Conflict - user with this identifier already exists."
+          }
+        },
+        "description": "Pre-generate a user with an embedded account before they authenticate.\nCreates a user record and an embedded account using the provided SSS key shares.\nWhen the user later authenticates (via email, OAuth, third-party auth, etc.)\nwith the same identifier, they will be linked to this pre-generated account.\n\nYou can pregenerate using either:\n- `email`: User will be linked when they authenticate with the same email\n- `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider",
+        "summary": "Pre-generate a user with an embedded account.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PregenerateUserRequestV2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend": {
+      "get": {
+        "operationId": "listBackendWallets",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackendWalletListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "List backend wallets.\n\nReturns a paginated list of backend wallets for the project.",
+        "summary": "List backend wallets.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Number of wallets to return (default: 10, max: 100).",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": 10
+          },
+          {
+            "description": "Number of wallets to skip (for pagination).",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": 0
+          },
+          {
+            "description": "Filter by chain type.",
+            "in": "query",
+            "name": "chainType",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "EVM",
+                "SVM"
+              ]
+            },
+            "example": "EVM"
+          },
+          {
+            "description": "Filter by wallet address.",
+            "in": "query",
+            "name": "address",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+          },
+          {
+            "description": "Filter by wallet name.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Treasury Wallet"
+          },
+          {
+            "description": "Filter by associated wallet ID (starts with `pla_`).",
+            "in": "query",
+            "name": "wallet",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createBackendWallet",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateBackendWalletResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Create a new backend wallet account.\n\nGenerates a new keypair securely in the backend wallet system.\nThe private key is stored encrypted and never exposed.",
+        "summary": "Create backend wallet.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackendWalletRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/{id}": {
+      "get": {
+        "operationId": "getBackendWallet",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackendWalletResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Wallet not found."
+          }
+        },
+        "description": "Get backend wallet details.\n\nReturns details for a specific backend wallet.",
+        "summary": "Get backend wallet.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The wallet ID (starts with acc_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteBackendWallet",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteBackendWalletResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Wallet not found."
+          }
+        },
+        "description": "Delete a backend wallet.\n\nPermanently deletes a backend wallet and its associated private key.",
+        "summary": "Delete backend wallet.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The wallet ID (starts with acc_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/accounts/backend/{id}/sign": {
+      "post": {
+        "operationId": "sign",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Account not found."
+          }
+        },
+        "description": "Sign data via backend wallet.\n\nSigns the provided data using the account's private key managed by the backend wallet.\nThe private key is securely stored and never exposed.",
+        "summary": "Sign data via backend wallet.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The account ID (starts with acc_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/{id}/export": {
+      "post": {
+        "operationId": "exportPrivateKey",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportPrivateKeyResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Account not found."
+          }
+        },
+        "description": "Export private key with E2E encryption via backend wallet.\n\nExports the account's private key encrypted using RSA-4096 OAEP SHA-256.\nThe client must provide their ephemeral RSA-4096 public key (base64 SPKI DER format).\nThe response contains the encrypted private key that can be decrypted with the client's private key.",
+        "summary": "Export private key (E2E encrypted).",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The account ID (starts with acc_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportPrivateKeyRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/import": {
+      "post": {
+        "operationId": "importPrivateKey",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportPrivateKeyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid key material."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Import private key with E2E encryption via backend wallet.\n\nImports a private key into the backend wallet system.\nThe private key must be encrypted using RSA-4096 OAEP SHA-256 with the server's\nstatic import public key (obtain out-of-band from SDK or documentation).",
+        "summary": "Import private key (E2E encrypted).",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportPrivateKeyRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/register-secret": {
+      "post": {
+        "operationId": "registerWalletSecret",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterWalletSecretResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Register a new wallet secret (authentication key).\n\nRegisters an ECDSA P-256 public key that will be used to verify\nX-Wallet-Auth JWT signatures. This is required before using WALLET_AUTH\nfor other backend wallet operations.",
+        "summary": "Register wallet secret.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterWalletSecretRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/revoke-secret": {
+      "post": {
+        "operationId": "revokeWalletSecret",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokeWalletSecretResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Secret not found."
+          }
+        },
+        "description": "Revoke a wallet secret (authentication key).\n\nPermanently revokes a wallet secret so it can no longer be used\nfor X-Wallet-Auth JWT signing.",
+        "summary": "Revoke wallet secret.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeWalletSecretRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/accounts/backend/rotate-secrets": {
+      "post": {
+        "operationId": "rotateWalletSecret",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotateWalletSecretResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Rotate wallet secret (authentication key).\n\nReplaces the current wallet secret (ECDSA P-256 public key) used for\nX-Wallet-Auth JWT signing. The old secret will be revoked.",
+        "summary": "Rotate wallet secret.",
+        "tags": [
+          "Backend Wallets"
+        ],
+        "security": [
+          {
+            "wallet_auth": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RotateWalletSecretRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/accounts": {
       "get": {
         "operationId": "getAccountsV2",
@@ -7899,10 +8540,10 @@
             "description": "Error response."
           }
         },
-        "description": "Returns a list of accounts for the given user.\n\nThis object represents a user's account, which is a blockchain smart account that can be used to interact with the blockchain.\n\nThe accounts are returned sorted by creation date, with the most recently created accounts appearing first.\n\nReturns the latest 10 transaction intents for each account.\n\nBy default, a maximum of 10 accounts are shown per page.",
-        "summary": "List accounts of a user.",
+        "description": "Returns a list of accounts for the given user.\n\nThis object represents a user's account, which is a blockchain smart account that can be used to interact with the blockchain.\n\nThe accounts are returned sorted by creation date, with the most recently created accounts appearing first.",
+        "summary": "List user accounts.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8032,8 +8673,10 @@
             "description": "Error response."
           }
         },
+        "description": "Creates a new blockchain account for a user.\n\nAccount creation does not consume any gas. The account can be used to interact with the blockchain.",
+        "summary": "Create new account.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8071,8 +8714,10 @@
             "description": "Error response."
           }
         },
+        "description": "Retrieves the signer ID associated with a given blockchain address.",
+        "summary": "Get signer ID by address.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8121,8 +8766,10 @@
             "description": "Error response."
           }
         },
+        "description": "Retrieves the details of an existing account.\n\nSupply the unique account ID and Openfort will return the corresponding account information.",
+        "summary": "Get existing account.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8173,8 +8820,9 @@
           }
         },
         "description": "Removes an account from a project.",
+        "summary": "Delete account.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8214,8 +8862,10 @@
             "description": "Error response."
           }
         },
+        "description": "Switches the blockchain network for an existing account.\n\nThis allows moving an account between different blockchain networks while maintaining the same account identity.",
+        "summary": "Switch account blockchain.",
         "tags": [
-          "Accounts"
+          "accs v2"
         ],
         "security": [
           {
@@ -8285,7 +8935,7 @@
         "description": "Get or create a new session for the player based on the refresh token.",
         "summary": "Refresh or create auth session.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8319,7 +8969,7 @@
         "description": "When using Openfort Auth, the endpoint logs out the player.",
         "summary": "Log out a player.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8369,7 +9019,7 @@
         "description": "Create a challenge to link external wallet to the player.",
         "summary": "Initialize SIWE.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8441,7 +9091,7 @@
         },
         "summary": "Authenticate player with SIWE",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8484,7 +9134,7 @@
         },
         "summary": "Unlink external wallet.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8530,7 +9180,7 @@
         },
         "summary": "Link external wallet.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8604,7 +9254,7 @@
         "description": "Create and authenticate a player based on email and password.",
         "summary": "Email and password signup.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8681,7 +9331,7 @@
         "description": "Authenticate a player based on email and password.",
         "summary": "Email and password login.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8724,7 +9374,7 @@
         "description": "Start the Email Verification process for a player.",
         "summary": "Request an Email Verification.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8758,7 +9408,7 @@
         "description": "Verify a player's email address.",
         "summary": "Verify an email.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8792,7 +9442,7 @@
         "description": "Start the Reset process for a player's password.",
         "summary": "Request a Reset password.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8826,7 +9476,7 @@
         "description": "Reset a player's password.",
         "summary": "Reset a password.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8872,7 +9522,7 @@
           }
         },
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8923,7 +9573,7 @@
           }
         },
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -8987,7 +9637,7 @@
         "description": "Authenticate a player from an identity token.",
         "summary": "OIDC Identity token.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9036,7 +9686,7 @@
         },
         "summary": "Initialize OAuth.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9085,7 +9735,7 @@
         },
         "summary": "Initialize Link OAuth.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9137,7 +9787,7 @@
         },
         "summary": "Initialize Link OAuth.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9189,7 +9839,7 @@
         },
         "summary": "Initialize OAuth.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9248,7 +9898,7 @@
         },
         "summary": "Authenticate player with oauth token.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9311,7 +9961,7 @@
         },
         "summary": "Verify oauth token of a third party auth provider.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9390,7 +10040,7 @@
         "summary": "Retrieve player by oauth token.",
         "tags": [
           "AdminAuthentication",
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9446,7 +10096,7 @@
         },
         "summary": "Unlink OAuth account",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -9573,6 +10223,152 @@
             }
           }
         }
+      }
+    },
+    "/iam/v1/oauth/callback": {
+      "get": {
+        "operationId": "DeprecatedCallbackOAuth",
+        "responses": {
+          "302": {
+            "description": "Redirect",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists"
+          }
+        },
+        "summary": "oauth callback.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "deprecated": true,
+        "security": [],
+        "parameters": [
+          {
+            "description": "Specifies the oauth code.",
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the oauth state.",
+            "in": "query",
+            "name": "state",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/iam/v1/oauth/grant/{provider}": {
+      "post": {
+        "operationId": "GrantOAuth",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrantOAuthResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists"
+          }
+        },
+        "summary": "oauth grant.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the oauth provider.",
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OAuthProvider"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrantCallbackRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/iam/v1/oauth/callback/{provider}": {
+      "get": {
+        "operationId": "CallbackOAuth",
+        "responses": {
+          "302": {
+            "description": "Redirect",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists"
+          }
+        },
+        "summary": "oauth callback.",
+        "tags": [
+          "AdminAuthentication"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "description": "Specifies the oauth code.",
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the oauth state.",
+            "in": "query",
+            "name": "state",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the oauth provider.",
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OAuthProvider"
+            }
+          }
+        ]
       }
     },
     "/iam/v1/oauth/{provider}": {
@@ -9711,7 +10507,7 @@
         "description": "Create a guest player.",
         "summary": "Create a guest player.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -10232,7 +11028,7 @@
         "description": "Get the jwks.json file.\n\nYou can use the jwks.json file to verify the signature of a JWT token issued by Openfort Auth.",
         "summary": "Get the jwks.json file.",
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [],
         "parameters": [
@@ -10284,7 +11080,7 @@
           }
         },
         "tags": [
-          "Authentication"
+          "auth v1"
         ],
         "security": [
           {
@@ -10405,8 +11201,9 @@
             "description": "Error response."
           }
         },
+        "summary": "Get user information.",
         "tags": [
-          "AuthenticationV2"
+          "auth v2"
         ],
         "security": [
           {
@@ -10461,7 +11258,7 @@
         },
         "summary": "Verify oauth token of a third party auth provider.",
         "tags": [
-          "AuthenticationV2"
+          "auth v2"
         ],
         "security": [
           {
@@ -10487,9 +11284,10 @@
     "/sign-in/social": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Sign in with a social provider",
+        "summary": "Sign in with a social provider.",
         "operationId": "socialSignIn",
         "security": [
           {
@@ -10757,15 +11555,25 @@
     "/get-session": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Get the current session",
+        "summary": "Get the current session.",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "parameters": [
+          {
+            "name": "x-project-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project public key (format: pk_{mode}_{uuid}). Required for authentication but typically provided via middleware."
+          },
           {
             "name": "disableCookieCache",
             "in": "query",
@@ -10901,9 +11709,10 @@
     "/sign-out": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Sign out the current user",
+        "summary": "Sign out.",
         "security": [
           {
             "bearerAuth": []
@@ -11038,9 +11847,10 @@
     "/sign-up/email": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Sign up a user using email and password",
+        "summary": "Sign up with email and password.",
         "security": [
           {
             "bearerAuth": []
@@ -11228,9 +12038,10 @@
     "/sign-in/email": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Sign in with email and password",
+        "summary": "Sign in with email and password.",
         "security": [
           {
             "bearerAuth": []
@@ -11442,9 +12253,10 @@
     "/forget-password": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Send a password reset email to the user",
+        "summary": "Forget password.",
         "security": [
           {
             "bearerAuth": []
@@ -11596,9 +12408,10 @@
     "/reset-password": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Reset the password for a user",
+        "summary": "Reset password.",
         "security": [
           {
             "bearerAuth": []
@@ -11742,9 +12555,10 @@
     "/verify-email": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
-        "description": "Verify the email of the user",
+        "description": "Verify the email of the user.\nUsually this endpoint is called when user clicks 'Verify email' link from the letter.",
+        "summary": "Verify email.",
         "security": [
           {
             "bearerAuth": []
@@ -11935,9 +12749,10 @@
     "/send-verification-email": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Send a verification email to the user",
+        "summary": "Send verification email.",
         "security": [
           {
             "bearerAuth": []
@@ -12087,8 +12902,10 @@
     },
     "/change-email": {
       "post": {
+        "description": "Change user's email",
+        "summary": "Change email.",
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "security": [
           {
@@ -12266,9 +13083,10 @@
     "/change-password": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Change the password of the user",
+        "summary": "Change password.",
         "security": [
           {
             "bearerAuth": []
@@ -12427,327 +13245,13 @@
         }
       }
     },
-    "/update-user": {
-      "post": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Update the current user",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "The name of the user"
-                  },
-                  "image": {
-                    "type": "string",
-                    "description": "The image of the user"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "description": "Indicates if the update was successful"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
-    "/delete-user": {
-      "post": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Delete the user",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "callbackURL": {
-                    "type": "string",
-                    "description": "The callback URL to redirect to after the user is deleted",
-                    "nullable": true
-                  },
-                  "password": {
-                    "type": "string",
-                    "description": "The password of the user is required to delete the user",
-                    "nullable": true
-                  },
-                  "token": {
-                    "type": "string",
-                    "description": "The token to delete the user is required",
-                    "nullable": true
-                  }
-                },
-                "required": []
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User deletion processed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "description": "Indicates if the operation was successful"
-                    },
-                    "message": {
-                      "type": "string",
-                      "enum": [
-                        "User deleted",
-                        "Verification email sent"
-                      ],
-                      "description": "Status message of the deletion process"
-                    }
-                  },
-                  "required": [
-                    "success",
-                    "message"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
     "/reset-password/{token}": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Redirects the user to the callback URL with the token",
+        "summary": "Reset password callback.",
         "security": [
           {
             "bearerAuth": []
@@ -12890,9 +13394,10 @@
     "/request-password-reset": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Send a password reset email to the user",
+        "summary": "Request password reset.",
         "security": [
           {
             "bearerAuth": []
@@ -13044,9 +13549,10 @@
     "/list-sessions": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "List all active sessions for the user",
+        "summary": "List sessions.",
         "security": [
           {
             "bearerAuth": []
@@ -13169,9 +13675,10 @@
     "/revoke-session": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Revoke a single session",
+        "summary": "Revoke session.",
         "security": [
           {
             "bearerAuth": []
@@ -13318,9 +13825,10 @@
     "/revoke-sessions": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Revoke all sessions for the user",
+        "summary": "Revoke sessions.",
         "security": [
           {
             "bearerAuth": []
@@ -13459,9 +13967,10 @@
     "/revoke-other-sessions": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Revoke all other sessions for the user except the current one",
+        "summary": "Revoke other sessions.",
         "security": [
           {
             "bearerAuth": []
@@ -13600,9 +14109,10 @@
     "/link-social": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Link a social account to the user",
+        "summary": "Link social account.",
         "security": [
           {
             "bearerAuth": []
@@ -13814,9 +14324,10 @@
     "/list-accounts": {
       "get": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "List all accounts linked to the user",
+        "summary": "List lined accounts.",
         "security": [
           {
             "bearerAuth": []
@@ -13974,169 +14485,13 @@
         }
       }
     },
-    "/delete-user/callback": {
-      "get": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Callback to complete user deletion with verification token",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "token",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "description": "The token to verify the deletion request"
-            }
-          },
-          {
-            "name": "callbackURL",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "description": "The URL to redirect to after deletion",
-              "nullable": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User successfully deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "description": "Indicates if the deletion was successful"
-                    },
-                    "message": {
-                      "type": "string",
-                      "enum": [
-                        "User deleted"
-                      ],
-                      "description": "Confirmation message"
-                    }
-                  },
-                  "required": [
-                    "success",
-                    "message"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
     "/unlink-account": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Unlink an account",
+        "summary": "Unlink account.",
         "security": [
           {
             "bearerAuth": []
@@ -14278,9 +14633,10 @@
     "/refresh-token": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Refresh the access token using a refresh token",
+        "summary": "Refresh access token.",
         "security": [
           {
             "bearerAuth": []
@@ -14436,9 +14792,10 @@
     "/get-access-token": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Get a valid access token, doing a refresh if needed",
+        "summary": "Get access token.",
         "security": [
           {
             "bearerAuth": []
@@ -14594,9 +14951,10 @@
     "/account-info": {
       "post": {
         "tags": [
-          "Default"
+          "auth v2"
         ],
         "description": "Get the account info provided by the provider",
+        "summary": "Get account info.",
         "security": [
           {
             "bearerAuth": []
@@ -14768,266 +15126,13 @@
         }
       }
     },
-    "/ok": {
-      "get": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Check if the API is working",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "API is working",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "description": "Indicates if the API is working"
-                    }
-                  },
-                  "required": [
-                    "ok"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
-    "/error": {
-      "get": {
-        "tags": [
-          "Default"
-        ],
-        "description": "Displays an error page",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string",
-                  "description": "The HTML content of the error page"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Bad Request. Usually due to missing parameters, or invalid parameters."
-          },
-          "401": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            },
-            "description": "Unauthorized. Due to missing or invalid authentication."
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Forbidden. You do not have permission to access this resource or to perform this action."
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Not Found. The requested resource was not found."
-          },
-          "429": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Too Many Requests. You have exceeded the rate limit. Try again later."
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Internal Server Error. This is a problem with the server that you cannot fix."
-          }
-        }
-      }
-    },
     "/sign-in/anonymous": {
       "post": {
         "tags": [
-          "Anonymous"
+          "auth v2"
         ],
         "description": "Sign in anonymously",
+        "summary": "Anonymous sign in.",
         "security": [
           {
             "bearerAuth": []
@@ -15160,9 +15265,10 @@
     "/sign-in/phone-number": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Use this endpoint to sign in with phone number",
+        "summary": "Sign in with phone.",
         "security": [
           {
             "bearerAuth": []
@@ -15309,9 +15415,10 @@
     "/phone-number/send-otp": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Use this endpoint to send OTP to phone number",
+        "summary": "Send OTP to phone number.",
         "security": [
           {
             "bearerAuth": []
@@ -15455,9 +15562,10 @@
     "/phone-number/verify": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Use this endpoint to verify phone number",
+        "summary": "Verify phone OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -15671,9 +15779,10 @@
     "/phone-number/forget-password": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Request OTP for password reset via phone number",
+        "summary": "Reset password reset with phone(forget password flow).",
         "security": [
           {
             "bearerAuth": []
@@ -15824,9 +15933,10 @@
     "/phone-number/request-password-reset": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Request OTP for password reset via phone number",
+        "summary": "Request password reset with phone.",
         "security": [
           {
             "bearerAuth": []
@@ -15976,9 +16086,10 @@
     "/phone-number/reset-password": {
       "post": {
         "tags": [
-          "Phone-number"
+          "auth v2"
         ],
         "description": "Reset password using phone number OTP",
+        "summary": "Reset password with phone OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16127,9 +16238,10 @@
     "/email-otp/send-verification-otp": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Send verification OTP",
+        "summary": "Request email verification with OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16279,9 +16391,10 @@
       "post": {
         "operationId": "checkVerificationOtp",
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Check if a verification OTP is valid",
+        "summary": "Check email OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16440,9 +16553,10 @@
     "/email-otp/verify-email": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Verify email with OTP",
+        "summary": "Verify email with OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16608,9 +16722,10 @@
     "/sign-in/email-otp": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Sign in with OTP",
+        "summary": "Sign in with email OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16767,9 +16882,10 @@
     "/forget-password/email-otp": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Send a password reset OTP to the user",
+        "summary": "Request password reset with email OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -16914,9 +17030,10 @@
     "/email-otp/reset-password": {
       "post": {
         "tags": [
-          "Email-otp"
+          "auth v2"
         ],
         "description": "Reset user password with OTP",
+        "summary": "Reset password with email OTP.",
         "security": [
           {
             "bearerAuth": []
@@ -17065,9 +17182,10 @@
     "/siwe/nonce": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
         "description": "Generate a nonce for Sign-In With Ethereum (SIWE) authentication",
+        "summary": "Initialize SIWE login.",
         "security": [
           {
             "bearerAuth": []
@@ -17180,9 +17298,10 @@
     "/siwe/verify": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
         "description": "Verify a signed SIWE message and authenticate the user",
+        "summary": "Login with SIWE.",
         "security": [
           {
             "bearerAuth": []
@@ -17347,9 +17466,9 @@
     "/link-siwe/nonce": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
-        "summary": "Get nonce for linking SIWE wallet",
+        "summary": "Initialize SIWE link.",
         "description": "Generates a cryptographically secure nonce for creating a SIWE message to link a wallet to the current authenticated user. Requires active session.",
         "security": [
           {
@@ -17463,9 +17582,9 @@
     "/link-siwe/verify": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
-        "summary": "Verify and link SIWE wallet",
+        "summary": "Verify and link SIWE wallet.",
         "description": "Verifies the SIWE signature and links the wallet to the currently authenticated user. Requires active session.",
         "security": [
           {
@@ -17651,9 +17770,9 @@
     "/link-siwe/list-wallets": {
       "get": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
-        "summary": "List linked wallets",
+        "summary": "List linked wallets.",
         "description": "Get all SIWE wallets linked to the authenticated user with full wallet metadata including primary status and chain information. Requires active session.",
         "security": [
           {
@@ -17747,9 +17866,9 @@
     "/link-siwe/unlink": {
       "post": {
         "tags": [
-          "SIWE"
+          "auth v2"
         ],
-        "summary": "Unlink SIWE wallet",
+        "summary": "Unlink SIWE wallet.",
         "description": "Remove a linked wallet from the authenticated user account. If the wallet being unlinked is the primary wallet, another wallet will be automatically promoted to primary. Requires active session.",
         "security": [
           {
@@ -24218,6 +24337,193 @@
       "UserDeleteResponse": {
         "$ref": "#/components/schemas/BaseDeleteEntityResponse_EntityType.PLAYER_"
       },
+      "SmartAccountData": {
+        "properties": {
+          "implementationType": {
+            "type": "string"
+          },
+          "factoryAddress": {
+            "type": "string"
+          },
+          "implementationAddress": {
+            "type": "string"
+          },
+          "salt": {
+            "type": "string"
+          },
+          "deployedTx": {
+            "type": "string"
+          },
+          "deployedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "implementationType",
+          "implementationAddress",
+          "active"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PasskeyEnv": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "os": {
+            "type": "string"
+          },
+          "osVersion": {
+            "type": "string"
+          },
+          "device": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RecoveryMethodDetails": {
+        "properties": {
+          "passkeyId": {
+            "type": "string"
+          },
+          "passkeyEnv": {
+            "$ref": "#/components/schemas/PasskeyEnv"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PregenerateAccountResponse": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "accountType": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "ownerAddress": {
+            "type": "string"
+          },
+          "chainType": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "updatedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "smartAccount": {
+            "$ref": "#/components/schemas/SmartAccountData"
+          },
+          "recoveryMethod": {
+            "type": "string"
+          },
+          "recoveryMethodDetails": {
+            "$ref": "#/components/schemas/RecoveryMethodDetails"
+          },
+          "recoveryShare": {
+            "type": "string",
+            "description": "The recovery share for the user's embedded signer.\nThis should be stored securely and provided to the user for account recovery."
+          }
+        },
+        "required": [
+          "id",
+          "user",
+          "accountType",
+          "address",
+          "chainType",
+          "createdAt",
+          "updatedAt",
+          "recoveryShare"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ThirdPartyOAuthProvider": {
+        "description": "Enum of the supporting third party auth providers.",
+        "enum": [
+          "accelbyte",
+          "firebase",
+          "lootlocker",
+          "playfab",
+          "supabase",
+          "custom",
+          "oidc",
+          "better-auth"
+        ],
+        "type": "string"
+      },
+      "PregenerateUserRequestV2": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user to pregenerate.\nRequired if thirdPartyUserId is not provided.",
+            "example": "user@example.com"
+          },
+          "thirdPartyUserId": {
+            "type": "string",
+            "description": "The third-party user ID from an external auth provider (Firebase, Supabase, etc.).\nRequired if email is not provided.",
+            "example": "firebase_uid_abc123"
+          },
+          "thirdPartyProvider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider",
+            "description": "The third-party auth provider. Required when thirdPartyUserId is provided.",
+            "example": "firebase"
+          },
+          "accountType": {
+            "type": "string",
+            "enum": [
+              "Externally Owned Account",
+              "Smart Account",
+              "Delegated Account"
+            ],
+            "description": "The type of account to pregenerate. \"Externally Owned Account\", \"Smart Account\" or \"Delegated Account\".\nDefaults to \"Smart Account\".",
+            "example": "Smart Account"
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type. \"EVM\" or \"SVM\". Defaults to \"EVM\".",
+            "example": "EVM"
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Required for Smart Account and Delegated Account types.\nMust be a [supported chain](/development/chains).",
+            "example": 137
+          },
+          "implementationType": {
+            "type": "string",
+            "description": "The implementation type for Smart Account or Delegated Account (e.g. Calibur, UpgradeableV6).\nRequired for Smart Account and Delegated Account types.",
+            "example": "Calibur"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
       "RecoverV2Response": {
         "properties": {
           "id": {
@@ -24341,66 +24647,568 @@
         "type": "object",
         "additionalProperties": false
       },
-      "SmartAccountData": {
+      "BackendWalletResponse": {
+        "description": "Backend wallet details response.",
         "properties": {
-          "implementationType": {
-            "type": "string"
+          "object": {
+            "type": "string",
+            "enum": [
+              "backendWallet"
+            ],
+            "nullable": false,
+            "description": "The type of object."
           },
-          "factoryAddress": {
-            "type": "string"
+          "id": {
+            "type": "string",
+            "description": "The wallet ID (starts with `acc_`).",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
           },
-          "implementationAddress": {
-            "type": "string"
+          "address": {
+            "type": "string",
+            "description": "The wallet address.",
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
           },
-          "salt": {
-            "type": "string"
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type the wallet is associated with.",
+            "example": "EVM"
           },
-          "deployedTx": {
-            "type": "string"
+          "name": {
+            "type": "string",
+            "description": "Optional name for the wallet.",
+            "example": "Treasury Wallet"
           },
-          "deployedAt": {
-            "type": "number",
-            "format": "double"
+          "createdAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Creation timestamp (Unix epoch seconds)."
           },
-          "active": {
-            "type": "boolean"
+          "updatedAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Last updated timestamp (Unix epoch seconds)."
           }
         },
         "required": [
-          "implementationType",
-          "implementationAddress",
-          "active"
+          "object",
+          "id",
+          "address",
+          "chainType",
+          "createdAt",
+          "updatedAt"
         ],
         "type": "object",
         "additionalProperties": false
       },
-      "PasskeyEnv": {
+      "BackendWalletListResponse": {
+        "description": "List of backend wallets response.",
         "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "url": {
+            "type": "string",
+            "description": "API endpoint URL."
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/BackendWalletResponse"
+            },
+            "type": "array",
+            "description": "List of backend wallets."
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Starting index."
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Ending index."
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Total number of wallets."
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "BackendWalletListQueries": {
+        "description": "Query parameters for listing backend wallets.",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of wallets to return (default: 10, max: 100).",
+            "example": 10
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of wallets to skip (for pagination).",
+            "example": 0
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "Filter by chain type.",
+            "example": "EVM"
+          },
+          "address": {
+            "type": "string",
+            "description": "Filter by wallet address.",
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+          },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Filter by wallet name.",
+            "example": "Treasury Wallet"
           },
-          "os": {
-            "type": "string"
-          },
-          "osVersion": {
-            "type": "string"
-          },
-          "device": {
-            "type": "string"
+          "wallet": {
+            "type": "string",
+            "description": "Filter by associated wallet ID (starts with `pla_`).",
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
           }
         },
         "type": "object",
         "additionalProperties": false
       },
-      "RecoveryMethodDetails": {
+      "CreateBackendWalletResponse": {
+        "description": "Response from creating a new backend wallet account.",
         "properties": {
-          "passkeyId": {
-            "type": "string"
+          "object": {
+            "type": "string",
+            "enum": [
+              "account"
+            ],
+            "nullable": false,
+            "description": "The type of object."
           },
-          "passkeyEnv": {
-            "$ref": "#/components/schemas/PasskeyEnv"
+          "id": {
+            "type": "string",
+            "description": "The created account ID (starts with `acc_`).",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "address": {
+            "type": "string",
+            "description": "The wallet address generated for this account.",
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type the wallet is associated with.",
+            "example": "EVM"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Creation timestamp (Unix epoch seconds)."
           }
         },
+        "required": [
+          "object",
+          "id",
+          "address",
+          "chainType",
+          "createdAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateBackendWalletRequest": {
+        "description": "Request to create a new backend wallet account.",
+        "properties": {
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type for the new wallet.",
+            "example": "EVM"
+          },
+          "wallet": {
+            "type": "string",
+            "description": "The wallet ID to associate with this wallet (starts with `pla_`).",
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional name for the wallet.",
+            "example": "Treasury Wallet"
+          }
+        },
+        "required": [
+          "chainType"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "DeleteBackendWalletResponse": {
+        "description": "Response from deleting a backend wallet.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "backendWallet"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "id": {
+            "type": "string",
+            "description": "The deleted wallet ID.",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Whether the wallet was deleted."
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "deleted"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SignResponse": {
+        "description": "Response from signing data via backend wallet.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "signature"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "account": {
+            "type": "string",
+            "description": "The account ID that signed the data (starts with `acc_`).",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "signature": {
+            "type": "string",
+            "description": "The signature bytes (hex-encoded).",
+            "example": "0x1234567890abcdef..."
+          }
+        },
+        "required": [
+          "object",
+          "account",
+          "signature"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SignRequest": {
+        "description": "Request to sign data via backend wallet.",
+        "properties": {
+          "data": {
+            "type": "string",
+            "description": "The data to sign (hex-encoded transaction data or message hash).",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ExportPrivateKeyResponse": {
+        "description": "Response from exporting a private key with E2E encryption.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "exportedKey"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "encryptedPrivateKey": {
+            "type": "string",
+            "description": "The private key encrypted with RSA-OAEP SHA-256 using your ephemeral public key (base64-encoded).\nDecrypt using your ephemeral RSA private key.",
+            "example": "base64_encrypted_data..."
+          }
+        },
+        "required": [
+          "object",
+          "encryptedPrivateKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ExportPrivateKeyRequest": {
+        "description": "Request to export private key with E2E encryption.",
+        "properties": {
+          "encryptionKey": {
+            "type": "string",
+            "description": "Client's ephemeral RSA-4096 public key for end-to-end encryption (base64 SPKI DER format).\nThe backend wallet will encrypt the private key using RSA-OAEP SHA-256.",
+            "example": "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA..."
+          }
+        },
+        "required": [
+          "encryptionKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ImportPrivateKeyResponse": {
+        "description": "Response from importing a private key with E2E encryption.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "account"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "id": {
+            "type": "string",
+            "description": "The created account ID (starts with `acc_`).",
+            "example": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "address": {
+            "type": "string",
+            "description": "The wallet address derived from the imported private key.",
+            "example": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type the wallet is associated with.",
+            "example": "EVM"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Creation timestamp (Unix epoch seconds)."
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "address",
+          "createdAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ImportPrivateKeyRequest": {
+        "description": "Request to import private key with E2E encryption.",
+        "properties": {
+          "encryptedPrivateKey": {
+            "type": "string",
+            "description": "The private key encrypted with RSA-OAEP SHA-256 using the server's static import public key.\nObtain the server's import public key out-of-band (e.g., from SDK or documentation).",
+            "example": "base64_encrypted_data..."
+          },
+          "chainType": {
+            "type": "string",
+            "enum": [
+              "EVM",
+              "SVM"
+            ],
+            "description": "The chain type for the imported wallet.",
+            "example": "EVM"
+          },
+          "wallet": {
+            "type": "string",
+            "description": "The wallet ID to associate with this wallet (starts with `pla_`).",
+            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional name for the imported wallet.",
+            "example": "Treasury Wallet"
+          }
+        },
+        "required": [
+          "encryptedPrivateKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RegisterWalletSecretResponse": {
+        "description": "Response from registering a new wallet secret.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "walletSecret"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "keyId": {
+            "type": "string",
+            "description": "The key ID for the registered secret.",
+            "example": "ws_1234567890"
+          },
+          "registeredAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Timestamp when the secret was registered (Unix epoch seconds)."
+          }
+        },
+        "required": [
+          "object",
+          "keyId",
+          "registeredAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RegisterWalletSecretRequest": {
+        "description": "Request to register a new wallet secret (authentication key).",
+        "properties": {
+          "publicKey": {
+            "type": "string",
+            "description": "ECDSA P-256 public key for wallet authentication (PEM or raw hex format).\nThis will be used to verify X-Wallet-Auth JWT signatures.",
+            "example": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE..."
+          },
+          "keyId": {
+            "type": "string",
+            "description": "Key identifier for the secret.\nUsed to identify this key in X-Wallet-Auth JWT headers.",
+            "example": "ws_1234567890"
+          }
+        },
+        "required": [
+          "publicKey"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RevokeWalletSecretResponse": {
+        "description": "Response from revoking a wallet secret.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "walletSecretRevocation"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "keyId": {
+            "type": "string",
+            "description": "The key ID of the revoked secret.",
+            "example": "ws_1234567890"
+          },
+          "revoked": {
+            "type": "boolean",
+            "description": "Whether the secret was successfully revoked."
+          },
+          "revokedAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Timestamp when the secret was revoked (Unix epoch seconds)."
+          }
+        },
+        "required": [
+          "object",
+          "keyId",
+          "revoked",
+          "revokedAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RevokeWalletSecretRequest": {
+        "description": "Request to revoke a wallet secret (authentication key).",
+        "properties": {
+          "keyId": {
+            "type": "string",
+            "description": "Key identifier of the secret to revoke.",
+            "example": "ws_1234567890"
+          }
+        },
+        "required": [
+          "keyId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RotateWalletSecretResponse": {
+        "description": "Response from rotating a wallet secret.",
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "walletSecretRotation"
+            ],
+            "nullable": false,
+            "description": "The type of object."
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the rotation was successful."
+          },
+          "rotatedAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Timestamp when the rotation occurred (Unix epoch seconds)."
+          }
+        },
+        "required": [
+          "object",
+          "success",
+          "rotatedAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RotateWalletSecretRequest": {
+        "description": "Request to rotate wallet secret (authentication key).",
+        "properties": {
+          "newSecretPublicKey": {
+            "type": "string",
+            "description": "New ECDSA P-256 public key for wallet authentication.\nThis will replace the current wallet secret used for X-Wallet-Auth JWT signing.",
+            "example": "04abc123def456..."
+          },
+          "newKeyId": {
+            "type": "string",
+            "description": "Key identifier for the new secret.\nUsed to identify this key in X-Wallet-Auth JWT headers.",
+            "example": "ws_1234567890"
+          }
+        },
+        "required": [
+          "newSecretPublicKey"
+        ],
         "type": "object",
         "additionalProperties": false
       },
@@ -26513,20 +27321,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "ThirdPartyOAuthProvider": {
-        "description": "Enum of the supporting third party auth providers.",
-        "enum": [
-          "accelbyte",
-          "firebase",
-          "lootlocker",
-          "playfab",
-          "supabase",
-          "custom",
-          "oidc",
-          "better-auth"
-        ],
-        "type": "string"
-      },
       "ThirdPartyLinkRequest": {
         "properties": {
           "provider": {
@@ -28163,6 +28957,7 @@
           }
         },
         "required": [
+          "id",
           "name",
           "email",
           "createdAt",
@@ -28381,5 +29176,45 @@
         "scheme": "bearer"
       }
     }
-  }
+  },
+  "x-tagGroups": [
+    {
+      "name": "Users",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "name": "Accounts",
+      "tags": [
+        "accs v1",
+        "accs v2"
+      ]
+    },
+    {
+      "name": "Transactions",
+      "tags": [
+        "TransactionIntents"
+      ]
+    },
+    {
+      "name": "Authentication",
+      "tags": [
+        "auth v1",
+        "auth v2"
+      ]
+    },
+    {
+      "name": "Session keys",
+      "tags": [
+        "Sessions"
+      ]
+    },
+    {
+      "name": "Sponsor transactions & Models",
+      "tags": [
+        "Policies"
+      ]
+    }
+  ]
 }

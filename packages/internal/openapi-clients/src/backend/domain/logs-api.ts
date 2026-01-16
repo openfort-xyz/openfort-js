@@ -22,22 +22,23 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { AuthUserResponse } from '../models';
-// @ts-ignore
-import { ThirdPartyOAuthRequest } from '../models';
+import { ProjectLogs } from '../models';
 /**
- * AuthenticationV2Api - axios parameter creator
+ * LogsApi - axios parameter creator
  * @export
  */
-export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Configuration) {
+export const LogsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Get logs for a project.
+         * @param {Array<string>} [method] .
+         * @param {string} [id] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        meV2: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/iam/v2/me`;
+        getProjectLogs: async (method?: Array<string>, id?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v1/logs`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -49,6 +50,18 @@ export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Co
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (method) {
+                localVarQueryParameter['method'] = method;
+            }
+
+            if (id !== undefined) {
+                localVarQueryParameter['id'] = id;
+            }
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -62,15 +75,12 @@ export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Co
         },
         /**
          * 
-         * @summary Verify oauth token of a third party auth provider.
-         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @summary Get webhook logs for a project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        thirdPartyV2: async (thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'thirdPartyOAuthRequest' is not null or undefined
-            assertParamExists('thirdPartyV2', 'thirdPartyOAuthRequest', thirdPartyOAuthRequest)
-            const localVarPath = `/iam/v2/user/third_party`;
+        getWebhookLogsByProjectId: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v1/logs/webhook`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -78,22 +88,19 @@ export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Co
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication pk required
+            // authentication sk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(thirdPartyOAuthRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -104,104 +111,115 @@ export const AuthenticationV2ApiAxiosParamCreator = function (configuration?: Co
 };
 
 /**
- * AuthenticationV2Api - functional programming interface
+ * LogsApi - functional programming interface
  * @export
  */
-export const AuthenticationV2ApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = AuthenticationV2ApiAxiosParamCreator(configuration)
+export const LogsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = LogsApiAxiosParamCreator(configuration)
     return {
         /**
          * 
+         * @summary Get logs for a project.
+         * @param {Array<string>} [method] .
+         * @param {string} [id] Specifies the unique project ID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async meV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.meV2(options);
+        async getProjectLogs(method?: Array<string>, id?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectLogs>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectLogs(method, id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
-         * @summary Verify oauth token of a third party auth provider.
-         * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
+         * @summary Get webhook logs for a project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async thirdPartyV2(thirdPartyOAuthRequest: ThirdPartyOAuthRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.thirdPartyV2(thirdPartyOAuthRequest, options);
+        async getWebhookLogsByProjectId(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectLogs>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getWebhookLogsByProjectId(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
 };
 
 /**
- * AuthenticationV2Api - factory interface
+ * LogsApi - factory interface
  * @export
  */
-export const AuthenticationV2ApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = AuthenticationV2ApiFp(configuration)
+export const LogsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = LogsApiFp(configuration)
     return {
         /**
          * 
+         * @summary Get logs for a project.
+         * @param {LogsApiGetProjectLogsRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        meV2(options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
-            return localVarFp.meV2(options).then((request) => request(axios, basePath));
+        getProjectLogs(requestParameters: LogsApiGetProjectLogsRequest = {}, options?: AxiosRequestConfig): AxiosPromise<ProjectLogs> {
+            return localVarFp.getProjectLogs(requestParameters.method, requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Verify oauth token of a third party auth provider.
-         * @param {AuthenticationV2ApiThirdPartyV2Request} requestParameters Request parameters.
+         * @summary Get webhook logs for a project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        thirdPartyV2(requestParameters: AuthenticationV2ApiThirdPartyV2Request, options?: AxiosRequestConfig): AxiosPromise<AuthUserResponse> {
-            return localVarFp.thirdPartyV2(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(axios, basePath));
+        getWebhookLogsByProjectId(options?: AxiosRequestConfig): AxiosPromise<ProjectLogs> {
+            return localVarFp.getWebhookLogsByProjectId(options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for thirdPartyV2 operation in AuthenticationV2Api.
+ * Request parameters for getProjectLogs operation in LogsApi.
  * @export
- * @interface AuthenticationV2ApiThirdPartyV2Request
+ * @interface LogsApiGetProjectLogsRequest
  */
-export interface AuthenticationV2ApiThirdPartyV2Request {
+export interface LogsApiGetProjectLogsRequest {
     /**
-     * 
-     * @type {ThirdPartyOAuthRequest}
-     * @memberof AuthenticationV2ApiThirdPartyV2
+     * .
+     * @type {Array<string>}
+     * @memberof LogsApiGetProjectLogs
      */
-    readonly thirdPartyOAuthRequest: ThirdPartyOAuthRequest
+    readonly method?: Array<string>
+
+    /**
+     * Specifies the unique project ID.
+     * @type {string}
+     * @memberof LogsApiGetProjectLogs
+     */
+    readonly id?: string
 }
 
 /**
- * AuthenticationV2Api - object-oriented interface
+ * LogsApi - object-oriented interface
  * @export
- * @class AuthenticationV2Api
+ * @class LogsApi
  * @extends {BaseAPI}
  */
-export class AuthenticationV2Api extends BaseAPI {
+export class LogsApi extends BaseAPI {
     /**
      * 
+     * @summary Get logs for a project.
+     * @param {LogsApiGetProjectLogsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof AuthenticationV2Api
+     * @memberof LogsApi
      */
-    public meV2(options?: AxiosRequestConfig) {
-        return AuthenticationV2ApiFp(this.configuration).meV2(options).then((request) => request(this.axios, this.basePath));
+    public getProjectLogs(requestParameters: LogsApiGetProjectLogsRequest = {}, options?: AxiosRequestConfig) {
+        return LogsApiFp(this.configuration).getProjectLogs(requestParameters.method, requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Verify oauth token of a third party auth provider.
-     * @param {AuthenticationV2ApiThirdPartyV2Request} requestParameters Request parameters.
+     * @summary Get webhook logs for a project.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof AuthenticationV2Api
+     * @memberof LogsApi
      */
-    public thirdPartyV2(requestParameters: AuthenticationV2ApiThirdPartyV2Request, options?: AxiosRequestConfig) {
-        return AuthenticationV2ApiFp(this.configuration).thirdPartyV2(requestParameters.thirdPartyOAuthRequest, options).then((request) => request(this.axios, this.basePath));
+    public getWebhookLogsByProjectId(options?: AxiosRequestConfig) {
+        return LogsApiFp(this.configuration).getWebhookLogsByProjectId(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

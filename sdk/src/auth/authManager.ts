@@ -1,12 +1,12 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type {
-  AuthenticationV2ApiThirdPartyV2Request,
-  DefaultApiLinkSocialPostRequest,
-  DefaultApiSocialSignInRequest,
+  AuthV2ApiThirdPartyV2Request,
   GetSessionGet200Response,
-  SIWEApiLinkSiweNoncePostRequest,
-  SIWEApiSiweNoncePostRequest,
-  SIWEApiSiweVerifyPostRequest,
+  LinkSocialPostRequest,
+  AuthV2ApiLinkSiweNoncePostRequest as SIWEApiLinkSiweNoncePostRequest,
+  AuthV2ApiSiweNoncePostRequest as SIWEApiSiweNoncePostRequest,
+  AuthV2ApiSiweVerifyPostRequest as SIWEApiSiweVerifyPostRequest,
+  SocialSignInRequest,
 } from '@openfort/openapi-clients/dist/backend'
 import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
@@ -129,7 +129,7 @@ export class AuthManager {
   ): Promise<string> {
     return await withApiError<string>(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.socialSignIn(
+        const response = await this.backendApiClients.userApi.socialSignIn(
           {
             socialSignInRequest: {
               provider,
@@ -153,7 +153,7 @@ export class AuthManager {
   async linkOAuthToAnonymous(auth: Authentication, provider: OAuthProvider, redirectUrl: string): Promise<string> {
     return await withApiError<string>(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.socialSignIn(
+        const response = await this.backendApiClients.userApi.socialSignIn(
           {
             socialSignInRequest: {
               provider,
@@ -176,7 +176,7 @@ export class AuthManager {
   public async registerGuest(): Promise<AuthResponse> {
     return withApiError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.anonymousApi.signInAnonymousPost({
+        const response = await this.backendApiClients.userApi.signInAnonymousPost({
           headers: {
             'x-project-key': `${this.publishableKey}`,
           },
@@ -191,7 +191,7 @@ export class AuthManager {
   }
 
   public async loginWithIdToken(provider: OAuthProvider, token: string): Promise<AuthResponse> {
-    const request: DefaultApiSocialSignInRequest = {
+    const request: { socialSignInRequest: SocialSignInRequest } = {
       socialSignInRequest: {
         provider: provider,
         idToken: {
@@ -201,7 +201,7 @@ export class AuthManager {
     }
     return await withApiError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.socialSignIn(request, {
+        const response = await this.backendApiClients.userApi.socialSignIn(request, {
           headers: {
             'x-project-key': `${this.publishableKey}`,
           },
@@ -216,7 +216,7 @@ export class AuthManager {
   }
 
   public async authenticateThirdParty(provider: ThirdPartyAuthProvider, token: string): Promise<{ userId: string }> {
-    const request: AuthenticationV2ApiThirdPartyV2Request = {
+    const request: AuthV2ApiThirdPartyV2Request = {
       thirdPartyOAuthRequest: {
         provider,
         token,
@@ -243,7 +243,7 @@ export class AuthManager {
     }
     const result = await withApiError(
       async () =>
-        this.backendApiClients.siweApi.siweNoncePost(request, {
+        this.backendApiClients.userApi.siweNoncePost(request, {
           headers: {
             'x-project-key': `${this.publishableKey}`,
           },
@@ -265,7 +265,7 @@ export class AuthManager {
     }
     const result = await withApiError(
       async () =>
-        this.backendApiClients.siweApi.linkSiweNoncePost(request, {
+        this.backendApiClients.userApi.linkSiweNoncePost(request, {
           headers: {
             authorization: `Bearer ${auth.token}`,
             'x-project-key': `${this.publishableKey}`,
@@ -298,7 +298,7 @@ export class AuthManager {
     }
     return withApiError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.siweApi.siweVerifyPost(request, {
+        const response = await this.backendApiClients.userApi.siweVerifyPost(request, {
           headers: {
             'x-project-key': `${this.publishableKey}`,
           },
@@ -316,7 +316,7 @@ export class AuthManager {
   public async loginEmailPassword(email: string, password: string): Promise<AuthResponse> {
     return withApiError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.signInEmailPost(
+        const response = await this.backendApiClients.userApi.signInEmailPost(
           {
             signInEmailPostRequest: {
               email,
@@ -342,7 +342,7 @@ export class AuthManager {
   public async requestResetPassword(email: string, redirectUrl: string): Promise<void> {
     await withApiError<void>(
       async () => {
-        await this.backendApiClients.authenticationV2Api.requestPasswordResetPost(
+        await this.backendApiClients.userApi.requestPasswordResetPost(
           {
             forgetPasswordPostRequest: {
               email,
@@ -363,7 +363,7 @@ export class AuthManager {
   public async resetPassword(password: string, token: string): Promise<void> {
     return withApiError<void>(
       async () => {
-        await this.backendApiClients.authenticationV2Api.resetPasswordPost(
+        await this.backendApiClients.userApi.resetPasswordPost(
           {
             resetPasswordPostRequest: {
               newPassword: password,
@@ -384,7 +384,7 @@ export class AuthManager {
   public async requestEmailVerification(email: string, redirectUrl: string): Promise<void> {
     await withApiError<void>(
       async () => {
-        await this.backendApiClients.authenticationV2Api.sendVerificationEmailPost(
+        await this.backendApiClients.userApi.sendVerificationEmailPost(
           {
             sendVerificationEmailPostRequest: {
               email,
@@ -405,7 +405,7 @@ export class AuthManager {
   public async verifyEmail(token: string, callbackURL?: string): Promise<void> {
     return withApiError<void>(
       async () => {
-        await this.backendApiClients.authenticationV2Api.verifyEmailGet({
+        await this.backendApiClients.userApi.verifyEmailGet({
           token,
           callbackURL,
         })
@@ -423,7 +423,7 @@ export class AuthManager {
   ): Promise<AuthResponse | AuthActionRequiredResponse> {
     return withApiError<AuthResponse | AuthActionRequiredResponse>(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.signUpEmailPost(
+        const response = await this.backendApiClients.userApi.signUpEmailPost(
           {
             signUpEmailPostRequest: {
               email,
@@ -465,7 +465,7 @@ export class AuthManager {
   public async logout(auth: Authentication): Promise<void> {
     return withApiError<void>(
       async () => {
-        await this.backendApiClients.authenticationV2Api.signOutPost(undefined, {
+        await this.backendApiClients.userApi.signOutPost(undefined, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
@@ -513,7 +513,7 @@ export class AuthManager {
     options?: InitializeOAuthOptions
   ): Promise<string> {
     const skipBrowserRedirect = options?.skipBrowserRedirect ?? false
-    const request: DefaultApiLinkSocialPostRequest = {
+    const request: { linkSocialPostRequest: LinkSocialPostRequest } = {
       linkSocialPostRequest: {
         provider,
         callbackURL: redirectTo,
@@ -523,7 +523,7 @@ export class AuthManager {
     }
     const result = await withApiError(
       async () =>
-        this.backendApiClients.authenticationV2Api.linkSocialPost(request, {
+        this.backendApiClients.userApi.linkSocialPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
@@ -546,14 +546,14 @@ export class AuthManager {
   }
 
   public async unlinkOAuth(provider: OAuthProvider, auth: Authentication) {
-    const request: Parameters<typeof this.backendApiClients.authenticationV2Api.unlinkAccountPost>[0] = {
+    const request: Parameters<typeof this.backendApiClients.userApi.unlinkAccountPost>[0] = {
       unlinkAccountPostRequest: {
         providerId: provider,
       },
     }
     return withApiError(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.unlinkAccountPost(request, {
+        const response = await this.backendApiClients.userApi.unlinkAccountPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
@@ -575,7 +575,7 @@ export class AuthManager {
   public async addEmail(email: string, callbackURL: string, auth: Authentication) {
     return withApiError(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.changeEmailPost(
+        const response = await this.backendApiClients.userApi.changeEmailPost(
           {
             changeEmailPostRequest: {
               newEmail: email,
@@ -611,7 +611,7 @@ export class AuthManager {
     }
     return withApiError(
       async () => {
-        const authPlayerResponse = await this.backendApiClients.siweApi.linkSiweUnlinkPost(request, {
+        const authPlayerResponse = await this.backendApiClients.userApi.linkSiweUnlinkPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
@@ -651,7 +651,7 @@ export class AuthManager {
     }
     return withApiError(
       async () => {
-        const response = await this.backendApiClients.siweApi.linkSiweVerifyPost(request, {
+        const response = await this.backendApiClients.userApi.linkSiweVerifyPost(request, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${this.publishableKey}`,
@@ -680,7 +680,7 @@ export class AuthManager {
 
     await withApiError(
       async () => {
-        const response = await this.backendApiClients.emailOTPApi.emailOtpSendVerificationOtpPost(request, {
+        const response = await this.backendApiClients.userApi.emailOtpSendVerificationOtpPost(request, {
           headers: {
             'x-project-key': `${this.publishableKey}`,
           },
@@ -694,7 +694,7 @@ export class AuthManager {
   public async verifyEmailOtp(email: string, otp: string, anonymousAuthToken?: string): Promise<void> {
     await withApiError(
       async () => {
-        const response = await this.backendApiClients.emailOTPApi.emailOtpVerifyEmailPost(
+        const response = await this.backendApiClients.userApi.emailOtpVerifyEmailPost(
           {
             emailOtpVerifyEmailPostRequest: {
               email,
@@ -714,7 +714,7 @@ export class AuthManager {
   public async loginWithEmailOTP(email: string, otp: string, anonymousAuthToken?: string): Promise<AuthResponse> {
     return await withApiError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.emailOTPApi.signInEmailOtpPost(
+        const response = await this.backendApiClients.userApi.signInEmailOtpPost(
           {
             signInEmailOtpPostRequest: {
               email,
@@ -744,7 +744,7 @@ export class AuthManager {
 
     await withApiError(
       async () => {
-        const response = await this.backendApiClients.smsOTPApi.phoneNumberSendOtpPost(request, {
+        const response = await this.backendApiClients.userApi.phoneNumberSendOtpPost(request, {
           headers: {
             'x-project-key': `${this.publishableKey}`,
           },
@@ -758,7 +758,7 @@ export class AuthManager {
   public async loginWithSMSOTP(phoneNumber: string, code: string): Promise<AuthResponse> {
     return await withApiError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.smsOTPApi.phoneNumberVerifyPost(
+        const response = await this.backendApiClients.userApi.phoneNumberVerifyPost(
           {
             phoneNumberVerifyPostRequest: {
               code,
@@ -787,7 +787,7 @@ export class AuthManager {
   public async linkSMSOTP(phoneNumber: string, code: string, auth: Authentication): Promise<AuthResponse> {
     return await withApiError<AuthResponse>(
       async () => {
-        const response = await this.backendApiClients.smsOTPApi.phoneNumberVerifyPost(
+        const response = await this.backendApiClients.userApi.phoneNumberVerifyPost(
           {
             phoneNumberVerifyPostRequest: {
               code,
@@ -818,7 +818,7 @@ export class AuthManager {
   private async getSessionWithToken(auth: Authentication, forceRefresh?: boolean): Promise<GetSessionGet200Response> {
     return await withApiError<GetSessionGet200Response>(
       async () => {
-        const response = await this.backendApiClients.authenticationV2Api.getSessionGet(
+        const response = await this.backendApiClients.userApi.getSessionGet(
           {
             disableCookieCache: forceRefresh,
           },

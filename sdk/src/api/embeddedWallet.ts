@@ -587,7 +587,7 @@ export class EmbeddedWalletApi {
     await this.validateAndRefreshToken()
     return withApiError<EmbeddedAccount[]>(
       async () => {
-        const response = await this.backendApiClients.accountsApi.getAccountsV2(params, {
+        const response = await this.backendApiClients.accountsV2Api.getAccountsV2(params, {
           headers: auth.thirdPartyProvider
             ? {
                 authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
