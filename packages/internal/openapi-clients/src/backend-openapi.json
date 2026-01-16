@@ -11217,7 +11217,7 @@
         },
         "summary": "Get user information.",
         "tags": [
-          "auth v2"
+          "Users"
         ],
         "security": [
           {
@@ -11272,7 +11272,7 @@
         },
         "summary": "Verify oauth token of a third party auth provider.",
         "tags": [
-          "auth v2"
+          "Users"
         ],
         "security": [
           {

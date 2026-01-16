@@ -8,6 +8,7 @@ import {
 	RPCApi,
 	SessionsApi,
 	TransactionIntentsApi,
+	UsersApi,
 } from "./backend";
 import {
 	createConfig,
@@ -44,9 +45,9 @@ export class BackendApiClients {
 	public sessionsApi: SessionsApi;
 
 
-	public userApi: AuthenticationV2Api;
+	public authApi: AuthenticationV2Api;
 
-
+	public userApi: UsersApi;
 
 
 	public authenticationApi: AuthenticationApi;
@@ -98,8 +99,13 @@ export class BackendApiClients {
 			this.axiosInstance,
 		);
 
-		this.userApi = new AuthenticationV2Api(
+		this.authApi = new AuthenticationV2Api(
 			authConfig,
+			undefined,
+			this.axiosInstance,
+		);
+		this.userApi = new UsersApi(
+			this.config.backend,
 			undefined,
 			this.axiosInstance,
 		);
