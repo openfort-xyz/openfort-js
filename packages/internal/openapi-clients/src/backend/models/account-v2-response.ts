@@ -98,5 +98,19 @@ export interface AccountV2Response {
      * @memberof AccountV2Response
      */
     'recoveryMethodDetails'?: RecoveryMethodDetails;
+    /**
+     * Indicates key custody: \"Developer\" for server-managed keys (WALLTEE), \"User\" for user-managed keys (DB).
+     * @type {string}
+     * @memberof AccountV2Response
+     */
+    'custody': AccountV2ResponseCustodyEnum;
 }
+
+export const AccountV2ResponseCustodyEnum = {
+    Developer: 'Developer',
+    User: 'User'
+} as const;
+
+export type AccountV2ResponseCustodyEnum = typeof AccountV2ResponseCustodyEnum[keyof typeof AccountV2ResponseCustodyEnum];
+
 

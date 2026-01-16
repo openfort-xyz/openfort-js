@@ -129,11 +129,12 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {string} [user] Specifies the unique user ID (starts with pla_)
          * @param {GetAccountsV2ChainTypeEnum} [chainType] The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
          * @param {GetAccountsV2AccountTypeEnum} [accountType] Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
+         * @param {GetAccountsV2CustodyEnum} [custody] Specifies the key custody of the account. Must be either \&quot;Developer\&quot; or \&quot;User\&quot;.
          * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountsV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, chainId?: number, user?: string, chainType?: GetAccountsV2ChainTypeEnum, accountType?: GetAccountsV2AccountTypeEnum, address?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountsV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, chainId?: number, user?: string, chainType?: GetAccountsV2ChainTypeEnum, accountType?: GetAccountsV2AccountTypeEnum, custody?: GetAccountsV2CustodyEnum, address?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -176,6 +177,10 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
 
             if (accountType !== undefined) {
                 localVarQueryParameter['accountType'] = accountType;
+            }
+
+            if (custody !== undefined) {
+                localVarQueryParameter['custody'] = custody;
             }
 
             if (address !== undefined) {
@@ -354,12 +359,13 @@ export const AccsV2ApiFp = function(configuration?: Configuration) {
          * @param {string} [user] Specifies the unique user ID (starts with pla_)
          * @param {GetAccountsV2ChainTypeEnum} [chainType] The chain type. Must be either \&quot;EVM\&quot; or \&quot;SVM\&quot;.
          * @param {GetAccountsV2AccountTypeEnum} [accountType] Specifies the type of account. Must be either \&quot;Smart Account\&quot; or \&quot;Externally Owned Account\&quot;.
+         * @param {GetAccountsV2CustodyEnum} [custody] Specifies the key custody of the account. Must be either \&quot;Developer\&quot; or \&quot;User\&quot;.
          * @param {string} [address] Specifies the account address
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountsV2(limit?: number, skip?: number, order?: PrismaSortOrder, chainId?: number, user?: string, chainType?: GetAccountsV2ChainTypeEnum, accountType?: GetAccountsV2AccountTypeEnum, address?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAccountV2Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountsV2(limit, skip, order, chainId, user, chainType, accountType, address, options);
+        async getAccountsV2(limit?: number, skip?: number, order?: PrismaSortOrder, chainId?: number, user?: string, chainType?: GetAccountsV2ChainTypeEnum, accountType?: GetAccountsV2AccountTypeEnum, custody?: GetAccountsV2CustodyEnum, address?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAccountV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountsV2(limit, skip, order, chainId, user, chainType, accountType, custody, address, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -433,7 +439,7 @@ export const AccsV2ApiFactory = function (configuration?: Configuration, basePat
          * @throws {RequiredError}
          */
         getAccountsV2(requestParameters: AccsV2ApiGetAccountsV2Request = {}, options?: AxiosRequestConfig): AxiosPromise<BaseEntityListResponseAccountV2Response> {
-            return localVarFp.getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, requestParameters.accountType, requestParameters.address, options).then((request) => request(axios, basePath));
+            return localVarFp.getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, requestParameters.accountType, requestParameters.custody, requestParameters.address, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves the signer ID associated with a given blockchain address.
@@ -552,6 +558,13 @@ export interface AccsV2ApiGetAccountsV2Request {
     readonly accountType?: GetAccountsV2AccountTypeEnum
 
     /**
+     * Specifies the key custody of the account. Must be either \&quot;Developer\&quot; or \&quot;User\&quot;.
+     * @type {'Developer' | 'User'}
+     * @memberof AccsV2ApiGetAccountsV2
+     */
+    readonly custody?: GetAccountsV2CustodyEnum
+
+    /**
      * Specifies the account address
      * @type {string}
      * @memberof AccsV2ApiGetAccountsV2
@@ -641,7 +654,7 @@ export class AccsV2Api extends BaseAPI {
      * @memberof AccsV2Api
      */
     public getAccountsV2(requestParameters: AccsV2ApiGetAccountsV2Request = {}, options?: AxiosRequestConfig) {
-        return AccsV2ApiFp(this.configuration).getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, requestParameters.accountType, requestParameters.address, options).then((request) => request(this.axios, this.basePath));
+        return AccsV2ApiFp(this.configuration).getAccountsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.user, requestParameters.chainType, requestParameters.accountType, requestParameters.custody, requestParameters.address, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -698,3 +711,11 @@ export const GetAccountsV2AccountTypeEnum = {
     DelegatedAccount: 'Delegated Account'
 } as const;
 export type GetAccountsV2AccountTypeEnum = typeof GetAccountsV2AccountTypeEnum[keyof typeof GetAccountsV2AccountTypeEnum];
+/**
+ * @export
+ */
+export const GetAccountsV2CustodyEnum = {
+    Developer: 'Developer',
+    User: 'User'
+} as const;
+export type GetAccountsV2CustodyEnum = typeof GetAccountsV2CustodyEnum[keyof typeof GetAccountsV2CustodyEnum];

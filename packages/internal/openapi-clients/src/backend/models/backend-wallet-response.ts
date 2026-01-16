@@ -51,6 +51,12 @@ export interface BackendWalletResponse {
      */
     'name'?: string;
     /**
+     * Key custody: always \"Developer\" for backend wallets (server-managed keys in TEE).
+     * @type {string}
+     * @memberof BackendWalletResponse
+     */
+    'custody': BackendWalletResponseCustodyEnum;
+    /**
      * Creation timestamp (Unix epoch seconds).
      * @type {number}
      * @memberof BackendWalletResponse
@@ -75,5 +81,10 @@ export const BackendWalletResponseChainTypeEnum = {
 } as const;
 
 export type BackendWalletResponseChainTypeEnum = typeof BackendWalletResponseChainTypeEnum[keyof typeof BackendWalletResponseChainTypeEnum];
+export const BackendWalletResponseCustodyEnum = {
+    Developer: 'Developer'
+} as const;
+
+export type BackendWalletResponseCustodyEnum = typeof BackendWalletResponseCustodyEnum[keyof typeof BackendWalletResponseCustodyEnum];
 
 

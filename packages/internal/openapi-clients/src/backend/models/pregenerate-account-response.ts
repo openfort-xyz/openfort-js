@@ -99,10 +99,24 @@ export interface PregenerateAccountResponse {
      */
     'recoveryMethodDetails'?: RecoveryMethodDetails;
     /**
+     * Indicates key custody: \"Developer\" for server-managed keys (WALLTEE), \"User\" for user-managed keys (DB).
+     * @type {string}
+     * @memberof PregenerateAccountResponse
+     */
+    'custody': PregenerateAccountResponseCustodyEnum;
+    /**
      * The recovery share for the user\'s embedded signer. This should be stored securely and provided to the user for account recovery.
      * @type {string}
      * @memberof PregenerateAccountResponse
      */
     'recoveryShare': string;
 }
+
+export const PregenerateAccountResponseCustodyEnum = {
+    Developer: 'Developer',
+    User: 'User'
+} as const;
+
+export type PregenerateAccountResponseCustodyEnum = typeof PregenerateAccountResponseCustodyEnum[keyof typeof PregenerateAccountResponseCustodyEnum];
+
 
