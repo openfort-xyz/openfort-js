@@ -10,17 +10,19 @@ import { Button } from '../components/ui/button'
 import { AuthProvider } from '../contexts/AuthContext'
 import { getConfig } from '../utils/wagmi'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      retryDelay: 1000,
-    },
-  },
-})
-
 function MyApp({ Component, pageProps }: AppProps) {
   const [config] = useState(() => getConfig())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 1,
+            retryDelay: 1000,
+          },
+        },
+      })
+  )
 
   return (
     <WagmiProvider config={config}>
