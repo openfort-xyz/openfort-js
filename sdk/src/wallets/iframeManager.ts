@@ -240,7 +240,17 @@ export class IframeManager {
       debugLog('Failed to establish connection:', err)
       throw new OpenfortError(
         OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
-        `Failed to establish iFrame connection: ${err.cause || err.message}`
+        `Failed to establish iFrame connection: ${err.cause || err.message}
+        
+        In apps built with:
+        - react native
+        - swift
+        - unity (non-webgl) 
+        
+        You must configure your origin in the openfort dashboard before using the embedded wallet.
+
+        For more information, see: https://www.openfort.io/docs/configuration/native-apps
+        `
       )
     }
   }
