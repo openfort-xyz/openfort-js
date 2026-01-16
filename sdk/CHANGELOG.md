@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.0.2
+
+### Patch Changes
+
+- [#201](https://github.com/openfort-xyz/openfort-js/pull/201) [`5699e73`](https://github.com/openfort-xyz/openfort-js/commit/5699e7360f2b5594bb6e586accbe528876760c31) Thanks [@jamalavedra](https://github.com/jamalavedra)! - remove list user accounts
+
 ## 1.0.1
 
 ### Patch Changes
