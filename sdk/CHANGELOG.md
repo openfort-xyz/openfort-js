@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.0.5
+
+### Patch Changes
+
+- [#209](https://github.com/openfort-xyz/openfort-js/pull/209) [`5d4e9a8`](https://github.com/openfort-xyz/openfort-js/commit/5d4e9a81751c66184fee7ddf9ee30b8a1f7405aa) Thanks [@n00m4d](https://github.com/n00m4d)! - Update generated API client
+
 ## 1.0.4
 
 ### Patch Changes
