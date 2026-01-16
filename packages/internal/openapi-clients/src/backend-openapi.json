@@ -8421,7 +8421,7 @@
         ],
         "security": [
           {
-            "sk": []
+            "user_project": []
           }
         ],
         "parameters": [],
@@ -8643,6 +8643,20 @@
               ]
             },
             "example": "Smart Account"
+          },
+          {
+            "description": "Specifies the key custody of the account. Must be either \"Developer\" or \"User\".",
+            "in": "query",
+            "name": "custody",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Developer",
+                "User"
+              ]
+            },
+            "example": "Developer"
           },
           {
             "description": "Specifies the account address",
@@ -24441,6 +24455,15 @@
           "recoveryMethodDetails": {
             "$ref": "#/components/schemas/RecoveryMethodDetails"
           },
+          "custody": {
+            "type": "string",
+            "enum": [
+              "Developer",
+              "User"
+            ],
+            "description": "Indicates key custody: \"Developer\" for server-managed keys (WALLTEE), \"User\" for user-managed keys (DB).",
+            "example": "Developer"
+          },
           "recoveryShare": {
             "type": "string",
             "description": "The recovery share for the user's embedded signer.\nThis should be stored securely and provided to the user for account recovery."
@@ -24454,6 +24477,7 @@
           "chainType",
           "createdAt",
           "updatedAt",
+          "custody",
           "recoveryShare"
         ],
         "type": "object",
@@ -24682,6 +24706,15 @@
             "description": "Optional name for the wallet.",
             "example": "Treasury Wallet"
           },
+          "custody": {
+            "type": "string",
+            "enum": [
+              "Developer"
+            ],
+            "nullable": false,
+            "description": "Key custody: always \"Developer\" for backend wallets (server-managed keys in TEE).",
+            "example": "Developer"
+          },
           "createdAt": {
             "type": "integer",
             "format": "int32",
@@ -24698,6 +24731,7 @@
           "id",
           "address",
           "chainType",
+          "custody",
           "createdAt",
           "updatedAt"
         ],
@@ -25252,6 +25286,15 @@
           },
           "recoveryMethodDetails": {
             "$ref": "#/components/schemas/RecoveryMethodDetails"
+          },
+          "custody": {
+            "type": "string",
+            "enum": [
+              "Developer",
+              "User"
+            ],
+            "description": "Indicates key custody: \"Developer\" for server-managed keys (WALLTEE), \"User\" for user-managed keys (DB).",
+            "example": "Developer"
           }
         },
         "required": [
@@ -25261,7 +25304,8 @@
           "address",
           "chainType",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
+          "custody"
         ],
         "type": "object",
         "additionalProperties": false
@@ -25354,6 +25398,15 @@
             ],
             "description": "Specifies the type of account. Must be either \"Smart Account\" or \"Externally Owned Account\".",
             "example": "Smart Account"
+          },
+          "custody": {
+            "type": "string",
+            "enum": [
+              "Developer",
+              "User"
+            ],
+            "description": "Specifies the key custody of the account. Must be either \"Developer\" or \"User\".",
+            "example": "Developer"
           },
           "address": {
             "type": "string",

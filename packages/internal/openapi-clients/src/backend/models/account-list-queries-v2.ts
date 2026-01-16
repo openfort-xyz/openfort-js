@@ -66,6 +66,12 @@ export interface AccountListQueriesV2 {
      */
     'accountType'?: AccountListQueriesV2AccountTypeEnum;
     /**
+     * Specifies the key custody of the account. Must be either \"Developer\" or \"User\".
+     * @type {string}
+     * @memberof AccountListQueriesV2
+     */
+    'custody'?: AccountListQueriesV2CustodyEnum;
+    /**
      * Specifies the account address
      * @type {string}
      * @memberof AccountListQueriesV2
@@ -86,5 +92,11 @@ export const AccountListQueriesV2AccountTypeEnum = {
 } as const;
 
 export type AccountListQueriesV2AccountTypeEnum = typeof AccountListQueriesV2AccountTypeEnum[keyof typeof AccountListQueriesV2AccountTypeEnum];
+export const AccountListQueriesV2CustodyEnum = {
+    Developer: 'Developer',
+    User: 'User'
+} as const;
+
+export type AccountListQueriesV2CustodyEnum = typeof AccountListQueriesV2CustodyEnum[keyof typeof AccountListQueriesV2CustodyEnum];
 
 
