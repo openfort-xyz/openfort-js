@@ -541,6 +541,7 @@ export class EmbeddedWalletApi {
   }
 
   async get(): Promise<EmbeddedAccount> {
+    await this.validateAndRefreshToken()
     const account = await Account.fromStorage(this.storage)
     if (!account) {
       throw new SignerError(OPENFORT_AUTH_ERROR_CODES.MISSING_SIGNER, 'No signer configured')
@@ -570,6 +571,7 @@ export class EmbeddedWalletApi {
   }
 
   async list(requestParams?: ListAccountsParams): Promise<EmbeddedAccount[]> {
+    await this.validateAndRefreshToken()
     const params = {
       accountType: AccountTypeEnum.SMART_ACCOUNT,
       ...requestParams,
