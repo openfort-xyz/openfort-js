@@ -85,8 +85,8 @@ importers:
         specifier: workspace:sdk
         version: link:../../../sdk
       '@openfort/openfort-node':
-        specifier: 0.7.0
-        version: 0.7.0(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+        specifier: 0.7.1
+        version: 0.7.1(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2122,8 +2122,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@openfort/openfort-node@0.7.0':
-    resolution: {integrity: sha512-yCYLGs6TIvl+svc50iAOttMTDQlbWJLkDrOUPsRpiFNTsZuuMZp459xL/0Kniyztr9AcCrnvWJDiWMVhl2pyCQ==}
+  '@openfort/openfort-node@0.7.1':
+    resolution: {integrity: sha512-kICE1mojqQxIiP3eLzJby90oC5SE/qgwNqy3mmvw9Uyyer8wmAB5XzUILloi4N9m30gJh1PDM2QYqjRpkSYq3Q==}
 
   '@openfort/shield-js@0.1.33':
     resolution: {integrity: sha512-fHMMwYlThcvhXyB4/EVGpSIWzLwbsxdnv81kRTphpnyzieCvV8t43od2NoAthpr8HrtpklLdQZAotGU6VYPBmg==}
@@ -9647,7 +9647,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
-  '@openfort/openfort-node@0.7.0(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
+  '@openfort/openfort-node@0.7.1(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
       '@openfort/shield-js': 0.1.33
       '@types/node': 22.19.6
