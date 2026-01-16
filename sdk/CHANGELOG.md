@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.0.6
+
+### Patch Changes
+
+- [#211](https://github.com/openfort-xyz/openfort-js/pull/211) [`46dd383`](https://github.com/openfort-xyz/openfort-js/commit/46dd3835bff4a8f2872b5d4dbb5816d31725e7be) Thanks [@n00m4d](https://github.com/n00m4d)! - fix url auth methods
+
 ## 1.0.5
 
 ### Patch Changes
