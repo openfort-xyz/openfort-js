@@ -6,6 +6,7 @@ export function getConfig() {
   return createConfig({
     chains: [baseSepolia],
     connectors: [injected()],
+    ssr: true,
     transports: {
       [baseSepolia.id]: http('https://base-sepolia.gateway.tenderly.co'),
     },
