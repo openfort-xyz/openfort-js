@@ -265,10 +265,17 @@ export class AuthManager {
     const result = await withApiError(
       async () =>
         this.backendApiClients.authApi.linkSiweNoncePost(request, {
-          headers: {
-            authorization: `Bearer ${auth.token}`,
-            'x-project-key': `${this.publishableKey}`,
-          },
+          headers: auth.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${this.publishableKey}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': auth.token,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': auth.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': auth.thirdPartyTokenType,
+              }
+            : this.buildAuthHeaders(auth.token),
         }),
       { context: 'linkSIWE' }
     )
