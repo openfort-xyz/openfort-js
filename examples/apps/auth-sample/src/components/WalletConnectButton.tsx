@@ -74,10 +74,10 @@ const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) =>
             try {
               let nonce: string
               if (link) {
-                const resp = await openfort.auth.linkSIWE({ address })
+                const resp = await openfort.auth.initLinkSiwe({ address })
                 nonce = resp.nonce
               } else {
-                const resp = await openfort.auth.initSIWE({ address })
+                const resp = await openfort.auth.initSiwe({ address })
                 nonce = resp.nonce
               }
               const SIWEMessage = createSIWEMessage(address, nonce, chainId)
@@ -85,7 +85,7 @@ const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) =>
                 message: SIWEMessage,
               })
               link
-                ? await openfort.auth.linkWallet({
+                ? await openfort.auth.linkWithSiwe({
                     signature,
                     message: SIWEMessage,
                     connectorType: connector?.type,
@@ -93,7 +93,7 @@ const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) =>
                     address,
                     chainId,
                   })
-                : await openfort.auth.authenticateWithSIWE({
+                : await openfort.auth.loginWithSiwe({
                     signature,
                     address,
                     message: SIWEMessage,
