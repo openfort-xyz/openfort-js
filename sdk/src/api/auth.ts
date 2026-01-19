@@ -351,12 +351,12 @@ export class AuthApi {
     return await this.authManager.unlinkOAuth(provider, auth)
   }
 
-  async initSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
+  async initSiwe({ address }: { address: string }): Promise<SIWEInitResponse> {
     await this.ensureInitialized()
     return await this.authManager.initSIWE(address)
   }
 
-  async linkSIWE({ address }: { address: string }): Promise<SIWEInitResponse> {
+  async initLinkSiwe({ address }: { address: string }): Promise<SIWEInitResponse> {
     await this.ensureInitialized()
     const auth = await Authentication.fromStorage(this.storage)
     if (!auth) {
@@ -365,7 +365,7 @@ export class AuthApi {
     return await this.authManager.linkSIWE(address, auth)
   }
 
-  async authenticateWithSIWE({
+  async loginWithSiwe({
     signature,
     message,
     walletClientType,
@@ -403,7 +403,7 @@ export class AuthApi {
     }
   }
 
-  async linkWallet({
+  async linkWithSiwe({
     signature,
     message,
     walletClientType,
