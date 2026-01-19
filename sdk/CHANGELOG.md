@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.1.0
+
+### Minor Changes
+
+- [#213](https://github.com/openfort-xyz/openfort-js/pull/213) [`25516c0`](https://github.com/openfort-xyz/openfort-js/commit/25516c055cd8595380038bacfdb88e9d5de1573b) Thanks [@jamalavedra](https://github.com/jamalavedra)! - change sdk methods for wallet auth
+
 ## 1.0.6
 
 ### Patch Changes
