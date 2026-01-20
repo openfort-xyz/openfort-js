@@ -14,11 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       method: 'POST',
       body: JSON.stringify({
         user_id: req.body.user_id,
-        dangerously_skip_verification: req.body.dangerously_skip_verification || false,
         email: req.body.email || null,
         phone: req.body.phone || null,
       }),
     })
+    // console.log('otp request response', response)
 
     if (response.status === 429) {
       res.status(429).send({ error: 'OTP_RATE_LIMIT' })
