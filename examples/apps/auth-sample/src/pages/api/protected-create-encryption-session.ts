@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (accounts.data.every((account) => account.recoveryMethod !== 'project')) {
         console.log("Requesting OTP since user doesn't have automatic recovery method")
-        await fetch(`${shieldUrl}/project/otp`, {
+        const res = await fetch(`${shieldUrl}/project/otp`, {
           headers: {
             'Content-Type': 'application/json',
             'x-api-key': process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
@@ -39,10 +39,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           body: JSON.stringify({
             user_id: req.body.user_id,
             dangerously_skip_verification: true,
-            email: req.body.email || null,
-            phone: req.body.phone || '',
           }),
         })
+        console.log('OTP response: ', res)
       }
     }
 
