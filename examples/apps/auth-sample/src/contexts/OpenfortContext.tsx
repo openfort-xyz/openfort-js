@@ -114,7 +114,6 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
           user_id: user.id,
           email: contact.email || null,
           phone: contact.phone || null,
-          dangerously_skip_verification: dangerouslySkipVerification,
         },
         {
           headers: { 'Content-Type': 'application/json' },
