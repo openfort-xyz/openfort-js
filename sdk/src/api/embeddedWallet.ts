@@ -749,6 +749,19 @@ export class EmbeddedWalletApi {
   }
 
   private async handleLogout(): Promise<void> {
+    // In React Native, if no messagePoster is set, we can't communicate with the WebView
+    // Skip signer disconnect since there's no iframe/WebView storage to clear
+    if (typeof document === 'undefined' && !this.messagePoster) {
+      debugLog('Skipping signer disconnect: no messagePoster available in non-browser environment')
+      this.provider = null
+      this.messenger = null
+      this.iframeManager = null
+      this.iframeManagerPromise = null
+      this.signer = null
+      this.signerPromise = null
+      return
+    }
+
     const signer = await this.ensureSigner()
     await signer.disconnect()
     this.provider = null
