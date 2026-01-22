@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.1.1
+
+### Patch Changes
+
+- [#217](https://github.com/openfort-xyz/openfort-js/pull/217) [`7f02c50`](https://github.com/openfort-xyz/openfort-js/commit/7f02c50f90f2dc5878588b242a0a8a912e6a4f93) Thanks [@jamalavedra](https://github.com/jamalavedra)! - fix document logout rn
+
 ## 1.1.0
 
 ### Minor Changes
