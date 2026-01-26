@@ -2,7 +2,13 @@ import { type Address, address, createSolanaRpc } from '@solana/kit'
 import { useCallback, useEffect, useId, useState } from 'react'
 import TransactionHistory from './components/TransactionHistory'
 import { useOpenfort } from './contexts/OpenfortContext'
+import { type KoraConfig, sendGaslessSolTransaction } from './utils/kora'
 import { sendSolanaTransaction } from './utils/transaction'
+
+const koraConfig: KoraConfig = {
+  rpcUrl: 'https://api.openfort.io/rpc/solana/devnet',
+  apiKey: `Bearer ${import.meta.env.VITE_SHIELD_PUBLISHABLE_KEY}`,
+}
 
 const rpc = createSolanaRpc('https://api.devnet.solana.com')
 
@@ -25,6 +31,7 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
   const [balance, setBalance] = useState<number | null>(null)
   const [transactionSignature, setTransactionSignature] = useState<string | null>(null)
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false)
+  const [sendingGasless, setSendingGasless] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<{
     recipient?: string
@@ -72,52 +79,72 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
     return Object.keys(errors).length === 0
   }
 
+  const isSending = sendingTransaction || sendingGasless
+
+  const handleSignMessage = async (message: Uint8Array) => {
+    const { data, error } = await signMessage(message)
+    if (error) throw error
+    return data || ''
+  }
+
+  const handleTransactionResult = async (result: { success: boolean; signature: string; error?: string }) => {
+    if (result.success) {
+      console.log('Transaction signature:', result.signature)
+      setTransactionSignature(result.signature)
+      await fetchBalance(publicKey)
+      setRecipient('')
+      setAmount('')
+    } else {
+      const errorMsg = result.error || 'Transaction failed'
+      setError(errorMsg)
+      console.error('Transaction failed:', result.error)
+    }
+  }
+
   const sendTransaction = async () => {
-    // Clear previous error and signature
     setError(null)
     setTransactionSignature(null)
-
-    // Validate form
-    if (!validateForm()) {
-      return
-    }
-
-    const recipientAddress = address(recipient)
-    const amountInSol = parseFloat(amount)
+    if (!validateForm()) return
 
     setSendingTransaction(true)
     try {
       const result = await sendSolanaTransaction({
         from: publicKey,
-        to: recipientAddress,
-        amountInSol,
-        signMessage: async (message) => {
-          const { data, error } = await signMessage(message)
-          if (error) throw error
-          return data || ''
-        },
+        to: address(recipient),
+        amountInSol: parseFloat(amount),
+        signMessage: handleSignMessage,
       })
-
-      if (result.success) {
-        console.log('Transaction signature:', result.signature)
-        setTransactionSignature(result.signature)
-
-        // Refresh balance after successful transaction
-        await fetchBalance(publicKey)
-        // Clear form
-        setRecipient('')
-        setAmount('')
-      } else {
-        const errorMsg = result.error || 'Transaction failed'
-        setError(errorMsg)
-        console.error('Transaction failed:', result.error)
-      }
+      await handleTransactionResult(result)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       setError(errorMessage)
       console.error('Transaction failed', error)
     } finally {
       setSendingTransaction(false)
+    }
+  }
+
+  const sendGaslessTransaction = async () => {
+    setError(null)
+    setTransactionSignature(null)
+    if (!validateForm()) return
+
+    setSendingGasless(true)
+    try {
+      const result = await sendGaslessSolTransaction({
+        from: publicKey,
+        to: address(recipient),
+        amountInSol: parseFloat(amount),
+        signMessage: handleSignMessage,
+        koraConfig,
+      })
+      await handleTransactionResult(result)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      setError(errorMessage)
+      console.error('Gasless transaction failed', error)
+    } finally {
+      setSendingGasless(false)
     }
   }
 
@@ -180,7 +207,7 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                       })
                     }}
                     className={`w-full ${validationErrors.recipient ? 'border-red-500' : ''}`}
-                    disabled={sendingTransaction}
+                    disabled={isSending}
                   />
                   {validationErrors.recipient && (
                     <p className="text-red-500 text-sm mt-1">{validationErrors.recipient}</p>
@@ -204,18 +231,28 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                       })
                     }}
                     className={`w-full ${validationErrors.amount ? 'border-red-500' : ''}`}
-                    disabled={sendingTransaction}
+                    disabled={isSending}
                   />
                   {validationErrors.amount && <p className="text-red-500 text-sm mt-1">{validationErrors.amount}</p>}
                 </div>
-                <button
-                  type="button"
-                  onClick={sendTransaction}
-                  disabled={sendingTransaction}
-                  className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-semibold"
-                >
-                  {sendingTransaction ? 'Sending...' : 'Send SOL'}
-                </button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="button"
+                    onClick={sendTransaction}
+                    disabled={isSending}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded font-semibold"
+                  >
+                    {sendingTransaction ? 'Sending...' : 'Send SOL'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={sendGaslessTransaction}
+                    disabled={isSending}
+                    className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded font-semibold"
+                  >
+                    {sendingGasless ? 'Sending...' : 'Send SOL (Gasless)'}
+                  </button>
+                </div>
                 {error && (
                   <div className="bg-red-900/30 border border-red-500 rounded-lg p-3">
                     <p className="text-red-400 text-sm">{error}</p>
