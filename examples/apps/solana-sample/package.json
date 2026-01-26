@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "@openfort/openfort-js": "workspace:sdk",
+    "@solana-program/compute-budget": "0.12.0",
     "@solana-program/system": "^0.10.0",
+    "@solana-program/token": "0.9.0",
     "@solana/kit": "^5.0.0",
+    "@solana/kora": "0.1.1",
     "@tailwindcss/vite": "^4.1.16",
     "buffer": "^6.0.3",
     "ox": "^0.6.10",
