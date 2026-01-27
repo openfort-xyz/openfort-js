@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.1.2
+
+### Patch Changes
+
+- [#221](https://github.com/openfort-xyz/openfort-js/pull/221) [`e1cf5a8`](https://github.com/openfort-xyz/openfort-js/commit/e1cf5a8bd0aaebf8ec346feb265be742c08a45b7) Thanks [@jamalavedra](https://github.com/jamalavedra)! - fix third party auth headers
+
 ## 1.1.1
 
 ### Patch Changes
