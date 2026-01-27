@@ -64,12 +64,6 @@ export interface SocialSignIn200ResponseUser {
     'updatedAt': string;
     /**
      * 
-     * @type {string}
-     * @memberof SocialSignIn200ResponseUser
-     */
-    'walletId'?: string;
-    /**
-     * 
      * @type {boolean}
      * @memberof SocialSignIn200ResponseUser
      */

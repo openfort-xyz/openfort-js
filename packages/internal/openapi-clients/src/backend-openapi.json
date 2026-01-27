@@ -7787,7 +7787,6 @@
                           "id": "usr_***",
                           "createdAt": 123456789,
                           "name": "Satoshi",
-                          "walletId": "pla_***",
                           "email": "satoshi@openfort.io",
                           "emailVerified": true,
                           "phoneNumber": null,
@@ -7806,7 +7805,6 @@
                           "id": "usr_***",
                           "createdAt": 123456789,
                           "name": "Nakamoto",
-                          "walletId": "pla_***",
                           "email": "nakamoto@openfort.io",
                           "emailVerified": true,
                           "phoneNumber": null,
@@ -7960,7 +7958,6 @@
                       "id": "usr_***",
                       "createdAt": 123456789,
                       "name": "Satoshi",
-                      "walletId": "pla_***",
                       "email": "satoshi@openfort.io",
                       "emailVerified": true,
                       "phoneNumber": null,
@@ -11282,7 +11279,6 @@
                       "id": "usr_***",
                       "createdAt": 123456789,
                       "name": "Satoshi",
-                      "walletId": "pla_***",
                       "email": "satoshi@openfort.io",
                       "emailVerified": true,
                       "phoneNumber": null,
@@ -11338,7 +11334,6 @@
                       "id": "usr_***",
                       "createdAt": 123456789,
                       "name": "Satoshi",
-                      "walletId": "pla_***",
                       "email": "satoshi@openfort.io",
                       "emailVerified": true,
                       "phoneNumber": null,
@@ -11539,9 +11534,6 @@
                         "updatedAt": {
                           "type": "string",
                           "format": "date-time"
-                        },
-                        "walletId": {
-                          "type": "string"
                         },
                         "isAnonymous": {
                           "type": "boolean"
@@ -12243,9 +12235,6 @@
                         "updatedAt": {
                           "type": "string",
                           "format": "date-time"
-                        },
-                        "walletId": {
-                          "type": "string"
                         },
                         "isAnonymous": {
                           "type": "boolean"
@@ -17497,10 +17486,6 @@
                         "id": {
                           "type": "string",
                           "description": "User ID"
-                        },
-                        "walletId": {
-                          "type": "string",
-                          "description": "Wallet ID (player UUID)"
                         },
                         "walletAddress": {
                           "type": "string",
@@ -24326,9 +24311,6 @@
           "name": {
             "type": "string"
           },
-          "walletId": {
-            "type": "string"
-          },
           "email": {
             "type": "string",
             "nullable": true
@@ -24357,7 +24339,6 @@
           "id",
           "createdAt",
           "name",
-          "walletId",
           "email",
           "emailVerified",
           "phoneNumber",
@@ -29160,9 +29141,6 @@
           "phoneNumberVerified": {
             "type": "boolean",
             "readOnly": true
-          },
-          "walletId": {
-            "type": "string"
           }
         },
         "required": [
@@ -29199,9 +29177,6 @@
             "type": "string"
           },
           "userId": {
-            "type": "string"
-          },
-          "walletId": {
             "type": "string"
           }
         },

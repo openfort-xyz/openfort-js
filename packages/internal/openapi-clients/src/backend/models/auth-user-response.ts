@@ -46,12 +46,6 @@ export interface AuthUserResponse {
      * @type {string}
      * @memberof AuthUserResponse
      */
-    'walletId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AuthUserResponse
-     */
     'email': string | null;
     /**
      * 
