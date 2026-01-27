@@ -25,6 +25,7 @@ domain/policy-rules-api.ts
 domain/rpcapi.ts
 domain/sessions-api.ts
 domain/settings-api.ts
+domain/solana-rpcapi.ts
 domain/subscriptions-api.ts
 domain/transaction-intents-api.ts
 domain/users-api.ts

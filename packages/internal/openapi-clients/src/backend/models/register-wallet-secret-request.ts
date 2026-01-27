@@ -15,17 +15,23 @@
 
 
 /**
- * Request to register a new wallet secret (authentication key).
+ * Request to register a new wallet secret (authentication key).  Uses provided-key authentication: the walletAuthToken JWT must be signed by the private key corresponding to the publicKey being registered.
  * @export
  * @interface RegisterWalletSecretRequest
  */
 export interface RegisterWalletSecretRequest {
     /**
-     * ECDSA P-256 public key for wallet authentication (PEM or raw hex format). This will be used to verify X-Wallet-Auth JWT signatures.
+     * ECDSA P-256 public key for wallet authentication (PEM format). This will be used to verify X-Wallet-Auth JWT signatures.
      * @type {string}
      * @memberof RegisterWalletSecretRequest
      */
     'publicKey': string;
+    /**
+     * JWT signed with the private key corresponding to publicKey. This proves possession of the private key without transmitting it.  JWT must include: uris (matching request path), reqHash (SHA-256 of request body), iat (issued at), nbf (not before), and optionally exp (expiration).
+     * @type {string}
+     * @memberof RegisterWalletSecretRequest
+     */
+    'walletAuthToken': string;
     /**
      * Key identifier for the secret. Used to identify this key in X-Wallet-Auth JWT headers.
      * @type {string}

@@ -27,6 +27,12 @@ export interface SiweVerifyPost200ResponseUser {
      */
     'id': string;
     /**
+     * Wallet ID (player UUID)
+     * @type {string}
+     * @memberof SiweVerifyPost200ResponseUser
+     */
+    'walletId'?: string;
+    /**
      * Ethereum wallet address
      * @type {string}
      * @memberof SiweVerifyPost200ResponseUser

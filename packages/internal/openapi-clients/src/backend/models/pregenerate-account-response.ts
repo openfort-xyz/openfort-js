@@ -43,6 +43,12 @@ export interface PregenerateAccountResponse {
      * @type {string}
      * @memberof PregenerateAccountResponse
      */
+    'walletId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PregenerateAccountResponse
+     */
     'accountType': string;
     /**
      * 

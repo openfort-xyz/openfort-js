@@ -68,5 +68,11 @@ export interface Session {
      * @memberof Session
      */
     'userId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Session
+     */
+    'walletId'?: string;
 }
 

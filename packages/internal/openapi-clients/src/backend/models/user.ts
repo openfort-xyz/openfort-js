@@ -80,5 +80,11 @@ export interface User {
      * @memberof User
      */
     'phoneNumberVerified'?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
+    'walletId'?: string;
 }
 

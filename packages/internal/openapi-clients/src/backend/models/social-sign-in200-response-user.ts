@@ -62,5 +62,17 @@ export interface SocialSignIn200ResponseUser {
      * @memberof SocialSignIn200ResponseUser
      */
     'updatedAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SocialSignIn200ResponseUser
+     */
+    'walletId'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SocialSignIn200ResponseUser
+     */
+    'isAnonymous'?: boolean;
 }
 
