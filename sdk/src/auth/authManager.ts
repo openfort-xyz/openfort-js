@@ -802,10 +802,20 @@ export class AuthManager {
             },
           },
           {
-            headers: {
-              authorization: `Bearer ${auth.token}`,
-              'x-project-key': `${this.publishableKey}`,
-            },
+            headers: auth.thirdPartyProvider
+              ? {
+                  authorization: `Bearer ${this.publishableKey}`,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-player-token': auth.token,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-auth-provider': auth.thirdPartyProvider,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  'x-token-type': auth.thirdPartyTokenType,
+                }
+              : {
+                  authorization: `Bearer ${auth.token}`,
+                  'x-project-key': `${this.publishableKey}`,
+                },
           }
         )
         const data = response.data as AuthResponse & {

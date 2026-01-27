@@ -70,6 +70,8 @@ const fetchWalletAssets = async (
             ? {
                 authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': authentication.token,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': authentication.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': authentication.thirdPartyTokenType,

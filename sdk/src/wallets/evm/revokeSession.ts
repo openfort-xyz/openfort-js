@@ -66,6 +66,8 @@ const buildOpenfortTransactions = async (
             ? {
                 authorization: `Bearer ${backendApiClients.config.backend.accessToken}`,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': authentication.token,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-auth-provider': authentication.thirdPartyProvider,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'x-token-type': authentication.thirdPartyTokenType,
@@ -121,10 +123,29 @@ export const revokeSession = async ({
     }
 
     const openfortSignatureResponse = await backendClient.sessionsApi
-      .signatureSession({
-        id: openfortTransaction.id,
-        signatureRequest: { signature },
-      })
+      .signatureSession(
+        {
+          id: openfortTransaction.id,
+          signatureRequest: { signature },
+        },
+        {
+          headers: authentication.thirdPartyProvider
+            ? {
+                authorization: `Bearer ${backendClient.config.backend.accessToken}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-player-token': authentication.token,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-auth-provider': authentication.thirdPartyProvider,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-token-type': authentication.thirdPartyTokenType,
+              }
+            : {
+                authorization: `Bearer ${authentication.token}`,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'x-project-key': String(backendClient.config.backend.accessToken),
+              },
+        }
+      )
       .catch((error) => {
         throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
       })
