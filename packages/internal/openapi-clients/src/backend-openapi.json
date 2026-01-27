@@ -24535,7 +24535,7 @@
           "user": {
             "type": "string"
           },
-          "walletId": {
+          "wallet": {
             "type": "string"
           },
           "accountType": {
@@ -24588,7 +24588,7 @@
         "required": [
           "id",
           "user",
-          "walletId",
+          "wallet",
           "accountType",
           "address",
           "chainType",
@@ -25383,7 +25383,7 @@
           "user": {
             "type": "string"
           },
-          "walletId": {
+          "wallet": {
             "type": "string"
           },
           "accountType": {
@@ -25432,7 +25432,7 @@
         "required": [
           "id",
           "user",
-          "walletId",
+          "wallet",
           "accountType",
           "address",
           "chainType",

@@ -43,7 +43,7 @@ export interface AccountV2Response {
      * @type {string}
      * @memberof AccountV2Response
      */
-    'walletId': string;
+    'wallet': string;
     /**
      * 
      * @type {string}
