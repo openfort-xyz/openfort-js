@@ -48,11 +48,35 @@ export interface UserListQueries {
      */
     'name'?: string;
     /**
-     * Filter by external user ID.
+     * Filter by external user ID (accountId from linked accounts).
      * @type {string}
      * @memberof UserListQueries
      */
     'externalUserId'?: string;
+    /**
+     * Filter by user email.
+     * @type {string}
+     * @memberof UserListQueries
+     */
+    'email'?: string;
+    /**
+     * Filter by user phone number.
+     * @type {string}
+     * @memberof UserListQueries
+     */
+    'phoneNumber'?: string;
+    /**
+     * Filter by provider ID (e.g., \"google\", \"apple\", \"siwe\", \"credential\").
+     * @type {string}
+     * @memberof UserListQueries
+     */
+    'authProviderId'?: string;
+    /**
+     * Filter by wallet client type (for SIWE accounts).
+     * @type {string}
+     * @memberof UserListQueries
+     */
+    'walletClientType'?: string;
 }
 
 
