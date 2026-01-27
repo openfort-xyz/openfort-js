@@ -9,7 +9,6 @@ import {
 
 export class Account implements EmbeddedAccount {
   constructor(account: EmbeddedAccount) {
-    this.user = account.user
     this.id = account.id
     this.chainType = account.chainType
     this.address = account.address
@@ -25,8 +24,6 @@ export class Account implements EmbeddedAccount {
     this.ownerAddress = account.ownerAddress
     this.type = account.type
   }
-
-  public readonly user: string
 
   public readonly id: string
 
@@ -61,7 +58,6 @@ export class Account implements EmbeddedAccount {
     storage.save(
       StorageKeys.ACCOUNT,
       JSON.stringify({
-        user: this.user,
         id: this.id,
         chainType: this.chainType,
         address: this.address,

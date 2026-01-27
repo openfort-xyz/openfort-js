@@ -189,7 +189,6 @@ export class EmbeddedSigner implements Signer {
         )
 
         const account = new Account({
-          user: response.data.user,
           chainType: response.data.chainType as ChainTypeEnum,
           id: response.data.id,
           address: response.data.address,
@@ -276,7 +275,6 @@ export class EmbeddedSigner implements Signer {
         )
 
         const account = new Account({
-          user: response.data.user,
           chainType: response.data.chainType as ChainTypeEnum,
           id: response.data.id,
           address: response.data.address,
@@ -335,7 +333,6 @@ export class EmbeddedSigner implements Signer {
         )
 
         const account = new Account({
-          user: response.data.user,
           chainType: response.data.chainType as ChainTypeEnum,
           id: response.data.id,
           address: response.data.address,
