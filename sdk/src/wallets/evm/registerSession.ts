@@ -245,29 +245,10 @@ export const registerSession = async ({
     }
     const openfortSignatureResponse = await withApiError<SessionResponse>(
       async () => {
-        const response = await backendClient.sessionsApi.signatureSession(
-          {
-            id: openfortTransaction.id,
-            signatureRequest: { signature },
-          },
-          {
-            headers: authentication.thirdPartyProvider
-              ? {
-                  authorization: `Bearer ${backendClient.config.backend.accessToken}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-player-token': authentication.token,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-auth-provider': authentication.thirdPartyProvider,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-token-type': authentication.thirdPartyTokenType,
-                }
-              : {
-                  authorization: `Bearer ${authentication.token}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-project-key': String(backendClient.config.backend.accessToken),
-                },
-          }
-        )
+        const response = await backendClient.sessionsApi.signatureSession({
+          id: openfortTransaction.id,
+          signatureRequest: { signature },
+        })
         return response.data
       },
       { context: 'operation' }

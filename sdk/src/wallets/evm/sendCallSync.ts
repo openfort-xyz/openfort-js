@@ -189,29 +189,10 @@ export const sendCallsSync = async ({
     }
     const response = await withApiError(
       async () =>
-        await backendClient.transactionIntentsApi.signature(
-          {
-            id: openfortTransaction.id,
-            signatureRequest: { signature },
-          },
-          {
-            headers: authentication.thirdPartyProvider
-              ? {
-                  authorization: `Bearer ${backendClient.config.backend.accessToken}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-player-token': authentication.token,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-auth-provider': authentication.thirdPartyProvider,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-token-type': authentication.thirdPartyTokenType,
-                }
-              : {
-                  authorization: `Bearer ${authentication.token}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-project-key': String(backendClient.config.backend.accessToken),
-                },
-          }
-        ),
+        await backendClient.transactionIntentsApi.signature({
+          id: openfortTransaction.id,
+          signatureRequest: { signature },
+        }),
       { context: 'operation' }
     ).catch((error) => {
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
