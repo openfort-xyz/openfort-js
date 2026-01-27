@@ -15,17 +15,23 @@
 
 
 /**
- * Request to rotate wallet secret (authentication key).
+ * Request to rotate wallet secret (authentication key).  Uses provided-key authentication: the walletAuthToken JWT must be signed by the private key corresponding to the newPublicKey being registered.
  * @export
  * @interface RotateWalletSecretRequest
  */
 export interface RotateWalletSecretRequest {
     /**
-     * New ECDSA P-256 public key for wallet authentication. This will replace the current wallet secret used for X-Wallet-Auth JWT signing.
+     * New ECDSA P-256 public key for wallet authentication (PEM format). This will replace the current wallet secret used for X-Wallet-Auth JWT signing.
      * @type {string}
      * @memberof RotateWalletSecretRequest
      */
-    'newSecretPublicKey': string;
+    'newPublicKey': string;
+    /**
+     * JWT signed with the private key corresponding to newPublicKey. This proves possession of the private key without transmitting it.  JWT must include: uris (matching request path), reqHash (SHA-256 of request body), iat (issued at), nbf (not before), and optionally exp (expiration).
+     * @type {string}
+     * @memberof RotateWalletSecretRequest
+     */
+    'walletAuthToken': string;
     /**
      * Key identifier for the new secret. Used to identify this key in X-Wallet-Auth JWT headers.
      * @type {string}
