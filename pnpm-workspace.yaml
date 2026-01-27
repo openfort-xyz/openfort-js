@@ -7,3 +7,4 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@openfort/shield-js"
   - "@openfort/openfort-node"
+  - "hono"
