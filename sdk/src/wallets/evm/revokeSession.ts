@@ -24,14 +24,12 @@ export type RevokePermissionsRequestParams = {
 const formatSessionRequest = (
   address: string,
   chainId: number,
-  player: string,
   policyId?: string,
   account?: string
 ): RevokeSessionRequest => {
   const request: RevokeSessionRequest = {
     address,
     chainId,
-    player,
     account,
   }
 
@@ -47,13 +45,7 @@ const buildOpenfortTransactions = async (
   authentication: Authentication,
   policyId?: string
 ): Promise<SessionResponse> => {
-  const sessionRequest = formatSessionRequest(
-    params.permissionContext,
-    account.chainId!,
-    authentication.userId,
-    policyId,
-    account.id
-  )
+  const sessionRequest = formatSessionRequest(params.permissionContext, account.chainId!, policyId, account.id)
 
   return withApiError<SessionResponse>(
     async () => {
