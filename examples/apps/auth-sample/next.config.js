@@ -2,9 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@rainbow-me/rainbowkit'],
-  experimental: {
-    esmExternals: 'loose',
-  },
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,

@@ -20,6 +20,12 @@ const nextConfig = {
       config.resolve.fallback = { fs: false, module: false, path: false }
     }
 
+    // Ignore React Native dependencies in MetaMask SDK for browser builds
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
     config.resolve.extensionAlias = { '.js': ['.js', '.ts'] }
 
     return config
