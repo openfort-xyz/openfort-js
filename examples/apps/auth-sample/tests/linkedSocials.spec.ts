@@ -13,7 +13,7 @@ test('Get user', async ({ page }) => {
   await logger.waitForNewLogs()
 
   const lastLog = logger.getLastLog()
-  expect(lastLog).toContain('"id": "pla_')
+  expect(lastLog).toContain('"id": "usr_')
 })
 
 // TODO Link google, twitter, facebook
