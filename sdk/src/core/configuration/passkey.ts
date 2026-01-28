@@ -1,10 +1,12 @@
 import { humanId } from 'human-id'
+import type { IPasskeyHandler } from './ipasskey'
+
 /**
  * PasskeyHandler handles operations related to passkeys.
  * This class is ONLY suitable for key-derivation related use cases.
  * That is, it's not designed (and must NOT be used) for authentication.
  */
-export class PasskeyHandler {
+export class PasskeyHandler implements IPasskeyHandler {
   // Valid byte length for target key derivation
   private readonly iValidByteLengths: number[] = [16, 24, 32]
 

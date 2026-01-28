@@ -11,6 +11,8 @@ export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'
 // Export main SDK classes
 export { Openfort }
+// Export passkey handler interface
+export type { IPasskeyHandler } from './core/configuration/ipasskey'
 // Export error handling
 export {
   OPENFORT_AUTH_ERROR_CODES,
