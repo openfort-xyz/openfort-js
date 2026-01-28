@@ -5,7 +5,7 @@
     "analyze": "ANALYZE=true next build",
     "check": "biome check --write --unsafe",
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
   },
@@ -13,7 +13,7 @@
     "@next/bundle-analyzer": "^14.2.3",
     "@tanstack/react-query": ">=5.45.1",
     "axios": "^1.12.2",
-    "next": "14.2.35",
+    "next": "16.2.0-canary.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "viem": "2.x",
