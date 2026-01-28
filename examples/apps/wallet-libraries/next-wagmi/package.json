@@ -4,7 +4,7 @@
   "scripts": {
     "analyze": "ANALYZE=true next build",
     "check": "biome check --write --unsafe",
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
