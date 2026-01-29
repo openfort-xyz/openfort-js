@@ -54,6 +54,7 @@
     "@biomejs/biome": "^2.2.4",
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.7",
+    "@playwright/test": "^1.58.0",
     "@rollup/plugin-typescript": "^11.1.6",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
