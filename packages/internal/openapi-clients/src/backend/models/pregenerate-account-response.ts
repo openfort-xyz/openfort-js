@@ -37,12 +37,6 @@ export interface PregenerateAccountResponse {
      * @type {string}
      * @memberof PregenerateAccountResponse
      */
-    'user': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PregenerateAccountResponse
-     */
     'wallet': string;
     /**
      * 
