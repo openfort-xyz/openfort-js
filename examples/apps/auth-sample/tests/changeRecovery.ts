@@ -3,20 +3,25 @@ import type { Logger } from './Logger'
 
 export const changeToAutomaticRecovery = async ({ page, logger }: { page: Page; logger: Logger }) => {
   const passwordRecoveryButton = page.getByRole('button', { name: 'Set wallet recovery' }).first()
+  await passwordRecoveryButton.scrollIntoViewIfNeeded()
   await passwordRecoveryButton.click({ force: true })
 
   const passwordRecoveryInput = page.locator('input[name="password-verifyRecovery"]')
+  await passwordRecoveryInput.scrollIntoViewIfNeeded()
   await passwordRecoveryInput.fill('password')
 
   const verifyRecoveryButton = page.getByRole('button', { name: 'Verify Password Recovery' }).first()
+  await verifyRecoveryButton.scrollIntoViewIfNeeded()
   await verifyRecoveryButton.click({ force: true })
 
   const automaticRecoveryButton1 = page.getByRole('button', { name: 'Set automatic recovery' }).first()
+  await automaticRecoveryButton1.scrollIntoViewIfNeeded()
   await automaticRecoveryButton1.click({ force: true })
 
   await page.waitForTimeout(500) // wait for the UI to be ready
 
   const automaticRecoveryButton2 = page.getByRole('button', { name: 'Set automatic recovery' }).first()
+  await automaticRecoveryButton2.scrollIntoViewIfNeeded()
   await automaticRecoveryButton2.click({ force: true })
 
   await logger.waitForNewLogs()
@@ -28,15 +33,19 @@ export const changeToAutomaticRecovery = async ({ page, logger }: { page: Page; 
 
 export const changeToPasswordRecovery = async ({ page, logger }: { page: Page; logger: Logger }) => {
   const passwordRecoveryButton = page.getByRole('button', { name: 'Set wallet recovery' }).first()
+  await passwordRecoveryButton.scrollIntoViewIfNeeded()
   await passwordRecoveryButton.click({ force: true })
 
   const passwordRecoveryButton1 = page.getByRole('button', { name: 'Set password recovery' }).first()
+  await passwordRecoveryButton1.scrollIntoViewIfNeeded()
   await passwordRecoveryButton1.click({ force: true })
 
   const passwordRecoveryInput = await page.waitForSelector('input[name="password-passwordRecovery"]')
+  await passwordRecoveryInput.scrollIntoViewIfNeeded()
   await passwordRecoveryInput.fill('password')
 
   const passwordRecoveryButton2 = page.getByRole('button', { name: 'Set password recovery' }).first()
+  await passwordRecoveryButton2.scrollIntoViewIfNeeded()
   await passwordRecoveryButton2.click({ force: true })
 
   await logger.waitForNewLogs()

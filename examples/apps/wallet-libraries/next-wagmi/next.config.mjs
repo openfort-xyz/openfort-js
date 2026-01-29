@@ -1,4 +1,3 @@
-// next.config.mjs
 import bundleAnalyzer from '@next/bundle-analyzer'
 
 const withBundleAnalyzer = bundleAnalyzer({
@@ -7,27 +6,16 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: { externalDir: true },
-  webpack(config, { isServer }) {
-    // Handle HeartbeatWorker file
-    config.module.rules.unshift({
-      test: /HeartbeatWorker\.js$/,
-      type: 'asset/source',
-    })
-
+  reactStrictMode: true,
+  webpack: (config, { isServer }) => {
     if (!isServer) {
-      config.output.globalObject = 'self'
-      config.resolve.fallback = { fs: false, module: false, path: false }
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      }
     }
-
-    // Ignore React Native dependencies in MetaMask SDK for browser builds
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@react-native-async-storage/async-storage': false,
-    }
-
-    config.resolve.extensionAlias = { '.js': ['.js', '.ts'] }
-
     return config
   },
 }
