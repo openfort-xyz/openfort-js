@@ -6,7 +6,8 @@ const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID)
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const accessToken = req.headers.authorization?.split(' ')[1]
-  if (!accessToken) {
+  const { account_id } = req.body
+  if (!accessToken || !account_id) {
     return res.status(401).send({
       error: 'You must be signed in to view the protected content on this page.',
     })
@@ -28,10 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     }
 
-    const userId = response?.user.id
-
     const sessionRevoke = await openfort.sessions.revoke({
-      player: userId,
+      account: account_id,
       policy: policy_id,
       chainId,
       address: sessionAddress,

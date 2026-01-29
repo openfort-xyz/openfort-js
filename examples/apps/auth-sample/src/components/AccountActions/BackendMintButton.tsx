@@ -9,16 +9,21 @@ import { Button } from '../ui/button'
 const BackendMintButton: React.FC<{
   handleSetMessage: (message: string) => void
 }> = ({ handleSetMessage }) => {
-  const { state } = useOpenfort()
+  const { state, account } = useOpenfort()
   const [loading, setLoading] = useState(false)
 
   const mintNFT = useCallback(async (): Promise<string | null> => {
+    if (!account?.id) {
+      alert('No account available')
+      return null
+    }
     const collectResponse = await fetch(`/api/protected-collect`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${await openfort.getAccessToken()}`,
       },
+      body: JSON.stringify({ account_id: account.id }),
     })
 
     if (!collectResponse.ok) {
@@ -32,7 +37,7 @@ const BackendMintButton: React.FC<{
       collectResponseJSON.userOperationHash
     )
     return response?.response?.transactionHash ?? null
-  }, [])
+  }, [account?.id])
 
   const handleMintNFT = async () => {
     setLoading(true)
