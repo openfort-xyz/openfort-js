@@ -25619,8 +25619,8 @@
           },
           "user": {
             "type": "string",
-            "description": "ID of the user this account belongs to (starts with `pla_`). If none is provided, a new user will be created.",
-            "example": "pla_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
+            "description": "ID of the user this account belongs to (starts with `usr_`). If none is provided, a new user will be created.",
+            "example": "usr_e0b84653-1741-4a3d-9e91-2b0fd2942f60"
           },
           "account": {
             "type": "string",

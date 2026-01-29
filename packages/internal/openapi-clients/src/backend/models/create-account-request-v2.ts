@@ -51,7 +51,7 @@ export interface CreateAccountRequestV2 {
      */
     'chainId'?: number;
     /**
-     * ID of the user this account belongs to (starts with `pla_`). If none is provided, a new user will be created.
+     * ID of the user this account belongs to (starts with `usr_`). If none is provided, a new user will be created.
      * @type {string}
      * @memberof CreateAccountRequestV2
      */
