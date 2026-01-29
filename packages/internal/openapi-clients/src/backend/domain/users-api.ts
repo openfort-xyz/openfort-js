@@ -124,11 +124,15 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [name] Filter by user name.
-         * @param {string} [externalUserId] Filter by external user ID.
+         * @param {string} [externalUserId] Filter by external user ID (accountId from linked accounts).
+         * @param {string} [email] Filter by user email.
+         * @param {string} [phoneNumber] Filter by user phone number.
+         * @param {string} [authProviderId] Filter by provider ID (e.g., \&quot;google\&quot;, \&quot;apple\&quot;, \&quot;siwe\&quot;, \&quot;credential\&quot;).
+         * @param {string} [walletClientType] Filter by wallet client type (for SIWE accounts).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAuthUsers: async (limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, externalUserId?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAuthUsers: async (limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, externalUserId?: string, email?: string, phoneNumber?: string, authProviderId?: string, walletClientType?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -163,6 +167,22 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
 
             if (externalUserId !== undefined) {
                 localVarQueryParameter['externalUserId'] = externalUserId;
+            }
+
+            if (email !== undefined) {
+                localVarQueryParameter['email'] = email;
+            }
+
+            if (phoneNumber !== undefined) {
+                localVarQueryParameter['phoneNumber'] = phoneNumber;
+            }
+
+            if (authProviderId !== undefined) {
+                localVarQueryParameter['authProviderId'] = authProviderId;
+            }
+
+            if (walletClientType !== undefined) {
+                localVarQueryParameter['walletClientType'] = walletClientType;
             }
 
 
@@ -325,12 +345,16 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {string} [name] Filter by user name.
-         * @param {string} [externalUserId] Filter by external user ID.
+         * @param {string} [externalUserId] Filter by external user ID (accountId from linked accounts).
+         * @param {string} [email] Filter by user email.
+         * @param {string} [phoneNumber] Filter by user phone number.
+         * @param {string} [authProviderId] Filter by provider ID (e.g., \&quot;google\&quot;, \&quot;apple\&quot;, \&quot;siwe\&quot;, \&quot;credential\&quot;).
+         * @param {string} [walletClientType] Filter by wallet client type (for SIWE accounts).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAuthUsers(limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, externalUserId?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAuthUserResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthUsers(limit, skip, order, name, externalUserId, options);
+        async getAuthUsers(limit?: number, skip?: number, order?: PrismaSortOrder, name?: string, externalUserId?: string, email?: string, phoneNumber?: string, authProviderId?: string, walletClientType?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityListResponseAuthUserResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAuthUsers(limit, skip, order, name, externalUserId, email, phoneNumber, authProviderId, walletClientType, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -403,7 +427,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          * @throws {RequiredError}
          */
         getAuthUsers(requestParameters: UsersApiGetAuthUsersRequest = {}, options?: AxiosRequestConfig): AxiosPromise<BaseEntityListResponseAuthUserResponse> {
-            return localVarFp.getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, options).then((request) => request(axios, basePath));
+            return localVarFp.getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, requestParameters.email, requestParameters.phoneNumber, requestParameters.authProviderId, requestParameters.walletClientType, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -500,11 +524,39 @@ export interface UsersApiGetAuthUsersRequest {
     readonly name?: string
 
     /**
-     * Filter by external user ID.
+     * Filter by external user ID (accountId from linked accounts).
      * @type {string}
      * @memberof UsersApiGetAuthUsers
      */
     readonly externalUserId?: string
+
+    /**
+     * Filter by user email.
+     * @type {string}
+     * @memberof UsersApiGetAuthUsers
+     */
+    readonly email?: string
+
+    /**
+     * Filter by user phone number.
+     * @type {string}
+     * @memberof UsersApiGetAuthUsers
+     */
+    readonly phoneNumber?: string
+
+    /**
+     * Filter by provider ID (e.g., \&quot;google\&quot;, \&quot;apple\&quot;, \&quot;siwe\&quot;, \&quot;credential\&quot;).
+     * @type {string}
+     * @memberof UsersApiGetAuthUsers
+     */
+    readonly authProviderId?: string
+
+    /**
+     * Filter by wallet client type (for SIWE accounts).
+     * @type {string}
+     * @memberof UsersApiGetAuthUsers
+     */
+    readonly walletClientType?: string
 }
 
 /**
@@ -575,7 +627,7 @@ export class UsersApi extends BaseAPI {
      * @memberof UsersApi
      */
     public getAuthUsers(requestParameters: UsersApiGetAuthUsersRequest = {}, options?: AxiosRequestConfig) {
-        return UsersApiFp(this.configuration).getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, options).then((request) => request(this.axios, this.basePath));
+        return UsersApiFp(this.configuration).getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, requestParameters.email, requestParameters.phoneNumber, requestParameters.authProviderId, requestParameters.walletClientType, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

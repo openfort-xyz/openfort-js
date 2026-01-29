@@ -293,7 +293,6 @@ export class EmbeddedWalletApi {
     return {
       id: account.id,
       chainId: account.chainId,
-      user: account.user,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -340,7 +339,6 @@ export class EmbeddedWalletApi {
     const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
-      user: auth?.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -386,7 +384,6 @@ export class EmbeddedWalletApi {
       implementationAddress: account.implementationAddress,
       factoryAddress: account.factoryAddress,
       salt: account.salt,
-      user: account.user,
       address: account.address,
       ownerAddress: account.ownerAddress,
       chainType: account.chainType,
@@ -555,7 +552,6 @@ export class EmbeddedWalletApi {
     return {
       id: account.id,
       chainId: account.chainId,
-      user: auth.userId,
       address: account.address,
       ownerAddress: account.ownerAddress,
       factoryAddress: account.factoryAddress,
@@ -606,7 +602,6 @@ export class EmbeddedWalletApi {
         })
 
         return response.data.data.map((account) => ({
-          user: account.user,
           chainType: account.chainType as ChainTypeEnum,
           id: account.id,
           address: account.address,

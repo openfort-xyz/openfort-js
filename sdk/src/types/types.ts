@@ -522,7 +522,6 @@ export enum ChainTypeEnum {
 }
 
 export interface EmbeddedAccount {
-  user: string
   id: string
   chainType: ChainTypeEnum
   address: string

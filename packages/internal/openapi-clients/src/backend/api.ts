@@ -34,6 +34,7 @@ export * from './domain/policy-rules-api';
 export * from './domain/rpcapi';
 export * from './domain/sessions-api';
 export * from './domain/settings-api';
+export * from './domain/solana-rpcapi';
 export * from './domain/subscriptions-api';
 export * from './domain/transaction-intents-api';
 export * from './domain/users-api';
