@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.1.4
+
+### Patch Changes
+
+- [#226](https://github.com/openfort-xyz/openfort-js/pull/226) [`325404f`](https://github.com/openfort-xyz/openfort-js/commit/325404fa5cfbf8be9af2ee60f70a7d964ad1bcb3) Thanks [@n00m4d](https://github.com/n00m4d)! - Delete user value from accounts respone
+
 ## 1.1.3
 
 ### Patch Changes
