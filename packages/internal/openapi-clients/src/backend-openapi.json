@@ -8061,6 +8061,61 @@
         ]
       }
     },
+    "/v2/users/{id}/wallet": {
+      "get": {
+        "operationId": "GetUserWallet",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_00000000-0000-0000-0000-000000000000",
+                      "object": "wallet",
+                      "createdAt": 1689869074
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "description": "Retrieves the wallet associated with an authenticated user.",
+        "summary": "Get wallet for user.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "sk": []
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
     "/v2/users/pregenerate": {
       "post": {
         "operationId": "pregenerateUserV2",
@@ -24441,6 +24496,36 @@
         "type": "object",
         "additionalProperties": false
       },
+      "EntityType.WALLET": {
+        "enum": [
+          "wallet"
+        ],
+        "type": "string"
+      },
+      "BaseEntityResponse_EntityType.WALLET_": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.WALLET"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "WalletResponse": {
+        "$ref": "#/components/schemas/BaseEntityResponse_EntityType.WALLET_"
+      },
       "BaseDeleteEntityResponse_EntityType.PLAYER_": {
         "properties": {
           "id": {
@@ -24532,9 +24617,6 @@
           "id": {
             "type": "string"
           },
-          "user": {
-            "type": "string"
-          },
           "wallet": {
             "type": "string"
           },
@@ -24587,7 +24669,6 @@
         },
         "required": [
           "id",
-          "user",
           "wallet",
           "accountType",
           "address",
@@ -25380,9 +25461,6 @@
           "id": {
             "type": "string"
           },
-          "user": {
-            "type": "string"
-          },
           "wallet": {
             "type": "string"
           },
@@ -25431,7 +25509,6 @@
         },
         "required": [
           "id",
-          "user",
           "wallet",
           "accountType",
           "address",

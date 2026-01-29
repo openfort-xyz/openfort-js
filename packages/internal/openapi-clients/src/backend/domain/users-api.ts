@@ -28,6 +28,8 @@ import { BaseDeleteEntityResponseEntityTypePLAYER } from '../models';
 // @ts-ignore
 import { BaseEntityListResponseAuthUserResponse } from '../models';
 // @ts-ignore
+import { BaseEntityResponseEntityTypeWALLET } from '../models';
+// @ts-ignore
 import { PregenerateAccountResponse } from '../models';
 // @ts-ignore
 import { PregenerateUserRequestV2 } from '../models';
@@ -184,6 +186,44 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             if (walletClientType !== undefined) {
                 localVarQueryParameter['walletClientType'] = walletClientType;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves the wallet associated with an authenticated user.
+         * @summary Get wallet for user.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserWallet: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getUserWallet', 'id', id)
+            const localVarPath = `/v2/users/{id}/wallet`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -358,6 +398,17 @@ export const UsersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Retrieves the wallet associated with an authenticated user.
+         * @summary Get wallet for user.
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUserWallet(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseEntityResponseEntityTypeWALLET>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUserWallet(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 
          * @summary Get user information.
          * @param {*} [options] Override http request option.
@@ -428,6 +479,16 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          */
         getAuthUsers(requestParameters: UsersApiGetAuthUsersRequest = {}, options?: AxiosRequestConfig): AxiosPromise<BaseEntityListResponseAuthUserResponse> {
             return localVarFp.getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, requestParameters.email, requestParameters.phoneNumber, requestParameters.authProviderId, requestParameters.walletClientType, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves the wallet associated with an authenticated user.
+         * @summary Get wallet for user.
+         * @param {UsersApiGetUserWalletRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUserWallet(requestParameters: UsersApiGetUserWalletRequest, options?: AxiosRequestConfig): AxiosPromise<BaseEntityResponseEntityTypeWALLET> {
+            return localVarFp.getUserWallet(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -560,6 +621,20 @@ export interface UsersApiGetAuthUsersRequest {
 }
 
 /**
+ * Request parameters for getUserWallet operation in UsersApi.
+ * @export
+ * @interface UsersApiGetUserWalletRequest
+ */
+export interface UsersApiGetUserWalletRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof UsersApiGetUserWallet
+     */
+    readonly id: string
+}
+
+/**
  * Request parameters for pregenerateUserV2 operation in UsersApi.
  * @export
  * @interface UsersApiPregenerateUserV2Request
@@ -628,6 +703,18 @@ export class UsersApi extends BaseAPI {
      */
     public getAuthUsers(requestParameters: UsersApiGetAuthUsersRequest = {}, options?: AxiosRequestConfig) {
         return UsersApiFp(this.configuration).getAuthUsers(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.name, requestParameters.externalUserId, requestParameters.email, requestParameters.phoneNumber, requestParameters.authProviderId, requestParameters.walletClientType, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves the wallet associated with an authenticated user.
+     * @summary Get wallet for user.
+     * @param {UsersApiGetUserWalletRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UsersApi
+     */
+    public getUserWallet(requestParameters: UsersApiGetUserWalletRequest, options?: AxiosRequestConfig) {
+        return UsersApiFp(this.configuration).getUserWallet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

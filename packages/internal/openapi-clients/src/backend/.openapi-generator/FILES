@@ -107,6 +107,7 @@ models/base-entity-list-response-device-response.ts
 models/base-entity-list-response-email-sample-response.ts
 models/base-entity-list-response-log-response.ts
 models/base-entity-list-response-trigger-response.ts
+models/base-entity-response-entity-type-wallet.ts
 models/basic-auth-provider-email.ts
 models/basic-auth-provider-guest.ts
 models/basic-auth-provider-phone.ts
@@ -217,6 +218,7 @@ models/entity-type-subscription.ts
 models/entity-type-transactionintent.ts
 models/entity-type-trigger.ts
 models/entity-type-user.ts
+models/entity-type-wallet.ts
 models/epic-games-oauth-config.ts
 models/error-type-invalidrequesterror.ts
 models/estimate-transaction-intent-gas-result.ts
