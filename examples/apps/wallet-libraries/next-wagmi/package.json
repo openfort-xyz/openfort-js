@@ -5,19 +5,19 @@
     "analyze": "ANALYZE=true next build",
     "check": "biome check --write --unsafe",
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@next/bundle-analyzer": "^14.2.3",
+    "@next/bundle-analyzer": "^16.1.6",
     "@tanstack/react-query": ">=5.45.1",
     "axios": "^1.12.2",
-    "next": "14.2.35",
+    "next": "16.1.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "viem": "2.x",
-    "wagmi": "^2.15.2"
+    "wagmi": "2.19.5"
   },
   "devDependencies": {
     "@openfort/openfort-js": "workspace:sdk",

@@ -24,7 +24,8 @@ export const ApiKeyType = {
     Pk: 'pk',
     Sk: 'sk',
     PkShield: 'pk_shield',
-    SkShield: 'sk_shield'
+    SkShield: 'sk_shield',
+    PkWallet: 'pk_wallet'
 } as const;
 
 export type ApiKeyType = typeof ApiKeyType[keyof typeof ApiKeyType];

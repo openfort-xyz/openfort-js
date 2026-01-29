@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('shieldProjectData', shieldProjectData)
 
     if (shieldProjectData.enabled_2fa) {
-      console.log('2FA is enabled for the project')
+      console.log('OTP is enabled for the project')
 
       // check if user has no accounts with automatic recover
       const accounts = await openfort.accounts.list({ user: req.body.user_id })

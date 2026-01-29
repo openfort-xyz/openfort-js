@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "check": "biome check --write --unsafe",
     "lint": "next lint",
@@ -34,7 +34,7 @@
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.454.0",
-    "next": "14.2.35",
+    "next": "16.1.6",
     "permissionless": "^0.2.57",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
@@ -42,7 +42,7 @@
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",
     "viem": "2.x",
-    "wagmi": "2.15.2",
+    "wagmi": "2.19.5",
     "zustand": "^5.0.2"
   },
   "devDependencies": {

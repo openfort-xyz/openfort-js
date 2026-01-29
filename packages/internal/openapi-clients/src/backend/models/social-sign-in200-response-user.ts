@@ -62,5 +62,11 @@ export interface SocialSignIn200ResponseUser {
      * @memberof SocialSignIn200ResponseUser
      */
     'updatedAt': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SocialSignIn200ResponseUser
+     */
+    'isAnonymous'?: boolean;
 }
 

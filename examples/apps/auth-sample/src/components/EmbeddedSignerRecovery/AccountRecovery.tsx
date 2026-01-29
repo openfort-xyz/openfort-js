@@ -164,8 +164,8 @@ const CreateWalletAutomaticForm = () => {
         onClose={() => setShowOTPRequest(false)}
         onSubmit={handleOTPRequest}
         isLoading={otpRequestLoading}
-        title="Setup 2FA for Recovery"
-        description="Put your 2FA information here for future key recovery"
+        title="Setup OTP for Recovery"
+        description="Put your OTP information here for future key recovery"
       />
 
       <OTPVerificationModal

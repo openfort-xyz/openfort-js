@@ -83,7 +83,6 @@ const formatSessionRequest = (
   policyId?: string,
   optimistic: boolean = false,
   whitelist?: string[],
-  player?: string,
   limit?: number,
   account?: string
 ): CreateSessionRequest => {
@@ -94,7 +93,6 @@ const formatSessionRequest = (
     validUntil,
     optimistic,
     whitelist,
-    player,
     account,
   }
 
@@ -156,7 +154,6 @@ const buildOpenfortTransactions = async (
     policyId,
     false,
     whitelist,
-    authentication.userId,
     limit,
     account.id
   )

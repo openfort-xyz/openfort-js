@@ -53,7 +53,7 @@ const SetPairingCode: React.FC<{
     setActiveSessions(walletKit.getActiveSessions())
   }, [walletKit])
 
-  useEffect(updateSessions, [])
+  useEffect(updateSessions, [updateSessions])
 
   const handleSetPairingCode = async () => {
     if (!walletKit) console.error('WalletKit not initialized')
