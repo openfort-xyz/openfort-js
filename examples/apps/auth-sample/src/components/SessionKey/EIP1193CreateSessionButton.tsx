@@ -15,7 +15,7 @@ const EIP1193CreateSessionButton: React.FC<{
   setSessionKey: (sessionKey: `0x${string}` | null) => void
   sessionKey: `0x${string}` | null
 }> = ({ handleSetMessage, setSessionKey, sessionKey }) => {
-  const { state, getEvmProvider } = useOpenfort()
+  const { state, getEvmProvider, account } = useOpenfort()
   const [loading, setLoading] = useState(false)
 
   const createSession = useCallback(async (): Promise<{
@@ -87,7 +87,11 @@ const EIP1193CreateSessionButton: React.FC<{
       >
         {loading ? <Loading /> : 'Create session'}
       </Button>
-      <BackendMintButton handleSetMessage={handleSetMessage} sessionKey={sessionKey as `0x${string}`} />
+      <BackendMintButton
+        handleSetMessage={handleSetMessage}
+        sessionKey={sessionKey as `0x${string}`}
+        accountId={account?.id ?? null}
+      />
     </div>
   )
 }

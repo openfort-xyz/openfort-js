@@ -13,13 +13,17 @@ const BackendCreateSessionButton: React.FC<{
   setSessionKey: (sessionKey: `0x${string}` | null) => void
   sessionKey: `0x${string}` | null
 }> = ({ handleSetMessage, setSessionKey, sessionKey }) => {
-  const { state, signMessage } = useOpenfort()
+  const { state, signMessage, account } = useOpenfort()
   const [loading, setLoading] = useState(false)
 
   const createSession = useCallback(async (): Promise<{
     address: `0x${string}`
     privateKey: `0x${string}`
   } | null> => {
+    if (!account?.id) {
+      alert('No account available')
+      return null
+    }
     const sessionKey = generatePrivateKey()
     const accountSession = privateKeyToAccount(sessionKey).address
 
@@ -30,6 +34,7 @@ const BackendCreateSessionButton: React.FC<{
         Authorization: `Bearer ${await openfort.getAccessToken()}`,
       },
       body: JSON.stringify({
+        account_id: account.id,
         sessionDuration: document.querySelector('input[name="session-method"]:checked')?.id,
         sessionAddress: accountSession,
       }),
@@ -61,10 +66,10 @@ const BackendCreateSessionButton: React.FC<{
       return { address: accountAddress, privateKey: sessionKey }
     }
     return null
-  }, [setSessionKey, signMessage])
+  }, [setSessionKey, signMessage, account?.id])
 
   const revokeSession = useCallback(async (): Promise<string | null> => {
-    if (!sessionKey) {
+    if (!sessionKey || !account?.id) {
       return null
     }
     const sessionSigner = privateKeyToAccount(sessionKey)
@@ -76,6 +81,7 @@ const BackendCreateSessionButton: React.FC<{
         Authorization: `Bearer ${await openfort.getAccessToken()}`,
       },
       body: JSON.stringify({
+        account_id: account.id,
         sessionAddress: sessionSigner.address,
       }),
     })
@@ -102,7 +108,7 @@ const BackendCreateSessionButton: React.FC<{
     } else {
       return revokeResponseJSON.response?.transactionHash
     }
-  }, [sessionKey, signMessage])
+  }, [sessionKey, signMessage, account?.id])
 
   const handleCreateSession = async () => {
     setLoading(true)
@@ -135,7 +141,11 @@ const BackendCreateSessionButton: React.FC<{
       >
         {loading ? <Loading /> : sessionKey !== null ? 'Revoke session' : 'Create session'}
       </Button>
-      <BackendMintButton handleSetMessage={handleSetMessage} sessionKey={sessionKey as `0x${string}`} />
+      <BackendMintButton
+        handleSetMessage={handleSetMessage}
+        sessionKey={sessionKey as `0x${string}`}
+        accountId={account?.id ?? null}
+      />
     </div>
   )
 }

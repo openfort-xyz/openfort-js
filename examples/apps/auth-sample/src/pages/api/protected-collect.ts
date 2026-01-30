@@ -11,7 +11,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await runMiddleware(req, res, cors)
 
   const accessToken = req.headers.authorization?.split(' ')[1]
-  if (!accessToken) {
+  const { account_id } = req.body
+  if (!accessToken || !account_id) {
     return res.status(401).send({
       error: 'You must be signed in to view the protected content on this page.',
     })
@@ -26,17 +27,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     }
 
-    const playerId = response?.user.id
     const interaction_mint = {
       contract: contract_id,
       functionName: 'mint',
-      functionArgs: [playerId, 1],
+      functionArgs: [account_id, 1],
     }
 
     const transactionIntent = await openfort.transactionIntents.create({
-      player: playerId,
+      account: account_id,
+      chainId: chainId,
       policy: policy_id,
-      chainId,
       optimistic,
       interactions: [interaction_mint],
     })

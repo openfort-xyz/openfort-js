@@ -10,12 +10,13 @@ import { Button } from '../ui/button'
 const BackendMintButton: React.FC<{
   handleSetMessage: (message: string) => void
   sessionKey: `0x${string}` | null
-}> = ({ handleSetMessage, sessionKey }) => {
+  accountId: string | null
+}> = ({ handleSetMessage, sessionKey, accountId }) => {
   const [loading, setLoading] = useState(false)
   const buttonId = useId()
 
   const mintNFT = useCallback(async (): Promise<string | null> => {
-    if (!sessionKey) {
+    if (!sessionKey || !accountId) {
       return null
     }
     const collectResponse = await fetch(`/api/protected-collect`, {
@@ -24,6 +25,7 @@ const BackendMintButton: React.FC<{
         'Content-Type': 'application/json',
         Authorization: `Bearer ${await openfort.getAccessToken()}`,
       },
+      body: JSON.stringify({ account_id: accountId }),
     })
 
     if (!collectResponse.ok) {
@@ -49,7 +51,7 @@ const BackendMintButton: React.FC<{
       signature
     )
     return response?.response?.transactionHash ?? null
-  }, [sessionKey])
+  }, [sessionKey, accountId])
 
   const handleMintNFT = async () => {
     setLoading(true)
@@ -65,7 +67,7 @@ const BackendMintButton: React.FC<{
       <Button
         className="w-full"
         onClick={handleMintNFT}
-        disabled={!sessionKey}
+        disabled={!sessionKey || !accountId}
         id={buttonId}
         data-testid="mint-nft-button"
         variant="outline"

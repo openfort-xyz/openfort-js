@@ -6,7 +6,8 @@ const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID)
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const accessToken = req.headers.authorization?.split(' ')[1]
-  if (!accessToken) {
+  const { account_id } = req.body
+  if (!accessToken || !account_id) {
     return res.status(401).send({
       error: 'You must be signed in to view the protected content on this page.',
     })
@@ -43,10 +44,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // The unix timestamp in seconds when the session key becomes invalid in number format (where session duration is 1hour, 1day, 1month).
     const validUntil = Math.floor(new Date(Date.now() + sessionDurationNumber[sessionDuration]).getTime() / 1000)
 
-    const playerId = response.user.id
-
     const sessionRegistration = await openfort.sessions.create({
-      player: playerId,
+      account: account_id,
       policy: policy_id,
       chainId,
       address: sessionAddress,
