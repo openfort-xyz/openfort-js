@@ -25,9 +25,10 @@ const OPENFORT_FUNCTIONS = {
   initOAuth: 'initOAuth',
   initLinkOAuth: 'initLinkOAuth',
   unlinkOAuth: 'unlinkOAuth',
-  initSIWE: 'initSIWE',
-  authenticateWithSIWE: 'authenticateWithSIWE',
-  linkWallet: 'linkWallet',
+  initSiwe: 'initSiwe',
+  loginWithSiwe: 'loginWithSiwe',
+  initLinkSiwe: 'initLinkSiwe',
+  linkWithSiwe: 'linkWithSiwe',
   unlinkWallet: 'unlinkWallet',
   storeCredentials: 'storeCredentials',
   sendSignatureTransactionIntentRequest: 'sendSignatureTransactionIntentRequest',
@@ -46,7 +47,6 @@ const OPENFORT_FUNCTIONS = {
   requestPhoneOtp: 'requestPhoneOtp',
   logInWithPhoneOtp: 'logInWithPhoneOtp',
   linkPhoneOtp: 'linkPhoneOtp',
-  linkSIWE: 'linkSIWE',
   addEmail: 'addEmail',
 }
 
@@ -228,9 +228,9 @@ window.callFunction = async (jsonData: string) => {
         })
         break
       }
-      case OPENFORT_FUNCTIONS.initSIWE: {
+      case OPENFORT_FUNCTIONS.initSiwe: {
         const request = JSON.parse(data)
-        const initResponse = await openfortClient.auth.initSIWE({
+        const initResponse = await openfortClient.auth.initSiwe({
           address: request.address,
         })
 
@@ -244,9 +244,9 @@ window.callFunction = async (jsonData: string) => {
         })
         break
       }
-      case OPENFORT_FUNCTIONS.authenticateWithSIWE: {
+      case OPENFORT_FUNCTIONS.loginWithSiwe: {
         const request = JSON.parse(data)
-        const authResponse = await openfortClient.auth.authenticateWithSIWE({
+        const authResponse = await openfortClient.auth.loginWithSiwe({
           signature: request.signature,
           message: request.message,
           walletClientType: request.walletClientType,
@@ -262,9 +262,23 @@ window.callFunction = async (jsonData: string) => {
         })
         break
       }
-      case OPENFORT_FUNCTIONS.linkWallet: {
+      case OPENFORT_FUNCTIONS.initLinkSiwe: {
         const request = JSON.parse(data)
-        const result = await openfortClient.auth.linkWallet({
+        const result = await openfortClient.auth.initLinkSiwe({
+          address: request.address,
+        })
+
+        callbackToGame({
+          ...result,
+          responseFor: fxName,
+          requestId,
+          success: true,
+        })
+        break
+      }
+      case OPENFORT_FUNCTIONS.linkWithSiwe: {
+        const request = JSON.parse(data)
+        const result = await openfortClient.auth.linkWithSiwe({
           signature: request.signature,
           message: request.message,
           walletClientType: request.walletClientType,
@@ -649,20 +663,6 @@ window.callFunction = async (jsonData: string) => {
           requestId,
           success: true,
           ...authResponse,
-        })
-        break
-      }
-      case OPENFORT_FUNCTIONS.linkSIWE: {
-        const request = JSON.parse(data)
-        const initResponse = await openfortClient.auth.linkSIWE({
-          address: request.address,
-        })
-
-        callbackToGame({
-          responseFor: fxName,
-          requestId,
-          success: true,
-          ...initResponse,
         })
         break
       }
