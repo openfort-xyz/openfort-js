@@ -58,3 +58,33 @@ export async function cryptoDigest(algorithm: string, data: BufferSource): Promi
 
   throw new Error('No crypto digest function available. Please provide a crypto override for this environment.')
 }
+
+/** Types that passkey.key may have after postMessage/JSON (e.g. React Native or bridge). */
+export type PasskeyKeyLike = Uint8Array | number[] | ArrayLike<number> | Record<string, number> | string
+
+/**
+ * Normalizes passkey key to a Uint8Array (BufferSource).
+ * Use when receiving passkey.key via postMessage/JSON (e.g. from React Native).
+ * Handles: Uint8Array, number[], plain object {0:n,1:n,...}, comma-separated string "n,n,...".
+ *
+ * @param key - Key from PasskeyDetails after JSON / bridge
+ * @returns Uint8Array for crypto.subtle.importKey('raw', result, ...)
+ */
+export function ensurePasskeyKeyBuffer(key: PasskeyKeyLike): Uint8Array {
+  if (key instanceof Uint8Array) {
+    return key
+  }
+  if (typeof key === 'string') {
+    return new Uint8Array(key.split(',').map(Number))
+  }
+  if (Array.isArray(key)) {
+    return new Uint8Array(key)
+  }
+  if (typeof key === 'object' && key !== null && 'length' in key) {
+    return new Uint8Array(key as ArrayLike<number>)
+  }
+  if (typeof key === 'object' && key !== null) {
+    return new Uint8Array(Object.values(key as Record<string, number>))
+  }
+  throw new Error('Passkey key must be Uint8Array, number[], object with numeric values, or comma-separated string')
+}

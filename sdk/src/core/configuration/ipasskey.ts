@@ -8,7 +8,7 @@ export interface IPasskeyHandler {
     id: string
     displayName: string
     seed: string
-  }): Promise<{ id: string; displayName?: string; key?: Uint8Array }>
+  }): Promise<{ id: string; displayName?: string; key?: Uint8Array | number[] }>
 
   deriveKey(config: { id: string; seed: string }): Promise<CryptoKey>
 

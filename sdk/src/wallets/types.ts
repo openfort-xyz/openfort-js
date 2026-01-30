@@ -588,5 +588,6 @@ export interface MessagePoster {
 export interface PasskeyDetails {
   id?: string
   env?: PasskeyEnv
-  key?: Uint8Array
+  /** When received via postMessage/JSON (e.g. React Native), key may be number[]. Coerce with ensurePasskeyKeyBuffer(key) before crypto.subtle.importKey. */
+  key?: Uint8Array | number[]
 }
