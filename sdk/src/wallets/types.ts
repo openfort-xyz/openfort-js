@@ -589,6 +589,4 @@ export interface PasskeyDetails {
   id?: string
   env?: PasskeyEnv
   key?: Uint8Array
-  /** When true, Shield/remote must use app:passkey:encrypt/decrypt; key is not sent. */
-  useLocalEncryption?: boolean
 }

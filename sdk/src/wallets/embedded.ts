@@ -38,7 +38,7 @@ export class EmbeddedSigner implements Signer {
     })
     return {
       id: passkey.id,
-      ...(passkey.key != null && { key: passkey.key }),
+      key: passkey.key,
     }
   }
 

@@ -256,15 +256,16 @@ export class EmbeddedWalletApi {
           encryptionSession: recoveryParams.encryptionSession,
         }
       case RecoveryMethod.PASSKEY:
-        if (!recoveryParams.passkeyInfo) return { passkey: {} }
         return {
-          passkey: {
-            id: recoveryParams.passkeyInfo.passkeyId,
-            // if passkey was just created don't re-derive key to avoid double popup
-            key:
-              recoveryParams.passkeyInfo.passkeyKey ||
-              (await this.getPasskeyKey(recoveryParams.passkeyInfo.passkeyId)),
-          },
+          passkey: recoveryParams.passkeyInfo
+            ? {
+                id: recoveryParams.passkeyInfo.passkeyId,
+                // if passkey was just created don't re-derive key to avoid double popup
+                key:
+                  recoveryParams.passkeyInfo.passkeyKey ||
+                  (await this.getPasskeyKey(recoveryParams.passkeyInfo.passkeyId)),
+              }
+            : {},
         }
       default:
         throw new ConfigurationError('Invalid recovery method')
