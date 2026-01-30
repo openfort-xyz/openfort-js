@@ -562,8 +562,7 @@ export type EmbeddedAccountCreateParams = {
 
 export type PasskeyInfo = {
   passkeyId: string
-  /** When received via postMessage/JSON (e.g. React Native), coerce with ensurePasskeyKeyBuffer(passkeyKey) before crypto.subtle.importKey. */
-  passkeyKey?: Uint8Array | number[]
+  passkeyKey?: Uint8Array
 }
 
 export type RecoveryParams =

@@ -38,7 +38,7 @@ export { IStorage as Storage } from './storage/istorage'
 // biome-ignore lint/performance/noReExportAll: Main SDK entry point needs to re-export all types
 export * from './types'
 // Export crypto utilities
-export { cryptoDigest, ensurePasskeyKeyBuffer, type PasskeyKeyLike } from './utils/crypto'
+export { cryptoDigest } from './utils/crypto'
 
 /**
  * Global event emitter for subscribing to Openfort SDK events

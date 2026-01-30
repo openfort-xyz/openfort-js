@@ -297,7 +297,7 @@ export class SetRecoveryMethodRequest implements IEventRequest {
 
   encryptionSession?: string
 
-  passkeyKey?: Uint8Array | number[]
+  passkeyKey?: Uint8Array
 
   passkeyId?: string
 
@@ -309,7 +309,7 @@ export class SetRecoveryMethodRequest implements IEventRequest {
     requestConfiguration: RequestConfiguration,
     recoveryPassword?: string,
     encryptionSession?: string,
-    passkeyKey?: Uint8Array | number[],
+    passkeyKey?: Uint8Array,
     passkeyId?: string
   ) {
     this.uuid = uuid
@@ -588,6 +588,5 @@ export interface MessagePoster {
 export interface PasskeyDetails {
   id?: string
   env?: PasskeyEnv
-  /** When received via postMessage/JSON (e.g. React Native), key may be number[]. Coerce with ensurePasskeyKeyBuffer(key) before crypto.subtle.importKey. */
-  key?: Uint8Array | number[]
+  key?: Uint8Array
 }
