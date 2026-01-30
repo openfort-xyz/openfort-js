@@ -780,6 +780,7 @@ export class EmbeddedWalletApi {
   private setupPasskeyBridge(): void {
     if (
       typeof window === 'undefined' ||
+      typeof window.addEventListener !== 'function' ||
       !this.messagePoster ||
       !this.hasLocalEncryptionHandler()
     ) {
@@ -823,7 +824,11 @@ export class EmbeddedWalletApi {
   }
 
   private teardownPasskeyBridge(): void {
-    if (this.passkeyBridgeListener && typeof window !== 'undefined') {
+    if (
+      this.passkeyBridgeListener &&
+      typeof window !== 'undefined' &&
+      typeof window.removeEventListener === 'function'
+    ) {
       window.removeEventListener('message', this.passkeyBridgeListener)
       this.passkeyBridgeListener = null
     }
