@@ -297,7 +297,7 @@ export class SetRecoveryMethodRequest implements IEventRequest {
 
   encryptionSession?: string
 
-  passkeyKey?: Uint8Array
+  passkeyKey?: Uint8Array | number[]
 
   passkeyId?: string
 
@@ -309,7 +309,7 @@ export class SetRecoveryMethodRequest implements IEventRequest {
     requestConfiguration: RequestConfiguration,
     recoveryPassword?: string,
     encryptionSession?: string,
-    passkeyKey?: Uint8Array,
+    passkeyKey?: Uint8Array | number[],
     passkeyId?: string
   ) {
     this.uuid = uuid
