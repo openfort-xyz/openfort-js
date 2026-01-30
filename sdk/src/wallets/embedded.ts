@@ -36,9 +36,11 @@ export class EmbeddedSigner implements Signer {
       displayName: 'Openfort - Embedded Wallet',
       seed: player,
     })
+    const hasKey = passkey.key != null
     return {
       id: passkey.id,
-      key: passkey.key,
+      ...(hasKey && { key: passkey.key }),
+      ...(!hasKey && { useLocalEncryption: true }),
     }
   }
 
@@ -68,11 +70,17 @@ export class EmbeddedSigner implements Signer {
               encryptionSession: params.entropy.encryptionSession,
             }),
             ...(acc.recoveryMethod === 'passkey' && {
-              passkey: {
-                id: acc.recoveryMethodDetails?.passkeyId,
-                env: acc.recoveryMethodDetails?.passkeyEnv,
-                key: await params.getPasskeyKeyFn(acc.recoveryMethodDetails?.passkeyId ?? ''),
-              },
+              passkey: params.entropy.passkey?.useLocalEncryption
+                ? {
+                    id: acc.recoveryMethodDetails?.passkeyId,
+                    env: acc.recoveryMethodDetails?.passkeyEnv,
+                    useLocalEncryption: true,
+                  }
+                : {
+                    id: acc.recoveryMethodDetails?.passkeyId,
+                    env: acc.recoveryMethodDetails?.passkeyEnv,
+                    key: await params.getPasskeyKeyFn(acc.recoveryMethodDetails?.passkeyId ?? ''),
+                  },
             }),
           },
         }),
@@ -145,11 +153,17 @@ export class EmbeddedSigner implements Signer {
                 encryptionSession: params.entropy.encryptionSession,
               }),
               ...(account.recoveryMethod === 'passkey' && {
-                passkey: {
-                  id: account.recoveryMethodDetails?.passkeyId,
-                  env: account.recoveryMethodDetails?.passkeyEnv,
-                  key: await params.getPasskeyKeyFn(account.recoveryMethodDetails?.passkeyId ?? ''),
-                },
+                passkey: params.entropy.passkey?.useLocalEncryption
+                  ? {
+                      id: account.recoveryMethodDetails?.passkeyId,
+                      env: account.recoveryMethodDetails?.passkeyEnv,
+                      useLocalEncryption: true,
+                    }
+                  : {
+                      id: account.recoveryMethodDetails?.passkeyId,
+                      env: account.recoveryMethodDetails?.passkeyEnv,
+                      key: await params.getPasskeyKeyFn(account.recoveryMethodDetails?.passkeyId ?? ''),
+                    },
               }),
             },
           }),
