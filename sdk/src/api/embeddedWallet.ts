@@ -52,14 +52,6 @@ export class EmbeddedWalletApi {
 
   private messenger: ReactNativeMessenger | null = null
 
-  /** Pending app:passkey:encrypt/decrypt requests (id -> resolve + iframe source) for Option A message bridge */
-  private pendingPasskeyRequests = new Map<
-    string,
-    { resolve: (value: unknown) => void; source: MessageEventSource; origin: string }
-  >()
-
-  private passkeyBridgeListener: ((e: MessageEvent) => void) | null = null
-
   constructor(
     private readonly storage: IStorage,
     private readonly validateAndRefreshToken: () => Promise<void>,
@@ -71,15 +63,6 @@ export class EmbeddedWalletApi {
       debugLog('Handling logout event in EmbeddedWalletApi')
       this.handleLogout()
     })
-  }
-
-  /**
-   * True when the handler supports local encrypt/decrypt (e.g. React Native);
-   * key must not be sent and Shield/remote must use app:passkey:encrypt/decrypt.
-   */
-  private hasLocalEncryptionHandler(): boolean {
-    const h = this.passkeyHandler as IPasskeyHandler & { encrypt?: unknown; decrypt?: unknown }
-    return typeof h.encrypt === 'function' && typeof h.decrypt === 'function'
   }
 
   private get backendApiClients(): BackendApiClients {
@@ -274,14 +257,6 @@ export class EmbeddedWalletApi {
         }
       case RecoveryMethod.PASSKEY:
         if (!recoveryParams.passkeyInfo) return { passkey: {} }
-        if (this.hasLocalEncryptionHandler()) {
-          return {
-            passkey: {
-              id: recoveryParams.passkeyInfo.passkeyId,
-              useLocalEncryption: true,
-            },
-          }
-        }
         return {
           passkey: {
             id: recoveryParams.passkeyInfo.passkeyId,
@@ -349,9 +324,7 @@ export class EmbeddedWalletApi {
         displayName: 'Openfort - Embedded Wallet',
         seed: auth?.userId,
       })
-      recoveryParams.passkeyInfo = this.hasLocalEncryptionHandler()
-        ? { passkeyId: passkeyDetails.id }
-        : { passkeyId: passkeyDetails.id, passkeyKey: passkeyDetails.key }
+      recoveryParams.passkeyInfo = { passkeyId: passkeyDetails.id, passkeyKey: passkeyDetails.key }
     }
 
     const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
@@ -509,24 +482,20 @@ export class EmbeddedWalletApi {
       if (!passkeyId) {
         throw new ConfigurationError('missing passkey id for account')
       }
-      passkeyInfo = this.hasLocalEncryptionHandler()
-        ? { passkeyId }
-        : {
-            passkeyId,
-            passkeyKey: await this.passkeyHandler.deriveAndExportKey({
-              id: passkeyId,
-              seed: auth.userId,
-            }),
-          }
+      passkeyInfo = {
+        passkeyId,
+        passkeyKey: await this.passkeyHandler.deriveAndExportKey({
+          id: passkeyId,
+          seed: auth.userId,
+        }),
+      }
     } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
       const newPasskeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
         seed: auth.userId!,
       })
-      passkeyInfo = this.hasLocalEncryptionHandler()
-        ? { passkeyId: newPasskeyDetails.id }
-        : { passkeyId: newPasskeyDetails.id, passkeyKey: newPasskeyDetails.key }
+      passkeyInfo = { passkeyId: newPasskeyDetails.id, passkeyKey: newPasskeyDetails.key }
       recoveryMethodDetails = {
         passkeyId: newPasskeyDetails.id,
       }
@@ -761,8 +730,6 @@ export class EmbeddedWalletApi {
       throw new ConfigurationError('Invalid message poster')
     }
 
-    this.teardownPasskeyBridge()
-
     this.messagePoster = poster
 
     if (this.messenger) this.messenger.destroy()
@@ -773,70 +740,9 @@ export class EmbeddedWalletApi {
     this.iframeManager = null
     this.iframeManagerPromise = null
     this.messenger = null
-
-    this.setupPasskeyBridge()
-  }
-
-  private setupPasskeyBridge(): void {
-    if (
-      typeof window === 'undefined' ||
-      typeof window.addEventListener !== 'function' ||
-      !this.messagePoster ||
-      !this.hasLocalEncryptionHandler()
-    ) {
-      return
-    }
-    const listener = (e: MessageEvent): void => {
-      const data = e?.data
-      if (!data || typeof data !== 'object' || !('id' in data)) return
-      const id = (data as { id?: string }).id
-      if (!id) return
-      // Response from RN app (relay back to iframe)
-      const pending = this.pendingPasskeyRequests.get(id)
-      if (pending) {
-        this.pendingPasskeyRequests.delete(id)
-        try {
-          ;(pending.source as Window).postMessage(data, pending.origin)
-        } catch (_err) {
-          debugLog('Passkey bridge: failed to postMessage back to iframe', _err)
-        }
-        pending.resolve(data)
-        return
-      }
-      // Request from iframe (forward to RN app)
-      const event = (data as { event?: string }).event
-      if (event === 'app:passkey:encrypt' || event === 'app:passkey:decrypt') {
-        let resolveFn!: (value: unknown) => void
-        void new Promise<unknown>((r) => {
-          resolveFn = r
-        })
-        this.pendingPasskeyRequests.set(id, {
-          resolve: resolveFn,
-          source: e.source as MessageEventSource,
-          origin: e.origin,
-        })
-        this.messagePoster?.postMessage(JSON.stringify(data))
-      }
-    }
-    this.passkeyBridgeListener = listener
-    window.addEventListener('message', this.passkeyBridgeListener)
-    debugLog('Passkey bridge: listener attached (local encryption)')
-  }
-
-  private teardownPasskeyBridge(): void {
-    if (
-      this.passkeyBridgeListener &&
-      typeof window !== 'undefined' &&
-      typeof window.removeEventListener === 'function'
-    ) {
-      window.removeEventListener('message', this.passkeyBridgeListener)
-      this.passkeyBridgeListener = null
-    }
-    this.pendingPasskeyRequests.clear()
   }
 
   private async handleLogout(): Promise<void> {
-    this.teardownPasskeyBridge()
     // In React Native, if no messagePoster is set, we can't communicate with the WebView
     // Skip signer disconnect since there's no iframe/WebView storage to clear
     if (typeof document === 'undefined' && !this.messagePoster) {
@@ -867,20 +773,6 @@ export class EmbeddedWalletApi {
     }
 
     debugLog('[HANDSHAKE DEBUG] EmbeddedWalletApi onMessage:', message)
-
-    // Option A bridge: passkey response from RN app (relay back to iframe)
-    const id = message.id as string | undefined
-    const pending = id ? this.pendingPasskeyRequests.get(id) : undefined
-    if (pending) {
-      this.pendingPasskeyRequests.delete(id as string)
-      try {
-        ;(pending.source as Window).postMessage(message, pending.origin)
-      } catch (_err) {
-        debugLog('Passkey bridge: failed to postMessage back to iframe', _err)
-      }
-      pending.resolve(message)
-      return
-    }
 
     // Check if this is a penpal message
     const isPenpalMessage =
