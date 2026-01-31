@@ -325,9 +325,13 @@ export class EmbeddedWalletApi {
         displayName: 'Openfort - Embedded Wallet',
         seed: auth?.userId,
       })
-      recoveryParams.passkeyInfo = { passkeyId: passkeyDetails.id, passkeyKey: passkeyDetails.key }
+      recoveryParams.passkeyInfo = {
+        passkeyId: passkeyDetails.id,
+        passkeyKey: passkeyDetails.key,
+      }
+      console.log('passkeyInfo', passkeyDetails)
     }
-
+    console.log('recoveryParams', recoveryParams)
     const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
     const account = await signer.create({
       accountType: params.accountType,
@@ -335,6 +339,10 @@ export class EmbeddedWalletApi {
       chainId: params.chainId,
       entropy,
     })
+    console.log('account', account)
+    console.log('recoveryParams', recoveryParams)
+    console.log('entropy', entropy)
+    console.log('signer', signer)
     const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
@@ -496,7 +504,10 @@ export class EmbeddedWalletApi {
         displayName: 'Openfort - Embedded Wallet',
         seed: auth.userId!,
       })
-      passkeyInfo = { passkeyId: newPasskeyDetails.id, passkeyKey: newPasskeyDetails.key }
+      passkeyInfo = {
+        passkeyId: newPasskeyDetails.id,
+        passkeyKey: newPasskeyDetails.key,
+      }
       recoveryMethodDetails = {
         passkeyId: newPasskeyDetails.id,
       }
