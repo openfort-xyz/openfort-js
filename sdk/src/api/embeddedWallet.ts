@@ -238,6 +238,7 @@ export class EmbeddedWalletApi {
 
   private async getPasskeyKey(id: string): Promise<Uint8Array> {
     const auth = await Authentication.fromStorage(this.storage)
+    console.log('auth', auth)
     const derivedKey = await this.passkeyHandler.deriveAndExportKey({
       id,
       seed: auth?.userId ?? '',
@@ -332,7 +333,11 @@ export class EmbeddedWalletApi {
       console.log('passkeyInfo', passkeyDetails)
     }
     console.log('recoveryParams', recoveryParams)
-    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
+    const signer = await this.ensureSigner()
+    console.log('signer', signer)
+    const entropy = await this.getEntropy(recoveryParams)
+    console.log('entropy', entropy)
+
     const account = await signer.create({
       accountType: params.accountType,
       chainType: params.chainType,
