@@ -1,4 +1,5 @@
 import { BackendApiClients } from '@openfort/openapi-clients'
+import { IPasskeyHandler } from 'core/configuration/ipasskey'
 import { PasskeyHandler } from 'core/configuration/passkey'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
@@ -56,7 +57,7 @@ export class EmbeddedWalletApi {
     private readonly validateAndRefreshToken: () => Promise<void>,
     private readonly ensureInitialized: () => Promise<void>,
     private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
-    private readonly passkeyHandler: PasskeyHandler
+    private readonly passkeyHandler: IPasskeyHandler
   ) {
     this.eventEmitter.on(OpenfortEvents.ON_LOGOUT, () => {
       debugLog('Handling logout event in EmbeddedWalletApi')
@@ -237,6 +238,7 @@ export class EmbeddedWalletApi {
 
   private async getPasskeyKey(id: string): Promise<Uint8Array> {
     const auth = await Authentication.fromStorage(this.storage)
+    console.log('auth', auth)
     const derivedKey = await this.passkeyHandler.deriveAndExportKey({
       id,
       seed: auth?.userId ?? '',
@@ -327,15 +329,24 @@ export class EmbeddedWalletApi {
         passkeyId: passkeyDetails.id,
         passkeyKey: passkeyDetails.key,
       }
+      console.log('passkeyInfo', passkeyDetails)
     }
+    console.log('recoveryParams', recoveryParams)
+    const signer = await this.ensureSigner()
+    console.log('signer', signer)
+    const entropy = await this.getEntropy(recoveryParams)
+    console.log('entropy', entropy)
 
-    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
     const account = await signer.create({
       accountType: params.accountType,
       chainType: params.chainType,
       chainId: params.chainId,
       entropy,
     })
+    console.log('account', account)
+    console.log('recoveryParams', recoveryParams)
+    console.log('entropy', entropy)
+    console.log('signer', signer)
     const embeddedAccount: EmbeddedAccount = {
       id: account.id,
       chainId: account.chainId,
