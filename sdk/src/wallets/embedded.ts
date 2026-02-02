@@ -31,11 +31,15 @@ export class EmbeddedSigner implements Signer {
   ) {}
 
   private async createPasskey(player: string): Promise<PasskeyDetails> {
-    const passkey = await this.passkeyHandler.createPasskey({
+    const config = {
       id: PasskeyHandler.randomPasskeyName(),
       displayName: 'Openfort - Embedded Wallet',
       seed: player,
-    })
+    }
+    // Prefer native method (returns base64url string, JSON-friendly for React Native)
+    const passkey = this.passkeyHandler.createNativePasskey
+      ? await this.passkeyHandler.createNativePasskey(config)
+      : await this.passkeyHandler.createPasskey(config)
     return {
       id: passkey.id,
       key: passkey.key,

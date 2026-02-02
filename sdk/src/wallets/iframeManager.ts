@@ -65,7 +65,7 @@ export interface SignerConfigureRequest {
   entropy?: EntropyResponse
   accountType: AccountTypeEnum
   chainType: ChainTypeEnum
-  getPasskeyKeyFn: (id: string) => Promise<Uint8Array>
+  getPasskeyKeyFn: (id: string) => Promise<Uint8Array | string>
 }
 
 export interface SignerCreateRequest {
@@ -510,7 +510,7 @@ export class IframeManager {
     recoveryMethod: RecoveryMethod,
     recoveryPassword?: string,
     encryptionSession?: string,
-    passkeyKey?: Uint8Array,
+    passkeyKey?: Uint8Array | string,
     passkeyId?: string
   ): Promise<void> {
     const remote = await this.ensureConnection()

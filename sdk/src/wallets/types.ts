@@ -297,7 +297,7 @@ export class SetRecoveryMethodRequest implements IEventRequest {
 
   encryptionSession?: string
 
-  passkeyKey?: Uint8Array
+  passkeyKey?: Uint8Array | string // Uint8Array from browser, base64url string from React Native
 
   passkeyId?: string
 
@@ -309,7 +309,7 @@ export class SetRecoveryMethodRequest implements IEventRequest {
     requestConfiguration: RequestConfiguration,
     recoveryPassword?: string,
     encryptionSession?: string,
-    passkeyKey?: Uint8Array,
+    passkeyKey?: Uint8Array | string,
     passkeyId?: string
   ) {
     this.uuid = uuid
@@ -588,5 +588,5 @@ export interface MessagePoster {
 export interface PasskeyDetails {
   id?: string
   env?: PasskeyEnv
-  key?: Uint8Array
+  key?: Uint8Array | string // Uint8Array from browser, base64url string from React Native
 }

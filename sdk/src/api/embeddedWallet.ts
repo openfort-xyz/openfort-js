@@ -236,13 +236,16 @@ export class EmbeddedWalletApi {
     return iframe
   }
 
-  private async getPasskeyKey(id: string): Promise<Uint8Array> {
+  private async getPasskeyKey(id: string): Promise<Uint8Array | string> {
     const auth = await Authentication.fromStorage(this.storage)
-    const derivedKey = await this.passkeyHandler.deriveAndExportKey({
-      id,
-      seed: auth?.userId ?? '',
-    })
-    return derivedKey
+    const seed = auth?.userId ?? ''
+
+    // Prefer native method (returns base64url string, JSON-friendly for React Native)
+    if (this.passkeyHandler.deriveAndExportNativeKey) {
+      return this.passkeyHandler.deriveAndExportNativeKey({ id, seed })
+    }
+    // Fall back to browser method (returns Uint8Array)
+    return this.passkeyHandler.deriveAndExportKey({ id, seed })
   }
 
   private async getEntropy(recoveryParams: RecoveryParams): Promise<EntropyResponse> {
@@ -319,11 +322,15 @@ export class EmbeddedWalletApi {
     }
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
-      const passkeyDetails = await this.passkeyHandler.createPasskey({
+      const config = {
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
         seed: auth?.userId,
-      })
+      }
+      // Prefer native method (returns base64url string, JSON-friendly for React Native)
+      const passkeyDetails = this.passkeyHandler.createNativePasskey
+        ? await this.passkeyHandler.createNativePasskey(config)
+        : await this.passkeyHandler.createPasskey(config)
       recoveryParams.passkeyInfo = {
         passkeyId: passkeyDetails.id,
         passkeyKey: passkeyDetails.key,
@@ -483,19 +490,30 @@ export class EmbeddedWalletApi {
       if (!passkeyId) {
         throw new ConfigurationError('missing passkey id for account')
       }
+      // Prefer native method (returns base64url string, JSON-friendly for React Native)
+      const passkeyKey = this.passkeyHandler.deriveAndExportNativeKey
+        ? await this.passkeyHandler.deriveAndExportNativeKey({
+            id: passkeyId,
+            seed: auth.userId,
+          })
+        : await this.passkeyHandler.deriveAndExportKey({
+            id: passkeyId,
+            seed: auth.userId,
+          })
       passkeyInfo = {
         passkeyId,
-        passkeyKey: await this.passkeyHandler.deriveAndExportKey({
-          id: passkeyId,
-          seed: auth.userId,
-        }),
+        passkeyKey,
       }
     } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
-      const newPasskeyDetails = await this.passkeyHandler.createPasskey({
+      const config = {
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
         seed: auth.userId!,
-      })
+      }
+      // Prefer native method (returns base64url string, JSON-friendly for React Native)
+      const newPasskeyDetails = this.passkeyHandler.createNativePasskey
+        ? await this.passkeyHandler.createNativePasskey(config)
+        : await this.passkeyHandler.createPasskey(config)
       passkeyInfo = {
         passkeyId: newPasskeyDetails.id,
         passkeyKey: newPasskeyDetails.key,

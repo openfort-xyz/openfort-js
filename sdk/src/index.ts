@@ -13,6 +13,9 @@ export { UserApi } from './api/user'
 export { Openfort }
 // Export passkey handler interface
 export type { IPasskeyHandler } from './core/configuration/ipasskey'
+export type { ValidKeyByteLength } from './core/configuration/passkey-utils'
+// Export passkey utilities (for React Native and other native implementations)
+export { PasskeyUtils } from './core/configuration/passkey-utils'
 // Export error handling
 export {
   OPENFORT_AUTH_ERROR_CODES,
