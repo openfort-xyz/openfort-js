@@ -1,3 +1,4 @@
+import type { IPasskeyHandler } from 'core/configuration/ipasskey'
 import type { ThirdPartyOAuthProvider } from 'types'
 import type { IStorage } from '../../storage/istorage'
 import { setCryptoDigestOverride } from '../../utils/crypto'
@@ -10,6 +11,7 @@ export interface SDKOverrides {
     digest?: (algorithm: string, data: BufferSource) => Promise<ArrayBuffer>
   }
   storage?: IStorage
+  passkeyHandler?: IPasskeyHandler
 }
 
 export interface ThirdPartyAuthConfiguration {

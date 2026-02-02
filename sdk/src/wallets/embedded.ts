@@ -1,5 +1,6 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import { Authentication } from 'core/configuration/authentication'
+import type { IPasskeyHandler } from 'core/configuration/ipasskey'
 import { PasskeyHandler } from 'core/configuration/passkey'
 import { OPENFORT_AUTH_ERROR_CODES } from 'core/errors/authErrorCodes'
 import { ConfigurationError, SessionError } from 'core/errors/openfortError'
@@ -25,7 +26,7 @@ export class EmbeddedSigner implements Signer {
     private readonly iframeManager: IframeManager,
     private readonly storage: IStorage,
     private readonly backendApiClients: BackendApiClients,
-    private readonly passkeyHandler: PasskeyHandler,
+    private readonly passkeyHandler: IPasskeyHandler,
     private eventEmitter: TypedEventEmitter<OpenfortEventMap>
   ) {}
 

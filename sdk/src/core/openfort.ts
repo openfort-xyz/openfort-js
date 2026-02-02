@@ -9,6 +9,7 @@ import { LazyStorage } from '../storage/lazyStorage'
 import type { OpenfortEventMap } from '../types/types'
 import TypedEventEmitter from '../utils/typedEventEmitter'
 import { type OpenfortSDKConfiguration, SDKConfiguration } from './config/config'
+import type { IPasskeyHandler } from './configuration/ipasskey'
 import { PasskeyHandler } from './configuration/passkey'
 import { OPENFORT_AUTH_ERROR_CODES, OPENFORT_ERROR_CODES } from './errors/authErrorCodes'
 import { ConfigurationError, OpenfortError, RequestError, SignerError } from './errors/openfortError'
@@ -38,7 +39,7 @@ export class Openfort {
 
   public eventEmitter: TypedEventEmitter<OpenfortEventMap>
 
-  private iPasskeyHandler: PasskeyHandler
+  private iPasskeyHandler: IPasskeyHandler
 
   /**
    * Global event emitter singleton for subscribing to SDK events
@@ -169,11 +170,13 @@ export class Openfort {
     }
 
     // Instantiate the passkey handler
-    this.iPasskeyHandler = new PasskeyHandler({
-      rpId: this.configuration.passkeyRpId,
-      rpName: this.configuration.passkeyRpName,
-      extractableKey: true,
-    })
+    this.iPasskeyHandler =
+      sdkConfiguration.overrides?.passkeyHandler ??
+      new PasskeyHandler({
+        rpId: this.configuration.passkeyRpId,
+        rpName: this.configuration.passkeyRpName,
+        extractableKey: true,
+      })
 
     InternalSentry.init({ configuration: this.configuration })
 
@@ -242,7 +245,7 @@ export class Openfort {
     return this.iAuthManager
   }
 
-  get passkeyHandler(): PasskeyHandler {
+  get passkeyHandler(): IPasskeyHandler {
     return this.iPasskeyHandler
   }
 

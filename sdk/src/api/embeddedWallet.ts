@@ -1,4 +1,5 @@
 import { BackendApiClients } from '@openfort/openapi-clients'
+import type { IPasskeyHandler } from 'core/configuration/ipasskey'
 import { PasskeyHandler } from 'core/configuration/passkey'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
@@ -56,7 +57,7 @@ export class EmbeddedWalletApi {
     private readonly validateAndRefreshToken: () => Promise<void>,
     private readonly ensureInitialized: () => Promise<void>,
     private readonly eventEmitter: TypedEventEmitter<OpenfortEventMap>,
-    private readonly passkeyHandler: PasskeyHandler
+    private readonly passkeyHandler: IPasskeyHandler
   ) {
     this.eventEmitter.on(OpenfortEvents.ON_LOGOUT, () => {
       debugLog('Handling logout event in EmbeddedWalletApi')
