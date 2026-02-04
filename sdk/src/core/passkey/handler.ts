@@ -180,7 +180,7 @@ export class PasskeyHandler implements IPasskeyHandler {
   }
 }
 
-export interface PasskeyHandlerConfig {
+interface PasskeyHandlerConfig {
   rpId?: string
   rpName?: string
   /** Timeout in milliseconds before passkey dialog expires (default: 60000) */
