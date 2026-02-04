@@ -561,7 +561,7 @@ export type EmbeddedAccountCreateParams = {
 
 export type PasskeyInfo = {
   passkeyId: string
-  passkeyKey?: Uint8Array | string // Uint8Array from browser, base64url string from React Native
+  passkeyKey?: string // base64url-encoded key material
 }
 
 export type RecoveryParams =

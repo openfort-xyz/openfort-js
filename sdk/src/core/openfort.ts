@@ -9,12 +9,12 @@ import { LazyStorage } from '../storage/lazyStorage'
 import type { OpenfortEventMap } from '../types/types'
 import TypedEventEmitter from '../utils/typedEventEmitter'
 import { type OpenfortSDKConfiguration, SDKConfiguration } from './config/config'
-import type { IPasskeyHandler } from './configuration/ipasskey'
-import { PasskeyHandler } from './configuration/passkey'
 import { OPENFORT_AUTH_ERROR_CODES, OPENFORT_ERROR_CODES } from './errors/authErrorCodes'
 import { ConfigurationError, OpenfortError, RequestError, SignerError } from './errors/openfortError'
 import { InternalSentry } from './errors/sentry'
 import { OpenfortInternal } from './openfortInternal'
+import type { IPasskeyHandler } from './passkey'
+import { PasskeyHandler } from './passkey'
 
 export class Openfort {
   private storage: IStorage
@@ -175,7 +175,6 @@ export class Openfort {
       new PasskeyHandler({
         rpId: this.configuration.passkeyRpId,
         rpName: this.configuration.passkeyRpName,
-        extractableKey: true,
       })
 
     InternalSentry.init({ configuration: this.configuration })

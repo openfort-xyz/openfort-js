@@ -1,4 +1,4 @@
-import type { IPasskeyHandler } from 'core/configuration/ipasskey'
+import type { IPasskeyHandler } from 'core/passkey'
 import type { ThirdPartyOAuthProvider } from 'types'
 import type { IStorage } from '../../storage/istorage'
 import { setCryptoDigestOverride } from '../../utils/crypto'

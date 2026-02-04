@@ -1,10 +1,10 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import { Authentication } from 'core/configuration/authentication'
-import type { IPasskeyHandler } from 'core/configuration/ipasskey'
-import { PasskeyHandler } from 'core/configuration/passkey'
 import { OPENFORT_AUTH_ERROR_CODES } from 'core/errors/authErrorCodes'
 import { ConfigurationError, SessionError } from 'core/errors/openfortError'
 import { withApiError } from 'core/errors/withApiError'
+import type { IPasskeyHandler } from 'core/passkey'
+import { PasskeyHandler } from 'core/passkey'
 import type TypedEventEmitter from 'utils/typedEventEmitter'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
@@ -31,15 +31,11 @@ export class EmbeddedSigner implements Signer {
   ) {}
 
   private async createPasskey(player: string): Promise<PasskeyDetails> {
-    const config = {
+    const passkey = await this.passkeyHandler.createPasskey({
       id: PasskeyHandler.randomPasskeyName(),
       displayName: 'Openfort - Embedded Wallet',
       seed: player,
-    }
-    // Prefer native method (returns base64url string, JSON-friendly for React Native)
-    const passkey = this.passkeyHandler.createNativePasskey
-      ? await this.passkeyHandler.createNativePasskey(config)
-      : await this.passkeyHandler.createPasskey(config)
+    })
     return {
       id: passkey.id,
       key: passkey.key,

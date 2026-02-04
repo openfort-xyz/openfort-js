@@ -11,11 +11,6 @@ export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'
 // Export main SDK classes
 export { Openfort }
-// Export passkey handler interface
-export type { IPasskeyHandler } from './core/configuration/ipasskey'
-export type { ValidKeyByteLength } from './core/configuration/passkey-utils'
-// Export passkey utilities (for React Native and other native implementations)
-export { PasskeyUtils } from './core/configuration/passkey-utils'
 // Export error handling
 export {
   OPENFORT_AUTH_ERROR_CODES,
@@ -36,6 +31,9 @@ export {
   SignerError,
   UserError,
 } from './core/errors/openfortError'
+// Export passkey module (Strategy pattern for platform-specific implementations)
+export type { IPasskeyHandler, PasskeyCreateConfig, PasskeyDeriveConfig, PasskeyDetails } from './core/passkey'
+export { arrayBufferToBase64URL, base64ToArrayBuffer, PasskeyHandler } from './core/passkey'
 // Export storage interface
 export { IStorage as Storage } from './storage/istorage'
 // biome-ignore lint/performance/noReExportAll: Main SDK entry point needs to re-export all types
