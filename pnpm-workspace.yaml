@@ -6,4 +6,5 @@ packages:
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@openfort/shield-js"
+  - "@isaacs/brace-expansion"
   - "@openfort/openfort-node"
