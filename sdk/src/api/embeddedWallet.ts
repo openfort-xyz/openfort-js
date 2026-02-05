@@ -5,7 +5,7 @@ import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
 import { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
-import { ConfigurationError, SessionError, SignerError } from '../core/errors/openfortError'
+import { AuthenticationError, ConfigurationError, SessionError, SignerError } from '../core/errors/openfortError'
 import { withApiError } from '../core/errors/withApiError'
 import type { IStorage } from '../storage/istorage'
 import {
@@ -238,8 +238,10 @@ export class EmbeddedWalletApi {
 
   private async getPasskeyKey(id: string): Promise<string> {
     const auth = await Authentication.fromStorage(this.storage)
-    const seed = auth?.userId ?? ''
-    return this.passkeyHandler.deriveAndExportKey({ id, seed })
+    if (!auth?.userId) {
+      throw new AuthenticationError('auth', 'User is required for passkey key derivation. Logout and login again.', 401)
+    }
+    return this.passkeyHandler.deriveAndExportKey({ id, seed: auth.userId })
   }
 
   private async getEntropy(recoveryParams: RecoveryParams): Promise<EntropyResponse> {
@@ -316,10 +318,13 @@ export class EmbeddedWalletApi {
     }
     // If we're here it's guaranteed we need to create a passkey for this particular user
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      if (!auth.userId) {
+        throw new ConfigurationError('User ID is required for passkey creation')
+      }
       const passkeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
-        seed: auth?.userId ?? '',
+        seed: auth.userId,
       })
       if (!passkeyDetails.key) {
         throw new ConfigurationError('Passkey creation failed: no key material returned')
@@ -483,6 +488,9 @@ export class EmbeddedWalletApi {
       if (!passkeyId) {
         throw new ConfigurationError('missing passkey id for account')
       }
+      if (!auth.userId) {
+        throw new ConfigurationError('User ID is required for passkey key derivation')
+      }
       const passkeyKey = await this.passkeyHandler.deriveAndExportKey({
         id: passkeyId,
         seed: auth.userId,
@@ -492,10 +500,13 @@ export class EmbeddedWalletApi {
         passkeyKey,
       }
     } else if (newRecovery.recoveryMethod === RecoveryMethod.PASSKEY) {
+      if (!auth.userId) {
+        throw new ConfigurationError('User ID is required for passkey creation')
+      }
       const newPasskeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
         displayName: 'Openfort - Embedded Wallet',
-        seed: auth.userId!,
+        seed: auth.userId,
       })
       if (!newPasskeyDetails.key) {
         throw new ConfigurationError('Passkey creation failed: no key material returned')

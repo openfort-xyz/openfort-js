@@ -32,8 +32,24 @@ export {
   UserError,
 } from './core/errors/openfortError'
 // Export passkey module (Strategy pattern for platform-specific implementations)
-export type { IPasskeyHandler, PasskeyCreateConfig, PasskeyDeriveConfig, PasskeyDetails } from './core/passkey'
-export { arrayBufferToBase64URL, base64ToArrayBuffer, PasskeyHandler } from './core/passkey'
+export type {
+  IPasskeyHandler,
+  PasskeyCreateConfig,
+  PasskeyDeriveConfig,
+  PasskeyDetails,
+  PasskeyErrorCode,
+} from './core/passkey'
+export {
+  arrayBufferToBase64URL,
+  base64ToArrayBuffer,
+  PASSKEY_ERROR_CODES,
+  PasskeyAssertionFailedError,
+  PasskeyCreationFailedError,
+  PasskeyHandler,
+  PasskeyPRFNotSupportedError,
+  PasskeySeedInvalidError,
+  PasskeyUserCancelledError,
+} from './core/passkey'
 // Export storage interface
 export { IStorage as Storage } from './storage/istorage'
 // biome-ignore lint/performance/noReExportAll: Main SDK entry point needs to re-export all types

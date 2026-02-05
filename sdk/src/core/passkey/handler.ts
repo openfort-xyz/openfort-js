@@ -1,4 +1,11 @@
 import { humanId } from 'human-id'
+import {
+  PasskeyAssertionFailedError,
+  PasskeyCreationFailedError,
+  PasskeyPRFNotSupportedError,
+  PasskeySeedInvalidError,
+  PasskeyUserCancelledError,
+} from './errors'
 import type { IPasskeyHandler, PasskeyCreateConfig, PasskeyDeriveConfig, PasskeyDetails } from './types'
 import { arrayBufferToBase64URL, base64ToArrayBuffer } from './utils'
 
@@ -65,13 +72,13 @@ export class PasskeyHandler implements IPasskeyHandler {
     const clientExtResults = assertion.getClientExtensionResults()
 
     if (!clientExtResults) {
-      throw new Error('Passkey fetch failed')
+      throw new PasskeyPRFNotSupportedError('Passkey fetch failed: no client extension results')
     }
 
     const prfResults = clientExtResults.prf
 
     if (!prfResults || !prfResults.results) {
-      throw new Error('PRF extension not supported or missing results')
+      throw new PasskeyPRFNotSupportedError('PRF extension not supported or missing results')
     }
     const rawBits = prfResults.results.first
     // ⚠️ key has extractable=true ON PURPOSE so it can be sent to the iframe
@@ -93,8 +100,17 @@ export class PasskeyHandler implements IPasskeyHandler {
    * @param displayName Display name (ideally it should hint about environment, chain id, etc)
    * @param seed Seed phrase for PRF key derivation
    * @returns PasskeyDetails with passkey details if passkey creation was successful
+   * @throws PasskeySeedInvalidError if seed is empty
+   * @throws PasskeyUserCancelledError if user cancels the operation
+   * @throws PasskeyPRFNotSupportedError if PRF extension fails
+   * @throws PasskeyCreationFailedError for other failures
    */
   async createPasskey({ id, displayName, seed }: PasskeyCreateConfig): Promise<PasskeyDetails> {
+    // Validate seed is non-empty for PRF entropy
+    if (!seed || seed.trim().length === 0) {
+      throw new PasskeySeedInvalidError()
+    }
+
     const publicKey: PublicKeyCredentialCreationOptions = {
       challenge: this.getChallengeBytes() as BufferSource,
       rp: {
@@ -129,17 +145,43 @@ export class PasskeyHandler implements IPasskeyHandler {
       attestation: 'direct',
     }
 
-    const credential = (await navigator.credentials.create({ publicKey })) as PublicKeyCredential
-
-    if (credential) {
-      const rawKey = await this.deriveKeyFromAssertion(credential)
-      return {
-        id: arrayBufferToBase64URL(credential.rawId),
-        displayName,
-        key: arrayBufferToBase64URL(rawKey),
+    let credential: PublicKeyCredential | null
+    try {
+      credential = (await navigator.credentials.create({ publicKey })) as PublicKeyCredential | null
+    } catch (e) {
+      // Check for user cancellation (NotAllowedError is thrown when user cancels)
+      if (e instanceof Error && e.name === 'NotAllowedError') {
+        throw new PasskeyUserCancelledError()
       }
+      throw new PasskeyCreationFailedError(
+        e instanceof Error ? e.message : 'Unknown error',
+        e instanceof Error ? e : undefined
+      )
     }
-    throw new Error('could not create passkey')
+
+    if (!credential) {
+      // Null result typically indicates user cancellation
+      throw new PasskeyUserCancelledError()
+    }
+
+    let rawKey: ArrayBuffer
+    try {
+      rawKey = await this.deriveKeyFromAssertion(credential)
+    } catch (e) {
+      // If PRF fails after credential creation, log warning about orphaned passkey
+      if (e instanceof PasskeyPRFNotSupportedError) {
+        console.warn(
+          `[Openfort] Passkey created but PRF extension failed. A passkey credential may exist on the device that cannot be used for wallet recovery. Credential ID: ${arrayBufferToBase64URL(credential.rawId)}`
+        )
+      }
+      throw e
+    }
+
+    return {
+      id: arrayBufferToBase64URL(credential.rawId),
+      displayName,
+      key: arrayBufferToBase64URL(rawKey),
+    }
   }
 
   /**
@@ -147,33 +189,59 @@ export class PasskeyHandler implements IPasskeyHandler {
    * @param id Internal ID of the passkey
    * @param seed Seed phrase to derive passkey ID
    * @returns base64url encoded derived key
+   * @throws PasskeySeedInvalidError if seed is empty
+   * @throws PasskeyUserCancelledError if user cancels the operation
+   * @throws PasskeyPRFNotSupportedError if PRF extension fails
+   * @throws PasskeyAssertionFailedError for other failures
    */
   async deriveAndExportKey({ id, seed }: PasskeyDeriveConfig): Promise<string> {
-    // This assertion is the authentication step in the passkey:
-    // it will fail if the user is not able to provide valid
-    // credentials (PIN, biometrics, etc)
-    const assertion = (await navigator.credentials.get({
-      publicKey: {
-        // Challenge just adds extra noise here, no security concerns for this
-        // particular use case
-        challenge: this.getChallengeBytes() as BufferSource,
-        rpId: this.rpId,
-        allowCredentials: [
-          {
-            id: base64ToArrayBuffer(id),
-            type: 'public-key',
-          },
-        ],
-        userVerification: 'required',
-        extensions: {
-          prf: {
-            eval: {
-              first: new TextEncoder().encode(seed),
+    // Validate seed is non-empty for PRF entropy
+    if (!seed || seed.trim().length === 0) {
+      throw new PasskeySeedInvalidError()
+    }
+
+    let assertion: PublicKeyCredential | null
+    try {
+      // This assertion is the authentication step in the passkey:
+      // it will fail if the user is not able to provide valid
+      // credentials (PIN, biometrics, etc)
+      assertion = (await navigator.credentials.get({
+        publicKey: {
+          // Challenge just adds extra noise here, no security concerns for this
+          // particular use case
+          challenge: this.getChallengeBytes() as BufferSource,
+          rpId: this.rpId,
+          allowCredentials: [
+            {
+              id: base64ToArrayBuffer(id),
+              type: 'public-key',
+            },
+          ],
+          userVerification: 'required',
+          extensions: {
+            prf: {
+              eval: {
+                first: new TextEncoder().encode(seed),
+              },
             },
           },
         },
-      },
-    })) as PublicKeyCredential
+      })) as PublicKeyCredential | null
+    } catch (e) {
+      // Check for user cancellation (NotAllowedError is thrown when user cancels)
+      if (e instanceof Error && e.name === 'NotAllowedError') {
+        throw new PasskeyUserCancelledError()
+      }
+      throw new PasskeyAssertionFailedError(
+        e instanceof Error ? e.message : 'Unknown error',
+        e instanceof Error ? e : undefined
+      )
+    }
+
+    if (!assertion) {
+      // Null result typically indicates user cancellation
+      throw new PasskeyUserCancelledError()
+    }
 
     const rawKey = await this.deriveKeyFromAssertion(assertion)
     return arrayBufferToBase64URL(rawKey)
