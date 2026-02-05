@@ -561,7 +561,7 @@ export type EmbeddedAccountCreateParams = {
 
 export type PasskeyInfo = {
   passkeyId: string
-  passkeyKey?: Uint8Array
+  passkeyKey?: string // base64url-encoded key material
 }
 
 export type RecoveryParams =
