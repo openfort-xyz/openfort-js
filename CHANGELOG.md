@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.1.5
+
+### Patch Changes
+
+- [#224](https://github.com/openfort-xyz/openfort-js/pull/224) [`8f033cb`](https://github.com/openfort-xyz/openfort-js/commit/8f033cb69daaa3048e1be88f27b0b1e9779da047) Thanks [@isardmart](https://github.com/isardmart)! - add passkey errors typed
+
 ## 1.1.4
 
 ### Patch Changes
