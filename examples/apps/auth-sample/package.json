@@ -27,7 +27,7 @@
     "@walletconnect/core": "^2.21.3",
     "@walletconnect/types": "^2.21.3",
     "@walletconnect/utils": "^2.21.3",
-    "axios": "^1.12.2",
+    "axios": "^1.13.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
