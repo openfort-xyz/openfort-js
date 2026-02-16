@@ -326,7 +326,6 @@ export class EmbeddedWalletApi {
       }
       const passkeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
-        displayName: SDKConfiguration.getInstance()?.passkeyDisplayName ?? 'Openfort - Embedded Wallet',
         seed: auth.userId,
       })
       if (!passkeyDetails.key) {
@@ -508,7 +507,6 @@ export class EmbeddedWalletApi {
       }
       const newPasskeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
-        displayName: SDKConfiguration.getInstance()?.passkeyDisplayName ?? 'Openfort - Embedded Wallet',
         seed: auth.userId,
       })
       if (!newPasskeyDetails.key) {

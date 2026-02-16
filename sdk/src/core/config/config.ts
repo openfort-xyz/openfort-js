@@ -33,13 +33,10 @@ export class OpenfortConfiguration {
   }
 }
 
+export const DEFAULT_PASSKEY_DISPLAY_NAME = 'Openfort - Embedded Wallet'
+
 export class ShieldConfiguration {
   readonly shieldPublishableKey: string
-
-  /**
-   * @deprecated This option is no longer used and will be removed in future versions.
-   */
-  readonly shieldEncryptionKey?: string
 
   readonly debug?: boolean = false
 
@@ -62,7 +59,7 @@ export class ShieldConfiguration {
    * The display name shown next to the passkey credential in the browser's passkey dialog
    * (e.g. "My Wallet" or "Trading Account"). This helps users identify the specific
    * credential when they have multiple passkeys for the same service.
-   * Defaults to "Openfort - Embedded Wallet" if not provided.
+   * Defaults to DEFAULT_PASSKEY_DISPLAY_NAME if not provided.
    */
   readonly passkeyDisplayName?: string
 
@@ -73,7 +70,7 @@ export class ShieldConfiguration {
     passkeyRpId?: string
     /** The relying party display name shown as the service name in passkey dialogs. */
     passkeyRpName?: string
-    /** The credential display name shown next to the passkey in browser dialogs. Defaults to "Openfort - Embedded Wallet". */
+    /** The credential display name shown next to the passkey in browser dialogs. Defaults to DEFAULT_PASSKEY_DISPLAY_NAME. */
     passkeyDisplayName?: string
   }) {
     this.shieldPublishableKey = options.shieldPublishableKey
@@ -111,7 +108,7 @@ export class SDKConfiguration {
 
   readonly passkeyRpName?: string
 
-  readonly passkeyDisplayName?: string
+  readonly passkeyDisplayName: string
 
   readonly nativeAppIdentifier?: string
 
@@ -135,7 +132,7 @@ export class SDKConfiguration {
 
     this.passkeyRpId = shieldConfiguration?.passkeyRpId
     this.passkeyRpName = shieldConfiguration?.passkeyRpName
-    this.passkeyDisplayName = shieldConfiguration?.passkeyDisplayName
+    this.passkeyDisplayName = shieldConfiguration?.passkeyDisplayName ?? DEFAULT_PASSKEY_DISPLAY_NAME
 
     this.nativeAppIdentifier = baseConfiguration.nativeAppIdentifier
 

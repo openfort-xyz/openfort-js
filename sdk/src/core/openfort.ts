@@ -175,6 +175,7 @@ export class Openfort {
       new PasskeyHandler({
         rpId: this.configuration.passkeyRpId,
         rpName: this.configuration.passkeyRpName,
+        displayName: this.configuration.passkeyDisplayName,
       })
 
     InternalSentry.init({ configuration: this.configuration })
