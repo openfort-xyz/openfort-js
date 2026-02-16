@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.1.6
+
+### Patch Changes
+
+- [#232](https://github.com/openfort-xyz/openfort-js/pull/232) [`9a1e1d9`](https://github.com/openfort-xyz/openfort-js/commit/9a1e1d9372c13a20f97d3d6fa14dd7fb89cec1af) Thanks [@jamalavedra](https://github.com/jamalavedra)! - update passkey iframe
+
 ## 1.1.5
 
 ### Patch Changes
