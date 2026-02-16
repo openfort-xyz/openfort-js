@@ -35,7 +35,7 @@ export default function AccountActions({ handleSetMessage }: { handleSetMessage:
         <div className="space-y-2">
           <Alert className="bg-blue-50">
             <AlertTitle>Backend Action!</AlertTitle>
-            <AlertDescription>This mode creates an API call to your backend to mint the NFT.</AlertDescription>
+            <AlertDescription>This mode creates an API call to your backend to mint the Token.</AlertDescription>
           </Alert>
           <BackendMintButton handleSetMessage={handleSetMessage} />
         </div>

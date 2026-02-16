@@ -105,7 +105,7 @@ const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) =>
               const errorMessage = getErrorMessage(error)
               console.error('Wallet authentication failed:', errorMessage, error)
               alert(`Wallet authentication failed: ${errorMessage}`)
-              throw error
+              // throw error
             } finally {
               setLoading(null!)
             }

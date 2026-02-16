@@ -13,7 +13,7 @@ const openfort = new Openfort({
   shieldConfiguration: {
     shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
     passkeyRpId: passkeyRpId,
-    debug: false,
+    debug: true,
     passkeyRpName: passkeyRpName,
   },
   debug: true,
