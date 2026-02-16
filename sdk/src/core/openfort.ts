@@ -173,9 +173,9 @@ export class Openfort {
     this.iPasskeyHandler =
       sdkConfiguration.overrides?.passkeyHandler ??
       new PasskeyHandler({
-        rpId: this.configuration.passkeyRpId,
-        rpName: this.configuration.passkeyRpName,
-        displayName: this.configuration.passkeyDisplayName,
+        rpId: sdkConfiguration.shieldConfiguration?.passkeyRpId,
+        rpName: sdkConfiguration.shieldConfiguration?.passkeyRpName,
+        displayName: sdkConfiguration.shieldConfiguration?.passkeyDisplayName,
       })
 
     InternalSentry.init({ configuration: this.configuration })

@@ -13,5 +13,11 @@ export {
   PasskeyUserCancelledError,
 } from './errors'
 export { PasskeyHandler } from './handler'
-export type { IPasskeyHandler, PasskeyCreateConfig, PasskeyDeriveConfig, PasskeyDetails } from './types'
+export {
+  DEFAULT_PASSKEY_DISPLAY_NAME,
+  type IPasskeyHandler,
+  type PasskeyCreateConfig,
+  type PasskeyDeriveConfig,
+  type PasskeyDetails,
+} from './types'
 export { arrayBufferToBase64URL, base64ToArrayBuffer } from './utils'

@@ -2,6 +2,8 @@
  * Passkey types and interfaces.
  */
 
+export const DEFAULT_PASSKEY_DISPLAY_NAME = 'Openfort - Embedded Wallet'
+
 /**
  * Configuration for creating a new passkey.
  */

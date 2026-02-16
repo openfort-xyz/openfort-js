@@ -33,8 +33,6 @@ export class OpenfortConfiguration {
   }
 }
 
-export const DEFAULT_PASSKEY_DISPLAY_NAME = 'Openfort - Embedded Wallet'
-
 export class ShieldConfiguration {
   readonly shieldPublishableKey: string
 
@@ -59,7 +57,7 @@ export class ShieldConfiguration {
    * The display name shown next to the passkey credential in the browser's passkey dialog
    * (e.g. "My Wallet" or "Trading Account"). This helps users identify the specific
    * credential when they have multiple passkeys for the same service.
-   * Defaults to DEFAULT_PASSKEY_DISPLAY_NAME if not provided.
+   * Defaults to "Openfort - Embedded Wallet" if not provided.
    */
   readonly passkeyDisplayName?: string
 
@@ -70,7 +68,7 @@ export class ShieldConfiguration {
     passkeyRpId?: string
     /** The relying party display name shown as the service name in passkey dialogs. */
     passkeyRpName?: string
-    /** The credential display name shown next to the passkey in browser dialogs. Defaults to DEFAULT_PASSKEY_DISPLAY_NAME. */
+    /** The credential display name shown next to the passkey in browser dialogs. Defaults to "Openfort - Embedded Wallet". */
     passkeyDisplayName?: string
   }) {
     this.shieldPublishableKey = options.shieldPublishableKey
@@ -104,12 +102,6 @@ export class SDKConfiguration {
 
   readonly storage?: IStorage
 
-  readonly passkeyRpId?: string
-
-  readonly passkeyRpName?: string
-
-  readonly passkeyDisplayName: string
-
   readonly nativeAppIdentifier?: string
 
   readonly debug?: boolean
@@ -129,10 +121,6 @@ export class SDKConfiguration {
     this.shieldUrl = overrides?.shieldUrl || 'https://shield.openfort.io'
     this.storage = overrides?.storage
     this.thirdPartyAuth = thirdPartyAuth
-
-    this.passkeyRpId = shieldConfiguration?.passkeyRpId
-    this.passkeyRpName = shieldConfiguration?.passkeyRpName
-    this.passkeyDisplayName = shieldConfiguration?.passkeyDisplayName ?? DEFAULT_PASSKEY_DISPLAY_NAME
 
     this.nativeAppIdentifier = baseConfiguration.nativeAppIdentifier
 

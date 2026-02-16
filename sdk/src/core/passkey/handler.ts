@@ -6,7 +6,13 @@ import {
   PasskeySeedInvalidError,
   PasskeyUserCancelledError,
 } from './errors'
-import type { IPasskeyHandler, PasskeyCreateConfig, PasskeyDeriveConfig, PasskeyDetails } from './types'
+import {
+  DEFAULT_PASSKEY_DISPLAY_NAME,
+  type IPasskeyHandler,
+  type PasskeyCreateConfig,
+  type PasskeyDeriveConfig,
+  type PasskeyDetails,
+} from './types'
 import { arrayBufferToBase64URL, base64ToArrayBuffer } from './utils'
 
 /**
@@ -44,7 +50,7 @@ export class PasskeyHandler implements IPasskeyHandler {
   constructor({ rpId, rpName, displayName, timeoutMs, derivedKeyLengthBytes }: PasskeyHandlerConfig = {}) {
     this.rpId = rpId
     this.rpName = rpName
-    this.displayName = displayName ?? 'Openfort - Embedded Wallet'
+    this.displayName = displayName ?? DEFAULT_PASSKEY_DISPLAY_NAME
     this.timeoutMs = timeoutMs ?? 60_000
     this.derivedKeyLengthBytes = derivedKeyLengthBytes ?? 32
 
