@@ -43,20 +43,44 @@ export class ShieldConfiguration {
 
   readonly debug?: boolean = false
 
+  /**
+   * The relying party identifier for WebAuthn passkey operations.
+   * This is typically the domain name (e.g. "example.com") and determines which
+   * passkeys are available during authentication — only passkeys created under this
+   * RP ID will be offered by the browser. Must match the domain the app is hosted on.
+   */
   readonly passkeyRpId?: string
 
+  /**
+   * The relying party display name shown in the browser's passkey creation dialog
+   * as the service requesting the passkey (e.g. "My App" or "Acme Corp").
+   * This identifies your application to the user during the WebAuthn ceremony.
+   */
   readonly passkeyRpName?: string
+
+  /**
+   * The display name shown next to the passkey credential in the browser's passkey dialog
+   * (e.g. "My Wallet" or "Trading Account"). This helps users identify the specific
+   * credential when they have multiple passkeys for the same service.
+   * Defaults to "Openfort - Embedded Wallet" if not provided.
+   */
+  readonly passkeyDisplayName?: string
 
   constructor(options: {
     shieldPublishableKey: string
     shieldDebug?: boolean
+    /** The relying party identifier (domain) for WebAuthn passkey operations. */
     passkeyRpId?: string
+    /** The relying party display name shown as the service name in passkey dialogs. */
     passkeyRpName?: string
+    /** The credential display name shown next to the passkey in browser dialogs. Defaults to "Openfort - Embedded Wallet". */
+    passkeyDisplayName?: string
   }) {
     this.shieldPublishableKey = options.shieldPublishableKey
     this.debug = options.shieldDebug || false
     this.passkeyRpId = options.passkeyRpId
     this.passkeyRpName = options.passkeyRpName
+    this.passkeyDisplayName = options.passkeyDisplayName
   }
 }
 
@@ -87,6 +111,8 @@ export class SDKConfiguration {
 
   readonly passkeyRpName?: string
 
+  readonly passkeyDisplayName?: string
+
   readonly nativeAppIdentifier?: string
 
   readonly debug?: boolean
@@ -109,6 +135,7 @@ export class SDKConfiguration {
 
     this.passkeyRpId = shieldConfiguration?.passkeyRpId
     this.passkeyRpName = shieldConfiguration?.passkeyRpName
+    this.passkeyDisplayName = shieldConfiguration?.passkeyDisplayName
 
     this.nativeAppIdentifier = baseConfiguration.nativeAppIdentifier
 

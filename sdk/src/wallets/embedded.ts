@@ -33,7 +33,7 @@ export class EmbeddedSigner implements Signer {
   private async createPasskey(player: string): Promise<PasskeyDetails> {
     const passkey = await this.passkeyHandler.createPasskey({
       id: PasskeyHandler.randomPasskeyName(),
-      displayName: 'Openfort - Embedded Wallet',
+      displayName: SDKConfiguration.getInstance()?.passkeyDisplayName ?? 'Openfort - Embedded Wallet',
       seed: player,
     })
     return {
