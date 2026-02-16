@@ -278,7 +278,17 @@ export class EmbeddedWalletApi {
       recoveryMethod: RecoveryMethod.AUTOMATIC,
     }
 
-    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
+    // For passkey recovery, ensure the iframe connection is established before triggering
+    // the biometric dialog. The WebAuthn modal blocks the parent's event loop, preventing
+    // the penpal handshake from completing and causing a connection timeout on the iframe side.
+    let signer: EmbeddedSigner
+    let entropy: EntropyResponse
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      signer = await this.ensureSigner()
+      entropy = await this.getEntropy(recoveryParams)
+    } else {
+      ;[signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
+    }
 
     const configureParams: SignerConfigureRequest = {
       chainId: params.chainId,
@@ -316,8 +326,11 @@ export class EmbeddedWalletApi {
     if (!auth) {
       throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'missing authentication')
     }
-    // If we're here it's guaranteed we need to create a passkey for this particular user
+    // For passkey creation, ensure the iframe connection is established before triggering
+    // the biometric dialog. The WebAuthn modal blocks the parent's event loop, preventing
+    // the penpal handshake from completing and causing a connection timeout on the iframe side.
     if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      await this.ensureSigner()
       if (!auth.userId) {
         throw new ConfigurationError('User ID is required for passkey creation')
       }
@@ -335,6 +348,8 @@ export class EmbeddedWalletApi {
       }
     }
 
+    // After passkey case: signer is already initialized, getEntropy uses cached passkeyKey (no dialog).
+    // For non-passkey: both run in parallel since no biometric dialog blocks the event loop.
     const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
     const account = await signer.create({
       accountType: params.accountType,
@@ -379,7 +394,17 @@ export class EmbeddedWalletApi {
       }
     }
 
-    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
+    // For passkey recovery, ensure the iframe connection is established before triggering
+    // the biometric dialog. The WebAuthn modal blocks the parent's event loop, preventing
+    // the penpal handshake from completing and causing a connection timeout on the iframe side.
+    let signer: EmbeddedSigner
+    let entropy: EntropyResponse
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      signer = await this.ensureSigner()
+      entropy = await this.getEntropy(recoveryParams)
+    } else {
+      ;[signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
+    }
     const account = await signer.recover({
       account: params.account,
       entropy,

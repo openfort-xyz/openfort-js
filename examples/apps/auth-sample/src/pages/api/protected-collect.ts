@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.send({
       transactionIntentId: transactionIntent.id,
-      userOperationHash: transactionIntent.nextAction?.payload.userOperationHash,
+      userOperationHash: transactionIntent.nextAction?.payload.signableHash,
     })
   } catch (e) {
     console.log(e)
