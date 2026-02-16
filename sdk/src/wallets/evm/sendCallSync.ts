@@ -159,7 +159,6 @@ export const sendCallsSync = async ({
       })
       signedAuthorization = serializeSignedAuthorization(_signedAuthorization)
     }
-    // If already delegated, signedAuthorization remains undefined (no authorization needed)
   }
   const openfortTransaction = await buildOpenfortTransactions(
     params,

@@ -203,6 +203,9 @@ export class EmbeddedWalletApi {
 
   private async createSigner(): Promise<EmbeddedSigner> {
     const iframeManager = await this.getIframeManager()
+    // Eagerly initialize the iframe connection so the penpal handshake completes
+    // before any WebAuthn dialogs can block the event loop.
+    await iframeManager.initialize()
     const signer = new EmbeddedSigner(
       iframeManager,
       this.storage,
@@ -323,7 +326,7 @@ export class EmbeddedWalletApi {
       }
       const passkeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
-        displayName: 'Openfort - Embedded Wallet',
+        displayName: SDKConfiguration.getInstance()?.passkeyDisplayName ?? 'Openfort - Embedded Wallet',
         seed: auth.userId,
       })
       if (!passkeyDetails.key) {
@@ -505,7 +508,7 @@ export class EmbeddedWalletApi {
       }
       const newPasskeyDetails = await this.passkeyHandler.createPasskey({
         id: PasskeyHandler.randomPasskeyName(),
-        displayName: 'Openfort - Embedded Wallet',
+        displayName: SDKConfiguration.getInstance()?.passkeyDisplayName ?? 'Openfort - Embedded Wallet',
         seed: auth.userId,
       })
       if (!newPasskeyDetails.key) {
