@@ -81,7 +81,7 @@ export class EmbeddedWalletApi {
     debugLog('[HANDSHAKE DEBUG] getIframeManager called')
 
     // Check if existing instance has failed - if so, clear it for recreation
-    if (this.iframeManager && (this.iframeManager as any).hasFailed) {
+    if (this.iframeManager?.hasFailed) {
       debugLog('[HANDSHAKE DEBUG] Existing iframeManager has failed, clearing for recreation')
       if (this.messenger) {
         this.messenger.destroy()
@@ -170,7 +170,7 @@ export class EmbeddedWalletApi {
    */
   private async ensureSigner(): Promise<EmbeddedSigner> {
     // Check if the IframeManager has failed - if so, clear the signer for recreation
-    if (this.iframeManager && (this.iframeManager as any).hasFailed) {
+    if (this.iframeManager?.hasFailed) {
       debugLog('IframeManager has failed, clearing signer for recreation')
       this.signer = null
     }
@@ -775,9 +775,11 @@ export class EmbeddedWalletApi {
       this.signerPromise = null
       return
     }
+    try {
+      const signer = await this.ensureSigner()
+      await signer.disconnect()
+    } catch {}
 
-    const signer = await this.ensureSigner()
-    await signer.disconnect()
     this.provider = null
     this.messenger = null
     this.iframeManager = null

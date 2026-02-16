@@ -154,7 +154,7 @@ export class IframeManager {
 
   private initializationPromise: Promise<void> | null = null
 
-  private hasFailed = false
+  public hasFailed = false
 
   constructor(configuration: SDKConfiguration, storage: IStorage, messenger: Messenger) {
     if (!configuration) {
