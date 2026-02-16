@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.1.7
+
+### Patch Changes
+
+- [#235](https://github.com/openfort-xyz/openfort-js/pull/235) [`cf1f6d2`](https://github.com/openfort-xyz/openfort-js/commit/cf1f6d22edd5fe70657ffac6df515496d586b1c4) Thanks [@jamalavedra](https://github.com/jamalavedra)! - improve base64 compat
+
 ## 1.1.6
 
 ### Patch Changes
