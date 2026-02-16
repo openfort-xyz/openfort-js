@@ -104,8 +104,6 @@
     },
     "auditConfig": {
       "ignoreCves": [
-        "GHSA-ffrw-9mx8-89p8",
-        "CVE-2025-57319",
         "CVE-2025-14505"
       ]
     }
