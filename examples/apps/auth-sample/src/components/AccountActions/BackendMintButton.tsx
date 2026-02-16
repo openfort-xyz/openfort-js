@@ -12,7 +12,7 @@ const BackendMintButton: React.FC<{
   const { state, account } = useOpenfort()
   const [loading, setLoading] = useState(false)
 
-  const mintNFT = useCallback(async (): Promise<string | null> => {
+  const mintToken = useCallback(async (): Promise<string | null> => {
     if (!account?.id) {
       alert('No account available')
       return null
@@ -27,7 +27,7 @@ const BackendMintButton: React.FC<{
     })
 
     if (!collectResponse.ok) {
-      alert(`Failed to mint NFT status: ${collectResponse.status}`)
+      alert(`Failed to mint Token status: ${collectResponse.status}`)
       return null
     }
     const collectResponseJSON = await collectResponse.json()
@@ -39,9 +39,9 @@ const BackendMintButton: React.FC<{
     return response?.response?.transactionHash ?? null
   }, [account?.id])
 
-  const handleMintNFT = async () => {
+  const handleMintToken = async () => {
     setLoading(true)
-    const transactionHash = await mintNFT()
+    const transactionHash = await mintToken()
     setLoading(false)
     if (transactionHash) {
       handleSetMessage(`https://amoy.polygonscan.com/tx/${transactionHash}`)
@@ -50,8 +50,8 @@ const BackendMintButton: React.FC<{
 
   return (
     <div>
-      <Button className="w-full" disabled={state !== EmbeddedState.READY} onClick={handleMintNFT} variant="outline">
-        {loading ? <Loading /> : 'Mint NFT'}
+      <Button className="w-full" disabled={state !== EmbeddedState.READY} onClick={handleMintToken} variant="outline">
+        {loading ? <Loading /> : 'Mint Token'}
       </Button>
     </div>
   )

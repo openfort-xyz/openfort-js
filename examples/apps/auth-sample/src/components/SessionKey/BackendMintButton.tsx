@@ -15,7 +15,7 @@ const BackendMintButton: React.FC<{
   const [loading, setLoading] = useState(false)
   const buttonId = useId()
 
-  const mintNFT = useCallback(async (): Promise<string | null> => {
+  const mintToken = useCallback(async (): Promise<string | null> => {
     if (!sessionKey || !accountId) {
       return null
     }
@@ -29,7 +29,7 @@ const BackendMintButton: React.FC<{
     })
 
     if (!collectResponse.ok) {
-      alert(`Failed to mint NFT status: ${collectResponse.status}`)
+      alert(`Failed to mint Token status: ${collectResponse.status}`)
       return null
     }
     const collectResponseJSON = await collectResponse.json()
@@ -53,9 +53,9 @@ const BackendMintButton: React.FC<{
     return response?.response?.transactionHash ?? null
   }, [sessionKey, accountId])
 
-  const handleMintNFT = async () => {
+  const handleMintToken = async () => {
     setLoading(true)
-    const transactionHash = await mintNFT()
+    const transactionHash = await mintToken()
     setLoading(false)
     if (transactionHash) {
       handleSetMessage(`https://amoy.polygonscan.com/tx/${transactionHash}`)
@@ -66,16 +66,16 @@ const BackendMintButton: React.FC<{
     <div className="mt-4">
       <Button
         className="w-full"
-        onClick={handleMintNFT}
+        onClick={handleMintToken}
         disabled={!sessionKey || !accountId}
         id={buttonId}
-        data-testid="mint-nft-button"
+        data-testid="mint-token-button"
         variant="outline"
       >
-        {loading ? <Loading /> : 'Mint NFT with session key'}
+        {loading ? <Loading /> : 'Mint Token with session key'}
       </Button>
       {!sessionKey && (
-        <p className="text-red-400 text-xs mt-2">Create a session before minting an NFT signed with a session key.</p>
+        <p className="text-red-400 text-xs mt-2">Create a session before minting an Token signed with a session key.</p>
       )}
     </div>
   )

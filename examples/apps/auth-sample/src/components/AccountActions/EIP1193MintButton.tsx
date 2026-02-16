@@ -186,7 +186,7 @@ const EIP1193MintButton: React.FC<{
         onClick={handleSendTransaction}
         variant="outline"
       >
-        {loading ? <Loading /> : 'Mint NFT'}
+        {loading ? <Loading /> : 'Mint Token'}
       </Button>
       <Button className="w-full" disabled={state !== EmbeddedState.READY} onClick={handleSendCalls} variant="outline">
         {loadingBatch ? <Loading /> : 'Send batch calls'}

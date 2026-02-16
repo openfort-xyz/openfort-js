@@ -30,7 +30,7 @@ import { Logger } from './Logger'
 //   expect(lastLog).toContain('Session key revoked successfully')
 // })
 
-test('Mint Session NFT', async ({ page }) => {
+test('Mint Session Token', async ({ page }) => {
   test.setTimeout(60000)
 
   await page.goto('/')
@@ -38,11 +38,11 @@ test('Mint Session NFT', async ({ page }) => {
   const logger = new Logger(page)
   await logger.init()
 
-  const mintNftButton = page.getByTestId('mint-nft-button')
+  const mintTokenButton = page.getByTestId('mint-token-button')
 
-  // expect Mint nft to be disabled because no session key
-  expect(mintNftButton).toBeVisible()
-  expect((await mintNftButton.isDisabled()).valueOf()).toBe(true)
+  // expect Mint token to be disabled because no session key
+  expect(mintTokenButton).toBeVisible()
+  expect((await mintTokenButton.isDisabled()).valueOf()).toBe(true)
 
   // create session
   const createSessionButton = page.getByRole('button', { name: 'Create session' }).first()
@@ -54,9 +54,9 @@ test('Mint Session NFT', async ({ page }) => {
 
   expect(lastLog).toContain('Session key registered successfully')
 
-  expect((await mintNftButton.isDisabled()).valueOf()).toBe(false)
+  expect((await mintTokenButton.isDisabled()).valueOf()).toBe(false)
 
-  mintNftButton.click()
+  mintTokenButton.click()
 
   await logger.waitForNewLogs()
 

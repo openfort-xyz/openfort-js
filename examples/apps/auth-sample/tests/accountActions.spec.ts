@@ -2,13 +2,13 @@ import test, { expect } from '@playwright/test'
 import { TEST_BATCH_SUCCESS_TEXT, TEST_MINT_SUCCESS_TEXT } from './constants'
 import { Logger } from './Logger'
 
-test('mint NFT', async ({ page }) => {
+test('mint Token', async ({ page }) => {
   await page.goto('/')
 
   const logger = new Logger(page)
   await logger.init()
 
-  const button = page.getByRole('button', { name: 'Mint NFT' }).first()
+  const button = page.getByRole('button', { name: 'Mint Token' }).first()
   button.click()
 
   await logger.waitForNewLogs()
