@@ -14,5 +14,4 @@ export {
 } from './errors'
 export { PasskeyHandler } from './handler'
 export type { IPasskeyHandler, PasskeyCreateConfig, PasskeyDeriveConfig, PasskeyDetails } from './types'
-export { DEFAULT_PASSKEY_DISPLAY_NAME } from './types'
 export { arrayBufferToBase64URL, base64ToArrayBuffer } from './utils'
