@@ -36,11 +36,6 @@ export class OpenfortConfiguration {
 export class ShieldConfiguration {
   readonly shieldPublishableKey: string
 
-  /**
-   * @deprecated This option is no longer used and will be removed in future versions.
-   */
-  readonly shieldEncryptionKey?: string
-
   readonly debug?: boolean = false
 
   /**
@@ -107,12 +102,6 @@ export class SDKConfiguration {
 
   readonly storage?: IStorage
 
-  readonly passkeyRpId?: string
-
-  readonly passkeyRpName?: string
-
-  readonly passkeyDisplayName?: string
-
   readonly nativeAppIdentifier?: string
 
   readonly debug?: boolean
@@ -132,10 +121,6 @@ export class SDKConfiguration {
     this.shieldUrl = overrides?.shieldUrl || 'https://shield.openfort.io'
     this.storage = overrides?.storage
     this.thirdPartyAuth = thirdPartyAuth
-
-    this.passkeyRpId = shieldConfiguration?.passkeyRpId
-    this.passkeyRpName = shieldConfiguration?.passkeyRpName
-    this.passkeyDisplayName = shieldConfiguration?.passkeyDisplayName
 
     this.nativeAppIdentifier = baseConfiguration.nativeAppIdentifier
 

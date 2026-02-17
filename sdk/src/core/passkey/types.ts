@@ -2,14 +2,14 @@
  * Passkey types and interfaces.
  */
 
+export const DEFAULT_PASSKEY_DISPLAY_NAME = 'Openfort - Embedded Wallet'
+
 /**
  * Configuration for creating a new passkey.
  */
 export interface PasskeyCreateConfig {
   /** Unique identifier for the passkey */
   id: string
-  /** Human-readable display name shown in passkey dialogs */
-  displayName: string
   /** Seed value used for PRF-based key derivation */
   seed: string
 }

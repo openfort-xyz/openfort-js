@@ -316,7 +316,7 @@ export class IframeManager {
       shieldAuthentication,
       shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       shieldURL: this.sdkConfiguration.shieldUrl,
-      encryptionKey: this.sdkConfiguration?.shieldConfiguration?.shieldEncryptionKey ?? undefined,
+      encryptionKey: undefined,
       appNativeIdentifier: this.sdkConfiguration?.nativeAppIdentifier ?? undefined,
     }
   }

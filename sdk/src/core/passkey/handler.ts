@@ -6,7 +6,13 @@ import {
   PasskeySeedInvalidError,
   PasskeyUserCancelledError,
 } from './errors'
-import type { IPasskeyHandler, PasskeyCreateConfig, PasskeyDeriveConfig, PasskeyDetails } from './types'
+import {
+  DEFAULT_PASSKEY_DISPLAY_NAME,
+  type IPasskeyHandler,
+  type PasskeyCreateConfig,
+  type PasskeyDeriveConfig,
+  type PasskeyDetails,
+} from './types'
 import { arrayBufferToBase64URL, base64ToArrayBuffer } from './utils'
 
 /**
@@ -24,6 +30,9 @@ export class PasskeyHandler implements IPasskeyHandler {
   // The issuer's display name
   private readonly rpName?: string
 
+  // The credential display name shown in passkey dialogs
+  private readonly displayName: string
+
   // Timeout (in milliseconds) before a passkey dialog expires (default = 60_000)
   private readonly timeoutMs: number
 
@@ -32,15 +41,16 @@ export class PasskeyHandler implements IPasskeyHandler {
 
   /**
    * Creates a new passkey handler
-   * The only fixed values from an issuer's point of view are rpId + rpName
    * @param rpId The issuer's domain name
    * @param rpName The issuer's display name
+   * @param displayName Credential display name shown in passkey dialogs
    * @param timeoutMs Timeout (in milliseconds) before a passkey dialog expires
    * @param derivedKeyLengthBytes Byte length for target keys (16, 24, or 32)
    */
-  constructor({ rpId, rpName, timeoutMs, derivedKeyLengthBytes }: PasskeyHandlerConfig = {}) {
+  constructor({ rpId, rpName, displayName, timeoutMs, derivedKeyLengthBytes }: PasskeyHandlerConfig = {}) {
     this.rpId = rpId
     this.rpName = rpName
+    this.displayName = displayName ?? DEFAULT_PASSKEY_DISPLAY_NAME
     this.timeoutMs = timeoutMs ?? 60_000
     this.derivedKeyLengthBytes = derivedKeyLengthBytes ?? 32
 
@@ -97,7 +107,6 @@ export class PasskeyHandler implements IPasskeyHandler {
   /**
    * Prompts the user to create a passkey.
    * @param id User identifier
-   * @param displayName Display name (ideally it should hint about environment, chain id, etc)
    * @param seed Seed phrase for PRF key derivation
    * @returns PasskeyDetails with passkey details if passkey creation was successful
    * @throws PasskeySeedInvalidError if seed is empty
@@ -105,7 +114,7 @@ export class PasskeyHandler implements IPasskeyHandler {
    * @throws PasskeyPRFNotSupportedError if PRF extension fails
    * @throws PasskeyCreationFailedError for other failures
    */
-  async createPasskey({ id, displayName, seed }: PasskeyCreateConfig): Promise<PasskeyDetails> {
+  async createPasskey({ id, seed }: PasskeyCreateConfig): Promise<PasskeyDetails> {
     // Validate seed is non-empty for PRF entropy
     if (!seed || seed.trim().length === 0) {
       throw new PasskeySeedInvalidError()
@@ -120,7 +129,7 @@ export class PasskeyHandler implements IPasskeyHandler {
       user: {
         id: new TextEncoder().encode(id),
         name: id,
-        displayName,
+        displayName: this.displayName,
       },
       pubKeyCredParams: [
         { type: 'public-key', alg: -7 }, // ES256
@@ -179,7 +188,7 @@ export class PasskeyHandler implements IPasskeyHandler {
 
     return {
       id: arrayBufferToBase64URL(credential.rawId),
-      displayName,
+      displayName: this.displayName,
       key: arrayBufferToBase64URL(rawKey),
     }
   }
@@ -251,6 +260,8 @@ export class PasskeyHandler implements IPasskeyHandler {
 interface PasskeyHandlerConfig {
   rpId?: string
   rpName?: string
+  /** Credential display name shown in passkey dialogs */
+  displayName?: string
   /** Timeout in milliseconds before passkey dialog expires (default: 60000) */
   timeoutMs?: number
   /** Derived key length in bytes: 16, 24, or 32 (default: 32) */
