@@ -586,7 +586,7 @@ export class EmbeddedWalletApi {
   async list(requestParams?: ListAccountsParams): Promise<EmbeddedAccount[]> {
     await this.validateAndRefreshToken()
     const params = {
-      accountType: AccountTypeEnum.SMART_ACCOUNT,
+      // accountType: AccountTypeEnum.SMART_ACCOUNT,
       ...requestParams,
     }
     const configuration = SDKConfiguration.getInstance()
