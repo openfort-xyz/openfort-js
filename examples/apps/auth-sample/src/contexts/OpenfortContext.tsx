@@ -309,10 +309,10 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
       }
 
       const response = await openfort.embeddedWallet.create({
-        accountType: AccountTypeEnum.EOA,
+        accountType: AccountTypeEnum.SMART_ACCOUNT,
         chainType: ChainTypeEnum.EVM,
         recoveryParams,
-        // chainId,
+        chainId,
       })
       setAccount(response)
       await refetchAccounts()
