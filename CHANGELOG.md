@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.2.0
+
+### Minor Changes
+
+- [#239](https://github.com/openfort-xyz/openfort-js/pull/239) [`8fcdba6`](https://github.com/openfort-xyz/openfort-js/commit/8fcdba6c961c06a2b614640e13d6298f7d6cd18a) Thanks [@n00m4d](https://github.com/n00m4d)! - Drop hardcoded smart account list
+
 ## 1.1.7
 
 ### Patch Changes
