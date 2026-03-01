@@ -68,7 +68,7 @@
     "@vitest/coverage-v8": "^2.1.8",
     "jsdom": "^25.0.1",
     "@types/node": "^22.7.5",
-    "rollup": "^4.0.0",
+    "rollup": "^4.59.0",
     "rollup-plugin-dts": "^5.3.0",
     "rollup-plugin-visualizer": "^5.14.0",
     "typescript": "^5.8.3",
