@@ -137,8 +137,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
 
   useEffect(() => {
     const unwatch = openfort.embeddedWallet.watchEmbeddedState({
-      onChange: (currentState) => setState(currentState),
-      onError: (err) => console.error('Error watching embedded state:', err),
+      onChange: (currentState: EmbeddedState) => setState(currentState),
+      onError: (err: Error) => console.error('Error watching embedded state:', err),
+      pollingInterval: 300,
     })
     return unwatch
   }, [])
