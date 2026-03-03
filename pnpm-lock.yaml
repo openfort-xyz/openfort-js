@@ -14588,7 +14588,7 @@ snapshots:
 
   miller-rabin@4.0.1:
     dependencies:
-      bn.js: 5.2.2
+      bn.js: 5.2.3
       brorand: 1.1.0
 
   mime-db@1.52.0: {}
