@@ -58,22 +58,34 @@ export interface RequestArguments {
   params?: any[]
 }
 
-export type Provider = {
-  request: (request: RequestArguments) => Promise<any>
-  on: (event: string, listener: (...args: any[]) => void) => void
-  removeListener: (event: string, listener: (...args: any[]) => void) => void
-  isOpenfort: boolean
-}
-
 export enum ProviderEvent {
   ACCOUNTS_CHANGED = 'accountsChanged',
+  CHAIN_CHANGED = 'chainChanged',
   ACCOUNTS_CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
 }
 
-type AccountsChangedEvent = string[]
+export interface ProviderConnectInfo {
+  chainId: string
+}
+
+export interface ProviderDisconnectError {
+  code: number
+  message: string
+}
 
 export interface ProviderEventMap extends Record<string, any> {
-  [ProviderEvent.ACCOUNTS_CHANGED]: [AccountsChangedEvent]
+  [ProviderEvent.ACCOUNTS_CHANGED]: [string[]]
+  [ProviderEvent.CHAIN_CHANGED]: [string]
+  [ProviderEvent.ACCOUNTS_CONNECT]: [ProviderConnectInfo]
+  [ProviderEvent.DISCONNECT]: [ProviderDisconnectError]
+}
+
+export type Provider = {
+  request: (request: RequestArguments) => Promise<any>
+  on: <E extends keyof ProviderEventMap>(event: E, listener: (...args: ProviderEventMap[E]) => void) => void
+  removeListener: <E extends keyof ProviderEventMap>(event: E, listener: (...args: ProviderEventMap[E]) => void) => void
+  isOpenfort: boolean
 }
 
 /**

@@ -18,14 +18,7 @@ const erc6492MagicBytes = '0x649264926492649264926492649264926492649264926492649
 export const signMessage = async (parameters: SignMessageParameters): Promise<string> => {
   const { hash, signer, ownerAddress, factoryAddress, salt, chainId, address, implementationType } = parameters
   let typedDataHash = hash
-  if (
-    [
-      AccountType.UPGRADEABLE_V5,
-      AccountType.UPGRADEABLE_V6,
-      AccountType.ZKSYNC_UPGRADEABLE_V1,
-      AccountType.ZKSYNC_UPGRADEABLE_V2,
-    ].includes(implementationType as AccountType)
-  ) {
+  if ([AccountType.UPGRADEABLE_V5, AccountType.UPGRADEABLE_V6].includes(implementationType as AccountType)) {
     const updatedDomain: TypedDataPayload['domain'] = {
       name: 'Openfort',
       version: '0.5',

@@ -26,6 +26,7 @@ import {
   type RecoveryParams,
 } from '../types/types'
 import { debugLog } from '../utils/debug'
+import { observe } from '../utils/observe'
 import type TypedEventEmitter from '../utils/typedEventEmitter'
 import { EmbeddedSigner } from '../wallets/embedded'
 import { EvmProvider, type Provider } from '../wallets/evm'
@@ -655,6 +656,55 @@ export class EmbeddedWalletApi {
       debugLog('Failed to get embedded state:', error)
       return EmbeddedState.UNAUTHENTICATED
     }
+  }
+
+  watchEmbeddedState(params: {
+    onChange: (state: EmbeddedState, prevState?: EmbeddedState) => void
+    onError?: (error: Error) => void
+    pollingInterval?: number
+  }): () => void {
+    const unwatch = observe('watchEmbeddedState', { onChange: params.onChange, onError: params.onError }, (emit) => {
+      let prevState: EmbeddedState | undefined
+
+      const emitState = async () => {
+        try {
+          const state = await this.getEmbeddedState()
+          if (prevState !== state) {
+            emit.onChange?.(state, prevState)
+            prevState = state
+          }
+        } catch (error) {
+          emit.onError?.(error instanceof Error ? error : new Error(String(error)))
+        }
+      }
+
+      // Emit current state immediately
+      emitState()
+
+      // Event-driven: react instantly to SDK state transitions
+      const onAuthSuccess = () => emitState()
+      const onLogout = () => emitState()
+      const onWalletCreated = () => emitState()
+      const onWalletRecovered = () => emitState()
+
+      this.eventEmitter.on(OpenfortEvents.ON_AUTH_SUCCESS, onAuthSuccess)
+      this.eventEmitter.on(OpenfortEvents.ON_LOGOUT, onLogout)
+      this.eventEmitter.on(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED, onWalletCreated)
+      this.eventEmitter.on(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED, onWalletRecovered)
+
+      // Background poll: catch out-of-band storage changes (e.g. manual localStorage edits)
+      const interval = setInterval(emitState, params.pollingInterval ?? 2000)
+
+      return () => {
+        clearInterval(interval)
+        this.eventEmitter.off(OpenfortEvents.ON_AUTH_SUCCESS, onAuthSuccess)
+        this.eventEmitter.off(OpenfortEvents.ON_LOGOUT, onLogout)
+        this.eventEmitter.off(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED, onWalletCreated)
+        this.eventEmitter.off(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED, onWalletRecovered)
+      }
+    })
+
+    return unwatch!
   }
 
   async getEthereumProvider(options?: {

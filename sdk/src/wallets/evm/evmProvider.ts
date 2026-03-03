@@ -107,6 +107,7 @@ export class EvmProvider implements Provider {
 
   #handleLogout = async () => {
     this.#signer = undefined
+    this.#eventEmitter.emit(ProviderEvent.DISCONNECT, { code: 4900, message: 'Disconnected' })
     this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [])
   }
 
@@ -140,8 +141,10 @@ export class EvmProvider implements Provider {
       case 'eth_requestAccounts': {
         const account = await Account.fromStorage(this.#storage)
         if (account) {
+          const rpcProvider = await this.getRpcProvider()
+          const { chainId } = await rpcProvider.detectNetwork()
           this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, {
-            chainId: String(account.chainId),
+            chainId: numberToHex(chainId),
           })
           return [account.address]
         }
@@ -342,6 +345,7 @@ export class EvmProvider implements Provider {
             const rpcUrl = this.#customChains ? this.#customChains[chainIdNumber] : undefined
             this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainIdNumber])
           })
+          this.#eventEmitter.emit(ProviderEvent.CHAIN_CHANGED, numberToHex(chainIdNumber))
         } catch (error) {
           const err = error as Error
           throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, `Failed to switch chain: ${err.message}`)
@@ -520,11 +524,14 @@ export class EvmProvider implements Provider {
     }
   }
 
-  public on(event: string, listener: (...args: any[]) => void): void {
+  public on<E extends keyof ProviderEventMap>(event: E, listener: (...args: ProviderEventMap[E]) => void): void {
     this.#eventEmitter.on(event, listener)
   }
 
-  public removeListener(event: string, listener: (...args: any[]) => void): void {
+  public removeListener<E extends keyof ProviderEventMap>(
+    event: E,
+    listener: (...args: ProviderEventMap[E]) => void
+  ): void {
     this.#eventEmitter.off(event, listener)
   }
 }

@@ -9,7 +9,7 @@ import {
 } from '@openfort/openfort-js'
 import axios from 'axios'
 import type React from 'react'
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { type Chain, createPublicClient, custom } from 'viem'
 import type { Address } from 'viem/accounts'
 import { appChain, RPC_URL } from '../utils/chainConfig'
@@ -64,7 +64,6 @@ export function useOpenfort() {
 
 export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const [state, setState] = useState<EmbeddedState>(EmbeddedState.NONE)
-  const poller = useRef<NodeJS.Timeout | null>(null)
 
   const getEncryptionSession = async (otpCode?: string): Promise<string> => {
     try {
@@ -137,21 +136,11 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
   }
 
   useEffect(() => {
-    const pollEmbeddedState = async () => {
-      try {
-        const currentState = await openfort.embeddedWallet.getEmbeddedState()
-        setState(currentState)
-      } catch (err) {
-        console.error('Error checking embedded state with Openfort:', err)
-        if (poller.current) clearInterval(poller.current)
-      }
-    }
-
-    poller.current = setInterval(pollEmbeddedState, 300)
-
-    return () => {
-      if (poller.current) clearInterval(poller.current)
-    }
+    const unwatch = openfort.embeddedWallet.watchEmbeddedState({
+      onChange: (currentState) => setState(currentState),
+      onError: (err) => console.error('Error watching embedded state:', err),
+    })
+    return unwatch
   }, [])
 
   // Account
