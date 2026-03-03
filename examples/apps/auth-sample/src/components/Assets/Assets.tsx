@@ -1,9 +1,9 @@
 import type React from 'react'
 import { useState } from 'react'
 import { createWalletClient, custom } from 'viem'
-import { polygonAmoy } from 'viem/chains'
 import { erc7811Actions } from 'viem/experimental'
 import { useOpenfort } from '@/contexts/OpenfortContext'
+import { appChain } from '../../utils/chainConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 
@@ -21,13 +21,13 @@ const Assets: React.FC<{
         throw new Error('Failed to get EVM provider')
       }
       const client = createWalletClient({
-        chain: polygonAmoy,
+        chain: appChain,
         transport: custom(provider),
       }).extend(erc7811Actions())
 
       const assets = await client.getAssets({
         account: account?.address as `0x${string}`,
-        chainIds: [polygonAmoy.id],
+        chainIds: [appChain.id],
       })
       console.log('Fetched assets:', assets)
 

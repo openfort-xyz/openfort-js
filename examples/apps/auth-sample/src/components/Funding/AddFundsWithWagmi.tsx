@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { type Address, http, parseEther } from 'viem'
-import { polygonAmoy } from 'viem/chains'
 import {
   type Connector,
   createConfig,
@@ -14,6 +13,7 @@ import {
   useWaitForTransactionReceipt,
   WagmiProvider,
 } from 'wagmi'
+import { appChain } from '../../utils/chainConfig'
 
 export const AddFundsWithWagmi: React.FC<{
   callback: () => void
@@ -33,9 +33,9 @@ export const AddFundsWithWagmi: React.FC<{
     }
   )
   const config = createConfig({
-    chains: [polygonAmoy],
+    chains: [appChain],
     transports: {
-      [polygonAmoy.id]: http(),
+      [appChain.id]: http(),
     },
     connectors,
     ssr: true,
@@ -72,7 +72,7 @@ const AddFundsWW: React.FC<{
 
   const handleSuccess = async () => {
     switchChain(
-      { chainId: polygonAmoy.id },
+      { chainId: appChain.id },
       {
         onSuccess: () => {
           sendTransaction({ to: fundAddress, value: parseEther(fundAmount) })

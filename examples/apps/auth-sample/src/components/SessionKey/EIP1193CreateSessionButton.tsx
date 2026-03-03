@@ -3,9 +3,9 @@ import type React from 'react'
 import { useCallback, useState } from 'react'
 import { createWalletClient, custom } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
-import { polygonAmoy } from 'viem/chains'
 import { erc7715Actions } from 'viem/experimental'
 import { useOpenfort } from '@/contexts/OpenfortContext'
+import { appChain } from '../../utils/chainConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 import BackendMintButton from './BackendMintButton'
@@ -30,7 +30,7 @@ const EIP1193CreateSessionButton: React.FC<{
     const accountSession = privateKeyToAccount(sessionKey).address
 
     const walletClient = createWalletClient({
-      chain: polygonAmoy,
+      chain: appChain,
       transport: custom(provider),
     }).extend(erc7715Actions())
     const [account] = await walletClient.getAddresses()

@@ -3,7 +3,6 @@ import cors, { runMiddleware } from '../../utils/cors'
 import openfort from '../../utils/openfortAdminConfig'
 
 const contract_id = process.env.NEXT_PUBLIC_CONTRACT_ID
-const optimistic = true
 const policy_id = process.env.NEXT_PUBLIC_POLICY_ID
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID)
 
@@ -37,7 +36,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       account: account_id,
       chainId: chainId,
       policy: policy_id,
-      optimistic,
       interactions: [interaction_mint],
     })
 

@@ -12,7 +12,7 @@ import type React from 'react'
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { type Chain, createPublicClient, custom } from 'viem'
 import type { Address } from 'viem/accounts'
-import { polygonAmoy } from 'viem/chains'
+import { appChain, RPC_URL } from '../utils/chainConfig'
 import openfort from '../utils/openfortConfig'
 
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID)
@@ -190,7 +190,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
     const externalProvider = await openfort.embeddedWallet.getEthereumProvider({
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
       chains: {
-        [polygonAmoy.id]: 'https://polygon-amoy-bor-rpc.publicnode.com',
+        [appChain.id]: RPC_URL,
       },
     })
     if (!externalProvider) {
@@ -309,7 +309,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
       }
 
       const response = await openfort.embeddedWallet.create({
-        accountType: AccountTypeEnum.SMART_ACCOUNT,
+        accountType: AccountTypeEnum.DELEGATED_ACCOUNT,
         chainType: ChainTypeEnum.EVM,
         recoveryParams,
         chainId,

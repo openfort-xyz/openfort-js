@@ -2,9 +2,9 @@ import { EmbeddedState } from '@openfort/openfort-js'
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import { createPublicClient, createWalletClient, custom, encodeFunctionData, type WriteContractErrorType } from 'viem'
-import { polygonAmoy } from 'viem/chains'
 import type { BaseError } from 'wagmi'
 import { useOpenfort } from '@/contexts/OpenfortContext'
+import { appChain, getExplorerTxUrl } from '../../utils/chainConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 
@@ -23,7 +23,7 @@ const EIP1193MintButton: React.FC<{
           throw new Error('Failed to get EVM provider')
         }
         const walletClient = createWalletClient({
-          chain: polygonAmoy,
+          chain: appChain,
           transport: custom(provider),
         })
         const [account] = await walletClient.getAddresses()
@@ -46,11 +46,11 @@ const EIP1193MintButton: React.FC<{
 
       setLoading(true)
       const publicClient = createPublicClient({
-        chain: polygonAmoy,
+        chain: appChain,
         transport: custom(provider),
       })
       const walletClient = createWalletClient({
-        chain: polygonAmoy,
+        chain: appChain,
         transport: custom(provider),
       })
 
@@ -79,7 +79,7 @@ const EIP1193MintButton: React.FC<{
       ]
 
       const [account] = await walletClient.getAddresses()
-      await walletClient.switchChain(polygonAmoy)
+      await walletClient.switchChain(appChain)
 
       const { request } = await publicClient.simulateContract({
         account,
@@ -92,7 +92,7 @@ const EIP1193MintButton: React.FC<{
       let tx: `0x${string}`
       try {
         tx = await walletClient.writeContract(request)
-        handleSetMessage(`https://amoy.polygonscan.com/tx/${tx}`)
+        handleSetMessage(getExplorerTxUrl(tx))
       } catch (error) {
         const er = error as WriteContractErrorType
         handleSetMessage(`Failed to send transaction: ${er.cause}`)
@@ -113,7 +113,7 @@ const EIP1193MintButton: React.FC<{
       }
       setLoadingBatch(true)
       const walletClient = createWalletClient({
-        chain: polygonAmoy,
+        chain: appChain,
         transport: custom(provider),
       })
 

@@ -2,7 +2,7 @@ import type React from 'react'
 import { useCallback, useId, useState } from 'react'
 import { createWalletClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { polygonAmoy } from 'viem/chains'
+import { appChain, getExplorerTxUrl } from '../../utils/chainConfig'
 import openfort from '../../utils/openfortConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
@@ -35,7 +35,7 @@ const BackendMintButton: React.FC<{
     const collectResponseJSON = await collectResponse.json()
     const walletClient = createWalletClient({
       account: privateKeyToAccount(sessionKey),
-      chain: polygonAmoy,
+      chain: appChain,
       transport: http(),
     })
     const signature = await walletClient.signMessage({
@@ -58,7 +58,7 @@ const BackendMintButton: React.FC<{
     const transactionHash = await mintToken()
     setLoading(false)
     if (transactionHash) {
-      handleSetMessage(`https://amoy.polygonscan.com/tx/${transactionHash}`)
+      handleSetMessage(getExplorerTxUrl(transactionHash))
     }
   }
 

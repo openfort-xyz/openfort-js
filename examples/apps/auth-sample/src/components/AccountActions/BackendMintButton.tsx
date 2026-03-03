@@ -2,6 +2,7 @@ import { EmbeddedState } from '@openfort/openfort-js'
 import type React from 'react'
 import { useCallback, useState } from 'react'
 import { useOpenfort } from '@/contexts/OpenfortContext'
+import { getExplorerTxUrl } from '../../utils/chainConfig'
 import openfort from '../../utils/openfortConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
@@ -44,7 +45,7 @@ const BackendMintButton: React.FC<{
     const transactionHash = await mintToken()
     setLoading(false)
     if (transactionHash) {
-      handleSetMessage(`https://amoy.polygonscan.com/tx/${transactionHash}`)
+      handleSetMessage(getExplorerTxUrl(transactionHash))
     }
   }
 

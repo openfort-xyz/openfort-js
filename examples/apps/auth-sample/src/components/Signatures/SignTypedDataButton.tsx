@@ -2,6 +2,7 @@ import { EmbeddedState } from '@openfort/openfort-js'
 import type React from 'react'
 import { useState } from 'react'
 import { useOpenfort } from '@/contexts/OpenfortContext'
+import { CHAIN_ID } from '../../utils/chainConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 
@@ -16,7 +17,7 @@ const SignTypedDataButton: React.FC<{
       const domain = {
         name: 'Openfort',
         version: '0.5',
-        chainId: 80002,
+        chainId: CHAIN_ID,
         verifyingContract: '0x9b5AB198e042fCF795E4a0Fa4269764A4E8037D2',
       }
       const types = {

@@ -8,6 +8,5 @@ export const WalletConnector = {
 } as const
 
 export const Chain = {
-  AMOY: 'amoy',
   BASE_SEPOLIA: 'base_sepolia',
 } as const

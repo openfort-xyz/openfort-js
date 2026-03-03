@@ -7,9 +7,10 @@ import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
 import { useCallback, useEffect, useState } from 'react'
 import { fromHex, type Transport } from 'viem'
 import { createConfig, http, WagmiProvider } from 'wagmi'
-import { base, mainnet, polygonAmoy, type Chain as WagmiChain } from 'wagmi/chains'
+import { base, mainnet, type Chain as WagmiChain } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
 import { useOpenfort } from '@/contexts/OpenfortContext'
+import { appChain, CHAIN_ID } from '../../utils/chainConfig'
 import { Chain } from '../../utils/constants'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
@@ -86,8 +87,12 @@ const SetPairingCode: React.FC<{
         proposal: proposal.params,
         supportedNamespaces: {
           eip155: {
-            chains: ['eip155:1', 'eip155:8453', 'eip155:80002'],
-            accounts: [`eip155:1:${accountAddress}`, `eip155:8453:${accountAddress}`, `eip155:80002:${accountAddress}`],
+            chains: ['eip155:1', 'eip155:8453', `eip155:${CHAIN_ID}`],
+            accounts: [
+              `eip155:1:${accountAddress}`,
+              `eip155:8453:${accountAddress}`,
+              `eip155:${CHAIN_ID}:${accountAddress}`,
+            ],
             methods: [
               'eth_accounts',
               'eth_requestAccounts',
@@ -223,10 +228,10 @@ export const SetPairingCodeWithWagmi: React.FC<{
   const chainToWagmiChain = {
     mainnet: mainnet,
     base: base,
-    [Chain.AMOY]: polygonAmoy,
+    [Chain.BASE_SEPOLIA]: appChain,
   }
 
-  const chains = ['mainnet', 'base', Chain.AMOY].map(
+  const chains = ['mainnet', 'base', Chain.BASE_SEPOLIA].map(
     (chain) => chainToWagmiChain[chain as keyof typeof chainToWagmiChain]
   ) as WagmiChain[]
   const transports: Record<WagmiChain['id'], Transport> = {}
@@ -235,7 +240,7 @@ export const SetPairingCodeWithWagmi: React.FC<{
   })
 
   const wagmiConfig = createConfig({
-    chains: [mainnet, base, polygonAmoy],
+    chains: [mainnet, base, appChain],
     connectors: [injected()],
     transports,
     ssr: true,
