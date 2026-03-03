@@ -1,10 +1,8 @@
 type Callback = ((...args: any[]) => any) | undefined
 type Callbacks = Record<string, Callback>
 
-/** @internal */
-export const listenersCache = /*#__PURE__*/ new Map<string, { id: number; fns: Callbacks }[]>()
-/** @internal */
-export const cleanupCache = /*#__PURE__*/ new Map<string, () => void | Promise<void>>()
+const listenersCache = /*#__PURE__*/ new Map<string, { id: number; fns: Callbacks }[]>()
+const cleanupCache = /*#__PURE__*/ new Map<string, () => void | Promise<void>>()
 
 let callbackCount = 0
 
