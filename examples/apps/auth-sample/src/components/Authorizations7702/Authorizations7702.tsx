@@ -1,14 +1,12 @@
 import { EmbeddedState } from '@openfort/openfort-js'
-import { createSmartAccountClient } from 'permissionless'
-import { to7702SimpleSmartAccount } from 'permissionless/accounts'
-import { createPimlicoClient } from 'permissionless/clients/pimlico'
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import { type Address, createPublicClient, createWalletClient, type Hex, http, parseSignature, zeroAddress } from 'viem'
-import { toAccount } from 'viem/accounts'
-import { sepolia } from 'viem/chains'
+import { createBundlerClient, createPaymasterClient, toSimple7702SmartAccount } from 'viem/account-abstraction'
+import { type PrivateKeyAccount, toAccount } from 'viem/accounts'
 import { hashAuthorization, hashTypedData } from 'viem/utils'
 import { useOpenfort } from '@/contexts/OpenfortContext'
+import { appChain, getExplorerTxUrl } from '@/utils/chainConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 
@@ -30,7 +28,7 @@ const Authorizations7702: React.FC<{
         setCheckingDeployment(true)
 
         const client = createPublicClient({
-          chain: sepolia,
+          chain: appChain,
           transport: http(),
         })
 
@@ -54,51 +52,70 @@ const Authorizations7702: React.FC<{
   const handleSignAuthorization = async () => {
     try {
       setLoading(true)
-      const pimlicoAPIKey = process.env.NEXT_PUBLIC_PIMLICO_ID!
+      const openfortKey = process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY!
+      const openfortRpcUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.openfort.io'}/rpc/${appChain.id}`
+      const openfortTransport = http(openfortRpcUrl, {
+        fetchOptions: {
+          headers: { Authorization: `Bearer ${openfortKey}` },
+        },
+      })
 
-      const pimlicoClient = createPimlicoClient({
-        chain: sepolia,
-        transport: http(`https://api.pimlico.io/v2/11155111/rpc?apikey=${pimlicoAPIKey}`),
+      const openfortPaymaster = createPaymasterClient({
+        transport: openfortTransport,
       })
-      const eoa7702 = toAccount({
-        address: (account?.ownerAddress ?? account?.address) as Address,
-        async signMessage({ message }) {
-          console.log('Signing message:', message)
-          return '0x'
-        },
-        async signTransaction(transaction) {
-          console.log('Signing transaction:', transaction)
-          return '0x'
-        },
-        async signTypedData(typedData) {
-          console.log('Signing typed data:', typedData)
-          return (
-            await signMessage(hashTypedData(typedData), {
-              arrayifyMessage: true,
-              hashMessage: false,
-            })
-          ).data as `0x${string}`
-        },
-      })
+      const eoa7702 = Object.assign(
+        toAccount({
+          address: (account?.ownerAddress ?? account?.address) as Address,
+          async signMessage({ message }) {
+            console.log('Signing message:', message)
+            return '0x'
+          },
+          async signTransaction(transaction) {
+            console.log('Signing transaction:', transaction)
+            return '0x'
+          },
+          async signTypedData(typedData) {
+            console.log('Signing typed data:', typedData)
+            return (
+              await signMessage(hashTypedData(typedData), {
+                arrayifyMessage: true,
+                hashMessage: false,
+              })
+            ).data as `0x${string}`
+          },
+        }),
+        {
+          sign: async ({ hash }: { hash: Hex }) => {
+            return (await signMessage(hash, { arrayifyMessage: true, hashMessage: false })).data as `0x${string}`
+          },
+          signAuthorization: async (authorization: any) => {
+            const authHash = hashAuthorization(authorization)
+            return (await signMessage(authHash, { arrayifyMessage: true, hashMessage: false })).data as `0x${string}`
+          },
+        }
+      ) as unknown as PrivateKeyAccount
       const client = createPublicClient({
-        chain: sepolia,
+        chain: appChain,
         transport: http(),
       })
       const walletClient = createWalletClient({
-        chain: sepolia,
+        chain: appChain,
         transport: http(),
         account: eoa7702,
       })
-      const simple7702Account = await to7702SimpleSmartAccount({
+      const simple7702Account = await toSimple7702SmartAccount({
         client,
         owner: eoa7702,
       })
-      const smartAccountClient = createSmartAccountClient({
+      const bundlerClient = createBundlerClient({
         client,
-        chain: sepolia,
+        chain: appChain,
         account: simple7702Account,
-        paymaster: pimlicoClient,
-        bundlerTransport: http(`https://api.pimlico.io/v2/11155111/rpc?apikey=${pimlicoAPIKey}`),
+        paymasterContext: {
+          policyId: process.env.NEXT_PUBLIC_POLICY_ID,
+        },
+        paymaster: openfortPaymaster,
+        transport: openfortTransport,
       })
 
       const preAuthorization = await walletClient.prepareAuthorization({
@@ -111,20 +128,20 @@ const Authorizations7702: React.FC<{
         hashMessage: false,
       })
       const parsedSignature = parseSignature(signature.data as `0x${string}`)
-      const isSmartAccountDeployed = await smartAccountClient.account.isDeployed()
+      const isSmartAccountDeployed = await bundlerClient.account.isDeployed()
       let transactionHash: Hex
       if (!isSmartAccountDeployed) {
-        transactionHash = await smartAccountClient.sendTransaction({
-          to: zeroAddress,
-          value: BigInt(0),
-          data: '0x',
+        const userOpHash = await bundlerClient.sendUserOperation({
+          calls: [{ to: zeroAddress, value: BigInt(0), data: '0x' }],
           authorization: {
             ...preAuthorization,
             ...parsedSignature,
           },
         })
+        const receipt = await bundlerClient.waitForUserOperationReceipt({ hash: userOpHash })
+        transactionHash = receipt.receipt.transactionHash
         handleSetMessage(
-          `Smart Account Deployment Tx Hash: ${transactionHash}\nView on Etherscan: https://sepolia.etherscan.io/tx/${transactionHash}`
+          `Smart Account Deployment Tx Hash: ${transactionHash}\nView on Explorer: ${getExplorerTxUrl(transactionHash)}`
         )
         setIsDeployed(true)
       } else {
@@ -143,7 +160,7 @@ const Authorizations7702: React.FC<{
       <div className="space-y-2">
         <div className="text-sm text-muted-foreground">
           <p className="mb-1">
-            This authorization is for deploying your smart account on the <strong>Sepolia testnet</strong>.
+            This authorization is for deploying your smart account on <strong>{appChain.name}</strong>.
           </p>
           <div className="flex items-center gap-2">
             <span>Deployment Status:</span>
