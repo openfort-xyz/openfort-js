@@ -2,9 +2,9 @@ import { EmbeddedState } from '@openfort/openfort-js'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { useEffect, useRef, useState } from 'react'
 import { type Address, formatEther } from 'viem'
-import { polygonAmoy } from 'viem/chains'
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useOpenfort } from '@/contexts/OpenfortContext'
+import { appChain } from '../../utils/chainConfig'
 import Loading from '../Loading'
 import { Button } from '../ui/button'
 import { AddFundsWithWagmi } from './AddFundsWithWagmi'
@@ -108,11 +108,11 @@ const AddFunds: React.FC<{
         throw new Error('Failed to get EVM provider')
       }
       if (step === StepEnum.MANUAL) {
-        const accountBalance = await getBalance(accountAddress as Address, polygonAmoy, provider)
+        const accountBalance = await getBalance(accountAddress as Address, appChain, provider)
         setAccountBalance(accountBalance)
 
         const intervalBalance = setInterval(async () => {
-          const last = await getBalance(accountAddress as Address, polygonAmoy, provider)
+          const last = await getBalance(accountAddress as Address, appChain, provider)
           if (last !== accountBalance) {
             setStep(StepEnum.COMPLETED)
             clearInterval(intervalBalanceId.current)
@@ -284,7 +284,7 @@ const AddFunds: React.FC<{
 
           <div className="rounded p-2 bg-red-100">
             <p className="">
-              Make sure to send on <span className="font-bold">Polygon Amoy</span>
+              Make sure to send on <span className="font-bold">Base Sepolia</span>
             </p>
           </div>
 

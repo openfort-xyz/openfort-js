@@ -9,10 +9,10 @@ import {
 } from '@openfort/openfort-js'
 import axios from 'axios'
 import type React from 'react'
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { type Chain, createPublicClient, custom } from 'viem'
 import type { Address } from 'viem/accounts'
-import { polygonAmoy } from 'viem/chains'
+import { appChain, RPC_URL } from '../utils/chainConfig'
 import openfort from '../utils/openfortConfig'
 
 const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID)
@@ -64,7 +64,6 @@ export function useOpenfort() {
 
 export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const [state, setState] = useState<EmbeddedState>(EmbeddedState.NONE)
-  const poller = useRef<NodeJS.Timeout | null>(null)
 
   const getEncryptionSession = async (otpCode?: string): Promise<string> => {
     try {
@@ -137,21 +136,12 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
   }
 
   useEffect(() => {
-    const pollEmbeddedState = async () => {
-      try {
-        const currentState = await openfort.embeddedWallet.getEmbeddedState()
-        setState(currentState)
-      } catch (err) {
-        console.error('Error checking embedded state with Openfort:', err)
-        if (poller.current) clearInterval(poller.current)
-      }
-    }
-
-    poller.current = setInterval(pollEmbeddedState, 300)
-
-    return () => {
-      if (poller.current) clearInterval(poller.current)
-    }
+    const unwatch = openfort.embeddedWallet.watchEmbeddedState({
+      onChange: (currentState: EmbeddedState) => setState(currentState),
+      onError: (err: Error) => console.error('Error watching embedded state:', err),
+      pollingInterval: 300,
+    })
+    return unwatch
   }, [])
 
   // Account
@@ -190,7 +180,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
     const externalProvider = await openfort.embeddedWallet.getEthereumProvider({
       policy: process.env.NEXT_PUBLIC_POLICY_ID,
       chains: {
-        [polygonAmoy.id]: 'https://polygon-amoy-bor-rpc.publicnode.com',
+        [appChain.id]: RPC_URL,
       },
     })
     if (!externalProvider) {

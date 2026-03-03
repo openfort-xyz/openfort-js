@@ -86,14 +86,11 @@ export type RecoveryMethodDetails = {
 }
 
 export enum AccountType {
-  ERC6551V1 = 'ERC6551V1',
   UPGRADEABLE_V5 = 'UpgradeableV5',
-  UPGRADEABLE_V4 = 'UpgradeableV4',
   UPGRADEABLE_V6 = 'UpgradeableV6',
-  ZKSYNC_UPGRADEABLE_V1 = 'ZKSyncUpgradeableV1',
-  ZKSYNC_UPGRADEABLE_V2 = 'ZKSyncUpgradeableV2',
   SIMPLE = 'Simple',
   CALIBUR = 'Calibur',
+  CALIBUR_V9 = 'CaliburV9',
 }
 
 export enum AuthType {

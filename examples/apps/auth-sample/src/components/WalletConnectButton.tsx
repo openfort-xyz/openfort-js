@@ -2,8 +2,8 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { type Connector, createConfig, http, useChainId, useConnect, useDisconnect, useSignMessage } from 'wagmi'
 import type { Chain as WagmiChain } from 'wagmi/chains'
-import { baseSepolia, polygonAmoy } from 'wagmi/chains'
 import { coinbaseWallet, metaMask, walletConnect } from 'wagmi/connectors'
+import { appChain } from '../utils/chainConfig'
 import { Chain, WalletConnector } from '../utils/constants'
 import { createSIWEMessage } from '../utils/create-siwe-message'
 import { getErrorMessage } from '../utils/errorHandler'
@@ -131,8 +131,7 @@ const WalletConnectButtons = ({ onSuccess, link }: WalletConnectButtonsProps) =>
 }
 
 const chainToWagmiChain = {
-  [Chain.AMOY]: polygonAmoy,
-  [Chain.BASE_SEPOLIA]: baseSepolia,
+  [Chain.BASE_SEPOLIA]: appChain,
 }
 const connectorToWagmiConnector = {
   [WalletConnector.METAMASK]: metaMask,

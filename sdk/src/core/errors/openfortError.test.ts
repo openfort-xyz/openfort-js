@@ -148,12 +148,12 @@ describe('AuthenticationError', () => {
 
 describe('SessionError', () => {
   it('should create session error with audience and scope', () => {
-    const error = new SessionError('session_expired', 'Session has expired', 'api.openfort.xyz', 'openid profile')
+    const error = new SessionError('session_expired', 'Session has expired', 'api.openfort.io', 'openid profile')
 
     expect(error).toBeInstanceOf(SessionError)
     expect(error.name).toBe('SessionError')
     expect(error.error).toBe('session_expired')
-    expect(error.audience).toBe('api.openfort.xyz')
+    expect(error.audience).toBe('api.openfort.io')
     expect(error.scope).toBe('openid profile')
   })
 

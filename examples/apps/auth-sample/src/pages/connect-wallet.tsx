@@ -24,7 +24,7 @@ function ConnectWalletPage() {
 
   const [status, setStatus] = useState<StatusType>(null)
   const WalletButtons = getWalletButtons({
-    chains: [Chain.AMOY],
+    chains: [Chain.BASE_SEPOLIA],
     connectors: [WalletConnector.METAMASK, WalletConnector.COINBASE],
   })
 

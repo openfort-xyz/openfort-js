@@ -24,7 +24,7 @@ function LinkWalletPage() {
 
   const [status, setStatus] = useState<StatusType>(null)
   const WalletButtons = getWalletButtons({
-    chains: [Chain.AMOY],
+    chains: [Chain.BASE_SEPOLIA],
     connectors: [WalletConnector.WALLET_CONNECT],
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
   })
