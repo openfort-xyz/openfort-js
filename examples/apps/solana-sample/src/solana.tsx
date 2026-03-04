@@ -7,7 +7,7 @@ import { sendSolanaTransaction } from './utils/transaction'
 
 const koraConfig: KoraConfig = {
   rpcUrl: 'https://api.openfort.io/rpc/solana/devnet',
-  apiKey: `Bearer ${import.meta.env.VITE_SHIELD_PUBLISHABLE_KEY}`,
+  apiKey: `Bearer ${import.meta.env.VITE_PROJECT_PUBLISHABLE_KEY}`,
 }
 
 const rpc = createSolanaRpc('https://api.devnet.solana.com')
