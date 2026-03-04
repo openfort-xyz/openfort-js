@@ -29,7 +29,8 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
   const [recipient, setRecipient] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [balance, setBalance] = useState<number | null>(null)
-  const [transactionSignature, setTransactionSignature] = useState<string | null>(null)
+  const [transactionSignature, setTransactionSignature] = useState<string>('')
+  const [transactionSuccess, setTransactionSuccess] = useState<boolean>(false)
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false)
   const [sendingGasless, setSendingGasless] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
@@ -91,6 +92,7 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
     if (result.success) {
       console.log('Transaction signature:', result.signature)
       setTransactionSignature(result.signature)
+      setTransactionSuccess(true)
       await fetchBalance(publicKey)
       setRecipient('')
       setAmount('')
@@ -103,7 +105,8 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
 
   const sendTransaction = async () => {
     setError(null)
-    setTransactionSignature(null)
+    setTransactionSignature('')
+    setTransactionSuccess(false)
     if (!validateForm()) return
 
     setSendingTransaction(true)
@@ -126,7 +129,8 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
 
   const sendGaslessTransaction = async () => {
     setError(null)
-    setTransactionSignature(null)
+    setTransactionSignature('')
+    setTransactionSuccess(false)
     if (!validateForm()) return
 
     setSendingGasless(true)
@@ -260,26 +264,31 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                 )}
               </div>
             </div>
-            {transactionSignature && (
+            {transactionSuccess && (
               <div className="bg-green-900/30 border border-green-500 rounded-lg p-4 mt-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <p className="text-green-400 font-semibold mb-2">Transaction Successful!</p>
-                    <p className="text-sm text-gray-300 break-all">
-                      <span className="text-gray-400">Signature:</span>
-                      <a
-                        className="ml-2 text-blue-400 hover:text-blue-300 underline font-mono"
-                        href={`https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {transactionSignature}
-                      </a>
-                    </p>
+                    {transactionSignature && (
+                      <p className="text-sm text-gray-300 break-all">
+                        <span className="text-gray-400">Signature:</span>
+                        <a
+                          className="ml-2 text-blue-400 hover:text-blue-300 underline font-mono"
+                          href={`https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {transactionSignature}
+                        </a>
+                      </p>
+                    )}
                   </div>
                   <button
                     type="button"
-                    onClick={() => setTransactionSignature(null)}
+                    onClick={() => {
+                      setTransactionSignature('')
+                      setTransactionSuccess(false)
+                    }}
                     className="text-gray-400 hover:text-white ml-2"
                   >
                     ✕
