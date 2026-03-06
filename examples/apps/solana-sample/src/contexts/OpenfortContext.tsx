@@ -8,7 +8,7 @@ import {
 } from '@openfort/openfort-js'
 import type { Address } from '@solana/kit'
 import type React from 'react'
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { openfort } from '../openfort'
 
 interface ContextType {
@@ -46,25 +46,14 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren> = ({ children }
   const [user, setUser] = useState<User | null>(null)
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false)
   const [solanaAddress, setSolanaAddress] = useState<Address | null>(null)
-  const poller = useRef<NodeJS.Timeout | null>(null)
 
-  // Poll embedded state every 300ms
   useEffect(() => {
-    const pollEmbeddedState = async () => {
-      try {
-        const currentState = await openfort.embeddedWallet.getEmbeddedState()
-        setState(currentState)
-      } catch (err) {
-        console.error('Error checking embedded state:', err)
-        if (poller.current) clearInterval(poller.current)
-      }
-    }
-
-    poller.current = setInterval(pollEmbeddedState, 300)
-
-    return () => {
-      if (poller.current) clearInterval(poller.current)
-    }
+    const unwatch = openfort.embeddedWallet.watchEmbeddedState({
+      onChange: (currentState: EmbeddedState) => setState(currentState),
+      onError: (err: Error) => console.error('Error watching embedded state:', err),
+      pollingInterval: 300,
+    })
+    return unwatch
   }, [])
 
   const getEncryptionSession = useCallback(async (): Promise<string> => {
@@ -188,8 +177,9 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren> = ({ children }
 
   const signMessage = useCallback(async (message: string | Uint8Array): Promise<{ data?: string; error?: Error }> => {
     try {
-      // For Solana, we need to sign the raw message bytes without hashing
-      // hashMessage: false disables the default keccak256 hashing used for EVM chains
+      // For Solana, sign raw message bytes without hashing.
+      // hashMessage: false disables the default keccak256 hashing used for EVM chains.
+      // The iframe's signSolanaMessage uses nacl.sign.detached, returning a 64-byte Ed25519 signature base58-encoded.
       const signature = await openfort.embeddedWallet.signMessage(message, {
         hashMessage: false,
       })
@@ -226,23 +216,42 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren> = ({ children }
     }
   }, [])
 
-  const contextValue: ContextType = {
-    state,
-    account,
-    accounts,
-    user,
-    isLoadingAccounts,
-    solanaAddress,
-    refetchAccount,
-    refetchAccounts,
-    refetchUser,
-    createAccount,
-    recoverAccount,
-    signMessage,
-    exportPrivateKey,
-    logout,
-    getEncryptionSession,
-  }
+  const contextValue: ContextType = useMemo(
+    () => ({
+      state,
+      account,
+      accounts,
+      user,
+      isLoadingAccounts,
+      solanaAddress,
+      refetchAccount,
+      refetchAccounts,
+      refetchUser,
+      createAccount,
+      recoverAccount,
+      signMessage,
+      exportPrivateKey,
+      logout,
+      getEncryptionSession,
+    }),
+    [
+      state,
+      account,
+      accounts,
+      user,
+      isLoadingAccounts,
+      solanaAddress,
+      refetchAccount,
+      refetchAccounts,
+      refetchUser,
+      createAccount,
+      recoverAccount,
+      signMessage,
+      exportPrivateKey,
+      logout,
+      getEncryptionSession,
+    ]
+  )
 
   return <OpenfortContext.Provider value={contextValue}>{children}</OpenfortContext.Provider>
 }

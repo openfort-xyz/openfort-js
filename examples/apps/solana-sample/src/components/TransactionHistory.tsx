@@ -4,30 +4,43 @@ import { getTransactionHistory, type TransactionHistoryItem } from '../utils/tra
 
 interface TransactionHistoryProps {
   address: Address
+  refreshTrigger?: number
 }
 
-export default function TransactionHistory({ address }: TransactionHistoryProps) {
+export default function TransactionHistory({ address, refreshTrigger }: TransactionHistoryProps) {
   const [transactions, setTransactions] = useState<TransactionHistoryItem[]>([])
   const [showHistory, setShowHistory] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [fetchError, setFetchError] = useState<string | null>(null)
 
   const fetchHistory = useCallback(async () => {
     setIsLoading(true)
+    setFetchError(null)
     try {
       const history = await getTransactionHistory(address, 20)
       setTransactions(history)
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to load transaction history'
+      setFetchError(message)
       console.error('Error fetching transaction history:', error)
     } finally {
       setIsLoading(false)
     }
   }, [address])
 
+  // Fetch when panel is opened (always refetch to get latest data)
   useEffect(() => {
-    if (showHistory && transactions.length === 0) {
+    if (showHistory) {
       fetchHistory()
     }
-  }, [showHistory, transactions.length, fetchHistory])
+  }, [showHistory, fetchHistory])
+
+  // Refresh when a new transaction is sent
+  useEffect(() => {
+    if (refreshTrigger && showHistory) {
+      fetchHistory()
+    }
+  }, [refreshTrigger, showHistory, fetchHistory])
 
   return (
     <div className="w-full max-w-4xl mt-6">
@@ -54,6 +67,8 @@ export default function TransactionHistory({ address }: TransactionHistoryProps)
       {showHistory &&
         (isLoading && transactions.length === 0 ? (
           <div className="text-center text-gray-400 py-8">Loading transaction history...</div>
+        ) : fetchError ? (
+          <div className="text-center text-red-400 py-8">{fetchError}</div>
         ) : transactions.length === 0 ? (
           <div className="text-center text-gray-400 py-8">No transactions found</div>
         ) : (

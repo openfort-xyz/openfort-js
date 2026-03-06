@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { copyToClipboard } from '../utils/clipboard'
 
 interface TruncatedDataProps {
@@ -10,12 +10,20 @@ interface TruncatedDataProps {
 
 export default function TruncatedData({ data, maxLength = 20, label, className = '' }: TruncatedDataProps) {
   const [copied, setCopied] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   const handleCopy = async () => {
     const success = await copyToClipboard(data)
     if (success) {
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => setCopied(false), 2000)
     }
   }
 
