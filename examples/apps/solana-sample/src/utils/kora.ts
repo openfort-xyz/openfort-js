@@ -19,8 +19,16 @@ import {
 } from '@solana-program/compute-budget'
 import { Base58 } from 'ox'
 
+/** Validate that the signature is a 64-byte Ed25519 signature (from nacl.sign.detached). */
+function validateEd25519Signature(raw: Uint8Array): Uint8Array {
+  if (raw.length !== 64) {
+    throw new Error(`Invalid Ed25519 signature: expected 64 bytes, got ${raw.length}`)
+  }
+  return raw
+}
+
 const COMPUTE_UNIT_LIMIT = 200_000
-const COMPUTE_UNIT_PRICE = 1_000_000n as MicroLamports
+const COMPUTE_UNIT_PRICE = 50_000n as MicroLamports
 
 export interface KoraConfig {
   rpcUrl: string
@@ -30,15 +38,14 @@ export interface KoraConfig {
 export interface SendGaslessTransactionParams {
   from: Address
   to: Address
-  amountInSol: number
+  amount: number
+  token: 'SOL' | 'USDC'
   signMessage: (message: Uint8Array) => Promise<string>
   koraConfig: KoraConfig
 }
 
 export interface GaslessTransactionResult {
   signature: string
-  success: boolean
-  error?: string
 }
 
 /**
@@ -61,11 +68,15 @@ function buildTransactionMessage(
 }
 
 /**
- * Sends a gasless SOL transfer using Kora as the fee payer.
+ * Sends a gasless SOL or USDC transfer using Kora as the fee payer.
+ *
+ * Kora will pay for transaction fees and, if configured, account creation rent.
+ * For USDC transfers, if the recipient doesn't have a token account,
+ * Kora will create it automatically (requires allow_create_account: true in kora.toml).
  *
  * Flow:
  * 1. Get Kora's signer address
- * 2. Generate a SOL transfer instruction via Kora's transferTransaction
+ * 2. Generate transfer instructions via Kora's transferTransaction
  * 3. Build the transaction with Kora as fee payer
  * 4. Sign with Openfort's embedded wallet
  * 5. Send to Kora for co-signing and submission to Solana
@@ -73,7 +84,8 @@ function buildTransactionMessage(
 export async function sendGaslessSolTransaction({
   from,
   to,
-  amountInSol,
+  amount,
+  token,
   signMessage,
   koraConfig,
 }: SendGaslessTransactionParams): Promise<GaslessTransactionResult> {
@@ -87,11 +99,13 @@ export async function sendGaslessSolTransaction({
     const { signer_address } = await client.getPayerSigner()
     const koraNoopSigner = createNoopSigner(signer_address as Address)
 
-    // Step 2: Create SOL transfer instruction via Kora
-    const lamports = Math.floor(amountInSol * 1_000_000_000)
-    const transferSol = await client.transferTransaction({
-      amount: lamports,
-      token: '11111111111111111111111111111111', // Native SOL
+    // Step 2: Create transfer instruction via Kora
+    const lamports = Math.floor(amount * 1_000_000_000)
+    const tokenMint =
+      token === 'USDC' ? '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU' : '11111111111111111111111111111111'
+    const transferInstructions = await client.transferTransaction({
+      amount: token === 'USDC' ? Math.floor(amount * 1_000_000) : lamports,
+      token: tokenMint,
       source: from,
       destination: to,
       signer_key: signer_address,
@@ -99,17 +113,14 @@ export async function sendGaslessSolTransaction({
 
     // Step 3: Build transaction with Kora as fee payer
     const { blockhash } = await client.getBlockhash()
-    const transaction = buildTransactionMessage(koraNoopSigner, blockhash, transferSol.instructions)
+    const transaction = buildTransactionMessage(koraNoopSigner, blockhash, transferInstructions.instructions)
 
     // Step 4: Partially sign (noop for Kora placeholder), then sign with Openfort
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const partiallySignedTx = await partiallySignTransactionMessageWithSigners(transaction as any)
 
     const signatureBase58 = await signMessage(new Uint8Array(partiallySignedTx.messageBytes))
-    let signatureBytes = Base58.toBytes(signatureBase58)
-    if (signatureBytes.length === 65) {
-      signatureBytes = signatureBytes.slice(0, 64)
-    }
+    const signatureBytes = validateEd25519Signature(Base58.toBytes(signatureBase58))
 
     const userSignedTx = {
       ...partiallySignedTx,
@@ -126,13 +137,10 @@ export async function sendGaslessSolTransaction({
       signer_key: signer_address,
     })
 
-    return { signature, success: true }
+    return { signature }
   } catch (error) {
-    console.error('Error sending gasless transaction:', error)
-    return {
-      signature: '',
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Error sending gasless transaction:', message)
+    throw new Error(message)
   }
 }

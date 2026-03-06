@@ -29,30 +29,34 @@ export function EventMonitorProvider({ children }: { children: React.ReactNode }
       setEvents((prev) => [eventLog, ...prev].slice(0, 100)) // Keep last 100 events
     }
 
-    // Subscribe to all Openfort events
-    openfortEvents.on(OpenfortEvents.ON_AUTH_INIT, (payload) => addEvent('onAuthInit', payload))
-    openfortEvents.on(OpenfortEvents.ON_AUTH_SUCCESS, (payload) => addEvent('onAuthSuccess', payload))
-    openfortEvents.on(OpenfortEvents.ON_AUTH_FAILURE, (error) => addEvent('onAuthFailure', error))
-    openfortEvents.on(OpenfortEvents.ON_LOGOUT, () => addEvent('onLogout'))
-    openfortEvents.on(OpenfortEvents.ON_SWITCH_ACCOUNT, (address) => addEvent('onSwitchAccount', { address }))
-    openfortEvents.on(OpenfortEvents.ON_SIGNED_MESSAGE, (payload) => addEvent('onSignedMessage', payload))
-    openfortEvents.on(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED, (wallet) =>
-      addEvent('onEmbeddedWalletCreated', wallet)
-    )
-    openfortEvents.on(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED, (wallet) =>
-      addEvent('onEmbeddedWalletRecovered', wallet)
-    )
+    // Store handler references so we only remove our own listeners on cleanup
+    const onAuthInit = (payload: any) => addEvent('onAuthInit', payload)
+    const onAuthSuccess = (payload: any) => addEvent('onAuthSuccess', payload)
+    const onAuthFailure = (error: any) => addEvent('onAuthFailure', error)
+    const onLogout = () => addEvent('onLogout')
+    const onSwitchAccount = (address: any) => addEvent('onSwitchAccount', { address })
+    const onSignedMessage = (payload: any) => addEvent('onSignedMessage', payload)
+    const onWalletCreated = (wallet: any) => addEvent('onEmbeddedWalletCreated', wallet)
+    const onWalletRecovered = (wallet: any) => addEvent('onEmbeddedWalletRecovered', wallet)
 
-    // Cleanup function to remove all listeners
+    openfortEvents.on(OpenfortEvents.ON_AUTH_INIT, onAuthInit)
+    openfortEvents.on(OpenfortEvents.ON_AUTH_SUCCESS, onAuthSuccess)
+    openfortEvents.on(OpenfortEvents.ON_AUTH_FAILURE, onAuthFailure)
+    openfortEvents.on(OpenfortEvents.ON_LOGOUT, onLogout)
+    openfortEvents.on(OpenfortEvents.ON_SWITCH_ACCOUNT, onSwitchAccount)
+    openfortEvents.on(OpenfortEvents.ON_SIGNED_MESSAGE, onSignedMessage)
+    openfortEvents.on(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED, onWalletCreated)
+    openfortEvents.on(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED, onWalletRecovered)
+
     return () => {
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_AUTH_INIT)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_AUTH_SUCCESS)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_AUTH_FAILURE)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_LOGOUT)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_SWITCH_ACCOUNT)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_SIGNED_MESSAGE)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED)
-      openfortEvents.removeAllListeners(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED)
+      openfortEvents.off(OpenfortEvents.ON_AUTH_INIT, onAuthInit)
+      openfortEvents.off(OpenfortEvents.ON_AUTH_SUCCESS, onAuthSuccess)
+      openfortEvents.off(OpenfortEvents.ON_AUTH_FAILURE, onAuthFailure)
+      openfortEvents.off(OpenfortEvents.ON_LOGOUT, onLogout)
+      openfortEvents.off(OpenfortEvents.ON_SWITCH_ACCOUNT, onSwitchAccount)
+      openfortEvents.off(OpenfortEvents.ON_SIGNED_MESSAGE, onSignedMessage)
+      openfortEvents.off(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED, onWalletCreated)
+      openfortEvents.off(OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED, onWalletRecovered)
     }
   }, [])
 

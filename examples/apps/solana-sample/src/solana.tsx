@@ -1,16 +1,16 @@
-import { type Address, address, createSolanaRpc } from '@solana/kit'
+import { type Address, address } from '@solana/kit'
+import { findAssociatedTokenPda, TOKEN_PROGRAM_ADDRESS } from '@solana-program/token'
 import { useCallback, useEffect, useId, useState } from 'react'
 import TransactionHistory from './components/TransactionHistory'
 import { useOpenfort } from './contexts/OpenfortContext'
 import { type KoraConfig, sendGaslessSolTransaction } from './utils/kora'
-import { sendSolanaTransaction } from './utils/transaction'
+import { rpc } from './utils/rpc'
+import { sendSolanaTransaction, type TokenType, USDC_MINT } from './utils/transaction'
 
 const koraConfig: KoraConfig = {
   rpcUrl: 'https://api.openfort.io/rpc/solana/devnet',
   apiKey: `Bearer ${import.meta.env.VITE_PROJECT_PUBLISHABLE_KEY}`,
 }
-
-const rpc = createSolanaRpc('https://api.devnet.solana.com')
 
 // Validate Solana address format (base58, 32-44 characters)
 function isValidSolanaAddress(addr: string): boolean {
@@ -26,30 +26,56 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
   const { signMessage } = useOpenfort()
   const recipientId = useId()
   const amountId = useId()
+  const tokenId = useId()
   const [recipient, setRecipient] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
-  const [balance, setBalance] = useState<number | null>(null)
+  const [selectedToken, setSelectedToken] = useState<TokenType>('SOL')
+  const [solBalance, setSolBalance] = useState<number | null>(null)
+  const [usdcBalance, setUsdcBalance] = useState<number | null>(null)
   const [transactionSignature, setTransactionSignature] = useState<string | null>(null)
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false)
   const [sendingGasless, setSendingGasless] = useState<boolean>(false)
+  const [txRefreshTrigger, setTxRefreshTrigger] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<{
     recipient?: string
     amount?: string
   }>({})
 
-  const fetchBalance = useCallback(async (publicKey: Address) => {
+  const fetchBalances = useCallback(async (publicKey: Address) => {
     try {
-      const { value: balanceInLamports } = await rpc.getBalance(publicKey).send()
-      setBalance(Number(balanceInLamports) / 1e9) // Convert lamports to SOL
+      // Fetch SOL balance
+      const { value: balanceInLamports } = await rpc.getBalance(publicKey, { commitment: 'confirmed' }).send()
+      setSolBalance(Number(balanceInLamports) / 1e9)
+
+      // Fetch USDC balance using getTokenAccountBalance
+      const [usdcTokenAccount] = await findAssociatedTokenPda({
+        mint: USDC_MINT,
+        owner: publicKey,
+        tokenProgram: TOKEN_PROGRAM_ADDRESS,
+      })
+
+      try {
+        const { value: tokenBalance } = await rpc.getTokenAccountBalance(usdcTokenAccount).send()
+        setUsdcBalance(Number(tokenBalance.uiAmount))
+      } catch {
+        // Token account doesn't exist yet
+        setUsdcBalance(0)
+      }
     } catch (error) {
-      console.error('Failed to fetch balance', error)
+      console.error('Failed to fetch balances', error)
+      setSolBalance(null)
+      setUsdcBalance(null)
     }
   }, [])
 
   useEffect(() => {
-    fetchBalance(publicKey)
-  }, [publicKey, fetchBalance])
+    fetchBalances(publicKey)
+  }, [publicKey, fetchBalances])
+
+  const getCurrentBalance = (): number | null => {
+    return selectedToken === 'SOL' ? solBalance : usdcBalance
+  }
 
   const validateForm = (): boolean => {
     const errors: { recipient?: string; amount?: string } = {}
@@ -70,8 +96,11 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
         errors.amount = 'Amount must be a valid number'
       } else if (amountNum <= 0) {
         errors.amount = 'Amount must be greater than 0'
-      } else if (balance !== null && amountNum > balance) {
-        errors.amount = 'Insufficient balance'
+      } else {
+        const balance = getCurrentBalance()
+        if (balance !== null && amountNum > balance) {
+          errors.amount = `Insufficient ${selectedToken} balance`
+        }
       }
     }
 
@@ -87,18 +116,12 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
     return data || ''
   }
 
-  const handleTransactionResult = async (result: { success: boolean; signature: string; error?: string }) => {
-    if (result.success) {
-      console.log('Transaction signature:', result.signature)
-      setTransactionSignature(result.signature)
-      await fetchBalance(publicKey)
-      setRecipient('')
-      setAmount('')
-    } else {
-      const errorMsg = result.error || 'Transaction failed'
-      setError(errorMsg)
-      console.error('Transaction failed:', result.error)
-    }
+  const handleTransactionSuccess = async (signature: string) => {
+    setTransactionSignature(signature)
+    setTxRefreshTrigger((prev) => prev + 1)
+    await fetchBalances(publicKey)
+    setRecipient('')
+    setAmount('')
   }
 
   const sendTransaction = async () => {
@@ -108,17 +131,16 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
 
     setSendingTransaction(true)
     try {
-      const result = await sendSolanaTransaction({
+      const { signature } = await sendSolanaTransaction({
         from: publicKey,
         to: address(recipient),
-        amountInSol: parseFloat(amount),
+        amount: parseFloat(amount),
+        token: selectedToken,
         signMessage: handleSignMessage,
       })
-      await handleTransactionResult(result)
+      await handleTransactionSuccess(signature)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      setError(errorMessage)
-      console.error('Transaction failed', error)
+      setError(error instanceof Error ? error.message : 'Unknown error')
     } finally {
       setSendingTransaction(false)
     }
@@ -131,21 +153,25 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
 
     setSendingGasless(true)
     try {
-      const result = await sendGaslessSolTransaction({
+      const { signature } = await sendGaslessSolTransaction({
         from: publicKey,
         to: address(recipient),
-        amountInSol: parseFloat(amount),
+        amount: parseFloat(amount),
+        token: selectedToken,
         signMessage: handleSignMessage,
         koraConfig,
       })
-      await handleTransactionResult(result)
+      await handleTransactionSuccess(signature)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      setError(errorMessage)
-      console.error('Gasless transaction failed', error)
+      setError(error instanceof Error ? error.message : 'Unknown error')
     } finally {
       setSendingGasless(false)
     }
+  }
+
+  const formatBalance = (balance: number | null, token: TokenType): string => {
+    if (balance === null) return 'Loading...'
+    return token === 'SOL' ? `${balance.toFixed(4)} SOL` : `${balance.toFixed(2)} USDC`
   }
 
   return (
@@ -171,19 +197,21 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
               <p
                 className="cursor-pointer text-sm md:text-base"
                 onClick={() => {
-                  setBalance(null)
-                  fetchBalance(publicKey)
+                  setSolBalance(null)
+                  setUsdcBalance(null)
+                  fetchBalances(publicKey)
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
-                    setBalance(null)
-                    fetchBalance(publicKey)
+                    setSolBalance(null)
+                    setUsdcBalance(null)
+                    fetchBalances(publicKey)
                   }
                 }}
               >
-                <span className="text-gray-400">Balance:</span>
+                <span className="text-gray-400">Balances:</span>
                 <span className="text-green-400 ml-2 font-semibold">
-                  {balance !== null ? `${balance.toFixed(4)} SOL` : 'Loading...'}
+                  {formatBalance(solBalance, 'SOL')} | {formatBalance(usdcBalance, 'USDC')}
                 </span>
               </p>
             </div>
@@ -213,27 +241,50 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                     <p className="text-red-500 text-sm mt-1">{validationErrors.recipient}</p>
                   )}
                 </div>
-                <div className="w-full md:w-1/2">
-                  <label htmlFor={amountId} className="block text-sm font-medium text-gray-400 mb-2">
-                    Amount (SOL)
-                  </label>
-                  <input
-                    id={amountId}
-                    type="number"
-                    step="0.0001"
-                    placeholder="0.00"
-                    value={amount}
-                    onChange={(e) => {
-                      setAmount(e.target.value)
-                      setValidationErrors({
-                        ...validationErrors,
-                        amount: undefined,
-                      })
-                    }}
-                    className={`w-full ${validationErrors.amount ? 'border-red-500' : ''}`}
-                    disabled={isSending}
-                  />
-                  {validationErrors.amount && <p className="text-red-500 text-sm mt-1">{validationErrors.amount}</p>}
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="w-full md:w-1/3">
+                    <label htmlFor={tokenId} className="block text-sm font-medium text-gray-400 mb-2">
+                      Token
+                    </label>
+                    <select
+                      id={tokenId}
+                      value={selectedToken}
+                      onChange={(e) => {
+                        setSelectedToken(e.target.value as TokenType)
+                        setValidationErrors({
+                          ...validationErrors,
+                          amount: undefined,
+                        })
+                      }}
+                      className="w-full"
+                      disabled={isSending}
+                    >
+                      <option value="SOL">SOL</option>
+                      <option value="USDC">USDC</option>
+                    </select>
+                  </div>
+                  <div className="w-full md:w-2/3">
+                    <label htmlFor={amountId} className="block text-sm font-medium text-gray-400 mb-2">
+                      Amount ({selectedToken})
+                    </label>
+                    <input
+                      id={amountId}
+                      type="number"
+                      step={selectedToken === 'SOL' ? '0.0001' : '0.01'}
+                      placeholder="0.00"
+                      value={amount}
+                      onChange={(e) => {
+                        setAmount(e.target.value)
+                        setValidationErrors({
+                          ...validationErrors,
+                          amount: undefined,
+                        })
+                      }}
+                      className={`w-full ${validationErrors.amount ? 'border-red-500' : ''}`}
+                      disabled={isSending}
+                    />
+                    {validationErrors.amount && <p className="text-red-500 text-sm mt-1">{validationErrors.amount}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
@@ -242,7 +293,7 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                     disabled={isSending}
                     className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded font-semibold"
                   >
-                    {sendingTransaction ? 'Sending...' : 'Send SOL'}
+                    {sendingTransaction ? 'Sending...' : `Send ${selectedToken}`}
                   </button>
                   <button
                     type="button"
@@ -250,7 +301,7 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                     disabled={isSending}
                     className="flex-1 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded font-semibold"
                   >
-                    {sendingGasless ? 'Sending...' : 'Send SOL (Gasless)'}
+                    {sendingGasless ? 'Sending...' : `Send ${selectedToken} (Gasless)`}
                   </button>
                 </div>
                 {error && (
@@ -287,7 +338,7 @@ const CustomSolanaWallet = ({ publicKey }: { publicKey: Address }) => {
                 </div>
               </div>
             )}
-            <TransactionHistory address={publicKey} />
+            <TransactionHistory address={publicKey} refreshTrigger={txRefreshTrigger} />
           </div>
         ) : (
           <p className="text-gray-400 text-center py-4">Public key not found</p>
