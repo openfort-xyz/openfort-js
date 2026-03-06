@@ -11,8 +11,21 @@ import Spinner from '../Shared/Spinner'
 import SignMessageButton from '../Signatures/SignMessageButton'
 import SignTypedDataButton from '../Signatures/SignTypedDataButton'
 
+// Main entry point - handles auth check before loading wagmi-dependent content
 const HomePageContent: React.FC = () => {
   const { user } = useAuth()
+
+  // Show login form if not authenticated - no wagmi hooks called here
+  if (!user) {
+    return <LoginSignupForm />
+  }
+
+  // Only render authenticated content (with wagmi hooks) when user exists
+  return <AuthenticatedContent user={user} />
+}
+
+// Authenticated content - wagmi hooks are only called when user is logged in
+const AuthenticatedContent: React.FC<{ user: { email?: string | null } }> = ({ user }) => {
   const { embeddedState, initializeEvmProvider, isReady } = useOpenfort()
   const [message, setMessage] = useState<string>('')
   const [isInitializing, setIsInitializing] = useState<boolean>(false)
@@ -173,11 +186,6 @@ const HomePageContent: React.FC = () => {
       handleSetMessage(`Wagmi connection error: ${connectError.message}`)
     }
   }, [connectError, handleError, handleSetMessage])
-
-  // Early returns with proper error boundaries
-  if (!user) {
-    return <LoginSignupForm />
-  }
 
   if (embeddedState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED) {
     return (
