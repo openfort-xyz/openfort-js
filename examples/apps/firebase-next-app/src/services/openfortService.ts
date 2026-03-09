@@ -1,4 +1,4 @@
-import { type Provider, RecoveryMethod } from '@openfort/openfort-js'
+import { type EmbeddedState, type Provider, RecoveryMethod } from '@openfort/openfort-js'
 import { baseSepolia } from 'viem/chains'
 import openfort from '../utils/openfortConfig'
 
@@ -11,9 +11,12 @@ class OpenfortService {
     })
   }
 
-  async getEmbeddedState() {
-    const state = await openfort.embeddedWallet.getEmbeddedState()
-    return state
+  watchEmbeddedState(params: {
+    onChange: (state: EmbeddedState) => void
+    onError?: (error: Error) => void
+    pollingInterval?: number
+  }): () => void {
+    return openfort.embeddedWallet.watchEmbeddedState(params)
   }
 
   async getEncryptionSession(): Promise<string> {

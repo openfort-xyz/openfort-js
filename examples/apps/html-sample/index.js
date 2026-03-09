@@ -59,11 +59,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
       addMessage('Signed in')
       const player = await openfort.user.get()
-      const embeddedState = await openfort.embeddedWallet.getEmbeddedState()
       addMessage(`Openfort: ${player.id}`)
 
-      if (embeddedState === 2) window.location.href = 'recover.html'
-      if (embeddedState === 4) window.location.href = 'signature.html'
+      openfort.embeddedWallet.watchEmbeddedState({
+        onChange: (embeddedState) => {
+          if (embeddedState === 2) window.location.href = 'recover.html'
+          if (embeddedState === 4) window.location.href = 'signature.html'
+        },
+        onError: (err) => console.error('Error watching embedded state:', err),
+        pollingInterval: 300,
+      })
     } else {
       addMessage('Signed out')
     }

@@ -59,21 +59,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       })
     }
     addMessage('Recovery process completed.')
-
-    const embeddedState = await openfort.embeddedWallet.getEmbeddedState()
-    if (embeddedState === 4) {
-      window.location.href = 'signature.html'
-    }
   }
 
   auth.onAuthStateChanged(async (user) => {
     if (user) {
       const idToken = await user.getIdToken()
       await openfort.getAccessToken()
-      const embeddedState = await openfort.embeddedWallet.getEmbeddedState()
-      if (embeddedState === 4) {
-        window.location.href = 'signature.html'
-      }
+
+      openfort.embeddedWallet.watchEmbeddedState({
+        onChange: (embeddedState) => {
+          if (embeddedState === 4) {
+            window.location.href = 'signature.html'
+          }
+        },
+        onError: (err) => console.error('Error watching embedded state:', err),
+        pollingInterval: 300,
+      })
 
       document.getElementById('password-recovery-button').addEventListener('click', async () => {
         const password = document.querySelector('input[name="passwordRecovery"]').value

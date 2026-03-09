@@ -19,7 +19,6 @@ function Authenticate() {
   })
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const poller = useRef<NodeJS.Timeout | null>(null)
   const navigate = useNavigate()
   const hasConfiguredSigner = useRef<boolean>(false)
   const emailId = useId()
@@ -59,29 +58,21 @@ function Authenticate() {
   }, [getEncryptionSession])
 
   useEffect(() => {
-    const pollEmbeddedState = async () => {
-      try {
-        const currentState = await openfortInstance.embeddedWallet.getEmbeddedState()
+    const unwatch = openfortInstance.embeddedWallet.watchEmbeddedState({
+      onChange: async (currentState: EmbeddedState) => {
         if (currentState === EmbeddedState.READY) {
-          if (poller.current) clearInterval(poller.current)
           navigate('/')
         } else if (currentState === EmbeddedState.EMBEDDED_SIGNER_NOT_CONFIGURED && !hasConfiguredSigner.current) {
           hasConfiguredSigner.current = true
           await configureEmbeddedSigner()
         }
-      } catch (err) {
-        console.error('Error checking embedded state with Openfort:', err)
-        if (poller.current) clearInterval(poller.current)
-      }
-    }
-
-    if (!poller.current) {
-      poller.current = setInterval(pollEmbeddedState, 300)
-    }
+      },
+      onError: (err: Error) => console.error('Error watching embedded state with Openfort:', err),
+      pollingInterval: 300,
+    })
 
     return () => {
-      if (poller.current) clearInterval(poller.current)
-      poller.current = null
+      unwatch()
       hasConfiguredSigner.current = false
     }
   }, [navigate, configureEmbeddedSigner])
