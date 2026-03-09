@@ -41,11 +41,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   auth.onAuthStateChanged(async (user) => {
     if (user) {
-      const embeddedState = await openfort.embeddedWallet.getEmbeddedState()
-      console.log(embeddedState)
-      if (embeddedState !== 4) {
-        window.location.href = 'index.html'
-      }
+      openfort.embeddedWallet.watchEmbeddedState({
+        onChange: (embeddedState) => {
+          console.log(embeddedState)
+          if (embeddedState !== 4) {
+            window.location.href = 'index.html'
+          }
+        },
+        onError: (err) => console.error('Error watching embedded state:', err),
+        pollingInterval: 300,
+      })
 
       document.getElementById('sign-message-button').addEventListener('click', async () => {
         await signMessage('Hello Message')

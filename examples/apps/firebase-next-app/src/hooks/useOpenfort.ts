@@ -6,31 +6,18 @@ export const useOpenfort = () => {
   const [error, setError] = useState<Error | null>(null)
   const [embeddedState, setEmbeddedState] = useState<EmbeddedState>(EmbeddedState.NONE)
   const [isInitialized, setIsInitialized] = useState(false)
-  const pollingRef = useRef<NodeJS.Timeout | null>(null)
   const providerRef = useRef<Provider | null>(null)
 
-  // Poll embedded state with proper cleanup
   useEffect(() => {
-    const pollEmbeddedState = async () => {
-      const state = await openfortService.getEmbeddedState()
-      console.log('Current embedded state:', state)
-      setEmbeddedState(state)
-    }
-
-    // Initial check
-    pollEmbeddedState()
-
-    // Start polling only if not ready
-    if (!pollingRef.current) {
-      pollingRef.current = setInterval(pollEmbeddedState, 800)
-    }
-
-    return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current)
-        pollingRef.current = null
-      }
-    }
+    const unwatch = openfortService.watchEmbeddedState({
+      onChange: (state: EmbeddedState) => {
+        console.log('Current embedded state:', state)
+        setEmbeddedState(state)
+      },
+      onError: (err: Error) => console.error('Error watching embedded state:', err),
+      pollingInterval: 800,
+    })
+    return unwatch
   }, [])
 
   const initializeEvmProvider = useCallback(async (): Promise<Provider | null> => {
