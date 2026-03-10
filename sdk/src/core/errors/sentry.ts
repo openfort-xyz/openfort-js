@@ -79,6 +79,11 @@ export class InternalSentry {
         return
       }
 
+      // Skip Sentry notification for JWT expired errors (expected/non-exceptional)
+      if (error.message?.toLowerCase().includes('jwt expired')) {
+        return
+      }
+
       // Extract error properties for OpenfortError instances
       const openfortError = error as any
       const errorCode = openfortError.error
