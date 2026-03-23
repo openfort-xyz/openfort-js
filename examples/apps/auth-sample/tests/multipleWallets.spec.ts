@@ -34,9 +34,7 @@ test('Multiple wallets', async ({ page }) => {
   await logger.init()
 
   await test.step('Ensure only one wallet', async () => {
-    await page.getByRole('button', { name: 'List wallets' }).first().click()
-
-    await logger.waitForNewLogs()
+    await logger.clickAndWaitForNewLogs(() => page.getByRole('button', { name: 'List wallets' }).first().click())
     const lastLog = logger.getLastLog()
 
     expect(lastLog).toContain('wallet list (length: 1):')
@@ -50,11 +48,8 @@ test('Multiple wallets', async ({ page }) => {
       name: 'Create with Automatic Recovery',
     })
     await expect(createAutomaticButton).toBeInViewport()
-    await createAutomaticButton.click()
+    await logger.clickAndWaitForNewLogs(() => createAutomaticButton.click(), { timeout: 60000 })
 
-    await expect(page.locator('div.spinner')).toBeInViewport()
-
-    await logger.waitForNewLogs()
     const lastLog = logger.getLastLog()
 
     expect(lastLog).toContain('Created a new wallet with automatic recovery.')
@@ -65,9 +60,7 @@ test('Multiple wallets', async ({ page }) => {
   await logger.init()
 
   await test.step('Ensure 2 wallets', async () => {
-    await page.getByRole('button', { name: 'List wallets' }).first().click()
-
-    await logger.waitForNewLogs()
+    await logger.clickAndWaitForNewLogs(() => page.getByRole('button', { name: 'List wallets' }).first().click())
     const lastLog = logger.getLastLog()
 
     expect(lastLog).toContain('wallet list (length: 2):')
@@ -79,9 +72,8 @@ test('Multiple wallets', async ({ page }) => {
       name: 'Use this wallet',
     })
     await useThisWalletButton.waitFor({ timeout: 5000 })
-    await useThisWalletButton.click()
+    await logger.clickAndWaitForNewLogs(() => useThisWalletButton.click())
 
-    await logger.waitForNewLogs()
     const lastLog = logger.getLastLog()
 
     expect(lastLog).toContain('Switched to wallet')

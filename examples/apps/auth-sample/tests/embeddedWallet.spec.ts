@@ -8,9 +8,7 @@ test('Export key', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Export key' }).first()
-  await button.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => button.click())
 
   const lastLog = logger.getLastLog()
   expect(lastLog).toContain('0x')
@@ -23,9 +21,7 @@ test('Get wallet', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Get wallet' }).first()
-  await button.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => button.click())
 
   const lastLog = logger.getLastLog()
   expect(lastLog).toContain('Current wallet:')

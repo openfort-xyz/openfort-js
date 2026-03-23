@@ -8,9 +8,7 @@ test('Sign message', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Sign Message' }).first()
-  await button.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => button.click())
 
   const lastLog = logger.getLastLog()
   expect(lastLog).toContain('0x')
@@ -23,9 +21,7 @@ test('Sign typed message', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Sign typed message' }).first()
-  await button.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => button.click())
 
   const lastLog = logger.getLastLog()
   expect(lastLog).toContain('0x')

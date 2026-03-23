@@ -30,10 +30,7 @@ test('Password recovery', async ({ page }) => {
   await logger.init()
 
   await test.step('Verify its in automatic recovery', async () => {
-    const getWalletButton = page.getByRole('button', { name: 'Get wallet' }).first()
-    await getWalletButton.click()
-
-    await logger.waitForNewLogs()
+    await logger.clickAndWaitForNewLogs(() => page.getByRole('button', { name: 'Get wallet' }).first().click())
     const lastLog = logger.getLastLog()
 
     // Verify that we are in automatic recovery
@@ -41,9 +38,7 @@ test('Password recovery', async ({ page }) => {
   })
 
   await test.step('Verify user has only one wallet (for test to work properly)', async () => {
-    await page.getByRole('button', { name: 'List wallets' }).first().click()
-
-    await logger.waitForNewLogs()
+    await logger.clickAndWaitForNewLogs(() => page.getByRole('button', { name: 'List wallets' }).first().click())
     const lastLog = logger.getLastLog()
 
     // Verify that user has only one wallet
@@ -80,9 +75,7 @@ test('Password recovery', async ({ page }) => {
     const logger = new Logger(page)
     await logger.init()
 
-    const getWalletButton = page.getByRole('button', { name: 'Get wallet' }).first()
-    await getWalletButton.click()
-    await logger.waitForNewLogs()
+    await logger.clickAndWaitForNewLogs(() => page.getByRole('button', { name: 'Get wallet' }).first().click())
     const lastLog = logger.getLastLog()
     expect(lastLog).toContain('password')
   })

@@ -17,9 +17,7 @@ export const changeToAutomaticRecovery = async ({ page, logger }: { page: Page; 
   await page.waitForTimeout(500) // wait for the UI to be ready
 
   const automaticRecoveryButton2 = page.getByRole('button', { name: 'Set automatic recovery' }).first()
-  await automaticRecoveryButton2.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => automaticRecoveryButton2.click())
   const lastLog = logger.getLastLog()
 
   expect(lastLog).toContain('success')
@@ -37,9 +35,7 @@ export const changeToPasswordRecovery = async ({ page, logger }: { page: Page; l
   await passwordRecoveryInput.fill('password')
 
   const passwordRecoveryButton2 = page.getByRole('button', { name: 'Set password recovery' }).first()
-  await passwordRecoveryButton2.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => passwordRecoveryButton2.click())
   const lastLog = logger.getLastLog()
 
   console.log('Last log:', lastLog)
