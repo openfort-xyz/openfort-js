@@ -8,7 +8,7 @@ test('Sign message', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Sign Message' }).first()
-  button.click()
+  await button.click()
 
   await logger.waitForNewLogs()
 
@@ -23,7 +23,7 @@ test('Sign typed message', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Sign typed message' }).first()
-  button.click()
+  await button.click()
 
   await logger.waitForNewLogs()
 

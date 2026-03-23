@@ -21,7 +21,7 @@ export async function authenticate(page: Page) {
 
   await page.getByLabel('Email address').fill(email)
   await page.getByLabel('Password').fill(password)
-  page.getByRole('button', { name: 'Sign in' }).click()
+  await page.getByRole('button', { name: 'Sign in' }).click()
   await page.waitForURL('/')
 
   await expect(page.locator('h1')).toContainText('Set up your embedded signer', { timeout: 100000 })
@@ -41,7 +41,7 @@ export async function authenticateAndRecover(page: Page) {
   const recoveryMethodText = await page.getByTestId('recovery-method-badge').textContent()
   expect(recoveryMethodText).toBeDefined()
 
-  page.getByRole('button', { name: 'Use this wallet' }).click()
+  await page.getByRole('button', { name: 'Use this wallet' }).click()
 
   const recoveryMethod: RecoveryMethod = parseRecoveryMethod(recoveryMethodText)
   switch (recoveryMethod) {
@@ -58,7 +58,7 @@ export async function authenticateAndRecover(page: Page) {
       const passwordRecoveryInputLogin = page.locator('input[name="password-recovery"]')
 
       await passwordRecoveryInputLogin.fill('password')
-      page.getByRole('button', { name: 'Use this wallet' }).click()
+      await page.getByRole('button', { name: 'Use this wallet' }).click()
 
       await expect(page.locator('div.spinner')).toBeInViewport()
       await page.locator('div.spinner').waitFor({ state: 'hidden' })

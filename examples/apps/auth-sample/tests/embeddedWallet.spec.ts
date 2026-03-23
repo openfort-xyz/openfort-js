@@ -8,7 +8,7 @@ test('Export key', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Export key' }).first()
-  button.click()
+  await button.click()
 
   await logger.waitForNewLogs()
 
@@ -23,7 +23,7 @@ test('Get wallet', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Get wallet' }).first()
-  button.click()
+  await button.click()
 
   await logger.waitForNewLogs()
 

@@ -9,7 +9,7 @@ test('mint Token', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Mint Token' }).first()
-  button.click()
+  await button.click()
 
   await logger.waitForNewLogs()
 
@@ -24,7 +24,7 @@ test('Send batch calls', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Send batch calls' }).first()
-  button.click()
+  await button.click()
 
   await logger.waitForNewLogs()
 

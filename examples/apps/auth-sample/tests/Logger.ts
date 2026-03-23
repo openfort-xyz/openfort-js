@@ -15,8 +15,13 @@ export class Logger {
 
     await this.textArea.textContent()
 
-    await expect(this.textArea).toHaveValue(/.*> Current account/, {
-      timeout: 10000,
+    // Wait for both the User info and Current account address to be logged
+    // before capturing the initial state, to avoid a race between the two async logs.
+    await expect(this.textArea).toHaveValue(/> Current account/, {
+      timeout: 15000,
+    })
+    await expect(this.textArea).toHaveValue(/> User:/, {
+      timeout: 15000,
     })
 
     await new Promise((r) => setTimeout(r, 500)) // wait a bit more to ensure all init logs are captured
@@ -35,20 +40,19 @@ export class Logger {
       throw new Error('Logger not initialized')
     }
 
-    const timer = setTimeout(() => {
-      throw new Error('Timeout waiting for new logs')
-    }, timeout)
+    const deadline = Date.now() + timeout
 
     // Store the initial value
     const currentValue = await this.textArea.inputValue()
 
     // Polling loop: keep checking until the value changes
     while (currentValue === (await this.textArea.inputValue())) {
+      if (Date.now() > deadline) {
+        throw new Error('Timeout waiting for new logs')
+      }
       // Wait for the specified interval before checking again
       await new Promise((resolve) => setTimeout(resolve, pollInterval))
     }
-
-    clearTimeout(timer)
 
     const newLogs = (await this.textArea.inputValue()).replace(currentValue, '')
 

@@ -8,7 +8,7 @@ test('Get user', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Get user' }).first()
-  button.click()
+  await button.click()
 
   await logger.waitForNewLogs()
 

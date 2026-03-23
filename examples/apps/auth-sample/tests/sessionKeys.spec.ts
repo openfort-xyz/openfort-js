@@ -46,7 +46,7 @@ test('Mint Session Token', async ({ page }) => {
 
   // create session
   const createSessionButton = page.getByRole('button', { name: 'Create session' }).first()
-  createSessionButton.click()
+  await createSessionButton.click()
 
   await logger.waitForNewLogs()
 
@@ -56,7 +56,7 @@ test('Mint Session Token', async ({ page }) => {
 
   expect((await mintTokenButton.isDisabled()).valueOf()).toBe(false)
 
-  mintTokenButton.click()
+  await mintTokenButton.click()
 
   await logger.waitForNewLogs()
 
