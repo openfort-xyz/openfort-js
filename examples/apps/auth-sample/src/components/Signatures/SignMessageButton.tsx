@@ -8,11 +8,17 @@ import { Button } from '../ui/button'
 const SignMessageButton: React.FC<{
   handleSetMessage: (message: string) => void
 }> = ({ handleSetMessage }) => {
-  const { signMessage, state } = useOpenfort()
+  const { signMessage, state, getEvmProvider } = useOpenfort()
   const [loading, setLoading] = useState(false)
   const handleSignMessage = async () => {
     try {
       setLoading(true)
+      const provider = await getEvmProvider()
+      const chainId = await provider.request({
+        method: 'eth_chainId',
+        params: [],
+      })
+      console.log('chainId', chainId)
       const signature = await signMessage('Hello World!')
       setLoading(false)
       if (signature.error) {

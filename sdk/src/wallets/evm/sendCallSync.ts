@@ -21,7 +21,7 @@ type WalletSendCallsParams = {
   account: Account
   authentication: Authentication
   rpcProvider: StaticJsonRpcProvider
-  policyId?: string
+  feeSponsorshipId?: string
   params: any[]
 }
 
@@ -58,7 +58,7 @@ const buildOpenfortTransactions = async (
   backendApiClients: BackendApiClients,
   account: Account,
   authentication: Authentication,
-  policyId?: string,
+  feeSponsorshipId?: string,
   signedAuthorization?: string
 ): Promise<TransactionIntentResponse> => {
   const interactions: Interaction[] = calls.map((call) => {
@@ -78,7 +78,7 @@ const buildOpenfortTransactions = async (
         {
           createTransactionIntentRequest: {
             account: account.id,
-            policy: policyId,
+            policy: feeSponsorshipId,
             signedAuthorization: signedAuthorization,
             chainId: account.chainId!,
             interactions,
@@ -133,12 +133,12 @@ export const sendCallsSync = async ({
   authentication,
   backendClient,
   rpcProvider,
-  policyId,
+  feeSponsorshipId,
 }: WalletSendCallsParams): Promise<{
   id: string
   receipt: TransactionReceipt<string, number, 'success' | 'reverted', TransactionType>
 }> => {
-  const policy = params[0]?.capabilities?.paymasterService?.policy ?? policyId
+  const policy = params[0]?.capabilities?.paymasterService?.policy ?? feeSponsorshipId
   let signedAuthorization: string | undefined
 
   if (account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {

@@ -9,7 +9,7 @@ type EthEstimateGasParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication
-  policyId?: string
+  feeSponsorshipId?: string
   params: any[]
 }
 
@@ -20,7 +20,7 @@ const buildOpenfortTransactions = async (
   backendApiClients: BackendApiClients,
   account: Account,
   authentication: Authentication,
-  policyId?: string
+  feeSponsorshipId?: string
 ): Promise<EstimateTransactionIntentGasResult> => {
   const interactions: Interaction[] = calls.map((call) => {
     if (!call.to) {
@@ -38,7 +38,7 @@ const buildOpenfortTransactions = async (
       const response = await backendApiClients.transactionIntentsApi.estimateTransactionIntentCost(
         {
           createTransactionIntentRequest: {
-            policy: policyId,
+            policy: feeSponsorshipId,
             chainId: account.chainId!,
             interactions,
           },
@@ -73,14 +73,14 @@ export const estimateGas = async ({
   account,
   authentication,
   backendClient,
-  policyId,
+  feeSponsorshipId,
 }: EthEstimateGasParams): Promise<`0x${string}`> => {
   const openfortTransaction = await buildOpenfortTransactions(
     params,
     backendClient,
     account,
     authentication,
-    policyId
+    feeSponsorshipId
   ).catch((error) => {
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
   })

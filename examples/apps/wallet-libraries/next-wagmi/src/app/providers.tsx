@@ -21,7 +21,7 @@ function OpenfortSetup({ children }: { children: ReactNode }) {
       if (!openfortInstance) return
       console.log('Setting up Openfort provider for chainId:', chainId)
       await openfortInstance.embeddedWallet.getEthereumProvider({
-        policy:
+        feeSponsorship:
           chainId === sepolia.id ? process.env.NEXT_PUBLIC_POLICY_SEPOLIA : process.env.NEXT_PUBLIC_POLICY_BASE_SEPOLIA,
       })
     }

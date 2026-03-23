@@ -708,7 +708,7 @@ export class EmbeddedWalletApi {
   }
 
   async getEthereumProvider(options?: {
-    policy?: string
+    feeSponsorship?: string
     chains?: Record<number, string>
     providerInfo?: {
       icon: `data:image/${string}`
@@ -735,7 +735,7 @@ export class EmbeddedWalletApi {
         account: account || undefined,
         authentication: authentication || undefined,
         backendApiClients: this.backendApiClients,
-        policyId: finalOptions.policy,
+        feeSponsorshipId: finalOptions.feeSponsorship,
         validateAndRefreshSession: this.validateAndRefreshToken.bind(this),
         chains: finalOptions.chains,
       })
@@ -746,8 +746,8 @@ export class EmbeddedWalletApi {
           provider: this.provider,
         })
       }
-    } else if (this.provider && finalOptions.policy) {
-      this.provider.updatePolicy(finalOptions.policy)
+    } else if (this.provider && finalOptions.feeSponsorship) {
+      this.provider.updateFeeSponsorship(finalOptions.feeSponsorship)
     }
 
     return this.provider

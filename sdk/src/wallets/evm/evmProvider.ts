@@ -38,25 +38,25 @@ type EvmProviderInput = {
   authentication?: Authentication
   backendApiClients: BackendApiClients
   openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>
-  policyId?: string
+  feeSponsorshipId?: string
   validateAndRefreshSession: () => Promise<void>
 }
 
 export class EvmProvider implements Provider {
   readonly #storage: IStorage
 
-  #policyId?: string
+  #feeSponsorshipId?: string
 
   #customChains?: Record<number, string>
 
   #signer?: Signer
 
   /**
-   * Updates the policy ID for the provider
-   * @param newPolicyId - The new policy ID to use
+   * Updates the fee sponsorship ID for the provider
+   * @param newFeeSponsorshipId - The new fee sponsorship ID to use
    */
-  public updatePolicy(newPolicy: string) {
-    this.#policyId = newPolicy
+  public updateFeeSponsorship(newFeeSponsorshipId: string) {
+    this.#feeSponsorshipId = newFeeSponsorshipId
   }
 
   readonly #validateAndRefreshSession: () => Promise<void>
@@ -75,7 +75,7 @@ export class EvmProvider implements Provider {
     storage,
     backendApiClients,
     openfortEventEmitter,
-    policyId,
+    feeSponsorshipId,
     ensureSigner,
     chains,
     validateAndRefreshSession,
@@ -86,7 +86,7 @@ export class EvmProvider implements Provider {
 
     this.#customChains = chains
 
-    this.#policyId = policyId
+    this.#feeSponsorshipId = feeSponsorshipId
 
     this.#validateAndRefreshSession = validateAndRefreshSession
 
@@ -118,7 +118,11 @@ export class EvmProvider implements Provider {
   async getRpcProvider(): Promise<StaticJsonRpcProvider> {
     if (!this.#rpcProvider) {
       const account = await Account.fromStorage(this.#storage)
-      const chainId = account?.chainId || 8453
+      // when accountTypeEnum is EOA, account.chainId will be undefined.
+      // we will always return the first configured chain in the provider if one is provided.
+      // otherwise we revert to 8453
+      const chainId =
+        account?.chainId || (this.#customChains ? Number(Object.keys(this.#customChains)[0]) : undefined) || 8453
 
       await import('@ethersproject/providers').then((module) => {
         const rpcUrl = this.#customChains ? this.#customChains[chainId] : undefined
@@ -243,7 +247,7 @@ export class EvmProvider implements Provider {
             authentication,
             backendClient: this.#backendApiClients,
             rpcProvider: await this.getRpcProvider(),
-            policyId: this.#policyId,
+            feeSponsorshipId: this.#feeSponsorshipId,
           })
         ).receipt.transactionHash
       }
@@ -268,7 +272,7 @@ export class EvmProvider implements Provider {
           authentication,
           backendClient: this.#backendApiClients,
           rpcProvider: await this.getRpcProvider(),
-          policyId: this.#policyId,
+          feeSponsorshipId: this.#feeSponsorshipId,
         })
       }
       case 'eth_estimateGas': {
@@ -283,7 +287,7 @@ export class EvmProvider implements Provider {
           account,
           authentication,
           backendClient: this.#backendApiClients,
-          policyId: this.#policyId,
+          feeSponsorshipId: this.#feeSponsorshipId,
         })
       }
       case 'eth_signTypedData':
@@ -404,7 +408,7 @@ export class EvmProvider implements Provider {
           authentication,
           backendClient: this.#backendApiClients,
           rpcProvider: await this.getRpcProvider(),
-          policyId: this.#policyId,
+          feeSponsorshipId: this.#feeSponsorshipId,
         })
         return result
       }
@@ -426,7 +430,7 @@ export class EvmProvider implements Provider {
           account,
           authentication,
           backendClient: this.#backendApiClients,
-          policyId: this.#policyId,
+          feeSponsorshipId: this.#feeSponsorshipId,
         })
       }
       // EIP-7715: Wallet Session Key API
@@ -445,7 +449,7 @@ export class EvmProvider implements Provider {
           account,
           authentication,
           backendClient: this.#backendApiClients,
-          policyId: this.#policyId,
+          feeSponsorshipId: this.#feeSponsorshipId,
         })
       }
       case 'wallet_getCapabilities': {
