@@ -14,7 +14,7 @@ type WalletRequestPermissionsParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication
-  policyId?: string
+  feeSponsorshipId?: string
 }
 
 export type RevokePermissionsRequestParams = {
@@ -24,7 +24,7 @@ export type RevokePermissionsRequestParams = {
 const formatSessionRequest = (
   address: string,
   chainId: number,
-  policyId?: string,
+  feeSponsorshipId?: string,
   account?: string
 ): RevokeSessionRequest => {
   const request: RevokeSessionRequest = {
@@ -33,7 +33,7 @@ const formatSessionRequest = (
     account,
   }
 
-  if (policyId) request.policy = policyId
+  if (feeSponsorshipId) request.policy = feeSponsorshipId
 
   return request
 }
@@ -43,9 +43,9 @@ const buildOpenfortTransactions = async (
   backendApiClients: BackendApiClients,
   account: Account,
   authentication: Authentication,
-  policyId?: string
+  feeSponsorshipId?: string
 ): Promise<SessionResponse> => {
-  const sessionRequest = formatSessionRequest(params.permissionContext, account.chainId!, policyId, account.id)
+  const sessionRequest = formatSessionRequest(params.permissionContext, account.chainId!, feeSponsorshipId, account.id)
 
   return withApiError<SessionResponse>(
     async () => {
@@ -85,7 +85,7 @@ export const revokeSession = async ({
   account,
   authentication,
   backendClient,
-  policyId,
+  feeSponsorshipId,
 }: WalletRequestPermissionsParams): Promise<SessionResponse> => {
   const param = params[0]
   if (!param.permissionContext) {
@@ -97,7 +97,7 @@ export const revokeSession = async ({
     backendClient,
     account,
     authentication,
-    policyId
+    feeSponsorshipId
   ).catch((error) => {
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
   })

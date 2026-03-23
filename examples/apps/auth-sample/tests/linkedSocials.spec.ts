@@ -8,9 +8,7 @@ test('Get user', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Get user' }).first()
-  button.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => button.click())
 
   const lastLog = logger.getLastLog()
   expect(lastLog).toContain('"id": "usr_')

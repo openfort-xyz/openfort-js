@@ -9,9 +9,7 @@ import { Logger } from './Logger'
 //   await logger.init()
 
 //   const createSessionButton = page.getByRole('button', { name: 'Create session' }).first()
-//   createSessionButton.click()
-
-//   await logger.waitForNewLogs()
+//   await logger.clickAndWaitForNewLogs(() => createSessionButton.click())
 
 //   let lastLog = logger.getLastLog()
 
@@ -22,9 +20,7 @@ import { Logger } from './Logger'
 //   const revokeButton = page.getByRole('button', { name: 'Revoke session' }).first()
 //   expect(revokeButton).toBeVisible()
 
-//   revokeButton.click()
-
-//   await logger.waitForNewLogs()
+//   await logger.clickAndWaitForNewLogs(() => revokeButton.click())
 //   lastLog = logger.getLastLog()
 
 //   expect(lastLog).toContain('Session key revoked successfully')
@@ -46,9 +42,7 @@ test('Mint Session Token', async ({ page }) => {
 
   // create session
   const createSessionButton = page.getByRole('button', { name: 'Create session' }).first()
-  createSessionButton.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => createSessionButton.click())
 
   let lastLog = logger.getLastLog()
 
@@ -56,9 +50,7 @@ test('Mint Session Token', async ({ page }) => {
 
   expect((await mintTokenButton.isDisabled()).valueOf()).toBe(false)
 
-  mintTokenButton.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => mintTokenButton.click())
 
   lastLog = logger.getLastLog()
 

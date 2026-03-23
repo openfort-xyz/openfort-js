@@ -14,7 +14,7 @@ type WalletRequestPermissionsParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication
-  policyId?: string
+  feeSponsorshipId?: string
 }
 
 function formatPolicyData(policy: Policy) {
@@ -80,7 +80,7 @@ const formatSessionRequest = (
   chainId: number,
   validAfter: number,
   validUntil: number,
-  policyId?: string,
+  feeSponsorshipId?: string,
   optimistic: boolean = false,
   whitelist?: string[],
   limit?: number,
@@ -96,7 +96,7 @@ const formatSessionRequest = (
     account,
   }
 
-  if (policyId) request.policy = policyId
+  if (feeSponsorshipId) request.policy = feeSponsorshipId
   if (limit) request.limit = limit
 
   return request
@@ -107,7 +107,7 @@ const buildOpenfortTransactions = async (
   backendApiClients: BackendApiClients,
   account: Account,
   authentication: Authentication,
-  policyId?: string
+  feeSponsorshipId?: string
 ): Promise<SessionResponse> => {
   const param = params[0]
   const now = Math.floor(Date.now() / 1000)
@@ -151,7 +151,7 @@ const buildOpenfortTransactions = async (
     account.chainId!,
     now,
     expiry,
-    policyId,
+    feeSponsorshipId,
     false,
     whitelist,
     limit,
@@ -218,14 +218,14 @@ export const registerSession = async ({
   account,
   authentication,
   backendClient,
-  policyId,
+  feeSponsorshipId,
 }: WalletRequestPermissionsParams): Promise<GrantPermissionsReturnType> => {
   const openfortTransaction = await buildOpenfortTransactions(
     params,
     backendClient,
     account,
     authentication,
-    policyId
+    feeSponsorshipId
   ).catch((error) => {
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
   })

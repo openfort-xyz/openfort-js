@@ -10,7 +10,7 @@ test.use({
 
 const logout = async (page: Page) => {
   const logoutButton = page.getByRole('button', { name: 'Logout' }).first()
-  logoutButton.click()
+  await logoutButton.click()
 
   await page.waitForURL('/login')
 }
@@ -30,10 +30,7 @@ test('Password recovery', async ({ page }) => {
   await logger.init()
 
   await test.step('Verify its in automatic recovery', async () => {
-    const getWalletButton = page.getByRole('button', { name: 'Get wallet' }).first()
-    getWalletButton.click()
-
-    await logger.waitForNewLogs()
+    await logger.clickAndWaitForNewLogs(() => page.getByRole('button', { name: 'Get wallet' }).first().click())
     const lastLog = logger.getLastLog()
 
     // Verify that we are in automatic recovery
@@ -41,9 +38,7 @@ test('Password recovery', async ({ page }) => {
   })
 
   await test.step('Verify user has only one wallet (for test to work properly)', async () => {
-    page.getByRole('button', { name: 'List wallets' }).first().click()
-
-    await logger.waitForNewLogs()
+    await logger.clickAndWaitForNewLogs(() => page.getByRole('button', { name: 'List wallets' }).first().click())
     const lastLog = logger.getLastLog()
 
     // Verify that user has only one wallet
@@ -62,17 +57,17 @@ test('Password recovery', async ({ page }) => {
 
   await test.step('Recover with password recovery', async () => {
     const passwordRecoveryButtonLogin = page.getByRole('button', { name: 'Use this wallet' }).first()
-    passwordRecoveryButtonLogin.click()
+    await passwordRecoveryButtonLogin.click()
 
     // First try with incorrect password
     const passwordRecoveryInput = page.locator('input[name="password-recovery"]')
     await passwordRecoveryInput.fill('incorrect password')
-    passwordRecoveryButtonLogin.click()
+    await passwordRecoveryButtonLogin.click()
 
     await page.getByTestId('wallet-recovery-error').waitFor({ timeout: 5000 })
 
     await passwordRecoveryInput.fill('password')
-    passwordRecoveryButtonLogin.click()
+    await passwordRecoveryButtonLogin.click()
 
     await expect(page.locator('div.spinner')).toBeInViewport()
     await page.locator('div.spinner').waitFor({ state: 'hidden' })
@@ -80,9 +75,7 @@ test('Password recovery', async ({ page }) => {
     const logger = new Logger(page)
     await logger.init()
 
-    const getWalletButton = page.getByRole('button', { name: 'Get wallet' }).first()
-    getWalletButton.click()
-    await logger.waitForNewLogs()
+    await logger.clickAndWaitForNewLogs(() => page.getByRole('button', { name: 'Get wallet' }).first().click())
     const lastLog = logger.getLastLog()
     expect(lastLog).toContain('password')
   })
