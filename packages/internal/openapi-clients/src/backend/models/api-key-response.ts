@@ -50,5 +50,11 @@ export interface ApiKeyResponse {
      * @memberof ApiKeyResponse
      */
     'livemode': boolean;
+    /**
+     * Scopes restricting this API key\'s access. Empty array means full access.
+     * @type {Array<string>}
+     * @memberof ApiKeyResponse
+     */
+    'scopes': Array<string>;
 }
 

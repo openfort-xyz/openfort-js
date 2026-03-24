@@ -39,6 +39,12 @@ export interface CreateBackendWalletResponse {
      */
     'address': string;
     /**
+     * The wallet ID
+     * @type {string}
+     * @memberof CreateBackendWalletResponse
+     */
+    'walletId': string;
+    /**
      * The chain type the wallet is associated with.
      * @type {string}
      * @memberof CreateBackendWalletResponse

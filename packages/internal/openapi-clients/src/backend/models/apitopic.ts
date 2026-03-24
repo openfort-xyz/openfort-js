@@ -28,7 +28,11 @@ export const APITopic = {
     BalanceProject: 'balance.project',
     BalanceContract: 'balance.contract',
     BalanceDevAccount: 'balance.dev_account',
-    Test: 'test'
+    Test: 'test',
+    UserCreated: 'user.created',
+    UserUpdated: 'user.updated',
+    UserDeleted: 'user.deleted',
+    AccountCreated: 'account.created'
 } as const;
 
 export type APITopic = typeof APITopic[keyof typeof APITopic];

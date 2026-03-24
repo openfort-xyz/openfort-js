@@ -32,8 +32,6 @@ import { JwtKeyResponse } from '../models';
 // @ts-ignore
 import { LinkEmail200Response } from '../models';
 // @ts-ignore
-import { LoginOIDCRequest } from '../models';
-// @ts-ignore
 import { LoginRequest } from '../models';
 // @ts-ignore
 import { LoginWithIdTokenRequest } from '../models';
@@ -265,6 +263,14 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (xGame != null) {
                 localVarHeaderParameter['x-game'] = String(xGame);
             }
@@ -306,6 +312,14 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (xGame != null) {
                 localVarHeaderParameter['x-game'] = String(xGame);
             }
@@ -346,6 +360,14 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -382,6 +404,14 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (xGame != null) {
                 localVarHeaderParameter['x-game'] = String(xGame);
@@ -447,51 +477,6 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * Authenticate a player from an identity token.
-         * @summary OIDC Identity token.
-         * @param {LoginOIDCRequest} loginOIDCRequest 
-         * @param {string} [xGame] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        loginOIDC: async (loginOIDCRequest: LoginOIDCRequest, xGame?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'loginOIDCRequest' is not null or undefined
-            assertParamExists('loginOIDC', 'loginOIDCRequest', loginOIDCRequest)
-            const localVarPath = `/iam/v1/oidc/login`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication pk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (xGame != null) {
-                localVarHeaderParameter['x-game'] = String(xGame);
-            }
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(loginOIDCRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * 
          * @summary Authenticate player with oauth token.
          * @param {LoginWithIdTokenRequest} loginWithIdTokenRequest 
@@ -512,6 +497,10 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             // authentication pk required
             // http bearer authentication required
@@ -553,6 +542,10 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -584,6 +577,14 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -904,6 +905,10 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
@@ -947,6 +952,14 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -983,6 +996,14 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -1018,6 +1039,14 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -1225,18 +1254,6 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
          */
         async loginEmailPassword(loginRequest: LoginRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignupEmailPassword201Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.loginEmailPassword(loginRequest, xGame, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Authenticate a player from an identity token.
-         * @summary OIDC Identity token.
-         * @param {LoginOIDCRequest} loginOIDCRequest 
-         * @param {string} [xGame] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async loginOIDC(loginOIDCRequest: LoginOIDCRequest, xGame?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.loginOIDC(loginOIDCRequest, xGame, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1512,16 +1529,6 @@ export const AuthV1ApiFactory = function (configuration?: Configuration, basePat
          */
         loginEmailPassword(requestParameters: AuthV1ApiLoginEmailPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<SignupEmailPassword201Response> {
             return localVarFp.loginEmailPassword(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Authenticate a player from an identity token.
-         * @summary OIDC Identity token.
-         * @param {AuthV1ApiLoginOIDCRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        loginOIDC(requestParameters: AuthV1ApiLoginOIDCRequest, options?: AxiosRequestConfig): AxiosPromise<AuthResponse> {
-            return localVarFp.loginOIDC(requestParameters.loginOIDCRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1847,27 +1854,6 @@ export interface AuthV1ApiLoginEmailPasswordRequest {
      * 
      * @type {string}
      * @memberof AuthV1ApiLoginEmailPassword
-     */
-    readonly xGame?: string
-}
-
-/**
- * Request parameters for loginOIDC operation in AuthV1Api.
- * @export
- * @interface AuthV1ApiLoginOIDCRequest
- */
-export interface AuthV1ApiLoginOIDCRequest {
-    /**
-     * 
-     * @type {LoginOIDCRequest}
-     * @memberof AuthV1ApiLoginOIDC
-     */
-    readonly loginOIDCRequest: LoginOIDCRequest
-
-    /**
-     * 
-     * @type {string}
-     * @memberof AuthV1ApiLoginOIDC
      */
     readonly xGame?: string
 }
@@ -2208,18 +2194,6 @@ export class AuthV1Api extends BaseAPI {
      */
     public loginEmailPassword(requestParameters: AuthV1ApiLoginEmailPasswordRequest, options?: AxiosRequestConfig) {
         return AuthV1ApiFp(this.configuration).loginEmailPassword(requestParameters.loginRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Authenticate a player from an identity token.
-     * @summary OIDC Identity token.
-     * @param {AuthV1ApiLoginOIDCRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AuthV1Api
-     */
-    public loginOIDC(requestParameters: AuthV1ApiLoginOIDCRequest, options?: AxiosRequestConfig) {
-        return AuthV1ApiFp(this.configuration).loginOIDC(requestParameters.loginOIDCRequest, requestParameters.xGame, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -21,6 +21,9 @@ import { AccelbyteOAuthConfig } from './accelbyte-oauth-config';
 import { AppleOAuthConfig } from './apple-oauth-config';
 // May contain unused imports in some cases
 // @ts-ignore
+import { BasicAuthProviderTESTACCOUNT } from './basic-auth-provider-testaccount';
+// May contain unused imports in some cases
+// @ts-ignore
 import { BetterAuthConfig } from './better-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -72,7 +75,7 @@ import { PlayFabOAuthConfig } from './play-fab-oauth-config';
 import { SupabaseAuthConfig } from './supabase-auth-config';
 // May contain unused imports in some cases
 // @ts-ignore
-import { ThirdPartyOAuthProviderBETTERAUTH } from './third-party-oauth-provider-betterauth';
+import { TestAccountConfig } from './test-account-config';
 // May contain unused imports in some cases
 // @ts-ignore
 import { TwitterOAuthConfig } from './twitter-oauth-config';
@@ -94,10 +97,10 @@ export interface AuthConfig {
     'enabled': boolean;
     /**
      * 
-     * @type {ThirdPartyOAuthProviderBETTERAUTH}
+     * @type {BasicAuthProviderTESTACCOUNT}
      * @memberof AuthConfig
      */
-    'provider': ThirdPartyOAuthProviderBETTERAUTH;
+    'provider': BasicAuthProviderTESTACCOUNT;
     /**
      * Allow unverified emails: Users will be able to sign in with unverified emails
      * @type {boolean}
@@ -212,6 +215,24 @@ export interface AuthConfig {
      * @memberof AuthConfig
      */
     'authenticationUrl': string;
+    /**
+     * Auto-generated 4-char hex suffix for test-XXXX@openfort.xyz. Server-generated, read-only.
+     * @type {string}
+     * @memberof AuthConfig
+     */
+    'emailSuffix'?: string;
+    /**
+     * Auto-generated 4-digit phone suffix for +1 555 555 XXXX. Server-generated, read-only.
+     * @type {string}
+     * @memberof AuthConfig
+     */
+    'phoneSuffix'?: string;
+    /**
+     * Auto-generated 6-digit OTP code. Server-generated, read-only.
+     * @type {string}
+     * @memberof AuthConfig
+     */
+    'otpCode'?: string;
 }
 
 

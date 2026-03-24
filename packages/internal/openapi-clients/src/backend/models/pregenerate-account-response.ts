@@ -99,7 +99,7 @@ export interface PregenerateAccountResponse {
      */
     'recoveryMethodDetails'?: RecoveryMethodDetails;
     /**
-     * Indicates key custody: \"Developer\" for server-managed keys (WALLTEE), \"User\" for user-managed keys (DB).
+     * Indicates key custody: \"Developer\" for TEE managed keys, \"User\" for user-managed keys.
      * @type {string}
      * @memberof PregenerateAccountResponse
      */
@@ -110,6 +110,12 @@ export interface PregenerateAccountResponse {
      * @memberof PregenerateAccountResponse
      */
     'recoveryShare': string;
+    /**
+     * User uuid
+     * @type {string}
+     * @memberof PregenerateAccountResponse
+     */
+    'user': string;
 }
 
 export const PregenerateAccountResponseCustodyEnum = {

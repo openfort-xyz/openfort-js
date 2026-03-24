@@ -99,7 +99,7 @@ export interface AccountV2Response {
      */
     'recoveryMethodDetails'?: RecoveryMethodDetails;
     /**
-     * Indicates key custody: \"Developer\" for server-managed keys (WALLTEE), \"User\" for user-managed keys (DB).
+     * Indicates key custody: \"Developer\" for TEE managed keys, \"User\" for user-managed keys.
      * @type {string}
      * @memberof AccountV2Response
      */

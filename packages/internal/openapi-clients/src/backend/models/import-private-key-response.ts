@@ -39,6 +39,12 @@ export interface ImportPrivateKeyResponse {
      */
     'address': string;
     /**
+     * The wallet ID
+     * @type {string}
+     * @memberof ImportPrivateKeyResponse
+     */
+    'walletId': string;
+    /**
      * The chain type the wallet is associated with.
      * @type {string}
      * @memberof ImportPrivateKeyResponse

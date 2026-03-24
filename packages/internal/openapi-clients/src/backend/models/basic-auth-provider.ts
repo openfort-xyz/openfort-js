@@ -25,7 +25,8 @@ export const BasicAuthProvider = {
     Wallet: 'wallet',
     Guest: 'guest',
     Web3: 'web3',
-    Phone: 'phone'
+    Phone: 'phone',
+    TestAccount: 'test_account'
 } as const;
 
 export type BasicAuthProvider = typeof BasicAuthProvider[keyof typeof BasicAuthProvider];

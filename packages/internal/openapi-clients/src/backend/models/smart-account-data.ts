@@ -62,5 +62,17 @@ export interface SmartAccountData {
      * @memberof SmartAccountData
      */
     'active': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof SmartAccountData
+     */
+    'ownerAddress'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof SmartAccountData
+     */
+    'chainId'?: number;
 }
 

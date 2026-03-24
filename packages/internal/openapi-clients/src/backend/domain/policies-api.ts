@@ -22,29 +22,21 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { CreatePolicyRequest } from '../models';
+import { CreatePolicyV2Request } from '../models';
 // @ts-ignore
-import { GasReportListResponse } from '../models';
+import { EvaluatePolicyV2Request } from '../models';
 // @ts-ignore
-import { GasReportTransactionIntentsListResponse } from '../models';
+import { EvaluatePolicyV2Response } from '../models';
 // @ts-ignore
-import { PolicyBalanceWithdrawResponse } from '../models';
+import { PolicyV2DeleteResponse } from '../models';
 // @ts-ignore
-import { PolicyDeleteResponse } from '../models';
+import { PolicyV2ListResponse } from '../models';
 // @ts-ignore
-import { PolicyListResponse } from '../models';
-// @ts-ignore
-import { PolicyResponse } from '../models';
-// @ts-ignore
-import { PolicyResponseExpandable } from '../models';
+import { PolicyV2Response } from '../models';
 // @ts-ignore
 import { PrismaSortOrder } from '../models';
 // @ts-ignore
-import { TransactionIntentResponse } from '../models';
-// @ts-ignore
-import { UpdatePolicyRequest } from '../models';
-// @ts-ignore
-import { WithdrawalPolicyRequest } from '../models';
+import { UpdatePolicyV2Request } from '../models';
 /**
  * PoliciesApi - axios parameter creator
  * @export
@@ -52,16 +44,16 @@ import { WithdrawalPolicyRequest } from '../models';
 export const PoliciesApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
-         * @summary Create a policy object.
-         * @param {CreatePolicyRequest} createPolicyRequest 
+         * Creates a new policy with the specified rules.
+         * @summary Create a policy.
+         * @param {CreatePolicyV2Request} createPolicyV2Request 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicy: async (createPolicyRequest: CreatePolicyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createPolicyRequest' is not null or undefined
-            assertParamExists('createPolicy', 'createPolicyRequest', createPolicyRequest)
-            const localVarPath = `/v1/policies`;
+        createPolicyV2: async (createPolicyV2Request: CreatePolicyV2Request, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createPolicyV2Request' is not null or undefined
+            assertParamExists('createPolicyV2', 'createPolicyV2Request', createPolicyV2Request)
+            const localVarPath = `/v2/policies`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -77,47 +69,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createPolicyRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Transfer ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
-         * @summary Withdraw tokens collected by policy.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {WithdrawalPolicyRequest} withdrawalPolicyRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createPolicyWithdrawal: async (id: string, withdrawalPolicyRequest: WithdrawalPolicyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('createPolicyWithdrawal', 'id', id)
-            // verify required parameter 'withdrawalPolicyRequest' is not null or undefined
-            assertParamExists('createPolicyWithdrawal', 'withdrawalPolicyRequest', withdrawalPolicyRequest)
-            const localVarPath = `/v1/policies/{id}/withdraw`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -128,7 +80,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(withdrawalPolicyRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createPolicyV2Request, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -136,17 +88,17 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @summary Delete a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
+         * Deletes a policy. This is a soft delete.
+         * @summary Delete a policy.
+         * @param {string} policyId Specifies the unique policy ID (starts with ply_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePolicy: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deletePolicy', 'id', id)
-            const localVarPath = `/v1/policies/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+        deletePolicyV2: async (policyId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'policyId' is not null or undefined
+            assertParamExists('deletePolicyV2', 'policyId', policyId)
+            const localVarPath = `/v2/policies/{policyId}`
+                .replace(`{${"policyId"}}`, encodeURIComponent(String(policyId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -162,41 +114,7 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Disable a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        disablePolicy: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('disablePolicy', 'id', id)
-            const localVarPath = `/v1/policies/{id}/disable`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -212,318 +130,16 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
-         * @summary Enable a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
+         * Evaluates an operation against policies without actually performing the operation. Use this endpoint to check if an operation would be allowed before attempting it.
+         * @summary Evaluate policy.
+         * @param {EvaluatePolicyV2Request} evaluatePolicyV2Request 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        enablePolicy: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('enablePolicy', 'id', id)
-            const localVarPath = `/v1/policies/{id}/enable`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Returns a list of Policies.  Returns the latest 10 transaction intents for each policy.
-         * @summary List policies.
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
-         * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand in the response.
-         * @param {string} [name] Specifies the name of the policy.
-         * @param {boolean} [deleted] Specifies whether to include deleted policies.
-         * @param {number} [chainId] The chain ID of the policy.
-         * @param {boolean} [enabled] Specifies whether to include enabled policies.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPolicies: async (limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<PolicyResponseExpandable>, name?: string, deleted?: boolean, chainId?: number, enabled?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/v1/policies`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
-            }
-
-            if (order !== undefined) {
-                localVarQueryParameter['order'] = order;
-            }
-
-            if (expand) {
-                localVarQueryParameter['expand'] = expand;
-            }
-
-            if (name !== undefined) {
-                localVarQueryParameter['name'] = name;
-            }
-
-            if (deleted !== undefined) {
-                localVarQueryParameter['deleted'] = deleted;
-            }
-
-            if (chainId !== undefined) {
-                localVarQueryParameter['chainId'] = chainId;
-            }
-
-            if (enabled !== undefined) {
-                localVarQueryParameter['enabled'] = enabled;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Retrieves the details of a Policy that has previously been created.  Returns the latest 10 transaction intents that used this policy.
-         * @summary Get a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPolicy: async (id: string, expand?: Array<PolicyResponseExpandable>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPolicy', 'id', id)
-            const localVarPath = `/v1/policies/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (expand) {
-                localVarQueryParameter['expand'] = expand;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Get the amount of ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
-         * @summary Get amount of tokens paid for gas policy.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPolicyBalance: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPolicyBalance', 'id', id)
-            const localVarPath = `/v1/policies/{id}/withdraw`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary List transaction intents of a policy report.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {number} to The start date of the period in unix timestamp.
-         * @param {number} from The end date of the period in unix timestamp.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPolicyReportTransactionIntents: async (id: string, to: number, from: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPolicyReportTransactionIntents', 'id', id)
-            // verify required parameter 'to' is not null or undefined
-            assertParamExists('getPolicyReportTransactionIntents', 'to', to)
-            // verify required parameter 'from' is not null or undefined
-            assertParamExists('getPolicyReportTransactionIntents', 'from', from)
-            const localVarPath = `/v1/policies/{id}/reports/transaction_intents`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (to !== undefined) {
-                localVarQueryParameter['to'] = to;
-            }
-
-            if (from !== undefined) {
-                localVarQueryParameter['from'] = from;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary List all gas reports of a policy.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPolicyTotalGasUsage: async (id: string, limit?: number, skip?: number, order?: PrismaSortOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPolicyTotalGasUsage', 'id', id)
-            const localVarPath = `/v1/policies/{id}/reports`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
-            }
-
-            if (order !== undefined) {
-                localVarQueryParameter['order'] = order;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Update a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {UpdatePolicyRequest} updatePolicyRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updatePolicy: async (id: string, updatePolicyRequest: UpdatePolicyRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updatePolicy', 'id', id)
-            // verify required parameter 'updatePolicyRequest' is not null or undefined
-            assertParamExists('updatePolicy', 'updatePolicyRequest', updatePolicyRequest)
-            const localVarPath = `/v1/policies/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+        evaluatePolicyV2: async (evaluatePolicyV2Request: EvaluatePolicyV2Request, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'evaluatePolicyV2Request' is not null or undefined
+            assertParamExists('evaluatePolicyV2', 'evaluatePolicyV2Request', evaluatePolicyV2Request)
+            const localVarPath = `/v2/policies/evaluate`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -539,6 +155,14 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -546,7 +170,175 @@ export const PoliciesApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(updatePolicyRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(evaluatePolicyV2Request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves the details of a policy that has previously been created.
+         * @summary Get a policy.
+         * @param {string} policyId Specifies the unique policy ID (starts with ply_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPolicyV2: async (policyId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'policyId' is not null or undefined
+            assertParamExists('getPolicyV2', 'policyId', policyId)
+            const localVarPath = `/v2/policies/{policyId}`
+                .replace(`{${"policyId"}}`, encodeURIComponent(String(policyId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns a list of policies.
+         * @summary List policies.
+         * @param {number} [limit] Specifies the maximum number of records to return.
+         * @param {number} [skip] Specifies the offset for the first records to return.
+         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
+         * @param {Array<ListPoliciesScopeEnum>} [scope] Filter by scope.
+         * @param {boolean} [enabled] Filter by enabled status.
+         * @param {string} [accountId] Filter by account ID (for account-scoped policies).
+         * @param {Array<string>} [operation] Only include policies that have at least one rule with an operation in this list.
+         * @param {Array<string>} [operationNotIn] Exclude policies where all rules have operations in this list.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listPolicies: async (limit?: number, skip?: number, order?: PrismaSortOrder, scope?: Array<ListPoliciesScopeEnum>, enabled?: boolean, accountId?: string, operation?: Array<string>, operationNotIn?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v2/policies`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (order !== undefined) {
+                localVarQueryParameter['order'] = order;
+            }
+
+            if (scope) {
+                localVarQueryParameter['scope'] = scope;
+            }
+
+            if (enabled !== undefined) {
+                localVarQueryParameter['enabled'] = enabled;
+            }
+
+            if (accountId !== undefined) {
+                localVarQueryParameter['accountId'] = accountId;
+            }
+
+            if (operation) {
+                localVarQueryParameter['operation'] = operation;
+            }
+
+            if (operationNotIn) {
+                localVarQueryParameter['operationNotIn'] = operationNotIn;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Updates an existing policy.
+         * @summary Update a policy.
+         * @param {string} policyId Specifies the unique policy ID (starts with ply_).
+         * @param {UpdatePolicyV2Request} updatePolicyV2Request 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePolicyV2: async (policyId: string, updatePolicyV2Request: UpdatePolicyV2Request, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'policyId' is not null or undefined
+            assertParamExists('updatePolicyV2', 'policyId', policyId)
+            // verify required parameter 'updatePolicyV2Request' is not null or undefined
+            assertParamExists('updatePolicyV2', 'updatePolicyV2Request', updatePolicyV2Request)
+            const localVarPath = `/v2/policies/{policyId}`
+                .replace(`{${"policyId"}}`, encodeURIComponent(String(policyId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updatePolicyV2Request, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -564,139 +356,77 @@ export const PoliciesApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = PoliciesApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
-         * @summary Create a policy object.
-         * @param {CreatePolicyRequest} createPolicyRequest 
+         * Creates a new policy with the specified rules.
+         * @summary Create a policy.
+         * @param {CreatePolicyV2Request} createPolicyV2Request 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicy(createPolicyRequest: CreatePolicyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicy(createPolicyRequest, options);
+        async createPolicyV2(createPolicyV2Request: CreatePolicyV2Request, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyV2(createPolicyV2Request, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Transfer ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
-         * @summary Withdraw tokens collected by policy.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {WithdrawalPolicyRequest} withdrawalPolicyRequest 
+         * Deletes a policy. This is a soft delete.
+         * @summary Delete a policy.
+         * @param {string} policyId Specifies the unique policy ID (starts with ply_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPolicyWithdrawal(id: string, withdrawalPolicyRequest: WithdrawalPolicyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPolicyWithdrawal(id, withdrawalPolicyRequest, options);
+        async deletePolicyV2(policyId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyV2DeleteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePolicyV2(policyId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Delete a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
+         * Evaluates an operation against policies without actually performing the operation. Use this endpoint to check if an operation would be allowed before attempting it.
+         * @summary Evaluate policy.
+         * @param {EvaluatePolicyV2Request} evaluatePolicyV2Request 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deletePolicy(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyDeleteResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePolicy(id, options);
+        async evaluatePolicyV2(evaluatePolicyV2Request: EvaluatePolicyV2Request, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EvaluatePolicyV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.evaluatePolicyV2(evaluatePolicyV2Request, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Disable a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
+         * Retrieves the details of a policy that has previously been created.
+         * @summary Get a policy.
+         * @param {string} policyId Specifies the unique policy ID (starts with ply_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async disablePolicy(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.disablePolicy(id, options);
+        async getPolicyV2(policyId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyV2(policyId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
-         * @summary Enable a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async enablePolicy(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.enablePolicy(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Returns a list of Policies.  Returns the latest 10 transaction intents for each policy.
+         * Returns a list of policies.
          * @summary List policies.
          * @param {number} [limit] Specifies the maximum number of records to return.
          * @param {number} [skip] Specifies the offset for the first records to return.
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
-         * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand in the response.
-         * @param {string} [name] Specifies the name of the policy.
-         * @param {boolean} [deleted] Specifies whether to include deleted policies.
-         * @param {number} [chainId] The chain ID of the policy.
-         * @param {boolean} [enabled] Specifies whether to include enabled policies.
+         * @param {Array<ListPoliciesScopeEnum>} [scope] Filter by scope.
+         * @param {boolean} [enabled] Filter by enabled status.
+         * @param {string} [accountId] Filter by account ID (for account-scoped policies).
+         * @param {Array<string>} [operation] Only include policies that have at least one rule with an operation in this list.
+         * @param {Array<string>} [operationNotIn] Exclude policies where all rules have operations in this list.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicies(limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<PolicyResponseExpandable>, name?: string, deleted?: boolean, chainId?: number, enabled?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicies(limit, skip, order, expand, name, deleted, chainId, enabled, options);
+        async listPolicies(limit?: number, skip?: number, order?: PrismaSortOrder, scope?: Array<ListPoliciesScopeEnum>, enabled?: boolean, accountId?: string, operation?: Array<string>, operationNotIn?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyV2ListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listPolicies(limit, skip, order, scope, enabled, accountId, operation, operationNotIn, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Retrieves the details of a Policy that has previously been created.  Returns the latest 10 transaction intents that used this policy.
-         * @summary Get a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {Array<PolicyResponseExpandable>} [expand] Specifies the fields to expand.
+         * Updates an existing policy.
+         * @summary Update a policy.
+         * @param {string} policyId Specifies the unique policy ID (starts with ply_).
+         * @param {UpdatePolicyV2Request} updatePolicyV2Request 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPolicy(id: string, expand?: Array<PolicyResponseExpandable>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicy(id, expand, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Get the amount of ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
-         * @summary Get amount of tokens paid for gas policy.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getPolicyBalance(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyBalanceWithdrawResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyBalance(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary List transaction intents of a policy report.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {number} to The start date of the period in unix timestamp.
-         * @param {number} from The end date of the period in unix timestamp.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getPolicyReportTransactionIntents(id: string, to: number, from: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportTransactionIntentsListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyReportTransactionIntents(id, to, from, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary List all gas reports of a policy.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {number} [limit] Specifies the maximum number of records to return.
-         * @param {number} [skip] Specifies the offset for the first records to return.
-         * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getPolicyTotalGasUsage(id: string, limit?: number, skip?: number, order?: PrismaSortOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GasReportListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPolicyTotalGasUsage(id, limit, skip, order, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Update a policy object.
-         * @param {string} id Specifies the unique policy ID (starts with pol_).
-         * @param {UpdatePolicyRequest} updatePolicyRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updatePolicy(id: string, updatePolicyRequest: UpdatePolicyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicy(id, updatePolicyRequest, options);
+        async updatePolicyV2(policyId: string, updatePolicyV2Request: UpdatePolicyV2Request, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PolicyV2Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePolicyV2(policyId, updatePolicyV2Request, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -710,375 +440,206 @@ export const PoliciesApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = PoliciesApiFp(configuration)
     return {
         /**
-         * 
-         * @summary Create a policy object.
-         * @param {PoliciesApiCreatePolicyRequest} requestParameters Request parameters.
+         * Creates a new policy with the specified rules.
+         * @summary Create a policy.
+         * @param {PoliciesApiCreatePolicyV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicy(requestParameters: PoliciesApiCreatePolicyRequest, options?: AxiosRequestConfig): AxiosPromise<PolicyResponse> {
-            return localVarFp.createPolicy(requestParameters.createPolicyRequest, options).then((request) => request(axios, basePath));
+        createPolicyV2(requestParameters: PoliciesApiCreatePolicyV2Request, options?: AxiosRequestConfig): AxiosPromise<PolicyV2Response> {
+            return localVarFp.createPolicyV2(requestParameters.createPolicyV2Request, options).then((request) => request(axios, basePath));
         },
         /**
-         * Transfer ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
-         * @summary Withdraw tokens collected by policy.
-         * @param {PoliciesApiCreatePolicyWithdrawalRequest} requestParameters Request parameters.
+         * Deletes a policy. This is a soft delete.
+         * @summary Delete a policy.
+         * @param {PoliciesApiDeletePolicyV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPolicyWithdrawal(requestParameters: PoliciesApiCreatePolicyWithdrawalRequest, options?: AxiosRequestConfig): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.createPolicyWithdrawal(requestParameters.id, requestParameters.withdrawalPolicyRequest, options).then((request) => request(axios, basePath));
+        deletePolicyV2(requestParameters: PoliciesApiDeletePolicyV2Request, options?: AxiosRequestConfig): AxiosPromise<PolicyV2DeleteResponse> {
+            return localVarFp.deletePolicyV2(requestParameters.policyId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Delete a policy object.
-         * @param {PoliciesApiDeletePolicyRequest} requestParameters Request parameters.
+         * Evaluates an operation against policies without actually performing the operation. Use this endpoint to check if an operation would be allowed before attempting it.
+         * @summary Evaluate policy.
+         * @param {PoliciesApiEvaluatePolicyV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePolicy(requestParameters: PoliciesApiDeletePolicyRequest, options?: AxiosRequestConfig): AxiosPromise<PolicyDeleteResponse> {
-            return localVarFp.deletePolicy(requestParameters.id, options).then((request) => request(axios, basePath));
+        evaluatePolicyV2(requestParameters: PoliciesApiEvaluatePolicyV2Request, options?: AxiosRequestConfig): AxiosPromise<EvaluatePolicyV2Response> {
+            return localVarFp.evaluatePolicyV2(requestParameters.evaluatePolicyV2Request, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Disable a policy object.
-         * @param {PoliciesApiDisablePolicyRequest} requestParameters Request parameters.
+         * Retrieves the details of a policy that has previously been created.
+         * @summary Get a policy.
+         * @param {PoliciesApiGetPolicyV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        disablePolicy(requestParameters: PoliciesApiDisablePolicyRequest, options?: AxiosRequestConfig): AxiosPromise<PolicyResponse> {
-            return localVarFp.disablePolicy(requestParameters.id, options).then((request) => request(axios, basePath));
+        getPolicyV2(requestParameters: PoliciesApiGetPolicyV2Request, options?: AxiosRequestConfig): AxiosPromise<PolicyV2Response> {
+            return localVarFp.getPolicyV2(requestParameters.policyId, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Enable a policy object.
-         * @param {PoliciesApiEnablePolicyRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        enablePolicy(requestParameters: PoliciesApiEnablePolicyRequest, options?: AxiosRequestConfig): AxiosPromise<PolicyResponse> {
-            return localVarFp.enablePolicy(requestParameters.id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Returns a list of Policies.  Returns the latest 10 transaction intents for each policy.
+         * Returns a list of policies.
          * @summary List policies.
-         * @param {PoliciesApiGetPoliciesRequest} requestParameters Request parameters.
+         * @param {PoliciesApiListPoliciesRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicies(requestParameters: PoliciesApiGetPoliciesRequest = {}, options?: AxiosRequestConfig): AxiosPromise<PolicyListResponse> {
-            return localVarFp.getPolicies(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.expand, requestParameters.name, requestParameters.deleted, requestParameters.chainId, requestParameters.enabled, options).then((request) => request(axios, basePath));
+        listPolicies(requestParameters: PoliciesApiListPoliciesRequest = {}, options?: AxiosRequestConfig): AxiosPromise<PolicyV2ListResponse> {
+            return localVarFp.listPolicies(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.scope, requestParameters.enabled, requestParameters.accountId, requestParameters.operation, requestParameters.operationNotIn, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieves the details of a Policy that has previously been created.  Returns the latest 10 transaction intents that used this policy.
-         * @summary Get a policy object.
-         * @param {PoliciesApiGetPolicyRequest} requestParameters Request parameters.
+         * Updates an existing policy.
+         * @summary Update a policy.
+         * @param {PoliciesApiUpdatePolicyV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPolicy(requestParameters: PoliciesApiGetPolicyRequest, options?: AxiosRequestConfig): AxiosPromise<PolicyResponse> {
-            return localVarFp.getPolicy(requestParameters.id, requestParameters.expand, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Get the amount of ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
-         * @summary Get amount of tokens paid for gas policy.
-         * @param {PoliciesApiGetPolicyBalanceRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPolicyBalance(requestParameters: PoliciesApiGetPolicyBalanceRequest, options?: AxiosRequestConfig): AxiosPromise<PolicyBalanceWithdrawResponse> {
-            return localVarFp.getPolicyBalance(requestParameters.id, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary List transaction intents of a policy report.
-         * @param {PoliciesApiGetPolicyReportTransactionIntentsRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPolicyReportTransactionIntents(requestParameters: PoliciesApiGetPolicyReportTransactionIntentsRequest, options?: AxiosRequestConfig): AxiosPromise<GasReportTransactionIntentsListResponse> {
-            return localVarFp.getPolicyReportTransactionIntents(requestParameters.id, requestParameters.to, requestParameters.from, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary List all gas reports of a policy.
-         * @param {PoliciesApiGetPolicyTotalGasUsageRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPolicyTotalGasUsage(requestParameters: PoliciesApiGetPolicyTotalGasUsageRequest, options?: AxiosRequestConfig): AxiosPromise<GasReportListResponse> {
-            return localVarFp.getPolicyTotalGasUsage(requestParameters.id, requestParameters.limit, requestParameters.skip, requestParameters.order, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update a policy object.
-         * @param {PoliciesApiUpdatePolicyRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updatePolicy(requestParameters: PoliciesApiUpdatePolicyRequest, options?: AxiosRequestConfig): AxiosPromise<PolicyResponse> {
-            return localVarFp.updatePolicy(requestParameters.id, requestParameters.updatePolicyRequest, options).then((request) => request(axios, basePath));
+        updatePolicyV2(requestParameters: PoliciesApiUpdatePolicyV2Request, options?: AxiosRequestConfig): AxiosPromise<PolicyV2Response> {
+            return localVarFp.updatePolicyV2(requestParameters.policyId, requestParameters.updatePolicyV2Request, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * Request parameters for createPolicy operation in PoliciesApi.
+ * Request parameters for createPolicyV2 operation in PoliciesApi.
  * @export
- * @interface PoliciesApiCreatePolicyRequest
+ * @interface PoliciesApiCreatePolicyV2Request
  */
-export interface PoliciesApiCreatePolicyRequest {
+export interface PoliciesApiCreatePolicyV2Request {
     /**
      * 
-     * @type {CreatePolicyRequest}
-     * @memberof PoliciesApiCreatePolicy
+     * @type {CreatePolicyV2Request}
+     * @memberof PoliciesApiCreatePolicyV2
      */
-    readonly createPolicyRequest: CreatePolicyRequest
+    readonly createPolicyV2Request: CreatePolicyV2Request
 }
 
 /**
- * Request parameters for createPolicyWithdrawal operation in PoliciesApi.
+ * Request parameters for deletePolicyV2 operation in PoliciesApi.
  * @export
- * @interface PoliciesApiCreatePolicyWithdrawalRequest
+ * @interface PoliciesApiDeletePolicyV2Request
  */
-export interface PoliciesApiCreatePolicyWithdrawalRequest {
+export interface PoliciesApiDeletePolicyV2Request {
     /**
-     * Specifies the unique policy ID (starts with pol_).
+     * Specifies the unique policy ID (starts with ply_).
      * @type {string}
-     * @memberof PoliciesApiCreatePolicyWithdrawal
+     * @memberof PoliciesApiDeletePolicyV2
      */
-    readonly id: string
+    readonly policyId: string
+}
 
+/**
+ * Request parameters for evaluatePolicyV2 operation in PoliciesApi.
+ * @export
+ * @interface PoliciesApiEvaluatePolicyV2Request
+ */
+export interface PoliciesApiEvaluatePolicyV2Request {
     /**
      * 
-     * @type {WithdrawalPolicyRequest}
-     * @memberof PoliciesApiCreatePolicyWithdrawal
+     * @type {EvaluatePolicyV2Request}
+     * @memberof PoliciesApiEvaluatePolicyV2
      */
-    readonly withdrawalPolicyRequest: WithdrawalPolicyRequest
+    readonly evaluatePolicyV2Request: EvaluatePolicyV2Request
 }
 
 /**
- * Request parameters for deletePolicy operation in PoliciesApi.
+ * Request parameters for getPolicyV2 operation in PoliciesApi.
  * @export
- * @interface PoliciesApiDeletePolicyRequest
+ * @interface PoliciesApiGetPolicyV2Request
  */
-export interface PoliciesApiDeletePolicyRequest {
+export interface PoliciesApiGetPolicyV2Request {
     /**
-     * Specifies the unique policy ID (starts with pol_).
+     * Specifies the unique policy ID (starts with ply_).
      * @type {string}
-     * @memberof PoliciesApiDeletePolicy
+     * @memberof PoliciesApiGetPolicyV2
      */
-    readonly id: string
+    readonly policyId: string
 }
 
 /**
- * Request parameters for disablePolicy operation in PoliciesApi.
+ * Request parameters for listPolicies operation in PoliciesApi.
  * @export
- * @interface PoliciesApiDisablePolicyRequest
+ * @interface PoliciesApiListPoliciesRequest
  */
-export interface PoliciesApiDisablePolicyRequest {
-    /**
-     * Specifies the unique policy ID (starts with pol_).
-     * @type {string}
-     * @memberof PoliciesApiDisablePolicy
-     */
-    readonly id: string
-}
-
-/**
- * Request parameters for enablePolicy operation in PoliciesApi.
- * @export
- * @interface PoliciesApiEnablePolicyRequest
- */
-export interface PoliciesApiEnablePolicyRequest {
-    /**
-     * Specifies the unique policy ID (starts with pol_).
-     * @type {string}
-     * @memberof PoliciesApiEnablePolicy
-     */
-    readonly id: string
-}
-
-/**
- * Request parameters for getPolicies operation in PoliciesApi.
- * @export
- * @interface PoliciesApiGetPoliciesRequest
- */
-export interface PoliciesApiGetPoliciesRequest {
+export interface PoliciesApiListPoliciesRequest {
     /**
      * Specifies the maximum number of records to return.
      * @type {number}
-     * @memberof PoliciesApiGetPolicies
+     * @memberof PoliciesApiListPolicies
      */
     readonly limit?: number
 
     /**
      * Specifies the offset for the first records to return.
      * @type {number}
-     * @memberof PoliciesApiGetPolicies
+     * @memberof PoliciesApiListPolicies
      */
     readonly skip?: number
 
     /**
      * Specifies the order in which to sort the results.
      * @type {PrismaSortOrder}
-     * @memberof PoliciesApiGetPolicies
+     * @memberof PoliciesApiListPolicies
      */
     readonly order?: PrismaSortOrder
 
     /**
-     * Specifies the fields to expand in the response.
-     * @type {Array<PolicyResponseExpandable>}
-     * @memberof PoliciesApiGetPolicies
+     * Filter by scope.
+     * @type {Array<'project' | 'account' | 'transaction'>}
+     * @memberof PoliciesApiListPolicies
      */
-    readonly expand?: Array<PolicyResponseExpandable>
+    readonly scope?: Array<ListPoliciesScopeEnum>
 
     /**
-     * Specifies the name of the policy.
-     * @type {string}
-     * @memberof PoliciesApiGetPolicies
-     */
-    readonly name?: string
-
-    /**
-     * Specifies whether to include deleted policies.
+     * Filter by enabled status.
      * @type {boolean}
-     * @memberof PoliciesApiGetPolicies
-     */
-    readonly deleted?: boolean
-
-    /**
-     * The chain ID of the policy.
-     * @type {number}
-     * @memberof PoliciesApiGetPolicies
-     */
-    readonly chainId?: number
-
-    /**
-     * Specifies whether to include enabled policies.
-     * @type {boolean}
-     * @memberof PoliciesApiGetPolicies
+     * @memberof PoliciesApiListPolicies
      */
     readonly enabled?: boolean
+
+    /**
+     * Filter by account ID (for account-scoped policies).
+     * @type {string}
+     * @memberof PoliciesApiListPolicies
+     */
+    readonly accountId?: string
+
+    /**
+     * Only include policies that have at least one rule with an operation in this list.
+     * @type {Array<string>}
+     * @memberof PoliciesApiListPolicies
+     */
+    readonly operation?: Array<string>
+
+    /**
+     * Exclude policies where all rules have operations in this list.
+     * @type {Array<string>}
+     * @memberof PoliciesApiListPolicies
+     */
+    readonly operationNotIn?: Array<string>
 }
 
 /**
- * Request parameters for getPolicy operation in PoliciesApi.
+ * Request parameters for updatePolicyV2 operation in PoliciesApi.
  * @export
- * @interface PoliciesApiGetPolicyRequest
+ * @interface PoliciesApiUpdatePolicyV2Request
  */
-export interface PoliciesApiGetPolicyRequest {
+export interface PoliciesApiUpdatePolicyV2Request {
     /**
-     * Specifies the unique policy ID (starts with pol_).
+     * Specifies the unique policy ID (starts with ply_).
      * @type {string}
-     * @memberof PoliciesApiGetPolicy
+     * @memberof PoliciesApiUpdatePolicyV2
      */
-    readonly id: string
-
-    /**
-     * Specifies the fields to expand.
-     * @type {Array<PolicyResponseExpandable>}
-     * @memberof PoliciesApiGetPolicy
-     */
-    readonly expand?: Array<PolicyResponseExpandable>
-}
-
-/**
- * Request parameters for getPolicyBalance operation in PoliciesApi.
- * @export
- * @interface PoliciesApiGetPolicyBalanceRequest
- */
-export interface PoliciesApiGetPolicyBalanceRequest {
-    /**
-     * Specifies the unique policy ID (starts with pol_).
-     * @type {string}
-     * @memberof PoliciesApiGetPolicyBalance
-     */
-    readonly id: string
-}
-
-/**
- * Request parameters for getPolicyReportTransactionIntents operation in PoliciesApi.
- * @export
- * @interface PoliciesApiGetPolicyReportTransactionIntentsRequest
- */
-export interface PoliciesApiGetPolicyReportTransactionIntentsRequest {
-    /**
-     * Specifies the unique policy ID (starts with pol_).
-     * @type {string}
-     * @memberof PoliciesApiGetPolicyReportTransactionIntents
-     */
-    readonly id: string
-
-    /**
-     * The start date of the period in unix timestamp.
-     * @type {number}
-     * @memberof PoliciesApiGetPolicyReportTransactionIntents
-     */
-    readonly to: number
-
-    /**
-     * The end date of the period in unix timestamp.
-     * @type {number}
-     * @memberof PoliciesApiGetPolicyReportTransactionIntents
-     */
-    readonly from: number
-}
-
-/**
- * Request parameters for getPolicyTotalGasUsage operation in PoliciesApi.
- * @export
- * @interface PoliciesApiGetPolicyTotalGasUsageRequest
- */
-export interface PoliciesApiGetPolicyTotalGasUsageRequest {
-    /**
-     * Specifies the unique policy ID (starts with pol_).
-     * @type {string}
-     * @memberof PoliciesApiGetPolicyTotalGasUsage
-     */
-    readonly id: string
-
-    /**
-     * Specifies the maximum number of records to return.
-     * @type {number}
-     * @memberof PoliciesApiGetPolicyTotalGasUsage
-     */
-    readonly limit?: number
-
-    /**
-     * Specifies the offset for the first records to return.
-     * @type {number}
-     * @memberof PoliciesApiGetPolicyTotalGasUsage
-     */
-    readonly skip?: number
-
-    /**
-     * Specifies the order in which to sort the results.
-     * @type {PrismaSortOrder}
-     * @memberof PoliciesApiGetPolicyTotalGasUsage
-     */
-    readonly order?: PrismaSortOrder
-}
-
-/**
- * Request parameters for updatePolicy operation in PoliciesApi.
- * @export
- * @interface PoliciesApiUpdatePolicyRequest
- */
-export interface PoliciesApiUpdatePolicyRequest {
-    /**
-     * Specifies the unique policy ID (starts with pol_).
-     * @type {string}
-     * @memberof PoliciesApiUpdatePolicy
-     */
-    readonly id: string
+    readonly policyId: string
 
     /**
      * 
-     * @type {UpdatePolicyRequest}
-     * @memberof PoliciesApiUpdatePolicy
+     * @type {UpdatePolicyV2Request}
+     * @memberof PoliciesApiUpdatePolicyV2
      */
-    readonly updatePolicyRequest: UpdatePolicyRequest
+    readonly updatePolicyV2Request: UpdatePolicyV2Request
 }
 
 /**
@@ -1089,135 +650,84 @@ export interface PoliciesApiUpdatePolicyRequest {
  */
 export class PoliciesApi extends BaseAPI {
     /**
-     * 
-     * @summary Create a policy object.
-     * @param {PoliciesApiCreatePolicyRequest} requestParameters Request parameters.
+     * Creates a new policy with the specified rules.
+     * @summary Create a policy.
+     * @param {PoliciesApiCreatePolicyV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public createPolicy(requestParameters: PoliciesApiCreatePolicyRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).createPolicy(requestParameters.createPolicyRequest, options).then((request) => request(this.axios, this.basePath));
+    public createPolicyV2(requestParameters: PoliciesApiCreatePolicyV2Request, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).createPolicyV2(requestParameters.createPolicyV2Request, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * Transfer ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
-     * @summary Withdraw tokens collected by policy.
-     * @param {PoliciesApiCreatePolicyWithdrawalRequest} requestParameters Request parameters.
+     * Deletes a policy. This is a soft delete.
+     * @summary Delete a policy.
+     * @param {PoliciesApiDeletePolicyV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public createPolicyWithdrawal(requestParameters: PoliciesApiCreatePolicyWithdrawalRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).createPolicyWithdrawal(requestParameters.id, requestParameters.withdrawalPolicyRequest, options).then((request) => request(this.axios, this.basePath));
+    public deletePolicyV2(requestParameters: PoliciesApiDeletePolicyV2Request, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).deletePolicyV2(requestParameters.policyId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @summary Delete a policy object.
-     * @param {PoliciesApiDeletePolicyRequest} requestParameters Request parameters.
+     * Evaluates an operation against policies without actually performing the operation. Use this endpoint to check if an operation would be allowed before attempting it.
+     * @summary Evaluate policy.
+     * @param {PoliciesApiEvaluatePolicyV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public deletePolicy(requestParameters: PoliciesApiDeletePolicyRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).deletePolicy(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    public evaluatePolicyV2(requestParameters: PoliciesApiEvaluatePolicyV2Request, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).evaluatePolicyV2(requestParameters.evaluatePolicyV2Request, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @summary Disable a policy object.
-     * @param {PoliciesApiDisablePolicyRequest} requestParameters Request parameters.
+     * Retrieves the details of a policy that has previously been created.
+     * @summary Get a policy.
+     * @param {PoliciesApiGetPolicyV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public disablePolicy(requestParameters: PoliciesApiDisablePolicyRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).disablePolicy(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    public getPolicyV2(requestParameters: PoliciesApiGetPolicyV2Request, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).getPolicyV2(requestParameters.policyId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @summary Enable a policy object.
-     * @param {PoliciesApiEnablePolicyRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PoliciesApi
-     */
-    public enablePolicy(requestParameters: PoliciesApiEnablePolicyRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).enablePolicy(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Returns a list of Policies.  Returns the latest 10 transaction intents for each policy.
+     * Returns a list of policies.
      * @summary List policies.
-     * @param {PoliciesApiGetPoliciesRequest} requestParameters Request parameters.
+     * @param {PoliciesApiListPoliciesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public getPolicies(requestParameters: PoliciesApiGetPoliciesRequest = {}, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicies(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.expand, requestParameters.name, requestParameters.deleted, requestParameters.chainId, requestParameters.enabled, options).then((request) => request(this.axios, this.basePath));
+    public listPolicies(requestParameters: PoliciesApiListPoliciesRequest = {}, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).listPolicies(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.scope, requestParameters.enabled, requestParameters.accountId, requestParameters.operation, requestParameters.operationNotIn, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * Retrieves the details of a Policy that has previously been created.  Returns the latest 10 transaction intents that used this policy.
-     * @summary Get a policy object.
-     * @param {PoliciesApiGetPolicyRequest} requestParameters Request parameters.
+     * Updates an existing policy.
+     * @summary Update a policy.
+     * @param {PoliciesApiUpdatePolicyV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PoliciesApi
      */
-    public getPolicy(requestParameters: PoliciesApiGetPolicyRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicy(requestParameters.id, requestParameters.expand, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Get the amount of ERC-20 tokens collected by policy.  When using a policy that includes payment of gas in ERC-20 tokens, this endpoint returns the amount of tokens paid for gas. This is specific to a policy that doesn\'t use your own deposited tokens in the paymaster.
-     * @summary Get amount of tokens paid for gas policy.
-     * @param {PoliciesApiGetPolicyBalanceRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PoliciesApi
-     */
-    public getPolicyBalance(requestParameters: PoliciesApiGetPolicyBalanceRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyBalance(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary List transaction intents of a policy report.
-     * @param {PoliciesApiGetPolicyReportTransactionIntentsRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PoliciesApi
-     */
-    public getPolicyReportTransactionIntents(requestParameters: PoliciesApiGetPolicyReportTransactionIntentsRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyReportTransactionIntents(requestParameters.id, requestParameters.to, requestParameters.from, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary List all gas reports of a policy.
-     * @param {PoliciesApiGetPolicyTotalGasUsageRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PoliciesApi
-     */
-    public getPolicyTotalGasUsage(requestParameters: PoliciesApiGetPolicyTotalGasUsageRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).getPolicyTotalGasUsage(requestParameters.id, requestParameters.limit, requestParameters.skip, requestParameters.order, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Update a policy object.
-     * @param {PoliciesApiUpdatePolicyRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PoliciesApi
-     */
-    public updatePolicy(requestParameters: PoliciesApiUpdatePolicyRequest, options?: AxiosRequestConfig) {
-        return PoliciesApiFp(this.configuration).updatePolicy(requestParameters.id, requestParameters.updatePolicyRequest, options).then((request) => request(this.axios, this.basePath));
+    public updatePolicyV2(requestParameters: PoliciesApiUpdatePolicyV2Request, options?: AxiosRequestConfig) {
+        return PoliciesApiFp(this.configuration).updatePolicyV2(requestParameters.policyId, requestParameters.updatePolicyV2Request, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
+/**
+ * @export
+ */
+export const ListPoliciesScopeEnum = {
+    Project: 'project',
+    Account: 'account',
+    Transaction: 'transaction'
+} as const;
+export type ListPoliciesScopeEnum = typeof ListPoliciesScopeEnum[keyof typeof ListPoliciesScopeEnum];
