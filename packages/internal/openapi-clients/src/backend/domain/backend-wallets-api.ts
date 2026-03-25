@@ -304,7 +304,7 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             };
         },
         /**
-         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.
+         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.  Requires an AAL2 session (MFA step-up). Users must enroll MFA and complete step-up authentication before calling this endpoint.
          * @summary Rotate wallet secret.
          * @param {RotateWalletSecretRequest} rotateWalletSecretRequest 
          * @param {*} [options] Override http request option.
@@ -469,7 +469,7 @@ export const BackendWalletsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.
+         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.  Requires an AAL2 session (MFA step-up). Users must enroll MFA and complete step-up authentication before calling this endpoint.
          * @summary Rotate wallet secret.
          * @param {RotateWalletSecretRequest} rotateWalletSecretRequest 
          * @param {*} [options] Override http request option.
@@ -562,7 +562,7 @@ export const BackendWalletsApiFactory = function (configuration?: Configuration,
             return localVarFp.revokeWalletSecret(requestParameters.revokeWalletSecretRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.
+         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.  Requires an AAL2 session (MFA step-up). Users must enroll MFA and complete step-up authentication before calling this endpoint.
          * @summary Rotate wallet secret.
          * @param {BackendWalletsApiRotateWalletSecretRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -790,7 +790,7 @@ export class BackendWalletsApi extends BaseAPI {
     }
 
     /**
-     * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.
+     * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.  Requires an AAL2 session (MFA step-up). Users must enroll MFA and complete step-up authentication before calling this endpoint.
      * @summary Rotate wallet secret.
      * @param {BackendWalletsApiRotateWalletSecretRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.

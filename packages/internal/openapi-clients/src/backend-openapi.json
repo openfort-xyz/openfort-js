@@ -8552,9 +8552,12 @@
           },
           "401": {
             "description": "Unauthorized."
+          },
+          "403": {
+            "description": "MFA required."
           }
         },
-        "description": "Rotate wallet secret (authentication key).\n\nReplaces the current wallet secret (ECDSA P-256 public key) used for\nX-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\"\nand immediately becomes unusable (no grace period).\n\nUses provided-key authentication: the request must include a walletAuthToken\nJWT signed by the private key corresponding to the NEW publicKey being registered.\nThis proves possession of the new private key without transmitting it.",
+        "description": "Rotate wallet secret (authentication key).\n\nReplaces the current wallet secret (ECDSA P-256 public key) used for\nX-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\"\nand immediately becomes unusable (no grace period).\n\nUses provided-key authentication: the request must include a walletAuthToken\nJWT signed by the private key corresponding to the NEW publicKey being registered.\nThis proves possession of the new private key without transmitting it.\n\nRequires an AAL2 session (MFA step-up). Users must enroll MFA and\ncomplete step-up authentication before calling this endpoint.",
         "summary": "Rotate wallet secret.",
         "tags": [
           "Backend Wallets"
@@ -28375,6 +28378,47 @@
         },
         "required": [
           "allowedOrigins"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MfaEmailChallengeResponse": {
+        "properties": {
+          "sent": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "sent"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MfaEmailVerifyResponse": {
+        "properties": {
+          "verified": {
+            "type": "boolean"
+          },
+          "factorsRemoved": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "verified",
+          "factorsRemoved"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MfaEmailVerifyRequest": {
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
         ],
         "type": "object",
         "additionalProperties": false

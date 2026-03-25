@@ -336,6 +336,9 @@ models/logout-request.ts
 models/loot-locker-oauth-config.ts
 models/mapping-strategy.ts
 models/message-bird-sms-provider-config.ts
+models/mfa-email-challenge-response.ts
+models/mfa-email-verify-request.ts
+models/mfa-email-verify-response.ts
 models/mint-address-criterion-operator.ts
 models/mint-address-criterion-request.ts
 models/mint-address-criterion.ts
