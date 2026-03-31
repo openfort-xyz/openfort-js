@@ -30,6 +30,8 @@ import { CreateAccountRequestV2 } from '../models';
 // @ts-ignore
 import { DeleteAccountResponse } from '../models';
 // @ts-ignore
+import { ExportShareResponse } from '../models';
+// @ts-ignore
 import { PrismaSortOrder } from '../models';
 // @ts-ignore
 import { SignerIdResponse } from '../models';
@@ -82,6 +84,44 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
+         * Exports the primary share for an account, including all data needed to import it on another instance.
+         * @summary Export account share.
+         * @param {string} accountUuid 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        exportAccountShare: async (accountUuid: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'accountUuid' is not null or undefined
+            assertParamExists('exportAccountShare', 'accountUuid', accountUuid)
+            const localVarPath = `/v2/accounts/{accountUuid}/export-share`
+                .replace(`{${"accountUuid"}}`, encodeURIComponent(String(accountUuid)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Retrieves the details of an existing account.  Supply the unique account ID and Openfort will return the corresponding account information.
          * @summary Get existing account.
          * @param {string} id 
@@ -104,7 +144,23 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication auth_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -147,7 +203,23 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication auth_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -220,7 +292,23 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication auth_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -266,6 +354,10 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -299,7 +391,19 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication auth_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -336,6 +440,17 @@ export const AccsV2ApiFp = function(configuration?: Configuration) {
          */
         async createAccountV2(createAccountRequestV2: CreateAccountRequestV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountV2Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAccountV2(createAccountRequestV2, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Exports the primary share for an account, including all data needed to import it on another instance.
+         * @summary Export account share.
+         * @param {string} accountUuid 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async exportAccountShare(accountUuid: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExportShareResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.exportAccountShare(accountUuid, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -422,6 +537,16 @@ export const AccsV2ApiFactory = function (configuration?: Configuration, basePat
             return localVarFp.createAccountV2(requestParameters.createAccountRequestV2, options).then((request) => request(axios, basePath));
         },
         /**
+         * Exports the primary share for an account, including all data needed to import it on another instance.
+         * @summary Export account share.
+         * @param {AccsV2ApiExportAccountShareRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        exportAccountShare(requestParameters: AccsV2ApiExportAccountShareRequest, options?: AxiosRequestConfig): AxiosPromise<ExportShareResponse> {
+            return localVarFp.exportAccountShare(requestParameters.accountUuid, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves the details of an existing account.  Supply the unique account ID and Openfort will return the corresponding account information.
          * @summary Get existing account.
          * @param {AccsV2ApiGetAccountV2Request} requestParameters Request parameters.
@@ -486,6 +611,20 @@ export interface AccsV2ApiCreateAccountV2Request {
      * @memberof AccsV2ApiCreateAccountV2
      */
     readonly createAccountRequestV2: CreateAccountRequestV2
+}
+
+/**
+ * Request parameters for exportAccountShare operation in AccsV2Api.
+ * @export
+ * @interface AccsV2ApiExportAccountShareRequest
+ */
+export interface AccsV2ApiExportAccountShareRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof AccsV2ApiExportAccountShare
+     */
+    readonly accountUuid: string
 }
 
 /**
@@ -631,6 +770,18 @@ export class AccsV2Api extends BaseAPI {
      */
     public createAccountV2(requestParameters: AccsV2ApiCreateAccountV2Request, options?: AxiosRequestConfig) {
         return AccsV2ApiFp(this.configuration).createAccountV2(requestParameters.createAccountRequestV2, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Exports the primary share for an account, including all data needed to import it on another instance.
+     * @summary Export account share.
+     * @param {AccsV2ApiExportAccountShareRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccsV2Api
+     */
+    public exportAccountShare(requestParameters: AccsV2ApiExportAccountShareRequest, options?: AxiosRequestConfig) {
+        return AccsV2ApiFp(this.configuration).exportAccountShare(requestParameters.accountUuid, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

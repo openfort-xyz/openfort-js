@@ -21,7 +21,7 @@
  */
 
 export const ThirdPartyOAuthProviderFIREBASE = {
-    Firebase: 'firebase'
+    FIREBASE: 'firebase'
 } as const;
 
 export type ThirdPartyOAuthProviderFIREBASE = typeof ThirdPartyOAuthProviderFIREBASE[keyof typeof ThirdPartyOAuthProviderFIREBASE];

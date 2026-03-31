@@ -21,11 +21,11 @@
  */
 
 export const ApiKeyType = {
-    Pk: 'pk',
-    Sk: 'sk',
-    PkShield: 'pk_shield',
-    SkShield: 'sk_shield',
-    PkWallet: 'pk_wallet'
+    PUBLIC_KEY: 'pk',
+    SECRET_KEY: 'sk',
+    PUBLIC_KEY_SHIELD: 'pk_shield',
+    SECRET_KEY_SHIELD: 'sk_shield',
+    BACKEND_WALLET_PUBLIC_KEY: 'pk_wallet'
 } as const;
 
 export type ApiKeyType = typeof ApiKeyType[keyof typeof ApiKeyType];

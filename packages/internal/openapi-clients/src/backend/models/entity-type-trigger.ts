@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeTRIGGER = {
-    Trigger: 'trigger'
+    TRIGGER: 'trigger'
 } as const;
 
 export type EntityTypeTRIGGER = typeof EntityTypeTRIGGER[keyof typeof EntityTypeTRIGGER];

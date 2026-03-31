@@ -21,7 +21,7 @@
  */
 
 export const OAuthProviderTWITTER = {
-    Twitter: 'twitter'
+    TWITTER: 'twitter'
 } as const;
 
 export type OAuthProviderTWITTER = typeof OAuthProviderTWITTER[keyof typeof OAuthProviderTWITTER];

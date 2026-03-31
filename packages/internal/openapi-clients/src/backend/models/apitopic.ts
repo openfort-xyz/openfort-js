@@ -21,14 +21,18 @@
  */
 
 export const APITopic = {
-    TransactionIntentBroadcast: 'transaction_intent.broadcast',
-    TransactionIntentSuccessful: 'transaction_intent.successful',
-    TransactionIntentCancelled: 'transaction_intent.cancelled',
-    TransactionIntentFailed: 'transaction_intent.failed',
-    BalanceProject: 'balance.project',
-    BalanceContract: 'balance.contract',
-    BalanceDevAccount: 'balance.dev_account',
-    Test: 'test'
+    TRANSACTION_BROADCAST: 'transaction_intent.broadcast',
+    TRANSACTION_SUCCESSFUL: 'transaction_intent.successful',
+    TRANSACTION_CANCELLED: 'transaction_intent.cancelled',
+    TRANSACTION_FAILED: 'transaction_intent.failed',
+    BALANCE_PROJECT: 'balance.project',
+    BALANCE_CONTRACT: 'balance.contract',
+    BALANCE_DEV_ACCOUNT: 'balance.dev_account',
+    TEST: 'test',
+    USER_CREATED: 'user.created',
+    USER_UPDATED: 'user.updated',
+    USER_DELETED: 'user.deleted',
+    ACCOUNT_CREATED: 'account.created'
 } as const;
 
 export type APITopic = typeof APITopic[keyof typeof APITopic];

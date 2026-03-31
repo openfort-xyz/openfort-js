@@ -21,7 +21,7 @@
  */
 
 export const OAuthProviderEPICGAMES = {
-    EpicGames: 'epic_games'
+    EPIC_GAMES: 'epic_games'
 } as const;
 
 export type OAuthProviderEPICGAMES = typeof OAuthProviderEPICGAMES[keyof typeof OAuthProviderEPICGAMES];

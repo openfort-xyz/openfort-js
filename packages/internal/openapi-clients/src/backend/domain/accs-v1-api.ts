@@ -28,119 +28,15 @@ import { AccountResponse } from '../models';
 // @ts-ignore
 import { AccountResponseExpandable } from '../models';
 // @ts-ignore
-import { CancelTransferOwnershipRequest } from '../models';
-// @ts-ignore
-import { CompleteRecoveryRequest } from '../models';
-// @ts-ignore
 import { CreateAccountRequest } from '../models';
 // @ts-ignore
-import { DeployRequest } from '../models';
-// @ts-ignore
 import { PrismaSortOrder } from '../models';
-// @ts-ignore
-import { SignPayloadRequest } from '../models';
-// @ts-ignore
-import { SignPayloadResponse } from '../models';
-// @ts-ignore
-import { StartRecoveryRequest } from '../models';
-// @ts-ignore
-import { TransactionIntentResponse } from '../models';
-// @ts-ignore
-import { TransferOwnershipRequest } from '../models';
 /**
  * AccsV1Api - axios parameter creator
  * @export
  */
 export const AccsV1ApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * Cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cancelTransferOwnership: async (id: string, cancelTransferOwnershipRequest: CancelTransferOwnershipRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('cancelTransferOwnership', 'id', id)
-            // verify required parameter 'cancelTransferOwnershipRequest' is not null or undefined
-            assertParamExists('cancelTransferOwnership', 'cancelTransferOwnershipRequest', cancelTransferOwnershipRequest)
-            const localVarPath = `/v1/accounts/{id}/cancel_transfer_ownership`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(cancelTransferOwnershipRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Complete a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {CompleteRecoveryRequest} completeRecoveryRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        completeRecovery: async (id: string, completeRecoveryRequest: CompleteRecoveryRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('completeRecovery', 'id', id)
-            // verify required parameter 'completeRecoveryRequest' is not null or undefined
-            assertParamExists('completeRecovery', 'completeRecoveryRequest', completeRecoveryRequest)
-            const localVarPath = `/v1/accounts/{id}/complete_recovery`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(completeRecoveryRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.  Account creation does not consume any gas. All accounts of a player will use the same address across blockchains.  Each player can only have one account per chain.
          * @summary Create an account object.
@@ -163,7 +59,23 @@ export const AccsV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication auth_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -175,50 +87,6 @@ export const AccsV1ApiAxiosParamCreator = function (configuration?: Configuratio
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createAccountRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
-         * @summary Deploy an account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {DeployRequest} deployRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        deployAccount: async (id: string, deployRequest: DeployRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deployAccount', 'id', id)
-            // verify required parameter 'deployRequest' is not null or undefined
-            assertParamExists('deployAccount', 'deployRequest', deployRequest)
-            const localVarPath = `/v1/accounts/{id}/deploy`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(deployRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -248,7 +116,23 @@ export const AccsV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication auth_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -288,6 +172,10 @@ export const AccsV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarQueryParameter = {} as any;
 
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -332,7 +220,23 @@ export const AccsV1ApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication pk_third_party required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication auth_token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication pk_access_token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -375,176 +279,6 @@ export const AccsV1ApiAxiosParamCreator = function (configuration?: Configuratio
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {TransferOwnershipRequest} transferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        requestTransferOwnership: async (id: string, transferOwnershipRequest: TransferOwnershipRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('requestTransferOwnership', 'id', id)
-            // verify required parameter 'transferOwnershipRequest' is not null or undefined
-            assertParamExists('requestTransferOwnership', 'transferOwnershipRequest', transferOwnershipRequest)
-            const localVarPath = `/v1/accounts/{id}/request_transfer_ownership`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(transferOwnershipRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * **Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
-         * @summary Sign a given payload
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {SignPayloadRequest} signPayloadRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        signPayload: async (id: string, signPayloadRequest: SignPayloadRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('signPayload', 'id', id)
-            // verify required parameter 'signPayloadRequest' is not null or undefined
-            assertParamExists('signPayload', 'signPayloadRequest', signPayloadRequest)
-            const localVarPath = `/v1/accounts/{id}/sign_payload`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(signPayloadRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Start a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {StartRecoveryRequest} startRecoveryRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        startRecovery: async (id: string, startRecoveryRequest: StartRecoveryRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('startRecovery', 'id', id)
-            // verify required parameter 'startRecoveryRequest' is not null or undefined
-            assertParamExists('startRecovery', 'startRecoveryRequest', startRecoveryRequest)
-            const localVarPath = `/v1/accounts/{id}/start_recovery`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(startRecoveryRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
-         * @summary Sync account state with the blockchain
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        syncAccount: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('syncAccount', 'id', id)
-            const localVarPath = `/v1/accounts/{id}/sync`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -556,30 +290,6 @@ export const AccsV1ApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AccsV1ApiAxiosParamCreator(configuration)
     return {
         /**
-         * Cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {CancelTransferOwnershipRequest} cancelTransferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async cancelTransferOwnership(id: string, cancelTransferOwnershipRequest: CancelTransferOwnershipRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.cancelTransferOwnership(id, cancelTransferOwnershipRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Complete a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {CompleteRecoveryRequest} completeRecoveryRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async completeRecovery(id: string, completeRecoveryRequest: CompleteRecoveryRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.completeRecovery(id, completeRecoveryRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.  Account creation does not consume any gas. All accounts of a player will use the same address across blockchains.  Each player can only have one account per chain.
          * @summary Create an account object.
          * @param {CreateAccountRequest} createAccountRequest 
@@ -588,18 +298,6 @@ export const AccsV1ApiFp = function(configuration?: Configuration) {
          */
         async createAccount(createAccountRequest: CreateAccountRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAccount(createAccountRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
-         * @summary Deploy an account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {DeployRequest} deployRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async deployAccount(id: string, deployRequest: DeployRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deployAccount(id, deployRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -642,53 +340,6 @@ export const AccsV1ApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccounts(limit, skip, order, chainId, player, address, expand, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
-        /**
-         * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {TransferOwnershipRequest} transferOwnershipRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async requestTransferOwnership(id: string, transferOwnershipRequest: TransferOwnershipRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.requestTransferOwnership(id, transferOwnershipRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * **Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
-         * @summary Sign a given payload
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {SignPayloadRequest} signPayloadRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async signPayload(id: string, signPayloadRequest: SignPayloadRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SignPayloadResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.signPayload(id, signPayloadRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Start a recovery process of a recoverable account.
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {StartRecoveryRequest} startRecoveryRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async startRecovery(id: string, startRecoveryRequest: StartRecoveryRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionIntentResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.startRecovery(id, startRecoveryRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
-         * @summary Sync account state with the blockchain
-         * @param {string} id Specifies the unique account ID (starts with acc_).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async syncAccount(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccountResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.syncAccount(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
     }
 };
 
@@ -700,26 +351,6 @@ export const AccsV1ApiFactory = function (configuration?: Configuration, basePat
     const localVarFp = AccsV1ApiFp(configuration)
     return {
         /**
-         * Cancel a pending transfer of ownership.
-         * @summary Cancel request to transfer ownership of an account.
-         * @param {AccsV1ApiCancelTransferOwnershipRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cancelTransferOwnership(requestParameters: AccsV1ApiCancelTransferOwnershipRequest, options?: AxiosRequestConfig): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.cancelTransferOwnership(requestParameters.id, requestParameters.cancelTransferOwnershipRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Complete a recovery process of a recoverable account.
-         * @param {AccsV1ApiCompleteRecoveryRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        completeRecovery(requestParameters: AccsV1ApiCompleteRecoveryRequest, options?: AxiosRequestConfig): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.completeRecovery(requestParameters.id, requestParameters.completeRecoveryRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
          * Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.  Account creation does not consume any gas. All accounts of a player will use the same address across blockchains.  Each player can only have one account per chain.
          * @summary Create an account object.
          * @param {AccsV1ApiCreateAccountRequest} requestParameters Request parameters.
@@ -728,16 +359,6 @@ export const AccsV1ApiFactory = function (configuration?: Configuration, basePat
          */
         createAccount(requestParameters: AccsV1ApiCreateAccountRequest, options?: AxiosRequestConfig): AxiosPromise<AccountResponse> {
             return localVarFp.createAccount(requestParameters.createAccountRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
-         * @summary Deploy an account.
-         * @param {AccsV1ApiDeployAccountRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        deployAccount(requestParameters: AccsV1ApiDeployAccountRequest, options?: AxiosRequestConfig): AxiosPromise<AccountResponse> {
-            return localVarFp.deployAccount(requestParameters.id, requestParameters.deployRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Disables an account.  Accounts won\'t be shown for user and won\'t be accessible for transactions.
@@ -769,90 +390,8 @@ export const AccsV1ApiFactory = function (configuration?: Configuration, basePat
         getAccounts(requestParameters: AccsV1ApiGetAccountsRequest = {}, options?: AxiosRequestConfig): AxiosPromise<AccountListResponse> {
             return localVarFp.getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(axios, basePath));
         },
-        /**
-         * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-         * @summary Request transfer ownership of account.
-         * @param {AccsV1ApiRequestTransferOwnershipRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        requestTransferOwnership(requestParameters: AccsV1ApiRequestTransferOwnershipRequest, options?: AxiosRequestConfig): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.requestTransferOwnership(requestParameters.id, requestParameters.transferOwnershipRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * **Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
-         * @summary Sign a given payload
-         * @param {AccsV1ApiSignPayloadRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        signPayload(requestParameters: AccsV1ApiSignPayloadRequest, options?: AxiosRequestConfig): AxiosPromise<SignPayloadResponse> {
-            return localVarFp.signPayload(requestParameters.id, requestParameters.signPayloadRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Start a recovery process of a recoverable account.
-         * @param {AccsV1ApiStartRecoveryRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        startRecovery(requestParameters: AccsV1ApiStartRecoveryRequest, options?: AxiosRequestConfig): AxiosPromise<TransactionIntentResponse> {
-            return localVarFp.startRecovery(requestParameters.id, requestParameters.startRecoveryRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
-         * @summary Sync account state with the blockchain
-         * @param {AccsV1ApiSyncAccountRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        syncAccount(requestParameters: AccsV1ApiSyncAccountRequest, options?: AxiosRequestConfig): AxiosPromise<AccountResponse> {
-            return localVarFp.syncAccount(requestParameters.id, options).then((request) => request(axios, basePath));
-        },
     };
 };
-
-/**
- * Request parameters for cancelTransferOwnership operation in AccsV1Api.
- * @export
- * @interface AccsV1ApiCancelTransferOwnershipRequest
- */
-export interface AccsV1ApiCancelTransferOwnershipRequest {
-    /**
-     * Specifies the unique account ID (starts with acc_).
-     * @type {string}
-     * @memberof AccsV1ApiCancelTransferOwnership
-     */
-    readonly id: string
-
-    /**
-     * 
-     * @type {CancelTransferOwnershipRequest}
-     * @memberof AccsV1ApiCancelTransferOwnership
-     */
-    readonly cancelTransferOwnershipRequest: CancelTransferOwnershipRequest
-}
-
-/**
- * Request parameters for completeRecovery operation in AccsV1Api.
- * @export
- * @interface AccsV1ApiCompleteRecoveryRequest
- */
-export interface AccsV1ApiCompleteRecoveryRequest {
-    /**
-     * Specifies the unique account ID (starts with acc_).
-     * @type {string}
-     * @memberof AccsV1ApiCompleteRecovery
-     */
-    readonly id: string
-
-    /**
-     * 
-     * @type {CompleteRecoveryRequest}
-     * @memberof AccsV1ApiCompleteRecovery
-     */
-    readonly completeRecoveryRequest: CompleteRecoveryRequest
-}
 
 /**
  * Request parameters for createAccount operation in AccsV1Api.
@@ -866,27 +405,6 @@ export interface AccsV1ApiCreateAccountRequest {
      * @memberof AccsV1ApiCreateAccount
      */
     readonly createAccountRequest: CreateAccountRequest
-}
-
-/**
- * Request parameters for deployAccount operation in AccsV1Api.
- * @export
- * @interface AccsV1ApiDeployAccountRequest
- */
-export interface AccsV1ApiDeployAccountRequest {
-    /**
-     * Specifies the unique account ID (starts with acc_).
-     * @type {string}
-     * @memberof AccsV1ApiDeployAccount
-     */
-    readonly id: string
-
-    /**
-     * 
-     * @type {DeployRequest}
-     * @memberof AccsV1ApiDeployAccount
-     */
-    readonly deployRequest: DeployRequest
 }
 
 /**
@@ -981,113 +499,12 @@ export interface AccsV1ApiGetAccountsRequest {
 }
 
 /**
- * Request parameters for requestTransferOwnership operation in AccsV1Api.
- * @export
- * @interface AccsV1ApiRequestTransferOwnershipRequest
- */
-export interface AccsV1ApiRequestTransferOwnershipRequest {
-    /**
-     * Specifies the unique account ID (starts with acc_).
-     * @type {string}
-     * @memberof AccsV1ApiRequestTransferOwnership
-     */
-    readonly id: string
-
-    /**
-     * 
-     * @type {TransferOwnershipRequest}
-     * @memberof AccsV1ApiRequestTransferOwnership
-     */
-    readonly transferOwnershipRequest: TransferOwnershipRequest
-}
-
-/**
- * Request parameters for signPayload operation in AccsV1Api.
- * @export
- * @interface AccsV1ApiSignPayloadRequest
- */
-export interface AccsV1ApiSignPayloadRequest {
-    /**
-     * Specifies the unique account ID (starts with acc_).
-     * @type {string}
-     * @memberof AccsV1ApiSignPayload
-     */
-    readonly id: string
-
-    /**
-     * 
-     * @type {SignPayloadRequest}
-     * @memberof AccsV1ApiSignPayload
-     */
-    readonly signPayloadRequest: SignPayloadRequest
-}
-
-/**
- * Request parameters for startRecovery operation in AccsV1Api.
- * @export
- * @interface AccsV1ApiStartRecoveryRequest
- */
-export interface AccsV1ApiStartRecoveryRequest {
-    /**
-     * Specifies the unique account ID (starts with acc_).
-     * @type {string}
-     * @memberof AccsV1ApiStartRecovery
-     */
-    readonly id: string
-
-    /**
-     * 
-     * @type {StartRecoveryRequest}
-     * @memberof AccsV1ApiStartRecovery
-     */
-    readonly startRecoveryRequest: StartRecoveryRequest
-}
-
-/**
- * Request parameters for syncAccount operation in AccsV1Api.
- * @export
- * @interface AccsV1ApiSyncAccountRequest
- */
-export interface AccsV1ApiSyncAccountRequest {
-    /**
-     * Specifies the unique account ID (starts with acc_).
-     * @type {string}
-     * @memberof AccsV1ApiSyncAccount
-     */
-    readonly id: string
-}
-
-/**
  * AccsV1Api - object-oriented interface
  * @export
  * @class AccsV1Api
  * @extends {BaseAPI}
  */
 export class AccsV1Api extends BaseAPI {
-    /**
-     * Cancel a pending transfer of ownership.
-     * @summary Cancel request to transfer ownership of an account.
-     * @param {AccsV1ApiCancelTransferOwnershipRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccsV1Api
-     */
-    public cancelTransferOwnership(requestParameters: AccsV1ApiCancelTransferOwnershipRequest, options?: AxiosRequestConfig) {
-        return AccsV1ApiFp(this.configuration).cancelTransferOwnership(requestParameters.id, requestParameters.cancelTransferOwnershipRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Complete a recovery process of a recoverable account.
-     * @param {AccsV1ApiCompleteRecoveryRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccsV1Api
-     */
-    public completeRecovery(requestParameters: AccsV1ApiCompleteRecoveryRequest, options?: AxiosRequestConfig) {
-        return AccsV1ApiFp(this.configuration).completeRecovery(requestParameters.id, requestParameters.completeRecoveryRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      * Creates a new blockchain account for the provided player. If not player is provided, a new one will be created.  Account creation does not consume any gas. All accounts of a player will use the same address across blockchains.  Each player can only have one account per chain.
      * @summary Create an account object.
@@ -1098,18 +515,6 @@ export class AccsV1Api extends BaseAPI {
      */
     public createAccount(requestParameters: AccsV1ApiCreateAccountRequest, options?: AxiosRequestConfig) {
         return AccsV1ApiFp(this.configuration).createAccount(requestParameters.createAccountRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * This endpoint can be used to deploy a smart contract account that was counterfactually generated.
-     * @summary Deploy an account.
-     * @param {AccsV1ApiDeployAccountRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccsV1Api
-     */
-    public deployAccount(requestParameters: AccsV1ApiDeployAccountRequest, options?: AxiosRequestConfig) {
-        return AccsV1ApiFp(this.configuration).deployAccount(requestParameters.id, requestParameters.deployRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1146,54 +551,6 @@ export class AccsV1Api extends BaseAPI {
      */
     public getAccounts(requestParameters: AccsV1ApiGetAccountsRequest = {}, options?: AxiosRequestConfig) {
         return AccsV1ApiFp(this.configuration).getAccounts(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.chainId, requestParameters.player, requestParameters.address, requestParameters.expand, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Perform a request to change the owner of an account.  To perform an update on the owner of an account, first you must provide a new owner address. Once requested, the owner must accept to take ownership by calling `acceptOwnership()` in the smart contract account.
-     * @summary Request transfer ownership of account.
-     * @param {AccsV1ApiRequestTransferOwnershipRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccsV1Api
-     */
-    public requestTransferOwnership(requestParameters: AccsV1ApiRequestTransferOwnershipRequest, options?: AxiosRequestConfig) {
-        return AccsV1ApiFp(this.configuration).requestTransferOwnership(requestParameters.id, requestParameters.transferOwnershipRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * **Custodial Accounts only** - Signs the typed repositories value with types repositories structure for domain using the [EIP-712](https://eips.ethereum.org/EIPS/eip-712) specification.
-     * @summary Sign a given payload
-     * @param {AccsV1ApiSignPayloadRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccsV1Api
-     */
-    public signPayload(requestParameters: AccsV1ApiSignPayloadRequest, options?: AxiosRequestConfig) {
-        return AccsV1ApiFp(this.configuration).signPayload(requestParameters.id, requestParameters.signPayloadRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Start a recovery process of a recoverable account.
-     * @param {AccsV1ApiStartRecoveryRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccsV1Api
-     */
-    public startRecovery(requestParameters: AccsV1ApiStartRecoveryRequest, options?: AxiosRequestConfig) {
-        return AccsV1ApiFp(this.configuration).startRecovery(requestParameters.id, requestParameters.startRecoveryRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Synchronize the account state with the blockchain. Specifically, it updates the account owner and whether its deployed or not.
-     * @summary Sync account state with the blockchain
-     * @param {AccsV1ApiSyncAccountRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AccsV1Api
-     */
-    public syncAccount(requestParameters: AccsV1ApiSyncAccountRequest, options?: AxiosRequestConfig) {
-        return AccsV1ApiFp(this.configuration).syncAccount(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

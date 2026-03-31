@@ -32,12 +32,6 @@ export interface CreateBackendWalletRequest {
      * @memberof CreateBackendWalletRequest
      */
     'wallet'?: string;
-    /**
-     * Optional name for the wallet.
-     * @type {string}
-     * @memberof CreateBackendWalletRequest
-     */
-    'name'?: string;
 }
 
 export const CreateBackendWalletRequestChainTypeEnum = {

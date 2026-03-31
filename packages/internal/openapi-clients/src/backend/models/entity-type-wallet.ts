@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeWALLET = {
-    Wallet: 'wallet'
+    WALLET: 'wallet'
 } as const;
 
 export type EntityTypeWALLET = typeof EntityTypeWALLET[keyof typeof EntityTypeWALLET];

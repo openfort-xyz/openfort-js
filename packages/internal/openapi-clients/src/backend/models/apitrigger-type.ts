@@ -21,8 +21,8 @@
  */
 
 export const APITriggerType = {
-    Webhook: 'webhook',
-    Email: 'email'
+    WEBHOOK: 'webhook',
+    EMAIL: 'email'
 } as const;
 
 export type APITriggerType = typeof APITriggerType[keyof typeof APITriggerType];

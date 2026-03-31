@@ -1,5 +1,5 @@
-import {
-  type ChangeEmailPost200Response,
+import type {
+  ChangeEmailPost200Response,
   ListAccountsGet200ResponseInner,
 } from '@openfort/openapi-clients/dist/backend'
 import type { PasskeyDetails } from 'wallets/types'
@@ -349,7 +349,7 @@ export interface EstimateTransactionIntentGasResult {
 
 type PlayerMetadataValue = unknown
 
-export { ListAccountsGet200ResponseInner as UserAccount }
+export type { ListAccountsGet200ResponseInner as UserAccount }
 
 /**
  * User profile information

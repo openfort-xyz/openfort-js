@@ -35,6 +35,12 @@ export interface CreateProjectRequest {
      * @memberof CreateProjectRequest
      */
     'pkPolicy'?: PrivateKeyPolicy;
+    /**
+     * Whether to create API keys for the project.
+     * @type {boolean}
+     * @memberof CreateProjectRequest
+     */
+    'createApiKey'?: boolean;
 }
 
 

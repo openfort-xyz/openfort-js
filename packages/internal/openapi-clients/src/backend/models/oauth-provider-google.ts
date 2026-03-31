@@ -21,7 +21,7 @@
  */
 
 export const OAuthProviderGOOGLE = {
-    Google: 'google'
+    GOOGLE: 'google'
 } as const;
 
 export type OAuthProviderGOOGLE = typeof OAuthProviderGOOGLE[keyof typeof OAuthProviderGOOGLE];

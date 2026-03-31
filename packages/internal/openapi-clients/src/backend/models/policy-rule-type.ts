@@ -21,9 +21,9 @@
  */
 
 export const PolicyRuleType = {
-    ContractFunctions: 'contract_functions',
-    AccountFunctions: 'account_functions',
-    RateLimit: 'rate_limit'
+    CONTRACT: 'contract_functions',
+    ACCOUNT: 'account_functions',
+    RATE_LIMIT: 'rate_limit'
 } as const;
 
 export type PolicyRuleType = typeof PolicyRuleType[keyof typeof PolicyRuleType];

@@ -36,10 +36,6 @@ import { AuthSessionResponse } from '../models';
 // @ts-ignore
 import { AuthenticateOAuthRequest } from '../models';
 // @ts-ignore
-import { Authorize200Response } from '../models';
-// @ts-ignore
-import { AuthorizePlayerRequest } from '../models';
-// @ts-ignore
 import { CreateAuthPlayerRequest } from '../models';
 // @ts-ignore
 import { GrantCallbackRequest } from '../models';
@@ -59,45 +55,6 @@ import { PrismaSortOrder } from '../models';
  */
 export const AdminAuthenticationApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * 
-         * @param {AuthorizePlayerRequest} authorizePlayerRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        authorize: async (authorizePlayerRequest: AuthorizePlayerRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'authorizePlayerRequest' is not null or undefined
-            assertParamExists('authorize', 'authorizePlayerRequest', authorizePlayerRequest)
-            const localVarPath = `/iam/v1/authorize`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(authorizePlayerRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * 
          * @summary oauth callback.
@@ -172,6 +129,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -209,6 +170,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             const localVarQueryParameter = {} as any;
 
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -253,6 +218,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -294,6 +263,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -330,6 +303,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             const localVarQueryParameter = {} as any;
 
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -416,6 +393,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -452,6 +433,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             const localVarQueryParameter = {} as any;
 
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -511,6 +496,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             const localVarQueryParameter = {} as any;
 
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -589,6 +578,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
@@ -629,6 +622,10 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
             const localVarQueryParameter = {} as any;
 
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
@@ -734,16 +731,6 @@ export const AdminAuthenticationApiAxiosParamCreator = function (configuration?:
 export const AdminAuthenticationApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AdminAuthenticationApiAxiosParamCreator(configuration)
     return {
-        /**
-         * 
-         * @param {AuthorizePlayerRequest} authorizePlayerRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async authorize(authorizePlayerRequest: AuthorizePlayerRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Authorize200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.authorize(authorizePlayerRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
         /**
          * 
          * @summary oauth callback.
@@ -933,15 +920,6 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
     return {
         /**
          * 
-         * @param {AdminAuthenticationApiAuthorizeRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        authorize(requestParameters: AdminAuthenticationApiAuthorizeRequest, options?: AxiosRequestConfig): AxiosPromise<Authorize200Response> {
-            return localVarFp.authorize(requestParameters.authorizePlayerRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary oauth callback.
          * @param {AdminAuthenticationApiCallbackOAuthRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -1096,20 +1074,6 @@ export const AdminAuthenticationApiFactory = function (configuration?: Configura
         },
     };
 };
-
-/**
- * Request parameters for authorize operation in AdminAuthenticationApi.
- * @export
- * @interface AdminAuthenticationApiAuthorizeRequest
- */
-export interface AdminAuthenticationApiAuthorizeRequest {
-    /**
-     * 
-     * @type {AuthorizePlayerRequest}
-     * @memberof AdminAuthenticationApiAuthorize
-     */
-    readonly authorizePlayerRequest: AuthorizePlayerRequest
-}
 
 /**
  * Request parameters for callbackOAuth operation in AdminAuthenticationApi.
@@ -1370,17 +1334,6 @@ export interface AdminAuthenticationApiVerifyOAuthTokenRequest {
  * @extends {BaseAPI}
  */
 export class AdminAuthenticationApi extends BaseAPI {
-    /**
-     * 
-     * @param {AdminAuthenticationApiAuthorizeRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AdminAuthenticationApi
-     */
-    public authorize(requestParameters: AdminAuthenticationApiAuthorizeRequest, options?: AxiosRequestConfig) {
-        return AdminAuthenticationApiFp(this.configuration).authorize(requestParameters.authorizePlayerRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      * 
      * @summary oauth callback.

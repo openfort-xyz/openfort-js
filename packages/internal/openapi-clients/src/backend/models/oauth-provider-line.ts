@@ -21,7 +21,7 @@
  */
 
 export const OAuthProviderLINE = {
-    Line: 'line'
+    LINE: 'line'
 } as const;
 
 export type OAuthProviderLINE = typeof OAuthProviderLINE[keyof typeof OAuthProviderLINE];

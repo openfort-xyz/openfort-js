@@ -22,10 +22,6 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
-import { BackendWalletListResponse } from '../models';
-// @ts-ignore
-import { BackendWalletResponse } from '../models';
-// @ts-ignore
 import { CreateBackendWalletRequest } from '../models';
 // @ts-ignore
 import { CreateBackendWalletResponse } from '../models';
@@ -83,6 +79,10 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication wallet_auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -119,6 +119,10 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication wallet_auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -157,6 +161,10 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication wallet_auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -165,44 +173,6 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(exportPrivateKeyRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Get backend wallet details.  Returns details for a specific backend wallet.
-         * @summary Get backend wallet.
-         * @param {string} id The wallet ID (starts with acc_).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getBackendWallet: async (id: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getBackendWallet', 'id', id)
-            const localVarPath = `/v2/accounts/backend/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -231,6 +201,10 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication wallet_auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -239,70 +213,6 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(importPrivateKeyRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * List backend wallets.  Returns a paginated list of backend wallets for the project.
-         * @summary List backend wallets.
-         * @param {number} [limit] Number of wallets to return (default: 10, max: 100).
-         * @param {number} [skip] Number of wallets to skip (for pagination).
-         * @param {ListBackendWalletsChainTypeEnum} [chainType] Filter by chain type.
-         * @param {string} [address] Filter by wallet address.
-         * @param {string} [name] Filter by wallet name.
-         * @param {string} [wallet] Filter by associated wallet ID (starts with &#x60;pla_&#x60;).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listBackendWallets: async (limit?: number, skip?: number, chainType?: ListBackendWalletsChainTypeEnum, address?: string, name?: string, wallet?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/v2/accounts/backend`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sk required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (skip !== undefined) {
-                localVarQueryParameter['skip'] = skip;
-            }
-
-            if (chainType !== undefined) {
-                localVarQueryParameter['chainType'] = chainType;
-            }
-
-            if (address !== undefined) {
-                localVarQueryParameter['address'] = address;
-            }
-
-            if (name !== undefined) {
-                localVarQueryParameter['name'] = name;
-            }
-
-            if (wallet !== undefined) {
-                localVarQueryParameter['wallet'] = wallet;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -330,6 +240,14 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -367,6 +285,10 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication wallet_auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -382,7 +304,7 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             };
         },
         /**
-         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.
+         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.  Requires an AAL2 session (MFA step-up). Users must enroll MFA and complete step-up authentication before calling this endpoint.
          * @summary Rotate wallet secret.
          * @param {RotateWalletSecretRequest} rotateWalletSecretRequest 
          * @param {*} [options] Override http request option.
@@ -402,6 +324,14 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -442,6 +372,10 @@ export const BackendWalletsApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication wallet_auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -502,17 +436,6 @@ export const BackendWalletsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Get backend wallet details.  Returns details for a specific backend wallet.
-         * @summary Get backend wallet.
-         * @param {string} id The wallet ID (starts with acc_).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getBackendWallet(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BackendWalletResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getBackendWallet(id, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * Import private key with E2E encryption via backend wallet.  Imports a private key into the backend wallet system. The private key must be encrypted using RSA-4096 OAEP SHA-256 with the server\'s static import public key (obtain out-of-band from SDK or documentation).
          * @summary Import private key (E2E encrypted).
          * @param {ImportPrivateKeyRequest} importPrivateKeyRequest 
@@ -521,22 +444,6 @@ export const BackendWalletsApiFp = function(configuration?: Configuration) {
          */
         async importPrivateKey(importPrivateKeyRequest: ImportPrivateKeyRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportPrivateKeyResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.importPrivateKey(importPrivateKeyRequest, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * List backend wallets.  Returns a paginated list of backend wallets for the project.
-         * @summary List backend wallets.
-         * @param {number} [limit] Number of wallets to return (default: 10, max: 100).
-         * @param {number} [skip] Number of wallets to skip (for pagination).
-         * @param {ListBackendWalletsChainTypeEnum} [chainType] Filter by chain type.
-         * @param {string} [address] Filter by wallet address.
-         * @param {string} [name] Filter by wallet name.
-         * @param {string} [wallet] Filter by associated wallet ID (starts with &#x60;pla_&#x60;).
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async listBackendWallets(limit?: number, skip?: number, chainType?: ListBackendWalletsChainTypeEnum, address?: string, name?: string, wallet?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BackendWalletListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listBackendWallets(limit, skip, chainType, address, name, wallet, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -562,7 +469,7 @@ export const BackendWalletsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.
+         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.  Requires an AAL2 session (MFA step-up). Users must enroll MFA and complete step-up authentication before calling this endpoint.
          * @summary Rotate wallet secret.
          * @param {RotateWalletSecretRequest} rotateWalletSecretRequest 
          * @param {*} [options] Override http request option.
@@ -625,16 +532,6 @@ export const BackendWalletsApiFactory = function (configuration?: Configuration,
             return localVarFp.exportPrivateKey(requestParameters.id, requestParameters.exportPrivateKeyRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Get backend wallet details.  Returns details for a specific backend wallet.
-         * @summary Get backend wallet.
-         * @param {BackendWalletsApiGetBackendWalletRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getBackendWallet(requestParameters: BackendWalletsApiGetBackendWalletRequest, options?: AxiosRequestConfig): AxiosPromise<BackendWalletResponse> {
-            return localVarFp.getBackendWallet(requestParameters.id, options).then((request) => request(axios, basePath));
-        },
-        /**
          * Import private key with E2E encryption via backend wallet.  Imports a private key into the backend wallet system. The private key must be encrypted using RSA-4096 OAEP SHA-256 with the server\'s static import public key (obtain out-of-band from SDK or documentation).
          * @summary Import private key (E2E encrypted).
          * @param {BackendWalletsApiImportPrivateKeyRequest} requestParameters Request parameters.
@@ -643,16 +540,6 @@ export const BackendWalletsApiFactory = function (configuration?: Configuration,
          */
         importPrivateKey(requestParameters: BackendWalletsApiImportPrivateKeyRequest, options?: AxiosRequestConfig): AxiosPromise<ImportPrivateKeyResponse> {
             return localVarFp.importPrivateKey(requestParameters.importPrivateKeyRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * List backend wallets.  Returns a paginated list of backend wallets for the project.
-         * @summary List backend wallets.
-         * @param {BackendWalletsApiListBackendWalletsRequest} requestParameters Request parameters.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listBackendWallets(requestParameters: BackendWalletsApiListBackendWalletsRequest = {}, options?: AxiosRequestConfig): AxiosPromise<BackendWalletListResponse> {
-            return localVarFp.listBackendWallets(requestParameters.limit, requestParameters.skip, requestParameters.chainType, requestParameters.address, requestParameters.name, requestParameters.wallet, options).then((request) => request(axios, basePath));
         },
         /**
          * Register a new wallet secret (authentication key).  Registers an ECDSA P-256 public key that will be used to verify X-Wallet-Auth JWT signatures. This is required before using WALLET_AUTH for other backend wallet operations.  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the publicKey being registered. This proves possession of the private key without transmitting it.  Note: Only ONE active secret is allowed per project. This call fails if an active secret already exists; use rotateWalletSecret to replace an existing secret.
@@ -675,7 +562,7 @@ export const BackendWalletsApiFactory = function (configuration?: Configuration,
             return localVarFp.revokeWalletSecret(requestParameters.revokeWalletSecretRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.
+         * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.  Requires an AAL2 session (MFA step-up). Users must enroll MFA and complete step-up authentication before calling this endpoint.
          * @summary Rotate wallet secret.
          * @param {BackendWalletsApiRotateWalletSecretRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -747,20 +634,6 @@ export interface BackendWalletsApiExportPrivateKeyRequest {
 }
 
 /**
- * Request parameters for getBackendWallet operation in BackendWalletsApi.
- * @export
- * @interface BackendWalletsApiGetBackendWalletRequest
- */
-export interface BackendWalletsApiGetBackendWalletRequest {
-    /**
-     * The wallet ID (starts with acc_).
-     * @type {string}
-     * @memberof BackendWalletsApiGetBackendWallet
-     */
-    readonly id: string
-}
-
-/**
  * Request parameters for importPrivateKey operation in BackendWalletsApi.
  * @export
  * @interface BackendWalletsApiImportPrivateKeyRequest
@@ -772,55 +645,6 @@ export interface BackendWalletsApiImportPrivateKeyRequest {
      * @memberof BackendWalletsApiImportPrivateKey
      */
     readonly importPrivateKeyRequest: ImportPrivateKeyRequest
-}
-
-/**
- * Request parameters for listBackendWallets operation in BackendWalletsApi.
- * @export
- * @interface BackendWalletsApiListBackendWalletsRequest
- */
-export interface BackendWalletsApiListBackendWalletsRequest {
-    /**
-     * Number of wallets to return (default: 10, max: 100).
-     * @type {number}
-     * @memberof BackendWalletsApiListBackendWallets
-     */
-    readonly limit?: number
-
-    /**
-     * Number of wallets to skip (for pagination).
-     * @type {number}
-     * @memberof BackendWalletsApiListBackendWallets
-     */
-    readonly skip?: number
-
-    /**
-     * Filter by chain type.
-     * @type {'EVM' | 'SVM'}
-     * @memberof BackendWalletsApiListBackendWallets
-     */
-    readonly chainType?: ListBackendWalletsChainTypeEnum
-
-    /**
-     * Filter by wallet address.
-     * @type {string}
-     * @memberof BackendWalletsApiListBackendWallets
-     */
-    readonly address?: string
-
-    /**
-     * Filter by wallet name.
-     * @type {string}
-     * @memberof BackendWalletsApiListBackendWallets
-     */
-    readonly name?: string
-
-    /**
-     * Filter by associated wallet ID (starts with &#x60;pla_&#x60;).
-     * @type {string}
-     * @memberof BackendWalletsApiListBackendWallets
-     */
-    readonly wallet?: string
 }
 
 /**
@@ -930,18 +754,6 @@ export class BackendWalletsApi extends BaseAPI {
     }
 
     /**
-     * Get backend wallet details.  Returns details for a specific backend wallet.
-     * @summary Get backend wallet.
-     * @param {BackendWalletsApiGetBackendWalletRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BackendWalletsApi
-     */
-    public getBackendWallet(requestParameters: BackendWalletsApiGetBackendWalletRequest, options?: AxiosRequestConfig) {
-        return BackendWalletsApiFp(this.configuration).getBackendWallet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * Import private key with E2E encryption via backend wallet.  Imports a private key into the backend wallet system. The private key must be encrypted using RSA-4096 OAEP SHA-256 with the server\'s static import public key (obtain out-of-band from SDK or documentation).
      * @summary Import private key (E2E encrypted).
      * @param {BackendWalletsApiImportPrivateKeyRequest} requestParameters Request parameters.
@@ -951,18 +763,6 @@ export class BackendWalletsApi extends BaseAPI {
      */
     public importPrivateKey(requestParameters: BackendWalletsApiImportPrivateKeyRequest, options?: AxiosRequestConfig) {
         return BackendWalletsApiFp(this.configuration).importPrivateKey(requestParameters.importPrivateKeyRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * List backend wallets.  Returns a paginated list of backend wallets for the project.
-     * @summary List backend wallets.
-     * @param {BackendWalletsApiListBackendWalletsRequest} requestParameters Request parameters.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BackendWalletsApi
-     */
-    public listBackendWallets(requestParameters: BackendWalletsApiListBackendWalletsRequest = {}, options?: AxiosRequestConfig) {
-        return BackendWalletsApiFp(this.configuration).listBackendWallets(requestParameters.limit, requestParameters.skip, requestParameters.chainType, requestParameters.address, requestParameters.name, requestParameters.wallet, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -990,7 +790,7 @@ export class BackendWalletsApi extends BaseAPI {
     }
 
     /**
-     * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.
+     * Rotate wallet secret (authentication key).  Replaces the current wallet secret (ECDSA P-256 public key) used for X-Wallet-Auth JWT signing. The old secret will be marked as \"rotated\" and immediately becomes unusable (no grace period).  Uses provided-key authentication: the request must include a walletAuthToken JWT signed by the private key corresponding to the NEW publicKey being registered. This proves possession of the new private key without transmitting it.  Requires an AAL2 session (MFA step-up). Users must enroll MFA and complete step-up authentication before calling this endpoint.
      * @summary Rotate wallet secret.
      * @param {BackendWalletsApiRotateWalletSecretRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -1014,11 +814,3 @@ export class BackendWalletsApi extends BaseAPI {
     }
 }
 
-/**
- * @export
- */
-export const ListBackendWalletsChainTypeEnum = {
-    Evm: 'EVM',
-    Svm: 'SVM'
-} as const;
-export type ListBackendWalletsChainTypeEnum = typeof ListBackendWalletsChainTypeEnum[keyof typeof ListBackendWalletsChainTypeEnum];

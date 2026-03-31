@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeDEVICE = {
-    Device: 'device'
+    DEVICE: 'device'
 } as const;
 
 export type EntityTypeDEVICE = typeof EntityTypeDEVICE[keyof typeof EntityTypeDEVICE];

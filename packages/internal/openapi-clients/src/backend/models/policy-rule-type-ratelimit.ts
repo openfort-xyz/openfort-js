@@ -21,7 +21,7 @@
  */
 
 export const PolicyRuleTypeRATELIMIT = {
-    RateLimit: 'rate_limit'
+    RATE_LIMIT: 'rate_limit'
 } as const;
 
 export type PolicyRuleTypeRATELIMIT = typeof PolicyRuleTypeRATELIMIT[keyof typeof PolicyRuleTypeRATELIMIT];

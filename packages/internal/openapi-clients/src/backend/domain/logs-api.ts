@@ -54,6 +54,10 @@ export const LogsApiAxiosParamCreator = function (configuration?: Configuration)
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (method) {
                 localVarQueryParameter['method'] = method;
             }
@@ -93,6 +97,10 @@ export const LogsApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarQueryParameter = {} as any;
 
             // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 

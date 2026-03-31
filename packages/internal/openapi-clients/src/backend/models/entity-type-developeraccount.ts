@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeDEVELOPERACCOUNT = {
-    DeveloperAccount: 'developerAccount'
+    DEVELOPER_ACCOUNT: 'developerAccount'
 } as const;
 
 export type EntityTypeDEVELOPERACCOUNT = typeof EntityTypeDEVELOPERACCOUNT[keyof typeof EntityTypeDEVELOPERACCOUNT];

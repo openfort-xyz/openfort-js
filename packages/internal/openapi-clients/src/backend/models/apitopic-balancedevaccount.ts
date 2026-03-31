@@ -21,7 +21,7 @@
  */
 
 export const APITopicBALANCEDEVACCOUNT = {
-    BalanceDevAccount: 'balance.dev_account'
+    BALANCE_DEV_ACCOUNT: 'balance.dev_account'
 } as const;
 
 export type APITopicBALANCEDEVACCOUNT = typeof APITopicBALANCEDEVACCOUNT[keyof typeof APITopicBALANCEDEVACCOUNT];

@@ -21,7 +21,7 @@
  */
 
 export const SponsorSchemaPAYFORUSER = {
-    PayForUser: 'pay_for_user'
+    PAY_FOR_USER: 'pay_for_user'
 } as const;
 
 export type SponsorSchemaPAYFORUSER = typeof SponsorSchemaPAYFORUSER[keyof typeof SponsorSchemaPAYFORUSER];

@@ -171,8 +171,8 @@ export const sendCallsSync = async ({
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
   })
 
-  if (openfortTransaction.response?.error.reason) {
-    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, openfortTransaction.response?.error.reason)
+  if (openfortTransaction.response?.error?.reason) {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, openfortTransaction.response.error.reason)
   }
 
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
@@ -198,7 +198,7 @@ export const sendCallsSync = async ({
     })
 
     if (response.data.response?.status === 0) {
-      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response?.error.reason)
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response?.error?.reason ?? '')
     }
 
     if (!response.data.response) {

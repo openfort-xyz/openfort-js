@@ -21,7 +21,7 @@
  */
 
 export const BasicAuthProviderGUEST = {
-    Guest: 'guest'
+    GUEST: 'guest'
 } as const;
 
 export type BasicAuthProviderGUEST = typeof BasicAuthProviderGUEST[keyof typeof BasicAuthProviderGUEST];

@@ -30,6 +30,12 @@ export interface UpdateProjectApiKeyRequest {
      */
     'type': ApiKeyType;
     /**
+     * Optional scopes to restrict this API key\'s access. Only applicable to secret keys (sk). Empty array or omitted means full access.
+     * @type {Array<string>}
+     * @memberof UpdateProjectApiKeyRequest
+     */
+    'scopes'?: Array<string>;
+    /**
      * The API key to update.
      * @type {string}
      * @memberof UpdateProjectApiKeyRequest

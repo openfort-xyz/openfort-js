@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeSESSION = {
-    Session: 'session'
+    SESSION: 'session'
 } as const;
 
 export type EntityTypeSESSION = typeof EntityTypeSESSION[keyof typeof EntityTypeSESSION];

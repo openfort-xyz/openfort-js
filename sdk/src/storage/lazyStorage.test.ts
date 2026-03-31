@@ -4,6 +4,10 @@ import { type IStorage, StorageKeys } from './istorage'
 import { LazyStorage } from './lazyStorage'
 
 const TEST_PUBLISHABLE_KEY = 'pk_test_12345'
+// ScopedStorage derives scope by removing the 'pk_test_' prefix (8 chars) and taking first 8 chars
+const SCOPE = TEST_PUBLISHABLE_KEY.substring(8).substring(0, 8)
+
+const scopedKey = (key: StorageKeys | string) => `${SCOPE}.${key}`
 
 describe('LazyStorage', () => {
   beforeEach(() => {
@@ -42,7 +46,7 @@ describe('LazyStorage', () => {
   describe('get', () => {
     it('should get value from localStorage', async () => {
       const storage = new LazyStorage(TEST_PUBLISHABLE_KEY)
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`, 'test-token')
+      localStorage.setItem(scopedKey(StorageKeys.AUTHENTICATION), 'test-token')
 
       const value = await storage.get(StorageKeys.AUTHENTICATION)
 
@@ -75,7 +79,7 @@ describe('LazyStorage', () => {
       const storage = new LazyStorage(TEST_PUBLISHABLE_KEY)
 
       // Set a value first so we can verify the storage was accessed
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`, 'test-value')
+      localStorage.setItem(scopedKey(StorageKeys.AUTHENTICATION), 'test-value')
       const value = await storage.get(StorageKeys.AUTHENTICATION)
 
       // Storage should have been initialized and returned the value
@@ -105,7 +109,7 @@ describe('LazyStorage', () => {
 
       storage.save(StorageKeys.AUTHENTICATION, 'new-token')
 
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`)).toBe('new-token')
+      expect(localStorage.getItem(scopedKey(StorageKeys.AUTHENTICATION))).toBe('new-token')
     })
 
     it('should save value to custom storage', () => {
@@ -119,16 +123,16 @@ describe('LazyStorage', () => {
 
       storage.save(StorageKeys.CONFIGURATION, 'config-data')
 
-      expect(customStorage.save).toHaveBeenCalledWith(StorageKeys.CONFIGURATION, 'config-data')
+      expect(customStorage.save).toHaveBeenCalledWith(scopedKey(StorageKeys.CONFIGURATION), 'config-data')
     })
 
     it('should overwrite existing values', () => {
       const storage = new LazyStorage(TEST_PUBLISHABLE_KEY)
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.SESSION}`, 'old-session')
+      localStorage.setItem(scopedKey(StorageKeys.SESSION), 'old-session')
 
       storage.save(StorageKeys.SESSION, 'new-session')
 
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.SESSION}`)).toBe('new-session')
+      expect(localStorage.getItem(scopedKey(StorageKeys.SESSION))).toBe('new-session')
     })
 
     it('should handle multiple save operations', () => {
@@ -138,20 +142,20 @@ describe('LazyStorage', () => {
       storage.save(StorageKeys.SESSION, 'session-1')
       storage.save(StorageKeys.ACCOUNT, 'account-1')
 
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`)).toBe('token-1')
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.SESSION}`)).toBe('session-1')
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.ACCOUNT}`)).toBe('account-1')
+      expect(localStorage.getItem(scopedKey(StorageKeys.AUTHENTICATION))).toBe('token-1')
+      expect(localStorage.getItem(scopedKey(StorageKeys.SESSION))).toBe('session-1')
+      expect(localStorage.getItem(scopedKey(StorageKeys.ACCOUNT))).toBe('account-1')
     })
   })
 
   describe('remove', () => {
     it('should remove value from localStorage', () => {
       const storage = new LazyStorage(TEST_PUBLISHABLE_KEY)
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`, 'token-to-remove')
+      localStorage.setItem(scopedKey(StorageKeys.AUTHENTICATION), 'token-to-remove')
 
       storage.remove(StorageKeys.AUTHENTICATION)
 
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`)).toBeNull()
+      expect(localStorage.getItem(scopedKey(StorageKeys.AUTHENTICATION))).toBeNull()
     })
 
     it('should remove value from custom storage', () => {
@@ -165,7 +169,7 @@ describe('LazyStorage', () => {
 
       storage.remove(StorageKeys.SESSION)
 
-      expect(customStorage.remove).toHaveBeenCalledWith(StorageKeys.SESSION)
+      expect(customStorage.remove).toHaveBeenCalledWith(scopedKey(StorageKeys.SESSION))
     })
 
     it('should not throw when removing non-existent key', () => {
@@ -176,34 +180,34 @@ describe('LazyStorage', () => {
 
     it('should handle removing all keys', () => {
       const storage = new LazyStorage(TEST_PUBLISHABLE_KEY)
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`, 'token')
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.SESSION}`, 'session')
+      localStorage.setItem(scopedKey(StorageKeys.AUTHENTICATION), 'token')
+      localStorage.setItem(scopedKey(StorageKeys.SESSION), 'session')
 
       storage.remove(StorageKeys.AUTHENTICATION)
       storage.remove(StorageKeys.SESSION)
 
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`)).toBeNull()
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.SESSION}`)).toBeNull()
+      expect(localStorage.getItem(scopedKey(StorageKeys.AUTHENTICATION))).toBeNull()
+      expect(localStorage.getItem(scopedKey(StorageKeys.SESSION))).toBeNull()
     })
   })
 
   describe('flush', () => {
     it('should remove all Openfort keys from localStorage', () => {
       const storage = new LazyStorage(TEST_PUBLISHABLE_KEY)
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`, 'token')
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.SESSION}`, 'session')
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.ACCOUNT}`, 'account')
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.CONFIGURATION}`, 'config')
+      localStorage.setItem(scopedKey(StorageKeys.AUTHENTICATION), 'token')
+      localStorage.setItem(scopedKey(StorageKeys.SESSION), 'session')
+      localStorage.setItem(scopedKey(StorageKeys.ACCOUNT), 'account')
+      localStorage.setItem(scopedKey(StorageKeys.CONFIGURATION), 'config')
 
       storage.flush()
 
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`)).toBeNull()
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.SESSION}`)).toBeNull()
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.ACCOUNT}`)).toBeNull()
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.CONFIGURATION}`)).toBeNull()
+      expect(localStorage.getItem(scopedKey(StorageKeys.AUTHENTICATION))).toBeNull()
+      expect(localStorage.getItem(scopedKey(StorageKeys.SESSION))).toBeNull()
+      expect(localStorage.getItem(scopedKey(StorageKeys.ACCOUNT))).toBeNull()
+      expect(localStorage.getItem(scopedKey(StorageKeys.CONFIGURATION))).toBeNull()
     })
 
-    it('should call flush on custom storage', () => {
+    it('should remove all scoped keys from custom storage on flush', () => {
       const customStorage: IStorage = {
         get: vi.fn(),
         save: vi.fn(),
@@ -214,17 +218,19 @@ describe('LazyStorage', () => {
 
       storage.flush()
 
-      expect(customStorage.flush).toHaveBeenCalled()
+      for (const key of Object.values(StorageKeys)) {
+        expect(customStorage.remove).toHaveBeenCalledWith(scopedKey(key))
+      }
     })
 
     it('should not affect non-Openfort keys in localStorage', () => {
       const storage = new LazyStorage(TEST_PUBLISHABLE_KEY)
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`, 'token')
+      localStorage.setItem(scopedKey(StorageKeys.AUTHENTICATION), 'token')
       localStorage.setItem('other.key', 'other-value')
 
       storage.flush()
 
-      expect(localStorage.getItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`)).toBeNull()
+      expect(localStorage.getItem(scopedKey(StorageKeys.AUTHENTICATION))).toBeNull()
       expect(localStorage.getItem('other.key')).toBe('other-value')
     })
 
@@ -308,10 +314,12 @@ describe('LazyStorage', () => {
       storage.remove(StorageKeys.SESSION)
       storage.flush()
 
-      // All operations should use the same storage instance
+      // save called once directly
       expect(customStorage.save).toHaveBeenCalledOnce()
-      expect(customStorage.remove).toHaveBeenCalledOnce()
-      expect(customStorage.flush).toHaveBeenCalledOnce()
+      // remove: 1 explicit call + 1 per StorageKey from flush()
+      expect(customStorage.remove).toHaveBeenCalledTimes(1 + Object.values(StorageKeys).length)
+      // flush() on ScopedStorage iterates keys via remove(), never calls underlying flush()
+      expect(customStorage.flush).not.toHaveBeenCalled()
     })
 
     it('should prefer custom storage over localStorage', async () => {
@@ -322,7 +330,7 @@ describe('LazyStorage', () => {
         flush: vi.fn(),
       }
       const storage = new LazyStorage(TEST_PUBLISHABLE_KEY, customStorage)
-      localStorage.setItem(`openfort_${TEST_PUBLISHABLE_KEY}_${StorageKeys.AUTHENTICATION}`, 'local')
+      localStorage.setItem(scopedKey(StorageKeys.AUTHENTICATION), 'local')
 
       const value = await storage.get(StorageKeys.AUTHENTICATION)
 

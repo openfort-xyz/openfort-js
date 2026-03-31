@@ -21,7 +21,7 @@
  */
 
 export const EntityTypePROJECT = {
-    Project: 'project'
+    PROJECT: 'project'
 } as const;
 
 export type EntityTypePROJECT = typeof EntityTypePROJECT[keyof typeof EntityTypePROJECT];

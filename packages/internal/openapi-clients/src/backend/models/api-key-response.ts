@@ -50,5 +50,17 @@ export interface ApiKeyResponse {
      * @memberof ApiKeyResponse
      */
     'livemode': boolean;
+    /**
+     * Scopes restricting this API key\'s access. Empty array means full access.
+     * @type {Array<string>}
+     * @memberof ApiKeyResponse
+     */
+    'scopes': Array<string>;
+    /**
+     * The raw secret key - only populated on creation/rotation for secret keys
+     * @type {string}
+     * @memberof ApiKeyResponse
+     */
+    'secretKey'?: string;
 }
 

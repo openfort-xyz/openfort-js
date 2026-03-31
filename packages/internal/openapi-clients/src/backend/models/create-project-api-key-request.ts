@@ -29,6 +29,12 @@ export interface CreateProjectApiKeyRequest {
      * @memberof CreateProjectApiKeyRequest
      */
     'type': ApiKeyType;
+    /**
+     * Optional scopes to restrict this API key\'s access. Only applicable to secret keys (sk). Empty array or omitted means full access.
+     * @type {Array<string>}
+     * @memberof CreateProjectApiKeyRequest
+     */
+    'scopes'?: Array<string>;
 }
 
 

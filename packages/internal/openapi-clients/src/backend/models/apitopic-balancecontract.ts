@@ -21,7 +21,7 @@
  */
 
 export const APITopicBALANCECONTRACT = {
-    BalanceContract: 'balance.contract'
+    BALANCE_CONTRACT: 'balance.contract'
 } as const;
 
 export type APITopicBALANCECONTRACT = typeof APITopicBALANCECONTRACT[keyof typeof APITopicBALANCECONTRACT];

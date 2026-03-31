@@ -21,7 +21,7 @@
  */
 
 export const SmsProviderMESSAGEBIRD = {
-    Messagebird: 'messagebird'
+    MESSAGEBIRD: 'messagebird'
 } as const;
 
 export type SmsProviderMESSAGEBIRD = typeof SmsProviderMESSAGEBIRD[keyof typeof SmsProviderMESSAGEBIRD];

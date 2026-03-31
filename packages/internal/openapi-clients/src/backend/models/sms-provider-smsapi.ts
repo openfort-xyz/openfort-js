@@ -21,7 +21,7 @@
  */
 
 export const SmsProviderSMSAPI = {
-    SmsApi: 'sms_api'
+    SMS_API: 'sms_api'
 } as const;
 
 export type SmsProviderSMSAPI = typeof SmsProviderSMSAPI[keyof typeof SmsProviderSMSAPI];

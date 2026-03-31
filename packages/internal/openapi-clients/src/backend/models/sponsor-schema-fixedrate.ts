@@ -21,7 +21,7 @@
  */
 
 export const SponsorSchemaFIXEDRATE = {
-    FixedRate: 'fixed_rate'
+    FIXED_RATE: 'fixed_rate'
 } as const;
 
 export type SponsorSchemaFIXEDRATE = typeof SponsorSchemaFIXEDRATE[keyof typeof SponsorSchemaFIXEDRATE];

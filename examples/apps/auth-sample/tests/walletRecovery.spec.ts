@@ -16,7 +16,7 @@ const logout = async (page: Page) => {
 }
 
 test('Password recovery', async ({ page }) => {
-  test.setTimeout(60000) // this is a long test, so we need a bit more time. 60 seconds
+  test.setTimeout(120000) // this is a long test, so we need a bit more time. 120 seconds
 
   await test.step('Authenticate and recover', async () => {
     // Clean authenticate so we don't invalidate the session

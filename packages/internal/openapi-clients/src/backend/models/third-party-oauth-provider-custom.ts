@@ -21,7 +21,7 @@
  */
 
 export const ThirdPartyOAuthProviderCUSTOM = {
-    Custom: 'custom'
+    CUSTOM: 'custom'
 } as const;
 
 export type ThirdPartyOAuthProviderCUSTOM = typeof ThirdPartyOAuthProviderCUSTOM[keyof typeof ThirdPartyOAuthProviderCUSTOM];

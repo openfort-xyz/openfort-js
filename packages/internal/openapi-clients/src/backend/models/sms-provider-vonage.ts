@@ -21,7 +21,7 @@
  */
 
 export const SmsProviderVONAGE = {
-    Vonage: 'vonage'
+    VONAGE: 'vonage'
 } as const;
 
 export type SmsProviderVONAGE = typeof SmsProviderVONAGE[keyof typeof SmsProviderVONAGE];

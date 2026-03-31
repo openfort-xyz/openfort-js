@@ -21,7 +21,7 @@
  */
 
 export const ThirdPartyOAuthProviderOIDC = {
-    Oidc: 'oidc'
+    OIDC: 'oidc'
 } as const;
 
 export type ThirdPartyOAuthProviderOIDC = typeof ThirdPartyOAuthProviderOIDC[keyof typeof ThirdPartyOAuthProviderOIDC];

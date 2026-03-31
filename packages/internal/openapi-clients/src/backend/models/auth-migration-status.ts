@@ -21,12 +21,12 @@
  */
 
 export const AuthMigrationStatus = {
-    Created: 'created',
-    Running: 'running',
-    Paused: 'paused',
-    Completed: 'completed',
-    Failed: 'failed',
-    Canceled: 'canceled'
+    CREATED: 'created',
+    RUNNING: 'running',
+    PAUSED: 'paused',
+    COMPLETED: 'completed',
+    FAILED: 'failed',
+    CANCELED: 'canceled'
 } as const;
 
 export type AuthMigrationStatus = typeof AuthMigrationStatus[keyof typeof AuthMigrationStatus];

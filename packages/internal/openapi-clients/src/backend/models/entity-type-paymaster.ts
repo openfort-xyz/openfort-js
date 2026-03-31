@@ -21,7 +21,7 @@
  */
 
 export const EntityTypePAYMASTER = {
-    Paymaster: 'paymaster'
+    PAYMASTER: 'paymaster'
 } as const;
 
 export type EntityTypePAYMASTER = typeof EntityTypePAYMASTER[keyof typeof EntityTypePAYMASTER];

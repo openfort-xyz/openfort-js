@@ -21,7 +21,7 @@
  */
 
 export const OAuthProviderFACEBOOK = {
-    Facebook: 'facebook'
+    FACEBOOK: 'facebook'
 } as const;
 
 export type OAuthProviderFACEBOOK = typeof OAuthProviderFACEBOOK[keyof typeof OAuthProviderFACEBOOK];

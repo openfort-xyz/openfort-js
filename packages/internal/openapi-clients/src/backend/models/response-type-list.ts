@@ -21,7 +21,7 @@
  */
 
 export const ResponseTypeLIST = {
-    List: 'list'
+    LIST: 'list'
 } as const;
 
 export type ResponseTypeLIST = typeof ResponseTypeLIST[keyof typeof ResponseTypeLIST];

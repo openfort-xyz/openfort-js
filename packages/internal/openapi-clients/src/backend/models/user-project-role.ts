@@ -21,9 +21,9 @@
  */
 
 export const UserProjectRole = {
-    Owner: 'OWNER',
-    Admin: 'ADMIN',
-    Member: 'MEMBER'
+    OWNER: 'OWNER',
+    ADMIN: 'ADMIN',
+    MEMBER: 'MEMBER'
 } as const;
 
 export type UserProjectRole = typeof UserProjectRole[keyof typeof UserProjectRole];

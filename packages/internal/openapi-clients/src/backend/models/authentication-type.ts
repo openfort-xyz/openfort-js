@@ -21,9 +21,9 @@
  */
 
 export const AuthenticationType = {
-    Oauth: 'oauth',
-    Basic: 'basic',
-    ThirdParty: 'third_party'
+    OAUTH: 'oauth',
+    BASIC: 'basic',
+    THIRD_PARTY: 'third_party'
 } as const;
 
 export type AuthenticationType = typeof AuthenticationType[keyof typeof AuthenticationType];

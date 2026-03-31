@@ -21,9 +21,9 @@
  */
 
 export const SponsorSchema = {
-    PayForUser: 'pay_for_user',
-    ChargeCustomTokens: 'charge_custom_tokens',
-    FixedRate: 'fixed_rate'
+    PAY_FOR_USER: 'pay_for_user',
+    CHARGE_CUSTOM_TOKENS: 'charge_custom_tokens',
+    FIXED_RATE: 'fixed_rate'
 } as const;
 
 export type SponsorSchema = typeof SponsorSchema[keyof typeof SponsorSchema];

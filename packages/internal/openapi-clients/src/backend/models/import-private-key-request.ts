@@ -38,12 +38,6 @@ export interface ImportPrivateKeyRequest {
      * @memberof ImportPrivateKeyRequest
      */
     'wallet'?: string;
-    /**
-     * Optional name for the imported wallet.
-     * @type {string}
-     * @memberof ImportPrivateKeyRequest
-     */
-    'name'?: string;
 }
 
 export const ImportPrivateKeyRequestChainTypeEnum = {

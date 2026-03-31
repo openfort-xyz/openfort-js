@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeSUBSCRIPTION = {
-    Subscription: 'subscription'
+    SUBSCRIPTION: 'subscription'
 } as const;
 
 export type EntityTypeSUBSCRIPTION = typeof EntityTypeSUBSCRIPTION[keyof typeof EntityTypeSUBSCRIPTION];
