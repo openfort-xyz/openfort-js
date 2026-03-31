@@ -85,9 +85,12 @@ export class BackendApiClients {
 		};
 
 		// Pass the custom axios instance to all API constructors
+		// Note: accessToken is intentionally not set here because authManager.ts
+		// handles all authorization headers manually. Using the publishable key
+		// as a Bearer token would cause auth endpoints to reject requests.
 		const authConfigOptions: OpenfortAPIConfigurationOptions = {
 			basePath: `${options.basePath}/iam/v2/auth`,
-			accessToken: options.accessToken,
+			accessToken: '',
 			nativeAppIdentifier: options.nativeAppIdentifier,
 		};
 
