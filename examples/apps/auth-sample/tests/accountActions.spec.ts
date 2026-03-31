@@ -9,9 +9,7 @@ test('mint Token', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Mint Token' }).first()
-  button.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => button.click())
 
   const lastLog = logger.getLastLog()
   expect(lastLog).toContain(TEST_MINT_SUCCESS_TEXT)
@@ -24,9 +22,7 @@ test('Send batch calls', async ({ page }) => {
   await logger.init()
 
   const button = page.getByRole('button', { name: 'Send batch calls' }).first()
-  button.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => button.click())
 
   const lastLog = logger.getLastLog()
   expect(lastLog).toContain(TEST_BATCH_SUCCESS_TEXT)

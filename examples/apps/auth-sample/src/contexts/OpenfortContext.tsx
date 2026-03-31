@@ -178,7 +178,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
 
   const getEvmProvider = useCallback(async (): Promise<Provider> => {
     const externalProvider = await openfort.embeddedWallet.getEthereumProvider({
-      policy: process.env.NEXT_PUBLIC_POLICY_ID,
+      feeSponsorship: process.env.NEXT_PUBLIC_POLICY_ID,
       chains: {
         [appChain.id]: RPC_URL,
       },

@@ -3,23 +3,21 @@ import type { Logger } from './Logger'
 
 export const changeToAutomaticRecovery = async ({ page, logger }: { page: Page; logger: Logger }) => {
   const passwordRecoveryButton = page.getByRole('button', { name: 'Set wallet recovery' }).first()
-  passwordRecoveryButton.click()
+  await passwordRecoveryButton.click()
 
   const passwordRecoveryInput = page.locator('input[name="password-verifyRecovery"]')
   await passwordRecoveryInput.fill('password')
 
   const verifyRecoveryButton = page.getByRole('button', { name: 'Verify Password Recovery' }).first()
-  verifyRecoveryButton.click()
+  await verifyRecoveryButton.click()
 
   const automaticRecoveryButton1 = page.getByRole('button', { name: 'Set automatic recovery' }).first()
-  automaticRecoveryButton1.click()
+  await automaticRecoveryButton1.click()
 
   await page.waitForTimeout(500) // wait for the UI to be ready
 
   const automaticRecoveryButton2 = page.getByRole('button', { name: 'Set automatic recovery' }).first()
-  automaticRecoveryButton2.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => automaticRecoveryButton2.click())
   const lastLog = logger.getLastLog()
 
   expect(lastLog).toContain('success')
@@ -28,18 +26,16 @@ export const changeToAutomaticRecovery = async ({ page, logger }: { page: Page; 
 
 export const changeToPasswordRecovery = async ({ page, logger }: { page: Page; logger: Logger }) => {
   const passwordRecoveryButton = page.getByRole('button', { name: 'Set wallet recovery' }).first()
-  passwordRecoveryButton.click()
+  await passwordRecoveryButton.click()
 
   const passwordRecoveryButton1 = page.getByRole('button', { name: 'Set password recovery' }).first()
-  passwordRecoveryButton1.click()
+  await passwordRecoveryButton1.click()
 
   const passwordRecoveryInput = await page.waitForSelector('input[name="password-passwordRecovery"]')
   await passwordRecoveryInput.fill('password')
 
   const passwordRecoveryButton2 = page.getByRole('button', { name: 'Set password recovery' }).first()
-  passwordRecoveryButton2.click()
-
-  await logger.waitForNewLogs()
+  await logger.clickAndWaitForNewLogs(() => passwordRecoveryButton2.click())
   const lastLog = logger.getLastLog()
 
   console.log('Last log:', lastLog)

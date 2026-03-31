@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.3.0
+
+### Minor Changes
+
+- [#251](https://github.com/openfort-xyz/openfort-js/pull/251) [`5ae40a2`](https://github.com/openfort-xyz/openfort-js/commit/5ae40a2d86f9249d5201c87301983aaee871905c) Thanks [@jamalavedra](https://github.com/jamalavedra)! - update naming from policyId to feeSponsorshipId and fix RPC for customc hains
+
 ## 1.2.1
 
 ### Patch Changes

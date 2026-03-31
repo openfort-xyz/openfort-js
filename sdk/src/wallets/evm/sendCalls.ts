@@ -11,7 +11,7 @@ type WalletSendCallsParams = {
   account: Account
   authentication: Authentication
   rpcProvider: StaticJsonRpcProvider
-  policyId?: string
+  feeSponsorshipId?: string
   params: any[]
 }
 
@@ -22,7 +22,7 @@ export const sendCalls = async ({
   authentication,
   backendClient,
   rpcProvider,
-  policyId,
+  feeSponsorshipId,
 }: WalletSendCallsParams): Promise<string> => {
   const response = await sendCallsSync({
     params,
@@ -31,7 +31,7 @@ export const sendCalls = async ({
     authentication,
     backendClient,
     rpcProvider,
-    policyId,
+    feeSponsorshipId,
   })
 
   return response.id

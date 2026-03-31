@@ -34,7 +34,7 @@ type GetCallsStatusParams = {
   backendClient: BackendApiClients
   account: Account
   authentication: Authentication
-  policyId?: string
+  feeSponsorshipId?: string
   params: GetCallsStatusParameters
 }
 
