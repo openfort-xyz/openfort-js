@@ -2,11 +2,12 @@ import Cors from 'cors'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 const allowedOrigins = [
+  'https://create-next-app.openfort.io',
   'http://localhost:3000',
   'http://localhost:3001',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:3001',
-  process.env.NEXT_PUBLIC_APP_URL,
+  ...(process.env.CORS_ALLOWED_ORIGINS?.split(',') ?? []),
 ].filter(Boolean)
 
 const cors = Cors({
