@@ -21,16 +21,16 @@
  */
 
 export const TransactionStatus = {
-    None: 'none',
-    New: 'new',
-    Sent: 'sent',
-    Dropped: 'dropped',
-    Indexed: 'indexed',
-    Confirmed: 'confirmed',
-    Reverted: 'reverted',
-    Notfound: 'notfound',
-    Replaced: 'replaced',
-    Expired: 'expired'
+    NONE: 'none',
+    NEW: 'new',
+    SENT: 'sent',
+    DROPPED: 'dropped',
+    INDEXED: 'indexed',
+    CONFIRMED: 'confirmed',
+    REVERTED: 'reverted',
+    NOT_FOUND: 'notfound',
+    REPLACED: 'replaced',
+    EXPIRED: 'expired'
 } as const;
 
 export type TransactionStatus = typeof TransactionStatus[keyof typeof TransactionStatus];

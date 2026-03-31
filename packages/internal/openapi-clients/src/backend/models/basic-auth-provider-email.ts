@@ -21,7 +21,7 @@
  */
 
 export const BasicAuthProviderEMAIL = {
-    Email: 'email'
+    EMAIL: 'email'
 } as const;
 
 export type BasicAuthProviderEMAIL = typeof BasicAuthProviderEMAIL[keyof typeof BasicAuthProviderEMAIL];

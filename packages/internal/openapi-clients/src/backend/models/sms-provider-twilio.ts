@@ -21,7 +21,7 @@
  */
 
 export const SmsProviderTWILIO = {
-    Twilio: 'twilio'
+    TWILIO: 'twilio'
 } as const;
 
 export type SmsProviderTWILIO = typeof SmsProviderTWILIO[keyof typeof SmsProviderTWILIO];

@@ -21,7 +21,7 @@
  */
 
 export const UserProjectRoleADMIN = {
-    Admin: 'ADMIN'
+    ADMIN: 'ADMIN'
 } as const;
 
 export type UserProjectRoleADMIN = typeof UserProjectRoleADMIN[keyof typeof UserProjectRoleADMIN];

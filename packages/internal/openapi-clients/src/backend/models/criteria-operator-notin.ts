@@ -21,7 +21,7 @@
  */
 
 export const CriteriaOperatorNOTIN = {
-    NotIn: 'not in'
+    NOT_IN: 'not in'
 } as const;
 
 export type CriteriaOperatorNOTIN = typeof CriteriaOperatorNOTIN[keyof typeof CriteriaOperatorNOTIN];

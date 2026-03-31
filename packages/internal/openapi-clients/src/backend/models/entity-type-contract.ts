@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeCONTRACT = {
-    Contract: 'contract'
+    CONTRACT: 'contract'
 } as const;
 
 export type EntityTypeCONTRACT = typeof EntityTypeCONTRACT[keyof typeof EntityTypeCONTRACT];

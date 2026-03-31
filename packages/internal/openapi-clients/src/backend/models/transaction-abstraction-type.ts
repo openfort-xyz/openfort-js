@@ -21,11 +21,11 @@
  */
 
 export const TransactionAbstractionType = {
-    AccountAbstractionV6: 'accountAbstractionV6',
-    AccountAbstractionV8: 'accountAbstractionV8',
-    AccountAbstractionV9: 'accountAbstractionV9',
-    ZkSync: 'zkSync',
-    Standard: 'standard'
+    AAV6: 'accountAbstractionV6',
+    AAV8: 'accountAbstractionV8',
+    AAV9: 'accountAbstractionV9',
+    ZKSYNC: 'zkSync',
+    EOA: 'standard'
 } as const;
 
 export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];

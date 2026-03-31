@@ -21,7 +21,7 @@
  */
 
 export const EvmCriteriaTypeNETUSDCHANGE = {
-    NetUsdChange: 'netUSDChange'
+    NET_USD_CHANGE: 'netUSDChange'
 } as const;
 
 export type EvmCriteriaTypeNETUSDCHANGE = typeof EvmCriteriaTypeNETUSDCHANGE[keyof typeof EvmCriteriaTypeNETUSDCHANGE];

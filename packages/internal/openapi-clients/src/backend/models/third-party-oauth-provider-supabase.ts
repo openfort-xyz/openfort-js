@@ -21,7 +21,7 @@
  */
 
 export const ThirdPartyOAuthProviderSUPABASE = {
-    Supabase: 'supabase'
+    SUPABASE: 'supabase'
 } as const;
 
 export type ThirdPartyOAuthProviderSUPABASE = typeof ThirdPartyOAuthProviderSUPABASE[keyof typeof ThirdPartyOAuthProviderSUPABASE];

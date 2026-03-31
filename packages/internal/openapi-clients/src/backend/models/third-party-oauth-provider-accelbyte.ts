@@ -21,7 +21,7 @@
  */
 
 export const ThirdPartyOAuthProviderACCELBYTE = {
-    Accelbyte: 'accelbyte'
+    ACCELBYTE: 'accelbyte'
 } as const;
 
 export type ThirdPartyOAuthProviderACCELBYTE = typeof ThirdPartyOAuthProviderACCELBYTE[keyof typeof ThirdPartyOAuthProviderACCELBYTE];

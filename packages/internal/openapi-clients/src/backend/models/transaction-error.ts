@@ -15,33 +15,31 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { PrivateKeyPolicy } from './private-key-policy';
+import { TransactionErrorExplanation } from './transaction-error-explanation';
 
 /**
  * 
  * @export
- * @interface CreateProjectRequest
+ * @interface TransactionError
  */
-export interface CreateProjectRequest {
+export interface TransactionError {
     /**
-     * Name of the project.
+     * The error reason string returned by the bundler or execution environment.
      * @type {string}
-     * @memberof CreateProjectRequest
+     * @memberof TransactionError
      */
-    'name': string;
+    'reason': string;
+    /**
+     * The decoded error name from the contract revert, if available.
+     * @type {string}
+     * @memberof TransactionError
+     */
+    'name'?: string;
     /**
      * 
-     * @type {PrivateKeyPolicy}
-     * @memberof CreateProjectRequest
+     * @type {TransactionErrorExplanation}
+     * @memberof TransactionError
      */
-    'pkPolicy'?: PrivateKeyPolicy;
-    /**
-     * Whether to create API keys for the project.
-     * @type {boolean}
-     * @memberof CreateProjectRequest
-     */
-    'createApiKey'?: boolean;
+    'explanation'?: TransactionErrorExplanation;
 }
-
-
 

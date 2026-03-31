@@ -21,8 +21,8 @@
  */
 
 export const PrivateKeyPolicy = {
-    Individual: 'INDIVIDUAL',
-    Project: 'PROJECT'
+    INDIVIDUAL: 'INDIVIDUAL',
+    PROJECT: 'PROJECT'
 } as const;
 
 export type PrivateKeyPolicy = typeof PrivateKeyPolicy[keyof typeof PrivateKeyPolicy];

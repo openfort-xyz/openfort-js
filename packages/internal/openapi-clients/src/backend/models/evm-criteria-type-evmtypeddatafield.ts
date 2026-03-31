@@ -21,7 +21,7 @@
  */
 
 export const EvmCriteriaTypeEVMTYPEDDATAFIELD = {
-    EvmTypedDataField: 'evmTypedDataField'
+    EVM_TYPED_DATA_FIELD: 'evmTypedDataField'
 } as const;
 
 export type EvmCriteriaTypeEVMTYPEDDATAFIELD = typeof EvmCriteriaTypeEVMTYPEDDATAFIELD[keyof typeof EvmCriteriaTypeEVMTYPEDDATAFIELD];

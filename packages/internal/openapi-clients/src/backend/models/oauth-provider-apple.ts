@@ -21,7 +21,7 @@
  */
 
 export const OAuthProviderAPPLE = {
-    Apple: 'apple'
+    APPLE: 'apple'
 } as const;
 
 export type OAuthProviderAPPLE = typeof OAuthProviderAPPLE[keyof typeof OAuthProviderAPPLE];

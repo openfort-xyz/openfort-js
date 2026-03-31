@@ -64,7 +64,7 @@ export const EvmDataCriterionRequestOperatorEnum = {
     LessThanOrEqualTo: '<=',
     GreaterThan: '>',
     GreaterThanOrEqualTo: '>=',
-    : '==',
+    Equal: '==',
     Match: 'match'
 } as const;
 

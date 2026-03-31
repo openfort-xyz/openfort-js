@@ -18191,7 +18191,10 @@
         "enum": [
           "usd"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "USD"
+        ]
       },
       "CheckoutRequest": {
         "properties": {
@@ -18279,7 +18282,10 @@
         "enum": [
           "list"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "LIST"
+        ]
       },
       "EntityIdResponse": {
         "properties": {
@@ -18297,7 +18303,10 @@
         "enum": [
           "pay_for_user"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PAY_FOR_USER"
+        ]
       },
       "SponsorSchema": {
         "enum": [
@@ -18305,7 +18314,12 @@
           "charge_custom_tokens",
           "fixed_rate"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PAY_FOR_USER",
+          "CHARGE_CUSTOM_TOKENS",
+          "FIXED_RATE"
+        ]
       },
       "PayForUserPolicyStrategy": {
         "properties": {
@@ -18327,7 +18341,10 @@
         "enum": [
           "charge_custom_tokens"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "CHARGE_CUSTOM_TOKENS"
+        ]
       },
       "ChargeCustomTokenPolicyStrategy": {
         "properties": {
@@ -18357,7 +18374,10 @@
         "enum": [
           "fixed_rate"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "FIXED_RATE"
+        ]
       },
       "FixedRateTokenPolicyStrategy": {
         "properties": {
@@ -18400,7 +18420,10 @@
         "enum": [
           "policy"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "POLICY"
+        ]
       },
       "Policy": {
         "properties": {
@@ -18485,7 +18508,10 @@
         "enum": [
           "player"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PLAYER"
+        ]
       },
       "Player": {
         "properties": {
@@ -18534,7 +18560,10 @@
         "enum": [
           "account"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "ACCOUNT"
+        ]
       },
       "Account": {
         "properties": {
@@ -18604,7 +18633,10 @@
         "enum": [
           "developerAccount"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "DEVELOPER_ACCOUNT"
+        ]
       },
       "DeveloperAccount": {
         "properties": {
@@ -18652,7 +18684,14 @@
           "zkSync",
           "standard"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "AAV6",
+          "AAV8",
+          "AAV9",
+          "ZKSYNC",
+          "EOA"
+        ]
       },
       "TransactionStatus": {
         "enum": [
@@ -18667,7 +18706,19 @@
           "replaced",
           "expired"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "NONE",
+          "NEW",
+          "SENT",
+          "DROPPED",
+          "INDEXED",
+          "CONFIRMED",
+          "REVERTED",
+          "NOT_FOUND",
+          "REPLACED",
+          "EXPIRED"
+        ]
       },
       "Transition": {
         "description": "A transition represents a change in the status of a transaction intent.",
@@ -19132,6 +19183,49 @@
         "type": "object",
         "additionalProperties": false
       },
+      "TransactionErrorExplanation": {
+        "properties": {
+          "cause": {
+            "type": "string",
+            "description": "A human-readable description of what caused the error.",
+            "example": "The paymaster does not have enough native tokens deposited in the EntryPoint to cover the gas cost."
+          },
+          "solution": {
+            "type": "string",
+            "description": "A human-readable suggestion for how to resolve the error.",
+            "example": "Top up your account balance in the dashboard or deposit more to the Paymaster contract on the relevant chain."
+          }
+        },
+        "required": [
+          "cause",
+          "solution"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionError": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "The error reason string returned by the bundler or execution environment.",
+            "example": "AA31: paymaster deposit too low"
+          },
+          "name": {
+            "type": "string",
+            "description": "The decoded error name from the contract revert, if available.",
+            "example": "ExecutionResult"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/TransactionErrorExplanation",
+            "description": "Detailed explanation of the error cause and suggested solution.\nPresent only for known Account Abstraction error codes (AA10–AA99)."
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "ResponseResponse": {
         "properties": {
           "createdAt": {
@@ -19181,7 +19275,8 @@
             "description": "The address of the contract of this log."
           },
           "error": {
-            "description": "The error of the transaction of this log."
+            "$ref": "#/components/schemas/TransactionError",
+            "description": "The error of the transaction, if it failed or was rejected.\nContains the error reason and, for known Account Abstraction errors (AA10–AA99),\nan explanation with cause and solution."
           }
         },
         "required": [
@@ -19235,7 +19330,10 @@
         "enum": [
           "sign_with_wallet"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SIGN_WITH_WALLET"
+        ]
       },
       "NextActionPayload": {
         "properties": {
@@ -19285,7 +19383,10 @@
         "enum": [
           "transactionIntent"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "TRANSACTION_INTENT"
+        ]
       },
       "TransactionIntentResponse": {
         "properties": {
@@ -19455,7 +19556,10 @@
         "enum": [
           "invalid_request_error"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "INVALID_REQUEST_ERROR"
+        ]
       },
       "FieldErrors": {
         "properties": {},
@@ -19710,20 +19814,41 @@
           "user.deleted",
           "account.created"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "TRANSACTION_BROADCAST",
+          "TRANSACTION_SUCCESSFUL",
+          "TRANSACTION_CANCELLED",
+          "TRANSACTION_FAILED",
+          "BALANCE_PROJECT",
+          "BALANCE_CONTRACT",
+          "BALANCE_DEV_ACCOUNT",
+          "TEST",
+          "USER_CREATED",
+          "USER_UPDATED",
+          "USER_DELETED",
+          "ACCOUNT_CREATED"
+        ]
       },
       "APITriggerType": {
         "enum": [
           "webhook",
           "email"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "WEBHOOK",
+          "EMAIL"
+        ]
       },
       "EntityType.TRIGGER": {
         "enum": [
           "trigger"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "TRIGGER"
+        ]
       },
       "TriggerResponse": {
         "properties": {
@@ -19766,7 +19891,10 @@
         "enum": [
           "subscription"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SUBSCRIPTION"
+        ]
       },
       "SubscriptionResponse": {
         "properties": {
@@ -19847,13 +19975,20 @@
           "success",
           "failed"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SUCCESS",
+          "FAILED"
+        ]
       },
       "EntityType.LOG": {
         "enum": [
           "log"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "LOG"
+        ]
       },
       "LogResponse": {
         "properties": {
@@ -20383,7 +20518,10 @@
         "enum": [
           "signature"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SIGNATURE"
+        ]
       },
       "SignPayloadResponse": {
         "properties": {
@@ -20555,7 +20693,10 @@
         "enum": [
           "session"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SESSION"
+        ]
       },
       "SessionResponse": {
         "properties": {
@@ -20838,7 +20979,10 @@
         "enum": [
           "contract_functions"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "CONTRACT"
+        ]
       },
       "PolicyRuleType": {
         "enum": [
@@ -20846,13 +20990,21 @@
           "account_functions",
           "rate_limit"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "CONTRACT",
+          "ACCOUNT",
+          "RATE_LIMIT"
+        ]
       },
       "EntityType.POLICY_RULE": {
         "enum": [
           "policyRule"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "POLICY_RULE"
+        ]
       },
       "AbiType": {
         "properties": {
@@ -20962,7 +21114,10 @@
         "enum": [
           "contract"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "CONTRACT"
+        ]
       },
       "ContractResponse": {
         "properties": {
@@ -21073,7 +21228,10 @@
         "enum": [
           "account_functions"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "ACCOUNT"
+        ]
       },
       "AccountPolicyRuleResponse": {
         "properties": {
@@ -21104,13 +21262,19 @@
         "enum": [
           "gas_per_transaction"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "GAS_PER_TRANSACTION"
+        ]
       },
       "PolicyRuleType.RATE_LIMIT": {
         "enum": [
           "rate_limit"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "RATE_LIMIT"
+        ]
       },
       "PolicyRateLimit": {
         "enum": [
@@ -21118,7 +21282,12 @@
           "gas_per_interval",
           "count_per_interval"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "GAS_PER_TRANSACTION",
+          "GAS_PER_INTERVAL",
+          "COUNT_PER_INTERVAL"
+        ]
       },
       "GasPerTransactionLimitPolicyRuleResponse": {
         "properties": {
@@ -21157,7 +21326,10 @@
         "enum": [
           "gas_per_interval"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "GAS_PER_INTERVAL"
+        ]
       },
       "TimeIntervalType": {
         "enum": [
@@ -21167,7 +21339,14 @@
           "week",
           "month"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "MINUTE",
+          "HOUR",
+          "DAY",
+          "WEEK",
+          "MONTH"
+        ]
       },
       "GasPerIntervalLimitPolicyRuleResponse": {
         "properties": {
@@ -21215,7 +21394,10 @@
         "enum": [
           "count_per_interval"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "COUNT_PER_INTERVAL"
+        ]
       },
       "CountPerIntervalLimitPolicyRuleResponse": {
         "properties": {
@@ -22278,7 +22460,10 @@
         "enum": [
           "paymaster"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PAYMASTER"
+        ]
       },
       "PaymasterResponse": {
         "properties": {
@@ -22393,7 +22578,11 @@
           "coinbase",
           "stripe"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "COINBASE",
+          "STRIPE"
+        ]
       },
       "OnrampFee": {
         "description": "Common fee structure for onramp operations",
@@ -22691,7 +22880,10 @@
         "enum": [
           "forwarderContract"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "FORWARDER_CONTRACT"
+        ]
       },
       "ForwarderContractResponse": {
         "properties": {
@@ -22778,13 +22970,19 @@
         "enum": [
           "balance.contract"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "BALANCE_CONTRACT"
+        ]
       },
       "EntityType.EVENT": {
         "enum": [
           "event"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EVENT"
+        ]
       },
       "ContractEventResponse": {
         "properties": {
@@ -22834,7 +23032,10 @@
         "enum": [
           "balance.dev_account"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "BALANCE_DEV_ACCOUNT"
+        ]
       },
       "AccountEventResponse": {
         "properties": {
@@ -22878,7 +23079,10 @@
         "enum": [
           "balance.project"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "BALANCE_PROJECT"
+        ]
       },
       "BalanceEventResponse": {
         "properties": {
@@ -22913,7 +23117,10 @@
         "enum": [
           "transaction_intent.successful"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "TRANSACTION_SUCCESSFUL"
+        ]
       },
       "TransactionConfirmedEventResponse": {
         "properties": {
@@ -23295,7 +23502,10 @@
         "enum": [
           "device"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "DEVICE"
+        ]
       },
       "DeviceResponse": {
         "properties": {
@@ -23642,7 +23852,10 @@
         "enum": [
           "readContract"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "READCONTRACT"
+        ]
       },
       "ContractReadResponse": {
         "properties": {
@@ -24116,7 +24329,10 @@
         "enum": [
           "wallet"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "WALLET"
+        ]
       },
       "BaseEntityResponse_EntityType.WALLET_": {
         "properties": {
@@ -24321,7 +24537,17 @@
           "oidc",
           "better-auth"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "ACCELBYTE",
+          "FIREBASE",
+          "LOOTLOCKER",
+          "PLAYFAB",
+          "SUPABASE",
+          "CUSTOM",
+          "OIDC",
+          "BETTER_AUTH"
+        ]
       },
       "PregenerateUserRequestV2": {
         "properties": {
@@ -24380,32 +24606,50 @@
           "account",
           "transaction"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PROJECT",
+          "ACCOUNT",
+          "TRANSACTION"
+        ]
       },
       "PolicyV2Action": {
         "enum": [
           "accept",
           "reject"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "ACCEPT",
+          "REJECT"
+        ]
       },
       "EvmCriteriaType.EVM_ADDRESS": {
         "enum": [
           "evmAddress"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EVM_ADDRESS"
+        ]
       },
       "CriteriaOperator.IN": {
         "enum": [
           "in"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "IN"
+        ]
       },
       "CriteriaOperator.NOT_IN": {
         "enum": [
           "not in"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "NOT_IN"
+        ]
       },
       "EvmCriteriaType": {
         "enum": [
@@ -24418,7 +24662,17 @@
           "evmTypedDataField",
           "netUSDChange"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EVM_ADDRESS",
+          "ETH_VALUE",
+          "EVM_NETWORK",
+          "EVM_MESSAGE",
+          "EVM_DATA",
+          "EVM_TYPED_DATA_VERIFYING_CONTRACT",
+          "EVM_TYPED_DATA_FIELD",
+          "NET_USD_CHANGE"
+        ]
       },
       "SolanaCriteriaType": {
         "enum": [
@@ -24432,7 +24686,18 @@
           "solNetwork",
           "solMessage"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SOL_ADDRESS",
+          "SOL_VALUE",
+          "SPL_ADDRESS",
+          "SPL_VALUE",
+          "MINT_ADDRESS",
+          "SOL_DATA",
+          "PROGRAM_ID",
+          "SOL_NETWORK",
+          "SOL_MESSAGE"
+        ]
       },
       "CriteriaType": {
         "anyOf": [
@@ -24455,7 +24720,17 @@
           "==",
           "match"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "IN",
+          "NOT_IN",
+          "LESS_THAN",
+          "LESS_THAN_OR_EQUAL",
+          "GREATER_THAN",
+          "GREATER_THAN_OR_EQUAL",
+          "EQUAL",
+          "MATCH"
+        ]
       },
       "EvmAddressCriterion": {
         "properties": {
@@ -24491,31 +24766,46 @@
         "enum": [
           "ethValue"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "ETH_VALUE"
+        ]
       },
       "CriteriaOperator.LESS_THAN_OR_EQUAL": {
         "enum": [
           "<="
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "LESS_THAN_OR_EQUAL"
+        ]
       },
       "CriteriaOperator.GREATER_THAN_OR_EQUAL": {
         "enum": [
           ">="
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "GREATER_THAN_OR_EQUAL"
+        ]
       },
       "CriteriaOperator.LESS_THAN": {
         "enum": [
           "<"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "LESS_THAN"
+        ]
       },
       "CriteriaOperator.GREATER_THAN": {
         "enum": [
           ">"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "GREATER_THAN"
+        ]
       },
       "EthValueCriterion": {
         "properties": {
@@ -24554,7 +24844,10 @@
         "enum": [
           "evmNetwork"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EVM_NETWORK"
+        ]
       },
       "EvmNetworkCriterion": {
         "properties": {
@@ -24591,13 +24884,19 @@
         "enum": [
           "evmMessage"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EVM_MESSAGE"
+        ]
       },
       "CriteriaOperator.MATCH": {
         "enum": [
           "match"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "MATCH"
+        ]
       },
       "EvmMessageCriterion": {
         "properties": {
@@ -24623,7 +24922,10 @@
         "enum": [
           "evmData"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EVM_DATA"
+        ]
       },
       "Record_string.unknown_": {
         "properties": {},
@@ -24662,7 +24964,10 @@
         "enum": [
           "evmTypedDataVerifyingContract"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EVM_TYPED_DATA_VERIFYING_CONTRACT"
+        ]
       },
       "EvmTypedDataVerifyingContractCriterion": {
         "properties": {
@@ -24698,7 +25003,10 @@
         "enum": [
           "evmTypedDataField"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EVM_TYPED_DATA_FIELD"
+        ]
       },
       "EvmTypedDataFieldCriterion": {
         "properties": {
@@ -24743,7 +25051,10 @@
         "enum": [
           "netUSDChange"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "NET_USD_CHANGE"
+        ]
       },
       "NetUSDChangeCriterion": {
         "properties": {
@@ -24776,7 +25087,10 @@
         "enum": [
           "solAddress"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SOL_ADDRESS"
+        ]
       },
       "SolAddressCriterion": {
         "properties": {
@@ -24812,7 +25126,10 @@
         "enum": [
           "solValue"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SOL_VALUE"
+        ]
       },
       "SolValueCriterion": {
         "properties": {
@@ -24845,7 +25162,10 @@
         "enum": [
           "splAddress"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SPL_ADDRESS"
+        ]
       },
       "SplAddressCriterion": {
         "properties": {
@@ -24881,7 +25201,10 @@
         "enum": [
           "splValue"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SPL_VALUE"
+        ]
       },
       "SplValueCriterion": {
         "properties": {
@@ -24914,13 +25237,19 @@
         "enum": [
           "mintAddress"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "MINT_ADDRESS"
+        ]
       },
       "CriteriaOperator.EQUAL": {
         "enum": [
           "=="
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EQUAL"
+        ]
       },
       "MintAddressCriterion": {
         "properties": {
@@ -24956,7 +25285,10 @@
         "enum": [
           "solData"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SOL_DATA"
+        ]
       },
       "SolDataCriterion": {
         "properties": {
@@ -24989,7 +25321,10 @@
         "enum": [
           "programId"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PROGRAM_ID"
+        ]
       },
       "ProgramIdCriterion": {
         "properties": {
@@ -25025,7 +25360,10 @@
         "enum": [
           "solNetwork"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SOL_NETWORK"
+        ]
       },
       "SolNetworkCriterion": {
         "properties": {
@@ -25061,7 +25399,10 @@
         "enum": [
           "solMessage"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SOL_MESSAGE"
+        ]
       },
       "SolMessageCriterion": {
         "properties": {
@@ -25142,7 +25483,10 @@
         "enum": [
           "policyV2Rule"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "POLICY_V2_RULE"
+        ]
       },
       "PolicyV2RuleResponse": {
         "properties": {
@@ -25189,7 +25533,10 @@
         "enum": [
           "policyV2"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "POLICY_V2"
+        ]
       },
       "PolicyV2Response": {
         "properties": {
@@ -25540,7 +25887,17 @@
               "==",
               "match"
             ],
-            "description": "The operator to use for comparison."
+            "description": "The operator to use for comparison.",
+            "x-enum-varnames": [
+              "In",
+              "NotIn",
+              "LessThan",
+              "LessThanOrEqualTo",
+              "GreaterThan",
+              "GreaterThanOrEqualTo",
+              "Equal",
+              "Match"
+            ]
           },
           "abi": {
             "type": "string",
@@ -25849,7 +26206,11 @@
               "in"
             ],
             "description": "The operator to use for comparison.",
-            "example": "in"
+            "example": "in",
+            "x-enum-varnames": [
+              "Equal",
+              "In"
+            ]
           },
           "addresses": {
             "items": {
@@ -25889,7 +26250,15 @@
               "==",
               "match"
             ],
-            "description": "The operator to use for comparison."
+            "description": "The operator to use for comparison.",
+            "x-enum-varnames": [
+              "In",
+              "NotIn",
+              "LessThanOrEqualTo",
+              "GreaterThanOrEqualTo",
+              "Equal",
+              "Match"
+            ]
           },
           "idl": {
             "type": "string",
@@ -26411,7 +26780,10 @@
         "enum": [
           "feeSponsorship"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "FEE_SPONSORSHIP"
+        ]
       },
       "FeeSponsorshipResponse": {
         "description": "Fee sponsorship policy response.",
@@ -27597,13 +27969,21 @@
           "ADMIN",
           "MEMBER"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "OWNER",
+          "ADMIN",
+          "MEMBER"
+        ]
       },
       "EntityType.USER": {
         "enum": [
           "user"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "USER"
+        ]
       },
       "UserProjectResponse": {
         "properties": {
@@ -27689,13 +28069,19 @@
         "enum": [
           "ADMIN"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "ADMIN"
+        ]
       },
       "UserProjectRole.MEMBER": {
         "enum": [
           "MEMBER"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "MEMBER"
+        ]
       },
       "UserProjectCreateRequest": {
         "properties": {
@@ -27940,6 +28326,10 @@
             },
             "type": "array",
             "description": "Scopes restricting this API key's access. Empty array means full access."
+          },
+          "secretKey": {
+            "type": "string",
+            "description": "The raw secret key - only populated on creation/rotation for secret keys"
           }
         },
         "required": [
@@ -27974,7 +28364,10 @@
         "enum": [
           "project"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PROJECT"
+        ]
       },
       "ChildProjectResponse": {
         "properties": {
@@ -28313,7 +28706,11 @@
           "INDIVIDUAL",
           "PROJECT"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "INDIVIDUAL",
+          "PROJECT"
+        ]
       },
       "CreateProjectRequest": {
         "properties": {
@@ -28328,6 +28725,11 @@
             "$ref": "#/components/schemas/PrivateKeyPolicy",
             "description": "The private key policyfor the project.",
             "example": "PROJECT"
+          },
+          "createApiKey": {
+            "type": "boolean",
+            "description": "Whether to create API keys for the project.",
+            "default": true
           }
         },
         "required": [
@@ -28427,7 +28829,10 @@
         "enum": [
           "smtpConfig"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SMTP_CONFIG"
+        ]
       },
       "SMTPConfigResponse": {
         "properties": {
@@ -28530,13 +28935,20 @@
           "emailVerification",
           "passwordReset"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EMAIL_VERIFICATION",
+          "PASSWORD_RESET"
+        ]
       },
       "EntityType.EMAIL_SAMPLE": {
         "enum": [
           "emailSample"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EMAIL_SAMPLE"
+        ]
       },
       "EmailSampleResponse": {
         "properties": {
@@ -28583,7 +28995,11 @@
           "emailVerification",
           "passwordReset"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EMAIL_VERIFICATION",
+          "PASSWORD_RESET"
+        ]
       },
       "CreateEmailSampleRequest": {
         "properties": {
@@ -28915,7 +29331,14 @@
           "sk_shield",
           "pk_wallet"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PUBLIC_KEY",
+          "SECRET_KEY",
+          "PUBLIC_KEY_SHIELD",
+          "SECRET_KEY_SHIELD",
+          "BACKEND_WALLET_PUBLIC_KEY"
+        ]
       },
       "CreateProjectApiKeyRequest": {
         "properties": {
@@ -29395,7 +29818,10 @@
         "enum": [
           "verify_email"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "ActionVerifyEmail"
+        ]
       },
       "ActionRequiredResponse": {
         "properties": {
@@ -29638,7 +30064,16 @@
           "line",
           "apple"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "GOOGLE",
+          "TWITTER",
+          "FACEBOOK",
+          "DISCORD",
+          "EPIC_GAMES",
+          "LINE",
+          "APPLE"
+        ]
       },
       "OAuthInitRequest": {
         "properties": {
@@ -29724,7 +30159,11 @@
           "idToken",
           "customToken"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "IDTOKEN",
+          "CUSTOMTOKEN"
+        ]
       },
       "ThirdPartyOAuthRequest": {
         "properties": {
@@ -29811,7 +30250,10 @@
         "enum": [
           "email"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EMAIL"
+        ]
       },
       "BasicAuthProvider": {
         "description": "Enum of the supporting Basic Auth providers.",
@@ -29823,7 +30265,15 @@
           "phone",
           "test_account"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EMAIL",
+          "WALLET",
+          "GUEST",
+          "WEB3",
+          "PHONE",
+          "TEST_ACCOUNT"
+        ]
       },
       "AuthProvider": {
         "anyOf": [
@@ -29904,7 +30354,10 @@
         "enum": [
           "guest"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "GUEST"
+        ]
       },
       "GuestAuthConfig": {
         "properties": {
@@ -29928,7 +30381,10 @@
         "enum": [
           "web3"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "WEB3"
+        ]
       },
       "Web3AuthConfig": {
         "properties": {
@@ -29952,13 +30408,19 @@
         "enum": [
           "phone"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PHONE"
+        ]
       },
       "SmsProvider.TWILIO": {
         "enum": [
           "twilio"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "TWILIO"
+        ]
       },
       "TwilioSmsProviderConfig": {
         "description": "Twilio SMS provider configuration",
@@ -29992,7 +30454,10 @@
         "enum": [
           "messagebird"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "MESSAGEBIRD"
+        ]
       },
       "MessageBirdSmsProviderConfig": {
         "description": "MessageBird SMS provider configuration",
@@ -30021,7 +30486,10 @@
         "enum": [
           "txtlocal"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "TXTLOCAL"
+        ]
       },
       "TxtLocalSmsProviderConfig": {
         "description": "TxtLocal SMS provider configuration",
@@ -30050,7 +30518,10 @@
         "enum": [
           "vonage"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "VONAGE"
+        ]
       },
       "VonageSmsProviderConfig": {
         "description": "Vonage SMS provider configuration",
@@ -30084,7 +30555,10 @@
         "enum": [
           "sms_api"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SMS_API"
+        ]
       },
       "SmsApiProviderConfig": {
         "description": "SMS API provider configuration",
@@ -30158,7 +30632,10 @@
         "enum": [
           "supabase"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "SUPABASE"
+        ]
       },
       "SupabaseAuthConfig": {
         "description": "Supabase oauth configuration",
@@ -30193,7 +30670,10 @@
         "enum": [
           "oidc"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "OIDC"
+        ]
       },
       "OIDCAuthConfig": {
         "properties": {
@@ -30230,7 +30710,10 @@
         "enum": [
           "accelbyte"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "ACCELBYTE"
+        ]
       },
       "AccelbyteOAuthConfig": {
         "description": "Accelbyte oauth configuration",
@@ -30270,7 +30753,10 @@
         "enum": [
           "google"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "GOOGLE"
+        ]
       },
       "GoogleOAuthConfig": {
         "description": "Google oauth configuration",
@@ -30304,7 +30790,10 @@
         "enum": [
           "twitter"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "TWITTER"
+        ]
       },
       "TwitterOAuthConfig": {
         "description": "Twitter oauth configuration",
@@ -30339,7 +30828,10 @@
         "enum": [
           "facebook"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "FACEBOOK"
+        ]
       },
       "FacebookOAuthConfig": {
         "properties": {
@@ -30373,7 +30865,10 @@
         "enum": [
           "apple"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "APPLE"
+        ]
       },
       "AppleOAuthConfig": {
         "properties": {
@@ -30406,7 +30901,10 @@
         "enum": [
           "line"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "LINE"
+        ]
       },
       "LineOAuthConfig": {
         "properties": {
@@ -30440,7 +30938,10 @@
         "enum": [
           "discord"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "DISCORD"
+        ]
       },
       "DiscordOAuthConfig": {
         "properties": {
@@ -30474,7 +30975,10 @@
         "enum": [
           "epic_games"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "EPIC_GAMES"
+        ]
       },
       "EpicGamesOAuthConfig": {
         "properties": {
@@ -30508,7 +31012,10 @@
         "enum": [
           "playfab"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "PLAYFAB"
+        ]
       },
       "PlayFabOAuthConfig": {
         "description": "PlayFab oauth configuration",
@@ -30538,7 +31045,10 @@
         "enum": [
           "firebase"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "FIREBASE"
+        ]
       },
       "FirebaseOAuthConfig": {
         "description": "Firebase configuration",
@@ -30568,7 +31078,10 @@
         "enum": [
           "custom"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "CUSTOM"
+        ]
       },
       "CustomAuthConfig": {
         "properties": {
@@ -30601,7 +31114,10 @@
         "enum": [
           "lootlocker"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "LOOTLOCKER"
+        ]
       },
       "LootLockerOAuthConfig": {
         "description": "LootLocker oauth configuration",
@@ -30626,7 +31142,10 @@
         "enum": [
           "better-auth"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "BETTER_AUTH"
+        ]
       },
       "BetterAuthConfig": {
         "description": "Better Auth configuration",
@@ -30656,7 +31175,10 @@
         "enum": [
           "test_account"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "TEST_ACCOUNT"
+        ]
       },
       "TestAccountConfig": {
         "description": "Test account configuration for automated testing and App Store review flows.\nWorks on both livemode and sandbox environments with V2 auth enabled.",
@@ -30821,7 +31343,15 @@
           "failed",
           "canceled"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "CREATED",
+          "RUNNING",
+          "PAUSED",
+          "COMPLETED",
+          "FAILED",
+          "CANCELED"
+        ]
       },
       "MappingStrategy": {
         "description": "Mapping strategy for the migration. This is used to transform the ids between the source and destination providers.\nFor the transformation, the order of the operations is:\n1. Trim the prefix and suffix from the destination id.\n2. Add the prefix and suffix to the destination id.\nWhen a user is authenticated in the destination provider, the id is transformed using the mapping strategy to find if exists in the source provider.\nIf the id is not found, the user is created in the destination provider.\nIf the id is found, the user in the destination provider is linked to the source provider.",
@@ -31011,7 +31541,12 @@
           "basic",
           "third_party"
         ],
-        "type": "string"
+        "type": "string",
+        "x-enum-varnames": [
+          "OAUTH",
+          "BASIC",
+          "THIRD_PARTY"
+        ]
       },
       "AuthProviderWithTypeResponse": {
         "properties": {

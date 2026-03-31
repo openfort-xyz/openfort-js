@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeREADCONTRACT = {
-    ReadContract: 'readContract'
+    READCONTRACT: 'readContract'
 } as const;
 
 export type EntityTypeREADCONTRACT = typeof EntityTypeREADCONTRACT[keyof typeof EntityTypeREADCONTRACT];

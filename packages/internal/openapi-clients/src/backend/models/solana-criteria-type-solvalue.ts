@@ -21,7 +21,7 @@
  */
 
 export const SolanaCriteriaTypeSOLVALUE = {
-    SolValue: 'solValue'
+    SOL_VALUE: 'solValue'
 } as const;
 
 export type SolanaCriteriaTypeSOLVALUE = typeof SolanaCriteriaTypeSOLVALUE[keyof typeof SolanaCriteriaTypeSOLVALUE];

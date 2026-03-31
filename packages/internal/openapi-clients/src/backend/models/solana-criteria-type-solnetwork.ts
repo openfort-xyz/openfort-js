@@ -21,7 +21,7 @@
  */
 
 export const SolanaCriteriaTypeSOLNETWORK = {
-    SolNetwork: 'solNetwork'
+    SOL_NETWORK: 'solNetwork'
 } as const;
 
 export type SolanaCriteriaTypeSOLNETWORK = typeof SolanaCriteriaTypeSOLNETWORK[keyof typeof SolanaCriteriaTypeSOLNETWORK];

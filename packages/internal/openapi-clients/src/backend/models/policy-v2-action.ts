@@ -21,8 +21,8 @@
  */
 
 export const PolicyV2Action = {
-    Accept: 'accept',
-    Reject: 'reject'
+    ACCEPT: 'accept',
+    REJECT: 'reject'
 } as const;
 
 export type PolicyV2Action = typeof PolicyV2Action[keyof typeof PolicyV2Action];

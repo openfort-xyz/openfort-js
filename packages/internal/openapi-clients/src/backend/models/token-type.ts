@@ -21,8 +21,8 @@
  */
 
 export const TokenType = {
-    IdToken: 'idToken',
-    CustomToken: 'customToken'
+    IDTOKEN: 'idToken',
+    CUSTOMTOKEN: 'customToken'
 } as const;
 
 export type TokenType = typeof TokenType[keyof typeof TokenType];

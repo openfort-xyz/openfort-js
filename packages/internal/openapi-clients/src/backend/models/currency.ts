@@ -21,7 +21,7 @@
  */
 
 export const Currency = {
-    Usd: 'usd'
+    USD: 'usd'
 } as const;
 
 export type Currency = typeof Currency[keyof typeof Currency];

@@ -21,7 +21,7 @@
  */
 
 export const EvmCriteriaTypeEVMMESSAGE = {
-    EvmMessage: 'evmMessage'
+    EVM_MESSAGE: 'evmMessage'
 } as const;
 
 export type EvmCriteriaTypeEVMMESSAGE = typeof EvmCriteriaTypeEVMMESSAGE[keyof typeof EvmCriteriaTypeEVMMESSAGE];

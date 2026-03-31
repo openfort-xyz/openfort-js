@@ -21,7 +21,7 @@
  */
 
 export const CriteriaOperatorLESSTHANOREQUAL = {
-    LessThanOrEqualTo: '<='
+    LESS_THAN_OR_EQUAL: '<='
 } as const;
 
 export type CriteriaOperatorLESSTHANOREQUAL = typeof CriteriaOperatorLESSTHANOREQUAL[keyof typeof CriteriaOperatorLESSTHANOREQUAL];

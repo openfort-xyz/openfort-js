@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeSIGNATURE = {
-    Signature: 'signature'
+    SIGNATURE: 'signature'
 } as const;
 
 export type EntityTypeSIGNATURE = typeof EntityTypeSIGNATURE[keyof typeof EntityTypeSIGNATURE];

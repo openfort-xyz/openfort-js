@@ -21,8 +21,8 @@
  */
 
 export const Status = {
-    Success: 'success',
-    Failed: 'failed'
+    SUCCESS: 'success',
+    FAILED: 'failed'
 } as const;
 
 export type Status = typeof Status[keyof typeof Status];

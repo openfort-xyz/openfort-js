@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeUSER = {
-    User: 'user'
+    USER: 'user'
 } as const;
 
 export type EntityTypeUSER = typeof EntityTypeUSER[keyof typeof EntityTypeUSER];

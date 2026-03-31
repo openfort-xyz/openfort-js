@@ -21,7 +21,7 @@
  */
 
 export const Actions = {
-    VerifyEmail: 'verify_email'
+    ActionVerifyEmail: 'verify_email'
 } as const;
 
 export type Actions = typeof Actions[keyof typeof Actions];

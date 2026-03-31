@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeEVENT = {
-    Event: 'event'
+    EVENT: 'event'
 } as const;
 
 export type EntityTypeEVENT = typeof EntityTypeEVENT[keyof typeof EntityTypeEVENT];

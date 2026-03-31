@@ -21,13 +21,13 @@
  */
 
 export const OAuthProvider = {
-    Google: 'google',
-    Twitter: 'twitter',
-    Facebook: 'facebook',
-    Discord: 'discord',
-    EpicGames: 'epic_games',
-    Line: 'line',
-    Apple: 'apple'
+    GOOGLE: 'google',
+    TWITTER: 'twitter',
+    FACEBOOK: 'facebook',
+    DISCORD: 'discord',
+    EPIC_GAMES: 'epic_games',
+    LINE: 'line',
+    APPLE: 'apple'
 } as const;
 
 export type OAuthProvider = typeof OAuthProvider[keyof typeof OAuthProvider];

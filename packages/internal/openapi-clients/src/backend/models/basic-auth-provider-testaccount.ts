@@ -21,7 +21,7 @@
  */
 
 export const BasicAuthProviderTESTACCOUNT = {
-    TestAccount: 'test_account'
+    TEST_ACCOUNT: 'test_account'
 } as const;
 
 export type BasicAuthProviderTESTACCOUNT = typeof BasicAuthProviderTESTACCOUNT[keyof typeof BasicAuthProviderTESTACCOUNT];

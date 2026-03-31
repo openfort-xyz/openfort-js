@@ -46,7 +46,7 @@ export const MintAddressCriterionRequestTypeEnum = {
 
 export type MintAddressCriterionRequestTypeEnum = typeof MintAddressCriterionRequestTypeEnum[keyof typeof MintAddressCriterionRequestTypeEnum];
 export const MintAddressCriterionRequestOperatorEnum = {
-    : '==',
+    Equal: '==',
     In: 'in'
 } as const;
 

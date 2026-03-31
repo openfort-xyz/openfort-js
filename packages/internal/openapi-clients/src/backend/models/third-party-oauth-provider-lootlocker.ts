@@ -21,7 +21,7 @@
  */
 
 export const ThirdPartyOAuthProviderLOOTLOCKER = {
-    Lootlocker: 'lootlocker'
+    LOOTLOCKER: 'lootlocker'
 } as const;
 
 export type ThirdPartyOAuthProviderLOOTLOCKER = typeof ThirdPartyOAuthProviderLOOTLOCKER[keyof typeof ThirdPartyOAuthProviderLOOTLOCKER];

@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeFEESPONSORSHIP = {
-    FeeSponsorship: 'feeSponsorship'
+    FEE_SPONSORSHIP: 'feeSponsorship'
 } as const;
 
 export type EntityTypeFEESPONSORSHIP = typeof EntityTypeFEESPONSORSHIP[keyof typeof EntityTypeFEESPONSORSHIP];

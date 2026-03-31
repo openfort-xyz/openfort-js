@@ -21,7 +21,7 @@
  */
 
 export const BasicAuthProviderWEB3 = {
-    Web3: 'web3'
+    WEB3: 'web3'
 } as const;
 
 export type BasicAuthProviderWEB3 = typeof BasicAuthProviderWEB3[keyof typeof BasicAuthProviderWEB3];

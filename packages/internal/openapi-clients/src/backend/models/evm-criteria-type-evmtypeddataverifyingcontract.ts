@@ -21,7 +21,7 @@
  */
 
 export const EvmCriteriaTypeEVMTYPEDDATAVERIFYINGCONTRACT = {
-    EvmTypedDataVerifyingContract: 'evmTypedDataVerifyingContract'
+    EVM_TYPED_DATA_VERIFYING_CONTRACT: 'evmTypedDataVerifyingContract'
 } as const;
 
 export type EvmCriteriaTypeEVMTYPEDDATAVERIFYINGCONTRACT = typeof EvmCriteriaTypeEVMTYPEDDATAVERIFYINGCONTRACT[keyof typeof EvmCriteriaTypeEVMTYPEDDATAVERIFYINGCONTRACT];

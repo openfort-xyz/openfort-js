@@ -17,16 +17,20 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface TransactionErrorExplanation
  */
-
-export const SponsorSchema = {
-    PAY_FOR_USER: 'pay_for_user',
-    CHARGE_CUSTOM_TOKENS: 'charge_custom_tokens',
-    FIXED_RATE: 'fixed_rate'
-} as const;
-
-export type SponsorSchema = typeof SponsorSchema[keyof typeof SponsorSchema];
-
-
+export interface TransactionErrorExplanation {
+    /**
+     * A human-readable description of what caused the error.
+     * @type {string}
+     * @memberof TransactionErrorExplanation
+     */
+    'cause': string;
+    /**
+     * A human-readable suggestion for how to resolve the error.
+     * @type {string}
+     * @memberof TransactionErrorExplanation
+     */
+    'solution': string;
+}
 

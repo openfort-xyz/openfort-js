@@ -21,7 +21,7 @@
  */
 
 export const CriteriaOperatorEQUAL = {
-    : '=='
+    EQUAL: '=='
 } as const;
 
 export type CriteriaOperatorEQUAL = typeof CriteriaOperatorEQUAL[keyof typeof CriteriaOperatorEQUAL];

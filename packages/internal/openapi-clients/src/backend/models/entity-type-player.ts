@@ -21,7 +21,7 @@
  */
 
 export const EntityTypePLAYER = {
-    Player: 'player'
+    PLAYER: 'player'
 } as const;
 
 export type EntityTypePLAYER = typeof EntityTypePLAYER[keyof typeof EntityTypePLAYER];

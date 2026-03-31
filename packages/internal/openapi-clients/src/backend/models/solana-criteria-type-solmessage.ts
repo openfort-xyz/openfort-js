@@ -21,7 +21,7 @@
  */
 
 export const SolanaCriteriaTypeSOLMESSAGE = {
-    SolMessage: 'solMessage'
+    SOL_MESSAGE: 'solMessage'
 } as const;
 
 export type SolanaCriteriaTypeSOLMESSAGE = typeof SolanaCriteriaTypeSOLMESSAGE[keyof typeof SolanaCriteriaTypeSOLMESSAGE];

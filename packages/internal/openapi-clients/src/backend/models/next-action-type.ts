@@ -21,7 +21,7 @@
  */
 
 export const NextActionType = {
-    SignWithWallet: 'sign_with_wallet'
+    SIGN_WITH_WALLET: 'sign_with_wallet'
 } as const;
 
 export type NextActionType = typeof NextActionType[keyof typeof NextActionType];

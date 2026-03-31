@@ -21,7 +21,7 @@
  */
 
 export const APITopicBALANCEPROJECT = {
-    BalanceProject: 'balance.project'
+    BALANCE_PROJECT: 'balance.project'
 } as const;
 
 export type APITopicBALANCEPROJECT = typeof APITopicBALANCEPROJECT[keyof typeof APITopicBALANCEPROJECT];

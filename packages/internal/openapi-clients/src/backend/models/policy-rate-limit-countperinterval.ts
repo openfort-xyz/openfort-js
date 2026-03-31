@@ -21,7 +21,7 @@
  */
 
 export const PolicyRateLimitCOUNTPERINTERVAL = {
-    CountPerInterval: 'count_per_interval'
+    COUNT_PER_INTERVAL: 'count_per_interval'
 } as const;
 
 export type PolicyRateLimitCOUNTPERINTERVAL = typeof PolicyRateLimitCOUNTPERINTERVAL[keyof typeof PolicyRateLimitCOUNTPERINTERVAL];

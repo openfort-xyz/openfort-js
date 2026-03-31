@@ -547,6 +547,8 @@ export * from './time-interval-type';
 export * from './token-type';
 export * from './transaction-abstraction-type';
 export * from './transaction-confirmed-event-response';
+export * from './transaction-error';
+export * from './transaction-error-explanation';
 export * from './transaction-intent';
 export * from './transaction-intent-list-queries';
 export * from './transaction-intent-list-response';

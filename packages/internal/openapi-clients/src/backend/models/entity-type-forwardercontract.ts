@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeFORWARDERCONTRACT = {
-    ForwarderContract: 'forwarderContract'
+    FORWARDER_CONTRACT: 'forwarderContract'
 } as const;
 
 export type EntityTypeFORWARDERCONTRACT = typeof EntityTypeFORWARDERCONTRACT[keyof typeof EntityTypeFORWARDERCONTRACT];

@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeTRANSACTIONINTENT = {
-    TransactionIntent: 'transactionIntent'
+    TRANSACTION_INTENT: 'transactionIntent'
 } as const;
 
 export type EntityTypeTRANSACTIONINTENT = typeof EntityTypeTRANSACTIONINTENT[keyof typeof EntityTypeTRANSACTIONINTENT];

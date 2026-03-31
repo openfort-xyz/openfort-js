@@ -21,7 +21,7 @@
  */
 
 export const CriteriaOperatorGREATERTHAN = {
-    GreaterThan: '>'
+    GREATER_THAN: '>'
 } as const;
 
 export type CriteriaOperatorGREATERTHAN = typeof CriteriaOperatorGREATERTHAN[keyof typeof CriteriaOperatorGREATERTHAN];

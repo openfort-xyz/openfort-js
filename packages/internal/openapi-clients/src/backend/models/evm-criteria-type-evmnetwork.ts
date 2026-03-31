@@ -21,7 +21,7 @@
  */
 
 export const EvmCriteriaTypeEVMNETWORK = {
-    EvmNetwork: 'evmNetwork'
+    EVM_NETWORK: 'evmNetwork'
 } as const;
 
 export type EvmCriteriaTypeEVMNETWORK = typeof EvmCriteriaTypeEVMNETWORK[keyof typeof EvmCriteriaTypeEVMNETWORK];

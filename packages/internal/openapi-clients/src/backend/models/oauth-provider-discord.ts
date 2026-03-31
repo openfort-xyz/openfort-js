@@ -21,7 +21,7 @@
  */
 
 export const OAuthProviderDISCORD = {
-    Discord: 'discord'
+    DISCORD: 'discord'
 } as const;
 
 export type OAuthProviderDISCORD = typeof OAuthProviderDISCORD[keyof typeof OAuthProviderDISCORD];

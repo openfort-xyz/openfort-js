@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeLOG = {
-    Log: 'log'
+    LOG: 'log'
 } as const;
 
 export type EntityTypeLOG = typeof EntityTypeLOG[keyof typeof EntityTypeLOG];

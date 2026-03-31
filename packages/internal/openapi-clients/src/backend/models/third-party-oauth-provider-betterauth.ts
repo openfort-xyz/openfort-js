@@ -21,7 +21,7 @@
  */
 
 export const ThirdPartyOAuthProviderBETTERAUTH = {
-    BetterAuth: 'better-auth'
+    BETTER_AUTH: 'better-auth'
 } as const;
 
 export type ThirdPartyOAuthProviderBETTERAUTH = typeof ThirdPartyOAuthProviderBETTERAUTH[keyof typeof ThirdPartyOAuthProviderBETTERAUTH];

@@ -56,5 +56,11 @@ export interface ApiKeyResponse {
      * @memberof ApiKeyResponse
      */
     'scopes': Array<string>;
+    /**
+     * The raw secret key - only populated on creation/rotation for secret keys
+     * @type {string}
+     * @memberof ApiKeyResponse
+     */
+    'secretKey'?: string;
 }
 

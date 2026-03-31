@@ -582,6 +582,8 @@ models/time-interval-type.ts
 models/token-type.ts
 models/transaction-abstraction-type.ts
 models/transaction-confirmed-event-response.ts
+models/transaction-error-explanation.ts
+models/transaction-error.ts
 models/transaction-intent-list-queries.ts
 models/transaction-intent-list-response.ts
 models/transaction-intent-response-account.ts

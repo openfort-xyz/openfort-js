@@ -62,7 +62,7 @@ export const SolDataCriterionRequestOperatorEnum = {
     NotIn: 'not in',
     LessThanOrEqualTo: '<=',
     GreaterThanOrEqualTo: '>=',
-    : '==',
+    Equal: '==',
     Match: 'match'
 } as const;
 

@@ -21,11 +21,11 @@
  */
 
 export const TimeIntervalType = {
-    Minute: 'minute',
-    Hour: 'hour',
-    Day: 'day',
-    Week: 'week',
-    Month: 'month'
+    MINUTE: 'minute',
+    HOUR: 'hour',
+    DAY: 'day',
+    WEEK: 'week',
+    MONTH: 'month'
 } as const;
 
 export type TimeIntervalType = typeof TimeIntervalType[keyof typeof TimeIntervalType];

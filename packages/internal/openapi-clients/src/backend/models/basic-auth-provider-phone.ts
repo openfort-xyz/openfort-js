@@ -21,7 +21,7 @@
  */
 
 export const BasicAuthProviderPHONE = {
-    Phone: 'phone'
+    PHONE: 'phone'
 } as const;
 
 export type BasicAuthProviderPHONE = typeof BasicAuthProviderPHONE[keyof typeof BasicAuthProviderPHONE];

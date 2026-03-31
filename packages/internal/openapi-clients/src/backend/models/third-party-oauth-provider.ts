@@ -21,14 +21,14 @@
  */
 
 export const ThirdPartyOAuthProvider = {
-    Accelbyte: 'accelbyte',
-    Firebase: 'firebase',
-    Lootlocker: 'lootlocker',
-    Playfab: 'playfab',
-    Supabase: 'supabase',
-    Custom: 'custom',
-    Oidc: 'oidc',
-    BetterAuth: 'better-auth'
+    ACCELBYTE: 'accelbyte',
+    FIREBASE: 'firebase',
+    LOOTLOCKER: 'lootlocker',
+    PLAYFAB: 'playfab',
+    SUPABASE: 'supabase',
+    CUSTOM: 'custom',
+    OIDC: 'oidc',
+    BETTER_AUTH: 'better-auth'
 } as const;
 
 export type ThirdPartyOAuthProvider = typeof ThirdPartyOAuthProvider[keyof typeof ThirdPartyOAuthProvider];

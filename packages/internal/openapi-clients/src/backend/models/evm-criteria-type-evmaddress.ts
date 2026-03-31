@@ -21,7 +21,7 @@
  */
 
 export const EvmCriteriaTypeEVMADDRESS = {
-    EvmAddress: 'evmAddress'
+    EVM_ADDRESS: 'evmAddress'
 } as const;
 
 export type EvmCriteriaTypeEVMADDRESS = typeof EvmCriteriaTypeEVMADDRESS[keyof typeof EvmCriteriaTypeEVMADDRESS];

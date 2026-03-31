@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { TransactionError } from './transaction-error';
+// May contain unused imports in some cases
+// @ts-ignore
 import { TransactionResponseLog } from './transaction-response-log';
 
 /**
@@ -84,10 +87,10 @@ export interface ResponseResponse {
      */
     'to'?: string;
     /**
-     * The error of the transaction of this log.
-     * @type {any}
+     * 
+     * @type {TransactionError}
      * @memberof ResponseResponse
      */
-    'error'?: any;
+    'error'?: TransactionError;
 }
 

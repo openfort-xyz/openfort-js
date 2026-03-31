@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeEMAILSAMPLE = {
-    EmailSample: 'emailSample'
+    EMAIL_SAMPLE: 'emailSample'
 } as const;
 
 export type EntityTypeEMAILSAMPLE = typeof EntityTypeEMAILSAMPLE[keyof typeof EntityTypeEMAILSAMPLE];

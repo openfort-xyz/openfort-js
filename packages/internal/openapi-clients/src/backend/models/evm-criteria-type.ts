@@ -21,14 +21,14 @@
  */
 
 export const EvmCriteriaType = {
-    EvmAddress: 'evmAddress',
-    EthValue: 'ethValue',
-    EvmNetwork: 'evmNetwork',
-    EvmMessage: 'evmMessage',
-    EvmData: 'evmData',
-    EvmTypedDataVerifyingContract: 'evmTypedDataVerifyingContract',
-    EvmTypedDataField: 'evmTypedDataField',
-    NetUsdChange: 'netUSDChange'
+    EVM_ADDRESS: 'evmAddress',
+    ETH_VALUE: 'ethValue',
+    EVM_NETWORK: 'evmNetwork',
+    EVM_MESSAGE: 'evmMessage',
+    EVM_DATA: 'evmData',
+    EVM_TYPED_DATA_VERIFYING_CONTRACT: 'evmTypedDataVerifyingContract',
+    EVM_TYPED_DATA_FIELD: 'evmTypedDataField',
+    NET_USD_CHANGE: 'netUSDChange'
 } as const;
 
 export type EvmCriteriaType = typeof EvmCriteriaType[keyof typeof EvmCriteriaType];

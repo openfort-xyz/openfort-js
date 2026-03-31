@@ -21,7 +21,7 @@
  */
 
 export const CriteriaOperatorMATCH = {
-    Match: 'match'
+    MATCH: 'match'
 } as const;
 
 export type CriteriaOperatorMATCH = typeof CriteriaOperatorMATCH[keyof typeof CriteriaOperatorMATCH];

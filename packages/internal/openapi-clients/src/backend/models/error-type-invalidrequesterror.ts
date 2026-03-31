@@ -21,7 +21,7 @@
  */
 
 export const ErrorTypeINVALIDREQUESTERROR = {
-    InvalidRequestError: 'invalid_request_error'
+    INVALID_REQUEST_ERROR: 'invalid_request_error'
 } as const;
 
 export type ErrorTypeINVALIDREQUESTERROR = typeof ErrorTypeINVALIDREQUESTERROR[keyof typeof ErrorTypeINVALIDREQUESTERROR];

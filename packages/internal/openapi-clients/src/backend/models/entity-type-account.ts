@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeACCOUNT = {
-    Account: 'account'
+    ACCOUNT: 'account'
 } as const;
 
 export type EntityTypeACCOUNT = typeof EntityTypeACCOUNT[keyof typeof EntityTypeACCOUNT];

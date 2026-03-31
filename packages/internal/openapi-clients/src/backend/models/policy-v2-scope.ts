@@ -21,9 +21,9 @@
  */
 
 export const PolicyV2Scope = {
-    Project: 'project',
-    Account: 'account',
-    Transaction: 'transaction'
+    PROJECT: 'project',
+    ACCOUNT: 'account',
+    TRANSACTION: 'transaction'
 } as const;
 
 export type PolicyV2Scope = typeof PolicyV2Scope[keyof typeof PolicyV2Scope];

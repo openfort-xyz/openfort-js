@@ -21,7 +21,7 @@
  */
 
 export const EvmCriteriaTypeETHVALUE = {
-    EthValue: 'ethValue'
+    ETH_VALUE: 'ethValue'
 } as const;
 
 export type EvmCriteriaTypeETHVALUE = typeof EvmCriteriaTypeETHVALUE[keyof typeof EvmCriteriaTypeETHVALUE];

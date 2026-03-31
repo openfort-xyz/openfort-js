@@ -21,7 +21,7 @@
  */
 
 export const EntityTypePOLICYRULE = {
-    PolicyRule: 'policyRule'
+    POLICY_RULE: 'policyRule'
 } as const;
 
 export type EntityTypePOLICYRULE = typeof EntityTypePOLICYRULE[keyof typeof EntityTypePOLICYRULE];

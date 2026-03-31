@@ -21,15 +21,15 @@
  */
 
 export const SolanaCriteriaType = {
-    SolAddress: 'solAddress',
-    SolValue: 'solValue',
-    SplAddress: 'splAddress',
-    SplValue: 'splValue',
-    MintAddress: 'mintAddress',
-    SolData: 'solData',
-    ProgramId: 'programId',
-    SolNetwork: 'solNetwork',
-    SolMessage: 'solMessage'
+    SOL_ADDRESS: 'solAddress',
+    SOL_VALUE: 'solValue',
+    SPL_ADDRESS: 'splAddress',
+    SPL_VALUE: 'splValue',
+    MINT_ADDRESS: 'mintAddress',
+    SOL_DATA: 'solData',
+    PROGRAM_ID: 'programId',
+    SOL_NETWORK: 'solNetwork',
+    SOL_MESSAGE: 'solMessage'
 } as const;
 
 export type SolanaCriteriaType = typeof SolanaCriteriaType[keyof typeof SolanaCriteriaType];

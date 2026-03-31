@@ -21,7 +21,7 @@
  */
 
 export const CriteriaOperatorIN = {
-    In: 'in'
+    IN: 'in'
 } as const;
 
 export type CriteriaOperatorIN = typeof CriteriaOperatorIN[keyof typeof CriteriaOperatorIN];

@@ -21,7 +21,7 @@
  */
 
 export const PolicyRuleTypeCONTRACT = {
-    ContractFunctions: 'contract_functions'
+    CONTRACT: 'contract_functions'
 } as const;
 
 export type PolicyRuleTypeCONTRACT = typeof PolicyRuleTypeCONTRACT[keyof typeof PolicyRuleTypeCONTRACT];

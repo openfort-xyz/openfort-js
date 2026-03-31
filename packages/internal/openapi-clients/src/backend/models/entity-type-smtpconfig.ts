@@ -21,7 +21,7 @@
  */
 
 export const EntityTypeSMTPCONFIG = {
-    SmtpConfig: 'smtpConfig'
+    SMTP_CONFIG: 'smtpConfig'
 } as const;
 
 export type EntityTypeSMTPCONFIG = typeof EntityTypeSMTPCONFIG[keyof typeof EntityTypeSMTPCONFIG];

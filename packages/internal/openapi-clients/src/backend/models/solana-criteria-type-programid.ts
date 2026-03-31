@@ -21,7 +21,7 @@
  */
 
 export const SolanaCriteriaTypePROGRAMID = {
-    ProgramId: 'programId'
+    PROGRAM_ID: 'programId'
 } as const;
 
 export type SolanaCriteriaTypePROGRAMID = typeof SolanaCriteriaTypePROGRAMID[keyof typeof SolanaCriteriaTypePROGRAMID];

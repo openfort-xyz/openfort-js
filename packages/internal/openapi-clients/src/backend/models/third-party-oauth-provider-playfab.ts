@@ -21,7 +21,7 @@
  */
 
 export const ThirdPartyOAuthProviderPLAYFAB = {
-    Playfab: 'playfab'
+    PLAYFAB: 'playfab'
 } as const;
 
 export type ThirdPartyOAuthProviderPLAYFAB = typeof ThirdPartyOAuthProviderPLAYFAB[keyof typeof ThirdPartyOAuthProviderPLAYFAB];

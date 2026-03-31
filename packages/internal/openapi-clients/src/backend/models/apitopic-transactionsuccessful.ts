@@ -21,7 +21,7 @@
  */
 
 export const APITopicTRANSACTIONSUCCESSFUL = {
-    TransactionIntentSuccessful: 'transaction_intent.successful'
+    TRANSACTION_SUCCESSFUL: 'transaction_intent.successful'
 } as const;
 
 export type APITopicTRANSACTIONSUCCESSFUL = typeof APITopicTRANSACTIONSUCCESSFUL[keyof typeof APITopicTRANSACTIONSUCCESSFUL];

@@ -21,7 +21,7 @@
  */
 
 export const PolicyRuleTypeACCOUNT = {
-    AccountFunctions: 'account_functions'
+    ACCOUNT: 'account_functions'
 } as const;
 
 export type PolicyRuleTypeACCOUNT = typeof PolicyRuleTypeACCOUNT[keyof typeof PolicyRuleTypeACCOUNT];

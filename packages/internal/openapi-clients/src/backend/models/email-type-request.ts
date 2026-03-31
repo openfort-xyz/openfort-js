@@ -21,8 +21,8 @@
  */
 
 export const EmailTypeRequest = {
-    EmailVerification: 'emailVerification',
-    PasswordReset: 'passwordReset'
+    EMAIL_VERIFICATION: 'emailVerification',
+    PASSWORD_RESET: 'passwordReset'
 } as const;
 
 export type EmailTypeRequest = typeof EmailTypeRequest[keyof typeof EmailTypeRequest];

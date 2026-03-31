@@ -21,7 +21,7 @@
  */
 
 export const SponsorSchemaCHARGECUSTOMTOKENS = {
-    ChargeCustomTokens: 'charge_custom_tokens'
+    CHARGE_CUSTOM_TOKENS: 'charge_custom_tokens'
 } as const;
 
 export type SponsorSchemaCHARGECUSTOMTOKENS = typeof SponsorSchemaCHARGECUSTOMTOKENS[keyof typeof SponsorSchemaCHARGECUSTOMTOKENS];

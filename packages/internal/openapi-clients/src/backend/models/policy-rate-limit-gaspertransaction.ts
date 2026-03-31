@@ -21,7 +21,7 @@
  */
 
 export const PolicyRateLimitGASPERTRANSACTION = {
-    GasPerTransaction: 'gas_per_transaction'
+    GAS_PER_TRANSACTION: 'gas_per_transaction'
 } as const;
 
 export type PolicyRateLimitGASPERTRANSACTION = typeof PolicyRateLimitGASPERTRANSACTION[keyof typeof PolicyRateLimitGASPERTRANSACTION];

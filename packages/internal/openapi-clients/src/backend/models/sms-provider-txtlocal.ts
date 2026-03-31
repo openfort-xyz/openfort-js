@@ -21,7 +21,7 @@
  */
 
 export const SmsProviderTXTLOCAL = {
-    Txtlocal: 'txtlocal'
+    TXTLOCAL: 'txtlocal'
 } as const;
 
 export type SmsProviderTXTLOCAL = typeof SmsProviderTXTLOCAL[keyof typeof SmsProviderTXTLOCAL];

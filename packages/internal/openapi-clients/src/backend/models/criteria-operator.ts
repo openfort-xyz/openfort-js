@@ -21,14 +21,14 @@
  */
 
 export const CriteriaOperator = {
-    In: 'in',
-    NotIn: 'not in',
-    LessThan: '<',
-    LessThanOrEqualTo: '<=',
-    GreaterThan: '>',
-    GreaterThanOrEqualTo: '>=',
-    : '==',
-    Match: 'match'
+    IN: 'in',
+    NOT_IN: 'not in',
+    LESS_THAN: '<',
+    LESS_THAN_OR_EQUAL: '<=',
+    GREATER_THAN: '>',
+    GREATER_THAN_OR_EQUAL: '>=',
+    EQUAL: '==',
+    MATCH: 'match'
 } as const;
 
 export type CriteriaOperator = typeof CriteriaOperator[keyof typeof CriteriaOperator];
