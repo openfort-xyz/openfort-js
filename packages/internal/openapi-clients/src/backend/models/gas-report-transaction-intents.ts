@@ -25,30 +25,18 @@ export interface GasReportTransactionIntents {
      * @type {string}
      * @memberof GasReportTransactionIntents
      */
-    'id': string;
+    'totalTransactionFee': string;
     /**
      * 
      * @type {string}
      * @memberof GasReportTransactionIntents
      */
-    'gasFee': string;
+    'totalTransactionFeeInUSD': string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof GasReportTransactionIntents
      */
-    'gasPrice': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GasReportTransactionIntents
-     */
-    'gasUsed': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GasReportTransactionIntents
-     */
-    'gasFeeInUSD': string;
+    'transactionCount': number;
 }
 

@@ -3855,22 +3855,7 @@
                           "totalTransactionFee": "0.00544349",
                           "totalTransactionFeeInUSD": "0.00191",
                           "totalTransactionFeeInCustomTokens": "0.00122705",
-                          "transactionIntents": [
-                            {
-                              "id": "tin_47eed6b7-...-ce4a602c5f17",
-                              "gasFee": "0.00421644",
-                              "gasPrice": "0.34918179665034244",
-                              "gasUsed": "0.000000000000421644",
-                              "gasFeeInUSD": "0.00148"
-                            },
-                            {
-                              "id": "tin_6d3b4a95-...-f63927018815",
-                              "gasFee": "0.00122705",
-                              "gasPrice": "0.34918179665034244",
-                              "gasUsed": "0.000000000000122705",
-                              "gasFeeInUSD": "0.00043"
-                            }
-                          ]
+                          "transactionIntents": []
                         }
                       ],
                       "start": 0,
@@ -3966,24 +3951,15 @@
                     "value": {
                       "data": [
                         {
-                          "id": "tin_47eed6b7-...-ce4a602c5f17",
-                          "gasFee": "0.00421644",
-                          "gasPrice": "0.34918179665034244",
-                          "gasUsed": "0.000000000000421644",
-                          "gasFeeInUSD": "0.00148"
-                        },
-                        {
-                          "id": "tin_6d3b4a95-...-f63927018815",
-                          "gasFee": "0.00122705",
-                          "gasPrice": "0.34918179665034244",
-                          "gasUsed": "0.000000000000122705",
-                          "gasFeeInUSD": "0.00043"
+                          "totalTransactionFee": "5443490000000000",
+                          "totalTransactionFeeInUSD": "1.91",
+                          "transactionCount": 2
                         }
                       ],
                       "start": 0,
                       "end": 1,
                       "total": 1,
-                      "url": "/v1/policies/pol_48eeba57-2cd5-4159-a2cb-057a23a35e65/reports",
+                      "url": "/v1/policies/pol_48eeba57-2cd5-4159-a2cb-057a23a35e65/reports/transaction_intents",
                       "object": "list"
                     }
                   }
@@ -4072,22 +4048,7 @@
                           "totalTransactionFee": "0.00544349",
                           "totalTransactionFeeInUSD": "0.00191",
                           "totalTransactionFeeInCustomTokens": "0.00122705",
-                          "transactionIntents": [
-                            {
-                              "id": "tin_47eed6b7-...-ce4a602c5f17",
-                              "gasFee": "0.00421644",
-                              "gasPrice": "0.34918179665034244",
-                              "gasUsed": "0.000000000000421644",
-                              "gasFeeInUSD": "0.00148"
-                            },
-                            {
-                              "id": "tin_6d3b4a95-...-f63927018815",
-                              "gasFee": "0.00122705",
-                              "gasPrice": "0.34918179665034244",
-                              "gasUsed": "0.000000000000122705",
-                              "gasFeeInUSD": "0.00043"
-                            }
-                          ]
+                          "transactionIntents": []
                         }
                       ],
                       "start": 0,
@@ -21980,28 +21941,21 @@
       },
       "GasReportTransactionIntents": {
         "properties": {
-          "id": {
+          "totalTransactionFee": {
             "type": "string"
           },
-          "gasFee": {
+          "totalTransactionFeeInUSD": {
             "type": "string"
           },
-          "gasPrice": {
-            "type": "string"
-          },
-          "gasUsed": {
-            "type": "string"
-          },
-          "gasFeeInUSD": {
-            "type": "string"
+          "transactionCount": {
+            "type": "number",
+            "format": "double"
           }
         },
         "required": [
-          "id",
-          "gasFee",
-          "gasPrice",
-          "gasUsed",
-          "gasFeeInUSD"
+          "totalTransactionFee",
+          "totalTransactionFeeInUSD",
+          "transactionCount"
         ],
         "type": "object",
         "additionalProperties": false

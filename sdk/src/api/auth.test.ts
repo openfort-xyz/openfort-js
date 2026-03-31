@@ -112,7 +112,6 @@ describe('AuthApi', () => {
 
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(OpenfortEvents.ON_AUTH_INIT, {
         method: 'email',
-        provider: 'email',
       })
     })
 
@@ -244,7 +243,6 @@ describe('AuthApi', () => {
 
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(OpenfortEvents.ON_AUTH_INIT, {
         method: 'email',
-        provider: 'email',
       })
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(OpenfortEvents.ON_AUTH_SUCCESS, authResponse)
     })
