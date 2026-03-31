@@ -19,10 +19,20 @@ export async function authenticate(page: Page) {
     throw new Error('E2E_TESTS_USER and E2E_TESTS_PASSWORD must be set')
   }
 
+  const responses: string[] = []
+  page.on('response', (response) => {
+    if (response.url().includes('/sign-in')) {
+      response.text().then((body) => responses.push(`${response.status()} ${response.url()} ${body}`)).catch(() => {})
+    }
+  })
+
   await page.getByLabel('Email address').fill(email)
   await page.getByLabel('Password').fill(password)
   await page.getByRole('button', { name: 'Sign in' }).click()
-  await page.waitForURL('/')
+  await page.waitForURL('/').catch(async (err) => {
+    console.log('Login responses:', responses)
+    throw err
+  })
 
   await expect(page.locator('h1')).toContainText('Set up your embedded signer', { timeout: 100000 })
 }
