@@ -1,9 +1,13 @@
 import Cors from 'cors'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', process.env.NEXT_PUBLIC_APP_URL].filter(
-  Boolean
-)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
+  process.env.NEXT_PUBLIC_APP_URL,
+].filter(Boolean)
 
 const cors = Cors({
   methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE'],
