@@ -198,10 +198,7 @@ export const sendCallsSync = async ({
     })
 
     if (response.data.response?.status === 0) {
-      throw new JsonRpcError(
-        RpcErrorCode.TRANSACTION_REJECTED,
-        response.data.response?.error?.reason ?? 'Transaction rejected'
-      )
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response?.error?.reason ?? '')
     }
 
     if (!response.data.response) {
