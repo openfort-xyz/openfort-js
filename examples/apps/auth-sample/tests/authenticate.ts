@@ -22,7 +22,10 @@ export async function authenticate(page: Page) {
   const responses: string[] = []
   page.on('response', (response) => {
     if (response.url().includes('/sign-in')) {
-      response.text().then((body) => responses.push(`${response.status()} ${response.url()} ${body}`)).catch(() => {})
+      response
+        .text()
+        .then((body) => responses.push(`${response.status()} ${response.url()} ${body}`))
+        .catch(() => {})
     }
   })
 
