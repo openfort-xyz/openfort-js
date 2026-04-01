@@ -9,3 +9,7 @@ updates:
         patterns:
           - "*"
     open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore"
+    labels:
+      - "dependencies"
