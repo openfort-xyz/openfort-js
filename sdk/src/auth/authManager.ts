@@ -458,7 +458,7 @@ export class AuthManager {
   }
 
   public async validateCredentials(authentication: Authentication, _forceRefresh?: boolean): Promise<AuthResponse> {
-    debugLog('Validating credentials with token:', authentication.token)
+    debugLog('Validating credentials...')
 
     const sessionData = await this.getSessionWithToken(authentication, _forceRefresh)
     return {
