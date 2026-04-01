@@ -1,13 +1,7 @@
-# apps
+# @openfort/openapi-clients
 
-## 1.0.1
+## 0.0.1
 
 ### Patch Changes
 
 - [#248](https://github.com/openfort-xyz/openfort-js/pull/248) [`176a74e`](https://github.com/openfort-xyz/openfort-js/commit/176a74e597ac43150dd56f8995ade94891cfbd3b) Thanks [@isardmart](https://github.com/isardmart)! - Rename policyId to feeSponsorshipId and fix RPC provider for custom chains and fixed auht sample mail login error
-
-## 1.0.0
-
-### Major Changes
-
-- [#186](https://github.com/openfort-xyz/openfort-js/pull/186) [`d2f8650`](https://github.com/openfort-xyz/openfort-js/commit/d2f8650e27a3d217b6080d316152cd84cac0cc3b) Thanks [@n00m4d](https://github.com/n00m4d)! - Fix back end mint
