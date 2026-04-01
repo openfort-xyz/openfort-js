@@ -13,7 +13,11 @@ const allowedOrigins = [
 const cors = Cors({
   methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE'],
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/[a-z0-9-]+\.openfort\.io$/.test(origin)
+    ) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
