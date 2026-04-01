@@ -3,17 +3,18 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 const allowedOrigins = [
   'https://create-next-app.openfort.io',
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://127.0.0.1:3000',
-  'http://127.0.0.1:3001',
   ...(process.env.CORS_ALLOWED_ORIGINS?.split(',') ?? []),
 ].filter(Boolean)
+
+const isAllowedOrigin = (origin: string) =>
+  allowedOrigins.includes(origin) ||
+  /^https:\/\/[a-z0-9-]+\.openfort\.io$/.test(origin) ||
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
 
 const cors = Cors({
   methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE'],
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || /^https:\/\/[a-z0-9-]+\.openfort\.io$/.test(origin)) {
+    if (!origin || isAllowedOrigin(origin)) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))

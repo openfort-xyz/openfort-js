@@ -7,7 +7,7 @@ import { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
 import { AuthenticationError, ConfigurationError, SessionError, SignerError } from '../core/errors/openfortError'
 import { withApiError } from '../core/errors/withApiError'
-import type { IStorage } from '../storage/istorage'
+import { type IStorage, StorageKeys } from '../storage/istorage'
 import {
   AccountTypeEnum,
   ChainTypeEnum,
@@ -810,6 +810,10 @@ export class EmbeddedWalletApi {
   }
 
   private async handleLogout(): Promise<void> {
+    // Clear Account from storage first — ensures getEmbeddedState() returns
+    // EMBEDDED_SIGNER_NOT_CONFIGURED on next login even if iframe disconnect fails
+    this.storage.remove(StorageKeys.ACCOUNT)
+
     // In React Native, if no messagePoster is set, we can't communicate with the WebView
     // Skip signer disconnect since there's no iframe/WebView storage to clear
     if (typeof document === 'undefined' && !this.messagePoster) {
