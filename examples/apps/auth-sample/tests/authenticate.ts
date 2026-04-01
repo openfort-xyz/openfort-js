@@ -10,9 +10,6 @@ export enum RecoveryMethod {
 }
 
 export async function authenticate(page: Page) {
-  await page.goto('/login')
-  await expect(page.locator('h1')).toContainText('Sign in to account')
-
   const email = process.env.E2E_TESTS_USER
   const password = process.env.E2E_TESTS_PASSWORD
   if (!email || !password) {
@@ -21,7 +18,7 @@ export async function authenticate(page: Page) {
 
   const responses: string[] = []
   page.on('response', (response) => {
-    if (response.url().includes('/sign-in')) {
+    if (response.url().includes('/sign-in') || response.url().includes('/user')) {
       response
         .text()
         .then((body) => responses.push(`${response.status()} ${response.url()} ${body}`))
@@ -29,13 +26,28 @@ export async function authenticate(page: Page) {
     }
   })
 
-  await page.getByLabel('Email address').fill(email)
-  await page.getByLabel('Password').fill(password)
-  await page.getByRole('button', { name: 'Sign in' }).click()
-  await page.waitForURL('/').catch(async (err) => {
-    console.log('Login responses:', responses)
-    throw err
-  })
+  const login = async () => {
+    await page.goto('/login')
+    await expect(page.locator('h1')).toContainText('Sign in to account')
+    await page.getByLabel('Email address').fill(email)
+    await page.getByLabel('Password').fill(password)
+    await page.getByRole('button', { name: 'Sign in' }).click()
+    await page.waitForURL('/').catch(async (err) => {
+      console.log('Login responses:', responses)
+      throw err
+    })
+    // Wait for the home page to settle (user.get() call + embedded state check)
+    await page.waitForLoadState('networkidle')
+  }
+
+  await login()
+
+  // The home page fetches the user session — if it fails, it redirects back to /login.
+  // This can happen after multiple login/logout cycles. Retry once if detected.
+  if (page.url().includes('/login')) {
+    console.log('Session not persisted after login, retrying. Responses:', responses)
+    await login()
+  }
 
   await expect(page.locator('h1')).toContainText('Set up your embedded signer', { timeout: 100000 })
 }
