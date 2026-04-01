@@ -16,13 +16,13 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
     - name: Setup pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.4.0
 
     - name: Setup Node
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
         node-version: 24
         cache: 'pnpm'
@@ -68,7 +68,7 @@ jobs:
       run: pnpm playwright test --reporter=dot --workers=5
       working-directory: examples/apps/auth-sample
 
-    - uses: actions/upload-artifact@v5.0.0
+    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
