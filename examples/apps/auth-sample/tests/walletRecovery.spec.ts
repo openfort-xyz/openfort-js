@@ -13,8 +13,6 @@ const logout = async (page: Page) => {
   await logoutButton.click()
 
   await page.waitForURL('/login')
-  // Ensure logout is fully processed before next login attempt
-  await page.waitForLoadState('networkidle')
 }
 
 test('Password recovery', async ({ page }) => {

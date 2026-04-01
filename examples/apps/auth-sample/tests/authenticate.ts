@@ -36,15 +36,19 @@ export async function authenticate(page: Page) {
       console.log('Login responses:', responses)
       throw err
     })
-    // Wait for the home page to settle (user.get() call + embedded state check)
-    await page.waitForLoadState('networkidle')
   }
 
   await login()
 
-  // The home page fetches the user session — if it fails, it redirects back to /login.
-  // This can happen after multiple login/logout cycles. Retry once if detected.
-  if (page.url().includes('/login')) {
+  // The home page fetches the user session asynchronously — if it fails,
+  // it redirects back to /login. This can happen after multiple login/logout cycles.
+  // Wait briefly to detect a redirect, then retry once if needed.
+  const redirectedToLogin = await page
+    .waitForURL('/login', { timeout: 5000 })
+    .then(() => true)
+    .catch(() => false)
+
+  if (redirectedToLogin) {
     console.log('Session not persisted after login, retrying. Responses:', responses)
     await login()
   }
