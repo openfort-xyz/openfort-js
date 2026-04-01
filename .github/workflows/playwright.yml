@@ -65,7 +65,7 @@ jobs:
         NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
         NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
         E2E_TESTS_USER: ${{ vars.E2E_TESTS_USER }}
-      run: pnpm playwright test --reporter=dot
+      run: pnpm playwright test --reporter=dot --workers=5
       working-directory: examples/apps/auth-sample
 
     - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
