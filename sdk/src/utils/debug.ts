@@ -1,10 +1,8 @@
 import { SDKConfiguration } from '../core/config/config'
 
-function sanitize(value: unknown): unknown {
-  if (typeof value === 'string') {
-    return value.replace(/[\r\n]/g, '\\n')
-  }
-  return value
+function sanitize(value: unknown): string {
+  const str = typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value)
+  return str.replace(/[\r\n]/g, '\\n')
 }
 
 export function debugLog(...args: unknown[]): void {
