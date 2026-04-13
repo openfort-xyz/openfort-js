@@ -53,7 +53,7 @@ export class EmbeddedSigner implements Signer {
 
     const acc = await Account.fromStorage(this.storage)
 
-    let accountId: string
+    let account: Account
 
     if (acc) {
       const recoverParams: SignerRecoverRequest = {
@@ -76,9 +76,8 @@ export class EmbeddedSigner implements Signer {
           },
         }),
       }
-      const iframeResponse = await this.iframeManager.recover(recoverParams)
-
-      accountId = iframeResponse.account
+      await this.iframeManager.recover(recoverParams)
+      account = acc
     } else {
       const response = await this.backendApiClients.accountsV2Api.getAccountsV2(
         {
@@ -126,15 +125,37 @@ export class EmbeddedSigner implements Signer {
         }
         const iframeResponse = await this.iframeManager.create(createParams)
 
-        accountId = iframeResponse.account
+        const recoveryMethod = params.entropy?.passkey
+          ? 'passkey'
+          : params.entropy?.recoveryPassword
+            ? 'password'
+            : 'automatic'
+
+        account = new Account({
+          chainType: iframeResponse.chainType as ChainTypeEnum,
+          id: iframeResponse.account,
+          address: iframeResponse.address,
+          ownerAddress: iframeResponse.ownerAddress,
+          accountType: iframeResponse.accountType as AccountTypeEnum,
+          createdAt: Date.now(),
+          implementationType: iframeResponse.implementationType,
+          chainId: iframeResponse.chainId,
+          implementationAddress: iframeResponse.implementationAddress,
+          salt: iframeResponse.salt,
+          factoryAddress: iframeResponse.factoryAddress,
+          recoveryMethod: Account.parseRecoveryMethod(recoveryMethod),
+          recoveryMethodDetails: passkeyDetails
+            ? { passkeyId: passkeyDetails.id, passkeyEnv: passkeyDetails.env }
+            : undefined,
+        })
       } else {
         const accounts = response.data.data
         // find if there exists an account with the requested chainId
         const accountExistsInChainId = accounts.find((ac) => ac.chainId === params.chainId)
         // intentionally take first account from the list, as they all should have the same owner EOA
-        const account = accountExistsInChainId || accounts[0]
+        const apiAccount = accountExistsInChainId || accounts[0]
         const recoverParams: SignerRecoverRequest = {
-          account: account.id,
+          account: apiAccount.id,
           ...(params.entropy && {
             entropy: {
               ...(params.entropy.recoveryPassword && {
@@ -143,72 +164,60 @@ export class EmbeddedSigner implements Signer {
               ...(params.entropy.encryptionSession && {
                 encryptionSession: params.entropy.encryptionSession,
               }),
-              ...(account.recoveryMethod === 'passkey' && {
+              ...(apiAccount.recoveryMethod === 'passkey' && {
                 passkey: {
-                  id: account.recoveryMethodDetails?.passkeyId,
-                  env: account.recoveryMethodDetails?.passkeyEnv,
-                  key: await params.getPasskeyKeyFn(account.recoveryMethodDetails?.passkeyId ?? ''),
+                  id: apiAccount.recoveryMethodDetails?.passkeyId,
+                  env: apiAccount.recoveryMethodDetails?.passkeyEnv,
+                  key: await params.getPasskeyKeyFn(apiAccount.recoveryMethodDetails?.passkeyId ?? ''),
                 },
               }),
             },
           }),
         }
-        const iframeResponse = await this.iframeManager.recover(recoverParams)
-        accountId = iframeResponse.account
+        await this.iframeManager.recover(recoverParams)
+
         // if no account exists with the requested chainId, we need to switch
         if (!accountExistsInChainId) {
-          const iframeResponseSwitchChain = await this.iframeManager.switchChain(params.chainId!)
-          accountId = iframeResponseSwitchChain.account!
+          const switchResponse = await this.iframeManager.switchChain(params.chainId!)
+          account = new Account({
+            chainType: (switchResponse.chainType ?? apiAccount.chainType) as ChainTypeEnum,
+            id: switchResponse.account!,
+            address: switchResponse.address,
+            ownerAddress: switchResponse.ownerAddress,
+            accountType: (switchResponse.accountType ?? apiAccount.accountType) as AccountTypeEnum,
+            createdAt: apiAccount.createdAt,
+            implementationType: switchResponse.implementationType ?? apiAccount.smartAccount?.implementationType,
+            chainId: switchResponse.chainId,
+            implementationAddress:
+              switchResponse.implementationAddress ?? apiAccount.smartAccount?.implementationAddress,
+            salt: switchResponse.salt ?? apiAccount.smartAccount?.salt,
+            factoryAddress: switchResponse.factoryAddress ?? apiAccount.smartAccount?.factoryAddress,
+            recoveryMethod: Account.parseRecoveryMethod(apiAccount.recoveryMethod),
+            recoveryMethodDetails: apiAccount.recoveryMethodDetails,
+          })
+        } else {
+          account = new Account({
+            chainType: apiAccount.chainType as ChainTypeEnum,
+            id: apiAccount.id,
+            address: apiAccount.address,
+            ownerAddress: apiAccount.ownerAddress,
+            accountType: apiAccount.accountType as AccountTypeEnum,
+            createdAt: apiAccount.createdAt,
+            implementationType: apiAccount.smartAccount?.implementationType,
+            chainId: apiAccount.chainId,
+            implementationAddress: apiAccount.smartAccount?.implementationAddress,
+            salt: apiAccount.smartAccount?.salt,
+            factoryAddress: apiAccount.smartAccount?.factoryAddress,
+            recoveryMethod: Account.parseRecoveryMethod(apiAccount.recoveryMethod),
+            recoveryMethodDetails: apiAccount.recoveryMethodDetails,
+          })
         }
       }
     }
 
-    return withApiError<Account>(
-      async () => {
-        const response = await this.backendApiClients.accountsV2Api.getAccountV2(
-          {
-            id: accountId,
-          },
-          {
-            headers: auth.thirdPartyProvider
-              ? {
-                  authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-player-token': auth.token,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-auth-provider': auth.thirdPartyProvider,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-token-type': auth.thirdPartyTokenType,
-                }
-              : {
-                  authorization: `Bearer ${auth.token}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-project-key': configuration.baseConfiguration.publishableKey,
-                },
-          }
-        )
-
-        const account = new Account({
-          chainType: response.data.chainType as ChainTypeEnum,
-          id: response.data.id,
-          address: response.data.address,
-          ownerAddress: response.data.ownerAddress,
-          accountType: response.data.accountType as AccountTypeEnum,
-          createdAt: response.data.createdAt,
-          implementationAddress: response.data.smartAccount?.implementationAddress,
-          implementationType: response.data.smartAccount?.implementationType,
-          chainId: response.data.chainId,
-          salt: response.data.smartAccount?.salt,
-          factoryAddress: response.data.smartAccount?.factoryAddress,
-          recoveryMethod: Account.parseRecoveryMethod(response.data.recoveryMethod),
-          recoveryMethodDetails: response.data.recoveryMethodDetails,
-        })
-        account.save(this.storage)
-        this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, response.data.address)
-        return account
-      },
-      { context: 'configure' }
-    )
+    account.save(this.storage)
+    this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, account.address)
+    return account
   }
 
   async sign(

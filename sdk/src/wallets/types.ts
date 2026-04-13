@@ -502,6 +502,16 @@ export class SwitchChainResponse implements ISwitchChainResponse {
 
   account: string | null
 
+  chainType?: string
+
+  implementationType?: string
+
+  implementationAddress?: string
+
+  factoryAddress?: string
+
+  salt?: string
+
   constructor(
     uuid: string,
     deviceID: string,
@@ -509,7 +519,12 @@ export class SwitchChainResponse implements ISwitchChainResponse {
     chainId: number,
     address: string,
     ownerAddress: string,
-    account: string
+    account: string,
+    chainType?: string,
+    implementationType?: string,
+    implementationAddress?: string,
+    factoryAddress?: string,
+    salt?: string
   ) {
     this.success = true
     this.deviceID = deviceID
@@ -520,6 +535,11 @@ export class SwitchChainResponse implements ISwitchChainResponse {
     this.ownerAddress = ownerAddress
     this.version = null
     this.account = account
+    this.chainType = chainType
+    this.implementationType = implementationType
+    this.implementationAddress = implementationAddress
+    this.factoryAddress = factoryAddress
+    this.salt = salt
   }
 }
 
