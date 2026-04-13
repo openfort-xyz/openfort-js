@@ -241,60 +241,33 @@ export class EmbeddedSigner implements Signer {
 
   async create(params: SignerCreateRequest): Promise<Account> {
     const iframeResponse = await this.iframeManager.create(params)
-    const auth = await Authentication.fromStorage(this.storage)
-    if (!auth) {
-      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'No access token found')
-    }
-    const configuration = SDKConfiguration.getInstance()
-    if (!configuration) {
-      throw new ConfigurationError('Configuration not found')
-    }
-    return withApiError<Account>(
-      async () => {
-        const response = await this.backendApiClients.accountsV2Api.getAccountV2(
-          {
-            id: iframeResponse.account,
-          },
-          {
-            headers: auth.thirdPartyProvider
-              ? {
-                  authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-player-token': auth.token,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-auth-provider': auth.thirdPartyProvider,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-token-type': auth.thirdPartyTokenType,
-                }
-              : {
-                  authorization: `Bearer ${auth.token}`,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  'x-project-key': configuration.baseConfiguration.publishableKey,
-                },
-          }
-        )
 
-        const account = new Account({
-          chainType: response.data.chainType as ChainTypeEnum,
-          id: response.data.id,
-          address: response.data.address,
-          ownerAddress: response.data.ownerAddress,
-          accountType: response.data.accountType as AccountTypeEnum,
-          createdAt: response.data.createdAt,
-          implementationType: response.data.smartAccount?.implementationType,
-          chainId: response.data.chainId,
-          implementationAddress: response.data.smartAccount?.implementationAddress,
-          salt: response.data.smartAccount?.salt,
-          factoryAddress: response.data.smartAccount?.factoryAddress,
-          recoveryMethod: Account.parseRecoveryMethod(response.data.recoveryMethod),
-          recoveryMethodDetails: response.data.recoveryMethodDetails,
-        })
-        account.save(this.storage)
-        this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, response.data.address)
-        return account
-      },
-      { context: 'create' }
-    )
+    const recoveryMethod = params.entropy?.passkey
+      ? 'passkey'
+      : params.entropy?.recoveryPassword
+        ? 'password'
+        : 'automatic'
+
+    const account = new Account({
+      chainType: iframeResponse.chainType as ChainTypeEnum,
+      id: iframeResponse.account,
+      address: iframeResponse.address,
+      ownerAddress: iframeResponse.ownerAddress,
+      accountType: iframeResponse.accountType as AccountTypeEnum,
+      createdAt: Date.now(),
+      implementationType: iframeResponse.implementationType,
+      chainId: iframeResponse.chainId,
+      implementationAddress: iframeResponse.implementationAddress,
+      salt: iframeResponse.salt,
+      factoryAddress: iframeResponse.factoryAddress,
+      recoveryMethod: Account.parseRecoveryMethod(recoveryMethod),
+      recoveryMethodDetails: params.entropy?.passkey
+        ? { passkeyId: params.entropy.passkey.id, passkeyEnv: params.entropy.passkey.env }
+        : undefined,
+    })
+    account.save(this.storage)
+    this.eventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, iframeResponse.address)
+    return account
   }
 
   async recover(params: SignerRecoverRequest): Promise<Account> {

@@ -407,16 +407,53 @@ export class CreateResponse implements IConfigureResponse {
 
   address: string
 
+  ownerAddress: string
+
+  accountType: string
+
+  chainType: string
+
+  chainId?: number
+
+  implementationType?: string
+
+  implementationAddress?: string
+
+  factoryAddress?: string
+
+  salt?: string
+
   action: Event = Event.CREATED
 
   version = VERSION
 
-  constructor(uuid: string, account: string, deviceID: string, address: string) {
+  constructor(
+    uuid: string,
+    account: string,
+    deviceID: string,
+    address: string,
+    ownerAddress: string,
+    accountType: string,
+    chainType: string,
+    chainId?: number,
+    implementationType?: string,
+    implementationAddress?: string,
+    factoryAddress?: string,
+    salt?: string,
+  ) {
     this.success = true
     this.account = account
     this.deviceID = deviceID
     this.uuid = uuid
     this.address = address
+    this.ownerAddress = ownerAddress
+    this.accountType = accountType
+    this.chainType = chainType
+    this.chainId = chainId
+    this.implementationType = implementationType
+    this.implementationAddress = implementationAddress
+    this.factoryAddress = factoryAddress
+    this.salt = salt
   }
 }
 
