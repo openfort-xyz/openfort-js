@@ -604,8 +604,8 @@ importers:
         specifier: ^5.8.0
         version: 5.8.0
       '@openfort/shield-js':
-        specifier: ^0.1.29
-        version: 0.1.34
+        specifier: ^0.1.36
+        version: 0.1.36
       '@sentry/browser':
         specifier: ^9.15.0
         version: 9.47.1
@@ -2355,6 +2355,9 @@ packages:
 
   '@openfort/shield-js@0.1.34':
     resolution: {integrity: sha512-bJxQc0zk0VPxk7CWSE5NZp5Bv8nYnStwG5GKXrS2A6hxEt0vf4BMu9db4IUiHxmgGaFWrdAnbSCSZ5AU1gwyew==}
+
+  '@openfort/shield-js@0.1.36':
+    resolution: {integrity: sha512-0vB5HvIxFr7IAzEFc7xr7FtiLvx6Zt+ByI48R8tywLb0+xp7ZAo/psB4sVz4aRyo+d+q5wW/5ulGP3mxkQeJyA==}
 
   '@opentelemetry/api@1.9.0':
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
@@ -9861,6 +9864,13 @@ snapshots:
       - zod
 
   '@openfort/shield-js@0.1.34':
+    dependencies:
+      axios: 1.15.0
+      axios-retry: 4.5.0(axios@1.15.0)
+    transitivePeerDependencies:
+      - debug
+
+  '@openfort/shield-js@0.1.36':
     dependencies:
       axios: 1.15.0
       axios-retry: 4.5.0(axios@1.15.0)
