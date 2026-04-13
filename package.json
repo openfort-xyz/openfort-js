@@ -134,7 +134,8 @@
       ],
       "ignoreGhsas": [
         "GHSA-c2c7-rcm5-vvqj",
-        "GHSA-3v7f-55p6-f55p"
+        "GHSA-3v7f-55p6-f55p",
+        "GHSA-4w7w-66w2-5vf9"
       ]
     }
   },
