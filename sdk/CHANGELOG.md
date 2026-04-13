@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.3.2
+
+### Patch Changes
+
+- [#264](https://github.com/openfort-xyz/openfort-js/pull/264) [`0484796`](https://github.com/openfort-xyz/openfort-js/commit/04847961467f2e7c77855a501b2424d8189b0c07) Thanks [@jamalavedra](https://github.com/jamalavedra)! - update deps
+
 ## 1.3.1
 
 ### Patch Changes
