@@ -439,7 +439,7 @@ export class CreateResponse implements IConfigureResponse {
     implementationType?: string,
     implementationAddress?: string,
     factoryAddress?: string,
-    salt?: string,
+    salt?: string
   ) {
     this.success = true
     this.account = account
