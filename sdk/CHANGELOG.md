@@ -1,5 +1,18 @@
 # @openfort/openfort-js
 
+## 1.3.3
+
+### Patch Changes
+
+- [#267](https://github.com/openfort-xyz/openfort-js/pull/267) [`593299c`](https://github.com/openfort-xyz/openfort-js/commit/593299c438caf68d45de912087f2e13288ee769b) Thanks [@jamalavedra](https://github.com/jamalavedra)! - chore(deps): semver-safe bump of dev and runtime dependencies
+
+  - @sentry/browser, @sentry/core: 9.15 → 9.47
+  - typescript: 5.8 → 5.9
+  - biome: 2.2 → 2.4
+  - vitest: 2.1.8 → 2.1.9
+  - @rollup/plugin-\* and rollup: pinned to current latest within ranges
+  - knip, publint, playwright, changesets: minor bumps
+
 ## 1.3.2
 
 ### Patch Changes
