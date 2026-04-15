@@ -51,22 +51,22 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
-    "@biomejs/biome": "^2.2.4",
-    "@changesets/changelog-github": "^0.5.1",
-    "@changesets/cli": "^2.29.7",
-    "@playwright/test": "^1.58.0",
+    "@biomejs/biome": "^2.4.11",
+    "@changesets/changelog-github": "^0.5.2",
+    "@changesets/cli": "^2.30.0",
+    "@playwright/test": "^1.59.1",
     "@rollup/plugin-typescript": "^11.1.6",
     "buffer": "^6.0.3",
-    "crypto-browserify": "^3.12.0",
-    "events": "^3.1.0",
-    "knip": "^5.70.1",
-    "publint": "^0.3.12",
+    "crypto-browserify": "^3.12.1",
+    "events": "^3.3.0",
+    "knip": "^5.88.1",
+    "publint": "^0.3.18",
     "sherif": "^0.8.4",
     "simple-git-hooks": "^2.13.1",
     "stream-browserify": "^3.0.0",
     "tslib": "^2.8.1",
     "typedoc": "^0.24.8",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.3",
     "vm-browserify": "^1.1.2"
   },
   "simple-git-hooks": {
@@ -137,7 +137,10 @@
         "GHSA-3v7f-55p6-f55p",
         "GHSA-4w7w-66w2-5vf9"
       ]
-    }
+    },
+    "onlyBuiltDependencies": [
+      "simple-git-hooks"
+    ]
   },
   "knip": {
     "ignore": [

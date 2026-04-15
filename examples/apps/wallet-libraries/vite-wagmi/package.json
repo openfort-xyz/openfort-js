@@ -10,21 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.32.1",
+    "@tanstack/react-query": "^5.99.0",
     "axios": "^1.15.0",
     "buffer": "^6.0.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.0",
-    "viem": "2.x",
-    "wagmi": "^2.15.2"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.3",
+    "viem": "~2.47.17",
+    "wagmi": "^2.19.5"
   },
   "devDependencies": {
-    "@openfort/openfort-js": "workspace:sdk",
-    "@types/react": "^18.2.18",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.4",
-    "typescript": "^5.8.3",
+    "@openfort/openfort-js": "workspace:^",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.9.3",
     "vite": "^6.4.2"
   }
 }

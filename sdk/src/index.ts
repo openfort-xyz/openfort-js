@@ -9,8 +9,6 @@ export { AuthApi } from './api/auth'
 export { EmbeddedWalletApi } from './api/embeddedWallet'
 export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'
-// Export main SDK classes
-export { Openfort }
 // Export error handling
 export {
   OPENFORT_AUTH_ERROR_CODES,
@@ -56,6 +54,8 @@ export { IStorage as Storage } from './storage/istorage'
 export * from './types'
 // Export crypto utilities
 export { cryptoDigest } from './utils/crypto'
+// Export main SDK classes
+export { Openfort }
 
 /**
  * Global event emitter for subscribing to Openfort SDK events
