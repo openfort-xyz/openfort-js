@@ -137,7 +137,10 @@
         "GHSA-3v7f-55p6-f55p",
         "GHSA-4w7w-66w2-5vf9"
       ]
-    }
+    },
+    "onlyBuiltDependencies": [
+      "simple-git-hooks"
+    ]
   },
   "knip": {
     "ignore": [
