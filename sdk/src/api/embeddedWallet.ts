@@ -233,6 +233,11 @@ export class EmbeddedWalletApi {
     const iframe = document.createElement('iframe')
     iframe.style.display = 'none'
     iframe.id = 'openfort-iframe'
+    // Ensure the parent origin is sent on the iframe document request so the
+    // server-side origin allowlist can be evaluated, even when the parent page
+    // sets a restrictive Referrer-Policy (e.g. `no-referrer`, `same-origin`).
+    // Without this, the browser strips Referer and validate-origin returns 403.
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin'
     iframe.src = url
 
     document.body.appendChild(iframe)
