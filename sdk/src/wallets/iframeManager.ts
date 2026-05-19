@@ -25,6 +25,8 @@ import {
   GetCurrentDeviceRequest,
   type GetCurrentDeviceResponse,
   type IframeAuthentication,
+  type ImportRequest,
+  type ImportResponse,
   INCORRECT_PASSKEY_ERROR,
   INCORRECT_USER_ENTROPY_ERROR,
   isErrorResponse,
@@ -75,6 +77,14 @@ export interface SignerCreateRequest {
   entropy?: EntropyResponse
 }
 
+export interface SignerImportRequest {
+  privateKey: string
+  accountType: AccountTypeEnum
+  chainType: ChainTypeEnum
+  chainId?: number
+  entropy?: EntropyResponse
+}
+
 export interface SignerRecoverRequest {
   account: string
   entropy?: EntropyResponse
@@ -82,6 +92,7 @@ export interface SignerRecoverRequest {
 
 interface IframeAPI {
   create(request: CreateRequest): Promise<CreateResponse>
+  import(request: ImportRequest): Promise<ImportResponse>
   recover(request: RecoverRequest): Promise<RecoverResponse>
   sign(request: SignRequest): Promise<SignResponse>
   switchChain(request: SwitchChainRequest): Promise<SwitchChainResponse>
@@ -384,6 +395,55 @@ export class IframeManager {
     }
 
     const response = await remote.create(request)
+
+    if (isErrorResponse(response)) {
+      this.handleError(response)
+    }
+
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('iframe-version', response.version ?? 'undefined')
+    }
+    return response
+  }
+
+  async import(params: SignerImportRequest): Promise<ImportResponse> {
+    if (!this.sdkConfiguration.shieldConfiguration) {
+      throw new Error('shieldConfiguration is required')
+    }
+
+    const remote = await this.ensureConnection()
+
+    const iframeConfiguration = await this.buildIFrameRequestConfiguration()
+    iframeConfiguration.chainId = params.chainId ?? null
+    iframeConfiguration.password = params?.entropy?.recoveryPassword ?? null
+    iframeConfiguration.recovery = {
+      ...iframeConfiguration.recovery,
+      encryptionSession: params?.entropy?.encryptionSession,
+    }
+    iframeConfiguration.passkey = params?.entropy?.passkey ?? null
+    const request: ImportRequest = {
+      uuid: randomUUID(),
+      action: Event.IMPORT,
+      privateKey: params.privateKey,
+      recovery: iframeConfiguration.recovery,
+      publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
+      shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
+      accessToken: iframeConfiguration.accessToken,
+      playerID: iframeConfiguration.playerID,
+      thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
+      thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
+      encryptionKey: iframeConfiguration.password,
+      encryptionSession: iframeConfiguration.recovery?.encryptionSession ?? null,
+      passkey: iframeConfiguration.passkey ?? null,
+      openfortURL: this.sdkConfiguration.backendUrl,
+      shieldURL: this.sdkConfiguration.shieldUrl,
+      chainId: params.chainId ?? null,
+      accountType: params.accountType,
+      chainType: params.chainType,
+      nativeAppIdentifier: this.sdkConfiguration?.nativeAppIdentifier ?? null,
+    }
+
+    const response = await remote.import(request)
 
     if (isErrorResponse(response)) {
       this.handleError(response)
