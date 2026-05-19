@@ -38,9 +38,7 @@ const PasswordRecoveryForm = ({
               password,
             },
           })
-          handleSetMessage(
-            `Imported wallet with password recovery.\nwallet: ${JSON.stringify(response, null, 2)}`
-          )
+          handleSetMessage(`Imported wallet with password recovery.\nwallet: ${JSON.stringify(response, null, 2)}`)
           onSuccess()
         } catch (error) {
           console.error('Error importing wallet:', error)
@@ -99,9 +97,7 @@ const AutomaticRecovery = ({
           encryptionSession: encSessionResponse,
         },
       })
-      handleSetMessage(
-        `Imported wallet with automatic recovery.\nwallet: ${JSON.stringify(response, null, 2)}`
-      )
+      handleSetMessage(`Imported wallet with automatic recovery.\nwallet: ${JSON.stringify(response, null, 2)}`)
       onSuccess()
     } catch (error) {
       if (error instanceof Error && error.message === 'OTP_REQUIRED') {
@@ -277,9 +273,7 @@ const PasskeyRecovery = ({
               recoveryMethod: RecoveryMethod.PASSKEY,
             },
           })
-          handleSetMessage(
-            `Imported wallet with passkey recovery.\nwallet: ${JSON.stringify(response, null, 2)}`
-          )
+          handleSetMessage(`Imported wallet with passkey recovery.\nwallet: ${JSON.stringify(response, null, 2)}`)
           onSuccess()
         } catch (error) {
           console.error('Error importing wallet:', error)
