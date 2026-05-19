@@ -53,10 +53,12 @@ const PasswordRecoveryForm = ({
         Make sure to remember this password, as it will be required for wallet recovery.
       </p>
       <input
-        type="text"
+        type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Enter a strong password"
+        autoComplete="new-password"
+        spellCheck={false}
         className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-opacity-50"
         required
       />
@@ -302,6 +304,11 @@ const Content = ({
 }) => {
   const [privateKey, setPrivateKey] = useState('')
 
+  const handleSuccess = () => {
+    setPrivateKey('')
+    onSuccess()
+  }
+
   return (
     <div className="space-y-2">
       <div className="p-4 border border-gray-200 rounded-lg">
@@ -313,17 +320,19 @@ const Content = ({
         </p>
         <input
           id="import-private-key"
-          type="text"
+          type="password"
           value={privateKey}
           onChange={(e) => setPrivateKey(e.target.value.trim())}
           placeholder="0x... or base58 string"
+          autoComplete="off"
+          spellCheck={false}
           className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-opacity-50"
         />
       </div>
       <p className="font-medium text-black text-sm">Choose a recovery method for the imported wallet:</p>
-      <AutomaticRecovery privateKey={privateKey} onSuccess={onSuccess} handleSetMessage={handleSetMessage} />
-      <PasswordRecoveryForm privateKey={privateKey} onSuccess={onSuccess} handleSetMessage={handleSetMessage} />
-      <PasskeyRecovery privateKey={privateKey} onSuccess={onSuccess} handleSetMessage={handleSetMessage} />
+      <AutomaticRecovery privateKey={privateKey} onSuccess={handleSuccess} handleSetMessage={handleSetMessage} />
+      <PasswordRecoveryForm privateKey={privateKey} onSuccess={handleSuccess} handleSetMessage={handleSetMessage} />
+      <PasskeyRecovery privateKey={privateKey} onSuccess={handleSuccess} handleSetMessage={handleSetMessage} />
     </div>
   )
 }
