@@ -87,7 +87,7 @@ export class PasskeyHandler implements IPasskeyHandler {
 
     const prfResults = clientExtResults.prf
 
-    if (!prfResults || !prfResults.results) {
+    if (!prfResults?.results) {
       throw new PasskeyPRFNotSupportedError('PRF extension not supported or missing results')
     }
     const rawBits = prfResults.results.first
