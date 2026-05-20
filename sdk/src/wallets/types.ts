@@ -6,6 +6,8 @@ export enum Event {
   RECOVERED = 'recovered',
   CREATE = 'create',
   CREATED = 'created',
+  IMPORT = 'import',
+  IMPORTED = 'imported',
   UPDATE_AUTHENTICATION = 'update-authentication',
   AUTHENTICATION_UPDATED = 'authentication-updated',
   SIGN = 'sign',
@@ -138,6 +140,86 @@ export class CreateRequest implements IEventRequest {
     nativeAppIdentifier: string | null = null
   ) {
     this.uuid = uuid
+    this.accountType = accountType
+    this.chainType = chainType
+    this.chainId = chainId
+    this.recovery = recovery
+    this.publishableKey = publishableKey
+    this.shieldAPIKey = shieldAPIKey
+    this.accessToken = accessToken
+    this.playerID = playerID
+    this.thirdPartyProvider = thirdPartyProvider
+    this.thirdPartyTokenType = thirdPartyTokenType
+    this.encryptionKey = encryptionKey
+    this.openfortURL = openfortURL
+    this.shieldURL = shieldURL
+    this.encryptionSession = encryptionSession
+    this.passkey = passkey
+    this.nativeAppIdentifier = nativeAppIdentifier
+  }
+}
+
+export class ImportRequest implements IEventRequest {
+  uuid: string
+
+  action: Event = Event.IMPORT
+
+  privateKey: string
+
+  accountType: string
+
+  chainType: string
+
+  chainId: number | null
+
+  recovery: ShieldAuthentication | null
+
+  publishableKey: string
+
+  shieldAPIKey: string
+
+  accessToken: string | null
+
+  encryptionKey: string | null
+
+  encryptionSession: string | null
+
+  passkey: PasskeyDetails | null
+
+  openfortURL: string
+
+  shieldURL: string
+
+  thirdPartyProvider: string | null
+
+  thirdPartyTokenType: string | null
+
+  nativeAppIdentifier: string | null
+
+  playerID: string | null
+
+  constructor(
+    uuid: string,
+    privateKey: string,
+    accountType: string,
+    chainType: string,
+    chainId: number,
+    recovery: ShieldAuthentication,
+    publishableKey: string,
+    shieldAPIKey: string,
+    accessToken: string,
+    playerID: string,
+    openfortURL: string,
+    shieldURL: string,
+    encryptionKey: string | null = null,
+    thirdPartyProvider: string | null = null,
+    thirdPartyTokenType: string | null = null,
+    encryptionSession: string | null = null,
+    passkey: PasskeyDetails | null = null,
+    nativeAppIdentifier: string | null = null
+  ) {
+    this.uuid = uuid
+    this.privateKey = privateKey
     this.accountType = accountType
     this.chainType = chainType
     this.chainId = chainId
@@ -408,6 +490,30 @@ export class CreateResponse implements IConfigureResponse {
   address: string
 
   action: Event = Event.CREATED
+
+  version = VERSION
+
+  constructor(uuid: string, account: string, deviceID: string, address: string) {
+    this.success = true
+    this.account = account
+    this.deviceID = deviceID
+    this.uuid = uuid
+    this.address = address
+  }
+}
+
+export class ImportResponse implements IConfigureResponse {
+  uuid: string
+
+  account: string
+
+  success: boolean
+
+  deviceID: string
+
+  address: string
+
+  action: Event = Event.IMPORTED
 
   version = VERSION
 

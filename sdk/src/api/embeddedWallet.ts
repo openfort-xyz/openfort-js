@@ -14,6 +14,7 @@ import {
   type EmbeddedAccount,
   type EmbeddedAccountConfigureParams,
   type EmbeddedAccountCreateParams,
+  type EmbeddedAccountImportParams,
   type EmbeddedAccountRecoverParams,
   EmbeddedState,
   type EntropyResponse,
@@ -340,6 +341,62 @@ export class EmbeddedWalletApi {
 
     const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
     const account = await signer.create({
+      accountType: params.accountType,
+      chainType: params.chainType,
+      chainId: params.chainId,
+      entropy,
+    })
+    const embeddedAccount: EmbeddedAccount = {
+      id: account.id,
+      chainId: account.chainId,
+      address: account.address,
+      ownerAddress: account.ownerAddress,
+      chainType: account.chainType,
+      accountType: account.accountType,
+      implementationType: account.implementationType,
+      factoryAddress: account.factoryAddress,
+      salt: account.salt,
+      createdAt: account.createdAt,
+      implementationAddress: account.implementationAddress,
+      recoveryMethod: Account.parseRecoveryMethod(account.recoveryMethod),
+      recoveryMethodDetails: account.recoveryMethodDetails,
+    }
+
+    this.eventEmitter.emit(OpenfortEvents.ON_EMBEDDED_WALLET_CREATED, embeddedAccount)
+
+    return embeddedAccount
+  }
+
+  async import(params: EmbeddedAccountImportParams): Promise<EmbeddedAccount> {
+    await this.validateAndRefreshToken()
+    const recoveryParams = params.recoveryParams ?? {
+      recoveryMethod: RecoveryMethod.AUTOMATIC,
+    }
+    const auth = await Authentication.fromStorage(this.storage)
+    if (!auth) {
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN, 'missing authentication')
+    }
+    // If we're here it's guaranteed we need to create a passkey for this particular user
+    if (recoveryParams.recoveryMethod === RecoveryMethod.PASSKEY) {
+      if (!auth.userId) {
+        throw new ConfigurationError('User ID is required for passkey creation')
+      }
+      const passkeyDetails = await this.passkeyHandler.createPasskey({
+        id: PasskeyHandler.randomPasskeyName(),
+        seed: auth.userId,
+      })
+      if (!passkeyDetails.key) {
+        throw new ConfigurationError('Passkey creation failed: no key material returned')
+      }
+      recoveryParams.passkeyInfo = {
+        passkeyId: passkeyDetails.id,
+        passkeyKey: passkeyDetails.key,
+      }
+    }
+
+    const [signer, entropy] = await Promise.all([this.ensureSigner(), this.getEntropy(recoveryParams)])
+    const account = await signer.import({
+      privateKey: params.privateKey,
       accountType: params.accountType,
       chainType: params.chainType,
       chainId: params.chainId,

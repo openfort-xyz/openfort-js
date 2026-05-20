@@ -3,6 +3,7 @@ import type React from 'react'
 import ChangeWallet from '@/components/Wallet/ChangeWalletButton'
 import CreateWalletButton from '@/components/Wallet/CreateWalletButton'
 import ExportPrivateKey from '@/components/Wallet/ExportPrivateKeyButton'
+import ImportWalletButton from '@/components/Wallet/ImportWalletButton'
 import SetWalletRecovery from '@/components/Wallet/SetWalletRecoveryButton'
 import { useOpenfort } from '@/contexts/OpenfortContext'
 import { Button } from '../ui/button'
@@ -46,6 +47,7 @@ const Wallets: React.FC<{
         </Button>
         <ChangeWallet handleSetMessage={handleSetMessage} />
         <CreateWalletButton handleSetMessage={handleSetMessage} />
+        <ImportWalletButton handleSetMessage={handleSetMessage} />
       </div>
     </>
   )

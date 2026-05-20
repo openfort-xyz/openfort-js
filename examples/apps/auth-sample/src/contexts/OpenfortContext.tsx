@@ -48,6 +48,13 @@ interface ContextType {
   refetchAccounts: () => Promise<void>
   refetchAccount: () => Promise<void>
   createWallet: ({ recoveryParams }: { recoveryParams: RecoveryParams }) => Promise<EmbeddedAccount>
+  importWallet: ({
+    privateKey,
+    recoveryParams,
+  }: {
+    privateKey: string
+    recoveryParams: RecoveryParams
+  }) => Promise<EmbeddedAccount>
   setRecoveryMethod: (previousRecovery: RecoveryParams, newRecovery: RecoveryParams) => Promise<void>
   getUserEmail: () => string | null
 }
@@ -311,6 +318,29 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
     [refetchAccounts]
   )
 
+  const importWallet = useCallback(
+    async ({ privateKey, recoveryParams }: { privateKey: string; recoveryParams: RecoveryParams }) => {
+      const user = await openfort.user.get()
+      if (!user) throw new Error('User not found')
+
+      if (user.email === 'testing@fort.dev') {
+        throw new Error('Test user should not import wallets.')
+      }
+
+      const response = await openfort.embeddedWallet.import({
+        privateKey,
+        accountType: AccountTypeEnum.SMART_ACCOUNT,
+        chainType: ChainTypeEnum.EVM,
+        recoveryParams,
+        chainId,
+      })
+      setAccount(response)
+      await refetchAccounts()
+      return response
+    },
+    [refetchAccounts]
+  )
+
   const setRecoveryMethod = useCallback(
     async (previousRecovery: RecoveryParams, newRecovery: RecoveryParams) => {
       await openfort.embeddedWallet.setRecoveryMethod(previousRecovery, newRecovery)
@@ -345,6 +375,7 @@ export const OpenfortProvider: React.FC<React.PropsWithChildren<unknown>> = ({ c
     isLoadingAccounts,
     refetchAccounts,
     createWallet,
+    importWallet,
     setRecoveryMethod,
     getUserEmail,
   }

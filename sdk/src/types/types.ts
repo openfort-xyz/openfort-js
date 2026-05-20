@@ -556,6 +556,14 @@ export type EmbeddedAccountCreateParams = {
   recoveryParams: RecoveryParams
 }
 
+export type EmbeddedAccountImportParams = {
+  privateKey: string
+  accountType: AccountTypeEnum
+  chainType: ChainTypeEnum
+  chainId?: number
+  recoveryParams: RecoveryParams
+}
+
 export type PasskeyInfo = {
   passkeyId: string
   passkeyKey?: string // base64url-encoded key material
