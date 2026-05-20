@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.3.4
+
+### Patch Changes
+
+- [#280](https://github.com/openfort-xyz/openfort-js/pull/280) [`b0c733b`](https://github.com/openfort-xyz/openfort-js/commit/b0c733b097729f8bd42464dfa4d5356aa686e28c) Thanks [@n00m4d](https://github.com/n00m4d)! - Import wallet feature
+
 ## 1.3.3
 
 ### Patch Changes
