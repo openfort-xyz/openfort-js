@@ -443,8 +443,10 @@ models/policy-v2-response.ts
 models/policy-v2-rule-response.ts
 models/policy-v2-scope.ts
 models/policy.ts
-models/pregenerate-account-response.ts
+models/pregenerate-account-config.ts
+models/pregenerate-account-entry.ts
 models/pregenerate-user-request-v2.ts
+models/pregenerate-user-response-v2.ts
 models/prisma-sort-order.ts
 models/private-key-policy.ts
 models/program-id-criterion-request.ts

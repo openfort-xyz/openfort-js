@@ -7360,11 +7360,11 @@
         "operationId": "pregenerateUserV2",
         "responses": {
           "200": {
-            "description": "User and account pre-generated successfully.",
+            "description": "User and accounts pre-generated successfully.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PregenerateAccountResponse"
+                  "$ref": "#/components/schemas/PregenerateUserResponseV2"
                 }
               }
             }
@@ -7379,8 +7379,8 @@
             "description": "Conflict - user with this identifier already exists."
           }
         },
-        "description": "Pre-generate a user with an embedded account before they authenticate.\nCreates a user record and an embedded account using the provided SSS key shares.\nWhen the user later authenticates (via email, OAuth, third-party auth, etc.)\nwith the same identifier, they will be linked to this pre-generated account.\n\nYou can pregenerate using either:\n- `email`: User will be linked when they authenticate with the same email\n- `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider",
-        "summary": "Pre-generate a user with an embedded account.",
+        "description": "Pre-generate a user with one or more embedded accounts before they authenticate.\nCreates a user record and an embedded account per entry in `accounts`, each with its\nown SSS key shares. When the user later authenticates (via email, OAuth, third-party\nauth, etc.) with the same identifier, they will be linked to these pre-generated accounts.\n\nUse the `accounts` array to pregenerate accounts on different chain types\n(e.g. one EVM account and one SVM account) in a single call.\n\nYou can pregenerate using either:\n- `email`: User will be linked when they authenticate with the same email\n- `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider",
+        "summary": "Pre-generate a user with embedded accounts.",
         "tags": [
           "Users"
         ],
@@ -24528,7 +24528,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "PregenerateAccountResponse": {
+      "PregenerateAccountEntry": {
         "properties": {
           "id": {
             "type": "string"
@@ -24580,11 +24580,7 @@
           },
           "recoveryShare": {
             "type": "string",
-            "description": "The recovery share for the user's embedded signer.\nThis should be stored securely and provided to the user for account recovery."
-          },
-          "user": {
-            "type": "string",
-            "description": "User uuid"
+            "description": "The recovery share for this embedded account's signer.\nThis should be stored securely and provided to the user for account recovery."
           }
         },
         "required": [
@@ -24596,8 +24592,28 @@
           "createdAt",
           "updatedAt",
           "custody",
-          "recoveryShare",
-          "user"
+          "recoveryShare"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PregenerateUserResponseV2": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "User uuid (starts with `usr_`)."
+          },
+          "accounts": {
+            "items": {
+              "$ref": "#/components/schemas/PregenerateAccountEntry"
+            },
+            "type": "array",
+            "description": "The embedded accounts that were pregenerated for this user,\nin the same order as the `accounts` array in the request."
+          }
+        },
+        "required": [
+          "user",
+          "accounts"
         ],
         "type": "object",
         "additionalProperties": false
@@ -24626,23 +24642,8 @@
           "BETTER_AUTH"
         ]
       },
-      "PregenerateUserRequestV2": {
+      "PregenerateAccountConfig": {
         "properties": {
-          "email": {
-            "type": "string",
-            "description": "The email address of the user to pregenerate.\nRequired if thirdPartyUserId is not provided.",
-            "example": "user@example.com"
-          },
-          "thirdPartyUserId": {
-            "type": "string",
-            "description": "The third-party user ID from an external auth provider (Firebase, Supabase, etc.).\nRequired if email is not provided.",
-            "example": "firebase_uid_abc123"
-          },
-          "thirdPartyProvider": {
-            "$ref": "#/components/schemas/ThirdPartyOAuthProvider",
-            "description": "The third-party auth provider. Required when thirdPartyUserId is provided.",
-            "example": "firebase"
-          },
           "accountType": {
             "type": "string",
             "enum": [
@@ -24674,6 +24675,38 @@
             "example": "Calibur"
           }
         },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PregenerateUserRequestV2": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user to pregenerate.\nRequired if thirdPartyUserId is not provided.",
+            "example": "user@example.com"
+          },
+          "thirdPartyUserId": {
+            "type": "string",
+            "description": "The third-party user ID from an external auth provider (Firebase, Supabase, etc.).\nRequired if email is not provided.",
+            "example": "firebase_uid_abc123"
+          },
+          "thirdPartyProvider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider",
+            "description": "The third-party auth provider. Required when thirdPartyUserId is provided.",
+            "example": "firebase"
+          },
+          "accounts": {
+            "items": {
+              "$ref": "#/components/schemas/PregenerateAccountConfig"
+            },
+            "type": "array",
+            "description": "One or more embedded accounts to pregenerate for the user.\nEach entry produces its own key material and recovery share.\nUse this to pregenerate accounts on different chain types (e.g. EVM and SVM) in a single call.",
+            "minItems": 1
+          }
+        },
+        "required": [
+          "accounts"
+        ],
         "type": "object",
         "additionalProperties": false
       },
