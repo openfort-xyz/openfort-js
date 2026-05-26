@@ -32,5 +32,11 @@ export interface WebhookResponse {
      * @memberof WebhookResponse
      */
     'livemode': boolean;
+    /**
+     * The raw webhook signing secret. Only populated on project creation — never returned by GET endpoints. Capture it now; use the rotate endpoint if you lose it.
+     * @type {string}
+     * @memberof WebhookResponse
+     */
+    'signingSecret'?: string;
 }
 

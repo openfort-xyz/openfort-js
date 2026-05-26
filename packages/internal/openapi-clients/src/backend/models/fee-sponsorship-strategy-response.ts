@@ -44,5 +44,11 @@ export interface FeeSponsorshipStrategyResponse {
      * @memberof FeeSponsorshipStrategyResponse
      */
     'dynamicExchangeRate'?: boolean;
+    /**
+     * SPL mint addresses accepted for fee payment on Solana charge_custom_tokens policies.
+     * @type {Array<string>}
+     * @memberof FeeSponsorshipStrategyResponse
+     */
+    'splTokens'?: Array<string>;
 }
 

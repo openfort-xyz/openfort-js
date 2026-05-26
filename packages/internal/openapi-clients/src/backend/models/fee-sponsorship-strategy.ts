@@ -41,6 +41,12 @@ export interface FeeSponsorshipStrategy {
      * @memberof FeeSponsorshipStrategy
      */
     'tokenContractAmount'?: string;
+    /**
+     * SPL mint addresses (base58) accepted as fee payment for Solana charge_custom_tokens policies. Solana-only; mutually exclusive with tokenContract / tokenContractAmount.
+     * @type {Array<string>}
+     * @memberof FeeSponsorshipStrategy
+     */
+    'splTokens'?: Array<string>;
 }
 
 

@@ -48,6 +48,9 @@
         "security": [
           {
             "pk": []
+          },
+          {
+            "user_project": []
           }
         ],
         "parameters": [
@@ -188,6 +191,7 @@
                           "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                           "createdAt": 1689869074,
                           "object": "transactionIntent",
+                          "finalCost": "0.42",
                           "details": {
                             "userOperationHash": "0x25d3...005c",
                             "userOperation": {
@@ -428,6 +432,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -693,6 +698,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -956,6 +962,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -1838,6 +1845,59 @@
           }
         ],
         "parameters": []
+      }
+    },
+    "/v1/solana/transactions": {
+      "get": {
+        "operationId": "getSolanaTransactionStatus",
+        "responses": {
+          "200": {
+            "description": "Solana transaction found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolanaTransactionStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Exactly one of id or externalId must be provided."
+          },
+          "404": {
+            "description": "Solana transaction not found."
+          }
+        },
+        "description": "Get the status of a Solana transaction by either its internal id or the\ncaller-supplied externalId attached when the transaction was signed.\n\nExactly one of `id` or `externalId` must be provided. Lookups are scoped to\nthe authenticated project.",
+        "summary": "Get Solana transaction status",
+        "tags": [
+          "Solana Transactions"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Internal Solana transaction ID (starts with `sol_`).",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "sol_f2b8b5f0-1f5c-4a7e-9b3a-1d2e3f4a5b6c"
+          },
+          {
+            "in": "query",
+            "name": "externalId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     },
     "/v1/settings/developer_accounts": {
@@ -3852,7 +3912,6 @@
                             "end": 1693526399
                           },
                           "averageTransactionFee": "0.002721745",
-                          "totalTransactionFee": "0.00544349",
                           "totalTransactionFeeInUSD": "0.00191",
                           "totalTransactionFeeInCustomTokens": "0.00122705",
                           "transactionIntents": []
@@ -4045,7 +4104,6 @@
                             "end": 1693526399
                           },
                           "averageTransactionFee": "0.002721745",
-                          "totalTransactionFee": "0.00544349",
                           "totalTransactionFeeInUSD": "0.00191",
                           "totalTransactionFeeInCustomTokens": "0.00122705",
                           "transactionIntents": []
@@ -4113,6 +4171,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -4680,6 +4739,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -4823,6 +4883,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -19414,6 +19475,11 @@
           "response": {
             "$ref": "#/components/schemas/ResponseResponse"
           },
+          "finalCost": {
+            "type": "string",
+            "description": "The actual transaction cost in USD, available after on-chain confirmation.",
+            "example": "0.42"
+          },
           "interactions": {
             "items": {
               "$ref": "#/components/schemas/Interaction"
@@ -19773,7 +19839,10 @@
           "user.created",
           "user.updated",
           "user.deleted",
-          "account.created"
+          "account.created",
+          "solana_transaction.broadcast",
+          "solana_transaction.successful",
+          "solana_transaction.failed"
         ],
         "type": "string",
         "x-enum-varnames": [
@@ -19788,7 +19857,10 @@
           "USER_CREATED",
           "USER_UPDATED",
           "USER_DELETED",
-          "ACCOUNT_CREATED"
+          "ACCOUNT_CREATED",
+          "SOLANA_TRANSACTION_BROADCAST",
+          "SOLANA_TRANSACTION_SUCCESSFUL",
+          "SOLANA_TRANSACTION_FAILED"
         ]
       },
       "APITriggerType": {
@@ -20225,6 +20297,56 @@
         "type": "object",
         "additionalProperties": false
       },
+      "SolanaTransactionStatus": {
+        "type": "string",
+        "enum": [
+          "sent",
+          "confirmed",
+          "expired",
+          "failed"
+        ],
+        "description": "Lifecycle status of a Solana transaction."
+      },
+      "SolanaTransactionStatusResponse": {
+        "description": "Solana transaction status response — exposes the on-chain transaction signature\n(hash) and the lifecycle status of the underlying sponsorship row.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal Solana transaction ID (starts with `sol_`).",
+            "example": "sol_f2b8b5f0-1f5c-4a7e-9b3a-1d2e3f4a5b6c"
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Caller-supplied externalId, if one was provided when the transaction was signed."
+          },
+          "txSignature": {
+            "type": "string",
+            "nullable": true,
+            "description": "Base58-encoded Solana transaction signature (a.k.a. transaction hash).\nNull only for `signTransaction` transactions that were never broadcast.",
+            "example": "5VfYbZ8XQ9..."
+          },
+          "status": {
+            "$ref": "#/components/schemas/SolanaTransactionStatus",
+            "description": "Lifecycle status of the transaction:\n- sent: signed by Kora, awaiting on-chain confirmation\n- confirmed: confirmed on-chain\n- expired: blockhash expired or never broadcast\n- failed: landed on-chain but execution failed (see errorMessage)",
+            "example": "confirmed"
+          },
+          "errorMessage": {
+            "type": "string",
+            "nullable": true,
+            "description": "On-chain error message when status is FAILED."
+          }
+        },
+        "required": [
+          "id",
+          "externalId",
+          "txSignature",
+          "status",
+          "errorMessage"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "TransactionIntent": {
         "properties": {
           "id": {
@@ -20289,6 +20411,11 @@
           },
           "response": {
             "$ref": "#/components/schemas/ResponseResponse"
+          },
+          "finalCost": {
+            "type": "string",
+            "description": "The actual transaction cost in USD, available after on-chain confirmation.",
+            "example": "0.42"
           },
           "interactions": {
             "items": {
@@ -21971,9 +22098,6 @@
           "totalTransactionFeeInCustomTokens": {
             "type": "string"
           },
-          "totalTransactionFee": {
-            "type": "string"
-          },
           "totalTransactionFeeInUSD": {
             "type": "string"
           },
@@ -21989,7 +22113,6 @@
           "period",
           "averageTransactionFee",
           "totalTransactionFeeInCustomTokens",
-          "totalTransactionFee",
           "totalTransactionFeeInUSD",
           "transactionIntents"
         ],
@@ -26722,6 +26845,16 @@
             "type": "boolean",
             "description": "Whether the exchange rate is computed dynamically from cached prices.\nTrue when tokenContractAmount was not provided at creation time.",
             "example": true
+          },
+          "splTokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "SPL mint addresses accepted for fee payment on Solana\ncharge_custom_tokens policies.",
+            "example": [
+              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            ]
           }
         },
         "required": [
@@ -26757,6 +26890,12 @@
             "nullable": true,
             "description": "Name of the fee sponsorship policy.",
             "example": "My DeFi Gas Sponsorship"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description or comment for the fee sponsorship.",
+            "example": "Sponsors gas for free-tier users"
           },
           "chainId": {
             "type": "integer",
@@ -26799,6 +26938,7 @@
           "object",
           "createdAt",
           "name",
+          "description",
           "chainId",
           "enabled",
           "strategy",
@@ -26909,6 +27049,16 @@
             "type": "string",
             "description": "Token amount for charge_custom_tokens or fixed_rate schemas.",
             "example": "1000000000000000000"
+          },
+          "splTokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "SPL mint addresses (base58) accepted as fee payment for Solana\ncharge_custom_tokens policies. Solana-only; mutually exclusive with\ntokenContract / tokenContractAmount.",
+            "example": [
+              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            ]
           }
         },
         "required": [
@@ -27917,6 +28067,59 @@
         "type": "object",
         "additionalProperties": false
       },
+      "WebhookSecretInfoResponse": {
+        "description": "Metadata about the per-environment webhook signing secret.\n\nNever includes the raw secret. The hint is a short prefix so callers can\nidentify which secret is active without seeing the full value.",
+        "properties": {
+          "hint": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "livemode": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "hint",
+          "createdAt",
+          "updatedAt",
+          "livemode"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "WebhookSecretRotateResponse": {
+        "description": "Response from a rotation. The raw secret is returned exactly once here and\ncannot be retrieved again — callers must capture it now. `updatedAt` is the\ntimestamp at which the new secret was written.",
+        "properties": {
+          "signingSecret": {
+            "type": "string"
+          },
+          "hint": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "livemode": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "signingSecret",
+          "hint",
+          "updatedAt",
+          "livemode"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "UserProjectRole": {
         "enum": [
           "OWNER",
@@ -28305,6 +28508,10 @@
           },
           "livemode": {
             "type": "boolean"
+          },
+          "signingSecret": {
+            "type": "string",
+            "description": "The raw webhook signing secret. Only populated on project creation —\nnever returned by GET endpoints. Capture it now; use the rotate endpoint\nif you lose it."
           }
         },
         "required": [
@@ -28425,6 +28632,9 @@
           },
           "isV2": {
             "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -28433,7 +28643,8 @@
           "createdAt",
           "updatedAt",
           "name",
-          "isV2"
+          "isV2",
+          "isActive"
         ],
         "type": "object",
         "additionalProperties": false
@@ -29341,11 +29552,6 @@
             "type": "string",
             "description": "The API key to update.",
             "example": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-          },
-          "use_for_webhooks": {
-            "type": "boolean",
-            "description": "Whether key to use to sign webhooks.",
-            "example": true
           }
         },
         "required": [
