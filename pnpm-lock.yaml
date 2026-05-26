@@ -41,6 +41,7 @@ overrides:
   fast-xml-builder: '>=1.1.7'
   uuid: '>=11.1.1'
   postcss: '>=8.5.10'
+  js-cookie: '>=3.0.7'
   smol-toml@<1.6.1: '>=1.6.1'
   brace-expansion: '>=5.0.6'
   yaml@>=2.0.0 <2.8.3: '>=2.8.3'
@@ -262,8 +263,8 @@ importers:
         specifier: ^13.8.0
         version: 13.8.0(encoding@0.1.13)
       js-cookie:
-        specifier: ^3.0.5
-        version: 3.0.5
+        specifier: '>=3.0.7'
+        version: 3.0.7
       next:
         specifier: '>=16.2.5'
         version: 16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -5293,9 +5294,9 @@ packages:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
 
-  js-cookie@3.0.5:
-    resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
-    engines: {node: '>=14'}
+  js-cookie@3.0.7:
+    resolution: {integrity: sha512-z/wZZgDrkNV1eA0ULjM/F9/50Ya8fbzgKneSpoPsXSGd0KnpdtHfOZWK+GcwLk+EZbS4F9RBhU+K2RgzuDaItw==}
+    engines: {node: '>=20'}
 
   js-sha3@0.8.0:
     resolution: {integrity: sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q==}
@@ -13883,7 +13884,7 @@ snapshots:
 
   joycon@3.1.1: {}
 
-  js-cookie@3.0.5: {}
+  js-cookie@3.0.7: {}
 
   js-sha3@0.8.0: {}
 
