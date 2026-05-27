@@ -30,9 +30,9 @@ import { BaseEntityListResponseAuthUserResponse } from '../models';
 // @ts-ignore
 import { BaseEntityResponseEntityTypeWALLET } from '../models';
 // @ts-ignore
-import { PregenerateAccountResponse } from '../models';
-// @ts-ignore
 import { PregenerateUserRequestV2 } from '../models';
+// @ts-ignore
+import { PregenerateUserResponseV2 } from '../models';
 // @ts-ignore
 import { PrismaSortOrder } from '../models';
 // @ts-ignore
@@ -291,8 +291,8 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             };
         },
         /**
-         * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
-         * @summary Pre-generate a user with an embedded account.
+         * Pre-generate a user with one or more embedded accounts before they authenticate. Creates a user record and an embedded account per entry in `accounts`, each with its own SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to these pre-generated accounts.  Use the `accounts` array to pregenerate accounts on different chain types (e.g. one EVM account and one SVM account) in a single call.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
+         * @summary Pre-generate a user with embedded accounts.
          * @param {PregenerateUserRequestV2} pregenerateUserRequestV2 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -447,13 +447,13 @@ export const UsersApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
-         * @summary Pre-generate a user with an embedded account.
+         * Pre-generate a user with one or more embedded accounts before they authenticate. Creates a user record and an embedded account per entry in `accounts`, each with its own SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to these pre-generated accounts.  Use the `accounts` array to pregenerate accounts on different chain types (e.g. one EVM account and one SVM account) in a single call.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
+         * @summary Pre-generate a user with embedded accounts.
          * @param {PregenerateUserRequestV2} pregenerateUserRequestV2 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async pregenerateUserV2(pregenerateUserRequestV2: PregenerateUserRequestV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PregenerateAccountResponse>> {
+        async pregenerateUserV2(pregenerateUserRequestV2: PregenerateUserRequestV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PregenerateUserResponseV2>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.pregenerateUserV2(pregenerateUserRequestV2, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -528,13 +528,13 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
             return localVarFp.meV2(options).then((request) => request(axios, basePath));
         },
         /**
-         * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
-         * @summary Pre-generate a user with an embedded account.
+         * Pre-generate a user with one or more embedded accounts before they authenticate. Creates a user record and an embedded account per entry in `accounts`, each with its own SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to these pre-generated accounts.  Use the `accounts` array to pregenerate accounts on different chain types (e.g. one EVM account and one SVM account) in a single call.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
+         * @summary Pre-generate a user with embedded accounts.
          * @param {UsersApiPregenerateUserV2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        pregenerateUserV2(requestParameters: UsersApiPregenerateUserV2Request, options?: AxiosRequestConfig): AxiosPromise<PregenerateAccountResponse> {
+        pregenerateUserV2(requestParameters: UsersApiPregenerateUserV2Request, options?: AxiosRequestConfig): AxiosPromise<PregenerateUserResponseV2> {
             return localVarFp.pregenerateUserV2(requestParameters.pregenerateUserRequestV2, options).then((request) => request(axios, basePath));
         },
         /**
@@ -757,8 +757,8 @@ export class UsersApi extends BaseAPI {
     }
 
     /**
-     * Pre-generate a user with an embedded account before they authenticate. Creates a user record and an embedded account using the provided SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to this pre-generated account.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
-     * @summary Pre-generate a user with an embedded account.
+     * Pre-generate a user with one or more embedded accounts before they authenticate. Creates a user record and an embedded account per entry in `accounts`, each with its own SSS key shares. When the user later authenticates (via email, OAuth, third-party auth, etc.) with the same identifier, they will be linked to these pre-generated accounts.  Use the `accounts` array to pregenerate accounts on different chain types (e.g. one EVM account and one SVM account) in a single call.  You can pregenerate using either: - `email`: User will be linked when they authenticate with the same email - `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider
+     * @summary Pre-generate a user with embedded accounts.
      * @param {UsersApiPregenerateUserV2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

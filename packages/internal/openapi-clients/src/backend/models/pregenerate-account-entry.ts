@@ -23,106 +23,106 @@ import { SmartAccountData } from './smart-account-data';
 /**
  * 
  * @export
- * @interface PregenerateAccountResponse
+ * @interface PregenerateAccountEntry
  */
-export interface PregenerateAccountResponse {
+export interface PregenerateAccountEntry {
     /**
      * 
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'id': string;
     /**
      * 
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'wallet': string;
     /**
      * 
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'accountType': string;
     /**
      * 
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'address': string;
     /**
      * 
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'ownerAddress'?: string;
     /**
      * 
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'chainType': string;
     /**
      * 
      * @type {number}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'chainId'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'createdAt': number;
     /**
      * 
      * @type {number}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'updatedAt': number;
     /**
      * 
      * @type {SmartAccountData}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'smartAccount'?: SmartAccountData;
     /**
      * 
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'recoveryMethod'?: string;
     /**
      * 
      * @type {RecoveryMethodDetails}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'recoveryMethodDetails'?: RecoveryMethodDetails;
     /**
      * Indicates key custody: \"Developer\" for TEE managed keys, \"User\" for user-managed keys.
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
-    'custody': PregenerateAccountResponseCustodyEnum;
+    'custody': PregenerateAccountEntryCustodyEnum;
     /**
-     * The recovery share for the user\'s embedded signer. This should be stored securely and provided to the user for account recovery.
+     * The recovery share for this embedded account\'s signer. This should be stored securely and provided to the user for account recovery.
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
     'recoveryShare': string;
     /**
-     * User uuid
+     * The signer UUID (starts with `sig_`) backing this embedded account. Use this value as the `reference` when storing the recovery share with Shield, so subsequent reads of the account can resolve the recovery method via the signer-reference lookup.
      * @type {string}
-     * @memberof PregenerateAccountResponse
+     * @memberof PregenerateAccountEntry
      */
-    'user': string;
+    'signer': string;
 }
 
-export const PregenerateAccountResponseCustodyEnum = {
+export const PregenerateAccountEntryCustodyEnum = {
     Developer: 'Developer',
     User: 'User'
 } as const;
 
-export type PregenerateAccountResponseCustodyEnum = typeof PregenerateAccountResponseCustodyEnum[keyof typeof PregenerateAccountResponseCustodyEnum];
+export type PregenerateAccountEntryCustodyEnum = typeof PregenerateAccountEntryCustodyEnum[keyof typeof PregenerateAccountEntryCustodyEnum];
 
 

@@ -27,6 +27,7 @@ domain/rpcapi.ts
 domain/sessions-api.ts
 domain/settings-api.ts
 domain/solana-rpcapi.ts
+domain/solana-transactions-api.ts
 domain/subscriptions-api.ts
 domain/transaction-intents-api.ts
 domain/users-api.ts
@@ -442,8 +443,10 @@ models/policy-v2-response.ts
 models/policy-v2-rule-response.ts
 models/policy-v2-scope.ts
 models/policy.ts
-models/pregenerate-account-response.ts
+models/pregenerate-account-config.ts
+models/pregenerate-account-entry.ts
 models/pregenerate-user-request-v2.ts
+models/pregenerate-user-response-v2.ts
 models/prisma-sort-order.ts
 models/private-key-policy.ts
 models/program-id-criterion-request.ts
@@ -548,6 +551,8 @@ models/solana-criteria-type-solvalue.ts
 models/solana-criteria-type-spladdress.ts
 models/solana-criteria-type-splvalue.ts
 models/solana-criteria-type.ts
+models/solana-transaction-status-response.ts
+models/solana-transaction-status.ts
 models/spl-address-criterion-request.ts
 models/spl-address-criterion.ts
 models/spl-value-criterion-request.ts
@@ -650,5 +655,7 @@ models/verify-email-request.ts
 models/vonage-sms-provider-config.ts
 models/web3-auth-config.ts
 models/webhook-response.ts
+models/webhook-secret-info-response.ts
+models/webhook-secret-rotate-response.ts
 models/withdrawal-policy-request.ts
 models/zksync-details.ts

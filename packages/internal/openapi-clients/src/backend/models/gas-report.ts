@@ -49,12 +49,6 @@ export interface GasReport {
      * @type {string}
      * @memberof GasReport
      */
-    'totalTransactionFee': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof GasReport
-     */
     'totalTransactionFeeInUSD': string;
     /**
      * 

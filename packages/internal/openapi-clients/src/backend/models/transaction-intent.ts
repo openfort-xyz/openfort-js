@@ -113,6 +113,12 @@ export interface TransactionIntent {
      */
     'response'?: ResponseResponse;
     /**
+     * The actual transaction cost in USD, available after on-chain confirmation.
+     * @type {string}
+     * @memberof TransactionIntent
+     */
+    'finalCost'?: string;
+    /**
      * 
      * @type {Array<Interaction>}
      * @memberof TransactionIntent

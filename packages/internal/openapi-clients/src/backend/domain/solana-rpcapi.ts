@@ -57,6 +57,10 @@ export const SolanaRPCApiAxiosParamCreator = function (configuration?: Configura
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)

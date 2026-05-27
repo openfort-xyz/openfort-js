@@ -51,6 +51,12 @@ export interface FeeSponsorshipResponse {
      */
     'name': string | null;
     /**
+     * Description or comment for the fee sponsorship.
+     * @type {string}
+     * @memberof FeeSponsorshipResponse
+     */
+    'description': string | null;
+    /**
      * Chain ID for single-chain sponsorship.
      * @type {number}
      * @memberof FeeSponsorshipResponse
