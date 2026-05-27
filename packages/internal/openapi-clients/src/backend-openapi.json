@@ -24581,6 +24581,10 @@
           "recoveryShare": {
             "type": "string",
             "description": "The recovery share for this embedded account's signer.\nThis should be stored securely and provided to the user for account recovery."
+          },
+          "signer": {
+            "type": "string",
+            "description": "The signer UUID (starts with `sig_`) backing this embedded account.\nUse this value as the `reference` when storing the recovery share with\nShield, so subsequent reads of the account can resolve the recovery\nmethod via the signer-reference lookup."
           }
         },
         "required": [
@@ -24592,7 +24596,8 @@
           "createdAt",
           "updatedAt",
           "custody",
-          "recoveryShare"
+          "recoveryShare",
+          "signer"
         ],
         "type": "object",
         "additionalProperties": false

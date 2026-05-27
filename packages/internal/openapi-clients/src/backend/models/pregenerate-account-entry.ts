@@ -110,6 +110,12 @@ export interface PregenerateAccountEntry {
      * @memberof PregenerateAccountEntry
      */
     'recoveryShare': string;
+    /**
+     * The signer UUID (starts with `sig_`) backing this embedded account. Use this value as the `reference` when storing the recovery share with Shield, so subsequent reads of the account can resolve the recovery method via the signer-reference lookup.
+     * @type {string}
+     * @memberof PregenerateAccountEntry
+     */
+    'signer': string;
 }
 
 export const PregenerateAccountEntryCustodyEnum = {
