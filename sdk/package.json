@@ -66,13 +66,13 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/node": "^22.19.17",
-    "@vitest/coverage-v8": "^2.1.9",
+    "@vitest/coverage-v8": "^4.1.8",
     "jsdom": "^25.0.1",
     "rollup": "^4.60.1",
     "rollup-plugin-dts": "^5.3.1",
     "rollup-plugin-visualizer": "^5.14.0",
     "typescript": "^5.9.3",
-    "vitest": "^2.1.9"
+    "vitest": "^4.1.8"
   },
   "main": "./dist/cjs/sdk/src/index.cjs",
   "module": "./dist/sdk/src/index.js",
