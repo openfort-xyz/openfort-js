@@ -14,7 +14,7 @@
  *
  * @see https://eips.ethereum.org/EIPS/eip-7702
  */
-export const EIP_7702_DELEGATION_PREFIX = '0xef0100'
+const EIP_7702_DELEGATION_PREFIX = '0xef0100'
 
 /**
  * Hex string length of a full designator: `0x` + 3-byte prefix (6 hex chars) +
