@@ -31,7 +31,7 @@ const DESIGNATOR_HEX_LENGTH = 2 + 6 + 40
  *   not a valid EIP-7702 delegation designator (an empty EOA or a regular
  *   contract).
  */
-export function getDelegationTarget(code: string | undefined): string | null {
+function getDelegationTarget(code: string | undefined): string | null {
   if (!code) return null
   const normalized = code.toLowerCase()
   if (normalized.length !== DESIGNATOR_HEX_LENGTH) return null
