@@ -3,7 +3,7 @@ import type { CreateSessionRequest } from '@openfort/openapi-clients/dist/backen
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { withApiError } from '../../core/errors/withApiError'
-import { AccountType, type SessionResponse } from '../../types/types'
+import { AccountTypeEnum, type SessionResponse } from '../../types/types'
 import type { Signer as OpenfortSigner } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import type { GrantPermissionsParameters, GrantPermissionsReturnType, Permission, Policy } from './sessionTypes'
@@ -231,11 +231,9 @@ export const registerSession = async ({
   })
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature: string
-    // zkSync based chains need a different signature
-    if (
-      [300, 324].includes(account.chainId!) ||
-      (account.implementationType && [AccountType.CALIBUR].includes(account.implementationType as AccountType))
-    ) {
+    // zkSync chains and EIP-7702 delegated accounts (Calibur, CaliburV9, …) sign
+    // the raw v0.8 typed-data hash — no EIP-191 hashMessage prefix.
+    if ([300, 324].includes(account.chainId!) || account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)
