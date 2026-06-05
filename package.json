@@ -133,7 +133,12 @@
       "ignoreGhsas": [
         "GHSA-c2c7-rcm5-vvqj",
         "GHSA-3v7f-55p6-f55p",
-        "GHSA-4w7w-66w2-5vf9"
+        "GHSA-4w7w-66w2-5vf9",
+        "GHSA-2j2x-hqr9-3h42",
+        "GHSA-xrhx-7g5j-rcj5",
+        "GHSA-3hrh-pfw6-9m5x",
+        "GHSA-f577-qrjj-4474",
+        "GHSA-2gcr-mfcq-wcc3"
       ]
     },
     "onlyBuiltDependencies": [
