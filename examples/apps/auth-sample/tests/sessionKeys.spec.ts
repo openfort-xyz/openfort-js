@@ -2,29 +2,31 @@ import test, { expect } from '@playwright/test'
 import { TEST_MINT_SUCCESS_TEXT } from './constants'
 import { Logger } from './Logger'
 
-// test('Create and revoke session', async ({ page }) => {
-//   await page.goto('/')
+test('Create and revoke session', async ({ page }) => {
+  test.setTimeout(120000)
 
-//   const logger = new Logger(page)
-//   await logger.init()
+  await page.goto('/')
 
-//   const createSessionButton = page.getByRole('button', { name: 'Create session' }).first()
-//   await logger.clickAndWaitForNewLogs(() => createSessionButton.click())
+  const logger = new Logger(page)
+  await logger.init()
 
-//   let lastLog = logger.getLastLog()
+  const createSessionButton = page.getByRole('button', { name: 'Create session' }).first()
+  await logger.clickAndWaitForNewLogs(() => createSessionButton.click())
 
-//   expect(lastLog).toContain('Session key registered successfully')
-//   expect(lastLog).toContain('Address')
-//   expect(lastLog).toContain('Private Key')
+  let lastLog = logger.getLastLog()
 
-//   const revokeButton = page.getByRole('button', { name: 'Revoke session' }).first()
-//   expect(revokeButton).toBeVisible()
+  expect(lastLog).toContain('Session key registered successfully')
+  expect(lastLog).toContain('Address')
+  expect(lastLog).toContain('Private Key')
 
-//   await logger.clickAndWaitForNewLogs(() => revokeButton.click())
-//   lastLog = logger.getLastLog()
+  const revokeButton = page.getByRole('button', { name: 'Revoke session' }).first()
+  expect(revokeButton).toBeVisible()
 
-//   expect(lastLog).toContain('Session key revoked successfully')
-// })
+  await logger.clickAndWaitForNewLogs(() => revokeButton.click())
+  lastLog = logger.getLastLog()
+
+  expect(lastLog).toContain('Session key revoked successfully')
+})
 
 test('Mint Session Token', async ({ page }) => {
   test.setTimeout(60000)
