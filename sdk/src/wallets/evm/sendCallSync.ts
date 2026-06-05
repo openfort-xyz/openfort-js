@@ -154,19 +154,33 @@ export const sendCallsSync = async ({
   let signedAuthorization: string | undefined
 
   if (account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
+    const { implementationAddress, chainId } = account
+    if (!implementationAddress) {
+      throw new JsonRpcError(
+        RpcErrorCode.INVALID_PARAMS,
+        `Delegated account ${account.id} is missing an implementationAddress; cannot authorize its EIP-7702 delegation`
+      )
+    }
+    if (chainId === undefined) {
+      throw new JsonRpcError(
+        RpcErrorCode.INVALID_PARAMS,
+        `Delegated account ${account.id} is missing a chainId; cannot authorize its EIP-7702 delegation`
+      )
+    }
+
     // Parallelize RPC calls: check delegation status and fetch nonce simultaneously
     const [alreadyDelegated, nonce] = await Promise.all([
-      isDelegatedToImplementation(rpcProvider, account.address!, account.implementationAddress),
-      rpcProvider.getTransactionCount(account.address!),
+      isDelegatedToImplementation(rpcProvider, account.address, implementationAddress),
+      rpcProvider.getTransactionCount(account.address),
     ])
 
     if (!alreadyDelegated) {
       // Account not yet delegated, create authorization using pre-fetched nonce
       const _signedAuthorization = await prepareAndSignAuthorization({
         signer,
-        accountAddress: account.address!,
-        contractAddress: account.implementationAddress!,
-        chainId: account.chainId!,
+        accountAddress: account.address,
+        contractAddress: implementationAddress,
+        chainId,
         nonce,
       })
       signedAuthorization = serializeSignedAuthorization(_signedAuthorization)
