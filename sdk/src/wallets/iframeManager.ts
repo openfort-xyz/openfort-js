@@ -150,6 +150,22 @@ export class OTPRequiredError extends OpenfortError {
   }
 }
 
+/**
+ * Thrown when the consumer calls `destroy()` on an `IframeManager` before its
+ * connection handshake has finished. The two paths that produce this error are
+ * (a) `initialize()` called on a manager that was already destroyed, and
+ * (b) `destroy()` racing an in-flight `initialize()` (component unmount during
+ * the penpal handshake). The original "configure your origin" copy is
+ * intentionally NOT surfaced here, because it misled customers (Sentry
+ * OPENFORT-JS-HD) into believing their dashboard origin config was wrong when
+ * the real cause was a teardown race.
+ */
+export class SessionEndedBeforeSetupError extends OpenfortError {
+  constructor() {
+    super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'Wallet session ended before setup completed.')
+  }
+}
+
 export class IframeManager {
   private messenger: Messenger
 
@@ -164,6 +180,8 @@ export class IframeManager {
   private isInitialized = false
 
   private initializationPromise: Promise<void> | null = null
+
+  private isDestroyed = false
 
   public hasFailed = false
 
@@ -189,6 +207,13 @@ export class IframeManager {
    * Initialize the connection to the iframe/WebView
    */
   public async initialize(): Promise<void> {
+    // If the manager was destroyed (either before init started or while init
+    // was in flight), refuse to resurrect — fall through to a clear error
+    // rather than the misleading "configure your origin" copy.
+    if (this.isDestroyed) {
+      throw new SessionEndedBeforeSetupError()
+    }
+
     // If already initialized, return immediately
     if (this.isInitialized) {
       return
@@ -206,6 +231,10 @@ export class IframeManager {
     // If initialization is in progress, return the existing promise
     if (this.initializationPromise) {
       await this.initializationPromise
+      // The in-flight initializer may have been cancelled by destroy().
+      if (this.isDestroyed) {
+        throw new SessionEndedBeforeSetupError()
+      }
       return
     }
 
@@ -214,12 +243,23 @@ export class IframeManager {
 
     try {
       await this.initializationPromise
+      // Guard the post-await checkpoint: destroy() may have fired while we
+      // were awaiting the handshake.
+      if (this.isDestroyed) {
+        throw new SessionEndedBeforeSetupError()
+      }
       this.isInitialized = true
     } catch (error) {
-      // Mark as failed so this instance won't be reused
-      this.hasFailed = true
       // Clear the promise on failure
       this.initializationPromise = null
+      // A teardown-race failure must NOT be treated as a permanent failure of
+      // this instance — the consumer destroyed us intentionally, not because
+      // the handshake itself failed. Don't set hasFailed.
+      if (error instanceof SessionEndedBeforeSetupError) {
+        throw error
+      }
+      // Mark as failed so this instance won't be reused
+      this.hasFailed = true
       throw error
     }
   }
@@ -229,6 +269,12 @@ export class IframeManager {
    */
   private async doInitialize(): Promise<void> {
     debugLog('Initializing IframeManager connection...')
+
+    // Entry checkpoint — if destroy() ran between scheduling and execution
+    // of doInitialize, bail out before touching the messenger.
+    if (this.isDestroyed) {
+      throw new SessionEndedBeforeSetupError()
+    }
 
     this.messenger.initialize({
       validateReceivedMessage: (data: unknown): data is Message => !!(data && typeof data === 'object'),
@@ -243,27 +289,67 @@ export class IframeManager {
 
     try {
       this.remote = await this.connection.promise
+      // Post-await checkpoint: if destroy() ran while we awaited the
+      // handshake, we must throw the teardown error rather than fall
+      // through into the "configure your origin" branch below (which
+      // would only fire on a real promise rejection — but we still
+      // belt-and-suspenders the success branch).
+      if (this.isDestroyed) {
+        throw new SessionEndedBeforeSetupError()
+      }
       debugLog('IframeManager connection established')
     } catch (error) {
+      // Teardown race — surface the precise error, not the misleading hint.
+      if (this.isDestroyed) {
+        debugLog('Connection rejected after destroy() — surfacing teardown error')
+        throw new SessionEndedBeforeSetupError()
+      }
       const err = error as PenpalError
       sentry.captureException(err)
-      this.destroy()
+      // Internal cleanup only — do NOT mark `isDestroyed`. The consumer hasn't
+      // torn the manager down; the handshake itself failed. Marking it
+      // destroyed here would shadow the genuine "configure your origin" hint
+      // on any subsequent `initialize()` call.
+      this.clearConnection()
       debugLog('Failed to establish connection:', err)
       throw new OpenfortError(
         OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
         `Failed to establish iFrame connection: ${err.cause || err.message}
-        
+
         In apps built with:
         - react native
         - swift
-        - unity (non-webgl) 
-        
+        - unity (non-webgl)
+
         You must configure your origin in the openfort dashboard before using the embedded wallet.
 
         For more information, see: https://www.openfort.io/docs/configuration/native-apps
         `
       )
     }
+  }
+
+  /**
+   * Tear down any in-flight connection state without marking the manager
+   * as destroyed. Used by `doInitialize()` on handshake failure so the
+   * "configure your origin" hint is still reachable on retry. The public
+   * `destroy()` method calls this in addition to setting `isDestroyed`.
+   */
+  private clearConnection(): void {
+    if (this.connection) {
+      try {
+        this.connection.destroy()
+      } catch (cleanupError) {
+        // Teardown should never crash the consumer. If penpal's destroy
+        // throws (it can — see the original OPENFORT-JS-HD report), log
+        // and continue.
+        debugLog('clearConnection: connection.destroy() threw, swallowing:', cleanupError)
+      }
+    }
+    this.remote = undefined
+    this.isInitialized = false
+    this.connection = undefined
+    this.initializationPromise = null
   }
 
   private async ensureConnection(): Promise<IframeAPI> {
@@ -682,12 +768,17 @@ export class IframeManager {
   }
 
   destroy(): void {
-    if (this.connection) this.connection.destroy()
+    // Idempotent: second call is a no-op. The first call marks the manager
+    // dead immediately, so any in-flight `initialize()` sees `isDestroyed`
+    // on its post-await checkpoint and rejects with
+    // `SessionEndedBeforeSetupError` instead of falling through to the
+    // misleading "configure your origin" branch.
+    if (this.isDestroyed) {
+      return
+    }
+    this.isDestroyed = true
     // Don't destroy messenger here - it's managed by EmbeddedWalletApi
-    // and needs to be recreated fresh on retry
-    this.remote = undefined
-    this.isInitialized = false
-    this.connection = undefined
-    this.initializationPromise = null
+    // and needs to be recreated fresh on retry.
+    this.clearConnection()
   }
 }
