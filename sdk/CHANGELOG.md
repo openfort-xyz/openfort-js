@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.3.5
+
+### Patch Changes
+
+- [#289](https://github.com/openfort-xyz/openfort-js/pull/289) [`7a86df7`](https://github.com/openfort-xyz/openfort-js/commit/7a86df77e5741c44211e70b532a0d63799dc3537) Thanks [@isardmart](https://github.com/isardmart)! - fix(evm): correct EIP-7702 delegated-account handling to prevent AA24 signature errors — re-authorize when the EOA is delegated to a different implementation, and sign the raw v0.8 hash for all delegated accounts (CaliburV9 and others, not only Calibur)
+
 ## 1.3.4
 
 ### Patch Changes
