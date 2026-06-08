@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import { mockSession, mockUser } from '../__tests__/fixtures/auth'
 import type { AuthManager } from '../auth/authManager'
 import { Authentication } from '../core/configuration/authentication'
@@ -26,8 +26,8 @@ describe('AuthApi', () => {
   let authApi: AuthApi
   let mockStorage: IStorage
   let mockAuthManager: AuthManager
-  let mockValidateAndRefreshToken: ReturnType<typeof vi.fn>
-  let mockEnsureInitialized: ReturnType<typeof vi.fn>
+  let mockValidateAndRefreshToken: Mock<() => Promise<void>>
+  let mockEnsureInitialized: Mock<() => Promise<void>>
   let mockEventEmitter: TypedEventEmitter<any>
 
   beforeEach(() => {
@@ -61,8 +61,8 @@ describe('AuthApi', () => {
       logout: vi.fn(),
     } as any
 
-    mockValidateAndRefreshToken = vi.fn().mockResolvedValue(undefined)
-    mockEnsureInitialized = vi.fn().mockResolvedValue(undefined)
+    mockValidateAndRefreshToken = vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
+    mockEnsureInitialized = vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
 
     mockEventEmitter = {
       emit: vi.fn(),

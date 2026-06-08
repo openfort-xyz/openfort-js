@@ -4,7 +4,6 @@ import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { withApiError } from '../../core/errors/withApiError'
 import {
-  AccountType,
   AccountTypeEnum,
   type Interaction,
   type TransactionIntentResponse,
@@ -13,6 +12,7 @@ import {
 } from '../../types/types'
 import { prepareAndSignAuthorization, serializeSignedAuthorization } from '../../utils/authorization'
 import type { Signer } from '../isigner'
+import { isDelegatedTo } from './delegation'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
 type WalletSendCallsParams = {
@@ -110,18 +110,30 @@ const buildOpenfortTransactions = async (
 }
 
 /**
- * Checks if an account has code (i.e., is already delegated)
+ * Whether the EOA is already delegated on-chain to the expected implementation.
+ *
+ * Checks the actual delegation target, not merely whether the account has code:
+ * an EOA delegated to a *different* implementation must be re-authorized, or the
+ * UserOp signature is validated by the wrong account code and reverts with an
+ * `AA24 signature error`.
+ *
+ * Fails open (returns `false`, so the authorization is signed) when the on-chain
+ * code cannot be read — re-delegating an already-delegated EOA is harmless,
+ * whereas skipping a needed authorization reverts on-chain.
+ *
  * @param rpcProvider - RPC provider to query the chain
- * @param address - Account address to check
- * @returns true if the account has code, false otherwise
+ * @param address - EOA address to check
+ * @param implementationAddress - The implementation the EOA should delegate to
  */
-async function hasAccountCode(rpcProvider: StaticJsonRpcProvider, address: string): Promise<boolean> {
+async function isDelegatedToImplementation(
+  rpcProvider: StaticJsonRpcProvider,
+  address: string,
+  implementationAddress: string | undefined
+): Promise<boolean> {
   try {
     const code = await rpcProvider.getCode(address)
-    // Code exists if it's not '0x' (empty)
-    return code !== '0x' && code.length > 2
+    return isDelegatedTo(code, implementationAddress)
   } catch {
-    // If there's an error checking code, assume no code exists
     return false
   }
 }
@@ -142,19 +154,33 @@ export const sendCallsSync = async ({
   let signedAuthorization: string | undefined
 
   if (account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
+    const { implementationAddress, chainId } = account
+    if (!implementationAddress) {
+      throw new JsonRpcError(
+        RpcErrorCode.INVALID_PARAMS,
+        `Delegated account ${account.id} is missing an implementationAddress; cannot authorize its EIP-7702 delegation`
+      )
+    }
+    if (chainId === undefined) {
+      throw new JsonRpcError(
+        RpcErrorCode.INVALID_PARAMS,
+        `Delegated account ${account.id} is missing a chainId; cannot authorize its EIP-7702 delegation`
+      )
+    }
+
     // Parallelize RPC calls: check delegation status and fetch nonce simultaneously
     const [alreadyDelegated, nonce] = await Promise.all([
-      hasAccountCode(rpcProvider, account.address!),
-      rpcProvider.getTransactionCount(account.address!),
+      isDelegatedToImplementation(rpcProvider, account.address, implementationAddress),
+      rpcProvider.getTransactionCount(account.address),
     ])
 
     if (!alreadyDelegated) {
       // Account not yet delegated, create authorization using pre-fetched nonce
       const _signedAuthorization = await prepareAndSignAuthorization({
         signer,
-        accountAddress: account.address!,
-        contractAddress: account.implementationAddress!,
-        chainId: account.chainId!,
+        accountAddress: account.address,
+        contractAddress: implementationAddress,
+        chainId,
         nonce,
       })
       signedAuthorization = serializeSignedAuthorization(_signedAuthorization)
@@ -177,11 +203,9 @@ export const sendCallsSync = async ({
 
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature: string
-    // zkSync based chains don't need hashMessage
-    if (
-      [300, 324].includes(account.chainId!) ||
-      (account.implementationType && [AccountType.CALIBUR].includes(account.implementationType as AccountType))
-    ) {
+    // zkSync chains and EIP-7702 delegated accounts (Calibur, CaliburV9, …) sign
+    // the raw v0.8 typed-data hash — no EIP-191 hashMessage prefix.
+    if ([300, 324].includes(account.chainId!) || account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)
