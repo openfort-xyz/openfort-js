@@ -204,15 +204,24 @@ export class IframeManager {
   }
 
   /**
-   * Initialize the connection to the iframe/WebView
+   * Throws if the manager has been destroyed. Called at each `await`
+   * checkpoint during initialization: every await is a yield point where the
+   * consumer's `destroy()` can run, so we must re-check afterwards and reject
+   * with a precise teardown error rather than the misleading "configure your
+   * origin" hint.
    */
-  public async initialize(): Promise<void> {
-    // If the manager was destroyed (either before init started or while init
-    // was in flight), refuse to resurrect — fall through to a clear error
-    // rather than the misleading "configure your origin" copy.
+  private assertAlive(): void {
     if (this.isDestroyed) {
       throw new SessionEndedBeforeSetupError()
     }
+  }
+
+  /**
+   * Initialize the connection to the iframe/WebView
+   */
+  public async initialize(): Promise<void> {
+    // Refuse to resurrect a destroyed manager.
+    this.assertAlive()
 
     // If already initialized, return immediately
     if (this.isInitialized) {
@@ -232,9 +241,7 @@ export class IframeManager {
     if (this.initializationPromise) {
       await this.initializationPromise
       // The in-flight initializer may have been cancelled by destroy().
-      if (this.isDestroyed) {
-        throw new SessionEndedBeforeSetupError()
-      }
+      this.assertAlive()
       return
     }
 
@@ -243,11 +250,8 @@ export class IframeManager {
 
     try {
       await this.initializationPromise
-      // Guard the post-await checkpoint: destroy() may have fired while we
-      // were awaiting the handshake.
-      if (this.isDestroyed) {
-        throw new SessionEndedBeforeSetupError()
-      }
+      // destroy() may have fired while we were awaiting the handshake.
+      this.assertAlive()
       this.isInitialized = true
     } catch (error) {
       // Clear the promise on failure
@@ -272,9 +276,7 @@ export class IframeManager {
 
     // Entry checkpoint — if destroy() ran between scheduling and execution
     // of doInitialize, bail out before touching the messenger.
-    if (this.isDestroyed) {
-      throw new SessionEndedBeforeSetupError()
-    }
+    this.assertAlive()
 
     this.messenger.initialize({
       validateReceivedMessage: (data: unknown): data is Message => !!(data && typeof data === 'object'),
@@ -290,20 +292,16 @@ export class IframeManager {
     try {
       this.remote = await this.connection.promise
       // Post-await checkpoint: if destroy() ran while we awaited the
-      // handshake, we must throw the teardown error rather than fall
-      // through into the "configure your origin" branch below (which
-      // would only fire on a real promise rejection — but we still
-      // belt-and-suspenders the success branch).
-      if (this.isDestroyed) {
-        throw new SessionEndedBeforeSetupError()
-      }
+      // handshake, throw the teardown error instead of treating this as a
+      // successful connection.
+      this.assertAlive()
       debugLog('IframeManager connection established')
     } catch (error) {
       // Teardown race — surface the precise error, not the misleading hint.
       if (this.isDestroyed) {
         debugLog('Connection rejected after destroy() — surfacing teardown error')
-        throw new SessionEndedBeforeSetupError()
       }
+      this.assertAlive()
       const err = error as PenpalError
       sentry.captureException(err)
       // Internal cleanup only — do NOT mark `isDestroyed`. The consumer hasn't
