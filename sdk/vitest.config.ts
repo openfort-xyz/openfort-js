@@ -1,7 +1,11 @@
 import path from 'node:path'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  // Resolve tsconfig `baseUrl` bare imports (e.g. `version`, `core/*`,
+  // `wallets/*`) the same way tsc and the rollup build do.
+  plugins: [tsconfigPaths()],
   test: {
     globals: true,
     environment: 'jsdom',
