@@ -6,6 +6,13 @@ import type { InitializeMessengerOptions } from './browserMessenger/messengers/M
 
 /**
  * React Native implementation of the Messenger interface using WebView postMessage
+ *
+ * Note: Public methods are declared as arrow-function class fields rather than
+ * ES6 method shorthand. This preserves `this` when the method is captured as a
+ * bare function reference — penpal's `connect()` does exactly that with
+ * `messenger.destroy`, and a bare invocation of a method-shorthand `destroy`
+ * causes `TypeError: Cannot read property 'isInitialized' of undefined`
+ * (Sentry OPENFORT-JS-HD). WindowMessenger follows the same pattern.
  */
 export class ReactNativeMessenger implements Messenger {
   private readonly handlers: Set<(message: any) => void> = new Set()
@@ -33,7 +40,7 @@ export class ReactNativeMessenger implements Messenger {
     debugLog('ReactNativeMessenger created')
   }
 
-  initialize(options?: InitializeMessengerOptions): void {
+  initialize = (options?: InitializeMessengerOptions): void => {
     if (this.isInitialized) {
       debugLog('ReactNativeMessenger already initialized')
       return
@@ -58,7 +65,7 @@ export class ReactNativeMessenger implements Messenger {
     })
   }
 
-  sendMessage(message: any, transferables?: Transferable[]): void {
+  sendMessage = (message: any, transferables?: Transferable[]): void => {
     if (!this.isInitialized) {
       throw new PenpalError('CONNECTION_DESTROYED', 'ReactNativeMessenger not initialized')
     }
@@ -91,12 +98,12 @@ export class ReactNativeMessenger implements Messenger {
     }
   }
 
-  addMessageHandler(handler: (message: any) => void): void {
+  addMessageHandler = (handler: (message: any) => void): void => {
     this.handlers.add(handler)
     debugLog(`Message handler added, total handlers: ${this.handlers.size}`)
   }
 
-  removeMessageHandler(handler: (message: any) => void): void {
+  removeMessageHandler = (handler: (message: any) => void): void => {
     this.handlers.delete(handler)
     debugLog(`Message handler removed, total handlers: ${this.handlers.size}`)
   }
@@ -105,7 +112,7 @@ export class ReactNativeMessenger implements Messenger {
    * Handle incoming message from WebView
    * This should be called by the parent component when WebView's onMessage fires
    */
-  handleMessage(message: any): void {
+  handleMessage = (message: any): void => {
     debugLog('[HANDSHAKE DEBUG] ReactNativeMessenger.handleMessage called with:', message)
 
     if (!this.isInitialized) {
@@ -333,12 +340,12 @@ export class ReactNativeMessenger implements Messenger {
     return message
   }
 
-  setupMessagePort(_port: MessagePort): void {
+  setupMessagePort = (_port: MessagePort): void => {
     // MessagePort is not supported in React Native
     debugLog('React Native: setupMessagePort called but ignored (MessagePort not supported)')
   }
 
-  destroy(): void {
+  destroy = (): void => {
     if (!this.isInitialized) {
       return
     }
@@ -361,7 +368,7 @@ export class ReactNativeMessenger implements Messenger {
   /**
    * Reset messenger state to allow reuse after connection failure
    */
-  reset(): void {
+  reset = (): void => {
     debugLog('ReactNativeMessenger reset for reuse')
     this.handlers.clear()
     this.messageBuffer = []
