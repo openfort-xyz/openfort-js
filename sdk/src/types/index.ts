@@ -48,6 +48,7 @@ export {
   MissingRecoveryPasswordError,
   NotConfiguredError,
   OTPRequiredError,
+  SessionEndedBeforeSetupError,
   WrongPasskeyError,
   WrongRecoveryPasswordError,
 } from '../wallets/iframeManager'
