@@ -151,6 +151,48 @@ export class OTPRequiredError extends OpenfortError {
 }
 
 /**
+ * Thrown when the iframe signer does not respond to a `sign` request within
+ * the configured timeout window. The handshake itself succeeded — penpal is
+ * connected — but `remote.sign()` never resolved. In practice this means the
+ * passkey/biometry prompt was dismissed, the iframe is frozen, or a
+ * postMessage was dropped. Without this timeout the promise hangs forever
+ * and the caller sees an endless "Processing" spinner with no error.
+ */
+export class IframeSignTimeoutError extends SignerError {
+  constructor(timeoutMs: number) {
+    super(
+      OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+      `Iframe signer did not respond within ${timeoutMs}ms. The signing prompt may have been dismissed or the iframe is unresponsive.`
+    )
+    this.name = 'IframeSignTimeoutError'
+    Object.setPrototypeOf(this, IframeSignTimeoutError.prototype)
+  }
+}
+
+/**
+ * Thrown when the iframe signer returns a response without a signature
+ * (empty string, undefined, or null). The transport succeeded but the
+ * payload is unusable — posting it downstream would create a malformed
+ * UserOperation, so fail fast instead.
+ */
+export class IframeSignEmptyResponseError extends SignerError {
+  constructor() {
+    super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'Iframe signer returned an empty signature.')
+    this.name = 'IframeSignEmptyResponseError'
+    Object.setPrototypeOf(this, IframeSignEmptyResponseError.prototype)
+  }
+}
+
+/**
+ * Default timeout for `remote.sign()` calls. 90s is deliberately generous —
+ * the signer may be waiting on a biometric prompt (passkey, hardware key)
+ * which a user can take 30-60s to complete. A short timeout (e.g. the 10s
+ * connect timeout) would produce false positives on legitimately slow
+ * passkey flows.
+ */
+const DEFAULT_SIGN_TIMEOUT_MS = 90_000
+
+/**
  * Thrown when the consumer calls `destroy()` on an `IframeManager` before its
  * connection handshake has finished. The two paths that produce this error are
  * (a) `initialize()` called on a manager that was already destroyed, and
@@ -611,7 +653,26 @@ export class IframeManager {
     )
     debugLog('[iframe] done ensureConnection')
 
-    const response = await remote.sign(request)
+    // Wrap `remote.sign` in a Promise.race against a timeout. The penpal
+    // handshake has its own 10s timeout (see `connect()` in doInitialize),
+    // but that only covers connection setup — the actual sign() RPC has no
+    // upper bound, so a dismissed passkey prompt or a frozen iframe leaves
+    // this await hanging forever and the caller stuck on "Processing".
+    let timeoutHandle: ReturnType<typeof setTimeout> | undefined
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutHandle = setTimeout(() => {
+        reject(new IframeSignTimeoutError(DEFAULT_SIGN_TIMEOUT_MS))
+      }, DEFAULT_SIGN_TIMEOUT_MS)
+    })
+
+    let response: SignResponse
+    try {
+      response = await Promise.race([remote.sign(request), timeoutPromise])
+    } finally {
+      if (timeoutHandle !== undefined) {
+        clearTimeout(timeoutHandle)
+      }
+    }
     debugLog('[iframe] response', response)
     if (isErrorResponse(response)) {
       this.handleError(response)
@@ -619,6 +680,12 @@ export class IframeManager {
 
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.setItem('iframe-version', response.version ?? 'undefined')
+    }
+    // Guard against an empty/missing signature slipping through. Posting an
+    // empty signature downstream would build a malformed UserOperation; fail
+    // fast with a typed error so the caller can surface it.
+    if (!response.signature) {
+      throw new IframeSignEmptyResponseError()
     }
     return response.signature
   }
