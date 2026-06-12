@@ -91,6 +91,9 @@ export interface FundingSession {
   expiresAt: number
 }
 
+/** Hard ceiling per funding request so a stalled backend can't hang the app. */
+const FUNDING_REQUEST_TIMEOUT_MS = 30_000
+
 export class FundingApi {
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
     const configuration = SDKConfiguration.getInstance()
@@ -104,6 +107,7 @@ export class FundingApi {
         'Content-Type': 'application/json',
         ...(init?.headers ?? {}),
       },
+      signal: AbortSignal.timeout(FUNDING_REQUEST_TIMEOUT_MS),
     })
     if (!response.ok) {
       const body = await response.text().catch(() => '')
