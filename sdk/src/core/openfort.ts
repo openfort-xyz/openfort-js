@@ -1,6 +1,7 @@
 import { BackendApiClients } from '@openfort/openapi-clients'
 import { AuthApi } from '../api/auth'
 import { EmbeddedWalletApi } from '../api/embeddedWallet'
+import { FundingApi } from '../api/funding'
 import { ProxyApi } from '../api/proxy'
 import { UserApi } from '../api/user'
 import { AuthManager } from '../auth/authManager'
@@ -34,6 +35,8 @@ export class Openfort {
   private userInstance?: UserApi
 
   private proxyInstance?: ProxyApi
+
+  private fundingInstance?: FundingApi
 
   private configuration: SDKConfiguration
 
@@ -83,6 +86,15 @@ export class Openfort {
     return this.proxyInstance
   }
 
+  public get funding(): FundingApi {
+    if (!this.fundingInstance) {
+      throw new ConfigurationError(
+        'Openfort SDK not initialized. Please await waitForInitialization() before accessing funding.'
+      )
+    }
+    return this.fundingInstance
+  }
+
   private initializeSynchronously(): void {
     try {
       // Initialize auth manager
@@ -107,6 +119,7 @@ export class Openfort {
         this.passkeyHandler
       )
       this.userInstance = new UserApi(this.storage, this.authManager, this.validateAndRefreshToken.bind(this))
+      this.fundingInstance = new FundingApi()
       this.proxyInstance = new ProxyApi(
         this.storage,
         this.backendApiClients,
