@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { IStorage } from '../storage/istorage'
-import { IframeManager, SessionEndedBeforeSetupError } from './iframeManager'
+import {
+  IframeManager,
+  IframeSignEmptyResponseError,
+  IframeSignTimeoutError,
+  SessionEndedBeforeSetupError,
+} from './iframeManager'
 
 // Mock the browserMessenger barrel so we can drive `connect()` from tests
 // without invoking the real penpal handshake.
@@ -80,6 +85,35 @@ function makeStorage(): IStorage {
     flush: vi.fn(),
   } as any
 }
+
+// `sign()` calls `buildRequestConfiguration()`, which reads an Authentication
+// out of storage and throws `SessionError` if none is present. The sign-path
+// tests need a connected, authenticated manager, so return a valid session
+// authentication for any `get`.
+function makeAuthedStorage(): IStorage {
+  return {
+    get: vi.fn().mockResolvedValue(JSON.stringify({ type: 'session', token: 'tok_test', userId: 'user_test' })),
+    save: vi.fn(),
+    remove: vi.fn(),
+    flush: vi.fn(),
+  } as any
+}
+
+// Drive `connect()` to resolve immediately to `remote`, then return a fully
+// initialized manager. Mirrors the production handshake without penpal.
+async function makeConnectedManager(remote: unknown) {
+  vi.mocked(connect).mockReturnValue({
+    promise: Promise.resolve(remote),
+    destroy: vi.fn(),
+  } as any)
+  const manager = new IframeManager(makeConfig(), makeAuthedStorage(), makeMessenger() as any)
+  await manager.initialize()
+  return manager
+}
+
+// Mirrors DEFAULT_SIGN_TIMEOUT_MS in iframeManager.ts (not exported). If that
+// constant changes, this must change too.
+const SIGN_TIMEOUT_MS = 90_000
 
 describe('IframeManager destroy/initialize race (OPENFORT-JS-HD)', () => {
   beforeEach(() => {
@@ -214,5 +248,77 @@ describe('IframeManager destroy/initialize race (OPENFORT-JS-HD)', () => {
     // A re-init after destroy must surface the teardown error, not silently
     // re-establish a connection on a manager the consumer thought was dead.
     await expect(manager.initialize()).rejects.toBeInstanceOf(SessionEndedBeforeSetupError)
+  })
+})
+
+describe('IframeManager.sign timeout and empty-signature guard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  it('returns the signature when the iframe responds in time', async () => {
+    const remote = { sign: vi.fn().mockResolvedValue({ signature: '0xsig', version: '1' }) }
+    const manager = await makeConnectedManager(remote)
+
+    await expect(manager.sign('0xdeadbeef')).resolves.toBe('0xsig')
+    expect(remote.sign).toHaveBeenCalledTimes(1)
+  })
+
+  it('rejects with IframeSignTimeoutError when remote.sign() never resolves', async () => {
+    // Never-settling sign() — the production hang: dismissed passkey prompt or
+    // a frozen iframe leaves the RPC pending forever.
+    const remote = { sign: vi.fn(() => new Promise(() => {})) }
+    const manager = await makeConnectedManager(remote)
+
+    vi.useFakeTimers()
+    const signPromise = manager.sign('0xdeadbeef')
+    // Attach the rejection handler BEFORE advancing the timer. Otherwise the
+    // promise rejects mid-advance with no handler yet and Node flags a
+    // (false) unhandled rejection.
+    const assertion = expect(signPromise).rejects.toBeInstanceOf(IframeSignTimeoutError)
+
+    // advanceTimersByTimeAsync flushes the pre-race awaits (ensureConnection,
+    // buildRequestConfiguration) and then fires the 90s timeout.
+    await vi.advanceTimersByTimeAsync(SIGN_TIMEOUT_MS)
+
+    await assertion
+  })
+
+  it('does not time out prematurely when sign() resolves just before the deadline', async () => {
+    const deferred = defer<{ signature: string; version: string }>()
+    const remote = { sign: vi.fn(() => deferred.promise) }
+    const manager = await makeConnectedManager(remote)
+
+    vi.useFakeTimers()
+    const signPromise = manager.sign('0xdeadbeef')
+
+    // Sit one millisecond short of the deadline, then resolve.
+    await vi.advanceTimersByTimeAsync(SIGN_TIMEOUT_MS - 1)
+    deferred.resolve({ signature: '0xsig', version: '1' })
+
+    await expect(signPromise).resolves.toBe('0xsig')
+
+    // The timeout must have been cleared — advancing past the original deadline
+    // produces no late rejection.
+    await vi.advanceTimersByTimeAsync(SIGN_TIMEOUT_MS)
+  })
+
+  it('throws IframeSignEmptyResponseError when the iframe returns an empty signature', async () => {
+    const remote = { sign: vi.fn().mockResolvedValue({ signature: '', version: '1' }) }
+    const manager = await makeConnectedManager(remote)
+
+    await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(IframeSignEmptyResponseError)
+  })
+
+  it('throws IframeSignEmptyResponseError when the signature field is missing entirely', async () => {
+    const remote = { sign: vi.fn().mockResolvedValue({ version: '1' }) }
+    const manager = await makeConnectedManager(remote)
+
+    await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(IframeSignEmptyResponseError)
   })
 })
