@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.3.7
+
+### Patch Changes
+
+- [#296](https://github.com/openfort-xyz/openfort-js/pull/296) [`a658717`](https://github.com/openfort-xyz/openfort-js/commit/a6587173a04bbd61f29fb01e286ff14a486dac26) Thanks [@isardmart](https://github.com/isardmart)! - Bound iframe `sign()` against a frozen signer: 90s timeout (self-healing on retry), empty-signature guard, and a destroy-race checkpoint; exports `IframeSignTimeoutError` and `IframeSignEmptyResponseError`
+
 ## 1.3.6
 
 ### Patch Changes
