@@ -44,6 +44,8 @@ export {
 } from '../wallets/evm/sessionTypes'
 export { Provider, TypedDataPayload } from '../wallets/evm/types'
 export {
+  IframeSignEmptyResponseError,
+  IframeSignTimeoutError,
   MissingProjectEntropyError,
   MissingRecoveryPasswordError,
   NotConfiguredError,
