@@ -190,7 +190,7 @@ export class IframeSignEmptyResponseError extends SignerError {
  * connect timeout) would produce false positives on legitimately slow
  * passkey flows.
  */
-const DEFAULT_SIGN_TIMEOUT_MS = 90_000
+export const DEFAULT_SIGN_TIMEOUT_MS = 90_000
 
 /**
  * Thrown when the consumer calls `destroy()` on an `IframeManager` before its
@@ -653,6 +653,14 @@ export class IframeManager {
     )
     debugLog('[iframe] done ensureConnection')
 
+    // `ensureConnection()` and `buildRequestConfiguration()` both await; a
+    // consumer's `destroy()` can land in that window, tearing the connection
+    // down underneath us. Re-assert liveness before issuing the RPC so we
+    // reject with a precise teardown error instead of signing against a dead
+    // connection (matching the post-await checkpoint invariant in
+    // `initialize()`).
+    this.assertAlive()
+
     // Wrap `remote.sign` in a Promise.race against a timeout. The penpal
     // handshake has its own 10s timeout (see `connect()` in doInitialize),
     // but that only covers connection setup — the actual sign() RPC has no
@@ -668,6 +676,17 @@ export class IframeManager {
     let response: SignResponse
     try {
       response = await Promise.race([remote.sign(request), timeoutPromise])
+    } catch (error) {
+      if (error instanceof IframeSignTimeoutError) {
+        // A timed-out RPC means the iframe is frozen/unresponsive. Leaving the
+        // manager `isInitialized` would hand the same dead connection to the
+        // next sign() (ensureConnection short-circuits on a live remote),
+        // hanging another full window. Mark it failed so the parent rebuilds a
+        // fresh iframe + messenger on the next operation (see
+        // `getIframeManager()`/`ensureSigner()` in embeddedWallet).
+        this.hasFailed = true
+      }
+      throw error
     } finally {
       if (timeoutHandle !== undefined) {
         clearTimeout(timeoutHandle)
@@ -678,14 +697,17 @@ export class IframeManager {
       this.handleError(response)
     }
 
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('iframe-version', response.version ?? 'undefined')
-    }
     // Guard against an empty/missing signature slipping through. Posting an
     // empty signature downstream would build a malformed UserOperation; fail
-    // fast with a typed error so the caller can surface it.
+    // fast with a typed error so the caller can surface it. This runs before
+    // the `iframe-version` write so a malformed response never mutates
+    // persisted diagnostic state.
     if (!response.signature) {
       throw new IframeSignEmptyResponseError()
+    }
+
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('iframe-version', response.version ?? 'undefined')
     }
     return response.signature
   }

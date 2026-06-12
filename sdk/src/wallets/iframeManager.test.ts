@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { IStorage } from '../storage/istorage'
 import {
+  DEFAULT_SIGN_TIMEOUT_MS,
   IframeManager,
   IframeSignEmptyResponseError,
   IframeSignTimeoutError,
@@ -111,9 +112,8 @@ async function makeConnectedManager(remote: unknown) {
   return manager
 }
 
-// Mirrors DEFAULT_SIGN_TIMEOUT_MS in iframeManager.ts (not exported). If that
-// constant changes, this must change too.
-const SIGN_TIMEOUT_MS = 90_000
+// Exported from iframeManager.ts so this stays in lockstep with production.
+const SIGN_TIMEOUT_MS = DEFAULT_SIGN_TIMEOUT_MS
 
 describe('IframeManager destroy/initialize race (OPENFORT-JS-HD)', () => {
   beforeEach(() => {
@@ -320,5 +320,83 @@ describe('IframeManager.sign timeout and empty-signature guard', () => {
     const manager = await makeConnectedManager(remote)
 
     await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(IframeSignEmptyResponseError)
+  })
+
+  it('rejects with SessionEndedBeforeSetupError and never issues the RPC when destroy() lands before sign()', async () => {
+    const remote = { sign: vi.fn().mockResolvedValue({ signature: '0xsig', version: '1' }) }
+    const manager = await makeConnectedManager(remote)
+
+    // Consumer tears the manager down after it was initialized — the next
+    // sign() must observe the teardown checkpoint, not sign against a dead
+    // connection.
+    manager.destroy()
+
+    await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(SessionEndedBeforeSetupError)
+    expect(remote.sign).not.toHaveBeenCalled()
+  })
+
+  it('does not write iframe-version when the signature is empty', async () => {
+    const remote = { sign: vi.fn().mockResolvedValue({ signature: '', version: '7' }) }
+    const manager = await makeConnectedManager(remote)
+
+    const setItem = vi.spyOn(Storage.prototype, 'setItem')
+
+    await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(IframeSignEmptyResponseError)
+    expect(setItem).not.toHaveBeenCalledWith('iframe-version', expect.anything())
+  })
+
+  it('marks the manager failed on timeout so the parent rebuilds a fresh iframe on retry', async () => {
+    const remote = { sign: vi.fn(() => new Promise(() => {})) }
+    const manager = await makeConnectedManager(remote)
+    expect(manager.hasFailed).toBe(false)
+
+    vi.useFakeTimers()
+    const signPromise = manager.sign('0xdeadbeef')
+    const assertion = expect(signPromise).rejects.toBeInstanceOf(IframeSignTimeoutError)
+    await vi.advanceTimersByTimeAsync(SIGN_TIMEOUT_MS)
+    await assertion
+
+    // A frozen iframe must poison the manager — otherwise the next sign() reuses
+    // the dead connection and hangs another full window.
+    expect(manager.hasFailed).toBe(true)
+  })
+
+  it('hits the post-await checkpoint when destroy() lands during buildRequestConfiguration', async () => {
+    // Drives the genuine race the line-662 assertAlive() targets: the manager
+    // is already initialized (so ensureConnection short-circuits to a live
+    // remote), then destroy() lands while buildRequestConfiguration awaits
+    // storage — the RPC must never fire.
+    const remote = { sign: vi.fn().mockResolvedValue({ signature: '0xsig', version: '1' }) }
+    const authJson = JSON.stringify({ type: 'session', token: 'tok_test', userId: 'user_test' })
+    const gate = defer<void>()
+    let signPhase = false
+    const storage = {
+      get: vi.fn().mockImplementation(async () => {
+        if (signPhase) {
+          await gate.promise
+        }
+        return authJson
+      }),
+      save: vi.fn(),
+      remove: vi.fn(),
+      flush: vi.fn(),
+    } as any
+
+    vi.mocked(connect).mockReturnValue({ promise: Promise.resolve(remote), destroy: vi.fn() } as any)
+    const manager = new IframeManager(makeConfig(), storage, makeMessenger() as any)
+    await manager.initialize()
+
+    signPhase = true
+    const signPromise = manager.sign('0xdeadbeef')
+    const assertion = expect(signPromise).rejects.toBeInstanceOf(SessionEndedBeforeSetupError)
+
+    // Let sign() reach the blocked storage.get inside buildRequestConfiguration,
+    // then tear the manager down before the checkpoint runs.
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    manager.destroy()
+    gate.resolve()
+
+    await assertion
+    expect(remote.sign).not.toHaveBeenCalled()
   })
 })
