@@ -37,6 +37,12 @@ export interface CreateFundingSessionParams {
   externalId?: string
   /** true = single-use deposit address; false (default) = open/reusable. */
   strict?: boolean
+  /**
+   * One-call funding: set the payment method at creation when the source route
+   * is already known — the session comes back in `waiting_payment` with the
+   * deposit address, skipping the separate setPaymentMethod round trip.
+   */
+  paymentMethod?: FundingPaymentMethodInput
 }
 
 export interface FundingPaymentMethodInput {
@@ -116,26 +122,80 @@ export class FundingApi {
     return response.json() as Promise<T>
   }
 
-  /** Funding session sub-resource: create → setPaymentMethod → get (poll). */
+  /**
+   * Client secrets remembered from create() responses, so follow-up calls in
+   * the same SDK instance don't need to thread the secret manually. Passing an
+   * explicit `clientSecret` always overrides (e.g. sessions created elsewhere).
+   */
+  private readonly secrets = new Map<string, string>()
+
+  private resolveSecret(sessionId: string, explicit?: string): string {
+    const secret = explicit ?? this.secrets.get(sessionId)
+    if (!secret) {
+      throw new Error(
+        `No clientSecret known for funding session ${sessionId} — pass it explicitly (it was returned when the session was created)`
+      )
+    }
+    return secret
+  }
+
+  private remember(session: FundingSession): FundingSession {
+    if (session.clientSecret) {
+      this.secrets.set(session.id, session.clientSecret)
+    }
+    return session
+  }
+
+  /** Funding session sub-resource: create → setPaymentMethod → get/wait. */
   public readonly sessions = {
-    create: (params: CreateFundingSessionParams): Promise<FundingSession> =>
-      this.request<FundingSession>('/v2/funding/sessions', {
-        method: 'POST',
-        body: JSON.stringify(params),
-      }),
+    create: async (params: CreateFundingSessionParams): Promise<FundingSession> =>
+      this.remember(
+        await this.request<FundingSession>('/v2/funding/sessions', {
+          method: 'POST',
+          body: JSON.stringify(params),
+        })
+      ),
 
     setPaymentMethod: (
       sessionId: string,
-      params: { clientSecret: string; paymentMethod: FundingPaymentMethodInput }
+      params: { paymentMethod: FundingPaymentMethodInput; clientSecret?: string }
     ): Promise<FundingSession> =>
       this.request<FundingSession>(`/v2/funding/sessions/${sessionId}/payment_methods`, {
         method: 'POST',
-        body: JSON.stringify(params),
+        body: JSON.stringify({
+          clientSecret: this.resolveSecret(sessionId, params.clientSecret),
+          paymentMethod: params.paymentMethod,
+        }),
       }),
 
     get: (sessionId: string, params?: { clientSecret?: string }): Promise<FundingSession> => {
-      const query = params?.clientSecret ? `?clientSecret=${encodeURIComponent(params.clientSecret)}` : ''
-      return this.request<FundingSession>(`/v2/funding/sessions/${sessionId}${query}`)
+      const secret = this.resolveSecret(sessionId, params?.clientSecret)
+      return this.request<FundingSession>(
+        `/v2/funding/sessions/${sessionId}?clientSecret=${encodeURIComponent(secret)}`
+      )
+    },
+
+    /**
+     * Poll a session until it reaches a terminal status (`succeeded`, `bounced`,
+     * or `expired`). Resolves with the terminal session; rejects on timeout.
+     */
+    wait: async (
+      sessionId: string,
+      params?: { clientSecret?: string; pollMs?: number; timeoutMs?: number }
+    ): Promise<FundingSession> => {
+      const pollMs = params?.pollMs ?? 4_000
+      const timeoutMs = params?.timeoutMs ?? 30 * 60_000
+      const deadline = Date.now() + timeoutMs
+      for (;;) {
+        const session = await this.sessions.get(sessionId, params)
+        if (session.status === 'succeeded' || session.status === 'bounced' || session.status === 'expired') {
+          return session
+        }
+        if (Date.now() >= deadline) {
+          throw new Error(`Timed out waiting for funding session ${sessionId} (last status: ${session.status})`)
+        }
+        await new Promise((resolve) => setTimeout(resolve, pollMs))
+      }
     },
   }
 }
