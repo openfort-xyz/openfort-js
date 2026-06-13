@@ -141,6 +141,7 @@ export class InternalSentry {
 
     InternalSentry.sentry = new sentryImport.BrowserClient({
       dsn: SENTRY_DSN,
+      release: `${PACKAGE}@${VERSION}`,
       integrations: [],
       stackParser: sentryImport.defaultStackParser,
       transport: sentryImport.makeFetchTransport,
@@ -151,6 +152,18 @@ export class InternalSentry {
       sdk: PACKAGE,
       sdkVersion: VERSION,
     }
+
+    // Tag every event — even ones captured directly via `sentry.captureException`
+    // outside the `captureError` / `captureAxiosError` wrappers — so telemetry can
+    // answer "is this fix shipped?" without an out-of-band lookup.
+    InternalSentry.sentryInstance.addEventProcessor((event) => {
+      event.tags = {
+        ...event.tags,
+        'sdk.name': PACKAGE,
+        'sdk.version': VERSION,
+      }
+      return event
+    })
 
     InternalSentry.processQueuedCalls()
   }
