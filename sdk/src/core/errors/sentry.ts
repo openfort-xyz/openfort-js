@@ -137,22 +137,34 @@ export class InternalSentry {
       return
     }
 
-    const sentryImport = await import('@sentry/browser')
-
-    InternalSentry.sentry = new sentryImport.BrowserClient({
-      dsn: SENTRY_DSN,
-      integrations: [],
-      stackParser: sentryImport.defaultStackParser,
-      transport: sentryImport.makeFetchTransport,
-    })
-
-    InternalSentry.baseTags = {
-      projectId: configuration?.baseConfiguration.publishableKey ?? '',
-      sdk: PACKAGE,
-      sdkVersion: VERSION,
+    // Telemetry is best-effort and opt-out. Skip it entirely when disabled.
+    if (configuration?.disableTelemetry) {
+      return
     }
 
-    InternalSentry.processQueuedCalls()
+    // Never let telemetry break the host app. The dynamic import can fail to
+    // resolve in some bundlers (notably Metro / React Native), so swallow any
+    // error — queued capture calls simply stay unsent.
+    try {
+      const sentryImport = await import('@sentry/browser')
+
+      InternalSentry.sentry = new sentryImport.BrowserClient({
+        dsn: SENTRY_DSN,
+        integrations: [],
+        stackParser: sentryImport.defaultStackParser,
+        transport: sentryImport.makeFetchTransport,
+      })
+
+      InternalSentry.baseTags = {
+        projectId: configuration?.baseConfiguration.publishableKey ?? '',
+        sdk: PACKAGE,
+        sdkVersion: VERSION,
+      }
+
+      InternalSentry.processQueuedCalls()
+    } catch {
+      // Telemetry unavailable — continue without it.
+    }
   }
 
   private static proxy = new Proxy({} as Client, {

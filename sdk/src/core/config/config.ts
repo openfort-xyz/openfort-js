@@ -85,6 +85,13 @@ export type OpenfortSDKConfiguration = {
   overrides?: SDKOverrides
   thirdPartyAuth?: ThirdPartyAuthConfiguration
   debug?: boolean
+  /**
+   * Disable anonymous error telemetry (Sentry). Telemetry is best-effort and
+   * never throws, but you can turn it off entirely — for example in React
+   * Native, where the telemetry SDK's dynamic import is unnecessary overhead.
+   * Defaults to `false`.
+   */
+  disableTelemetry?: boolean
 }
 
 export class SDKConfiguration {
@@ -106,15 +113,25 @@ export class SDKConfiguration {
 
   readonly debug?: boolean
 
+  readonly disableTelemetry?: boolean
+
   static instance: SDKConfiguration | null = null
 
-  constructor({ baseConfiguration, shieldConfiguration, overrides, thirdPartyAuth, debug }: OpenfortSDKConfiguration) {
+  constructor({
+    baseConfiguration,
+    shieldConfiguration,
+    overrides,
+    thirdPartyAuth,
+    debug,
+    disableTelemetry,
+  }: OpenfortSDKConfiguration) {
     this.shieldConfiguration = shieldConfiguration
     this.baseConfiguration = baseConfiguration
     this.backendUrl = overrides?.backendUrl || 'https://api.openfort.io'
     this.iframeUrl = overrides?.iframeUrl || 'https://embed.openfort.io'
     this.iframeUrl = `${this.iframeUrl}/iframe/${this.baseConfiguration.publishableKey}`
     this.debug = debug
+    this.disableTelemetry = disableTelemetry
     if (shieldConfiguration?.debug) {
       this.iframeUrl = `${this.iframeUrl}?debug=true`
     }
