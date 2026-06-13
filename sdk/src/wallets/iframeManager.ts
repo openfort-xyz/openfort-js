@@ -219,6 +219,98 @@ export class SessionEndedBeforeSetupError extends OpenfortError {
   }
 }
 
+/**
+ * Penpal handshake timeout — the iframe never replied to SYN/ACK within the
+ * 10s window. Distinct from the misleading "configure your origin" copy: a
+ * handshake timeout means the embed page is unreachable, blocked by CSP, or
+ * the host network is dropping the load — not that the origin allowlist is
+ * misconfigured. The original PenpalError is preserved as `cause` so callers
+ * can inspect `code === 'CONNECTION_TIMEOUT'` for programmatic routing.
+ */
+export class IframeHandshakeTimeoutError extends OpenfortError {
+  constructor(timeoutMs: number, cause: unknown) {
+    super(
+      OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+      `Failed to establish iframe handshake within ${timeoutMs}ms — check that the embed page is reachable and not blocked by CSP/network.`
+    )
+    this.name = 'IframeHandshakeTimeoutError'
+    // ES2022 Error.cause — set explicitly because the OpenfortError base
+    // constructor does not forward it.
+    ;(this as { cause?: unknown }).cause = cause
+    Object.setPrototypeOf(this, IframeHandshakeTimeoutError.prototype)
+  }
+}
+
+/**
+ * Generic handshake-time failure that is neither a teardown race nor a
+ * Penpal connection timeout nor a recognizable origin/CSP misconfiguration.
+ * Preserves the original rejection as `cause` so the real underlying error
+ * (TransmissionFailed, unexpected throw inside penpal, etc.) is still
+ * inspectable instead of being collapsed into the misleading "configure your
+ * origin" copy.
+ */
+export class IframeInitializeError extends OpenfortError {
+  constructor(message: string, cause: unknown) {
+    super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, message)
+    this.name = 'IframeInitializeError'
+    ;(this as { cause?: unknown }).cause = cause
+    Object.setPrototypeOf(this, IframeInitializeError.prototype)
+  }
+}
+
+/**
+ * Default Penpal handshake timeout used by `doInitialize()` when calling
+ * `connect()`. Surfaced as a constant so `IframeHandshakeTimeoutError`
+ * reports the same number that was actually used.
+ */
+const HANDSHAKE_TIMEOUT_MS = 10_000
+
+/**
+ * Heuristic check for "the iframe got blocked because the origin is not
+ * allowlisted in the dashboard". The penpal handshake itself just times out,
+ * but a 403/CSP/forbidden error sometimes leaks through as the rejection's
+ * `cause` or `message`. Only when this returns true do we surface the
+ * "configure your origin" hint — every other handshake failure surfaces its
+ * actual cause instead.
+ */
+function looksLikeOriginAllowlistFailure(err: unknown): boolean {
+  if (!err || typeof err !== 'object') {
+    return false
+  }
+  const e = err as { status?: unknown; statusCode?: unknown; message?: unknown; cause?: unknown }
+  if (e.status === 403 || e.statusCode === 403) {
+    return true
+  }
+  const msg = typeof e.message === 'string' ? e.message.toLowerCase() : ''
+  if (msg.includes('forbidden') || msg.includes('unauthorized origin') || msg.includes('not allowed origin')) {
+    return true
+  }
+  if (e.cause && e.cause !== err) {
+    return looksLikeOriginAllowlistFailure(e.cause)
+  }
+  return false
+}
+
+/**
+ * Discriminator for Penpal's `CONNECTION_TIMEOUT`. Checks `code` first (the
+ * authoritative signal produced by `shakeHands.ts`), then falls back to a
+ * message match for defensive handling if penpal's error surface ever
+ * regresses.
+ */
+function isPenpalConnectionTimeout(err: unknown): boolean {
+  if (!err || typeof err !== 'object') {
+    return false
+  }
+  const e = err as { code?: unknown; name?: unknown; message?: unknown }
+  if (e.code === 'CONNECTION_TIMEOUT') {
+    return true
+  }
+  if (e.name === 'PenpalError' && typeof e.message === 'string' && e.message.includes('Connection timed out')) {
+    return true
+  }
+  return false
+}
+
 export class IframeManager {
   private messenger: Messenger
 
@@ -338,7 +430,7 @@ export class IframeManager {
 
     this.connection = connect<IframeAPI>({
       messenger: this.messenger,
-      timeout: 10000,
+      timeout: HANDSHAKE_TIMEOUT_MS,
       log: debugLog,
     })
 
@@ -349,23 +441,35 @@ export class IframeManager {
       // successful connection.
       this.assertAlive()
       debugLog('IframeManager connection established')
-    } catch (error) {
+    } catch (error: unknown) {
       // Teardown race — surface the precise error, not the misleading hint.
       if (this.isDestroyed) {
         debugLog('Connection rejected after destroy() — surfacing teardown error')
       }
       this.assertAlive()
-      const err = error as PenpalError
-      sentry.captureException(err)
+      sentry.captureException(error)
       // Internal cleanup only — do NOT mark `isDestroyed`. The consumer hasn't
       // torn the manager down; the handshake itself failed. Marking it
       // destroyed here would shadow the genuine "configure your origin" hint
       // on any subsequent `initialize()` call.
       this.clearConnection()
-      debugLog('Failed to establish connection:', err)
-      throw new OpenfortError(
-        OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
-        `Failed to establish iFrame connection: ${err.cause || err.message}
+      debugLog('Failed to establish connection:', error)
+
+      // Discriminate the rejection rather than collapsing every failure into
+      // the "configure your origin" copy — the OPENFORT-JS-HD telemetry
+      // showed ~248 events / 14d of Penpal handshake timeouts on
+      // playground.openfort.io that were surfaced as origin allowlist
+      // errors, masking the real cause (embed unreachable / CSP blocked /
+      // network drop).
+      if (isPenpalConnectionTimeout(error)) {
+        throw new IframeHandshakeTimeoutError(HANDSHAKE_TIMEOUT_MS, error)
+      }
+
+      if (looksLikeOriginAllowlistFailure(error)) {
+        const causeMessage = error instanceof Error ? error.message : String(error)
+        throw new OpenfortError(
+          OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+          `Failed to establish iFrame connection: ${causeMessage}
 
         In apps built with:
         - react native
@@ -376,7 +480,11 @@ export class IframeManager {
 
         For more information, see: https://www.openfort.io/docs/configuration/native-apps
         `
-      )
+        )
+      }
+
+      const causeMessage = error instanceof Error ? error.message : String(error)
+      throw new IframeInitializeError(`Failed to establish iFrame connection: ${causeMessage}`, error)
     }
   }
 

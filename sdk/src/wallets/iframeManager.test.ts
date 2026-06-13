@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { OpenfortError } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 import {
+  IframeHandshakeTimeoutError,
+  IframeInitializeError,
   IframeManager,
   IframeSignEmptyResponseError,
   IframeSignTimeoutError,
@@ -254,6 +257,150 @@ describe('IframeManager destroy/initialize race (OPENFORT-JS-HD)', () => {
     // A re-init after destroy must surface the teardown error, not silently
     // re-establish a connection on a manager the consumer thought was dead.
     await expect(manager.initialize()).rejects.toBeInstanceOf(SessionEndedBeforeSetupError)
+  })
+})
+
+describe('IframeManager.initialize handshake-failure discrimination', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('maps a Penpal CONNECTION_TIMEOUT rejection to IframeHandshakeTimeoutError (NOT "configure your origin")', async () => {
+    // The on-the-wire shape penpal/shakeHands.ts produces on handshake timeout.
+    const penpalTimeout = new PenpalError('CONNECTION_TIMEOUT', 'Connection timed out after 10000ms')
+    const connectionDestroy = vi.fn()
+    vi.mocked(connect).mockReturnValue({
+      promise: Promise.reject(penpalTimeout),
+      destroy: connectionDestroy,
+    } as any)
+
+    const manager = new IframeManager(makeConfig(), makeStorage(), makeMessenger() as any)
+
+    let caught: unknown
+    try {
+      await manager.initialize()
+    } catch (e) {
+      caught = e
+    }
+
+    expect(caught).toBeInstanceOf(IframeHandshakeTimeoutError)
+    const message = (caught as Error).message
+    // The whole point: surface the timeout, not the origin allowlist hint.
+    expect(message).not.toMatch(/configure your origin/i)
+    expect(message).toMatch(/iframe handshake/i)
+    expect(message).toMatch(/10000/)
+    // Original PenpalError survives as cause so callers can inspect `code`.
+    expect((caught as { cause?: unknown }).cause).toBe(penpalTimeout)
+    expect(manager.hasFailed).toBe(true)
+  })
+
+  it('maps a handshake rejection whose name matches PenpalError but lacks code via message-substring fallback', async () => {
+    // Defensive case — if penpal's error surface ever regresses and we lose
+    // the `code` field, fall back to matching on the message.
+    const looseTimeout = Object.assign(new Error('Connection timed out after 10000ms'), { name: 'PenpalError' })
+    vi.mocked(connect).mockReturnValue({
+      promise: Promise.reject(looseTimeout),
+      destroy: vi.fn(),
+    } as any)
+
+    const manager = new IframeManager(makeConfig(), makeStorage(), makeMessenger() as any)
+
+    await expect(manager.initialize()).rejects.toBeInstanceOf(IframeHandshakeTimeoutError)
+  })
+
+  it('preserves the "configure your origin" copy when the rejection looks like an HTTP 403 origin block', async () => {
+    // The legitimate origin-allowlist case the original copy was written for —
+    // an iframe load that comes back with status 403 should still suggest the
+    // dashboard origin config as the most likely fix.
+    const originBlock = Object.assign(new Error('iframe load rejected'), { status: 403 })
+    vi.mocked(connect).mockReturnValue({
+      promise: Promise.reject(originBlock),
+      destroy: vi.fn(),
+    } as any)
+
+    const manager = new IframeManager(makeConfig(), makeStorage(), makeMessenger() as any)
+
+    let caught: unknown
+    try {
+      await manager.initialize()
+    } catch (e) {
+      caught = e
+    }
+
+    expect(caught).toBeInstanceOf(OpenfortError)
+    expect(caught).not.toBeInstanceOf(IframeHandshakeTimeoutError)
+    expect(caught).not.toBeInstanceOf(IframeInitializeError)
+    expect((caught as Error).message).toMatch(/configure your origin/i)
+  })
+
+  it('preserves the "configure your origin" copy when the rejection message includes "forbidden"', async () => {
+    // Heuristic — text-shaped origin block (e.g. CSP frame-ancestors throws an
+    // error like "Refused to display 'https://embed.openfort.io' in a frame
+    // because an ancestor violates ..."). Keeping the dashboard hint here is
+    // still the right user-facing message.
+    const forbidden = new Error('embed page rejected: Forbidden')
+    vi.mocked(connect).mockReturnValue({
+      promise: Promise.reject(forbidden),
+      destroy: vi.fn(),
+    } as any)
+
+    const manager = new IframeManager(makeConfig(), makeStorage(), makeMessenger() as any)
+
+    await expect(manager.initialize()).rejects.toThrow(/configure your origin/i)
+  })
+
+  it('maps an unrecognized handshake failure to IframeInitializeError with the original error preserved as cause', async () => {
+    // The catch used to collapse every unknown rejection into the misleading
+    // "configure your origin" copy. Now it surfaces the original cause so
+    // callers (and Sentry) see the real failure mode.
+    const unknown = new Error('postMessage transmission failed')
+    vi.mocked(connect).mockReturnValue({
+      promise: Promise.reject(unknown),
+      destroy: vi.fn(),
+    } as any)
+
+    const manager = new IframeManager(makeConfig(), makeStorage(), makeMessenger() as any)
+
+    let caught: unknown
+    try {
+      await manager.initialize()
+    } catch (e) {
+      caught = e
+    }
+
+    expect(caught).toBeInstanceOf(IframeInitializeError)
+    expect(caught).not.toBeInstanceOf(IframeHandshakeTimeoutError)
+    expect((caught as Error).message).not.toMatch(/configure your origin/i)
+    expect((caught as Error).message).toMatch(/postMessage transmission failed/)
+    expect((caught as { cause?: unknown }).cause).toBe(unknown)
+    expect(manager.hasFailed).toBe(true)
+  })
+
+  it('does not leak the "configure your origin" copy for a generic non-Error rejection', async () => {
+    // Even when penpal rejects with a non-Error value (string, plain object),
+    // the catch must not synthesize the dashboard hint. Coerce to a stringified
+    // IframeInitializeError instead.
+    vi.mocked(connect).mockReturnValue({
+      promise: Promise.reject('boom'),
+      destroy: vi.fn(),
+    } as any)
+
+    const manager = new IframeManager(makeConfig(), makeStorage(), makeMessenger() as any)
+
+    let caught: unknown
+    try {
+      await manager.initialize()
+    } catch (e) {
+      caught = e
+    }
+
+    expect(caught).toBeInstanceOf(IframeInitializeError)
+    expect((caught as Error).message).not.toMatch(/configure your origin/i)
+    expect((caught as Error).message).toMatch(/boom/)
   })
 })
 
