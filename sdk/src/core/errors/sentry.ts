@@ -139,6 +139,12 @@ export class InternalSentry {
 
     const sentryImport = await import('@sentry/browser')
 
+    // `release` is applied by the client to every event it prepares (see
+    // applyClientOptions in @sentry/core), so it covers the wrapped
+    // captureError / captureAxiosError paths AND bare sentry.captureException
+    // calls (e.g. wallets/iframeManager.ts) without a per-event processor.
+    // This is what lets telemetry answer "is this fix shipped?" — the events
+    // that previously reported release: null now carry the SDK version.
     InternalSentry.sentry = new sentryImport.BrowserClient({
       dsn: SENTRY_DSN,
       release: `${PACKAGE}@${VERSION}`,
@@ -152,18 +158,6 @@ export class InternalSentry {
       sdk: PACKAGE,
       sdkVersion: VERSION,
     }
-
-    // Tag every event — even ones captured directly via `sentry.captureException`
-    // outside the `captureError` / `captureAxiosError` wrappers — so telemetry can
-    // answer "is this fix shipped?" without an out-of-band lookup.
-    InternalSentry.sentryInstance.addEventProcessor((event) => {
-      event.tags = {
-        ...event.tags,
-        'sdk.name': PACKAGE,
-        'sdk.version': VERSION,
-      }
-      return event
-    })
 
     InternalSentry.processQueuedCalls()
   }
