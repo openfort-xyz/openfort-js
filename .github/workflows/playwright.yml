@@ -49,8 +49,25 @@ jobs:
       working-directory: examples/apps/auth-sample
 
     - name: Install Playwright Browsers
-      run: pnpm playwright install --with-deps
+      # Splits `--with-deps` into two operations so a hang in the system-deps
+      # install (apt-get on the GitHub-hosted runner) fails fast at the
+      # step-level timeout instead of eating the 60-min job-level wall.
+      #
+      # Setting DEBIAN_FRONTEND / NEEDRESTART_* on the apt-get sudo command
+      # line (rather than just the GitHub `env:` block) is required because
+      # the runner's sudoers does not preserve NEEDRESTART_* — without this,
+      # the post-apt needrestart hook on Ubuntu 24.04 runners can wait on a
+      # TTY prompt that is never answered and the step blocks indefinitely.
+      env:
+        DEBIAN_FRONTEND: noninteractive
+        NEEDRESTART_MODE: a
+        NEEDRESTART_SUSPEND: '1'
+      run: |
+        sudo -E NEEDRESTART_MODE=a NEEDRESTART_SUSPEND=1 DEBIAN_FRONTEND=noninteractive \
+          pnpm exec playwright install-deps
+        pnpm playwright install
       working-directory: examples/apps/auth-sample
+      timeout-minutes: 10
 
     - name: Run Playwright tests
       env:
