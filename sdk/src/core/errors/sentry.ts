@@ -139,8 +139,15 @@ export class InternalSentry {
 
     const sentryImport = await import('@sentry/browser')
 
+    // `release` is applied by the client to every event it prepares (see
+    // applyClientOptions in @sentry/core), so it covers the wrapped
+    // captureError / captureAxiosError paths AND bare sentry.captureException
+    // calls (e.g. wallets/iframeManager.ts) without a per-event processor.
+    // This is what lets telemetry answer "is this fix shipped?" — the events
+    // that previously reported release: null now carry the SDK version.
     InternalSentry.sentry = new sentryImport.BrowserClient({
       dsn: SENTRY_DSN,
+      release: `${PACKAGE}@${VERSION}`,
       integrations: [],
       stackParser: sentryImport.defaultStackParser,
       transport: sentryImport.makeFetchTransport,
