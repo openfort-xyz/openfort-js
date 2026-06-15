@@ -1,5 +1,13 @@
 # @openfort/openfort-js
 
+## 1.3.8
+
+### Patch Changes
+
+- [#302](https://github.com/openfort-xyz/openfort-js/pull/302) [`e797c1e`](https://github.com/openfort-xyz/openfort-js/commit/e797c1e7b3b97de82d6cb00a2f813544804b64a3) Thanks [@isardmart](https://github.com/isardmart)! - Surface a penpal handshake `CONNECTION_TIMEOUT` as a typed `IframeHandshakeTimeoutError` instead of the native-app "configure your origin" copy, which misled web embeds whose origin was correctly configured (Sentry OPENFORT-JS-D0). The original PenpalError is preserved as `cause`; non-timeout handshake failures keep the existing hint.
+
+- [#301](https://github.com/openfort-xyz/openfort-js/pull/301) [`f1688ab`](https://github.com/openfort-xyz/openfort-js/commit/f1688abcc914c1b13b49128c53ab9261822badd0) Thanks [@condor-openfort](https://github.com/apps/condor-openfort)! - chore(observability): tag Sentry events with sdk.name + sdk.version and set release from package.json
+
 ## 1.3.7
 
 ### Patch Changes
