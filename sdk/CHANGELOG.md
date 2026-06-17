@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.3.9
+
+### Patch Changes
+
+- [#305](https://github.com/openfort-xyz/openfort-js/pull/305) [`2b2f940`](https://github.com/openfort-xyz/openfort-js/commit/2b2f9407cfad3ad185dd2c5acf39d722b72cf5f7) Thanks [@isardmart](https://github.com/isardmart)! - fixed strict origin referer policy
+
 ## 1.3.8
 
 ### Patch Changes
