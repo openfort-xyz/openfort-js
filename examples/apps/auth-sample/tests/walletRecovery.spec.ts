@@ -16,7 +16,7 @@ const logout = async (page: Page) => {
 }
 
 test('Password recovery', async ({ page }) => {
-  test.setTimeout(120000) // this is a long test, so we need a bit more time. 120 seconds
+  test.setTimeout(180000) // this is a long, multi-step test that is slower on CI
 
   await test.step('Authenticate and recover', async () => {
     // Clean authenticate so we don't invalidate the session
@@ -64,7 +64,9 @@ test('Password recovery', async ({ page }) => {
     await passwordRecoveryInput.fill('incorrect password')
     await passwordRecoveryButtonLogin.click()
 
-    await page.getByTestId('wallet-recovery-error').waitFor({ timeout: 5000 })
+    // The wrong-password attempt is a full Shield/backend round-trip before the
+    // error renders — 5s is enough locally but too short on slower CI runners.
+    await page.getByTestId('wallet-recovery-error').waitFor({ timeout: 30000 })
 
     await passwordRecoveryInput.fill('password')
     await passwordRecoveryButtonLogin.click()
