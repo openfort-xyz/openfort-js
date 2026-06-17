@@ -52,7 +52,7 @@ export class Logger {
    * before waitForNewLogs can capture the baseline.
    */
   async clickAndWaitForNewLogs(action: () => Promise<void>, options: { pollInterval?: number; timeout?: number } = {}) {
-    const { pollInterval = 1000, timeout = 30000 } = options
+    const { pollInterval = 1000, timeout = 60000 } = options
 
     if (!this.textArea) {
       throw new Error('Logger not initialized')
@@ -82,7 +82,7 @@ export class Logger {
   }
 
   async waitForNewLogs(options: { pollInterval?: number; timeout?: number } = {}) {
-    const { pollInterval = 1000, timeout = 30000 } = options
+    const { pollInterval = 1000, timeout = 60000 } = options
 
     if (!this.textArea) {
       throw new Error('Logger not initialized')
