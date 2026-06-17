@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { IStorage } from '../storage/istorage'
 import {
+  IframeHandshakeTimeoutError,
   IframeManager,
   IframeSignEmptyResponseError,
   IframeSignTimeoutError,
@@ -254,6 +255,48 @@ describe('IframeManager destroy/initialize race (OPENFORT-JS-HD)', () => {
     // A re-init after destroy must surface the teardown error, not silently
     // re-establish a connection on a manager the consumer thought was dead.
     await expect(manager.initialize()).rejects.toBeInstanceOf(SessionEndedBeforeSetupError)
+  })
+})
+
+describe('IframeManager handshake-timeout discriminator (OPENFORT-JS-D0)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  async function initWithRejection(reason: unknown): Promise<unknown> {
+    vi.mocked(connect).mockReturnValue({
+      promise: Promise.reject(reason),
+      destroy: vi.fn(),
+    } as any)
+    const manager = new IframeManager(makeConfig(), makeStorage(), makeMessenger() as any)
+    try {
+      await manager.initialize()
+      return undefined
+    } catch (e) {
+      return e
+    }
+  }
+
+  it('maps a penpal CONNECTION_TIMEOUT to IframeHandshakeTimeoutError without the "configure your origin" copy', async () => {
+    const penpalError = new PenpalError('CONNECTION_TIMEOUT', 'Connection timed out after 10000ms')
+
+    const caught = await initWithRejection(penpalError)
+
+    expect(caught).toBeInstanceOf(IframeHandshakeTimeoutError)
+    const message = (caught as Error).message
+    expect(message).toMatch(/within 10000ms/i)
+    expect(message).not.toMatch(/configure your origin/i)
+    // The original PenpalError is preserved for programmatic routing.
+    expect((caught as { cause?: unknown }).cause).toBe(penpalError)
+  })
+
+  it('keeps the "configure your origin" hint for non-timeout handshake failures', async () => {
+    const penpalError = new PenpalError('CONNECTION_DESTROYED', 'connection destroyed')
+
+    const caught = await initWithRejection(penpalError)
+
+    expect(caught).not.toBeInstanceOf(IframeHandshakeTimeoutError)
+    expect((caught as Error).message).toMatch(/configure your origin/i)
   })
 })
 

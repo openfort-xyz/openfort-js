@@ -219,6 +219,36 @@ export class SessionEndedBeforeSetupError extends OpenfortError {
   }
 }
 
+/**
+ * Thrown when the penpal handshake does not complete within the connection
+ * window — the iframe never replied to SYN/ACK. Distinct from a dashboard
+ * origin misconfiguration: a timeout usually means the embed page is
+ * unreachable, blocked by CSP, or the network dropped the load. Collapsing it
+ * into the native-app "configure your origin" copy misled web users whose
+ * origin was fine (Sentry OPENFORT-JS-D0, seen on playground.openfort.io). The
+ * original PenpalError is kept as `cause` so callers can still inspect
+ * `code === 'CONNECTION_TIMEOUT'`.
+ */
+export class IframeHandshakeTimeoutError extends OpenfortError {
+  constructor(timeoutMs: number, cause: unknown) {
+    super(
+      OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+      `Failed to establish iframe connection within ${timeoutMs}ms. The embedded wallet page did not respond — it may be unreachable or blocked by CSP/network.`
+    )
+    this.name = 'IframeHandshakeTimeoutError'
+    // The base OpenfortError constructor does not forward `cause`; set it
+    // explicitly so the underlying PenpalError stays inspectable.
+    ;(this as { cause?: unknown }).cause = cause
+    Object.setPrototypeOf(this, IframeHandshakeTimeoutError.prototype)
+  }
+}
+
+/**
+ * Penpal handshake timeout used by `doInitialize()`'s `connect()` call. Named
+ * so `IframeHandshakeTimeoutError` reports the value actually used.
+ */
+const HANDSHAKE_TIMEOUT_MS = 10_000
+
 export class IframeManager {
   private messenger: Messenger
 
@@ -338,7 +368,7 @@ export class IframeManager {
 
     this.connection = connect<IframeAPI>({
       messenger: this.messenger,
-      timeout: 10000,
+      timeout: HANDSHAKE_TIMEOUT_MS,
       log: debugLog,
     })
 
@@ -355,14 +385,23 @@ export class IframeManager {
         debugLog('Connection rejected after destroy() — surfacing teardown error')
       }
       this.assertAlive()
-      const err = error as PenpalError
-      sentry.captureException(err)
+      sentry.captureException(error)
       // Internal cleanup only — do NOT mark `isDestroyed`. The consumer hasn't
       // torn the manager down; the handshake itself failed. Marking it
       // destroyed here would shadow the genuine "configure your origin" hint
       // on any subsequent `initialize()` call.
       this.clearConnection()
-      debugLog('Failed to establish connection:', err)
+      debugLog('Failed to establish connection:', error)
+
+      // A penpal CONNECTION_TIMEOUT is the common handshake failure (Sentry
+      // OPENFORT-JS-D0). Surface it as a typed timeout instead of the native-app
+      // "configure your origin" copy below, which is wrong for web embeds whose
+      // origin is correctly configured.
+      if (error instanceof PenpalError && error.code === 'CONNECTION_TIMEOUT') {
+        throw new IframeHandshakeTimeoutError(HANDSHAKE_TIMEOUT_MS, error)
+      }
+
+      const err = error as PenpalError
       throw new OpenfortError(
         OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
         `Failed to establish iFrame connection: ${err.cause || err.message}
