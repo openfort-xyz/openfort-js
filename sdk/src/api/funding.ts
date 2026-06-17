@@ -97,6 +97,40 @@ export interface FundingSession {
   expiresAt: number
 }
 
+/** Parameters for a prefilled exchange on-ramp link. */
+export interface PayLinkParams {
+  /** Exchange id, e.g. "coinbase" | "binance". */
+  exchange: string
+  /** Destination wallet the bought crypto is delivered to. */
+  address: string
+  /** Asset symbol, e.g. "USDC". */
+  asset: string
+  /** CAIP-2 destination chain. */
+  chain: string
+  amount?: string
+}
+
+/** A source currency available on a chain. */
+export interface FundingCurrency {
+  symbol: string
+  /** Contract address, or the zero address for the chain's native asset. */
+  address: string
+  decimals: number
+  logo: string | null
+  /** True for the chain's native currency (ETH, SOL, POL, …). */
+  native: boolean
+}
+
+/** A source chain the rail can route from, with its routable currencies. */
+export interface FundingChain {
+  /** CAIP-2 chain id, e.g. "eip155:8453". */
+  id: string
+  name: string
+  logo: string | null
+  vmType: string
+  currencies: FundingCurrency[]
+}
+
 /** Hard ceiling per funding request so a stalled backend can't hang the app. */
 const FUNDING_REQUEST_TIMEOUT_MS = 30_000
 
@@ -197,5 +231,27 @@ export class FundingApi {
         await new Promise((resolve) => setTimeout(resolve, pollMs))
       }
     },
+  }
+
+  /**
+   * Resolve a prefilled exchange on-ramp URL (Coinbase Onramp, Binance Connect)
+   * that delivers the bought crypto to `params.address`. Powers the "send from
+   * an exchange" one-tap buttons.
+   */
+  public readonly payLink = async (params: PayLinkParams): Promise<string> => {
+    const { url } = await this.request<{ url: string }>('/v2/funding/pay_link', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    })
+    return url
+  }
+
+  /**
+   * The source chains + currencies the rail can route from — a live passthrough
+   * of the provider's supported routes, for building the source picker.
+   */
+  public readonly chains = async (): Promise<FundingChain[]> => {
+    const { chains } = await this.request<{ chains: FundingChain[] }>('/v2/funding/chains')
+    return chains
   }
 }

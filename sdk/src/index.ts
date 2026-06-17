@@ -10,12 +10,15 @@ export { EmbeddedWalletApi } from './api/embeddedWallet'
 export {
   type CreateFundingSessionParams,
   FundingApi,
+  type FundingChain,
+  type FundingCurrency,
   type FundingPaymentMethod,
   type FundingPaymentMethodInput,
   type FundingSession,
   type FundingSessionStatus,
   type FundingSource,
   type FundingTarget,
+  type PayLinkParams,
 } from './api/funding'
 export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'
