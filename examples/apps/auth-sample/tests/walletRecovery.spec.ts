@@ -16,7 +16,9 @@ const logout = async (page: Page) => {
 }
 
 test('Password recovery', async ({ page }) => {
-  test.setTimeout(180000) // this is a long, multi-step test that is slower on CI
+  // Heaviest test in the suite: ~3 full auth cycles + 2 recovery-method changes +
+  // wallet ops, all sequential. ~47s locally but ~4x slower on CI's networked runs.
+  test.setTimeout(300000)
 
   await test.step('Authenticate and recover', async () => {
     // Clean authenticate so we don't invalidate the session
