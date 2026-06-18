@@ -137,29 +137,41 @@ export class InternalSentry {
       return
     }
 
-    const sentryImport = await import('@sentry/browser')
-
-    // `release` is applied by the client to every event it prepares (see
-    // applyClientOptions in @sentry/core), so it covers the wrapped
-    // captureError / captureAxiosError paths AND bare sentry.captureException
-    // calls (e.g. wallets/iframeManager.ts) without a per-event processor.
-    // This is what lets telemetry answer "is this fix shipped?" — the events
-    // that previously reported release: null now carry the SDK version.
-    InternalSentry.sentry = new sentryImport.BrowserClient({
-      dsn: SENTRY_DSN,
-      release: `${PACKAGE}@${VERSION}`,
-      integrations: [],
-      stackParser: sentryImport.defaultStackParser,
-      transport: sentryImport.makeFetchTransport,
-    })
-
-    InternalSentry.baseTags = {
-      projectId: configuration?.baseConfiguration.publishableKey ?? '',
-      sdk: PACKAGE,
-      sdkVersion: VERSION,
+    // Telemetry is best-effort and opt-out. Skip it entirely when disabled.
+    if (configuration?.disableTelemetry) {
+      return
     }
 
-    InternalSentry.processQueuedCalls()
+    // Never let telemetry break the host app. The dynamic import can fail to
+    // resolve in some bundlers (notably Metro / React Native), so swallow any
+    // error — queued capture calls simply stay unsent.
+    try {
+      const sentryImport = await import('@sentry/browser')
+
+      // `release` is applied by the client to every event it prepares (see
+      // applyClientOptions in @sentry/core), so it covers the wrapped
+      // captureError / captureAxiosError paths AND bare sentry.captureException
+      // calls (e.g. wallets/iframeManager.ts) without a per-event processor.
+      // This is what lets telemetry answer "is this fix shipped?" — the events
+      // that previously reported release: null now carry the SDK version.
+      InternalSentry.sentry = new sentryImport.BrowserClient({
+        dsn: SENTRY_DSN,
+        release: `${PACKAGE}@${VERSION}`,
+        integrations: [],
+        stackParser: sentryImport.defaultStackParser,
+        transport: sentryImport.makeFetchTransport,
+      })
+
+      InternalSentry.baseTags = {
+        projectId: configuration?.baseConfiguration.publishableKey ?? '',
+        sdk: PACKAGE,
+        sdkVersion: VERSION,
+      }
+
+      InternalSentry.processQueuedCalls()
+    } catch {
+      // Telemetry unavailable — continue without it.
+    }
   }
 
   private static proxy = new Proxy({} as Client, {
