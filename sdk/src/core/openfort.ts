@@ -272,7 +272,12 @@ export class Openfort {
    */
   private async initializeAsync(): Promise<void> {
     if (!(await Openfort.isStorageAccessible(this.storage))) {
-      throw new OpenfortError('Storage is not accessible', OPENFORT_ERROR_CODES.INVALID_CONFIGURATION)
+      throw new OpenfortError(
+        'Storage is not accessible. The SDK needs a working key/value store to persist the session. ' +
+          'On React Native, ensure the app is code-signed (an unsigned build cannot use the keychain) ' +
+          'and that expo-secure-store — or your `overrides.storage` implementation — is installed and reachable.',
+        OPENFORT_ERROR_CODES.INVALID_CONFIGURATION
+      )
     }
 
     this.authManager.setBackendApiClients(this.backendApiClients, this.configuration.baseConfiguration.publishableKey)

@@ -10,6 +10,10 @@ test('Create and revoke session', async ({ page }) => {
   const logger = new Logger(page)
   await logger.init()
 
+  // Revoke is only available on the backend session button; the EIP-1193 provider
+  // button (shown by default) never toggles to "Revoke session". Switch it off.
+  await page.getByLabel('EIP-1193 Provider').click()
+
   const createSessionButton = page.getByRole('button', { name: 'Create session' }).first()
   await logger.clickAndWaitForNewLogs(() => createSessionButton.click())
 
@@ -20,7 +24,7 @@ test('Create and revoke session', async ({ page }) => {
   expect(lastLog).toContain('Private Key')
 
   const revokeButton = page.getByRole('button', { name: 'Revoke session' }).first()
-  expect(revokeButton).toBeVisible()
+  await expect(revokeButton).toBeVisible()
 
   await logger.clickAndWaitForNewLogs(() => revokeButton.click())
   lastLog = logger.getLastLog()

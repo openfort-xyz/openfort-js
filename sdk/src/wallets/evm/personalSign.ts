@@ -1,5 +1,4 @@
 import type { Account } from '../../core/configuration/account'
-import { hexToString } from '../../utils/crypto'
 import type { Signer as OpenfortSigner } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import { signMessage } from './walletHelpers'
@@ -21,10 +20,17 @@ export const personalSign = async ({ params, signer, account }: PersonalSignPara
   if (fromAddress.toLowerCase() !== account.address.toLowerCase()) {
     throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'personal_sign requires the signer to be the from address')
   }
+
+  // personal_sign (EIP-191) accepts either a 0x-prefixed byte string or a plain UTF-8
+  // string. Hash the raw bytes for hex input and the string itself otherwise — matching
+  // MetaMask/ethers/viem. Previously only hex was handled, so callers passing a raw
+  // string (e.g. a SIWE / EIP-4361 sign-in message) produced an invalid signature.
   const { hashMessage } = await import('@ethersproject/hash')
+  const { arrayify, isHexString } = await import('@ethersproject/bytes')
+  const data = isHexString(message) ? arrayify(message) : message
 
   return await signMessage({
-    hash: hashMessage(hexToString(message as `0x${string}`)),
+    hash: hashMessage(data),
     implementationType: (account.implementationType || account.type)!,
     chainId: Number(account.chainId),
     signer,

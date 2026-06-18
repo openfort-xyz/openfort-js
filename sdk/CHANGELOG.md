@@ -1,5 +1,25 @@
 # @openfort/openfort-js
 
+## 1.3.9
+
+### Patch Changes
+
+- [#305](https://github.com/openfort-xyz/openfort-js/pull/305) [`2b2f940`](https://github.com/openfort-xyz/openfort-js/commit/2b2f9407cfad3ad185dd2c5acf39d722b72cf5f7) Thanks [@isardmart](https://github.com/isardmart)! - fixed strict origin referer policy
+
+## 1.3.8
+
+### Patch Changes
+
+- [#302](https://github.com/openfort-xyz/openfort-js/pull/302) [`e797c1e`](https://github.com/openfort-xyz/openfort-js/commit/e797c1e7b3b97de82d6cb00a2f813544804b64a3) Thanks [@isardmart](https://github.com/isardmart)! - Surface a penpal handshake `CONNECTION_TIMEOUT` as a typed `IframeHandshakeTimeoutError` instead of the native-app "configure your origin" copy, which misled web embeds whose origin was correctly configured (Sentry OPENFORT-JS-D0). The original PenpalError is preserved as `cause`; non-timeout handshake failures keep the existing hint.
+
+- [#301](https://github.com/openfort-xyz/openfort-js/pull/301) [`f1688ab`](https://github.com/openfort-xyz/openfort-js/commit/f1688abcc914c1b13b49128c53ab9261822badd0) Thanks [@condor-openfort](https://github.com/apps/condor-openfort)! - chore(observability): tag Sentry events with sdk.name + sdk.version and set release from package.json
+
+## 1.3.7
+
+### Patch Changes
+
+- [#296](https://github.com/openfort-xyz/openfort-js/pull/296) [`a658717`](https://github.com/openfort-xyz/openfort-js/commit/a6587173a04bbd61f29fb01e286ff14a486dac26) Thanks [@isardmart](https://github.com/isardmart)! - Bound iframe `sign()` against a frozen signer: 90s timeout (self-healing on retry), empty-signature guard, and a destroy-race checkpoint; exports `IframeSignTimeoutError` and `IframeSignEmptyResponseError`
+
 ## 1.3.6
 
 ### Patch Changes
