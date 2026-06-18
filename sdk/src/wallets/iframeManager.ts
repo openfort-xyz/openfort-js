@@ -15,7 +15,14 @@ import type { AccountTypeEnum, ChainTypeEnum, EntropyResponse, RecoveryMethod } 
 import { randomUUID } from '../utils/crypto'
 import { debugLog } from '../utils/debug'
 import { ReactNativeMessenger } from './messaging'
-import { type Connection, connect, type Message, type Messenger, type PenpalError } from './messaging/browserMessenger'
+import {
+  CallOptions,
+  type Connection,
+  connect,
+  type Message,
+  type Messenger,
+  PenpalError,
+} from './messaging/browserMessenger'
 import {
   type CreateRequest,
   type CreateResponse,
@@ -94,7 +101,7 @@ interface IframeAPI {
   create(request: CreateRequest): Promise<CreateResponse>
   import(request: ImportRequest): Promise<ImportResponse>
   recover(request: RecoverRequest): Promise<RecoverResponse>
-  sign(request: SignRequest): Promise<SignResponse>
+  sign(request: SignRequest, options?: CallOptions): Promise<SignResponse>
   switchChain(request: SwitchChainRequest): Promise<SwitchChainResponse>
   updateAuthentication(request: UpdateAuthenticationRequest): Promise<UpdateAuthenticationResponse>
   logout(request: any): Promise<LogoutResponse>
@@ -151,6 +158,48 @@ export class OTPRequiredError extends OpenfortError {
 }
 
 /**
+ * Thrown when the iframe signer does not respond to a `sign` request within
+ * the configured timeout window. The handshake itself succeeded — penpal is
+ * connected — but `remote.sign()` never resolved. In practice this means the
+ * passkey/biometry prompt was dismissed, the iframe is frozen, or a
+ * postMessage was dropped. Without this timeout the promise hangs forever
+ * and the caller sees an endless "Processing" spinner with no error.
+ */
+export class IframeSignTimeoutError extends SignerError {
+  constructor(timeoutMs: number) {
+    super(
+      OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+      `Iframe signer did not respond within ${timeoutMs}ms. The signing prompt may have been dismissed or the iframe is unresponsive.`
+    )
+    this.name = 'IframeSignTimeoutError'
+    Object.setPrototypeOf(this, IframeSignTimeoutError.prototype)
+  }
+}
+
+/**
+ * Thrown when the iframe signer returns a response without a signature
+ * (empty string, undefined, or null). The transport succeeded but the
+ * payload is unusable — posting it downstream would create a malformed
+ * UserOperation, so fail fast instead.
+ */
+export class IframeSignEmptyResponseError extends SignerError {
+  constructor() {
+    super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'Iframe signer returned an empty signature.')
+    this.name = 'IframeSignEmptyResponseError'
+    Object.setPrototypeOf(this, IframeSignEmptyResponseError.prototype)
+  }
+}
+
+/**
+ * Default timeout for `remote.sign()` calls. 90s is deliberately generous —
+ * the signer may be waiting on a biometric prompt (passkey, hardware key)
+ * which a user can take 30-60s to complete. A short timeout (e.g. the 10s
+ * connect timeout) would produce false positives on legitimately slow
+ * passkey flows.
+ */
+const DEFAULT_SIGN_TIMEOUT_MS = 90_000
+
+/**
  * Thrown when the consumer calls `destroy()` on an `IframeManager` before its
  * connection handshake has finished. The two paths that produce this error are
  * (a) `initialize()` called on a manager that was already destroyed, and
@@ -169,6 +218,36 @@ export class SessionEndedBeforeSetupError extends OpenfortError {
     Object.setPrototypeOf(this, SessionEndedBeforeSetupError.prototype)
   }
 }
+
+/**
+ * Thrown when the penpal handshake does not complete within the connection
+ * window — the iframe never replied to SYN/ACK. Distinct from a dashboard
+ * origin misconfiguration: a timeout usually means the embed page is
+ * unreachable, blocked by CSP, or the network dropped the load. Collapsing it
+ * into the native-app "configure your origin" copy misled web users whose
+ * origin was fine (Sentry OPENFORT-JS-D0, seen on playground.openfort.io). The
+ * original PenpalError is kept as `cause` so callers can still inspect
+ * `code === 'CONNECTION_TIMEOUT'`.
+ */
+export class IframeHandshakeTimeoutError extends OpenfortError {
+  constructor(timeoutMs: number, cause: unknown) {
+    super(
+      OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+      `Failed to establish iframe connection within ${timeoutMs}ms. The embedded wallet page did not respond — it may be unreachable or blocked by CSP/network.`
+    )
+    this.name = 'IframeHandshakeTimeoutError'
+    // The base OpenfortError constructor does not forward `cause`; set it
+    // explicitly so the underlying PenpalError stays inspectable.
+    ;(this as { cause?: unknown }).cause = cause
+    Object.setPrototypeOf(this, IframeHandshakeTimeoutError.prototype)
+  }
+}
+
+/**
+ * Penpal handshake timeout used by `doInitialize()`'s `connect()` call. Named
+ * so `IframeHandshakeTimeoutError` reports the value actually used.
+ */
+const HANDSHAKE_TIMEOUT_MS = 10_000
 
 export class IframeManager {
   private messenger: Messenger
@@ -289,7 +368,7 @@ export class IframeManager {
 
     this.connection = connect<IframeAPI>({
       messenger: this.messenger,
-      timeout: 10000,
+      timeout: HANDSHAKE_TIMEOUT_MS,
       log: debugLog,
     })
 
@@ -306,14 +385,23 @@ export class IframeManager {
         debugLog('Connection rejected after destroy() — surfacing teardown error')
       }
       this.assertAlive()
-      const err = error as PenpalError
-      sentry.captureException(err)
+      sentry.captureException(error)
       // Internal cleanup only — do NOT mark `isDestroyed`. The consumer hasn't
       // torn the manager down; the handshake itself failed. Marking it
       // destroyed here would shadow the genuine "configure your origin" hint
       // on any subsequent `initialize()` call.
       this.clearConnection()
-      debugLog('Failed to establish connection:', err)
+      debugLog('Failed to establish connection:', error)
+
+      // A penpal CONNECTION_TIMEOUT is the common handshake failure (Sentry
+      // OPENFORT-JS-D0). Surface it as a typed timeout instead of the native-app
+      // "configure your origin" copy below, which is wrong for web embeds whose
+      // origin is correctly configured.
+      if (error instanceof PenpalError && error.code === 'CONNECTION_TIMEOUT') {
+        throw new IframeHandshakeTimeoutError(HANDSHAKE_TIMEOUT_MS, error)
+      }
+
+      const err = error as PenpalError
       throw new OpenfortError(
         OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
         `Failed to establish iFrame connection: ${err.cause || err.message}
@@ -611,10 +699,51 @@ export class IframeManager {
     )
     debugLog('[iframe] done ensureConnection')
 
-    const response = await remote.sign(request)
+    // `ensureConnection()` and `buildRequestConfiguration()` both await; a
+    // consumer's `destroy()` can land in that window, tearing the connection
+    // down underneath us. Re-assert liveness before issuing the RPC so we
+    // reject with a precise teardown error instead of signing against a dead
+    // connection (matching the post-await checkpoint invariant in
+    // `initialize()`).
+    this.assertAlive()
+
+    // `remote.sign()` has no inherent upper bound: the penpal handshake's 10s
+    // timeout (see `connect()` in doInitialize) only covers connection setup,
+    // so a dismissed passkey prompt or a frozen iframe would leave this await
+    // hanging forever and the caller stuck on "Processing". Penpal bounds the
+    // RPC itself when handed a per-call timeout (see connectRemoteProxy); on
+    // expiry it rejects with a METHOD_CALL_TIMEOUT PenpalError, which we map to
+    // a typed IframeSignTimeoutError. 90s is deliberately generous — a
+    // biometric prompt can legitimately take 30-60s, where the 10s connect
+    // timeout would false-positive.
+    let response: SignResponse
+    try {
+      response = await remote.sign(request, new CallOptions({ timeout: DEFAULT_SIGN_TIMEOUT_MS }))
+    } catch (error) {
+      if (error instanceof PenpalError && error.code === 'METHOD_CALL_TIMEOUT') {
+        // A timed-out RPC means the iframe is frozen/unresponsive. Leaving the
+        // manager `isInitialized` would hand the same dead connection to the
+        // next sign() (ensureConnection short-circuits on a live remote),
+        // hanging another full window. Mark it failed so the parent rebuilds a
+        // fresh iframe + messenger on the next operation (see
+        // `getIframeManager()`/`ensureSigner()` in embeddedWallet).
+        this.hasFailed = true
+        throw new IframeSignTimeoutError(DEFAULT_SIGN_TIMEOUT_MS)
+      }
+      throw error
+    }
     debugLog('[iframe] response', response)
     if (isErrorResponse(response)) {
       this.handleError(response)
+    }
+
+    // Guard against an empty/missing signature slipping through. Posting an
+    // empty signature downstream would build a malformed UserOperation; fail
+    // fast with a typed error so the caller can surface it. This runs before
+    // the `iframe-version` write so a malformed response never mutates
+    // persisted diagnostic state.
+    if (!response.signature) {
+      throw new IframeSignEmptyResponseError()
     }
 
     if (typeof sessionStorage !== 'undefined') {

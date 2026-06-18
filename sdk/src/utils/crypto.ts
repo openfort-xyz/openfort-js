@@ -23,21 +23,6 @@ export function numberToHex(value: number): string {
   return `0x${value.toString(16)}`
 }
 
-export function hexToString(hex: string): string {
-  let result = ''
-  const cleanHex = hex.startsWith('0x') ? hex.slice(2) : hex
-
-  for (let i = 0; i < cleanHex.length; i += 2) {
-    const byte = parseInt(cleanHex.substring(i, i + 2), 16)
-    if (byte !== 0) {
-      // Skip null bytes
-      result += String.fromCharCode(byte)
-    }
-  }
-
-  return result
-}
-
 // Crypto digest helper that can use overrides
 let cryptoDigestOverride: ((algorithm: string, data: BufferSource) => Promise<ArrayBuffer>) | undefined
 

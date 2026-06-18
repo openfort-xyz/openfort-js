@@ -234,6 +234,7 @@ export class EmbeddedWalletApi {
     const iframe = document.createElement('iframe')
     iframe.style.display = 'none'
     iframe.id = 'openfort-iframe'
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin'
     iframe.src = url
 
     document.body.appendChild(iframe)

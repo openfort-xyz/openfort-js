@@ -20,6 +20,9 @@ const allDevicesTestMatch = ['**/base.spec.ts', '**/auth.spec.ts', '**/linkedSoc
  */
 export default defineConfig({
   testDir: './tests',
+  /* CI runners are slower than local, especially for embedded-wallet
+   * operations that hit the network — give each test a larger budget. */
+  timeout: process.env.CI ? 90_000 : 30_000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
