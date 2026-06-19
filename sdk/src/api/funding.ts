@@ -240,6 +240,37 @@ export class FundingApi {
   }
 
   /**
+   * One-call deposit: create a session with the payment method set, then poll
+   * until it reaches a terminal status (`succeeded`, `bounced`, or `expired`).
+   * Bundles `sessions.create` + `sessions.wait` — the headless equivalent of the
+   * React `useFunding().fund()` flow. Resolves with the terminal session; rejects
+   * on timeout.
+   */
+  public readonly fund = async (params: {
+    target: FundingTarget
+    paymentMethod: FundingPaymentMethodInput
+    /** Lock the deposit to a fixed amount (destination base units). */
+    amountUnits?: string
+    metadata?: Record<string, string>
+    /** Idempotency/correlation key — reusing it returns the existing session. */
+    externalId?: string
+    /** true = single-use deposit address; false (default) = open/reusable. */
+    strict?: boolean
+    /** Poll interval and overall timeout for the wait phase. */
+    wait?: { pollMs?: number; timeoutMs?: number }
+  }): Promise<FundingSession> => {
+    const session = await this.sessions.create({
+      target: params.target,
+      paymentMethod: params.paymentMethod,
+      amountUnits: params.amountUnits,
+      metadata: params.metadata,
+      externalId: params.externalId,
+      strict: params.strict,
+    })
+    return this.sessions.wait(session.id, params.wait)
+  }
+
+  /**
    * Resolve a prefilled Coinbase "Transfer funds" URL that delivers the asset to
    * the session's wallet. Session-bound — the destination comes from the session,
    * so the client only chooses the amount. Powers the "send from an exchange" path.

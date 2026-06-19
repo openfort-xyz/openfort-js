@@ -72,4 +72,18 @@ describe('FundingApi', () => {
     const result = await new FundingApi().sessions.wait('fnd_1', { clientSecret: 'cs_1', pollMs: 1 })
     expect(result.status).toBe('succeeded')
   })
+
+  it('fund() creates the session (one-call) then waits until terminal', async () => {
+    fetchMock
+      .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'waiting_payment' }))
+      .mockResolvedValueOnce(okJson({ id: 'fnd_1', status: 'succeeded' }))
+    const session = await new FundingApi().fund({
+      target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' },
+      paymentMethod: { type: 'evm', source: { chain: 'eip155:137', currency: '0x0', amount: '1000' } },
+      wait: { pollMs: 1 },
+    })
+    expect(session.status).toBe('succeeded')
+    expect(fetchMock.mock.calls[0][0]).toBe('https://api.test/v2/funding/sessions')
+    expect(fetchMock.mock.calls[1][0]).toBe('https://api.test/v2/funding/sessions/fnd_1?clientSecret=cs_1')
+  })
 })
