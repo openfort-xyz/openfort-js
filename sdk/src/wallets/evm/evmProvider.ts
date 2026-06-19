@@ -15,6 +15,7 @@ import { estimateGas } from './estimateGas'
 import { getAssets } from './getAssets'
 import { type GetCallsStatusParameters, getCallStatus } from './getCallsStatus'
 import { JsonRpcError, ProviderErrorCode, RpcErrorCode } from './JsonRpcError'
+import { normalizeRpcErrorMessage } from './normalizeRpcError'
 import { personalSign } from './personalSign'
 import { registerSession } from './registerSession'
 import { type RevokePermissionsRequestParams, revokeSession } from './revokeSession'
@@ -515,13 +516,15 @@ export class EvmProvider implements Provider {
 
   public async request(request: RequestArguments): Promise<any> {
     try {
-      return this.#performRequest(request)
+      // Await so asynchronous failures (e.g. a node rejecting eth_sendTransaction)
+      // are caught here and surfaced as JsonRpcError instead of leaking raw.
+      return await this.#performRequest(request)
     } catch (error: unknown) {
       if (error instanceof JsonRpcError) {
         throw error
       }
       if (error instanceof Error) {
-        throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, error.message)
+        throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, normalizeRpcErrorMessage(error.message))
       }
 
       throw new JsonRpcError(RpcErrorCode.INTERNAL_ERROR, 'Internal error')

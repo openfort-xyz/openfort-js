@@ -99,6 +99,10 @@ const connectRemoteProxy = <TMethods extends Methods>(
     }
 
     replyHandlers.delete(callId)
+    // Clear the per-call timeout once the reply lands; otherwise a successful
+    // call leaves its timer pending until expiry (firing harmlessly against an
+    // already-settled promise, but leaking a timer for up to `timeout` ms).
+    clearTimeout(replyHandler.timeoutId)
     log?.(`Received ${formatMethodPath(replyHandler.methodPath)}() call`, message)
 
     if (isError) {

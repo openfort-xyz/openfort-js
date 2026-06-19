@@ -1,5 +1,37 @@
 # @openfort/openfort-js
 
+## 1.4.0
+
+### Minor Changes
+
+- [#310](https://github.com/openfort-xyz/openfort-js/pull/310) [`f49b68e`](https://github.com/openfort-xyz/openfort-js/commit/f49b68ec2ae075c5363c23d49e4507d4cb0ae0b4) Thanks [@isardmart](https://github.com/isardmart)! - Make error telemetry resilient and opt-out. `InternalSentry.init` no longer lets the dynamic `import('@sentry/browser')` crash the host app — the import can fail to resolve in some bundlers (notably Metro / React Native), so failures are now caught and telemetry is simply skipped (queued capture calls stay unsent). Added a `disableTelemetry` flag to `OpenfortSDKConfiguration` to turn telemetry off entirely.
+
+### Patch Changes
+
+- [#309](https://github.com/openfort-xyz/openfort-js/pull/309) [`bf773fe`](https://github.com/openfort-xyz/openfort-js/commit/bf773feb15dff2fa57762170c387bb6854e03a3f) Thanks [@isardmart](https://github.com/isardmart)! - Surface clearer errors. The EIP-1193 `request()` now awaits the underlying call so asynchronous failures (e.g. a node rejecting `eth_sendTransaction`) are caught and wrapped as `JsonRpcError` instead of leaking the raw node response. Common messages — insufficient funds, execution reverted, nonce conflicts, gas errors — are normalized to short, readable text (unknown messages pass through unchanged). The "Storage is not accessible" error now explains the likely cause (e.g. an unsigned React Native build can't use the keychain).
+
+- [#307](https://github.com/openfort-xyz/openfort-js/pull/307) [`5a46a94`](https://github.com/openfort-xyz/openfort-js/commit/5a46a94d6b83bde29435462dd32ecf85a3fd9ac7) Thanks [@isardmart](https://github.com/isardmart)! - `personal_sign` now accepts plain UTF-8 messages (e.g. SIWE / EIP-4361 sign-in), not only hex-encoded ones — matching MetaMask/ethers/viem. Hex input produces the identical EIP-191 hash (no regression); plain strings that were previously run through `hexToString` and mangled now produce a valid signature.
+
+## 1.3.9
+
+### Patch Changes
+
+- [#305](https://github.com/openfort-xyz/openfort-js/pull/305) [`2b2f940`](https://github.com/openfort-xyz/openfort-js/commit/2b2f9407cfad3ad185dd2c5acf39d722b72cf5f7) Thanks [@isardmart](https://github.com/isardmart)! - fixed strict origin referer policy
+
+## 1.3.8
+
+### Patch Changes
+
+- [#302](https://github.com/openfort-xyz/openfort-js/pull/302) [`e797c1e`](https://github.com/openfort-xyz/openfort-js/commit/e797c1e7b3b97de82d6cb00a2f813544804b64a3) Thanks [@isardmart](https://github.com/isardmart)! - Surface a penpal handshake `CONNECTION_TIMEOUT` as a typed `IframeHandshakeTimeoutError` instead of the native-app "configure your origin" copy, which misled web embeds whose origin was correctly configured (Sentry OPENFORT-JS-D0). The original PenpalError is preserved as `cause`; non-timeout handshake failures keep the existing hint.
+
+- [#301](https://github.com/openfort-xyz/openfort-js/pull/301) [`f1688ab`](https://github.com/openfort-xyz/openfort-js/commit/f1688abcc914c1b13b49128c53ab9261822badd0) Thanks [@condor-openfort](https://github.com/apps/condor-openfort)! - chore(observability): tag Sentry events with sdk.name + sdk.version and set release from package.json
+
+## 1.3.7
+
+### Patch Changes
+
+- [#296](https://github.com/openfort-xyz/openfort-js/pull/296) [`a658717`](https://github.com/openfort-xyz/openfort-js/commit/a6587173a04bbd61f29fb01e286ff14a486dac26) Thanks [@isardmart](https://github.com/isardmart)! - Bound iframe `sign()` against a frozen signer: 90s timeout (self-healing on retry), empty-signature guard, and a destroy-race checkpoint; exports `IframeSignTimeoutError` and `IframeSignEmptyResponseError`
+
 ## 1.3.6
 
 ### Patch Changes
