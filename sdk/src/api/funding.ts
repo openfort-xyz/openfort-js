@@ -48,7 +48,12 @@ export interface CreateFundingSessionParams {
 export interface FundingPaymentMethodInput {
   type: 'evm' | 'solana'
   source: FundingSource
-  /** Origin-chain refund address; defaults server-side to the target address. */
+  /**
+   * Origin-chain refund address (refunds land on the source chain). Optional —
+   * the server defaults it to the target address for same-VM routes, or to a
+   * source-VM stand-in for cross-VM routes (e.g. an EVM source funding a Solana
+   * wallet), where the destination address isn't valid on the source chain.
+   */
   refundTo?: string
 }
 
