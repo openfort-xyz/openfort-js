@@ -12,12 +12,14 @@ export {
   FundingApi,
   type FundingChain,
   type FundingCurrency,
+  type FundingFee,
   type FundingPaymentMethod,
   type FundingPaymentMethodInput,
   type FundingSession,
   type FundingSessionStatus,
   type FundingSource,
   type FundingTarget,
+  type FundingWalletDeeplink,
   type PayLinkParams,
 } from './api/funding'
 export { ProxyApi } from './api/proxy'
