@@ -20,19 +20,25 @@ describe('FundingApi', () => {
     vi.stubGlobal('fetch', fetchMock)
   })
 
-  it('payLink POSTs to /v2/funding/pay_link with the publishable key and returns the url', async () => {
+  it('payLink POSTs the session-bound body to /v2/funding/pay_link and returns the url', async () => {
     fetchMock.mockResolvedValueOnce(okJson({ url: 'https://pay.example/checkout' }))
     const url = await new FundingApi().payLink({
-      exchange: 'coinbase',
-      address: '0x1',
+      sessionId: 'fnd_1',
+      clientSecret: 'cs_1',
+      amount: '10',
       asset: 'USDC',
-      chain: 'eip155:8453',
     })
     expect(url).toBe('https://pay.example/checkout')
     const [calledUrl, init] = fetchMock.mock.calls[0]
     expect(calledUrl).toBe('https://api.test/v2/funding/pay_link')
     expect(init.method).toBe('POST')
     expect(init.headers.Authorization).toBe('Bearer pk_test')
+    expect(JSON.parse(init.body)).toMatchObject({
+      sessionId: 'fnd_1',
+      clientSecret: 'cs_1',
+      amount: '10',
+      asset: 'USDC',
+    })
   })
 
   it('chains GETs /v2/funding/chains and returns the array', async () => {

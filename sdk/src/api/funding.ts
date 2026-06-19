@@ -97,17 +97,23 @@ export interface FundingSession {
   expiresAt: number
 }
 
-/** Parameters for a prefilled exchange on-ramp link. */
+/**
+ * Parameters for a Coinbase "Transfer funds" pay-link. Session-bound: the
+ * destination chain and address come from the session, so the link can't be
+ * redirected — the client only chooses the amount.
+ */
 export interface PayLinkParams {
-  /** Exchange id, e.g. "coinbase" | "binance". */
-  exchange: string
-  /** Destination wallet the bought crypto is delivered to. */
-  address: string
-  /** Asset symbol, e.g. "USDC". */
-  asset: string
-  /** CAIP-2 destination chain. */
-  chain: string
-  amount?: string
+  /** Funding session (starts with fnd_) whose wallet receives the funds. */
+  sessionId: string
+  /**
+   * The session's client secret. Optional when the session was created on this
+   * SDK instance (remembered from create()); required for sessions created elsewhere.
+   */
+  clientSecret?: string
+  /** Amount to deliver, in the asset's human units (Coinbase enforces a minimum). */
+  amount: string
+  /** Destination asset ticker; defaults to "USDC" server-side. */
+  asset?: string
 }
 
 /** A source currency available on a chain. */
@@ -190,7 +196,7 @@ export class FundingApi {
         })
       ),
 
-    setPaymentMethod: (
+    setPaymentMethod: async (
       sessionId: string,
       params: { paymentMethod: FundingPaymentMethodInput; clientSecret?: string }
     ): Promise<FundingSession> =>
@@ -202,7 +208,7 @@ export class FundingApi {
         }),
       }),
 
-    get: (sessionId: string, params?: { clientSecret?: string }): Promise<FundingSession> => {
+    get: async (sessionId: string, params?: { clientSecret?: string }): Promise<FundingSession> => {
       const secret = this.resolveSecret(sessionId, params?.clientSecret)
       return this.request<FundingSession>(
         `/v2/funding/sessions/${sessionId}?clientSecret=${encodeURIComponent(secret)}`
@@ -234,14 +240,19 @@ export class FundingApi {
   }
 
   /**
-   * Resolve a prefilled exchange on-ramp URL (Coinbase Onramp, Binance Connect)
-   * that delivers the bought crypto to `params.address`. Powers the "send from
-   * an exchange" one-tap buttons.
+   * Resolve a prefilled Coinbase "Transfer funds" URL that delivers the asset to
+   * the session's wallet. Session-bound — the destination comes from the session,
+   * so the client only chooses the amount. Powers the "send from an exchange" path.
    */
   public readonly payLink = async (params: PayLinkParams): Promise<string> => {
     const { url } = await this.request<{ url: string }>('/v2/funding/pay_link', {
       method: 'POST',
-      body: JSON.stringify(params),
+      body: JSON.stringify({
+        sessionId: params.sessionId,
+        clientSecret: this.resolveSecret(params.sessionId, params.clientSecret),
+        amount: params.amount,
+        asset: params.asset,
+      }),
     })
     return url
   }
