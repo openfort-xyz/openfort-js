@@ -1,5 +1,13 @@
 # @openfort/openfort-js
 
+## 1.5.0
+
+### Minor Changes
+
+- [#314](https://github.com/openfort-xyz/openfort-js/pull/314) [`cd12242`](https://github.com/openfort-xyz/openfort-js/commit/cd12242a3530aa4141c38e71a0b0304818c1c5f5) Thanks [@isardmart](https://github.com/isardmart)! - Add the `cex` payment method to `openfort.funding`: fund a wallet via a guided withdrawal from a centralized exchange. `sessions.create`, `sessions.setPaymentMethod`, and `fund()` accept `{ type: 'cex', cex, source }`, and a settled session's `paymentMethod.cex` carries the withdrawal guidance (`exchange`, `network`, `minWithdrawal`, `requiresMemo`).
+
+- [#312](https://github.com/openfort-xyz/openfort-js/pull/312) [`7548414`](https://github.com/openfort-xyz/openfort-js/commit/754841426fa37a664e0d3ef0b1c2f86f8eba5511) Thanks [@0xbri3t](https://github.com/0xbri3t)! - Add the `openfort.funding` namespace for cross-chain wallet deposits: create, advance, and poll deposit sessions (`sessions.create` / `setPaymentMethod` / `get` / `wait`), a one-call `fund()` helper, `payLink()`, and `chains()`. Funding request failures throw a typed `RequestError` with the status and never include the raw backend body.
+
 ## 1.4.0
 
 ### Minor Changes
