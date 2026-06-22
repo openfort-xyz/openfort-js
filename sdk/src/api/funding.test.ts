@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { RequestError } from '../core/errors/openfortError'
 import { FundingApi } from './funding'
 
 vi.mock('../core/config/config', () => ({
@@ -39,6 +40,29 @@ describe('FundingApi', () => {
       amount: '10',
       asset: 'USDC',
     })
+  })
+
+  it('throws RequestError with the status, never leaking the raw error body', async () => {
+    const internals = 'Error: ECONNREFUSED at db.internal:5432\n  at Socket.connect'
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({ raw: internals }),
+      text: async () => internals,
+    })
+    const err = await new FundingApi().chains().catch((e) => e)
+    expect(err).toBeInstanceOf(RequestError)
+    expect(err.statusCode).toBe(500)
+    expect(err.message).not.toContain('internal')
+  })
+
+  it('surfaces the backend structured error message', async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({ error: { message: 'amount must be at least 5' } }),
+    })
+    await expect(new FundingApi().chains()).rejects.toThrow('amount must be at least 5')
   })
 
   it('chains GETs /v2/funding/chains and returns the array', async () => {

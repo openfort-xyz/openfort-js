@@ -1,5 +1,5 @@
 import { SDKConfiguration } from '../core/config/config'
-import { ConfigurationError } from '../core/errors/openfortError'
+import { ConfigurationError, RequestError } from '../core/errors/openfortError'
 
 /**
  * Funding (cross-chain wallet deposit) resource.
@@ -156,8 +156,11 @@ export class FundingApi {
       signal: AbortSignal.timeout(FUNDING_REQUEST_TIMEOUT_MS),
     })
     if (!response.ok) {
-      const body = await response.text().catch(() => '')
-      throw new Error(`Openfort funding request failed (${response.status}): ${body}`)
+      // Surface only the backend's structured `{ error: { message } }` text — never the
+      // raw body, which on a 5xx/proxy error can leak stack traces or internal hosts.
+      const body = (await response.json().catch(() => ({}))) as { error?: { message?: string } | string }
+      const message = typeof body.error === 'string' ? body.error : body.error?.message
+      throw new RequestError(message ?? 'Openfort funding request failed', response.status)
     }
     return response.json() as Promise<T>
   }
