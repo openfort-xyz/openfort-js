@@ -7,6 +7,21 @@ import { Openfort } from './core/openfort'
 // biome-ignore lint/performance/noBarrelFile: Main SDK entry point needs to export all public APIs
 export { AuthApi } from './api/auth'
 export { EmbeddedWalletApi } from './api/embeddedWallet'
+export {
+  type CreateFundingSessionParams,
+  FundingApi,
+  type FundingChain,
+  type FundingCurrency,
+  type FundingFee,
+  type FundingPaymentMethod,
+  type FundingPaymentMethodInput,
+  type FundingSession,
+  type FundingSessionStatus,
+  type FundingSource,
+  type FundingTarget,
+  type FundingWalletDeeplink,
+  type PayLinkParams,
+} from './api/funding'
 export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'
 // Export error handling
