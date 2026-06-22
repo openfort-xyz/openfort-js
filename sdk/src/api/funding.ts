@@ -45,12 +45,31 @@ export interface CreateFundingSessionParams {
   paymentMethod?: FundingPaymentMethodInput
 }
 
-export interface FundingPaymentMethodInput {
-  type: 'evm' | 'solana'
+interface FundingPaymentMethodBase {
   source: FundingSource
-  /** Origin-chain refund address; defaults server-side to the target address. */
+  /**
+   * Origin-chain refund address (refunds land on the source chain). Optional —
+   * the server defaults it to the target address for same-VM routes, or to a
+   * source-VM stand-in for cross-VM routes (e.g. an EVM source funding a Solana
+   * wallet), where the destination address isn't valid on the source chain.
+   */
   refundTo?: string
 }
+
+/**
+ * The source route the user commits to. `evm` / `solana` are self-custody
+ * transfers; `cex` is a guided withdrawal from a centralized exchange — the same
+ * deposit address, plus withdrawal guidance (network, minimum, memo) and no
+ * wallet deeplinks (exchanges don't expose them).
+ */
+export type FundingPaymentMethodInput =
+  | (FundingPaymentMethodBase & { type: 'evm' })
+  | (FundingPaymentMethodBase & { type: 'solana' })
+  | (FundingPaymentMethodBase & {
+      type: 'cex'
+      /** Exchange id, e.g. "binance" | "coinbase". */
+      cex: string
+    })
 
 export type FundingSessionStatus =
   | 'requires_payment_method'
@@ -72,12 +91,26 @@ export interface FundingWalletDeeplink {
   url: string
 }
 
+/** Withdrawal guidance for a `cex` payment method. */
+export interface FundingCexGuidance {
+  /** Exchange id, e.g. "binance" | "coinbase". */
+  exchange: string
+  /** Network name as the exchange labels it, e.g. "Base", "Polygon". */
+  network: string
+  /** Minimum withdrawal in source base units, if the exchange enforces one. */
+  minWithdrawal: string | null
+  /** True when the network requires a destination tag / memo. */
+  requiresMemo: boolean
+}
+
 export interface FundingPaymentMethod {
   type: string
   source: FundingSource
   receiverAddress: string
   addressUri: string
   deeplinks: FundingWalletDeeplink[]
+  /** Withdrawal guidance; present only for `cex` payment methods, else null. */
+  cex: FundingCexGuidance | null
   fees: FundingFee[]
   minAmount: string | null
 }

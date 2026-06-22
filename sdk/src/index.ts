@@ -10,6 +10,7 @@ export { EmbeddedWalletApi } from './api/embeddedWallet'
 export {
   type CreateFundingSessionParams,
   FundingApi,
+  type FundingCexGuidance,
   type FundingChain,
   type FundingCurrency,
   type FundingFee,
