@@ -9,9 +9,12 @@ import { ConfigurationError, RequestError } from '../core/errors/openfortError'
  * deposit address, then poll until terminal. Sessions are guarded by a
  * per-session `clientSecret` and authenticated with the project publishable key.
  *
- * NOTE: This thin wrapper calls the backend directly. Once the API's funding
- * endpoints are part of the published OpenAPI spec, this can move onto the
- * generated `BackendApiClients.fundingApi` like the other resources.
+ * NOTE: This thin wrapper calls the backend directly. The API's `/v2/funding`
+ * endpoints are now in the published OpenAPI spec (tag `Funding`: createFundingSession,
+ * SetPaymentMethod, getFundingSession, CreatePayLink, ListChains), so regenerating
+ * `@openfort/openapi-clients` (`make generate-backend-openapi`) produces a `FundingApi`
+ * and this wrapper can then delegate to `BackendApiClients.fundingApi` like the other
+ * resources — keeping the clientSecret memory + ergonomics in this class.
  */
 
 /** Where the funded crypto should land (CAIP-2 chain + token + wallet). */
