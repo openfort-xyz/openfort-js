@@ -6,7 +6,7 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
     const response = await fetch(`${shieldUrl}/project/encryption-session`, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+        'x-api-key': process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!,
         'x-api-secret': process.env.NEXTAUTH_SHIELD_SECRET_KEY!,
       },
       method: 'POST',
