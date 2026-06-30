@@ -19,8 +19,8 @@ pnpm build
 cp .env.example .env
 
 # Add your Openfort keys to .env
-VITE_APP_OPENFORT_PUBLISHABLE_KEY=
-VITE_APP_SHIELD_PUBLISHABLE_KEY=
+VITE_OPENFORT_PUBLISHABLE_KEY=
+VITE_SHIELD_PUBLISHABLE_KEY=
 ```
 
 ## Building locally
