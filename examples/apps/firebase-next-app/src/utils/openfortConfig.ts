@@ -11,14 +11,14 @@ export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 export const iframeUrl = process.env.NEXT_PUBLIC_IFRAME_URL
 
 const baseConfiguration: OpenfortConfiguration = {
-  publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY!,
+  publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY!,
 }
 const shieldConfiguration: ShieldConfiguration = {
   debug: true,
-  shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+  shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!,
 }
 
-if (!process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY || !process.env.NEXT_PUBLIC_SHIELD_API_KEY) {
+if (!process.env.NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY || !process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY) {
   throw new Error('Missing Openfort environment variables')
 }
 

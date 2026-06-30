@@ -6,10 +6,10 @@ export const iframeUrl = process.env.NEXT_PUBLIC_IFRAME_URL
 
 export const openfortInstance = new Openfort({
   baseConfiguration: {
-    publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY!,
+    publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY!,
   },
   shieldConfiguration: {
-    shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+    shieldPublishableKey: process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!,
   },
   overrides: {
     shieldUrl: shieldUrl,

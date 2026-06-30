@@ -6,7 +6,7 @@ export const iframeUrl = import.meta.env.VITE_IFRAME_URL
 
 export const openfort = new Openfort({
   baseConfiguration: {
-    publishableKey: import.meta.env.VITE_PROJECT_PUBLISHABLE_KEY!,
+    publishableKey: import.meta.env.VITE_OPENFORT_PUBLISHABLE_KEY!,
   },
   shieldConfiguration: {
     shieldPublishableKey: import.meta.env.VITE_SHIELD_PUBLISHABLE_KEY!,

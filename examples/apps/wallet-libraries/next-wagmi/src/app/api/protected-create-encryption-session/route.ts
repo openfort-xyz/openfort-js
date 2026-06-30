@@ -6,12 +6,12 @@ export async function POST(_request: Request) {
     const response = await fetch(`${shieldUrl}/project/encryption-session`, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+        'x-api-key': process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!,
         'x-api-secret': process.env.NEXTAUTH_SHIELD_SECRET_KEY!,
       },
       method: 'POST',
       body: JSON.stringify({
-        encryption_part: process.env.NEXTAUTH_SHIELD_ENCRYPTION_SHARE!,
+        encryption_part: process.env.NEXTAUTH_SHIELD_ENCRYPTION_KEY!,
       }),
     })
 

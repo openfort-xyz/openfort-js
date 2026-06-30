@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const shieldProjectResponse = await fetch(`${shieldUrl}/project`, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+        'x-api-key': process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!,
         'x-api-secret': process.env.NEXTAUTH_SHIELD_SECRET_KEY!,
       },
     })
@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const res = await fetch(`${shieldUrl}/project/otp`, {
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+            'x-api-key': process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!,
             'x-api-secret': process.env.NEXTAUTH_SHIELD_SECRET_KEY!,
           },
           method: 'POST',
@@ -48,12 +48,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const response = await fetch(`${shieldUrl}/project/encryption-session`, {
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.NEXT_PUBLIC_SHIELD_API_KEY!,
+        'x-api-key': process.env.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY!,
         'x-api-secret': process.env.NEXTAUTH_SHIELD_SECRET_KEY!,
       },
       method: 'POST',
       body: JSON.stringify({
-        encryption_part: process.env.NEXTAUTH_SHIELD_ENCRYPTION_SHARE!,
+        encryption_part: process.env.NEXTAUTH_SHIELD_ENCRYPTION_KEY!,
         user_id: req.body.user_id,
         otp_code: req.body.otp_code,
       }),
