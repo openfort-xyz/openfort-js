@@ -6,7 +6,7 @@ const openfort = (() => {
   }
   return new Openfort(process.env.NEXTAUTH_OPENFORT_SECRET_KEY, {
     basePath: process.env.NEXT_PUBLIC_BACKEND_URL,
-    publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY,
+    publishableKey: process.env.NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY,
   })
 })()
 

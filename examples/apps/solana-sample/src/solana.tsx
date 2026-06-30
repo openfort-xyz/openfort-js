@@ -9,7 +9,7 @@ import { sendSolanaTransaction, type TokenType, USDC_MINT } from './utils/transa
 
 const koraConfig: KoraConfig = {
   rpcUrl: 'https://api.openfort.io/rpc/solana/devnet',
-  apiKey: `Bearer ${import.meta.env.VITE_PROJECT_PUBLISHABLE_KEY}`,
+  apiKey: `Bearer ${import.meta.env.VITE_OPENFORT_PUBLISHABLE_KEY}`,
 }
 
 // Validate Solana address format (base58, 32-44 characters)

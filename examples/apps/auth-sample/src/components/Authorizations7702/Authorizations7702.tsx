@@ -52,7 +52,7 @@ const Authorizations7702: React.FC<{
   const handleSignAuthorization = async () => {
     try {
       setLoading(true)
-      const openfortKey = process.env.NEXT_PUBLIC_OPENFORT_PUBLIC_KEY!
+      const openfortKey = process.env.NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY!
       const openfortRpcUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.openfort.io'}/rpc/${appChain.id}`
       const openfortTransport = http(openfortRpcUrl, {
         fetchOptions: {

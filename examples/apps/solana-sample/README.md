@@ -25,7 +25,7 @@ Set these in `.env.local` (get keys from the [Openfort dashboard](https://www.op
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `VITE_PROJECT_PUBLISHABLE_KEY` | Yes | Openfort project publishable key |
+| `VITE_OPENFORT_PUBLISHABLE_KEY` | Yes | Openfort project publishable key |
 | `VITE_SHIELD_PUBLISHABLE_KEY` | Yes | Shield publishable key (also used for gasless transactions) |
 | `VITE_SOLANA_TEST_RECEIVE_ADDRESS` | No | Pre-filled recipient address for testing |
 
