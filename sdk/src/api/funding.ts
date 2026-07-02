@@ -1,19 +1,6 @@
 import { SDKConfiguration } from '../core/config/config'
 import { ConfigurationError, RequestError } from '../core/errors/openfortError'
 
-/**
- * Funding (cross-chain wallet deposit) resource.
- *
- * Wraps the API's `/v2/funding` session endpoints: create a session for a
- * destination, set a single payment method (a source route) to mint a Relay
- * deposit address, then poll until terminal. Sessions are guarded by a
- * per-session `clientSecret` and authenticated with the project publishable key.
- *
- * NOTE: This thin wrapper calls the backend directly. Once the API's funding
- * endpoints are part of the published OpenAPI spec, this can move onto the
- * generated `BackendApiClients.fundingApi` like the other resources.
- */
-
 /** Where the funded crypto should land (CAIP-2 chain + token + wallet). */
 export interface FundingTarget {
   chain: string
@@ -56,11 +43,20 @@ interface FundingPaymentMethodBase {
   refundTo?: string
 }
 
+/** Fiat web2 funding methods. The rail the user sees, never the provider. */
+export type OnrampMethodId = 'apple_pay' | 'google_pay' | 'card' | 'bank_transfer'
+
+/** How a resolved onramp executes: open a hosted `url`, or an in-page provider SDK. */
+export type OnrampAngle = 'iframe' | 'native'
+
 /**
- * The source route the user commits to. `evm` / `solana` are self-custody
+ * The payment method the user commits to. `evm` / `solana` are self-custody
  * transfers; `cex` is a guided withdrawal from a centralized exchange — the same
  * deposit address, plus withdrawal guidance (network, minimum, memo) and no
- * wallet deeplinks (exchanges don't expose them).
+ * wallet deeplinks (exchanges don't expose them). `onramp` is a fiat purchase —
+ * the server resolves the provider (buyer region + destination + project config)
+ * and returns a checkout `url`; settlement advances the same session lifecycle
+ * via the provider's webhook.
  */
 export type FundingPaymentMethodInput =
   | (FundingPaymentMethodBase & { type: 'evm' })
@@ -70,6 +66,19 @@ export type FundingPaymentMethodInput =
       /** Exchange id, e.g. "binance" | "coinbase". */
       cex: string
     })
+  | {
+      type: 'onramp'
+      /** The fiat method the user picked (from `sessions.methods()`). */
+      method: OnrampMethodId
+      /** Fiat amount to prefill in the checkout, human units (e.g. "100.00"). */
+      sourceAmount?: string
+      /** ISO-4217 fiat currency for `sourceAmount`. */
+      sourceCurrency?: string
+      /** Buyer-country override (ISO-3166 alpha-2); defaults to the request IP. */
+      country?: string
+      /** URL the provider redirects back to after checkout. */
+      redirectUrl?: string
+    }
 
 export type FundingSessionStatus =
   | 'requires_payment_method'
@@ -103,8 +112,9 @@ export interface FundingCexGuidance {
   requiresMemo: boolean
 }
 
-export interface FundingPaymentMethod {
-  type: string
+/** A committed crypto source route: deposit address, QR uri, deeplinks. */
+export interface FundingCryptoPaymentMethod {
+  type: 'evm' | 'solana' | 'cex'
   source: FundingSource
   receiverAddress: string
   addressUri: string
@@ -114,6 +124,23 @@ export interface FundingPaymentMethod {
   fees: FundingFee[]
   minAmount: string | null
 }
+
+/**
+ * A committed fiat onramp. The executing provider is resolved server-side and
+ * never part of the response — open `url` (iframe angle) and track the session
+ * status; settlement is webhook-driven.
+ */
+export interface FundingOnrampPaymentMethod {
+  type: 'onramp'
+  method: OnrampMethodId
+  angle: OnrampAngle
+  /** Hosted checkout URL to open, or null. */
+  url: string | null
+  fees: FundingFee[]
+  minAmount: string | null
+}
+
+export type FundingPaymentMethod = FundingCryptoPaymentMethod | FundingOnrampPaymentMethod
 
 export interface FundingSession {
   id: string
@@ -168,6 +195,48 @@ export interface FundingChain {
   logo: string | null
   vmType: string
   currencies: FundingCurrency[]
+}
+
+/**
+ * One fiat method row to render. The provider is included for telemetry only —
+ * it is not shown to the user and never chosen by the client.
+ */
+export interface ResolvedFundingMethod {
+  method: OnrampMethodId
+  provider: string
+  angle: OnrampAngle
+  /** Server-resolved display label; bank_transfer shows the regional rail. */
+  label: string
+  /** The regional bank rail behind `label`, for bank_transfer. */
+  rail?: 'ach' | 'sepa' | 'interac'
+  /** Gate the row on device capability client-side (e.g. Apple Pay on Safari). */
+  requiresDeviceCheck?: boolean
+}
+
+/** The fiat methods resolved for a session's destination and the buyer's region. */
+export interface ResolvedFundingMethods {
+  /** Resolved ISO-3166 alpha-2 country, or null for rest-of-world. */
+  country: string | null
+  methods: ResolvedFundingMethod[]
+}
+
+/** A single fee leg of an onramp quote, in the source (fiat) currency. */
+export interface OnrampQuoteFee {
+  type: string
+  amount: string
+  currency: string
+}
+
+/** A priced onramp route: what the entered fiat buys after fees. */
+export interface OnrampQuote {
+  provider: string
+  sourceAmount: string
+  sourceCurrency: string
+  destinationAmount: string
+  destinationCurrency: string
+  destinationNetwork: string
+  fees: OnrampQuoteFee[]
+  exchangeRate: string
 }
 
 /** Hard ceiling per funding request so a stalled backend can't hang the app. */
@@ -250,6 +319,52 @@ export class FundingApi {
         `/v2/funding/sessions/${sessionId}?clientSecret=${encodeURIComponent(secret)}`
       )
     },
+
+    /**
+     * Resolve the fiat methods available for this session's destination and the
+     * buyer's region (server-detected from the request IP, or an explicit
+     * `country` override). Render one row per method — the provider is already
+     * chosen server-side. Commit one via `setPaymentMethod({ type: 'onramp', method })`.
+     */
+    methods: async (
+      sessionId: string,
+      params?: { clientSecret?: string; country?: string }
+    ): Promise<ResolvedFundingMethods> => {
+      const secret = this.resolveSecret(sessionId, params?.clientSecret)
+      const query = new URLSearchParams({ clientSecret: secret })
+      if (params?.country) {
+        query.set('country', params.country)
+      }
+      return this.request<ResolvedFundingMethods>(`/v2/funding/sessions/${sessionId}/methods?${query.toString()}`)
+    },
+
+    /**
+     * Price a fiat route before committing it. The provider is resolved exactly
+     * as `setPaymentMethod` would resolve it, so the quote matches the checkout
+     * the user will get.
+     */
+    quote: async (
+      sessionId: string,
+      params: {
+        method: OnrampMethodId
+        /** Fiat amount in human units, e.g. "100.00". */
+        sourceAmount: string
+        /** ISO-4217 fiat currency, e.g. "USD". */
+        sourceCurrency: string
+        country?: string
+        clientSecret?: string
+      }
+    ): Promise<OnrampQuote> =>
+      this.request<OnrampQuote>(`/v2/funding/sessions/${sessionId}/quotes`, {
+        method: 'POST',
+        body: JSON.stringify({
+          clientSecret: this.resolveSecret(sessionId, params.clientSecret),
+          method: params.method,
+          sourceAmount: params.sourceAmount,
+          sourceCurrency: params.sourceCurrency,
+          country: params.country,
+        }),
+      }),
 
     /**
      * Poll a session until it reaches a terminal status (`succeeded`, `bounced`,

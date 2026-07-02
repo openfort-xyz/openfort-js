@@ -12,8 +12,10 @@ export {
   FundingApi,
   type FundingCexGuidance,
   type FundingChain,
+  type FundingCryptoPaymentMethod,
   type FundingCurrency,
   type FundingFee,
+  type FundingOnrampPaymentMethod,
   type FundingPaymentMethod,
   type FundingPaymentMethodInput,
   type FundingSession,
@@ -21,7 +23,13 @@ export {
   type FundingSource,
   type FundingTarget,
   type FundingWalletDeeplink,
+  type OnrampAngle,
+  type OnrampMethodId,
+  type OnrampQuote,
+  type OnrampQuoteFee,
   type PayLinkParams,
+  type ResolvedFundingMethod,
+  type ResolvedFundingMethods,
 } from './api/funding'
 export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'

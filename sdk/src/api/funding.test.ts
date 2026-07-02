@@ -127,4 +127,76 @@ describe('FundingApi', () => {
     expect(body.paymentMethod.type).toBe('cex')
     expect(body.paymentMethod.cex).toBe('binance')
   })
+
+  it('setPaymentMethod commits a fiat onramp and returns the checkout url', async () => {
+    fetchMock
+      .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method' }))
+      .mockResolvedValueOnce(
+        okJson({
+          id: 'fnd_1',
+          status: 'waiting_payment',
+          paymentMethod: { type: 'onramp', method: 'card', angle: 'iframe', url: 'https://crypto.link.com/s?x=1' },
+        })
+      )
+    const api = new FundingApi()
+    await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
+    const session = await api.sessions.setPaymentMethod('fnd_1', {
+      paymentMethod: { type: 'onramp', method: 'card', sourceAmount: '100.00', sourceCurrency: 'USD' },
+    })
+    const body = JSON.parse(fetchMock.mock.calls[1][1].body)
+    expect(body.paymentMethod).toMatchObject({ type: 'onramp', method: 'card', sourceAmount: '100.00' })
+    expect(session.paymentMethod?.type).toBe('onramp')
+    if (session.paymentMethod?.type === 'onramp') {
+      expect(session.paymentMethod.url).toBe('https://crypto.link.com/s?x=1')
+    }
+  })
+
+  it('methods() GETs the session-scoped resolved rows with the remembered secret', async () => {
+    fetchMock
+      .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method' }))
+      .mockResolvedValueOnce(
+        okJson({
+          country: 'US',
+          methods: [{ method: 'card', provider: 'stripe', angle: 'iframe', label: 'Card' }],
+        })
+      )
+    const api = new FundingApi()
+    await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
+    const resolved = await api.sessions.methods('fnd_1', { country: 'US' })
+    expect(fetchMock.mock.calls[1][0]).toBe(
+      'https://api.test/v2/funding/sessions/fnd_1/methods?clientSecret=cs_1&country=US'
+    )
+    expect(resolved.country).toBe('US')
+    expect(resolved.methods[0]?.label).toBe('Card')
+  })
+
+  it('quote() POSTs the fiat route and returns the priced quote', async () => {
+    fetchMock.mockResolvedValueOnce(
+      okJson({
+        provider: 'stripe',
+        sourceAmount: '100.00',
+        sourceCurrency: 'USD',
+        destinationAmount: '98.20',
+        destinationCurrency: 'USDC',
+        destinationNetwork: 'base',
+        fees: [{ type: 'transaction_fee', amount: '1.80', currency: 'USD' }],
+        exchangeRate: '1.018330',
+      })
+    )
+    const quote = await new FundingApi().sessions.quote('fnd_1', {
+      clientSecret: 'cs_1',
+      method: 'card',
+      sourceAmount: '100.00',
+      sourceCurrency: 'USD',
+    })
+    const [calledUrl, init] = fetchMock.mock.calls[0]
+    expect(calledUrl).toBe('https://api.test/v2/funding/sessions/fnd_1/quotes')
+    expect(JSON.parse(init.body)).toMatchObject({
+      clientSecret: 'cs_1',
+      method: 'card',
+      sourceAmount: '100.00',
+      sourceCurrency: 'USD',
+    })
+    expect(quote.destinationAmount).toBe('98.20')
+  })
 })
