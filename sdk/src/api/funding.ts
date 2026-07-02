@@ -136,6 +136,11 @@ export interface FundingOnrampPaymentMethod {
   angle: OnrampAngle
   /** Hosted checkout URL to open, or null. */
   url: string | null
+  /**
+   * Provider session secret for embeddable checkouts (e.g. Stripe's embedded
+   * onramp element mounts with it), or null when the provider has none.
+   */
+  providerClientSecret: string | null
   fees: FundingFee[]
   minAmount: string | null
 }
