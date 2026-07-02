@@ -57,19 +57,12 @@ interface FundingPaymentMethodBase {
 }
 
 /**
- * The source route the user commits to. `evm` / `solana` are self-custody
- * transfers; `cex` is a guided withdrawal from a centralized exchange — the same
- * deposit address, plus withdrawal guidance (network, minimum, memo) and no
- * wallet deeplinks (exchanges don't expose them).
+ * The source route the user commits to — an EVM or Solana self-custody
+ * transfer. To fund from a centralized exchange, use `payLink` instead.
  */
 export type FundingPaymentMethodInput =
   | (FundingPaymentMethodBase & { type: 'evm' })
   | (FundingPaymentMethodBase & { type: 'solana' })
-  | (FundingPaymentMethodBase & {
-      type: 'cex'
-      /** Exchange id, e.g. "binance" | "coinbase". */
-      cex: string
-    })
 
 export type FundingSessionStatus =
   | 'requires_payment_method'
