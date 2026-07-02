@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.5.1
+
+### Patch Changes
+
+- [#322](https://github.com/openfort-xyz/openfort-js/pull/322) [`59a2bfa`](https://github.com/openfort-xyz/openfort-js/commit/59a2bfae230fcbb62e35256a74c8740b96340fa1) Thanks [@isardmart](https://github.com/isardmart)! - Remove the non-functional `cex` variant from `FundingPaymentMethodInput`. Centralized-exchange funding goes through `funding.payLink`, not `setPaymentMethod` — the `cex` payment method was always rejected by the API.
+
 ## 1.5.0
 
 ### Minor Changes
