@@ -111,20 +111,19 @@ describe('FundingApi', () => {
     expect(fetchMock.mock.calls[1][0]).toBe('https://api.test/v2/funding/sessions/fnd_1?clientSecret=cs_1')
   })
 
-  it('setPaymentMethod sends a cex payment method with the remembered clientSecret', async () => {
+  it('setPaymentMethod sends the payment method with the remembered clientSecret', async () => {
     fetchMock
       .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method' }))
       .mockResolvedValueOnce(okJson({ id: 'fnd_1', status: 'waiting_payment' }))
     const api = new FundingApi()
     await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
     await api.sessions.setPaymentMethod('fnd_1', {
-      paymentMethod: { type: 'cex', cex: 'binance', source: { chain: 'eip155:8453', currency: '0x0', amount: '1000' } },
+      paymentMethod: { type: 'evm', source: { chain: 'eip155:137', currency: '0x0', amount: '1000' } },
     })
     const [calledUrl, init] = fetchMock.mock.calls[1]
     expect(calledUrl).toBe('https://api.test/v2/funding/sessions/fnd_1/payment_methods')
     const body = JSON.parse(init.body)
     expect(body.clientSecret).toBe('cs_1')
-    expect(body.paymentMethod.type).toBe('cex')
-    expect(body.paymentMethod.cex).toBe('binance')
+    expect(body.paymentMethod.type).toBe('evm')
   })
 })
