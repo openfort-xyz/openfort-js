@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 1.5.2
+
+### Patch Changes
+
+- [#324](https://github.com/openfort-xyz/openfort-js/pull/324) [`6296c0b`](https://github.com/openfort-xyz/openfort-js/commit/6296c0bc55b47790872d752a771dbed53120c209) Thanks [@isardmart](https://github.com/isardmart)! - Funding resource now delegates to the generated `BackendApiClients.fundingApi` instead of hand-rolling HTTP calls, so its request/response shapes track the published OpenAPI spec. Public funding types and method signatures are unchanged.
+
 ## 1.5.1
 
 ### Patch Changes
