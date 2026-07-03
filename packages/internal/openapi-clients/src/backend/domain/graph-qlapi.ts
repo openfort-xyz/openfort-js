@@ -28,7 +28,8 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 export const GraphQLApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * Executes a GraphQL query against the Openfort API.
+         * @summary Execute GraphQL query.
          * @param {any} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -77,7 +78,8 @@ export const GraphQLApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = GraphQLApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * Executes a GraphQL query against the Openfort API.
+         * @summary Execute GraphQL query.
          * @param {any} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -97,7 +99,8 @@ export const GraphQLApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = GraphQLApiFp(configuration)
     return {
         /**
-         * 
+         * Executes a GraphQL query against the Openfort API.
+         * @summary Execute GraphQL query.
          * @param {GraphQLApiQueryRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -130,7 +133,8 @@ export interface GraphQLApiQueryRequest {
  */
 export class GraphQLApi extends BaseAPI {
     /**
-     * 
+     * Executes a GraphQL query against the Openfort API.
+     * @summary Execute GraphQL query.
      * @param {GraphQLApiQueryRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

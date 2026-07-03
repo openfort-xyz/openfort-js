@@ -32,7 +32,11 @@ export const APITopic = {
     USER_CREATED: 'user.created',
     USER_UPDATED: 'user.updated',
     USER_DELETED: 'user.deleted',
-    ACCOUNT_CREATED: 'account.created'
+    ACCOUNT_CREATED: 'account.created',
+    SOLANA_TRANSACTION_BROADCAST: 'solana_transaction.broadcast',
+    SOLANA_TRANSACTION_SUCCESSFUL: 'solana_transaction.successful',
+    SOLANA_TRANSACTION_FAILED: 'solana_transaction.failed',
+    FUNDING_SESSION_UPDATED: 'funding.session.updated'
 } as const;
 
 export type APITopic = typeof APITopic[keyof typeof APITopic];

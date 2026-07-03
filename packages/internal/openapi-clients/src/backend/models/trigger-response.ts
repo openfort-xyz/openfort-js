@@ -63,6 +63,12 @@ export interface TriggerResponse {
      */
     'subscription': string;
     /**
+     * Whether the trigger is active. Webhook triggers are automatically deactivated after repeated delivery failures and can be re-enabled.
+     * @type {boolean}
+     * @memberof TriggerResponse
+     */
+    'active': boolean;
+    /**
      * 
      * @type {number}
      * @memberof TriggerResponse

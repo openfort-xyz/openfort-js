@@ -45,7 +45,7 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
          * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
-         * @param {string} [xBehalfOfProject] 
+         * @param {string} [xBehalfOfProject] Project ID to act on behalf of (for ecosystem operations).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -214,7 +214,7 @@ export const SessionsApiAxiosParamCreator = function (configuration?: Configurat
          * 
          * @summary Revoke the session session key.
          * @param {RevokeSessionRequest} revokeSessionRequest 
-         * @param {string} [xBehalfOfProject] 
+         * @param {string} [xBehalfOfProject] Project ID to act on behalf of (for ecosystem operations).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -333,7 +333,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
          * Creates a Session.
          * @summary Create a session key.
          * @param {CreateSessionRequest} createSessionRequest 
-         * @param {string} [xBehalfOfProject] 
+         * @param {string} [xBehalfOfProject] Project ID to act on behalf of (for ecosystem operations).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -372,7 +372,7 @@ export const SessionsApiFp = function(configuration?: Configuration) {
          * 
          * @summary Revoke the session session key.
          * @param {RevokeSessionRequest} revokeSessionRequest 
-         * @param {string} [xBehalfOfProject] 
+         * @param {string} [xBehalfOfProject] Project ID to act on behalf of (for ecosystem operations).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -469,7 +469,7 @@ export interface SessionsApiCreateSessionRequest {
     readonly createSessionRequest: CreateSessionRequest
 
     /**
-     * 
+     * Project ID to act on behalf of (for ecosystem operations).
      * @type {string}
      * @memberof SessionsApiCreateSession
      */
@@ -553,7 +553,7 @@ export interface SessionsApiRevokeSessionRequest {
     readonly revokeSessionRequest: RevokeSessionRequest
 
     /**
-     * 
+     * Project ID to act on behalf of (for ecosystem operations).
      * @type {string}
      * @memberof SessionsApiRevokeSession
      */

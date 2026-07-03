@@ -15,28 +15,28 @@
 
 
 /**
- * 
+ * The source route the user commits to sending from.
  * @export
- * @interface WebhookResponse
+ * @interface FundingSourceRequest
  */
-export interface WebhookResponse {
+export interface FundingSourceRequest {
     /**
-     * 
+     * Source CAIP-2 chain id.
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingSourceRequest
      */
-    'webhook': string | null;
+    'chain': string;
     /**
-     * 
-     * @type {boolean}
-     * @memberof WebhookResponse
-     */
-    'livemode': boolean;
-    /**
-     * The raw webhook signing secret. Only populated on project creation — never returned by GET endpoints. Capture it now; use the rotate endpoint if you lose it.
+     * Source token contract, or the zero address for native.
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingSourceRequest
      */
-    'signingSecret'?: string;
+    'currency': string;
+    /**
+     * Amount in the source token\'s smallest unit (wei, lamports, base units).
+     * @type {string}
+     * @memberof FundingSourceRequest
+     */
+    'amount': string;
 }
 

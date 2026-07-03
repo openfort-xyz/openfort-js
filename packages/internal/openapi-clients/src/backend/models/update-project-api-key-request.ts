@@ -41,12 +41,6 @@ export interface UpdateProjectApiKeyRequest {
      * @memberof UpdateProjectApiKeyRequest
      */
     'uuid': string;
-    /**
-     * Whether key to use to sign webhooks.
-     * @type {boolean}
-     * @memberof UpdateProjectApiKeyRequest
-     */
-    'use_for_webhooks'?: boolean;
 }
 
 

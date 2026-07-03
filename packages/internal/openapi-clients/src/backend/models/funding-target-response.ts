@@ -15,28 +15,28 @@
 
 
 /**
- * 
+ * Where the funded crypto lands.
  * @export
- * @interface WebhookResponse
+ * @interface FundingTargetResponse
  */
-export interface WebhookResponse {
+export interface FundingTargetResponse {
     /**
      * 
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingTargetResponse
      */
-    'webhook': string | null;
+    'chain': string;
     /**
      * 
-     * @type {boolean}
-     * @memberof WebhookResponse
-     */
-    'livemode': boolean;
-    /**
-     * The raw webhook signing secret. Only populated on project creation — never returned by GET endpoints. Capture it now; use the rotate endpoint if you lose it.
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingTargetResponse
      */
-    'signingSecret'?: string;
+    'currency': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingTargetResponse
+     */
+    'address': string;
 }
 

@@ -15,28 +15,28 @@
 
 
 /**
- * 
+ * A prefilled deeplink into a source wallet app.
  * @export
- * @interface WebhookResponse
+ * @interface FundingWalletDeeplinkResponse
  */
-export interface WebhookResponse {
+export interface FundingWalletDeeplinkResponse {
     /**
      * 
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingWalletDeeplinkResponse
      */
-    'webhook': string | null;
+    'app': string;
     /**
      * 
-     * @type {boolean}
-     * @memberof WebhookResponse
-     */
-    'livemode': boolean;
-    /**
-     * The raw webhook signing secret. Only populated on project creation — never returned by GET endpoints. Capture it now; use the rotate endpoint if you lose it.
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingWalletDeeplinkResponse
      */
-    'signingSecret'?: string;
+    'label': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingWalletDeeplinkResponse
+     */
+    'url': string;
 }
 

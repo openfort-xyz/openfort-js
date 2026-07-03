@@ -15,28 +15,28 @@
 
 
 /**
- * 
+ * Where the funded crypto should land.
  * @export
- * @interface WebhookResponse
+ * @interface FundingTargetRequest
  */
-export interface WebhookResponse {
+export interface FundingTargetRequest {
     /**
-     * 
+     * Destination CAIP-2 chain id.
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingTargetRequest
      */
-    'webhook': string | null;
+    'chain': string;
     /**
-     * 
-     * @type {boolean}
-     * @memberof WebhookResponse
-     */
-    'livemode': boolean;
-    /**
-     * The raw webhook signing secret. Only populated on project creation — never returned by GET endpoints. Capture it now; use the rotate endpoint if you lose it.
+     * Destination token contract, or the zero address for the chain\'s native asset.
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingTargetRequest
      */
-    'signingSecret'?: string;
+    'currency': string;
+    /**
+     * Destination wallet that receives the bridged funds.
+     * @type {string}
+     * @memberof FundingTargetRequest
+     */
+    'address': string;
 }
 

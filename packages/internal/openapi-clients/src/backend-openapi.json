@@ -40,7 +40,7 @@
             }
           }
         },
-        "description": "Execute Solana JSON-RPC 2.0 methods via Kora\n\nThis endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions\nusing the Kora paymaster service.\n\n**Supported clusters:**\n- `mainnet-beta` - Solana mainnet-beta\n- `devnet` - Solana devnet\n\n**Supported methods (per Kora JSON-RPC API spec):**\n- `getConfig`: Retrieve Kora server configuration\n- `getPayerSigner`: Get fee payer signer and payment destination\n- `getSupportedTokens`: List tokens accepted for fee payment\n- `getBlockhash`: Get latest blockhash\n- `estimateTransactionFee`: Estimate fees in lamports and token\n- `transferTransaction`: Create token transfer with Kora as fee payer\n- `signTransaction`: Sign transaction without broadcasting\n- `signAndSendTransaction`: Sign and broadcast to Solana",
+        "description": "Execute Solana JSON-RPC 2.0 methods via Kora\n\nThis endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions\nusing the Kora paymaster service.\n\n**Supported clusters:**\n- `mainnet-beta` - Solana mainnet-beta\n- `devnet` - Solana devnet\n\n**Supported methods (per Kora JSON-RPC API spec):**\n- `getConfig`: Retrieve Kora server configuration\n- `getPayerSigner`: Get fee payer signer and payment destination\n- `getSupportedTokens`: List tokens accepted for fee payment\n- `getBlockhash`: Get latest blockhash\n- `estimateTransactionFee`: Estimate fees in lamports and token\n- `signTransaction`: Sign transaction without broadcasting\n- `signAndSendTransaction`: Sign and broadcast to Solana (waits for confirmation)\n- `signAndSendTransactionWithoutConfirmation`: Sign and broadcast without waiting for confirmation",
         "summary": "Execute Solana Kora JSON-RPC methods",
         "tags": [
           "Solana RPC"
@@ -48,10 +48,14 @@
         "security": [
           {
             "pk": []
+          },
+          {
+            "user_project": []
           }
         ],
         "parameters": [
           {
+            "description": "The Solana cluster to route the request to (mainnet-beta, devnet).",
             "in": "path",
             "name": "cluster",
             "required": true,
@@ -143,6 +147,7 @@
         ],
         "parameters": [
           {
+            "description": "The EVM chain ID to route the RPC request to.",
             "in": "path",
             "name": "chainId",
             "required": true,
@@ -188,6 +193,7 @@
                           "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                           "createdAt": 1689869074,
                           "object": "transactionIntent",
+                          "finalCost": "0.42",
                           "details": {
                             "userOperationHash": "0x25d3...005c",
                             "userOperation": {
@@ -428,6 +434,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -656,6 +663,7 @@
         ],
         "parameters": [
           {
+            "description": "Project ID to act on behalf of (for ecosystem operations).",
             "in": "header",
             "name": "X-Behalf-Of-Project",
             "required": false,
@@ -693,6 +701,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -956,6 +965,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -1129,6 +1139,7 @@
                               "object": "trigger",
                               "target": "https://webhook.site/7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                               "type": "webhook",
+                              "active": true,
                               "createdAt": 1617226800,
                               "subscription": "sub_7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                               "updatedAt": 1617226800
@@ -1187,6 +1198,7 @@
                           "object": "trigger",
                           "target": "https://webhook.site/7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                           "type": "webhook",
+                          "active": true,
                           "createdAt": 1617226800,
                           "subscription": "sub_7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                           "updatedAt": 1617226800
@@ -1404,6 +1416,7 @@
                           "object": "trigger",
                           "target": "https://webhook.site/7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                           "type": "webhook",
+                          "active": true,
                           "createdAt": 1617226800,
                           "subscription": "sub_7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                           "updatedAt": 1617226800
@@ -1535,6 +1548,7 @@
                           "object": "trigger",
                           "target": "https://webhook.site/7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                           "type": "webhook",
+                          "active": true,
                           "createdAt": 1617226800,
                           "subscription": "sub_7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                           "updatedAt": 1617226800
@@ -1598,6 +1612,7 @@
                       "object": "trigger",
                       "target": "https://webhook.site/7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                       "type": "webhook",
+                      "active": true,
                       "createdAt": 1617226800,
                       "subscription": "sub_7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                       "updatedAt": 1617226800
@@ -1671,6 +1686,7 @@
                       "object": "trigger",
                       "target": "https://webhook.site/7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                       "type": "webhook",
+                      "active": true,
                       "createdAt": 1617226800,
                       "subscription": "sub_7b9f89cf2-c185-40f4-beef-2a250d7a472b",
                       "updatedAt": 1617226800
@@ -1793,6 +1809,70 @@
         ]
       }
     },
+    "/v1/subscriptions/triggers/{triggerId}/enable": {
+      "post": {
+        "operationId": "EnableTrigger",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTriggerResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "tri_7b9f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "object": "trigger",
+                      "target": "https://webhook.site/7b9f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "type": "webhook",
+                      "active": true,
+                      "createdAt": 1617226800,
+                      "subscription": "sub_7b9f89cf2-c185-40f4-beef-2a250d7a472b",
+                      "updatedAt": 1617226800
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response."
+          },
+          "404": {
+            "description": "Trigger not found."
+          }
+        },
+        "description": "Re-enables a trigger that was automatically deactivated after repeated delivery failures.\n\nWebhook triggers are deactivated when consecutive deliveries fail; once the endpoint is\nhealthy again, use this to resume notifications. The failure counter is reset.",
+        "summary": "Enable trigger of subscription.",
+        "tags": [
+          "Subscriptions"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": [
+              "subscriptions:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the unique trigger ID (starts with tri_).",
+            "in": "path",
+            "name": "triggerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "tri_6194ad12-a213-1e5c-b003-8040fa3c9c48"
+          }
+        ]
+      }
+    },
     "/v1/subscriptions/test": {
       "post": {
         "operationId": "TestTrigger",
@@ -1838,6 +1918,59 @@
           }
         ],
         "parameters": []
+      }
+    },
+    "/v1/solana/transactions": {
+      "get": {
+        "operationId": "getSolanaTransactionStatus",
+        "responses": {
+          "200": {
+            "description": "Solana transaction found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolanaTransactionStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Exactly one of id or externalId must be provided."
+          },
+          "404": {
+            "description": "Solana transaction not found."
+          }
+        },
+        "description": "Get the status of a Solana transaction by either its internal id or the\ncaller-supplied externalId attached when the transaction was signed.\n\nExactly one of `id` or `externalId` must be provided. Lookups are scoped to\nthe authenticated project.",
+        "summary": "Get Solana transaction status",
+        "tags": [
+          "Solana Transactions"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Internal Solana transaction ID (starts with `sol_`).",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "sol_f2b8b5f0-1f5c-4a7e-9b3a-1d2e3f4a5b6c"
+          },
+          {
+            "in": "query",
+            "name": "externalId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     },
     "/v1/settings/developer_accounts": {
@@ -2559,6 +2692,7 @@
         ],
         "parameters": [
           {
+            "description": "Project ID to act on behalf of (for ecosystem operations).",
             "in": "header",
             "name": "X-Behalf-Of-Project",
             "required": false,
@@ -2652,6 +2786,7 @@
         ],
         "parameters": [
           {
+            "description": "Project ID to act on behalf of (for ecosystem operations).",
             "in": "header",
             "name": "X-Behalf-Of-Project",
             "required": false,
@@ -3852,7 +3987,6 @@
                             "end": 1693526399
                           },
                           "averageTransactionFee": "0.002721745",
-                          "totalTransactionFee": "0.00544349",
                           "totalTransactionFeeInUSD": "0.00191",
                           "totalTransactionFeeInCustomTokens": "0.00122705",
                           "transactionIntents": []
@@ -4045,7 +4179,6 @@
                             "end": 1693526399
                           },
                           "averageTransactionFee": "0.002721745",
-                          "totalTransactionFee": "0.00544349",
                           "totalTransactionFeeInUSD": "0.00191",
                           "totalTransactionFeeInCustomTokens": "0.00122705",
                           "transactionIntents": []
@@ -4113,6 +4246,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -4680,6 +4814,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -4823,6 +4958,7 @@
                       "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
                       "createdAt": 1689869074,
                       "object": "transactionIntent",
+                      "finalCost": "0.42",
                       "details": {
                         "userOperationHash": "0x25d3...005c",
                         "userOperation": {
@@ -5398,6 +5534,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "Maximum number of logs to return (1-100, default 25).",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "description": "Number of logs to skip for pagination (default 0).",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
           }
         ]
       }
@@ -5450,6 +5606,8 @@
             }
           }
         },
+        "description": "Executes a GraphQL query against the Openfort API.",
+        "summary": "Execute GraphQL query.",
         "tags": [
           "GraphQL"
         ],
@@ -7299,11 +7457,39 @@
         "operationId": "pregenerateUserV2",
         "responses": {
           "200": {
-            "description": "User and account pre-generated successfully.",
+            "description": "User and accounts pre-generated successfully.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PregenerateAccountResponse"
+                  "$ref": "#/components/schemas/PregenerateUserResponseV2"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "user": "usr_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43",
+                      "accounts": [
+                        {
+                          "id": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                          "wallet": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                          "accountType": "Smart Account",
+                          "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                          "chainType": "EVM",
+                          "createdAt": 1689869074,
+                          "updatedAt": 1689869074,
+                          "custody": "Developer",
+                          "smartAccount": {
+                            "implementationType": "UpgradeableV5",
+                            "factoryAddress": "0x1234567890123456789012345678901234567890",
+                            "implementationAddress": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+                            "salt": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                            "active": true
+                          },
+                          "recoveryShare": "2a7f8c4e1b3d5a9f6e8c2b4d7a1f3e5c8b2d4a6f9e1c3b5d7a2f4e6c8b1d3a",
+                          "signer": "sig_3b1a4d9c-7e2f-4a6d-8c9b-1e5f2d7a4b3c"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -7318,8 +7504,8 @@
             "description": "Conflict - user with this identifier already exists."
           }
         },
-        "description": "Pre-generate a user with an embedded account before they authenticate.\nCreates a user record and an embedded account using the provided SSS key shares.\nWhen the user later authenticates (via email, OAuth, third-party auth, etc.)\nwith the same identifier, they will be linked to this pre-generated account.\n\nYou can pregenerate using either:\n- `email`: User will be linked when they authenticate with the same email\n- `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider",
-        "summary": "Pre-generate a user with an embedded account.",
+        "description": "Pre-generate a user with one or more embedded accounts before they authenticate.\nCreates a user record and an embedded account per entry in `accounts`, each with its\nown SSS key shares. When the user later authenticates (via email, OAuth, third-party\nauth, etc.) with the same identifier, they will be linked to these pre-generated accounts.\n\nUse the `accounts` array to pregenerate accounts on different chain types\n(e.g. one EVM account and one SVM account) in a single call.\n\nYou can pregenerate using either:\n- `email`: User will be linked when they authenticate with the same email\n- `thirdPartyUserId` + `thirdPartyProvider`: User will be linked when they authenticate via the same third-party provider",
+        "summary": "Pre-generate a user with embedded accounts.",
         "tags": [
           "Users"
         ],
@@ -7353,6 +7539,59 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PolicyV2ListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/v2/policies",
+                      "data": [
+                        {
+                          "id": "ply_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                          "object": "policyV2",
+                          "createdAt": 1689869074,
+                          "scope": "project",
+                          "description": "Limit ETH transfers to 1 ETH to approved addresses",
+                          "accountId": null,
+                          "enabled": true,
+                          "priority": 0,
+                          "rules": [
+                            {
+                              "id": "plr_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43",
+                              "object": "policyV2Rule",
+                              "createdAt": 1689869074,
+                              "action": "accept",
+                              "operation": "signEvmTransaction",
+                              "criteria": []
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ply_9f3d7b82-1e4a-4c5f-a8d6-2b7e9c0f3a61",
+                          "object": "policyV2",
+                          "createdAt": 1689955474,
+                          "scope": "account",
+                          "description": "Allow only token approvals for this account",
+                          "accountId": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                          "enabled": true,
+                          "priority": 1,
+                          "rules": [
+                            {
+                              "id": "plr_c4f8e261-5a9b-4d3c-b7e1-8f2a6d0c9b54",
+                              "object": "policyV2Rule",
+                              "createdAt": 1689955474,
+                              "action": "accept",
+                              "operation": "sendEvmTransaction",
+                              "criteria": []
+                            }
+                          ]
+                        }
+                      ],
+                      "start": 0,
+                      "end": 2,
+                      "total": 2
+                    }
+                  }
                 }
               }
             }
@@ -7492,6 +7731,30 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PolicyV2Response"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "ply_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "policyV2",
+                      "createdAt": 1689869074,
+                      "scope": "project",
+                      "description": "Limit ETH transfers to 1 ETH to approved addresses",
+                      "accountId": null,
+                      "enabled": true,
+                      "priority": 0,
+                      "rules": [
+                        {
+                          "id": "plr_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43",
+                          "object": "policyV2Rule",
+                          "createdAt": 1689869074,
+                          "action": "accept",
+                          "operation": "signEvmTransaction",
+                          "criteria": []
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -7541,6 +7804,30 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PolicyV2Response"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "ply_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "policyV2",
+                      "createdAt": 1689869074,
+                      "scope": "project",
+                      "description": "Limit ETH transfers to 1 ETH to approved addresses",
+                      "accountId": null,
+                      "enabled": true,
+                      "priority": 0,
+                      "rules": [
+                        {
+                          "id": "plr_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43",
+                          "object": "policyV2Rule",
+                          "createdAt": 1689869074,
+                          "action": "accept",
+                          "operation": "signEvmTransaction",
+                          "criteria": []
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -7589,6 +7876,30 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PolicyV2Response"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "ply_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "policyV2",
+                      "createdAt": 1689869074,
+                      "scope": "project",
+                      "description": "Limit ETH transfers to 1 ETH to approved addresses",
+                      "accountId": null,
+                      "enabled": true,
+                      "priority": 0,
+                      "rules": [
+                        {
+                          "id": "plr_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43",
+                          "object": "policyV2Rule",
+                          "createdAt": 1689869074,
+                          "action": "accept",
+                          "operation": "signEvmTransaction",
+                          "criteria": []
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -7650,6 +7961,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PolicyV2DeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "ply_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "policyV2",
+                      "deleted": true
+                    }
+                  }
                 }
               }
             }
@@ -7700,6 +8020,19 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/EvaluatePolicyV2Response"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "policy_evaluation",
+                      "allowed": true,
+                      "reason": "Allowed by policy rule",
+                      "operation": "signEvmTransaction",
+                      "accountId": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "matchedPolicyId": "ply_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "matchedRuleId": "plr_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43"
+                    }
+                  }
                 }
               }
             }
@@ -7742,6 +8075,241 @@
         }
       }
     },
+    "/v2/funding/chains": {
+      "get": {
+        "operationId": "ListChains",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingChainsResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Lists the source chains and currencies the funding rail can route from.\n\nA live passthrough of the rail's dictionary (Relay), narrowed client-side\nto a curated subset. Public — it exposes no tenant data, so the source\npicker can load it before the user authenticates.",
+        "summary": "List funding source chains.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "description": "Live (mainnet, default) or test (testnet) rail. Pass `false`\nfrom a test-mode (`pk_test_…`) client so the testnet chain list is returned.",
+            "in": "query",
+            "name": "livemode",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/sessions": {
+      "post": {
+        "operationId": "createFundingSession",
+        "responses": {
+          "201": {
+            "description": "Created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Creates a funding session for a destination.\n\nA session is one cross-chain deposit attempt: pick a destination chain,\ntoken, and wallet, then set a payment method to mint a deposit address.\nThe response includes a `clientSecret` used to advance and read the session.",
+        "summary": "Create a funding session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFundingSessionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/payment_methods": {
+      "post": {
+        "operationId": "SetPaymentMethod",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Sets the (single) payment method on a session.\n\nCommits the source route the user will send from and mints the Relay\ndeposit address. Requires the session `clientSecret`.",
+        "summary": "Set a session's payment method.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPaymentMethodRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}": {
+      "get": {
+        "operationId": "getFundingSession",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Retrieves a funding session, refreshing its status from the rail.\n\nRequires the session `clientSecret` (query parameter).",
+        "summary": "Get a funding session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The session client secret returned at creation.",
+            "in": "query",
+            "name": "clientSecret",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/pay_link": {
+      "post": {
+        "operationId": "CreatePayLink",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayLinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Builds a prefilled centralized-exchange (cex) transfer link for a session.\n\nReturns a hosted exchange transfer URL: the user signs into their own\nexchange account and the exchange delivers the asset to the session's\nwallet, handling any bridging from the balance they hold. Destination\naddress and chain are derived from the session, not the client. The active\ncex provider is resolved server-side. Requires the session `clientSecret`.",
+        "summary": "Build a centralized-exchange transfer link for a session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayLinkRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/fee-sponsorship": {
       "get": {
         "operationId": "ListFeeSponsorships",
@@ -7752,6 +8320,51 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeeSponsorshipListResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/v2/fee-sponsorship",
+                      "data": [
+                        {
+                          "id": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                          "object": "feeSponsorship",
+                          "createdAt": 1689869074,
+                          "name": "My DeFi Gas Sponsorship",
+                          "description": "Sponsors gas for free-tier users",
+                          "chainId": 8453,
+                          "enabled": true,
+                          "strategy": {
+                            "sponsorSchema": "pay_for_user"
+                          },
+                          "paymasterId": null,
+                          "forwarderContractId": null,
+                          "policyId": "ply_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43"
+                        },
+                        {
+                          "id": "pol_9f3d7b82-1e4a-4c5f-a8d6-2b7e9c0f3a61",
+                          "object": "feeSponsorship",
+                          "createdAt": 1689955474,
+                          "name": "NFT Minting Sponsorship",
+                          "description": null,
+                          "chainId": null,
+                          "enabled": false,
+                          "strategy": {
+                            "sponsorSchema": "charge_custom_tokens",
+                            "tokenContract": "con_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                            "tokenContractAmount": "1000000000000000000"
+                          },
+                          "paymasterId": "pay_62d8a4f1-9b3c-4e7a-8f5d-1c6e0b2a9d47",
+                          "forwarderContractId": null,
+                          "policyId": null
+                        }
+                      ],
+                      "start": 0,
+                      "end": 2,
+                      "total": 2
+                    }
+                  }
                 }
               }
             }
@@ -7860,6 +8473,25 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeeSponsorshipResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "feeSponsorship",
+                      "createdAt": 1689869074,
+                      "name": "My DeFi Gas Sponsorship",
+                      "description": "Sponsors gas for free-tier users",
+                      "chainId": 8453,
+                      "enabled": true,
+                      "strategy": {
+                        "sponsorSchema": "pay_for_user"
+                      },
+                      "paymasterId": null,
+                      "forwarderContractId": null,
+                      "policyId": "ply_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43"
+                    }
+                  }
                 }
               }
             }
@@ -7909,6 +8541,25 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeeSponsorshipResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "feeSponsorship",
+                      "createdAt": 1689869074,
+                      "name": "My DeFi Gas Sponsorship",
+                      "description": "Sponsors gas for free-tier users",
+                      "chainId": 8453,
+                      "enabled": true,
+                      "strategy": {
+                        "sponsorSchema": "pay_for_user"
+                      },
+                      "paymasterId": null,
+                      "forwarderContractId": null,
+                      "policyId": "ply_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43"
+                    }
+                  }
                 }
               }
             }
@@ -7957,6 +8608,25 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeeSponsorshipResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "feeSponsorship",
+                      "createdAt": 1689869074,
+                      "name": "My DeFi Gas Sponsorship",
+                      "description": "Sponsors gas for free-tier users",
+                      "chainId": 8453,
+                      "enabled": true,
+                      "strategy": {
+                        "sponsorSchema": "pay_for_user"
+                      },
+                      "paymasterId": null,
+                      "forwarderContractId": null,
+                      "policyId": "ply_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43"
+                    }
+                  }
                 }
               }
             }
@@ -8018,6 +8688,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeeSponsorshipDeleteResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "feeSponsorship",
+                      "deleted": true
+                    }
+                  }
                 }
               }
             }
@@ -8068,6 +8747,25 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeeSponsorshipResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "feeSponsorship",
+                      "createdAt": 1689869074,
+                      "name": "My DeFi Gas Sponsorship",
+                      "description": "Sponsors gas for free-tier users",
+                      "chainId": 8453,
+                      "enabled": true,
+                      "strategy": {
+                        "sponsorSchema": "pay_for_user"
+                      },
+                      "paymasterId": null,
+                      "forwarderContractId": null,
+                      "policyId": "ply_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43"
+                    }
+                  }
                 }
               }
             }
@@ -8118,6 +8816,25 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FeeSponsorshipResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pol_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "feeSponsorship",
+                      "createdAt": 1689869074,
+                      "name": "My DeFi Gas Sponsorship",
+                      "description": "Sponsors gas for free-tier users",
+                      "chainId": 8453,
+                      "enabled": true,
+                      "strategy": {
+                        "sponsorSchema": "pay_for_user"
+                      },
+                      "paymasterId": null,
+                      "forwarderContractId": null,
+                      "policyId": "ply_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43"
+                    }
+                  }
                 }
               }
             }
@@ -8168,6 +8885,18 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateBackendWalletResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "account",
+                      "id": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60",
+                      "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                      "walletId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "chainType": "EVM",
+                      "createdAt": 1689869074
+                    }
+                  }
                 }
               }
             }
@@ -8211,6 +8940,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DeleteBackendWalletResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "backendWallet",
+                      "id": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60",
+                      "deleted": true
+                    }
+                  }
                 }
               }
             }
@@ -8257,6 +8995,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SignResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "signature",
+                      "account": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60",
+                      "signature": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12"
+                    }
+                  }
                 }
               }
             }
@@ -8313,6 +9060,14 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ExportPrivateKeyResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "exportedKey",
+                      "encryptedPrivateKey": "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ..."
+                    }
+                  }
                 }
               }
             }
@@ -8369,6 +9124,18 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ImportPrivateKeyResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "account",
+                      "id": "acc_e0b84653-1741-4a3d-9e91-2b0fd2942f60",
+                      "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                      "walletId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "chainType": "EVM",
+                      "createdAt": 1689869074
+                    }
+                  }
                 }
               }
             }
@@ -8415,6 +9182,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RegisterWalletSecretResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "walletSecret",
+                      "keyId": "ws_1234567890",
+                      "registeredAt": 1689869074
+                    }
+                  }
                 }
               }
             }
@@ -8461,6 +9237,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RevokeWalletSecretResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "walletSecretRevocation",
+                      "keyId": "ws_1234567890",
+                      "revoked": true,
+                      "revokedAt": 1689869074
+                    }
+                  }
                 }
               }
             }
@@ -8507,6 +9293,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RotateWalletSecretResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "walletSecretRotation",
+                      "success": true,
+                      "rotatedAt": 1689869074
+                    }
+                  }
                 }
               }
             }
@@ -8556,6 +9351,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccountListV2Response"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/v2/accounts",
+                      "data": [
+                        {
+                          "id": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                          "wallet": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                          "accountType": "Smart Account",
+                          "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                          "chainType": "EVM",
+                          "createdAt": 1689869074,
+                          "updatedAt": 1689869074,
+                          "custody": "Developer",
+                          "smartAccount": {
+                            "implementationType": "UpgradeableV5",
+                            "factoryAddress": "0x1234567890123456789012345678901234567890",
+                            "implementationAddress": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+                            "salt": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                            "active": true
+                          }
+                        },
+                        {
+                          "id": "acc_9f3d7b82-1e4a-4c5f-a8d6-2b7e9c0f3a61",
+                          "wallet": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                          "accountType": "EOA",
+                          "address": "0x8ba1f109551bD432803012645Ac136ddd64DBA72",
+                          "chainType": "EVM",
+                          "createdAt": 1689955474,
+                          "updatedAt": 1689955474,
+                          "custody": "User"
+                        }
+                      ],
+                      "start": 0,
+                      "end": 2,
+                      "total": 2
+                    }
+                  }
                 }
               }
             }
@@ -8705,6 +9540,27 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccountV2Response"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "wallet": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "accountType": "Smart Account",
+                      "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                      "chainType": "EVM",
+                      "createdAt": 1689869074,
+                      "updatedAt": 1689869074,
+                      "custody": "Developer",
+                      "smartAccount": {
+                        "implementationType": "UpgradeableV5",
+                        "factoryAddress": "0x1234567890123456789012345678901234567890",
+                        "implementationAddress": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+                        "salt": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                        "active": true
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -8748,6 +9604,13 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SignerIdResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+                    }
+                  }
                 }
               }
             }
@@ -8782,6 +9645,7 @@
         ],
         "parameters": [
           {
+            "description": "The blockchain address to look up the signer ID for.",
             "in": "query",
             "name": "address",
             "required": true,
@@ -8802,6 +9666,27 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccountV2Response"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "wallet": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "accountType": "Smart Account",
+                      "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                      "chainType": "EVM",
+                      "createdAt": 1689869074,
+                      "updatedAt": 1689869074,
+                      "custody": "Developer",
+                      "smartAccount": {
+                        "implementationType": "UpgradeableV5",
+                        "factoryAddress": "0x1234567890123456789012345678901234567890",
+                        "implementationAddress": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+                        "salt": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                        "active": true
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -8836,6 +9721,7 @@
         ],
         "parameters": [
           {
+            "description": "The account ID (starts with acc_).",
             "in": "path",
             "name": "id",
             "required": true,
@@ -8854,6 +9740,15 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DeleteAccountResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "account",
+                      "deleted": true
+                    }
+                  }
                 }
               }
             }
@@ -8882,6 +9777,7 @@
         ],
         "parameters": [
           {
+            "description": "The account ID (starts with acc_).",
             "in": "path",
             "name": "id",
             "required": true,
@@ -8902,6 +9798,27 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AccountV2Response"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "wallet": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "accountType": "Smart Account",
+                      "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                      "chainType": "EVM",
+                      "createdAt": 1689869074,
+                      "updatedAt": 1689869074,
+                      "custody": "Developer",
+                      "smartAccount": {
+                        "implementationType": "UpgradeableV5",
+                        "factoryAddress": "0x1234567890123456789012345678901234567890",
+                        "implementationAddress": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+                        "salt": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                        "active": true
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -8954,6 +9871,30 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ExportShareResponse"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "acc_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "wallet": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "accountType": "Smart Account",
+                      "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+                      "chainType": "EVM",
+                      "createdAt": 1689869074,
+                      "updatedAt": 1689869074,
+                      "custody": "Developer",
+                      "smartAccount": {
+                        "implementationType": "UpgradeableV5",
+                        "factoryAddress": "0x1234567890123456789012345678901234567890",
+                        "implementationAddress": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+                        "salt": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                        "active": true
+                      },
+                      "share": "2a7f8c4e1b3d5a9f6e8c2b4d7a1f3e5c8b2d4a6f9e1c3b5d7a2f4e6c8b1d3a",
+                      "signerId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "userId": "usr_7a2c4e91-3bd8-4f6a-b12e-9d8f7c6e5a43"
+                    }
+                  }
                 }
               }
             }
@@ -9123,6 +10064,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -9358,6 +10300,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -9435,6 +10378,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -9616,6 +10560,8 @@
             "description": ""
           }
         },
+        "description": "Link a password credential to an existing authenticated account.",
+        "summary": "Link password to account.",
         "tags": [
           "auth v1"
         ],
@@ -9629,6 +10575,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -9667,6 +10614,8 @@
             "description": ""
           }
         },
+        "description": "Removes the password credential from an authenticated account.",
+        "summary": "Unlink password from account.",
         "tags": [
           "auth v1"
         ],
@@ -9720,6 +10669,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -9772,6 +10722,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -9824,6 +10775,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -9998,6 +10950,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -10551,6 +11504,7 @@
         ],
         "parameters": [
           {
+            "description": "The publishable key of the game project.",
             "in": "header",
             "name": "x-game",
             "required": false,
@@ -11126,6 +12080,8 @@
             "description": "Error response."
           }
         },
+        "description": "Returns the authenticated player's information.",
+        "summary": "Get authenticated player.",
         "tags": [
           "auth v1"
         ],
@@ -19414,6 +20370,11 @@
           "response": {
             "$ref": "#/components/schemas/ResponseResponse"
           },
+          "finalCost": {
+            "type": "string",
+            "description": "The actual transaction cost in USD, available after on-chain confirmation.",
+            "example": "0.42"
+          },
           "interactions": {
             "items": {
               "$ref": "#/components/schemas/Interaction"
@@ -19773,7 +20734,11 @@
           "user.created",
           "user.updated",
           "user.deleted",
-          "account.created"
+          "account.created",
+          "solana_transaction.broadcast",
+          "solana_transaction.successful",
+          "solana_transaction.failed",
+          "funding.session.updated"
         ],
         "type": "string",
         "x-enum-varnames": [
@@ -19788,7 +20753,11 @@
           "USER_CREATED",
           "USER_UPDATED",
           "USER_DELETED",
-          "ACCOUNT_CREATED"
+          "ACCOUNT_CREATED",
+          "SOLANA_TRANSACTION_BROADCAST",
+          "SOLANA_TRANSACTION_SUCCESSFUL",
+          "SOLANA_TRANSACTION_FAILED",
+          "FUNDING_SESSION_UPDATED"
         ]
       },
       "APITriggerType": {
@@ -19832,6 +20801,10 @@
           "subscription": {
             "type": "string"
           },
+          "active": {
+            "type": "boolean",
+            "description": "Whether the trigger is active. Webhook triggers are automatically\ndeactivated after repeated delivery failures and can be re-enabled."
+          },
           "updatedAt": {
             "type": "number",
             "format": "double"
@@ -19843,7 +20816,8 @@
           "createdAt",
           "target",
           "type",
-          "subscription"
+          "subscription",
+          "active"
         ],
         "type": "object",
         "additionalProperties": false
@@ -20225,6 +21199,56 @@
         "type": "object",
         "additionalProperties": false
       },
+      "SolanaTransactionStatus": {
+        "type": "string",
+        "enum": [
+          "sent",
+          "confirmed",
+          "expired",
+          "failed"
+        ],
+        "description": "Lifecycle status of a Solana transaction."
+      },
+      "SolanaTransactionStatusResponse": {
+        "description": "Solana transaction status response — exposes the on-chain transaction signature\n(hash) and the lifecycle status of the underlying sponsorship row.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal Solana transaction ID (starts with `sol_`).",
+            "example": "sol_f2b8b5f0-1f5c-4a7e-9b3a-1d2e3f4a5b6c"
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Caller-supplied externalId, if one was provided when the transaction was signed."
+          },
+          "txSignature": {
+            "type": "string",
+            "nullable": true,
+            "description": "Base58-encoded Solana transaction signature (a.k.a. transaction hash).\nNull only for `signTransaction` transactions that were never broadcast.",
+            "example": "5VfYbZ8XQ9..."
+          },
+          "status": {
+            "$ref": "#/components/schemas/SolanaTransactionStatus",
+            "description": "Lifecycle status of the transaction:\n- sent: signed by Kora, awaiting on-chain confirmation\n- confirmed: confirmed on-chain\n- expired: blockhash expired or never broadcast\n- failed: landed on-chain but execution failed (see errorMessage)",
+            "example": "confirmed"
+          },
+          "errorMessage": {
+            "type": "string",
+            "nullable": true,
+            "description": "On-chain error message when status is FAILED."
+          }
+        },
+        "required": [
+          "id",
+          "externalId",
+          "txSignature",
+          "status",
+          "errorMessage"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "TransactionIntent": {
         "properties": {
           "id": {
@@ -20289,6 +21313,11 @@
           },
           "response": {
             "$ref": "#/components/schemas/ResponseResponse"
+          },
+          "finalCost": {
+            "type": "string",
+            "description": "The actual transaction cost in USD, available after on-chain confirmation.",
+            "example": "0.42"
           },
           "interactions": {
             "items": {
@@ -21971,9 +23000,6 @@
           "totalTransactionFeeInCustomTokens": {
             "type": "string"
           },
-          "totalTransactionFee": {
-            "type": "string"
-          },
           "totalTransactionFeeInUSD": {
             "type": "string"
           },
@@ -21989,7 +23015,6 @@
           "period",
           "averageTransactionFee",
           "totalTransactionFeeInCustomTokens",
-          "totalTransactionFee",
           "totalTransactionFeeInUSD",
           "transactionIntents"
         ],
@@ -24405,7 +25430,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "PregenerateAccountResponse": {
+      "PregenerateAccountEntry": {
         "properties": {
           "id": {
             "type": "string"
@@ -24457,11 +25482,11 @@
           },
           "recoveryShare": {
             "type": "string",
-            "description": "The recovery share for the user's embedded signer.\nThis should be stored securely and provided to the user for account recovery."
+            "description": "The recovery share for this embedded account's signer.\nThis should be stored securely and provided to the user for account recovery."
           },
-          "user": {
+          "signer": {
             "type": "string",
-            "description": "User uuid"
+            "description": "The signer UUID (starts with `sig_`) backing this embedded account.\nUse this value as the `reference` when storing the recovery share with\nShield, so subsequent reads of the account can resolve the recovery\nmethod via the signer-reference lookup."
           }
         },
         "required": [
@@ -24474,7 +25499,28 @@
           "updatedAt",
           "custody",
           "recoveryShare",
-          "user"
+          "signer"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PregenerateUserResponseV2": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "User uuid (starts with `usr_`)."
+          },
+          "accounts": {
+            "items": {
+              "$ref": "#/components/schemas/PregenerateAccountEntry"
+            },
+            "type": "array",
+            "description": "The embedded accounts that were pregenerated for this user,\nin the same order as the `accounts` array in the request."
+          }
+        },
+        "required": [
+          "user",
+          "accounts"
         ],
         "type": "object",
         "additionalProperties": false
@@ -24503,23 +25549,8 @@
           "BETTER_AUTH"
         ]
       },
-      "PregenerateUserRequestV2": {
+      "PregenerateAccountConfig": {
         "properties": {
-          "email": {
-            "type": "string",
-            "description": "The email address of the user to pregenerate.\nRequired if thirdPartyUserId is not provided.",
-            "example": "user@example.com"
-          },
-          "thirdPartyUserId": {
-            "type": "string",
-            "description": "The third-party user ID from an external auth provider (Firebase, Supabase, etc.).\nRequired if email is not provided.",
-            "example": "firebase_uid_abc123"
-          },
-          "thirdPartyProvider": {
-            "$ref": "#/components/schemas/ThirdPartyOAuthProvider",
-            "description": "The third-party auth provider. Required when thirdPartyUserId is provided.",
-            "example": "firebase"
-          },
           "accountType": {
             "type": "string",
             "enum": [
@@ -24527,8 +25558,8 @@
               "Smart Account",
               "Delegated Account"
             ],
-            "description": "The type of account to pregenerate. \"Externally Owned Account\", \"Smart Account\" or \"Delegated Account\".\nDefaults to \"Smart Account\".",
-            "example": "Smart Account"
+            "description": "The type of account to pregenerate. \"Externally Owned Account\", \"Smart Account\" or \"Delegated Account\".\nDefaults to \"Externally Owned Account\".",
+            "example": "Externally Owned Account"
           },
           "chainType": {
             "type": "string",
@@ -24551,6 +25582,38 @@
             "example": "Calibur"
           }
         },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PregenerateUserRequestV2": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address of the user to pregenerate.\nRequired if thirdPartyUserId is not provided.",
+            "example": "user@example.com"
+          },
+          "thirdPartyUserId": {
+            "type": "string",
+            "description": "The third-party user ID from an external auth provider (Firebase, Supabase, etc.).\nRequired if email is not provided.",
+            "example": "firebase_uid_abc123"
+          },
+          "thirdPartyProvider": {
+            "$ref": "#/components/schemas/ThirdPartyOAuthProvider",
+            "description": "The third-party auth provider. Required when thirdPartyUserId is provided.",
+            "example": "firebase"
+          },
+          "accounts": {
+            "items": {
+              "$ref": "#/components/schemas/PregenerateAccountConfig"
+            },
+            "type": "array",
+            "description": "One or more embedded accounts to pregenerate for the user.\nEach entry produces its own key material and recovery share.\nUse this to pregenerate accounts on different chain types (e.g. EVM and SVM) in a single call.",
+            "minItems": 1
+          }
+        },
+        "required": [
+          "accounts"
+        ],
         "type": "object",
         "additionalProperties": false
       },
@@ -26700,6 +27763,493 @@
         "type": "object",
         "additionalProperties": false
       },
+      "FundingChainCurrencyResponse": {
+        "description": "A source currency available on a chain.",
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string",
+            "description": "Token contract address, or the zero address for the chain's native asset."
+          },
+          "decimals": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "logo": {
+            "type": "string",
+            "nullable": true
+          },
+          "native": {
+            "type": "boolean",
+            "description": "True for the chain's native currency."
+          }
+        },
+        "required": [
+          "symbol",
+          "address",
+          "decimals",
+          "logo",
+          "native"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingChainResponse": {
+        "description": "A source chain the funding rail can route a deposit from.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "CAIP-2 chain id, e.g. \"eip155:8453\"."
+          },
+          "name": {
+            "type": "string"
+          },
+          "logo": {
+            "type": "string",
+            "nullable": true
+          },
+          "vmType": {
+            "type": "string",
+            "description": "\"evm\" | \"svm\"."
+          },
+          "currencies": {
+            "items": {
+              "$ref": "#/components/schemas/FundingChainCurrencyResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "logo",
+          "vmType",
+          "currencies"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingChainsResponse": {
+        "description": "Source chains + currencies the rail supports (a live passthrough of Relay's dictionary).",
+        "properties": {
+          "chains": {
+            "items": {
+              "$ref": "#/components/schemas/FundingChainResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "chains"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingTargetResponse": {
+        "description": "Where the funded crypto lands.",
+        "properties": {
+          "chain": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chain",
+          "currency",
+          "address"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingMetadata": {
+        "description": "Arbitrary string metadata stored with a funding session.",
+        "properties": {},
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "FundingSourceResponse": {
+        "description": "The committed source route.",
+        "properties": {
+          "chain": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chain",
+          "currency",
+          "amount"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingWalletDeeplinkResponse": {
+        "description": "A prefilled deeplink into a source wallet app.",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "app",
+          "label",
+          "url"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingFeeResponse": {
+        "description": "A single fee line reported by the rail provider.",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingPaymentMethodResponse": {
+        "description": "The resolved payment method — what the client renders.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Source family (\"evm\" or \"solana\")."
+          },
+          "source": {
+            "$ref": "#/components/schemas/FundingSourceResponse"
+          },
+          "receiverAddress": {
+            "type": "string",
+            "description": "Address the user sends the source funds to."
+          },
+          "addressUri": {
+            "type": "string",
+            "description": "BIP-21 / EIP-681 / Solana Pay URI for QR rendering."
+          },
+          "deeplinks": {
+            "items": {
+              "$ref": "#/components/schemas/FundingWalletDeeplinkResponse"
+            },
+            "type": "array",
+            "description": "Wallet deeplinks for the transfer, populated client-side."
+          },
+          "fees": {
+            "items": {
+              "$ref": "#/components/schemas/FundingFeeResponse"
+            },
+            "type": "array"
+          },
+          "minAmount": {
+            "type": "string",
+            "nullable": true,
+            "description": "Minimum the user must send for this route (source base units), or null."
+          }
+        },
+        "required": [
+          "type",
+          "source",
+          "receiverAddress",
+          "addressUri",
+          "deeplinks",
+          "fees",
+          "minAmount"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EntityType.FUNDING_SESSION": {
+        "enum": [
+          "fundingSession"
+        ],
+        "type": "string",
+        "x-enum-varnames": [
+          "FUNDING_SESSION"
+        ]
+      },
+      "FundingSessionResponse": {
+        "description": "A funding session.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.FUNDING_SESSION"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "description": "Session lifecycle state.",
+            "example": "waiting_payment"
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "Per-session secret clients present to read or advance the session."
+          },
+          "target": {
+            "$ref": "#/components/schemas/FundingTargetResponse"
+          },
+          "amountUnits": {
+            "type": "string",
+            "nullable": true,
+            "description": "Locked amount (destination base units), or null when the sender chooses."
+          },
+          "metadata": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FundingMetadata"
+              }
+            ],
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "strict": {
+            "type": "boolean"
+          },
+          "paymentMethod": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FundingPaymentMethodResponse"
+              }
+            ],
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Unix seconds when the session expires (24h after creation)."
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt",
+          "status",
+          "clientSecret",
+          "target",
+          "amountUnits",
+          "metadata",
+          "externalId",
+          "strict",
+          "paymentMethod",
+          "expiresAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingTargetRequest": {
+        "description": "Where the funded crypto should land.",
+        "properties": {
+          "chain": {
+            "type": "string",
+            "description": "Destination CAIP-2 chain id.",
+            "example": "eip155:8453"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Destination token contract, or the zero address for the chain's native asset.",
+            "example": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+          },
+          "address": {
+            "type": "string",
+            "description": "Destination wallet that receives the bridged funds.",
+            "example": "0x0000000000000000000000000000000000000000"
+          }
+        },
+        "required": [
+          "chain",
+          "currency",
+          "address"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingSourceRequest": {
+        "description": "The source route the user commits to sending from.",
+        "properties": {
+          "chain": {
+            "type": "string",
+            "description": "Source CAIP-2 chain id.",
+            "example": "eip155:137"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Source token contract, or the zero address for native."
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount in the source token's smallest unit (wei, lamports, base units).",
+            "example": "10000000"
+          }
+        },
+        "required": [
+          "chain",
+          "currency",
+          "amount"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PaymentMethodRequest": {
+        "description": "A single payment method (source) for a session.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "evm",
+              "solana"
+            ],
+            "description": "Self-custody source family.",
+            "example": "evm"
+          },
+          "source": {
+            "$ref": "#/components/schemas/FundingSourceRequest"
+          },
+          "refundTo": {
+            "type": "string",
+            "description": "Origin-chain address refunded if the deposit bounces. Defaults to the\ntarget address (valid for same-address EVM embedded wallets)."
+          }
+        },
+        "required": [
+          "type",
+          "source"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateFundingSessionRequest": {
+        "description": "Create a funding session for a destination.",
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/FundingTargetRequest"
+          },
+          "amountUnits": {
+            "type": "string",
+            "description": "Lock the deposit to a fixed amount (destination base units). Omit to let\nthe sender choose any amount above the route minimum.",
+            "example": "10000000"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/FundingMetadata",
+            "description": "Arbitrary string metadata stored with the session."
+          },
+          "externalId": {
+            "type": "string",
+            "description": "Idempotency/correlation key. Reusing the same value returns the existing\nsession instead of creating a new one."
+          },
+          "strict": {
+            "type": "boolean",
+            "description": "Deposit-address mode. `true` mints a single-use address bound to one\ndeposit; `false` (default) mints an open address reusable for the route."
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentMethodRequest",
+            "description": "Set the payment method in the same call when the source route is already\nknown — the response comes back in `waiting_payment` with the deposit\naddress, collapsing the create + setPaymentMethod round trip.\n\nNote: when `externalId` matches an existing session, that session is\nreturned unchanged (use `setPaymentMethod` with its `clientSecret` to\nadvance it). If minting fails, the created session is still returned by a\nretry and can be advanced with `setPaymentMethod`."
+          }
+        },
+        "required": [
+          "target"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SetPaymentMethodRequest": {
+        "description": "Set the (single) payment method on a session.",
+        "properties": {
+          "clientSecret": {
+            "type": "string",
+            "description": "The session's client secret, returned at creation."
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentMethodRequest"
+          }
+        },
+        "required": [
+          "clientSecret",
+          "paymentMethod"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PayLinkResponse": {
+        "description": "A prefilled centralized-exchange (cex) transfer URL for the cex funding path.",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The hosted exchange URL to open (prefilled transfer page)."
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PayLinkRequest": {
+        "description": "Build a prefilled centralized-exchange (cex) transfer link for a session.\n\nSession-bound: the destination address and chain come from the session, so the\nclient can't redirect the withdrawal. The user opens the URL, signs into their\nown exchange account, and the exchange delivers the asset to the session's\nwallet — handling any bridging/conversion from the balance they already hold.\nThis path does not touch Relay. The active cex provider is resolved\nserver-side (e.g. Coinbase today; other exchanges may back this path later).",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "The funding session id (starts with fnd_) whose wallet receives the funds.",
+            "example": "fnd_1a2b3c"
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "The session's client secret, returned at creation."
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount to deliver, in the asset's human units. Minimum 5 (the cex\nprovider's minimum, enforced server-side).",
+            "example": "10"
+          },
+          "asset": {
+            "type": "string",
+            "description": "Asset ticker to deliver, as the exchange labels it. Must be supported by\nthe cex provider on the session's chain. Defaults to \"USDC\".",
+            "example": "USDC"
+          }
+        },
+        "required": [
+          "sessionId",
+          "clientSecret",
+          "amount"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "FeeSponsorshipStrategyResponse": {
         "description": "Strategy information in fee sponsorship response.",
         "properties": {
@@ -26722,6 +28272,16 @@
             "type": "boolean",
             "description": "Whether the exchange rate is computed dynamically from cached prices.\nTrue when tokenContractAmount was not provided at creation time.",
             "example": true
+          },
+          "splTokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "SPL mint addresses accepted for fee payment on Solana\ncharge_custom_tokens policies.",
+            "example": [
+              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            ]
           }
         },
         "required": [
@@ -26757,6 +28317,12 @@
             "nullable": true,
             "description": "Name of the fee sponsorship policy.",
             "example": "My DeFi Gas Sponsorship"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description or comment for the fee sponsorship.",
+            "example": "Sponsors gas for free-tier users"
           },
           "chainId": {
             "type": "integer",
@@ -26799,6 +28365,7 @@
           "object",
           "createdAt",
           "name",
+          "description",
           "chainId",
           "enabled",
           "strategy",
@@ -26909,6 +28476,16 @@
             "type": "string",
             "description": "Token amount for charge_custom_tokens or fixed_rate schemas.",
             "example": "1000000000000000000"
+          },
+          "splTokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "SPL mint addresses (base58) accepted as fee payment for Solana\ncharge_custom_tokens policies. Solana-only; mutually exclusive with\ntokenContract / tokenContractAmount.",
+            "example": [
+              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            ]
           }
         },
         "required": [
@@ -27917,6 +29494,59 @@
         "type": "object",
         "additionalProperties": false
       },
+      "WebhookSecretInfoResponse": {
+        "description": "Metadata about the per-environment webhook signing secret.\n\nNever includes the raw secret. The hint is a short prefix so callers can\nidentify which secret is active without seeing the full value.",
+        "properties": {
+          "hint": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "livemode": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "hint",
+          "createdAt",
+          "updatedAt",
+          "livemode"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "WebhookSecretRotateResponse": {
+        "description": "Response from a rotation. The raw secret is returned exactly once here and\ncannot be retrieved again — callers must capture it now. `updatedAt` is the\ntimestamp at which the new secret was written.",
+        "properties": {
+          "signingSecret": {
+            "type": "string"
+          },
+          "hint": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "livemode": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "signingSecret",
+          "hint",
+          "updatedAt",
+          "livemode"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "UserProjectRole": {
         "enum": [
           "OWNER",
@@ -28305,6 +29935,10 @@
           },
           "livemode": {
             "type": "boolean"
+          },
+          "signingSecret": {
+            "type": "string",
+            "description": "The raw webhook signing secret. Only populated on project creation —\nnever returned by GET endpoints. Capture it now; use the rotate endpoint\nif you lose it."
           }
         },
         "required": [
@@ -28425,6 +30059,9 @@
           },
           "isV2": {
             "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -28433,7 +30070,8 @@
           "createdAt",
           "updatedAt",
           "name",
-          "isV2"
+          "isV2",
+          "isActive"
         ],
         "type": "object",
         "additionalProperties": false
@@ -29341,11 +30979,6 @@
             "type": "string",
             "description": "The API key to update.",
             "example": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-          },
-          "use_for_webhooks": {
-            "type": "boolean",
-            "description": "Whether key to use to sign webhooks.",
-            "example": true
           }
         },
         "required": [
