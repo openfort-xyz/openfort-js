@@ -1,5 +1,6 @@
-import { SDKConfiguration } from '../core/config/config'
-import { ConfigurationError, RequestError } from '../core/errors/openfortError'
+import type { BackendApiClients } from '@openfort/openapi-clients'
+import type { CreateFundingSessionRequest, FundingSessionResponse } from '@openfort/openapi-clients/dist/backend'
+import { withApiError } from '../core/errors/withApiError'
 
 /**
  * Funding (cross-chain wallet deposit) resource.
@@ -9,9 +10,9 @@ import { ConfigurationError, RequestError } from '../core/errors/openfortError'
  * deposit address, then poll until terminal. Sessions are guarded by a
  * per-session `clientSecret` and authenticated with the project publishable key.
  *
- * NOTE: This thin wrapper calls the backend directly. Once the API's funding
- * endpoints are part of the published OpenAPI spec, this can move onto the
- * generated `BackendApiClients.fundingApi` like the other resources.
+ * Delegates to the generated `BackendApiClients.fundingApi`, so request/response
+ * shapes track the published OpenAPI spec. The public types below are the SDK's
+ * stable surface; responses are mapped onto them.
  */
 
 /** Where the funded crypto should land (CAIP-2 chain + token + wallet). */
@@ -163,32 +164,26 @@ export interface FundingChain {
   currencies: FundingCurrency[]
 }
 
-/** Hard ceiling per funding request so a stalled backend can't hang the app. */
-const FUNDING_REQUEST_TIMEOUT_MS = 30_000
-
 export class FundingApi {
-  private async request<T>(path: string, init?: RequestInit): Promise<T> {
-    const configuration = SDKConfiguration.getInstance()
-    if (!configuration) {
-      throw new ConfigurationError('Configuration not found')
+  constructor(private readonly backendApiClients: BackendApiClients) {}
+
+  private get fundingApi() {
+    return this.backendApiClients.fundingApi
+  }
+
+  /**
+   * Narrow a generated response onto the SDK's public {@link FundingSession}. The
+   * spread keeps the shapes structurally checked (a dropped/renamed server field
+   * breaks compilation), overriding only where the public type differs: `status`
+   * is narrowed to the documented union, and the payment method carries no
+   * exchange withdrawal guidance from the API today, so `cex` is always null.
+   */
+  private static toSession(response: FundingSessionResponse): FundingSession {
+    return {
+      ...response,
+      status: response.status as FundingSessionStatus,
+      paymentMethod: response.paymentMethod ? { ...response.paymentMethod, cex: null } : null,
     }
-    const response = await fetch(`${configuration.backendUrl}${path}`, {
-      ...init,
-      headers: {
-        Authorization: `Bearer ${configuration.baseConfiguration.publishableKey}`,
-        'Content-Type': 'application/json',
-        ...(init?.headers ?? {}),
-      },
-      signal: AbortSignal.timeout(FUNDING_REQUEST_TIMEOUT_MS),
-    })
-    if (!response.ok) {
-      // Surface only the backend's structured `{ error: { message } }` text — never the
-      // raw body, which on a 5xx/proxy error can leak stack traces or internal hosts.
-      const body = (await response.json().catch(() => ({}))) as { error?: { message?: string } | string }
-      const message = typeof body.error === 'string' ? body.error : body.error?.message
-      throw new RequestError(message ?? 'Openfort funding request failed', response.status)
-    }
-    return response.json() as Promise<T>
   }
 
   /**
@@ -217,31 +212,44 @@ export class FundingApi {
 
   /** Funding session sub-resource: create → setPaymentMethod → get/wait. */
   public readonly sessions = {
-    create: async (params: CreateFundingSessionParams): Promise<FundingSession> =>
-      this.remember(
-        await this.request<FundingSession>('/v2/funding/sessions', {
-          method: 'POST',
-          body: JSON.stringify(params),
-        })
-      ),
+    create: async (params: CreateFundingSessionParams): Promise<FundingSession> => {
+      const response = await withApiError(
+        async () =>
+          (
+            await this.fundingApi.createFundingSession({
+              createFundingSessionRequest: params as CreateFundingSessionRequest,
+            })
+          ).data,
+        { context: 'funding.sessions.create' }
+      )
+      return this.remember(FundingApi.toSession(response))
+    },
 
     setPaymentMethod: async (
       sessionId: string,
       params: { paymentMethod: FundingPaymentMethodInput; clientSecret?: string }
-    ): Promise<FundingSession> =>
-      this.request<FundingSession>(`/v2/funding/sessions/${sessionId}/payment_methods`, {
-        method: 'POST',
-        body: JSON.stringify({
-          clientSecret: this.resolveSecret(sessionId, params.clientSecret),
-          paymentMethod: params.paymentMethod,
-        }),
-      }),
+    ): Promise<FundingSession> => {
+      const clientSecret = this.resolveSecret(sessionId, params.clientSecret)
+      const response = await withApiError(
+        async () =>
+          (
+            await this.fundingApi.setPaymentMethod({
+              sessionId,
+              setPaymentMethodRequest: { clientSecret, paymentMethod: params.paymentMethod },
+            })
+          ).data,
+        { context: 'funding.sessions.setPaymentMethod' }
+      )
+      return FundingApi.toSession(response)
+    },
 
     get: async (sessionId: string, params?: { clientSecret?: string }): Promise<FundingSession> => {
-      const secret = this.resolveSecret(sessionId, params?.clientSecret)
-      return this.request<FundingSession>(
-        `/v2/funding/sessions/${sessionId}?clientSecret=${encodeURIComponent(secret)}`
+      const clientSecret = this.resolveSecret(sessionId, params?.clientSecret)
+      const response = await withApiError(
+        async () => (await this.fundingApi.getFundingSession({ sessionId, clientSecret })).data,
+        { context: 'funding.sessions.get' }
       )
+      return FundingApi.toSession(response)
     },
 
     /**
@@ -305,16 +313,22 @@ export class FundingApi {
    * so the client only chooses the amount. Powers the "send from an exchange" path.
    */
   public readonly payLink = async (params: PayLinkParams): Promise<string> => {
-    const { url } = await this.request<{ url: string }>('/v2/funding/pay_link', {
-      method: 'POST',
-      body: JSON.stringify({
-        sessionId: params.sessionId,
-        clientSecret: this.resolveSecret(params.sessionId, params.clientSecret),
-        amount: params.amount,
-        asset: params.asset,
-      }),
-    })
-    return url
+    const clientSecret = this.resolveSecret(params.sessionId, params.clientSecret)
+    const response = await withApiError(
+      async () =>
+        (
+          await this.fundingApi.createPayLink({
+            payLinkRequest: {
+              sessionId: params.sessionId,
+              clientSecret,
+              amount: params.amount,
+              asset: params.asset,
+            },
+          })
+        ).data,
+      { context: 'funding.payLink' }
+    )
+    return response.url
   }
 
   /**
@@ -322,7 +336,9 @@ export class FundingApi {
    * of the provider's supported routes, for building the source picker.
    */
   public readonly chains = async (): Promise<FundingChain[]> => {
-    const { chains } = await this.request<{ chains: FundingChain[] }>('/v2/funding/chains')
-    return chains
+    const response = await withApiError(async () => (await this.fundingApi.listChains({})).data, {
+      context: 'funding.chains',
+    })
+    return response.chains
   }
 }

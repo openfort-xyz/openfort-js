@@ -17,6 +17,7 @@ import Wallets from '@/components/Wallet/Wallet'
 import { useOpenfort } from '@/contexts/OpenfortContext'
 import AccountRecovery from '../components/EmbeddedSignerRecovery/AccountRecovery'
 import AddFunds from '../components/Funding/AddFunds'
+import TestFundingButton from '../components/Funding/TestFundingButton'
 import { Layout } from '../components/Layouts/Layout'
 import LinkOAuthButton from '../components/LinkButtons/LinkOAuthButton'
 import Loading from '../components/Loading'
@@ -253,6 +254,12 @@ const HomePage: NextPage = () => {
             <div>
               <p className="font-medium text-black mb-4">Add funds is on-ramp or transfer funds from another wallet.</p>
               <AddFunds handleSetMessage={handleSetMessage} />
+            </div>
+            <div>
+              <p className="font-medium text-black mb-4">
+                Test aid (#316): exercises client.funding.chains() through the SDK.
+              </p>
+              <TestFundingButton handleSetMessage={handleSetMessage} />
             </div>
           </div>
           <div className="bg-white p-4 rounded-md shadow-2xl space-y-4">

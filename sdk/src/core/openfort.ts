@@ -119,7 +119,7 @@ export class Openfort {
         this.passkeyHandler
       )
       this.userInstance = new UserApi(this.storage, this.authManager, this.validateAndRefreshToken.bind(this))
-      this.fundingInstance = new FundingApi()
+      this.fundingInstance = new FundingApi(this.backendApiClients)
       this.proxyInstance = new ProxyApi(
         this.storage,
         this.backendApiClients,
