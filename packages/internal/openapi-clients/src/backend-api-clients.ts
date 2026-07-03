@@ -5,6 +5,7 @@ import {
 	AccsV2Api,
 	AuthV1Api as AuthenticationApi,
 	AuthV2Api as AuthenticationV2Api,
+	FundingApi,
 	RPCApi,
 	SessionsApi,
 	TransactionIntentsApi,
@@ -44,6 +45,8 @@ export class BackendApiClients {
 
 	public sessionsApi: SessionsApi;
 
+	public fundingApi: FundingApi;
+
 
 	public authApi: AuthenticationV2Api;
 
@@ -59,19 +62,27 @@ export class BackendApiClients {
 
 	private axiosInstance: AxiosInstance;
 
+	// Funding rides a separate instance so its 401s (an invalid per-session
+	// clientSecret is a 401) don't trip the shared logout interceptor and tear
+	// down the whole SDK session. Retry behaviour is otherwise identical.
+	private fundingAxiosInstance: AxiosInstance;
+
 	constructor(options: BackendApiClientsOptions) {
 		this.storage = options.storage;
 		this.onLogout = options.onLogout;
 
 		this.axiosInstance = axios.create();
+		this.fundingAxiosInstance = axios.create();
 
-		axiosRetry(this.axiosInstance, {
-			retries: 3,
-			retryDelay: axiosRetry.exponentialDelay,
-			retryCondition: axiosRetry.isRetryableError,
-		});
+		for (const instance of [this.axiosInstance, this.fundingAxiosInstance]) {
+			axiosRetry(instance, {
+				retries: 3,
+				retryDelay: axiosRetry.exponentialDelay,
+				retryCondition: axiosRetry.isRetryableError,
+			});
+		}
 
-		// Setup 401 error interceptor
+		// Setup 401 error interceptor (shared instance only; funding opts out).
 		this.setupInterceptors();
 
 		const configOptions: OpenfortAPIConfigurationOptions = {
@@ -136,6 +147,11 @@ export class BackendApiClients {
 			this.config.backend,
 			undefined,
 			this.axiosInstance,
+		);
+		this.fundingApi = new FundingApi(
+			this.config.backend,
+			undefined,
+			this.fundingAxiosInstance,
 		);
 	}
 
