@@ -92,6 +92,12 @@ export interface ProjectResponse {
      * @memberof ProjectResponse
      */
     'isV2': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ProjectResponse
+     */
+    'isActive': boolean;
 }
 
 

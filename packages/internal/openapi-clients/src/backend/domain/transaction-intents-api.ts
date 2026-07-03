@@ -47,7 +47,7 @@ export const TransactionIntentsApiAxiosParamCreator = function (configuration?: 
          * Creates a TransactionIntent.  A pending TransactionIntent has the `response` attribute as undefined.  After the TransactionIntent is created and broadcasted to the blockchain, `response` will be populated with the transaction hash and a status (1 success, 0 fail).  When using a non-custodial account, a `nextAction` attribute is returned with the `userOperationHash` that must be signed by the owner of the account.
          * @summary Create a transaction intent object.
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
-         * @param {string} [xBehalfOfProject] 
+         * @param {string} [xBehalfOfProject] Project ID to act on behalf of (for ecosystem operations).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -356,7 +356,7 @@ export const TransactionIntentsApiFp = function(configuration?: Configuration) {
          * Creates a TransactionIntent.  A pending TransactionIntent has the `response` attribute as undefined.  After the TransactionIntent is created and broadcasted to the blockchain, `response` will be populated with the transaction hash and a status (1 success, 0 fail).  When using a non-custodial account, a `nextAction` attribute is returned with the `userOperationHash` that must be signed by the owner of the account.
          * @summary Create a transaction intent object.
          * @param {CreateTransactionIntentRequest} createTransactionIntentRequest 
-         * @param {string} [xBehalfOfProject] 
+         * @param {string} [xBehalfOfProject] Project ID to act on behalf of (for ecosystem operations).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -495,7 +495,7 @@ export interface TransactionIntentsApiCreateTransactionIntentRequest {
     readonly createTransactionIntentRequest: CreateTransactionIntentRequest
 
     /**
-     * 
+     * Project ID to act on behalf of (for ecosystem operations).
      * @type {string}
      * @memberof TransactionIntentsApiCreateTransactionIntent
      */

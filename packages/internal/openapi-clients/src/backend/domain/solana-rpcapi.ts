@@ -32,9 +32,9 @@ import { JsonRpcResponse } from '../models';
 export const SolanaRPCApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Execute Solana JSON-RPC 2.0 methods via Kora  This endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions using the Kora paymaster service.  **Supported clusters:** - `mainnet-beta` - Solana mainnet-beta - `devnet` - Solana devnet  **Supported methods (per Kora JSON-RPC API spec):** - `getConfig`: Retrieve Kora server configuration - `getPayerSigner`: Get fee payer signer and payment destination - `getSupportedTokens`: List tokens accepted for fee payment - `getBlockhash`: Get latest blockhash - `estimateTransactionFee`: Estimate fees in lamports and token - `transferTransaction`: Create token transfer with Kora as fee payer - `signTransaction`: Sign transaction without broadcasting - `signAndSendTransaction`: Sign and broadcast to Solana
+         * Execute Solana JSON-RPC 2.0 methods via Kora  This endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions using the Kora paymaster service.  **Supported clusters:** - `mainnet-beta` - Solana mainnet-beta - `devnet` - Solana devnet  **Supported methods (per Kora JSON-RPC API spec):** - `getConfig`: Retrieve Kora server configuration - `getPayerSigner`: Get fee payer signer and payment destination - `getSupportedTokens`: List tokens accepted for fee payment - `getBlockhash`: Get latest blockhash - `estimateTransactionFee`: Estimate fees in lamports and token - `signTransaction`: Sign transaction without broadcasting - `signAndSendTransaction`: Sign and broadcast to Solana (waits for confirmation) - `signAndSendTransactionWithoutConfirmation`: Sign and broadcast without waiting for confirmation
          * @summary Execute Solana Kora JSON-RPC methods
-         * @param {string} cluster 
+         * @param {string} cluster The Solana cluster to route the request to (mainnet-beta, devnet).
          * @param {JsonRpcRequest} jsonRpcRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -56,6 +56,10 @@ export const SolanaRPCApiAxiosParamCreator = function (configuration?: Configura
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             // authentication pk required
             // http bearer authentication required
@@ -86,9 +90,9 @@ export const SolanaRPCApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SolanaRPCApiAxiosParamCreator(configuration)
     return {
         /**
-         * Execute Solana JSON-RPC 2.0 methods via Kora  This endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions using the Kora paymaster service.  **Supported clusters:** - `mainnet-beta` - Solana mainnet-beta - `devnet` - Solana devnet  **Supported methods (per Kora JSON-RPC API spec):** - `getConfig`: Retrieve Kora server configuration - `getPayerSigner`: Get fee payer signer and payment destination - `getSupportedTokens`: List tokens accepted for fee payment - `getBlockhash`: Get latest blockhash - `estimateTransactionFee`: Estimate fees in lamports and token - `transferTransaction`: Create token transfer with Kora as fee payer - `signTransaction`: Sign transaction without broadcasting - `signAndSendTransaction`: Sign and broadcast to Solana
+         * Execute Solana JSON-RPC 2.0 methods via Kora  This endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions using the Kora paymaster service.  **Supported clusters:** - `mainnet-beta` - Solana mainnet-beta - `devnet` - Solana devnet  **Supported methods (per Kora JSON-RPC API spec):** - `getConfig`: Retrieve Kora server configuration - `getPayerSigner`: Get fee payer signer and payment destination - `getSupportedTokens`: List tokens accepted for fee payment - `getBlockhash`: Get latest blockhash - `estimateTransactionFee`: Estimate fees in lamports and token - `signTransaction`: Sign transaction without broadcasting - `signAndSendTransaction`: Sign and broadcast to Solana (waits for confirmation) - `signAndSendTransactionWithoutConfirmation`: Sign and broadcast without waiting for confirmation
          * @summary Execute Solana Kora JSON-RPC methods
-         * @param {string} cluster 
+         * @param {string} cluster The Solana cluster to route the request to (mainnet-beta, devnet).
          * @param {JsonRpcRequest} jsonRpcRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -108,7 +112,7 @@ export const SolanaRPCApiFactory = function (configuration?: Configuration, base
     const localVarFp = SolanaRPCApiFp(configuration)
     return {
         /**
-         * Execute Solana JSON-RPC 2.0 methods via Kora  This endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions using the Kora paymaster service.  **Supported clusters:** - `mainnet-beta` - Solana mainnet-beta - `devnet` - Solana devnet  **Supported methods (per Kora JSON-RPC API spec):** - `getConfig`: Retrieve Kora server configuration - `getPayerSigner`: Get fee payer signer and payment destination - `getSupportedTokens`: List tokens accepted for fee payment - `getBlockhash`: Get latest blockhash - `estimateTransactionFee`: Estimate fees in lamports and token - `transferTransaction`: Create token transfer with Kora as fee payer - `signTransaction`: Sign transaction without broadcasting - `signAndSendTransaction`: Sign and broadcast to Solana
+         * Execute Solana JSON-RPC 2.0 methods via Kora  This endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions using the Kora paymaster service.  **Supported clusters:** - `mainnet-beta` - Solana mainnet-beta - `devnet` - Solana devnet  **Supported methods (per Kora JSON-RPC API spec):** - `getConfig`: Retrieve Kora server configuration - `getPayerSigner`: Get fee payer signer and payment destination - `getSupportedTokens`: List tokens accepted for fee payment - `getBlockhash`: Get latest blockhash - `estimateTransactionFee`: Estimate fees in lamports and token - `signTransaction`: Sign transaction without broadcasting - `signAndSendTransaction`: Sign and broadcast to Solana (waits for confirmation) - `signAndSendTransactionWithoutConfirmation`: Sign and broadcast without waiting for confirmation
          * @summary Execute Solana Kora JSON-RPC methods
          * @param {SolanaRPCApiHandleSolanaRpcRequestRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -127,7 +131,7 @@ export const SolanaRPCApiFactory = function (configuration?: Configuration, base
  */
 export interface SolanaRPCApiHandleSolanaRpcRequestRequest {
     /**
-     * 
+     * The Solana cluster to route the request to (mainnet-beta, devnet).
      * @type {string}
      * @memberof SolanaRPCApiHandleSolanaRpcRequest
      */
@@ -149,7 +153,7 @@ export interface SolanaRPCApiHandleSolanaRpcRequestRequest {
  */
 export class SolanaRPCApi extends BaseAPI {
     /**
-     * Execute Solana JSON-RPC 2.0 methods via Kora  This endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions using the Kora paymaster service.  **Supported clusters:** - `mainnet-beta` - Solana mainnet-beta - `devnet` - Solana devnet  **Supported methods (per Kora JSON-RPC API spec):** - `getConfig`: Retrieve Kora server configuration - `getPayerSigner`: Get fee payer signer and payment destination - `getSupportedTokens`: List tokens accepted for fee payment - `getBlockhash`: Get latest blockhash - `estimateTransactionFee`: Estimate fees in lamports and token - `transferTransaction`: Create token transfer with Kora as fee payer - `signTransaction`: Sign transaction without broadcasting - `signAndSendTransaction`: Sign and broadcast to Solana
+     * Execute Solana JSON-RPC 2.0 methods via Kora  This endpoint handles Solana-specific JSON-RPC 2.0 requests for gasless transactions using the Kora paymaster service.  **Supported clusters:** - `mainnet-beta` - Solana mainnet-beta - `devnet` - Solana devnet  **Supported methods (per Kora JSON-RPC API spec):** - `getConfig`: Retrieve Kora server configuration - `getPayerSigner`: Get fee payer signer and payment destination - `getSupportedTokens`: List tokens accepted for fee payment - `getBlockhash`: Get latest blockhash - `estimateTransactionFee`: Estimate fees in lamports and token - `signTransaction`: Sign transaction without broadcasting - `signAndSendTransaction`: Sign and broadcast to Solana (waits for confirmation) - `signAndSendTransactionWithoutConfirmation`: Sign and broadcast without waiting for confirmation
      * @summary Execute Solana Kora JSON-RPC methods
      * @param {SolanaRPCApiHandleSolanaRpcRequestRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.

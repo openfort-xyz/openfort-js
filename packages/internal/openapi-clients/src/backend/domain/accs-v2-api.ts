@@ -124,7 +124,7 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * Retrieves the details of an existing account.  Supply the unique account ID and Openfort will return the corresponding account information.
          * @summary Get existing account.
-         * @param {string} id 
+         * @param {string} id The account ID (starts with acc_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -273,7 +273,7 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * Retrieves the signer ID associated with a given blockchain address.
          * @summary Get signer ID by address.
-         * @param {string} address 
+         * @param {string} address The blockchain address to look up the signer ID for.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -330,7 +330,7 @@ export const AccsV2ApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * Removes an account from a project.
          * @summary Delete account.
-         * @param {string} id 
+         * @param {string} id The account ID (starts with acc_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -456,7 +456,7 @@ export const AccsV2ApiFp = function(configuration?: Configuration) {
         /**
          * Retrieves the details of an existing account.  Supply the unique account ID and Openfort will return the corresponding account information.
          * @summary Get existing account.
-         * @param {string} id 
+         * @param {string} id The account ID (starts with acc_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -486,7 +486,7 @@ export const AccsV2ApiFp = function(configuration?: Configuration) {
         /**
          * Retrieves the signer ID associated with a given blockchain address.
          * @summary Get signer ID by address.
-         * @param {string} address 
+         * @param {string} address The blockchain address to look up the signer ID for.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -497,7 +497,7 @@ export const AccsV2ApiFp = function(configuration?: Configuration) {
         /**
          * Removes an account from a project.
          * @summary Delete account.
-         * @param {string} id 
+         * @param {string} id The account ID (starts with acc_).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -634,7 +634,7 @@ export interface AccsV2ApiExportAccountShareRequest {
  */
 export interface AccsV2ApiGetAccountV2Request {
     /**
-     * 
+     * The account ID (starts with acc_).
      * @type {string}
      * @memberof AccsV2ApiGetAccountV2
      */
@@ -718,7 +718,7 @@ export interface AccsV2ApiGetAccountsV2Request {
  */
 export interface AccsV2ApiGetSignerIdByAddressRequest {
     /**
-     * 
+     * The blockchain address to look up the signer ID for.
      * @type {string}
      * @memberof AccsV2ApiGetSignerIdByAddress
      */
@@ -732,7 +732,7 @@ export interface AccsV2ApiGetSignerIdByAddressRequest {
  */
 export interface AccsV2ApiRemoveAccountRequest {
     /**
-     * 
+     * The account ID (starts with acc_).
      * @type {string}
      * @memberof AccsV2ApiRemoveAccount
      */

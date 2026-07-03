@@ -155,7 +155,7 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
          * 
          * @summary Initialize OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -200,7 +200,7 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
          * Create a challenge to link external wallet to the player.
          * @summary Initialize SIWE.
          * @param {SIWERequest} sIWERequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -242,9 +242,10 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * 
+         * Link a password credential to an existing authenticated account.
+         * @summary Link password to account.
          * @param {LoginRequest} loginRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -293,7 +294,7 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
          * 
          * @summary Initialize Link OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -386,7 +387,7 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
          * 
          * @summary Initialize Link OAuth.
          * @param {ThirdPartyLinkRequest} thirdPartyLinkRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -435,7 +436,7 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
          * Authenticate a player based on email and password.
          * @summary Email and password login.
          * @param {LoginRequest} loginRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -561,7 +562,8 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * 
+         * Returns the authenticated player\'s information.
+         * @summary Get authenticated player.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -681,7 +683,7 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * Create a guest player.
          * @summary Create a guest player.
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -841,7 +843,7 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
          * Create and authenticate a player based on email and password.
          * @summary Email and password signup.
          * @param {SignupRequest} signupRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -886,7 +888,7 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
          * 
          * @summary Verify oauth token of a third party auth provider.
          * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -932,7 +934,8 @@ export const AuthV1ApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * 
+         * Removes the password credential from an authenticated account.
+         * @summary Unlink password from account.
          * @param {UnlinkEmailRequest} unlinkEmailRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1178,7 +1181,7 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
          * 
          * @summary Initialize OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1190,7 +1193,7 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
          * Create a challenge to link external wallet to the player.
          * @summary Initialize SIWE.
          * @param {SIWERequest} sIWERequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1199,9 +1202,10 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Link a password credential to an existing authenticated account.
+         * @summary Link password to account.
          * @param {LoginRequest} loginRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1213,7 +1217,7 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
          * 
          * @summary Initialize Link OAuth.
          * @param {OAuthInitRequest} oAuthInitRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1236,7 +1240,7 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
          * 
          * @summary Initialize Link OAuth.
          * @param {ThirdPartyLinkRequest} thirdPartyLinkRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1248,7 +1252,7 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
          * Authenticate a player based on email and password.
          * @summary Email and password login.
          * @param {LoginRequest} loginRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1279,7 +1283,8 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Returns the authenticated player\'s information.
+         * @summary Get authenticated player.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1312,7 +1317,7 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
         /**
          * Create a guest player.
          * @summary Create a guest player.
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1357,7 +1362,7 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
          * Create and authenticate a player based on email and password.
          * @summary Email and password signup.
          * @param {SignupRequest} signupRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1369,7 +1374,7 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
          * 
          * @summary Verify oauth token of a third party auth provider.
          * @param {ThirdPartyOAuthRequest} thirdPartyOAuthRequest 
-         * @param {string} [xGame] 
+         * @param {string} [xGame] The publishable key of the game project.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1378,7 +1383,8 @@ export const AuthV1ApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Removes the password credential from an authenticated account.
+         * @summary Unlink password from account.
          * @param {UnlinkEmailRequest} unlinkEmailRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1482,7 +1488,8 @@ export const AuthV1ApiFactory = function (configuration?: Configuration, basePat
             return localVarFp.initSIWE(requestParameters.sIWERequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Link a password credential to an existing authenticated account.
+         * @summary Link password to account.
          * @param {AuthV1ApiLinkEmailRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1551,7 +1558,8 @@ export const AuthV1ApiFactory = function (configuration?: Configuration, basePat
             return localVarFp.logout(requestParameters.logoutRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Returns the authenticated player\'s information.
+         * @summary Get authenticated player.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1639,7 +1647,8 @@ export const AuthV1ApiFactory = function (configuration?: Configuration, basePat
             return localVarFp.thirdParty(requestParameters.thirdPartyOAuthRequest, requestParameters.xGame, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Removes the password credential from an authenticated account.
+         * @summary Unlink password from account.
          * @param {AuthV1ApiUnlinkEmailRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1732,7 +1741,7 @@ export interface AuthV1ApiInitOAuthRequest {
     readonly oAuthInitRequest: OAuthInitRequest
 
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiInitOAuth
      */
@@ -1753,7 +1762,7 @@ export interface AuthV1ApiInitSIWERequest {
     readonly sIWERequest: SIWERequest
 
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiInitSIWE
      */
@@ -1774,7 +1783,7 @@ export interface AuthV1ApiLinkEmailRequest {
     readonly loginRequest: LoginRequest
 
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiLinkEmail
      */
@@ -1795,7 +1804,7 @@ export interface AuthV1ApiLinkOAuthRequest {
     readonly oAuthInitRequest: OAuthInitRequest
 
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiLinkOAuth
      */
@@ -1830,7 +1839,7 @@ export interface AuthV1ApiLinkThirdPartyRequest {
     readonly thirdPartyLinkRequest: ThirdPartyLinkRequest
 
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiLinkThirdParty
      */
@@ -1851,7 +1860,7 @@ export interface AuthV1ApiLoginEmailPasswordRequest {
     readonly loginRequest: LoginRequest
 
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiLoginEmailPassword
      */
@@ -1921,7 +1930,7 @@ export interface AuthV1ApiRefreshRequest {
  */
 export interface AuthV1ApiRegisterGuestRequest {
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiRegisterGuest
      */
@@ -1984,7 +1993,7 @@ export interface AuthV1ApiSignupEmailPasswordRequest {
     readonly signupRequest: SignupRequest
 
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiSignupEmailPassword
      */
@@ -2005,7 +2014,7 @@ export interface AuthV1ApiThirdPartyRequest {
     readonly thirdPartyOAuthRequest: ThirdPartyOAuthRequest
 
     /**
-     * 
+     * The publishable key of the game project.
      * @type {string}
      * @memberof AuthV1ApiThirdParty
      */
@@ -2138,7 +2147,8 @@ export class AuthV1Api extends BaseAPI {
     }
 
     /**
-     * 
+     * Link a password credential to an existing authenticated account.
+     * @summary Link password to account.
      * @param {AuthV1ApiLinkEmailRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -2221,7 +2231,8 @@ export class AuthV1Api extends BaseAPI {
     }
 
     /**
-     * 
+     * Returns the authenticated player\'s information.
+     * @summary Get authenticated player.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthV1Api
@@ -2327,7 +2338,8 @@ export class AuthV1Api extends BaseAPI {
     }
 
     /**
-     * 
+     * Removes the password credential from an authenticated account.
+     * @summary Unlink password from account.
      * @param {AuthV1ApiUnlinkEmailRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

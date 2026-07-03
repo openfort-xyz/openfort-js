@@ -15,6 +15,7 @@ domain/contracts-api.ts
 domain/events-api.ts
 domain/fee-sponsorship-api.ts
 domain/forwarder-contract-api.ts
+domain/funding-api.ts
 domain/gas-policies-legacy-api.ts
 domain/gas-policy-rules-legacy-api.ts
 domain/graph-qlapi.ts
@@ -27,6 +28,7 @@ domain/rpcapi.ts
 domain/sessions-api.ts
 domain/settings-api.ts
 domain/solana-rpcapi.ts
+domain/solana-transactions-api.ts
 domain/subscriptions-api.ts
 domain/transaction-intents-api.ts
 domain/users-api.ts
@@ -148,6 +150,7 @@ models/create-embedded-request.ts
 models/create-event-request.ts
 models/create-fee-sponsorship-request.ts
 models/create-forwarder-contract-request.ts
+models/create-funding-session-request.ts
 models/create-migration-request.ts
 models/create-paymaster-request.ts
 models/create-policy-request.ts
@@ -209,6 +212,7 @@ models/entity-type-emailsample.ts
 models/entity-type-event.ts
 models/entity-type-feesponsorship.ts
 models/entity-type-forwardercontract.ts
+models/entity-type-fundingsession.ts
 models/entity-type-log.ts
 models/entity-type-paymaster.ts
 models/entity-type-player.ts
@@ -282,6 +286,17 @@ models/forget-password-post-request.ts
 models/forget-password-post200-response.ts
 models/forwarder-contract-delete-response.ts
 models/forwarder-contract-response.ts
+models/funding-chain-currency-response.ts
+models/funding-chain-response.ts
+models/funding-chains-response.ts
+models/funding-fee-response.ts
+models/funding-payment-method-response.ts
+models/funding-session-response.ts
+models/funding-source-request.ts
+models/funding-source-response.ts
+models/funding-target-request.ts
+models/funding-target-response.ts
+models/funding-wallet-deeplink-response.ts
 models/gas-per-interval-limit-policy-rule-response.ts
 models/gas-per-transaction-limit-policy-rule-response.ts
 models/gas-report-list-response.ts
@@ -378,8 +393,11 @@ models/otp-verification-response.ts
 models/paging-queries.ts
 models/passkey-env.ts
 models/pay-for-user-policy-strategy.ts
+models/pay-link-request.ts
+models/pay-link-response.ts
 models/paymaster-delete-response.ts
 models/paymaster-response.ts
+models/payment-method-request.ts
 models/phone-auth-config-sms-provider-config.ts
 models/phone-auth-config.ts
 models/phone-number-forget-password-post-request.ts
@@ -442,8 +460,10 @@ models/policy-v2-response.ts
 models/policy-v2-rule-response.ts
 models/policy-v2-scope.ts
 models/policy.ts
-models/pregenerate-account-response.ts
+models/pregenerate-account-config.ts
+models/pregenerate-account-entry.ts
 models/pregenerate-user-request-v2.ts
+models/pregenerate-user-response-v2.ts
 models/prisma-sort-order.ts
 models/private-key-policy.ts
 models/program-id-criterion-request.ts
@@ -488,6 +508,7 @@ models/session-list-response.ts
 models/session-response-expandable.ts
 models/session-response.ts
 models/session.ts
+models/set-payment-method-request.ts
 models/sign-in-anonymous-post200-response.ts
 models/sign-in-email-otp-post-request.ts
 models/sign-in-email-otp-post200-response.ts
@@ -548,6 +569,8 @@ models/solana-criteria-type-solvalue.ts
 models/solana-criteria-type-spladdress.ts
 models/solana-criteria-type-splvalue.ts
 models/solana-criteria-type.ts
+models/solana-transaction-status-response.ts
+models/solana-transaction-status.ts
 models/spl-address-criterion-request.ts
 models/spl-address-criterion.ts
 models/spl-value-criterion-request.ts
@@ -650,5 +673,7 @@ models/verify-email-request.ts
 models/vonage-sms-provider-config.ts
 models/web3-auth-config.ts
 models/webhook-response.ts
+models/webhook-secret-info-response.ts
+models/webhook-secret-rotate-response.ts
 models/withdrawal-policy-request.ts
 models/zksync-details.ts

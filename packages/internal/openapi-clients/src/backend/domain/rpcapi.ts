@@ -34,7 +34,7 @@ export const RPCApiAxiosParamCreator = function (configuration?: Configuration) 
         /**
          * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
          * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
-         * @param {number} chainId 
+         * @param {number} chainId The EVM chain ID to route the RPC request to.
          * @param {JsonRpcRequest} jsonRpcRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -136,7 +136,7 @@ export const RPCApiFp = function(configuration?: Configuration) {
         /**
          * Execute chain-specific JSON-RPC 2.0 methods (bundler & paymaster)  This endpoint handles chain-specific JSON-RPC 2.0 requests for ERC-4337 bundler operations and ERC-7677 paymaster operations. The chainId is specified in the URL path following the standard pattern.  **Supported namespaces:** - `eth_*`: ERC-4337 bundler methods (sendUserOperation, estimateUserOperationGas, getUserOperationReceipt, getUserOperationByHash, supportedEntryPoints) - `openfort_*`: Openfort bundler extensions (getUserOperationGasPrice, getUserOperationStatus) - `pm_*`: ERC-7677 paymaster methods (getPaymasterStubData, getPaymasterData) - `wallet_*`: EIP-7811 wallet methods (can also be called here with chainId context)
          * @summary Execute chain-specific bundler and paymaster JSON-RPC methods
-         * @param {number} chainId 
+         * @param {number} chainId The EVM chain ID to route the RPC request to.
          * @param {JsonRpcRequest} jsonRpcRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -196,7 +196,7 @@ export const RPCApiFactory = function (configuration?: Configuration, basePath?:
  */
 export interface RPCApiHandleChainRpcRequestRequest {
     /**
-     * 
+     * The EVM chain ID to route the RPC request to.
      * @type {number}
      * @memberof RPCApiHandleChainRpcRequest
      */

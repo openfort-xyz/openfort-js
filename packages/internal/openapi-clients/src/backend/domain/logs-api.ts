@@ -34,10 +34,12 @@ export const LogsApiAxiosParamCreator = function (configuration?: Configuration)
          * @summary Get logs for a project.
          * @param {Array<string>} [method] .
          * @param {string} [id] Specifies the unique project ID.
+         * @param {number} [limit] Maximum number of logs to return (1-100, default 25).
+         * @param {number} [skip] Number of logs to skip for pagination (default 0).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getProjectLogs: async (method?: Array<string>, id?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getProjectLogs: async (method?: Array<string>, id?: string, limit?: number, skip?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/logs`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -64,6 +66,14 @@ export const LogsApiAxiosParamCreator = function (configuration?: Configuration)
 
             if (id !== undefined) {
                 localVarQueryParameter['id'] = id;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
             }
 
 
@@ -130,11 +140,13 @@ export const LogsApiFp = function(configuration?: Configuration) {
          * @summary Get logs for a project.
          * @param {Array<string>} [method] .
          * @param {string} [id] Specifies the unique project ID.
+         * @param {number} [limit] Maximum number of logs to return (1-100, default 25).
+         * @param {number} [skip] Number of logs to skip for pagination (default 0).
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getProjectLogs(method?: Array<string>, id?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectLogs>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectLogs(method, id, options);
+        async getProjectLogs(method?: Array<string>, id?: string, limit?: number, skip?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectLogs>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getProjectLogs(method, id, limit, skip, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -165,7 +177,7 @@ export const LogsApiFactory = function (configuration?: Configuration, basePath?
          * @throws {RequiredError}
          */
         getProjectLogs(requestParameters: LogsApiGetProjectLogsRequest = {}, options?: AxiosRequestConfig): AxiosPromise<ProjectLogs> {
-            return localVarFp.getProjectLogs(requestParameters.method, requestParameters.id, options).then((request) => request(axios, basePath));
+            return localVarFp.getProjectLogs(requestParameters.method, requestParameters.id, requestParameters.limit, requestParameters.skip, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -198,6 +210,20 @@ export interface LogsApiGetProjectLogsRequest {
      * @memberof LogsApiGetProjectLogs
      */
     readonly id?: string
+
+    /**
+     * Maximum number of logs to return (1-100, default 25).
+     * @type {number}
+     * @memberof LogsApiGetProjectLogs
+     */
+    readonly limit?: number
+
+    /**
+     * Number of logs to skip for pagination (default 0).
+     * @type {number}
+     * @memberof LogsApiGetProjectLogs
+     */
+    readonly skip?: number
 }
 
 /**
@@ -216,7 +242,7 @@ export class LogsApi extends BaseAPI {
      * @memberof LogsApi
      */
     public getProjectLogs(requestParameters: LogsApiGetProjectLogsRequest = {}, options?: AxiosRequestConfig) {
-        return LogsApiFp(this.configuration).getProjectLogs(requestParameters.method, requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+        return LogsApiFp(this.configuration).getProjectLogs(requestParameters.method, requestParameters.id, requestParameters.limit, requestParameters.skip, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -15,28 +15,28 @@
 
 
 /**
- * 
+ * A single fee line reported by the rail provider.
  * @export
- * @interface WebhookResponse
+ * @interface FundingFeeResponse
  */
-export interface WebhookResponse {
+export interface FundingFeeResponse {
     /**
      * 
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingFeeResponse
      */
-    'webhook': string | null;
+    'kind': string;
     /**
      * 
-     * @type {boolean}
-     * @memberof WebhookResponse
-     */
-    'livemode': boolean;
-    /**
-     * The raw webhook signing secret. Only populated on project creation — never returned by GET endpoints. Capture it now; use the rotate endpoint if you lose it.
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingFeeResponse
      */
-    'signingSecret'?: string;
+    'amount': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingFeeResponse
+     */
+    'currency': string;
 }
 

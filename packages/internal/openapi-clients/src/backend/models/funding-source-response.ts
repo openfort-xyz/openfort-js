@@ -15,28 +15,28 @@
 
 
 /**
- * 
+ * The committed source route.
  * @export
- * @interface WebhookResponse
+ * @interface FundingSourceResponse
  */
-export interface WebhookResponse {
+export interface FundingSourceResponse {
     /**
      * 
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingSourceResponse
      */
-    'webhook': string | null;
+    'chain': string;
     /**
      * 
-     * @type {boolean}
-     * @memberof WebhookResponse
-     */
-    'livemode': boolean;
-    /**
-     * The raw webhook signing secret. Only populated on project creation — never returned by GET endpoints. Capture it now; use the rotate endpoint if you lose it.
      * @type {string}
-     * @memberof WebhookResponse
+     * @memberof FundingSourceResponse
      */
-    'signingSecret'?: string;
+    'currency': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingSourceResponse
+     */
+    'amount': string;
 }
 

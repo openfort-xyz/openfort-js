@@ -1,129 +1,158 @@
+import type { BackendApiClients } from '@openfort/openapi-clients'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { RequestError } from '../core/errors/openfortError'
+import { createMockAxiosError } from '../__tests__/fixtures/auth'
+import { OpenfortError } from '../core/errors/openfortError'
 import { FundingApi } from './funding'
 
-vi.mock('../core/config/config', () => ({
-  SDKConfiguration: {
-    getInstance: () => ({
-      backendUrl: 'https://api.test',
-      baseConfiguration: { publishableKey: 'pk_test' },
-    }),
-  },
+// Mock sentry so error-path tests don't touch the real reporter.
+vi.mock('../core/errors/sentry', () => ({
+  sentry: { captureError: vi.fn() },
 }))
 
-const okJson = (body: unknown) => ({ ok: true, json: async () => body, text: async () => JSON.stringify(body) })
+const ok = <T>(data: T) => Promise.resolve({ data })
+
+/** A mock generated FundingApi surface; each method is a vi.fn returning { data }. */
+function mockFundingApi() {
+  return {
+    createFundingSession: vi.fn(),
+    setPaymentMethod: vi.fn(),
+    getFundingSession: vi.fn(),
+    createPayLink: vi.fn(),
+    listChains: vi.fn(),
+  }
+}
+
+function makeApi(funding: ReturnType<typeof mockFundingApi>) {
+  return new FundingApi({ fundingApi: funding } as unknown as BackendApiClients)
+}
 
 describe('FundingApi', () => {
-  let fetchMock: ReturnType<typeof vi.fn>
+  let funding: ReturnType<typeof mockFundingApi>
 
   beforeEach(() => {
-    fetchMock = vi.fn()
-    vi.stubGlobal('fetch', fetchMock)
+    funding = mockFundingApi()
   })
 
-  it('payLink POSTs the session-bound body to /v2/funding/pay_link and returns the url', async () => {
-    fetchMock.mockResolvedValueOnce(okJson({ url: 'https://pay.example/checkout' }))
-    const url = await new FundingApi().payLink({
+  it('payLink delegates to createPayLink with the session-bound body and returns the url', async () => {
+    funding.createPayLink.mockReturnValue(ok({ url: 'https://pay.example/checkout' }))
+    const url = await makeApi(funding).payLink({
       sessionId: 'fnd_1',
       clientSecret: 'cs_1',
       amount: '10',
       asset: 'USDC',
     })
     expect(url).toBe('https://pay.example/checkout')
-    const [calledUrl, init] = fetchMock.mock.calls[0]
-    expect(calledUrl).toBe('https://api.test/v2/funding/pay_link')
-    expect(init.method).toBe('POST')
-    expect(init.headers.Authorization).toBe('Bearer pk_test')
-    expect(JSON.parse(init.body)).toMatchObject({
-      sessionId: 'fnd_1',
-      clientSecret: 'cs_1',
-      amount: '10',
-      asset: 'USDC',
+    expect(funding.createPayLink).toHaveBeenCalledWith({
+      payLinkRequest: { sessionId: 'fnd_1', clientSecret: 'cs_1', amount: '10', asset: 'USDC' },
     })
   })
 
-  it('throws RequestError with the status, never leaking the raw error body', async () => {
-    const internals = 'Error: ECONNREFUSED at db.internal:5432\n  at Socket.connect'
-    fetchMock.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: async () => ({ raw: internals }),
-      text: async () => internals,
-    })
-    const err = await new FundingApi().chains().catch((e) => e)
-    expect(err).toBeInstanceOf(RequestError)
-    expect(err.statusCode).toBe(500)
+  it('maps an underlying axios error to an OpenfortError without leaking internals', async () => {
+    const internals = 'Error: ECONNREFUSED at db.internal:5432'
+    funding.listChains.mockRejectedValue(createMockAxiosError(500, { raw: internals }))
+    const err = await makeApi(funding)
+      .chains()
+      .catch((e) => e)
+    expect(err).toBeInstanceOf(OpenfortError)
     expect(err.message).not.toContain('internal')
   })
 
   it('surfaces the backend structured error message', async () => {
-    fetchMock.mockResolvedValueOnce({
-      ok: false,
-      status: 400,
-      json: async () => ({ error: { message: 'amount must be at least 5' } }),
-    })
-    await expect(new FundingApi().chains()).rejects.toThrow('amount must be at least 5')
+    funding.listChains.mockRejectedValue(createMockAxiosError(400, { error: { message: 'amount must be at least 5' } }))
+    await expect(makeApi(funding).chains()).rejects.toThrow('amount must be at least 5')
   })
 
-  it('chains GETs /v2/funding/chains and returns the array', async () => {
-    fetchMock.mockResolvedValueOnce(
-      okJson({ chains: [{ id: 'eip155:8453', name: 'Base', logo: null, vmType: 'evm', currencies: [] }] })
+  it('chains calls listChains and returns the array', async () => {
+    funding.listChains.mockReturnValue(
+      ok({ chains: [{ id: 'eip155:8453', name: 'Base', logo: null, vmType: 'evm', currencies: [] }] })
     )
-    const chains = await new FundingApi().chains()
+    const chains = await makeApi(funding).chains()
     expect(chains).toHaveLength(1)
     expect(chains[0]?.id).toBe('eip155:8453')
-    expect(fetchMock.mock.calls[0][0]).toBe('https://api.test/v2/funding/chains')
+    expect(funding.listChains).toHaveBeenCalledWith({})
   })
 
   it('remembers the clientSecret from create() so get() needs no explicit secret', async () => {
-    fetchMock
-      .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method' }))
-      .mockResolvedValueOnce(okJson({ id: 'fnd_1', status: 'succeeded' }))
-    const api = new FundingApi()
+    funding.createFundingSession.mockReturnValue(
+      ok({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method', paymentMethod: null })
+    )
+    funding.getFundingSession.mockReturnValue(ok({ id: 'fnd_1', status: 'succeeded', paymentMethod: null }))
+    const api = makeApi(funding)
     await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
     await api.sessions.get('fnd_1')
-    expect(fetchMock.mock.calls[1][0]).toBe('https://api.test/v2/funding/sessions/fnd_1?clientSecret=cs_1')
+    expect(funding.getFundingSession).toHaveBeenCalledWith({ sessionId: 'fnd_1', clientSecret: 'cs_1' })
   })
 
   it('throws when no clientSecret is known for a session', async () => {
-    await expect(new FundingApi().sessions.get('fnd_unknown')).rejects.toThrow(/No clientSecret known/)
+    await expect(makeApi(funding).sessions.get('fnd_unknown')).rejects.toThrow(/No clientSecret known/)
+    expect(funding.getFundingSession).not.toHaveBeenCalled()
+  })
+
+  it('narrows the response onto the public session shape (status union, cex null)', async () => {
+    funding.createFundingSession.mockReturnValue(
+      ok({
+        id: 'fnd_1',
+        clientSecret: 'cs_1',
+        status: 'waiting_payment',
+        paymentMethod: {
+          type: 'evm',
+          source: { chain: 'eip155:137', currency: '0x0', amount: '1000' },
+          receiverAddress: '0xreceiver',
+          addressUri: 'ethereum:0xreceiver',
+          deeplinks: [],
+          fees: [],
+          minAmount: null,
+        },
+      })
+    )
+    const session = await makeApi(funding).sessions.create({
+      target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' },
+    })
+    expect(session.status).toBe('waiting_payment')
+    expect(session.paymentMethod?.cex).toBeNull()
+    expect(session.paymentMethod?.receiverAddress).toBe('0xreceiver')
   })
 
   it('wait() polls until a terminal status', async () => {
-    fetchMock
-      .mockResolvedValueOnce(okJson({ id: 'fnd_1', status: 'processing' }))
-      .mockResolvedValueOnce(okJson({ id: 'fnd_1', status: 'succeeded' }))
-    const result = await new FundingApi().sessions.wait('fnd_1', { clientSecret: 'cs_1', pollMs: 1 })
+    funding.getFundingSession
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'processing', paymentMethod: null }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'succeeded', paymentMethod: null }))
+    const result = await makeApi(funding).sessions.wait('fnd_1', { clientSecret: 'cs_1', pollMs: 1 })
     expect(result.status).toBe('succeeded')
+    expect(funding.getFundingSession).toHaveBeenCalledTimes(2)
   })
 
   it('fund() creates the session (one-call) then waits until terminal', async () => {
-    fetchMock
-      .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'waiting_payment' }))
-      .mockResolvedValueOnce(okJson({ id: 'fnd_1', status: 'succeeded' }))
-    const session = await new FundingApi().fund({
+    funding.createFundingSession.mockReturnValue(
+      ok({ id: 'fnd_1', clientSecret: 'cs_1', status: 'waiting_payment', paymentMethod: null })
+    )
+    funding.getFundingSession.mockReturnValue(ok({ id: 'fnd_1', status: 'succeeded', paymentMethod: null }))
+    const session = await makeApi(funding).fund({
       target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' },
       paymentMethod: { type: 'evm', source: { chain: 'eip155:137', currency: '0x0', amount: '1000' } },
       wait: { pollMs: 1 },
     })
     expect(session.status).toBe('succeeded')
-    expect(fetchMock.mock.calls[0][0]).toBe('https://api.test/v2/funding/sessions')
-    expect(fetchMock.mock.calls[1][0]).toBe('https://api.test/v2/funding/sessions/fnd_1?clientSecret=cs_1')
+    expect(funding.createFundingSession).toHaveBeenCalledTimes(1)
+    expect(funding.getFundingSession).toHaveBeenCalledWith({ sessionId: 'fnd_1', clientSecret: 'cs_1' })
   })
 
   it('setPaymentMethod sends the payment method with the remembered clientSecret', async () => {
-    fetchMock
-      .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method' }))
-      .mockResolvedValueOnce(okJson({ id: 'fnd_1', status: 'waiting_payment' }))
-    const api = new FundingApi()
+    funding.createFundingSession.mockReturnValue(
+      ok({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method', paymentMethod: null })
+    )
+    funding.setPaymentMethod.mockReturnValue(ok({ id: 'fnd_1', status: 'waiting_payment', paymentMethod: null }))
+    const api = makeApi(funding)
     await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
     await api.sessions.setPaymentMethod('fnd_1', {
       paymentMethod: { type: 'evm', source: { chain: 'eip155:137', currency: '0x0', amount: '1000' } },
     })
-    const [calledUrl, init] = fetchMock.mock.calls[1]
-    expect(calledUrl).toBe('https://api.test/v2/funding/sessions/fnd_1/payment_methods')
-    const body = JSON.parse(init.body)
-    expect(body.clientSecret).toBe('cs_1')
-    expect(body.paymentMethod.type).toBe('evm')
+    expect(funding.setPaymentMethod).toHaveBeenCalledWith({
+      sessionId: 'fnd_1',
+      setPaymentMethodRequest: {
+        clientSecret: 'cs_1',
+        paymentMethod: { type: 'evm', source: { chain: 'eip155:137', currency: '0x0', amount: '1000' } },
+      },
+    })
   })
 })

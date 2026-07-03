@@ -234,6 +234,48 @@ export const SubscriptionsApiAxiosParamCreator = function (configuration?: Confi
             };
         },
         /**
+         * Re-enables a trigger that was automatically deactivated after repeated delivery failures.  Webhook triggers are deactivated when consecutive deliveries fail; once the endpoint is healthy again, use this to resume notifications. The failure counter is reset.
+         * @summary Enable trigger of subscription.
+         * @param {string} triggerId Specifies the unique trigger ID (starts with tri_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        enableTrigger: async (triggerId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'triggerId' is not null or undefined
+            assertParamExists('enableTrigger', 'triggerId', triggerId)
+            const localVarPath = `/v1/subscriptions/triggers/{triggerId}/enable`
+                .replace(`{${"triggerId"}}`, encodeURIComponent(String(triggerId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Returns a subscription for the given project.  This object represents the subscription where the project owner has subscribed to.
          * @summary Get subscription of project.
          * @param {string} id Specifies the unique subscription ID (starts with sub_).
@@ -579,6 +621,17 @@ export const SubscriptionsApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Re-enables a trigger that was automatically deactivated after repeated delivery failures.  Webhook triggers are deactivated when consecutive deliveries fail; once the endpoint is healthy again, use this to resume notifications. The failure counter is reset.
+         * @summary Enable trigger of subscription.
+         * @param {string} triggerId Specifies the unique trigger ID (starts with tri_).
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async enableTrigger(triggerId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TriggerResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.enableTrigger(triggerId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Returns a subscription for the given project.  This object represents the subscription where the project owner has subscribed to.
          * @summary Get subscription of project.
          * @param {string} id Specifies the unique subscription ID (starts with sub_).
@@ -700,6 +753,16 @@ export const SubscriptionsApiFactory = function (configuration?: Configuration, 
          */
         deleteTrigger(requestParameters: SubscriptionsApiDeleteTriggerRequest, options?: AxiosRequestConfig): AxiosPromise<TriggerDeleteResponse> {
             return localVarFp.deleteTrigger(requestParameters.id, requestParameters.triggerId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Re-enables a trigger that was automatically deactivated after repeated delivery failures.  Webhook triggers are deactivated when consecutive deliveries fail; once the endpoint is healthy again, use this to resume notifications. The failure counter is reset.
+         * @summary Enable trigger of subscription.
+         * @param {SubscriptionsApiEnableTriggerRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        enableTrigger(requestParameters: SubscriptionsApiEnableTriggerRequest, options?: AxiosRequestConfig): AxiosPromise<TriggerResponse> {
+            return localVarFp.enableTrigger(requestParameters.triggerId, options).then((request) => request(axios, basePath));
         },
         /**
          * Returns a subscription for the given project.  This object represents the subscription where the project owner has subscribed to.
@@ -828,6 +891,20 @@ export interface SubscriptionsApiDeleteTriggerRequest {
      * Specifies the unique subscription ID (starts with sub_).
      * @type {string}
      * @memberof SubscriptionsApiDeleteTrigger
+     */
+    readonly triggerId: string
+}
+
+/**
+ * Request parameters for enableTrigger operation in SubscriptionsApi.
+ * @export
+ * @interface SubscriptionsApiEnableTriggerRequest
+ */
+export interface SubscriptionsApiEnableTriggerRequest {
+    /**
+     * Specifies the unique trigger ID (starts with tri_).
+     * @type {string}
+     * @memberof SubscriptionsApiEnableTrigger
      */
     readonly triggerId: string
 }
@@ -1004,6 +1081,18 @@ export class SubscriptionsApi extends BaseAPI {
      */
     public deleteTrigger(requestParameters: SubscriptionsApiDeleteTriggerRequest, options?: AxiosRequestConfig) {
         return SubscriptionsApiFp(this.configuration).deleteTrigger(requestParameters.id, requestParameters.triggerId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Re-enables a trigger that was automatically deactivated after repeated delivery failures.  Webhook triggers are deactivated when consecutive deliveries fail; once the endpoint is healthy again, use this to resume notifications. The failure counter is reset.
+     * @summary Enable trigger of subscription.
+     * @param {SubscriptionsApiEnableTriggerRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SubscriptionsApi
+     */
+    public enableTrigger(requestParameters: SubscriptionsApiEnableTriggerRequest, options?: AxiosRequestConfig) {
+        return SubscriptionsApiFp(this.configuration).enableTrigger(requestParameters.triggerId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

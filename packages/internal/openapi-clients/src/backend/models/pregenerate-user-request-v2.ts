@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { PregenerateAccountConfig } from './pregenerate-account-config';
+// May contain unused imports in some cases
+// @ts-ignore
 import { ThirdPartyOAuthProvider } from './third-party-oauth-provider';
 
 /**
@@ -42,43 +45,12 @@ export interface PregenerateUserRequestV2 {
      */
     'thirdPartyProvider'?: ThirdPartyOAuthProvider;
     /**
-     * The type of account to pregenerate. \"Externally Owned Account\", \"Smart Account\" or \"Delegated Account\". Defaults to \"Smart Account\".
-     * @type {string}
+     * One or more embedded accounts to pregenerate for the user. Each entry produces its own key material and recovery share. Use this to pregenerate accounts on different chain types (e.g. EVM and SVM) in a single call.
+     * @type {Array<PregenerateAccountConfig>}
      * @memberof PregenerateUserRequestV2
      */
-    'accountType'?: PregenerateUserRequestV2AccountTypeEnum;
-    /**
-     * The chain type. \"EVM\" or \"SVM\". Defaults to \"EVM\".
-     * @type {string}
-     * @memberof PregenerateUserRequestV2
-     */
-    'chainType'?: PregenerateUserRequestV2ChainTypeEnum;
-    /**
-     * The chain ID. Required for Smart Account and Delegated Account types. Must be a [supported chain](/development/chains).
-     * @type {number}
-     * @memberof PregenerateUserRequestV2
-     */
-    'chainId'?: number;
-    /**
-     * The implementation type for Smart Account or Delegated Account (e.g. Calibur, UpgradeableV6). Required for Smart Account and Delegated Account types.
-     * @type {string}
-     * @memberof PregenerateUserRequestV2
-     */
-    'implementationType'?: string;
+    'accounts': Array<PregenerateAccountConfig>;
 }
 
-export const PregenerateUserRequestV2AccountTypeEnum = {
-    ExternallyOwnedAccount: 'Externally Owned Account',
-    SmartAccount: 'Smart Account',
-    DelegatedAccount: 'Delegated Account'
-} as const;
-
-export type PregenerateUserRequestV2AccountTypeEnum = typeof PregenerateUserRequestV2AccountTypeEnum[keyof typeof PregenerateUserRequestV2AccountTypeEnum];
-export const PregenerateUserRequestV2ChainTypeEnum = {
-    Evm: 'EVM',
-    Svm: 'SVM'
-} as const;
-
-export type PregenerateUserRequestV2ChainTypeEnum = typeof PregenerateUserRequestV2ChainTypeEnum[keyof typeof PregenerateUserRequestV2ChainTypeEnum];
 
 
