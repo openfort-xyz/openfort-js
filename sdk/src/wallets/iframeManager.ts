@@ -15,14 +15,7 @@ import type { AccountTypeEnum, ChainTypeEnum, EntropyResponse, RecoveryMethod } 
 import { randomUUID } from '../utils/crypto'
 import { debugLog } from '../utils/debug'
 import { ReactNativeMessenger } from './messaging'
-import {
-  CallOptions,
-  type Connection,
-  connect,
-  type Message,
-  type Messenger,
-  PenpalError,
-} from './messaging/browserMessenger'
+import { CallOptions, type Connection, connect, type Messenger, PenpalError } from './messaging/browserMessenger'
 import {
   type CreateRequest,
   type CreateResponse,
@@ -303,6 +296,23 @@ function recordIframeVersion(version: string | null | undefined): void {
   }
 }
 
+/**
+ * Reason passed to {@link IframeManagerCallbacks.onConnectionLost}. Mirrors
+ * `EmbeddedWalletConnectionLostPayload['reason']` — kept as a separate type so
+ * this module doesn't depend on the public event types.
+ */
+export type IframeConnectionLostReason = 'rpc-timeout' | 'handshake-timeout' | 'iframe-reloaded'
+
+export interface IframeManagerCallbacks {
+  /**
+   * Invoked when the connection degrades: an RPC or the handshake timed out,
+   * or the embed page reloaded mid-session and re-handshaked. The parent
+   * (EmbeddedWalletApi) surfaces this to consumers as an SDK event so hosts
+   * can react — e.g. a React Native app reloading its WebView.
+   */
+  onConnectionLost?: (reason: IframeConnectionLostReason) => void
+}
+
 export class IframeManager {
   private messenger: Messenger
 
@@ -314,6 +324,8 @@ export class IframeManager {
 
   private readonly sdkConfiguration: SDKConfiguration
 
+  private readonly callbacks: IframeManagerCallbacks
+
   private isInitialized = false
 
   private initializationPromise: Promise<void> | null = null
@@ -322,7 +334,12 @@ export class IframeManager {
 
   public hasFailed = false
 
-  constructor(configuration: SDKConfiguration, storage: IStorage, messenger: Messenger) {
+  constructor(
+    configuration: SDKConfiguration,
+    storage: IStorage,
+    messenger: Messenger,
+    callbacks: IframeManagerCallbacks = {}
+  ) {
     if (!configuration) {
       throw new ConfigurationError('Configuration is required for IframeManager')
     }
@@ -338,6 +355,19 @@ export class IframeManager {
     this.sdkConfiguration = configuration
     this.storage = storage
     this.messenger = messenger
+    this.callbacks = callbacks
+  }
+
+  /**
+   * Notify the parent of a connection-health transition. Consumer callbacks
+   * must never break connection handling, so failures are logged and dropped.
+   */
+  private notifyConnectionLost(reason: IframeConnectionLostReason): void {
+    try {
+      this.callbacks.onConnectionLost?.(reason)
+    } catch (callbackError) {
+      debugLog('onConnectionLost callback threw, swallowing:', callbackError)
+    }
   }
 
   /**
@@ -415,11 +445,12 @@ export class IframeManager {
     // of doInitialize, bail out before touching the messenger.
     this.assertAlive()
 
-    this.messenger.initialize({
-      validateReceivedMessage: (data: unknown): data is Message => !!(data && typeof data === 'object'),
-      log: debugLog,
-    })
-
+    // Note: the messenger is NOT initialized here. connect() initializes it
+    // with the proper penpal message validator. Initializing it first had two
+    // problems: the permissive validator installed here won (messenger
+    // initialization is first-wins), and ReactNativeMessenger flushed any
+    // buffered handshake messages before connect()/shakeHands had registered
+    // their handlers, dropping the iframe's first SYN.
     this.connection = connect<IframeAPI>({
       messenger: this.messenger,
       timeout: HANDSHAKE_TIMEOUT_MS,
@@ -432,6 +463,7 @@ export class IframeManager {
         // invisible and that failure looks like data corruption.
         debugLog('Iframe re-connected mid-session — embed page reloaded, signer state lost')
         sentry.captureException(new Error('Openfort iframe re-handshaked mid-session (embed page reloaded)'))
+        this.notifyConnectionLost('iframe-reloaded')
       },
     })
 
@@ -461,6 +493,7 @@ export class IframeManager {
       // "configure your origin" copy below, which is wrong for web embeds whose
       // origin is correctly configured.
       if (error instanceof PenpalError && error.code === 'CONNECTION_TIMEOUT') {
+        this.notifyConnectionLost('handshake-timeout')
         throw new IframeHandshakeTimeoutError(HANDSHAKE_TIMEOUT_MS, error)
       }
 
@@ -541,6 +574,7 @@ export class IframeManager {
       if (error instanceof PenpalError && error.code === 'METHOD_CALL_TIMEOUT') {
         this.hasFailed = true
         this.clearConnection()
+        this.notifyConnectionLost('rpc-timeout')
         throw method === 'sign' ? new IframeSignTimeoutError(timeoutMs) : new IframeRpcTimeoutError(method, timeoutMs)
       }
       throw error
@@ -568,7 +602,12 @@ export class IframeManager {
       } else if (error.error === OTP_REQUIRED_ERROR) {
         throw new OTPRequiredError()
       }
-      this.storage.remove(StorageKeys.ACCOUNT)
+      // Unknown errors must NOT clear the stored account. Only the explicit
+      // signals above prove the iframe evaluated this account and found it
+      // unconfigured/unrecoverable. An unknown error is just as likely a
+      // transient failure inside the iframe (a failed storage read, a network
+      // error mid-flow) — deleting the account on those forces the user
+      // through recovery even though their signer state is intact.
       throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, `Unknown error: ${error.error}`)
     }
     throw error

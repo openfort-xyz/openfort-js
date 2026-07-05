@@ -38,6 +38,21 @@ export enum OpenfortEvents {
   ON_EMBEDDED_WALLET_CREATED = 'onEmbeddedWalletCreated',
   /** Called when an embedded wallet is recovered */
   ON_EMBEDDED_WALLET_RECOVERED = 'onEmbeddedWalletRecovered',
+  /**
+   * Called when the embedded wallet connection degrades: an RPC or handshake
+   * timed out (the iframe is unresponsive and will be rebuilt on the next
+   * operation), or the embed page reloaded mid-session and re-handshaked
+   * (transport recovered, but the iframe's in-memory signer state is gone).
+   * Hosts can react — e.g. a React Native app may reload its WebView.
+   */
+  ON_EMBEDDED_WALLET_CONNECTION_LOST = 'onEmbeddedWalletConnectionLost',
+}
+
+/**
+ * Payload for {@link OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST}
+ */
+export type EmbeddedWalletConnectionLostPayload = {
+  reason: 'rpc-timeout' | 'handshake-timeout' | 'iframe-reloaded'
 }
 
 /**
@@ -65,6 +80,7 @@ export interface OpenfortEventMap extends Record<string, any> {
   [OpenfortEvents.ON_SIGNED_MESSAGE]: [SignedMessagePayload]
   [OpenfortEvents.ON_EMBEDDED_WALLET_CREATED]: [EmbeddedAccount]
   [OpenfortEvents.ON_EMBEDDED_WALLET_RECOVERED]: [EmbeddedAccount]
+  [OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST]: [EmbeddedWalletConnectionLostPayload]
 }
 
 export enum RecoveryMethod {

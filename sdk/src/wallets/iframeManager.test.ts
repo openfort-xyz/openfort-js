@@ -601,3 +601,109 @@ describe('IframeManager per-call RPC timeouts', () => {
     await expect(manager.sign('0xdeadbeef')).resolves.toBe('0xsig')
   })
 })
+
+describe('IframeManager.handleError account preservation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  // Drives handleError through a real RPC: the remote resolves with an
+  // iframe error-response payload ({ error: ... }), which sign() routes
+  // through handleError.
+  async function signWithErrorResponse(errorValue: string) {
+    const remote = { sign: vi.fn().mockResolvedValue({ uuid: 'u', error: errorValue }) }
+    const storage = makeAuthedStorage()
+    vi.mocked(connect).mockReturnValue({ promise: Promise.resolve(remote), destroy: vi.fn() } as any)
+    const manager = new IframeManager(makeConfig(), storage, makeMessenger() as any)
+    await manager.initialize()
+    const caught = await manager.sign('0xdeadbeef').catch((e) => e)
+    return { caught, storage }
+  }
+
+  it('does NOT clear the stored account on an unknown iframe error', async () => {
+    // An unknown error is just as likely a transient failure inside the
+    // iframe (failed storage read, network error mid-flow). Clearing the
+    // account on it forces the user through recovery with intact signer state.
+    const { caught, storage } = await signWithErrorResponse('Error: something transient went wrong')
+
+    expect((caught as Error).message).toMatch(/Unknown error/i)
+    expect(storage.remove).not.toHaveBeenCalled()
+  })
+
+  it('still clears the stored account on an explicit not-configured signal', async () => {
+    const { caught, storage } = await signWithErrorResponse('not-configured-error')
+
+    expect((caught as Error).message).toMatch(/not configured/i)
+    expect(storage.remove).toHaveBeenCalledWith('openfort.account')
+  })
+})
+
+describe('IframeManager connection-lost notifications', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  function makeManagerWithCallback(remotePromise: Promise<unknown>) {
+    const onConnectionLost = vi.fn()
+    vi.mocked(connect).mockReturnValue({ promise: remotePromise, destroy: vi.fn() } as any)
+    const manager = new IframeManager(makeConfig(), makeAuthedStorage(), makeMessenger() as any, {
+      onConnectionLost,
+    })
+    return { manager, onConnectionLost }
+  }
+
+  it('notifies rpc-timeout when a per-call timeout poisons the manager', async () => {
+    const remote = {
+      sign: vi.fn().mockRejectedValue(new PenpalError(METHOD_CALL_TIMEOUT, 'timed out after 90000ms')),
+    }
+    const { manager, onConnectionLost } = makeManagerWithCallback(Promise.resolve(remote))
+    await manager.initialize()
+
+    await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(IframeSignTimeoutError)
+
+    expect(onConnectionLost).toHaveBeenCalledTimes(1)
+    expect(onConnectionLost).toHaveBeenCalledWith('rpc-timeout')
+  })
+
+  it('notifies handshake-timeout when the penpal handshake times out', async () => {
+    const { manager, onConnectionLost } = makeManagerWithCallback(
+      Promise.reject(new PenpalError('CONNECTION_TIMEOUT', 'Connection timed out after 10000ms'))
+    )
+
+    await expect(manager.initialize()).rejects.toBeInstanceOf(IframeHandshakeTimeoutError)
+
+    expect(onConnectionLost).toHaveBeenCalledTimes(1)
+    expect(onConnectionLost).toHaveBeenCalledWith('handshake-timeout')
+  })
+
+  it('notifies iframe-reloaded when the remote re-handshakes mid-session', async () => {
+    const remote = { sign: vi.fn() }
+    const { manager, onConnectionLost } = makeManagerWithCallback(Promise.resolve(remote))
+    await manager.initialize()
+
+    // connect() was handed an onRemoteReconnect hook — fire it the way
+    // shakeHands does when the embed page reloads and re-handshakes.
+    const connectOptions = vi.mocked(connect).mock.calls[0][0] as { onRemoteReconnect?: () => void }
+    connectOptions.onRemoteReconnect?.()
+
+    expect(onConnectionLost).toHaveBeenCalledTimes(1)
+    expect(onConnectionLost).toHaveBeenCalledWith('iframe-reloaded')
+  })
+
+  it('a throwing consumer callback must not change the surfaced error', async () => {
+    const remote = {
+      sign: vi.fn().mockRejectedValue(new PenpalError(METHOD_CALL_TIMEOUT, 'timed out after 90000ms')),
+    }
+    const onConnectionLost = vi.fn(() => {
+      throw new Error('consumer callback exploded')
+    })
+    vi.mocked(connect).mockReturnValue({ promise: Promise.resolve(remote), destroy: vi.fn() } as any)
+    const manager = new IframeManager(makeConfig(), makeAuthedStorage(), makeMessenger() as any, {
+      onConnectionLost,
+    })
+    await manager.initialize()
+
+    await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(IframeSignTimeoutError)
+    expect(onConnectionLost).toHaveBeenCalledTimes(1)
+  })
+})

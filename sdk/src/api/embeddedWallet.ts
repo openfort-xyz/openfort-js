@@ -170,7 +170,14 @@ export class EmbeddedWalletApi {
     }
 
     debugLog('[HANDSHAKE DEBUG] Creating IframeManager instance')
-    return new IframeManager(configuration, this.storage, messenger)
+    return new IframeManager(configuration, this.storage, messenger, {
+      onConnectionLost: (reason) => {
+        // Surface connection-health transitions to consumers. Hosts use this
+        // to react to an unresponsive or reloaded embed — e.g. the React
+        // Native SDK reloads its hidden WebView.
+        this.eventEmitter.emit(OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST, { reason })
+      },
+    })
   }
 
   /**

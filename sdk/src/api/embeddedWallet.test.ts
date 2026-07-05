@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigurationError } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 import { StorageKeys } from '../storage/istorage'
+import { OpenfortEvents } from '../types/types'
 import { IframeHandshakeTimeoutError, IframeManager } from '../wallets/iframeManager'
 import { EmbeddedWalletApi } from './embeddedWallet'
 
@@ -304,5 +305,21 @@ describe('handleLogout()', () => {
     expect(manager.destroy).toHaveBeenCalledTimes(1)
     expect((api as any).signer).toBeNull()
     expect((api as any).iframeManager).toBeNull()
+  })
+})
+
+describe('connection-lost event wiring', () => {
+  it('emits ON_EMBEDDED_WALLET_CONNECTION_LOST when the manager reports a degraded connection', async () => {
+    const { api, eventEmitter } = makeApi()
+    await api.setMessagePoster({ postMessage: vi.fn() })
+
+    const manager = await (api as any).createIframeManager()
+
+    // Fire the hook the way IframeManager does on an RPC timeout.
+    ;(manager as any).callbacks.onConnectionLost('rpc-timeout')
+
+    expect(eventEmitter.emit).toHaveBeenCalledWith(OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST, {
+      reason: 'rpc-timeout',
+    })
   })
 })
