@@ -16,6 +16,14 @@ type Options = {
   timeout: number | undefined
   channel: string | undefined
   log: Log | undefined
+  /**
+   * Called when the remote participant completes a NEW handshake after this
+   * connection was already established — i.e. the remote page reloaded and
+   * re-connected. The transport recovers transparently, but the remote's
+   * in-memory state is gone and any in-flight calls were dropped, so
+   * consumers usually want to log/report this and re-configure.
+   */
+  onRemoteReconnect: (() => void) | undefined
 }
 
 type HandshakeResult<TMethods extends Methods> = {
@@ -90,6 +98,7 @@ const shakeHands = <TMethods extends Methods>({
   timeout,
   channel,
   log,
+  onRemoteReconnect,
 }: Options): Promise<HandshakeResult<TMethods>> => {
   const participantId = randomUUID()
   let remoteParticipantId: string
@@ -115,8 +124,13 @@ const shakeHands = <TMethods extends Methods>({
 
   const connectCallHandlerAndMethodProxies = () => {
     if (isComplete) {
-      // If we get here, it means the remote is attempting to re-connect. While
-      // that's supported, we don't need to run the rest of this function again.
+      // If we get here, it means the remote re-connected (e.g. the remote page
+      // reloaded mid-session). The transport keeps working, but surface it to
+      // the consumer — the remote's in-memory state is gone and in-flight
+      // calls were dropped. We don't need to run the rest of this function
+      // again.
+      log?.('Remote participant re-connected after handshake completion')
+      onRemoteReconnect?.()
       return
     }
 

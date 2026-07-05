@@ -3,6 +3,7 @@ import type { IStorage } from '../storage/istorage'
 import {
   IframeHandshakeTimeoutError,
   IframeManager,
+  IframeRpcTimeoutError,
   IframeSignEmptyResponseError,
   IframeSignTimeoutError,
   SessionEndedBeforeSetupError,
@@ -116,6 +117,19 @@ async function makeConnectedManager(remote: unknown) {
   const manager = new IframeManager(makeConfig(), makeAuthedStorage(), makeMessenger() as any)
   await manager.initialize()
   return manager
+}
+
+// Like makeConnectedManager, but also exposes the connection's destroy spy so
+// tests can assert the manager tears the connection down on RPC timeout.
+async function makeConnectedManagerWithDestroy(remote: unknown) {
+  const connectionDestroy = vi.fn()
+  vi.mocked(connect).mockReturnValue({
+    promise: Promise.resolve(remote),
+    destroy: connectionDestroy,
+  } as any)
+  const manager = new IframeManager(makeConfig(), makeAuthedStorage(), makeMessenger() as any)
+  await manager.initialize()
+  return { manager, connectionDestroy }
 }
 
 // Penpal's METHOD_CALL_TIMEOUT error code — what connectRemoteProxy rejects
@@ -440,5 +454,150 @@ describe('IframeManager.sign timeout and empty-signature guard', () => {
 
     await assertion
     expect(remote.sign).not.toHaveBeenCalled()
+  })
+})
+
+describe('IframeManager per-call RPC timeouts', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  // Every remote RPC must hand penpal a CallOptions timeout — an unbounded
+  // RPC against a frozen/reloaded iframe hangs forever. Each case lists the
+  // method, its expected budget, a stub success response, and an invoker.
+  const cases: {
+    method: string
+    timeout: number
+    response: Record<string, unknown>
+    invoke: (manager: IframeManager) => Promise<unknown>
+  }[] = [
+    {
+      method: 'create',
+      timeout: 120_000,
+      response: { version: '1', account: 'acc_1', deviceID: 'dev_1', address: '0xabc' },
+      invoke: (m) => m.create({ accountType: 'smart' as any, chainType: 'EVM' as any }),
+    },
+    {
+      method: 'import',
+      timeout: 120_000,
+      response: { version: '1', account: 'acc_1', deviceID: 'dev_1', address: '0xabc' },
+      invoke: (m) => m.import({ privateKey: '0x01', accountType: 'smart' as any, chainType: 'EVM' as any }),
+    },
+    {
+      method: 'recover',
+      timeout: 120_000,
+      response: { version: '1', account: 'acc_1', deviceID: 'dev_1', address: '0xabc' },
+      invoke: (m) => m.recover({ account: 'acc_1' }),
+    },
+    {
+      method: 'switchChain',
+      timeout: 30_000,
+      response: { version: '1', deviceID: 'dev_1', chainId: 137 },
+      invoke: (m) => m.switchChain(137),
+    },
+    {
+      method: 'export',
+      timeout: 120_000,
+      response: { version: '1', key: '0xkey' },
+      invoke: (m) => m.export(),
+    },
+    {
+      method: 'setRecoveryMethod',
+      timeout: 120_000,
+      response: { version: '1' },
+      invoke: (m) => m.setRecoveryMethod('password' as any, 'pw'),
+    },
+    {
+      method: 'getCurrentDevice',
+      timeout: 30_000,
+      response: { version: '1', deviceID: 'dev_1' },
+      invoke: (m) => m.getCurrentDevice('player_1'),
+    },
+    {
+      method: 'logout',
+      timeout: 10_000,
+      response: {},
+      invoke: (m) => m.disconnect(),
+    },
+    {
+      method: 'updateAuthentication',
+      timeout: 30_000,
+      response: {},
+      invoke: (m) => m.updateAuthentication(),
+    },
+  ]
+
+  for (const { method, timeout, response, invoke } of cases) {
+    it(`bounds ${method}() with a ${timeout}ms per-call timeout`, async () => {
+      const remoteMethod = vi.fn().mockResolvedValue(response)
+      const remote = { [method]: remoteMethod }
+      const manager = await makeConnectedManager(remote)
+
+      await invoke(manager)
+
+      expect(remoteMethod).toHaveBeenCalledTimes(1)
+      const options = remoteMethod.mock.calls[0].at(-1)
+      expect(options?.timeout).toBe(timeout)
+    })
+
+    it(`maps a ${method}() METHOD_CALL_TIMEOUT to IframeRpcTimeoutError, poisons the manager, and tears down the connection`, async () => {
+      const remoteMethod = vi
+        .fn()
+        .mockRejectedValue(new PenpalError(METHOD_CALL_TIMEOUT, `timed out after ${timeout}ms`))
+      const remote = { [method]: remoteMethod }
+      const { manager, connectionDestroy } = await makeConnectedManagerWithDestroy(remote)
+
+      await expect(invoke(manager)).rejects.toBeInstanceOf(IframeRpcTimeoutError)
+
+      // A frozen iframe must poison the manager so the parent rebuilds a fresh
+      // iframe + messenger on the next operation…
+      expect(manager.hasFailed).toBe(true)
+      // …and the dead connection must be destroyed so concurrent in-flight
+      // RPCs reject immediately instead of hanging out their own windows.
+      expect(connectionDestroy).toHaveBeenCalledTimes(1)
+      expect(manager.isLoaded()).toBe(false)
+    })
+  }
+
+  it('sign() timeout still surfaces the sign-specific error (which is an IframeRpcTimeoutError)', async () => {
+    const remote = {
+      sign: vi.fn().mockRejectedValue(new PenpalError(METHOD_CALL_TIMEOUT, 'timed out after 90000ms')),
+    }
+    const { manager, connectionDestroy } = await makeConnectedManagerWithDestroy(remote)
+
+    const caught = await manager.sign('0xdeadbeef').catch((e) => e)
+
+    expect(caught).toBeInstanceOf(IframeSignTimeoutError)
+    expect(caught).toBeInstanceOf(IframeRpcTimeoutError)
+    expect(manager.hasFailed).toBe(true)
+    expect(connectionDestroy).toHaveBeenCalledTimes(1)
+  })
+
+  it('non-timeout RPC failures pass through untouched and do not poison the manager', async () => {
+    const remote = {
+      switchChain: vi.fn().mockRejectedValue(new PenpalError('CONNECTION_DESTROYED', 'connection destroyed')),
+    }
+    const { manager, connectionDestroy } = await makeConnectedManagerWithDestroy(remote)
+
+    await expect(manager.switchChain(1)).rejects.toBeInstanceOf(PenpalError)
+    expect(manager.hasFailed).toBe(false)
+    expect(connectionDestroy).not.toHaveBeenCalled()
+  })
+
+  it('a sessionStorage SecurityError must not fail an operation that already succeeded', async () => {
+    const remote = { sign: vi.fn().mockResolvedValue({ signature: '0xsig', version: '1' }) }
+    const manager = await makeConnectedManager(remote)
+
+    // Storage-partitioned/sandboxed contexts throw on *access*, not just on
+    // quota — the diagnostic write must swallow it.
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('The operation is insecure.', 'SecurityError')
+    })
+
+    await expect(manager.sign('0xdeadbeef')).resolves.toBe('0xsig')
   })
 })

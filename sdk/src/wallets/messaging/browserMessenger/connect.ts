@@ -31,6 +31,12 @@ type Options = {
    * logged when this is defined.
    */
   log?: Log
+  /**
+   * Called when the remote participant completes a new handshake after the
+   * connection was already established (the remote page reloaded and
+   * re-connected). See shakeHands for details.
+   */
+  onRemoteReconnect?: () => void
 }
 
 const usedMessengers = new WeakSet<Messenger>()
@@ -44,6 +50,7 @@ const connect = <TMethods extends Methods>({
   timeout,
   channel,
   log,
+  onRemoteReconnect,
 }: Options): Connection<TMethods> => {
   if (!messenger) {
     throw new PenpalError('INVALID_ARGUMENT', 'messenger must be defined')
@@ -99,6 +106,7 @@ const connect = <TMethods extends Methods>({
         timeout,
         channel,
         log,
+        onRemoteReconnect,
       })
       connectionDestroyedHandlers.push(destroy)
       return remoteProxy
