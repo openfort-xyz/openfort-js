@@ -45,6 +45,7 @@ export {
 export { Provider, TypedDataPayload } from '../wallets/evm/types'
 export {
   IframeHandshakeTimeoutError,
+  IframeRpcTimeoutError,
   IframeSignEmptyResponseError,
   IframeSignTimeoutError,
   MissingProjectEntropyError,
