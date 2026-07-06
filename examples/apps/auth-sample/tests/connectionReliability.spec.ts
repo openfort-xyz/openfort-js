@@ -1,5 +1,4 @@
 import test, { expect, type Page } from '@playwright/test'
-import { authenticate, authenticateAndRecover } from './authenticate'
 import { Logger } from './Logger'
 
 /**
@@ -9,16 +8,18 @@ import { Logger } from './Logger'
  * - handshake timeout → transparent one-shot retry (no spurious events),
  *   then logout after a page reload → best-effort iframe flush + cleanup
  * - unreachable embed → typed failure, exactly ONE connection-lost event,
- *   and full recovery once the embed is reachable again
+ *   and wallet creation succeeds once the embed is reachable again
  * - embed page reloaded mid-session → exactly one 'iframe-reloaded' event
  *   (the deprecated-protocol duplicate-ACK path must stay silent), then
  *   logout against a dead embed → bounded, and NEVER reported as a
  *   connection loss (intentional teardown)
  * - repeated login/logout cycles → connection rebuild leaks nothing
  *
- * Scenarios that can safely share one authenticated session are chained into
- * a single test — every full login+recovery costs ~1-2 minutes of serial CI
- * time (the suite shares one test account, so nothing can parallelize).
+ * Every test signs up a FRESH GUEST account and creates its wallet through
+ * the automatic-recovery flow. That keeps this suite entirely off the shared
+ * E2E account the rest of the suite serializes around — so it runs in its
+ * own Playwright project (`reliability`), with parallel workers, in a CI job
+ * that runs concurrently with the main suite instead of extending it.
  *
  * These tests intercept the embed's document requests to simulate slow or
  * dead embeds; they work against both a local embed dev server
@@ -26,27 +27,38 @@ import { Logger } from './Logger'
  * window.__connectionLostEvents, populated in src/utils/openfortConfig.ts.
  */
 
-// Every test starts logged out — connection lifecycle is the subject here.
-test.use({
-  // biome-ignore lint/correctness/noEmptyPattern: Playwright fixture requires object destructuring
-  storageState: [async ({}, use) => use(undefined), { scope: 'test' }],
-})
-
 // The embed document URL is <iframe-host>/iframe/<publishable key>.
 const isIframeDocument = (url: URL) => url.pathname.startsWith('/iframe/')
 
 const getConnectionLostEvents = (page: Page): Promise<unknown[]> =>
   page.evaluate(() => (window as unknown as { __connectionLostEvents?: unknown[] }).__connectionLostEvents ?? [])
 
-/** Recovery half of authenticateAndRecover, for re-recovery after failures. */
-async function recoverAutomatic(page: Page) {
+/** Sign up a brand-new guest account and land on the wallet-setup screen. */
+async function signUpGuest(page: Page) {
+  await page.goto('/login')
+  await page.getByRole('button', { name: 'Continue as Guest' }).click()
+  await page.waitForURL('/', { timeout: 30_000 })
   await expect(page.locator('h1')).toContainText('Set up your embedded signer', { timeout: 60_000 })
-  await page.getByRole('button', { name: 'Use this wallet' }).click()
+}
+
+/**
+ * Create the guest's wallet via automatic recovery. This is the step that
+ * establishes the iframe connection (createSigner → handshake), so the
+ * interception scenarios anchor on it.
+ */
+async function createWalletAutomatic(page: Page) {
+  await expect(page.getByRole('heading', { name: 'Create a new account' })).toBeVisible({ timeout: 30_000 })
+  await page.getByRole('button', { name: 'Set Automatic Recovery' }).click()
   await expect(page.getByRole('heading', { name: 'Console' })).toBeVisible({ timeout: 90_000 })
 }
 
+async function logout(page: Page) {
+  await page.getByRole('button', { name: 'Logout' }).first().click()
+  await page.waitForURL('/login', { timeout: 30_000 })
+}
+
 test('slow embed: silent handshake retry, then post-reload logout flushes and cleans up', async ({ page }) => {
-  test.setTimeout(300_000)
+  test.setTimeout(240_000)
 
   let embedDocumentRequests = 0
   await page.route(isIframeDocument, async (route) => {
@@ -62,7 +74,8 @@ test('slow embed: silent handshake retry, then post-reload logout flushes and cl
     await route.continue()
   })
 
-  await authenticateAndRecover(page)
+  await signUpGuest(page)
+  await createWalletAutomatic(page)
 
   // The retry actually happened…
   expect(embedDocumentRequests).toBeGreaterThanOrEqual(2)
@@ -77,15 +90,13 @@ test('slow embed: silent handshake retry, then post-reload logout flushes and cl
   // leave no hidden embed behind.
   await page.reload()
   await expect(page.getByRole('button', { name: 'Logout' }).first()).toBeVisible({ timeout: 30_000 })
-
-  await page.getByRole('button', { name: 'Logout' }).first().click()
-  await page.waitForURL('/login', { timeout: 30_000 })
+  await logout(page)
 
   await expect(page.locator('#openfort-iframe')).toHaveCount(0, { timeout: 15_000 })
 })
 
-test('unreachable embed: exactly one connection-lost event, then full recovery once reachable', async ({ page }) => {
-  test.setTimeout(300_000)
+test('unreachable embed: exactly one connection-lost event, then wallet creation once reachable', async ({ page }) => {
+  test.setTimeout(240_000)
 
   let embedBlocked = true
   await page.route(isIframeDocument, async (route) => {
@@ -96,8 +107,9 @@ test('unreachable embed: exactly one connection-lost event, then full recovery o
     await route.continue()
   })
 
-  await authenticate(page)
-  await page.getByRole('button', { name: 'Use this wallet' }).click()
+  await signUpGuest(page)
+  await expect(page.getByRole('heading', { name: 'Create a new account' })).toBeVisible({ timeout: 30_000 })
+  await page.getByRole('button', { name: 'Set Automatic Recovery' }).click()
 
   // Both handshake attempts (10s each) must fail, then emit EXACTLY ONE
   // handshake-timeout event — not one per attempt.
@@ -108,18 +120,20 @@ test('unreachable embed: exactly one connection-lost event, then full recovery o
   expect(await getConnectionLostEvents(page)).toHaveLength(1)
 
   // Unblock the embed: the poisoned manager must be rebuilt from scratch and
-  // recovery must succeed — a transient outage must not require a logout.
+  // wallet creation must succeed — a transient outage must not strand the
+  // account.
   embedBlocked = false
   await page.reload()
-  await recoverAutomatic(page)
+  await createWalletAutomatic(page)
 })
 
 test('embed reloaded mid-session reported exactly once, then logout against a dead embed stays bounded and silent', async ({
   page,
 }) => {
-  test.setTimeout(300_000)
+  test.setTimeout(240_000)
 
-  await authenticateAndRecover(page)
+  await signUpGuest(page)
+  await createWalletAutomatic(page)
   expect(await getConnectionLostEvents(page)).toEqual([])
 
   // Reload the embed page out from under the SDK (what browser memory
@@ -160,11 +174,12 @@ test('embed reloaded mid-session reported exactly once, then logout against a de
   expect(events.filter((event) => event.reason !== 'iframe-reloaded')).toEqual([])
 })
 
-test('repeated login/logout cycles: the connection rebuild survives churn', async ({ page }) => {
-  test.setTimeout(420_000)
+test('repeated signup/logout cycles: the connection rebuild survives churn', async ({ page }) => {
+  test.setTimeout(300_000)
 
   for (let cycle = 1; cycle <= 2; cycle++) {
-    await authenticateAndRecover(page)
+    await signUpGuest(page)
+    await createWalletAutomatic(page)
 
     // The rebuilt connection must actually be usable, not just "recovered".
     const logger = new Logger(page)
@@ -173,7 +188,6 @@ test('repeated login/logout cycles: the connection rebuild survives churn', asyn
     await logger.clickAndWaitForNewLogs(() => signButton.click())
     expect(logger.getLastLog()).toContain('0x')
 
-    await page.getByRole('button', { name: 'Logout' }).first().click()
-    await page.waitForURL('/login', { timeout: 30_000 })
+    await logout(page)
   }
 })
