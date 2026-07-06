@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { makeStorage } from '../__tests__/fixtures/storage'
 import { ConfigurationError } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
 import { StorageKeys } from '../storage/istorage'
@@ -42,15 +43,6 @@ vi.mock('../core/config/config', () => ({
 
 import { SDKConfiguration } from '../core/config/config'
 import { EmbeddedSigner } from '../wallets/embedded'
-
-function makeStorage(): IStorage {
-  return {
-    get: vi.fn().mockResolvedValue(null),
-    save: vi.fn(),
-    remove: vi.fn(),
-    flush: vi.fn(),
-  } as any
-}
 
 function makeEventEmitter() {
   return {
@@ -171,6 +163,31 @@ describe('getIframeManager() failure recovery', () => {
     expect(recreated).not.toBe(failed)
     expect(recreated).toBeInstanceOf(IframeManager)
   })
+
+  it('destroys the failed manager WITHOUT notifying the remote (RN child must stay connectable)', async () => {
+    const { api } = makeApi()
+    const failed = { hasFailed: true, destroy: vi.fn() }
+    ;(api as any).iframeManager = failed
+
+    await (api as any).getIframeManager()
+
+    expect(failed.destroy).toHaveBeenCalledWith({ notifyRemote: false })
+  })
+
+  it('clears the cached signer when recreating a failed manager, so no stale signer wraps the destroyed one', async () => {
+    // Recreation can be triggered outside ensureSigner (the RN onMessage
+    // path); a kept signer would dead-end every later operation in
+    // SessionEndedBeforeSetupError even though the replacement is healthy.
+    const { api } = makeApi()
+    const staleSigner = { disconnect: vi.fn() }
+    const failed = { hasFailed: true, destroy: vi.fn() }
+    ;(api as any).signer = staleSigner
+    ;(api as any).iframeManager = failed
+
+    await (api as any).getIframeManager()
+
+    expect((api as any).signer).toBeNull()
+  })
 })
 
 describe('createSigner() handshake retry', () => {
@@ -198,9 +215,14 @@ describe('createSigner() handshake retry', () => {
     // First attempt used managerA and failed; the retry must have torn A down
     // (via getIframeManager's hasFailed path) and initialized a fresh manager.
     expect(managerA.initialize).toHaveBeenCalledTimes(1)
+    // The first attempt suppresses the connection-lost notification (the SDK
+    // is about to retry transparently); the retry initializes unsuppressed so
+    // a final failure still emits exactly one event.
+    expect(managerA.initialize).toHaveBeenCalledWith({ suppressConnectionLostNotify: true })
     expect(managerA.destroy).toHaveBeenCalledTimes(1)
     expect(createSpy).toHaveBeenCalledTimes(1)
     expect(managerB.initialize).toHaveBeenCalledTimes(1)
+    expect(managerB.initialize).toHaveBeenCalledWith()
     expect(signer).toBeInstanceOf(EmbeddedSigner)
     expect((signer as any).iframeManager).toBe(managerB)
   })
@@ -266,17 +288,95 @@ describe('handleLogout()', () => {
     expect((api as any).provider).toBeNull()
   })
 
-  it('does not build a brand-new signer/iframe just to log out', async () => {
+  it('does not build a brand-new signer/iframe just to log out when no account was ever configured', async () => {
     const { api, storage } = makeApi()
     const createSpy = vi.spyOn(api as any, 'createIframeManager')
 
     await (api as any).handleLogout()
 
-    // No signer existed — logout must not spin up an iframe + handshake.
+    // No signer AND no stored account — there is no iframe-side state to
+    // flush, so logout must not spin up an iframe + handshake.
     expect(createSpy).not.toHaveBeenCalled()
     expect((api as any).iframeManager).toBeNull()
     expect(storage.remove).toHaveBeenCalledWith(StorageKeys.ACCOUNT)
     expect(document.getElementById('openfort-iframe')).toBeNull()
+  })
+
+  it('flushes iframe-side state on logout after a page reload (stored account, no live connection)', async () => {
+    // The embed persists the device share in its origin's localStorage, which
+    // survives page reloads. A logout that skips the iframe logout RPC just
+    // because THIS page load never connected would leave that share on disk.
+    const { api, storage } = makeApi()
+    vi.mocked(storage.get).mockImplementation(async (key: string) =>
+      key === StorageKeys.ACCOUNT ? JSON.stringify({ id: 'acc_1', chainId: 1, address: '0xabc' }) : null
+    )
+    const manager = {
+      hasFailed: false,
+      isLoaded: () => false,
+      initialize: vi.fn().mockResolvedValue(undefined),
+      disconnect: vi.fn().mockResolvedValue(undefined),
+      destroy: vi.fn(),
+    }
+    const createSpy = vi.spyOn(api as any, 'createIframeManager').mockResolvedValue(manager)
+
+    await (api as any).handleLogout()
+
+    expect(createSpy).toHaveBeenCalledTimes(1)
+    expect(manager.initialize).toHaveBeenCalledWith({ suppressConnectionLostNotify: true })
+    expect(manager.disconnect).toHaveBeenCalledTimes(1)
+    // Logout still completes its local teardown.
+    expect(storage.remove).toHaveBeenCalledWith(StorageKeys.ACCOUNT)
+    expect((api as any).iframeManager).toBeNull()
+    expect((api as any).signer).toBeNull()
+  })
+
+  it('completes logout locally when the best-effort flush handshake fails', async () => {
+    const { api, storage } = makeApi()
+    vi.mocked(storage.get).mockImplementation(async (key: string) =>
+      key === StorageKeys.ACCOUNT ? JSON.stringify({ id: 'acc_1', chainId: 1, address: '0xabc' }) : null
+    )
+    const manager = {
+      hasFailed: false,
+      isLoaded: () => false,
+      initialize: vi.fn().mockRejectedValue(new IframeHandshakeTimeoutError(10_000, undefined)),
+      disconnect: vi.fn(),
+      destroy: vi.fn(),
+    }
+    vi.spyOn(api as any, 'createIframeManager').mockResolvedValue(manager)
+
+    await expect((api as any).handleLogout()).resolves.toBeUndefined()
+
+    expect(manager.disconnect).not.toHaveBeenCalled()
+    expect(storage.remove).toHaveBeenCalledWith(StorageKeys.ACCOUNT)
+    expect((api as any).iframeManager).toBeNull()
+  })
+
+  it('destroys the manager silently in React Native mode (no penpal DESTROY to the WebView child)', async () => {
+    // A DESTROY makes the child remove its listeners permanently; the SDK
+    // cannot reload a WebView, so the next login would dead-end in handshake
+    // timeouts until the host remounts the WebView.
+    const { api } = makeApi()
+    const signer = { disconnect: vi.fn().mockResolvedValue(undefined) }
+    const manager = { hasFailed: false, isLoaded: () => true, destroy: vi.fn() }
+    ;(api as any).messagePoster = { postMessage: vi.fn() }
+    ;(api as any).signer = signer
+    ;(api as any).iframeManager = manager
+
+    await (api as any).handleLogout()
+
+    expect(manager.destroy).toHaveBeenCalledWith({ notifyRemote: false })
+  })
+
+  it('destroys the manager with remote notification in browser mode (disposable iframe child)', async () => {
+    const { api } = makeApi()
+    const signer = { disconnect: vi.fn().mockResolvedValue(undefined) }
+    const manager = { hasFailed: false, isLoaded: () => true, destroy: vi.fn() }
+    ;(api as any).signer = signer
+    ;(api as any).iframeManager = manager
+
+    await (api as any).handleLogout()
+
+    expect(manager.destroy).toHaveBeenCalledWith({ notifyRemote: true })
   })
 
   it('skips disconnect when the connection is not live, but still destroys and clears', async () => {

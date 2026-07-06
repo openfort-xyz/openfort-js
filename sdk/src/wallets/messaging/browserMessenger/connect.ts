@@ -120,8 +120,8 @@ const connect = <TMethods extends Methods>({
     promise,
     // Why we don't reject the connection promise when consumer calls destroy():
     // https://github.com/Aaronius/penpal/issues/51
-    destroy: () => {
-      destroyConnection(true)
+    destroy: (notifyRemote = true) => {
+      destroyConnection(notifyRemote)
     },
   }
 }

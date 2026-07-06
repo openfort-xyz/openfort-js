@@ -11,7 +11,13 @@ import {
 } from '../core/errors/openfortError'
 import { sentry } from '../core/errors/sentry'
 import { type IStorage, StorageKeys } from '../storage/istorage'
-import type { AccountTypeEnum, ChainTypeEnum, EntropyResponse, RecoveryMethod } from '../types/types'
+import type {
+  AccountTypeEnum,
+  ChainTypeEnum,
+  EmbeddedWalletConnectionLostPayload,
+  EntropyResponse,
+  RecoveryMethod,
+} from '../types/types'
 import { randomUUID } from '../utils/crypto'
 import { debugLog } from '../utils/debug'
 import { ReactNativeMessenger } from './messaging'
@@ -162,10 +168,15 @@ export class OTPRequiredError extends OpenfortError {
  * an endless "Processing" spinner with no error.
  */
 export class IframeRpcTimeoutError extends SignerError {
-  constructor(method: string, timeoutMs: number) {
+  constructor(method: string, timeoutMs: number, description?: string) {
+    // The description must flow through the constructor chain: OpenfortError
+    // sets the readonly `error_description` (the field consumers are told to
+    // display) from it, so patching `this.message` afterwards would leave the
+    // two diverged.
     super(
       OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
-      `Iframe did not respond to ${method}() within ${timeoutMs}ms. The iframe may be frozen or unresponsive.`
+      description ??
+        `Iframe did not respond to ${method}() within ${timeoutMs}ms. The iframe may be frozen or unresponsive.`
     )
     this.name = 'IframeRpcTimeoutError'
     Object.setPrototypeOf(this, IframeRpcTimeoutError.prototype)
@@ -180,10 +191,30 @@ export class IframeRpcTimeoutError extends SignerError {
  */
 export class IframeSignTimeoutError extends IframeRpcTimeoutError {
   constructor(timeoutMs: number) {
-    super('sign', timeoutMs)
-    this.message = `Iframe signer did not respond within ${timeoutMs}ms. The signing prompt may have been dismissed or the iframe is unresponsive.`
+    super(
+      'sign',
+      timeoutMs,
+      `Iframe signer did not respond within ${timeoutMs}ms. The signing prompt may have been dismissed or the iframe is unresponsive.`
+    )
     this.name = 'IframeSignTimeoutError'
     Object.setPrototypeOf(this, IframeSignTimeoutError.prototype)
+  }
+}
+
+/**
+ * Thrown when an RPC was aborted because the iframe connection was torn down
+ * while the call was in flight — a concurrent RPC timed out (poisoning the
+ * manager) or the consumer destroyed it (e.g. logout). The operation did not
+ * complete on this side of the transport; the next operation rebuilds a fresh
+ * connection. Replaces penpal's internal CONNECTION_DESTROYED error, which is
+ * not part of the SDK's public error surface and cannot be instanceof-checked
+ * by consumers.
+ */
+export class IframeConnectionDestroyedError extends SignerError {
+  constructor(method: string) {
+    super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, `Iframe connection was closed while ${method}() was in flight.`)
+    this.name = 'IframeConnectionDestroyedError'
+    Object.setPrototypeOf(this, IframeConnectionDestroyedError.prototype)
   }
 }
 
@@ -211,15 +242,22 @@ export class IframeSignEmptyResponseError extends SignerError {
 const DEFAULT_SIGN_TIMEOUT_MS = 90_000
 
 /**
- * Timeout for recovery-class RPCs (create/import/recover/setRecoveryMethod/
- * export). These run the longest iframe-side flows — Shield fetches plus
- * backend round-trips — so the budget is deliberately the most generous.
+ * Timeout for mutation-class RPCs (create/import/recover/setRecoveryMethod/
+ * export/switchChain). These run the longest iframe-side flows — Shield
+ * fetches plus backend round-trips (child-side switchChain creates a new
+ * smart account, not just a lookup) — so the budget is deliberately the most
+ * generous.
+ *
+ * Note: a timeout does NOT cancel the child-side operation. The embed has no
+ * timeout of its own, so it may still complete the mutation (and persist
+ * state) after the parent gave up; retrying create/recover after a timeout
+ * can therefore conflict with server-side state from the abandoned attempt.
  */
 const RECOVERY_RPC_TIMEOUT_MS = 120_000
 
 /**
- * Timeout for query-class RPCs (switchChain/getCurrentDevice/
- * updateAuthentication). These are single backend round-trips at most.
+ * Timeout for query-class RPCs (getCurrentDevice/updateAuthentication).
+ * These are single backend round-trips at most.
  */
 const QUERY_RPC_TIMEOUT_MS = 30_000
 
@@ -297,18 +335,19 @@ function recordIframeVersion(version: string | null | undefined): void {
 }
 
 /**
- * Reason passed to {@link IframeManagerCallbacks.onConnectionLost}. Mirrors
- * `EmbeddedWalletConnectionLostPayload['reason']` — kept as a separate type so
- * this module doesn't depend on the public event types.
+ * Reason passed to {@link IframeManagerCallbacks.onConnectionLost} — derived
+ * from the public event payload so the two unions cannot drift.
  */
-type IframeConnectionLostReason = 'rpc-timeout' | 'handshake-timeout' | 'iframe-reloaded'
+type IframeConnectionLostReason = EmbeddedWalletConnectionLostPayload['reason']
 
 interface IframeManagerCallbacks {
   /**
    * Invoked when the connection degrades: an RPC or the handshake timed out,
    * or the embed page reloaded mid-session and re-handshaked. The parent
-   * (EmbeddedWalletApi) surfaces this to consumers as an SDK event so hosts
-   * can react — e.g. a React Native app reloading its WebView.
+   * (EmbeddedWalletApi) surfaces this to consumers as an SDK event. Note the
+   * per-reason semantics on {@link OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST}:
+   * for 'iframe-reloaded' the transport has already recovered and hosts must
+   * NOT reload the embed in reaction.
    */
   onConnectionLost?: (reason: IframeConnectionLostReason) => void
 }
@@ -333,6 +372,23 @@ export class IframeManager {
   private isDestroyed = false
 
   public hasFailed = false
+
+  /**
+   * When true, a handshake CONNECTION_TIMEOUT does not fire the
+   * onConnectionLost callback. Set per-initialize() by callers that retry the
+   * handshake themselves (createSigner's first attempt): hosts must not react
+   * to a "loss" the SDK is about to recover from transparently. Applies to
+   * the doInitialize() started by that call; concurrent initialize() callers
+   * share the initiator's choice.
+   */
+  private suppressHandshakeLostNotify = false
+
+  /**
+   * Ensures the mid-session re-handshake Sentry report fires at most once per
+   * manager instance — a crash-looping embed re-handshakes repeatedly and
+   * would otherwise flood Sentry with identical events.
+   */
+  private hasReportedRemoteReconnect = false
 
   constructor(
     configuration: SDKConfiguration,
@@ -384,9 +440,13 @@ export class IframeManager {
   }
 
   /**
-   * Initialize the connection to the iframe/WebView
+   * Initialize the connection to the iframe/WebView.
+   *
+   * `suppressConnectionLostNotify` prevents a handshake timeout from firing
+   * the onConnectionLost callback — used by callers that retry the handshake
+   * themselves and only want the final failure surfaced to hosts.
    */
-  public async initialize(): Promise<void> {
+  public async initialize(options?: { suppressConnectionLostNotify?: boolean }): Promise<void> {
     // Refuse to resurrect a destroyed manager.
     this.assertAlive()
 
@@ -413,6 +473,7 @@ export class IframeManager {
     }
 
     // Start new initialization
+    this.suppressHandshakeLostNotify = options?.suppressConnectionLostNotify ?? false
     this.initializationPromise = this.doInitialize()
 
     try {
@@ -456,13 +517,18 @@ export class IframeManager {
       timeout: HANDSHAKE_TIMEOUT_MS,
       log: debugLog,
       onRemoteReconnect: () => {
-        // The embed page reloaded mid-session (browser memory pressure, crash,
-        // manual reload) and re-handshaked. The transport recovered, but the
-        // iframe's in-memory signer state is gone — the next operation will
-        // likely report NOT_CONFIGURED. Without this hook the reload is
-        // invisible and that failure looks like data corruption.
-        debugLog('Iframe re-connected mid-session — embed page reloaded, signer state lost')
-        sentry.captureException(new Error('Openfort iframe re-handshaked mid-session (embed page reloaded)'))
+        // The embed re-handshaked mid-session with a new participant id —
+        // usually the page reloaded (browser memory pressure, crash, manual
+        // reload), occasionally the child's own connect-retry after a dropped
+        // final ACK. The transport has already recovered; what may be gone is
+        // the iframe's in-memory signer state, so the next operation can
+        // report NOT_CONFIGURED. Without this hook the reload is invisible
+        // and that failure looks like data corruption.
+        debugLog('Iframe re-connected mid-session — embed page likely reloaded, in-memory signer state may be lost')
+        if (!this.hasReportedRemoteReconnect) {
+          this.hasReportedRemoteReconnect = true
+          sentry.captureException(new Error('Openfort iframe re-handshaked mid-session (embed page reloaded)'))
+        }
         this.notifyConnectionLost('iframe-reloaded')
       },
     })
@@ -493,7 +559,12 @@ export class IframeManager {
       // "configure your origin" copy below, which is wrong for web embeds whose
       // origin is correctly configured.
       if (error instanceof PenpalError && error.code === 'CONNECTION_TIMEOUT') {
-        this.notifyConnectionLost('handshake-timeout')
+        // Suppressed when the caller retries the handshake itself (see
+        // initialize) — the retry attempt initializes unsuppressed, so a
+        // final failure still notifies exactly once.
+        if (!this.suppressHandshakeLostNotify) {
+          this.notifyConnectionLost('handshake-timeout')
+        }
         throw new IframeHandshakeTimeoutError(HANDSHAKE_TIMEOUT_MS, error)
       }
 
@@ -520,11 +591,18 @@ export class IframeManager {
    * as destroyed. Used by `doInitialize()` on handshake failure so the
    * "configure your origin" hint is still reachable on retry. The public
    * `destroy()` method calls this in addition to setting `isDestroyed`.
+   *
+   * Internal cleanup never notifies the remote by default: sending a penpal
+   * DESTROY tells the child to remove its message listeners, and a React
+   * Native WebView child (which the SDK cannot reload) then becomes
+   * permanently unreachable — every rebuild handshake after an RPC timeout
+   * would dead-end. Only a deliberate, final teardown (`destroy()` in browser
+   * mode) notifies the remote.
    */
-  private clearConnection(): void {
+  private clearConnection(notifyRemote = false): void {
     if (this.connection) {
       try {
-        this.connection.destroy()
+        this.connection.destroy(notifyRemote)
       } catch (cleanupError) {
         // Teardown should never crash the consumer. If penpal's destroy
         // throws (it can — see the original OPENFORT-JS-HD report), log
@@ -574,8 +652,23 @@ export class IframeManager {
       if (error instanceof PenpalError && error.code === 'METHOD_CALL_TIMEOUT') {
         this.hasFailed = true
         this.clearConnection()
-        this.notifyConnectionLost('rpc-timeout')
+        // Logout is an intentional teardown: the timeout must still bound the
+        // logout flow (hasFailed + teardown above), but reporting it as a
+        // connection-health event would tell hosts the connection degraded in
+        // the middle of a deliberate logout, prompting reactions (e.g. a
+        // WebView reload) that race the teardown.
+        if (method !== 'logout') {
+          this.notifyConnectionLost('rpc-timeout')
+        }
         throw method === 'sign' ? new IframeSignTimeoutError(timeoutMs) : new IframeRpcTimeoutError(method, timeoutMs)
+      }
+      if (error instanceof PenpalError && error.code === 'CONNECTION_DESTROYED') {
+        // The connection was torn down while this call was in flight — a
+        // concurrent RPC timed out, or the consumer destroyed the manager.
+        // Whoever tore it down already handled manager state (no poisoning or
+        // notification here); this call just needs a typed error instead of
+        // leaking penpal's internal error class across the public API.
+        throw new IframeConnectionDestroyedError(method)
       }
       throw error
     }
@@ -608,6 +701,14 @@ export class IframeManager {
       // transient failure inside the iframe (a failed storage read, a network
       // error mid-flow) — deleting the account on those forces the user
       // through recovery even though their signer state is intact.
+      //
+      // Trade-off accepted here: the old clear-on-unknown was also the
+      // self-heal for a PERSISTENTLY broken account (child rejecting it with
+      // a non-standard error string every time) — that case now stays READY
+      // and keeps failing until the user logs out or explicitly re-recovers.
+      // If such a case surfaces, close it at the source: make the child emit
+      // a recognized signal (e.g. NOT_CONFIGURED) for every account-invalid
+      // condition it can detect, rather than re-widening this catch-all.
       throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, `Unknown error: ${error.error}`)
     }
     throw error
@@ -873,7 +974,9 @@ export class IframeManager {
 
     const request = new SwitchChainRequest(randomUUID(), chainId, await this.buildRequestConfiguration())
 
-    const response = await this.callRemote('switchChain', QUERY_RPC_TIMEOUT_MS, (options) =>
+    // Mutation budget, not query: child-side switchChain creates a new smart
+    // account via the backend and persists it — see RECOVERY_RPC_TIMEOUT_MS.
+    const response = await this.callRemote('switchChain', RECOVERY_RPC_TIMEOUT_MS, (options) =>
       remote.switchChain(request, options)
     )
 
@@ -966,10 +1069,18 @@ export class IframeManager {
       return
     }
 
+    // Re-read after the await above: a concurrent RPC timeout can run
+    // clearConnection() (nulling this.remote) while we were reading storage —
+    // the narrowing from the top guard does not survive the await.
+    const remote = this.remote
+    if (!remote) {
+      debugLog('Connection was torn down during authentication update, skipping')
+      return
+    }
+
     const request = new UpdateAuthenticationRequest(randomUUID(), authentication.token)
 
     debugLog('Updating authentication in iframe with token')
-    const remote = this.remote
     const response = await this.callRemote('updateAuthentication', QUERY_RPC_TIMEOUT_MS, (options) =>
       remote.updateAuthentication(request, options)
     )
@@ -1019,7 +1130,7 @@ export class IframeManager {
     return this.isInitialized && this.remote !== undefined
   }
 
-  destroy(): void {
+  destroy(options?: { notifyRemote?: boolean }): void {
     // Idempotent: second call is a no-op. The first call marks the manager
     // dead immediately, so any in-flight `initialize()` sees `isDestroyed`
     // on its post-await checkpoint and rejects with
@@ -1031,6 +1142,11 @@ export class IframeManager {
     this.isDestroyed = true
     // Don't destroy messenger here - it's managed by EmbeddedWalletApi
     // and needs to be recreated fresh on retry.
-    this.clearConnection()
+    //
+    // notifyRemote defaults to true: a deliberate destroy in browser mode
+    // tells the disposable iframe child to release its resources. Pass false
+    // when the remote must stay connectable (React Native WebView child —
+    // see clearConnection).
+    this.clearConnection(options?.notifyRemote ?? true)
   }
 }

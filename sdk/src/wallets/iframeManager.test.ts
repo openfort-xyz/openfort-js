@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { makeStorage } from '../__tests__/fixtures/storage'
 import type { IStorage } from '../storage/istorage'
 import {
+  IframeConnectionDestroyedError,
   IframeHandshakeTimeoutError,
   IframeManager,
   IframeRpcTimeoutError,
@@ -82,15 +84,6 @@ function makeConfig() {
     backendUrl: 'https://api.test',
     shieldUrl: 'https://shield.test',
     nativeAppIdentifier: undefined,
-  } as any
-}
-
-function makeStorage(): IStorage {
-  return {
-    get: vi.fn().mockResolvedValue(null),
-    save: vi.fn(),
-    remove: vi.fn(),
-    flush: vi.fn(),
   } as any
 }
 
@@ -357,8 +350,10 @@ describe('IframeManager.sign timeout and empty-signature guard', () => {
   })
 
   it('rethrows non-timeout penpal errors as-is without poisoning the manager', async () => {
+    // CONNECTION_DESTROYED is mapped to a typed error elsewhere; use a code
+    // callRemote has no mapping for to prove the pass-through.
     const remote = {
-      sign: vi.fn().mockRejectedValue(new PenpalError('CONNECTION_DESTROYED', 'connection destroyed')),
+      sign: vi.fn().mockRejectedValue(new PenpalError('TRANSMISSION_FAILED', 'send failed')),
     }
     const manager = await makeConnectedManager(remote)
 
@@ -494,8 +489,10 @@ describe('IframeManager per-call RPC timeouts', () => {
       invoke: (m) => m.recover({ account: 'acc_1' }),
     },
     {
+      // Mutation budget: the child-side switchChain creates a new smart
+      // account and persists it — not a lookup (see RECOVERY_RPC_TIMEOUT_MS).
       method: 'switchChain',
-      timeout: 30_000,
+      timeout: 120_000,
       response: { version: '1', deviceID: 'dev_1', chainId: 137 },
       invoke: (m) => m.switchChain(137),
     },
@@ -577,15 +574,44 @@ describe('IframeManager per-call RPC timeouts', () => {
     expect(connectionDestroy).toHaveBeenCalledTimes(1)
   })
 
-  it('non-timeout RPC failures pass through untouched and do not poison the manager', async () => {
+  it('maps CONNECTION_DESTROYED to a typed error without poisoning (whoever destroyed the connection owns manager state)', async () => {
     const remote = {
       switchChain: vi.fn().mockRejectedValue(new PenpalError('CONNECTION_DESTROYED', 'connection destroyed')),
+    }
+    const { manager, connectionDestroy } = await makeConnectedManagerWithDestroy(remote)
+
+    // A raw PenpalError is not part of the SDK's public error surface —
+    // consumers can't instanceof-check it.
+    await expect(manager.switchChain(1)).rejects.toBeInstanceOf(IframeConnectionDestroyedError)
+    expect(manager.hasFailed).toBe(false)
+    expect(connectionDestroy).not.toHaveBeenCalled()
+  })
+
+  it('other non-timeout RPC failures pass through untouched and do not poison the manager', async () => {
+    const remote = {
+      switchChain: vi.fn().mockRejectedValue(new PenpalError('TRANSMISSION_FAILED', 'send failed')),
     }
     const { manager, connectionDestroy } = await makeConnectedManagerWithDestroy(remote)
 
     await expect(manager.switchChain(1)).rejects.toBeInstanceOf(PenpalError)
     expect(manager.hasFailed).toBe(false)
     expect(connectionDestroy).not.toHaveBeenCalled()
+  })
+
+  it('sign timeout carries the sign-specific copy in BOTH message and error_description', async () => {
+    // error_description is the field OpenfortError's docs tell consumers to
+    // display — it must not diverge from message (it did when the subclass
+    // patched this.message after super()).
+    const remote = {
+      sign: vi.fn().mockRejectedValue(new PenpalError(METHOD_CALL_TIMEOUT, 'timed out after 90000ms')),
+    }
+    const { manager } = await makeConnectedManagerWithDestroy(remote)
+
+    const caught = await manager.sign('0xdeadbeef').catch((e) => e)
+
+    expect(caught).toBeInstanceOf(IframeSignTimeoutError)
+    expect(caught.message).toMatch(/signing prompt may have been dismissed/i)
+    expect(caught.error_description).toBe(caught.message)
   })
 
   it('a sessionStorage SecurityError must not fail an operation that already succeeded', async () => {
@@ -676,6 +702,36 @@ describe('IframeManager connection-lost notifications', () => {
     expect(onConnectionLost).toHaveBeenCalledWith('handshake-timeout')
   })
 
+  it('suppresses the handshake-timeout notification when the caller retries the handshake itself', async () => {
+    // createSigner's first attempt passes this flag: a timeout it recovers
+    // from transparently must not surface as a connection-lost event.
+    const { manager, onConnectionLost } = makeManagerWithCallback(
+      Promise.reject(new PenpalError('CONNECTION_TIMEOUT', 'Connection timed out after 10000ms'))
+    )
+
+    await expect(manager.initialize({ suppressConnectionLostNotify: true })).rejects.toBeInstanceOf(
+      IframeHandshakeTimeoutError
+    )
+
+    expect(onConnectionLost).not.toHaveBeenCalled()
+  })
+
+  it('does NOT notify when the logout RPC times out (intentional teardown)', async () => {
+    // A frozen iframe during logout must still bound the flow (poison +
+    // teardown) but must not tell hosts the connection degraded — a host
+    // reacting (e.g. reloading a WebView) would race the logout itself.
+    const remote = {
+      logout: vi.fn().mockRejectedValue(new PenpalError(METHOD_CALL_TIMEOUT, 'timed out after 10000ms')),
+    }
+    const { manager, onConnectionLost } = makeManagerWithCallback(Promise.resolve(remote))
+    await manager.initialize()
+
+    await expect(manager.disconnect()).rejects.toBeInstanceOf(IframeRpcTimeoutError)
+
+    expect(manager.hasFailed).toBe(true)
+    expect(onConnectionLost).not.toHaveBeenCalled()
+  })
+
   it('notifies iframe-reloaded when the remote re-handshakes mid-session', async () => {
     const remote = { sign: vi.fn() }
     const { manager, onConnectionLost } = makeManagerWithCallback(Promise.resolve(remote))
@@ -705,5 +761,43 @@ describe('IframeManager connection-lost notifications', () => {
 
     await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(IframeSignTimeoutError)
     expect(onConnectionLost).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('IframeManager remote-notification on teardown', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  // Whether the remote is told about a teardown decides if a React Native
+  // WebView child (which cannot be reloaded) stays connectable: a penpal
+  // DESTROY makes it remove its message listeners permanently.
+
+  it('destroy() notifies the remote by default (deliberate browser teardown)', async () => {
+    const { manager, connectionDestroy } = await makeConnectedManagerWithDestroy({ sign: vi.fn() })
+
+    manager.destroy()
+
+    expect(connectionDestroy).toHaveBeenCalledWith(true)
+  })
+
+  it('destroy({ notifyRemote: false }) tears down locally without a DESTROY message', async () => {
+    const { manager, connectionDestroy } = await makeConnectedManagerWithDestroy({ sign: vi.fn() })
+
+    manager.destroy({ notifyRemote: false })
+
+    expect(connectionDestroy).toHaveBeenCalledWith(false)
+  })
+
+  it('an RPC-timeout teardown never notifies the remote (internal cleanup must keep the child connectable)', async () => {
+    const remote = {
+      sign: vi.fn().mockRejectedValue(new PenpalError(METHOD_CALL_TIMEOUT, 'timed out after 90000ms')),
+    }
+    const { manager, connectionDestroy } = await makeConnectedManagerWithDestroy(remote)
+
+    await expect(manager.sign('0xdeadbeef')).rejects.toBeInstanceOf(IframeSignTimeoutError)
+
+    expect(connectionDestroy).toHaveBeenCalledTimes(1)
+    expect(connectionDestroy).toHaveBeenCalledWith(false)
   })
 })

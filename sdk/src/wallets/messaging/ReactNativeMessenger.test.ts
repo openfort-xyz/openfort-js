@@ -103,4 +103,49 @@ describe('ReactNativeMessenger buffered-message flush ordering', () => {
     expect(received).toHaveLength(1)
     expect(received[0]).toMatchObject({ type: 'SYN' })
   })
+
+  it('one bad buffered message must not drop the rest of the flush', async () => {
+    // Conversion/validation run before processMessage's guarded handler loop;
+    // an unguarded throw there would abort the forEach inside the microtask
+    // (unhandled rejection) and silently drop later handshake messages —
+    // stalling the connection until its 10s timeout.
+    const messenger = makeMessenger()
+    const received: unknown[] = []
+
+    // `penpal: 'reply'` with a malformed body drives convertFromDeprecatedFormat
+    // into the reply branch, which reads properties a bad payload may lack.
+    messenger.handleMessage({ penpal: 'call', id: 1, methodName: null })
+    messenger.handleMessage(deprecatedSyn)
+
+    messenger.initialize({
+      validateReceivedMessage: (data: unknown): data is Message =>
+        !!data && typeof data === 'object' && (data as { namespace?: string }).namespace === 'penpal',
+    })
+    messenger.addMessageHandler((message) => received.push(message))
+
+    await runMicrotasks()
+
+    // The malformed first message is skipped (methodName.split throws inside
+    // conversion); the buffered SYN behind it is still delivered.
+    expect(received).toHaveLength(1)
+    expect(received[0]).toMatchObject({ type: 'SYN' })
+  })
+
+  it('destroy() clears a scheduled flush so a reused messenger starts clean', async () => {
+    const messenger = makeMessenger()
+    const received: unknown[] = []
+
+    messenger.handleMessage(deprecatedSyn)
+    messenger.initialize()
+    messenger.addMessageHandler((message) => received.push(message))
+    messenger.destroy()
+
+    // Reuse after destroy: fresh buffer, fresh flush scheduling.
+    messenger.handleMessage(deprecatedSyn)
+    messenger.initialize()
+    messenger.addMessageHandler((message) => received.push(message))
+    await runMicrotasks()
+
+    expect(received).toHaveLength(1)
+  })
 })

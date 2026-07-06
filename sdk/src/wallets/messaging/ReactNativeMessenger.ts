@@ -81,7 +81,17 @@ export class ReactNativeMessenger implements Messenger {
       this.messageBuffer = []
       debugLog(`ReactNativeMessenger flushing ${bufferedMessages.length} buffered messages`)
       bufferedMessages.forEach((message) => {
-        this.processMessage(message)
+        // One malformed message must not abort the flush: the rest of the
+        // buffer can hold handshake messages (SYN/synAck) the connection
+        // depends on, and a throw here would also surface as an unhandled
+        // rejection inside the microtask instead of a connection error.
+        // processMessage guards its handler loop the same way, but its
+        // conversion/validation steps run before that guard.
+        try {
+          this.processMessage(message)
+        } catch (error) {
+          debugLog('ReactNativeMessenger: error processing buffered message, continuing flush:', error)
+        }
       })
     })
   }
@@ -377,6 +387,9 @@ export class ReactNativeMessenger implements Messenger {
     // Clear handlers and message buffer
     this.handlers.clear()
     this.messageBuffer = []
+    // A pending flush microtask bails on !isInitialized; clearing the flag
+    // here keeps handleMessage's buffering condition consistent too.
+    this.flushScheduled = false
 
     // Clear ID mappings
     this.stringToNumericId.clear()
@@ -396,6 +409,7 @@ export class ReactNativeMessenger implements Messenger {
     debugLog('ReactNativeMessenger reset for reuse')
     this.handlers.clear()
     this.messageBuffer = []
+    this.flushScheduled = false
     this.isInitialized = false
     this.hasBeenUsed = false
     // Reset ID mappings

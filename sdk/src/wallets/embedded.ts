@@ -5,6 +5,7 @@ import { ConfigurationError, SessionError } from 'core/errors/openfortError'
 import { withApiError } from 'core/errors/withApiError'
 import type { IPasskeyHandler } from 'core/passkey'
 import { PasskeyHandler } from 'core/passkey'
+import { debugLog } from 'utils/debug'
 import type TypedEventEmitter from 'utils/typedEventEmitter'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
@@ -440,7 +441,16 @@ export class EmbeddedSigner implements Signer {
   }
 
   async disconnect(): Promise<void> {
-    await this.iframeManager.disconnect()
+    try {
+      // Best-effort: bounded by the logout RPC timeout in IframeManager. A
+      // frozen iframe must not prevent the local account from being cleared
+      // below, nor fail callers that treat disconnect as cleanup (e.g.
+      // wallet_revokePermissions' no-permissionContext path awaits this with
+      // no try/catch of its own).
+      await this.iframeManager.disconnect()
+    } catch (error) {
+      debugLog('EmbeddedSigner.disconnect: iframe logout failed, continuing local cleanup:', error)
+    }
     this.storage.remove(StorageKeys.ACCOUNT)
   }
 }

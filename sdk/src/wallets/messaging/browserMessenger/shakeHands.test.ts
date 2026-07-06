@@ -89,6 +89,52 @@ describe('shakeHands remote re-connect detection', () => {
     connection.destroy()
   })
 
+  it('does not fire onRemoteReconnect for duplicate ACK1s from the SAME participant (RN deprecated-protocol shape)', async () => {
+    // The React Native child talks the deprecated wire format, which bypasses
+    // its SYN dedup and makes it the permanent handshake leader — so it
+    // answers EACH of our two SYNs with an ACK1. The second ACK1 lands after
+    // completion on virtually every healthy RN connection; treating it as a
+    // reconnect fired a false connection-lost event + Sentry error per connect.
+    const messenger = makeFakeMessenger()
+    const onRemoteReconnect = vi.fn()
+    const connection = connect({ messenger: messenger as any, timeout: 5000, onRemoteReconnect })
+
+    // '~' (0x7E) sorts above every hex digit, so the REMOTE is the handshake
+    // leader here (unlike completeHandshakeAs) and sends the ACK1s itself.
+    messenger.emit({ namespace: 'penpal', type: 'SYN', channel: undefined, participantId: '~~' })
+    messenger.emit({ namespace: 'penpal', type: 'ACK1', channel: undefined, methodPaths: [] })
+    await connection.promise
+
+    // The remote's answer to our second SYN — same participant, post-completion.
+    messenger.emit({ namespace: 'penpal', type: 'ACK1', channel: undefined, methodPaths: [] })
+
+    expect(onRemoteReconnect).not.toHaveBeenCalled()
+
+    // A genuinely NEW participant re-handshaking must still be detected.
+    messenger.emit({ namespace: 'penpal', type: 'SYN', channel: undefined, participantId: '~z' })
+    messenger.emit({ namespace: 'penpal', type: 'ACK1', channel: undefined, methodPaths: [] })
+
+    expect(onRemoteReconnect).toHaveBeenCalledTimes(1)
+
+    connection.destroy()
+  })
+
+  it('does not fire onRemoteReconnect for a duplicate ACK2 from the SAME participant', async () => {
+    const messenger = makeFakeMessenger()
+    const onRemoteReconnect = vi.fn()
+    const connection = connect({ messenger: messenger as any, timeout: 5000, onRemoteReconnect })
+
+    completeHandshakeAs(messenger, '!!')
+    await connection.promise
+
+    // A retransmitted ACK2 (dropped-message recovery) is not a reload.
+    messenger.emit({ namespace: 'penpal', type: 'ACK2', channel: undefined })
+
+    expect(onRemoteReconnect).not.toHaveBeenCalled()
+
+    connection.destroy()
+  })
+
   it('keeps working when onRemoteReconnect is not provided (reconnect stays supported)', async () => {
     const messenger = makeFakeMessenger()
     const connection = connect({ messenger: messenger as any, timeout: 5000 })
