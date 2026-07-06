@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { Message } from './browserMessenger'
+import type { Message } from './browserMessenger/types'
 import { ReactNativeMessenger } from './ReactNativeMessenger'
 
 // One microtask tick — enough for the messenger's queueMicrotask flush,

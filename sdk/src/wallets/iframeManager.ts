@@ -301,9 +301,9 @@ function recordIframeVersion(version: string | null | undefined): void {
  * `EmbeddedWalletConnectionLostPayload['reason']` — kept as a separate type so
  * this module doesn't depend on the public event types.
  */
-export type IframeConnectionLostReason = 'rpc-timeout' | 'handshake-timeout' | 'iframe-reloaded'
+type IframeConnectionLostReason = 'rpc-timeout' | 'handshake-timeout' | 'iframe-reloaded'
 
-export interface IframeManagerCallbacks {
+interface IframeManagerCallbacks {
   /**
    * Invoked when the connection degrades: an RPC or the handshake timed out,
    * or the embed page reloaded mid-session and re-handshaked. The parent
