@@ -76,7 +76,10 @@ export async function authenticateAndRecover(page: Page) {
   switch (recoveryMethod) {
     case RecoveryMethod.AUTOMATIC: {
       await expect(page.locator('div.spinner')).toBeInViewport()
-      await page.locator('div.spinner').waitFor({ state: 'hidden' })
+      // Recovery RPCs are bounded at 120s inside the SDK — if the spinner is
+      // still up past 150s the flow is genuinely hung; fail fast instead of
+      // burning the whole test timeout (and its retries) on a known-bad state.
+      await page.locator('div.spinner').waitFor({ state: 'hidden', timeout: 150_000 })
       await page.waitForTimeout(500)
       const consoleExists = (await page.getByRole('heading', { name: 'Console' }).count()) > 0
       expect(consoleExists).toBe(true)
@@ -90,7 +93,10 @@ export async function authenticateAndRecover(page: Page) {
       await page.getByRole('button', { name: 'Use this wallet' }).click()
 
       await expect(page.locator('div.spinner')).toBeInViewport()
-      await page.locator('div.spinner').waitFor({ state: 'hidden' })
+      // Recovery RPCs are bounded at 120s inside the SDK — if the spinner is
+      // still up past 150s the flow is genuinely hung; fail fast instead of
+      // burning the whole test timeout (and its retries) on a known-bad state.
+      await page.locator('div.spinner').waitFor({ state: 'hidden', timeout: 150_000 })
 
       await expect(page.getByRole('heading', { name: 'Console' }), {
         // error message in case it fails:

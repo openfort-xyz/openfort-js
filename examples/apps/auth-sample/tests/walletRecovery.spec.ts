@@ -15,6 +15,11 @@ const logout = async (page: Page) => {
   await page.waitForURL('/login')
 }
 
+// One retry is enough signal for this spec: at ~3-5 minutes per attempt it is
+// the single biggest wall-clock risk in the suite, and its known failure mode
+// (the shared account's embed-side recovery hang) does not go away on retry.
+test.describe.configure({ retries: process.env.CI ? 1 : 0 })
+
 test('Password recovery', async ({ page }) => {
   // Heaviest test in the suite: ~3 full auth cycles + 2 recovery-method changes +
   // wallet ops, all sequential. ~47s locally but ~4x slower on CI's networked runs.
@@ -74,7 +79,7 @@ test('Password recovery', async ({ page }) => {
     await passwordRecoveryButtonLogin.click()
 
     await expect(page.locator('div.spinner')).toBeInViewport()
-    await page.locator('div.spinner').waitFor({ state: 'hidden' })
+    await page.locator('div.spinner').waitFor({ state: 'hidden', timeout: 150_000 })
 
     const logger = new Logger(page)
     await logger.init()
