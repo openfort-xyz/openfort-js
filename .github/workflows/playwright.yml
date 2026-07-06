@@ -6,6 +6,11 @@ on:
   merge_group:
     branches:
       - main
+# A new push supersedes any in-flight run for the same ref — without this,
+# rapid pushes stack full ~40-minute runs that all burn runners to completion.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     timeout-minutes: 60
@@ -35,6 +40,16 @@ jobs:
     - name: Build SDK
       run: pnpm build
 
+    # Next.js incremental build cache — cuts the production build of the
+    # sample app on warm runs.
+    - name: Cache Next.js build
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: examples/apps/auth-sample/.next/cache
+        key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('examples/apps/auth-sample/src/**', 'sdk/src/**') }}
+        restore-keys: |
+          nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
     - name: Build auth-sample for production
       env:
         NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY }}
@@ -48,8 +63,24 @@ jobs:
       run: pnpm build
       working-directory: examples/apps/auth-sample
 
+    # Browser binaries are ~500MB across chromium/firefox/webkit and change
+    # only when the Playwright version does — cache them instead of
+    # re-downloading every run (~2-4 minutes).
+    - name: Cache Playwright browsers
+      id: playwright-cache
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-browsers-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
     - name: Install Playwright Browsers
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: pnpm playwright install --with-deps
+      working-directory: examples/apps/auth-sample
+
+    - name: Install Playwright system dependencies (cached browsers)
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: pnpm playwright install-deps
       working-directory: examples/apps/auth-sample
 
     - name: Run Playwright tests
