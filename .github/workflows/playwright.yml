@@ -12,12 +12,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  # Main suite. Serial (workers: 1) because every test shares ONE E2E account
-  # — logout/recovery-method changes in one test corrupt another's session.
-  # PRs run chromium only for fast feedback; the merge queue runs the full
-  # browser matrix before anything lands on main.
+  # Main suite: the KNOWN shared E2E account with pre-provisioned wallet
+  # state, exactly as it always ran — serial (workers: 1, since tests share
+  # that account) across chromium/firefox/webkit. The connection-reliability
+  # stress spec is the only exclusion; it runs in the parallel guest-based
+  # job below instead of extending this one.
   test:
-    timeout-minutes: 45
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -86,8 +87,7 @@ jobs:
       run: pnpm playwright install-deps
       working-directory: examples/apps/auth-sample
 
-    - name: Run Playwright tests (chromium — pull request)
-      if: github.event_name == 'pull_request'
+    - name: Run Playwright tests
       env:
         NEXTAUTH_OPENFORT_SECRET_KEY: ${{ secrets.NEXTAUTH_OPENFORT_SECRET_KEY }}
         NEXTAUTH_SHIELD_ENCRYPTION_KEY: ${{ secrets.NEXTAUTH_SHIELD_ENCRYPTION_KEY }}
@@ -102,25 +102,8 @@ jobs:
         NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
         NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
         E2E_TESTS_USER: ${{ vars.E2E_TESTS_USER }}
-      run: pnpm playwright test --project=setup --project=chromium --reporter=dot
-      working-directory: examples/apps/auth-sample
-
-    - name: Run Playwright tests (all browsers — merge queue)
-      if: github.event_name == 'merge_group'
-      env:
-        NEXTAUTH_OPENFORT_SECRET_KEY: ${{ secrets.NEXTAUTH_OPENFORT_SECRET_KEY }}
-        NEXTAUTH_SHIELD_ENCRYPTION_KEY: ${{ secrets.NEXTAUTH_SHIELD_ENCRYPTION_KEY }}
-        NEXTAUTH_SHIELD_SECRET_KEY: ${{ secrets.NEXTAUTH_SHIELD_SECRET_KEY }}
-        E2E_TESTS_PASSWORD: ${{ secrets.E2E_TESTS_PASSWORD }}
-        NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_OPENFORT_PUBLISHABLE_KEY }}
-        NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SHIELD_PUBLISHABLE_KEY }}
-        NEXT_PUBLIC_POLICY_ID: ${{ vars.NEXT_PUBLIC_POLICY_ID }}
-        NEXT_PUBLIC_CHAIN_ID: ${{ vars.NEXT_PUBLIC_CHAIN_ID }}
-        NEXT_PUBLIC_CONTRACT_ID: ${{ vars.NEXT_PUBLIC_CONTRACT_ID }}
-        NEXT_PUBLIC_REOWN_PROJECT_ID: ${{ vars.NEXT_PUBLIC_REOWN_PROJECT_ID }}
-        NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
-        NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
-        E2E_TESTS_USER: ${{ vars.E2E_TESTS_USER }}
+      # Everything except the reliability project (guest-based, runs in the
+      # parallel job below) — i.e. the suite exactly as it ran before.
       run: pnpm playwright test --project=setup --project=chromium --project=firefox --project=webkit --reporter=dot
       working-directory: examples/apps/auth-sample
 
