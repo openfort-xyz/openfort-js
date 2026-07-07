@@ -111,8 +111,14 @@ jobs:
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
-        path: examples/apps/auth-sample/playwright-report/
+        # test-results/ holds the retry traces and error contexts — the dot
+        # reporter never writes playwright-report/, so without this the
+        # artifact was always empty and failures shipped no evidence.
+        path: |
+          examples/apps/auth-sample/playwright-report/
+          examples/apps/auth-sample/test-results/
         retention-days: 30
+        if-no-files-found: ignore
 
   # Connection-reliability stress suite. Guest-account based (a fresh guest
   # per test), so it never touches the shared E2E account — it runs here in
@@ -205,5 +211,8 @@ jobs:
       if: ${{ !cancelled() }}
       with:
         name: playwright-report-reliability
-        path: examples/apps/auth-sample/playwright-report/
+        path: |
+          examples/apps/auth-sample/playwright-report/
+          examples/apps/auth-sample/test-results/
         retention-days: 30
+        if-no-files-found: ignore
