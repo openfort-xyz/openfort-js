@@ -633,7 +633,7 @@ describe('IframeManager per-call RPC timeouts', () => {
   })
 })
 
-describe('IframeManager.handleError account preservation', () => {
+describe('IframeManager.handleError account clearing', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -651,17 +651,16 @@ describe('IframeManager.handleError account preservation', () => {
     return { caught, storage }
   }
 
-  it('does NOT clear the stored account on an unknown iframe error', async () => {
-    // An unknown error is just as likely a transient failure inside the
-    // iframe (failed storage read, network error mid-flow). Clearing the
-    // account on it forces the user through recovery with intact signer state.
-    const { caught, storage } = await signWithErrorResponse('Error: something transient went wrong')
+  it('clears the stored account on an unknown iframe error', async () => {
+    // Self-heal: an account the child keeps rejecting with an unrecognized
+    // error string must not stay READY and fail every operation until logout.
+    const { caught, storage } = await signWithErrorResponse('Error: something went wrong')
 
     expect((caught as Error).message).toMatch(/Unknown error/i)
-    expect(storage.remove).not.toHaveBeenCalled()
+    expect(storage.remove).toHaveBeenCalledWith('openfort.account')
   })
 
-  it('still clears the stored account on an explicit not-configured signal', async () => {
+  it('clears the stored account on an explicit not-configured signal', async () => {
     const { caught, storage } = await signWithErrorResponse('not-configured-error')
 
     expect((caught as Error).message).toMatch(/not configured/i)

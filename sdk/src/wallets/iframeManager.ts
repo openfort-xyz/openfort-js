@@ -696,20 +696,12 @@ export class IframeManager {
       } else if (error.error === OTP_REQUIRED_ERROR) {
         throw new OTPRequiredError()
       }
-      // Unknown errors must NOT clear the stored account. Only the explicit
-      // signals above prove the iframe evaluated this account and found it
-      // unconfigured/unrecoverable. An unknown error is just as likely a
-      // transient failure inside the iframe (a failed storage read, a network
-      // error mid-flow) — deleting the account on those forces the user
-      // through recovery even though their signer state is intact.
-      //
-      // Trade-off accepted here: the old clear-on-unknown was also the
-      // self-heal for a PERSISTENTLY broken account (child rejecting it with
-      // a non-standard error string every time) — that case now stays READY
-      // and keeps failing until the user logs out or explicitly re-recovers.
-      // If such a case surfaces, close it at the source: make the child emit
-      // a recognized signal (e.g. NOT_CONFIGURED) for every account-invalid
-      // condition it can detect, rather than re-widening this catch-all.
+      // Unknown errors also clear the stored account: an account the child
+      // keeps rejecting with an unrecognized error string would otherwise
+      // stay READY and fail every operation until logout. The accepted cost
+      // is that a transient child-side failure surfacing as an unknown error
+      // sends the user back through recovery.
+      this.storage.remove(StorageKeys.ACCOUNT)
       throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, `Unknown error: ${error.error}`)
     }
     throw error
