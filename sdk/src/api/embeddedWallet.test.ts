@@ -406,6 +406,29 @@ describe('handleLogout()', () => {
     expect((api as any).signer).toBeNull()
     expect((api as any).iframeManager).toBeNull()
   })
+
+  it('keeps the EvmProvider across logout (it subscribes to the shared emitter)', async () => {
+    // The provider registers ON_LOGOUT/ON_SWITCH_ACCOUNT/CONNECTION_LOST
+    // handlers on the shared emitter in its constructor and is announced via
+    // EIP-6963 (external code holds the instance). Dropping it on logout made
+    // every login cycle construct a new provider whose subscriptions
+    // accumulated on the emitter without bound; the provider is designed to
+    // survive logout (its own ON_LOGOUT handler clears the cached signer).
+    const { api } = makeApi()
+    const signer = { disconnect: vi.fn().mockResolvedValue(undefined) }
+    const manager = { hasFailed: false, isLoaded: () => true, destroy: vi.fn() }
+    const provider = { marker: 'provider' }
+    ;(api as any).signer = signer
+    ;(api as any).iframeManager = manager
+    ;(api as any).provider = provider
+
+    await (api as any).handleLogout()
+
+    expect((api as any).provider).toBe(provider)
+    // The connection-scoped state is still cleared.
+    expect((api as any).signer).toBeNull()
+    expect((api as any).iframeManager).toBeNull()
+  })
 })
 
 describe('connection-lost event wiring', () => {

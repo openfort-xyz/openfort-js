@@ -957,7 +957,6 @@ export class EmbeddedWalletApi {
     // Skip signer disconnect since there's no iframe/WebView storage to clear
     if (typeof document === 'undefined' && !this.messagePoster) {
       debugLog('Skipping signer disconnect: no messagePoster available in non-browser environment')
-      this.provider = null
       this.messenger = null
       this.iframeManager = null
       this.iframeManagerPromise = null
@@ -996,7 +995,12 @@ export class EmbeddedWalletApi {
       document.getElementById('openfort-iframe')?.remove()
     }
 
-    this.provider = null
+    // The EvmProvider is deliberately NOT dropped here. It subscribes to the
+    // shared event emitter in its constructor and is announced via EIP-6963
+    // (external code holds the instance across sessions), so recreating it per
+    // login cycle accumulated listeners on the shared emitter without bound.
+    // Its own ON_LOGOUT handler clears the cached signer and emits disconnect;
+    // the next request rebuilds through ensureSigner.
     this.messenger = null
     this.iframeManager = null
     this.iframeManagerPromise = null

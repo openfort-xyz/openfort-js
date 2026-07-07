@@ -1,16 +1,11 @@
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import CallOptions from './CallOptions'
 import connectRemoteProxy from './connectRemoteProxy'
 import type { Message } from './types'
 
-// The shared test setup replaces `global.window` with a stub that omits timers
-// (src/__tests__/setup.ts). `connectRemoteProxy` deliberately calls
-// `window.setTimeout` (a real-browser global), so point it at the env timers.
-beforeAll(() => {
-  const w = globalThis as any
-  w.window.setTimeout = globalThis.setTimeout.bind(globalThis)
-  w.window.clearTimeout = globalThis.clearTimeout.bind(globalThis)
-})
+// connectRemoteProxy uses `globalThis.setTimeout` (it must work outside
+// browsers — React Native routes RPCs through this same proxy), so no window
+// timer stubbing is needed here.
 
 // A minimal in-memory Messenger: it records outgoing CALL messages and lets the
 // test inject the matching REPLY, standing in for the iframe side of penpal.

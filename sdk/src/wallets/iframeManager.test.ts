@@ -574,7 +574,7 @@ describe('IframeManager per-call RPC timeouts', () => {
     expect(connectionDestroy).toHaveBeenCalledTimes(1)
   })
 
-  it('maps CONNECTION_DESTROYED to a typed error without poisoning (whoever destroyed the connection owns manager state)', async () => {
+  it('maps CONNECTION_DESTROYED to a typed error and marks the manager for rebuild', async () => {
     const remote = {
       switchChain: vi.fn().mockRejectedValue(new PenpalError('CONNECTION_DESTROYED', 'connection destroyed')),
     }
@@ -583,7 +583,12 @@ describe('IframeManager per-call RPC timeouts', () => {
     // A raw PenpalError is not part of the SDK's public error surface —
     // consumers can't instanceof-check it.
     await expect(manager.switchChain(1)).rejects.toBeInstanceOf(IframeConnectionDestroyedError)
-    expect(manager.hasFailed).toBe(false)
+    // hasFailed must be set: for locally-initiated teardown it is a no-op
+    // (the initiator already set it), but a REMOTE-initiated destroy has no
+    // other path that marks the manager — without this it would stay
+    // isLoaded()-but-dead, failing every operation until logout.
+    expect(manager.hasFailed).toBe(true)
+    // Teardown itself belongs to whoever destroyed the connection.
     expect(connectionDestroy).not.toHaveBeenCalled()
   })
 

@@ -664,10 +664,16 @@ export class IframeManager {
       }
       if (error instanceof PenpalError && error.code === 'CONNECTION_DESTROYED') {
         // The connection was torn down while this call was in flight — a
-        // concurrent RPC timed out, or the consumer destroyed the manager.
-        // Whoever tore it down already handled manager state (no poisoning or
-        // notification here); this call just needs a typed error instead of
-        // leaking penpal's internal error class across the public API.
+        // concurrent RPC timed out, the consumer destroyed the manager, or
+        // the REMOTE side destroyed the connection (e.g. the embed page tore
+        // its end down). For the local cases hasFailed is already set and
+        // this assignment is a no-op; for a remote-initiated destroy nothing
+        // else marks the manager, and without it the manager stays
+        // isLoaded()-but-dead forever — every subsequent operation would
+        // throw this same error until logout. No notification here: the
+        // local cases already notified, and rebuilding on the next operation
+        // covers the remote case without prompting host reactions.
+        this.hasFailed = true
         throw new IframeConnectionDestroyedError(method)
       }
       throw error
