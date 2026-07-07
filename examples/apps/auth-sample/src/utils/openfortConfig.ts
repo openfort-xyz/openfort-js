@@ -24,4 +24,19 @@ const openfort = new Openfort({
   },
 })
 
+// E2E/debug hooks: expose the SDK instance and record connection-health
+// events so stress tests can assert exactly-once event semantics
+// (tests/connectionReliability.spec.ts). No-op during SSR.
+if (typeof window !== 'undefined') {
+  const w = window as unknown as {
+    __openfort?: unknown
+    __connectionLostEvents?: unknown[]
+  }
+  w.__openfort = openfort
+  w.__connectionLostEvents = []
+  Openfort.getEventEmitter().on('onEmbeddedWalletConnectionLost', (payload: unknown) => {
+    w.__connectionLostEvents?.push(payload)
+  })
+}
+
 export default openfort

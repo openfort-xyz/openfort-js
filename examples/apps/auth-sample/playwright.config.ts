@@ -54,6 +54,20 @@ export default defineConfig({
         storageState: 'playwright/.auth/user.json',
       },
       dependencies: ['setup'],
+      // The connection-reliability stress suite runs in its own project (and
+      // its own CI job): it uses fresh guest accounts, so unlike the rest of
+      // the suite it doesn't touch the shared E2E account and can run in
+      // parallel instead of extending this serial run.
+      testIgnore: ['**/connectionReliability.spec.ts'],
+    },
+
+    {
+      // Connection-reliability stress tests. Guest-account based: no setup
+      // dependency, no shared auth state, safe to run with parallel workers
+      // and concurrently with the main suite.
+      name: 'reliability',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: ['**/connectionReliability.spec.ts'],
     },
 
     {

@@ -16,6 +16,14 @@ type Options = {
   timeout: number | undefined
   channel: string | undefined
   log: Log | undefined
+  /**
+   * Called when the remote participant completes a NEW handshake after this
+   * connection was already established — i.e. the remote page reloaded and
+   * re-connected. The transport recovers transparently, but the remote's
+   * in-memory state is gone and any in-flight calls were dropped, so
+   * consumers usually want to log/report this and re-configure.
+   */
+  onRemoteReconnect: (() => void) | undefined
 }
 
 type HandshakeResult<TMethods extends Methods> = {
@@ -90,9 +98,15 @@ const shakeHands = <TMethods extends Methods>({
   timeout,
   channel,
   log,
+  onRemoteReconnect,
 }: Options): Promise<HandshakeResult<TMethods>> => {
   const participantId = randomUUID()
   let remoteParticipantId: string
+  // Participant the connection was completed (or last re-completed) with.
+  // Used to tell a genuine remote reload (NEW participant re-handshakes)
+  // apart from duplicate ACKs of the SAME participant, which the protocol
+  // produces routinely — see connectCallHandlerAndMethodProxies.
+  let completedRemoteParticipantId: string | undefined
   const destroyHandlers: (() => void)[] = []
   let isComplete = false
 
@@ -115,8 +129,22 @@ const shakeHands = <TMethods extends Methods>({
 
   const connectCallHandlerAndMethodProxies = () => {
     if (isComplete) {
-      // If we get here, it means the remote is attempting to re-connect. While
-      // that's supported, we don't need to run the rest of this function again.
+      // The remote finished another handshake after this connection was
+      // already established. Only a handshake from a NEW participant means
+      // the remote page actually reloaded (in-memory state gone, in-flight
+      // calls dropped). Duplicate ACKs from the SAME participant are protocol
+      // noise: the deprecated wire format bypasses the remote's SYN dedup, so
+      // a deprecated-protocol peer (e.g. talking to a React Native WebView)
+      // answers each of our two SYNs with its own ACK1, and the second one
+      // lands here on every healthy connection. A remote that only ever
+      // presents the shared deprecated participant id can therefore never be
+      // reload-detected — an accepted trade-off, since a false reload report
+      // (Sentry error + connection-lost event) is worse than a missed one.
+      if (remoteParticipantId !== completedRemoteParticipantId) {
+        completedRemoteParticipantId = remoteParticipantId
+        log?.('Remote participant re-connected after handshake completion')
+        onRemoteReconnect?.()
+      }
       return
     }
 
@@ -128,6 +156,7 @@ const shakeHands = <TMethods extends Methods>({
 
     clearTimeout(timeoutId)
     isComplete = true
+    completedRemoteParticipantId = remoteParticipantId
 
     resolve({
       remoteProxy,

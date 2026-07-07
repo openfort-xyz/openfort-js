@@ -34,10 +34,19 @@ import { EvmProvider, type Provider } from '../wallets/evm'
 import { announceProvider, openfortProviderInfo } from '../wallets/evm/provider/eip6963'
 import type { TypedDataPayload } from '../wallets/evm/types'
 import { signMessage } from '../wallets/evm/walletHelpers'
-import { IframeManager, type SignerConfigureRequest } from '../wallets/iframeManager'
+import { IframeHandshakeTimeoutError, IframeManager, type SignerConfigureRequest } from '../wallets/iframeManager'
 import { ReactNativeMessenger } from '../wallets/messaging'
 import { WindowMessenger } from '../wallets/messaging/browserMessenger'
 import type { MessagePoster } from '../wallets/types'
+
+/**
+ * Deadline for the best-effort handshake during a logout that has no live
+ * connection (see flushIframeStateOnLogout). Deliberately shorter than the
+ * regular 10s handshake window: an unreachable embed must not hold the logout
+ * flow hostage, and the flush is opportunistic — local logout proceeds either
+ * way.
+ */
+const LOGOUT_FLUSH_HANDSHAKE_DEADLINE_MS = 5_000
 
 export class EmbeddedWalletApi {
   private iframeManager: IframeManager | null = null
@@ -85,11 +94,26 @@ export class EmbeddedWalletApi {
     // Check if existing instance has failed - if so, clear it for recreation
     if (this.iframeManager?.hasFailed) {
       debugLog('[HANDSHAKE DEBUG] Existing iframeManager has failed, clearing for recreation')
+      // Tear the failed manager down before discarding it. In browser mode
+      // the WindowMessenger is owned by the manager's connection — without
+      // this, its window 'message' listener and MessagePort leak on every
+      // failure cycle and any in-flight RPCs on the old connection hang
+      // forever instead of rejecting.
+      // Never notify the remote from this internal rebuild path: in React
+      // Native a penpal DESTROY permanently deafens the WebView child (it
+      // cannot be reloaded from here), dead-ending every later handshake.
+      this.iframeManager.destroy({ notifyRemote: false })
       if (this.messenger) {
         this.messenger.destroy()
         this.messenger = null
       }
       this.iframeManager = null
+      // The cached signer wraps the manager just destroyed. Recreation can be
+      // triggered outside ensureSigner (e.g. the React Native onMessage
+      // path), and ensureSigner's refresh check only inspects the CURRENT
+      // manager — the fresh, healthy replacement — so a stale signer kept
+      // here would dead-end every operation in SessionEndedBeforeSetupError.
+      this.signer = null
     }
 
     // Return existing instance if available and not failed
@@ -164,7 +188,13 @@ export class EmbeddedWalletApi {
     }
 
     debugLog('[HANDSHAKE DEBUG] Creating IframeManager instance')
-    return new IframeManager(configuration, this.storage, messenger)
+    return new IframeManager(configuration, this.storage, messenger, {
+      onConnectionLost: (reason) => {
+        // Surface connection-health transitions to consumers — see the
+        // event's JSDoc for the per-reason semantics hosts must follow.
+        this.eventEmitter.emit(OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST, { reason })
+      },
+    })
   }
 
   /**
@@ -204,10 +234,34 @@ export class EmbeddedWalletApi {
   }
 
   private async createSigner(): Promise<EmbeddedSigner> {
-    const iframeManager = await this.getIframeManager()
+    let iframeManager = await this.getIframeManager()
     // Eagerly initialize the iframe connection so the penpal handshake completes
     // before any WebAuthn dialogs can block the event loop.
-    await iframeManager.initialize()
+    try {
+      // Suppress the connection-lost notification for this first attempt: a
+      // timeout here is retried transparently below, and hosts must not react
+      // (e.g. reload a WebView) to a loss the SDK is about to recover from.
+      // The retry initializes unsuppressed, so a final failure still emits
+      // exactly one event.
+      await iframeManager.initialize({ suppressConnectionLostNotify: true })
+    } catch (error) {
+      if (!(error instanceof IframeHandshakeTimeoutError)) {
+        throw error
+      }
+      // One automatic retry with a fresh manager before surfacing the timeout.
+      // A handshake timeout usually means the embed page loaded too slowly for
+      // the window, or the child's own connection attempt had already expired.
+      // The failed manager is marked hasFailed, so getIframeManager() tears it
+      // down and recreates it. In browser mode that recreates the iframe
+      // element, reloading the child page for a fresh handshake window. In
+      // React Native mode only the messenger is recreated (the WebView cannot
+      // be reloaded from here) — the retry still helps because the child
+      // retries its own handshake every ~10.5s, so the second window can
+      // catch its next attempt.
+      debugLog('[HANDSHAKE DEBUG] Handshake timed out, retrying once with a fresh iframe')
+      iframeManager = await this.getIframeManager()
+      await iframeManager.initialize()
+    }
     const signer = new EmbeddedSigner(
       iframeManager,
       this.storage,
@@ -222,6 +276,15 @@ export class EmbeddedWalletApi {
     if (typeof document === 'undefined') {
       throw new ConfigurationError(
         'Document is not available. Please provide a message poster for non-browser environments.'
+      )
+    }
+
+    if (!document.body) {
+      // Without this guard, appendChild below throws a bare TypeError that is
+      // hard to trace back to "the SDK ran before <body> was parsed".
+      throw new ConfigurationError(
+        'document.body is not available yet. Initialize the embedded wallet after the document has loaded ' +
+          '(e.g. defer SDK initialization or run it from a script at the end of <body>).'
       )
     }
 
@@ -819,8 +882,13 @@ export class EmbeddedWalletApi {
         })
       }
 
-      const iframeManager = await this.getIframeManager()
-      if (!iframeManager.isLoaded()) {
+      // Deliberately do NOT call getIframeManager() here: it would create the
+      // iframe element without connecting to it. The child page connects once
+      // at load with a bounded handshake timeout — an iframe created by a
+      // probe and left unconnected produces a child that has already given up
+      // by the time the first real operation starts its handshake.
+      const iframeManager = this.iframeManager
+      if (!iframeManager?.isLoaded()) {
         return false
       }
 
@@ -868,6 +936,16 @@ export class EmbeddedWalletApi {
   }
 
   private async handleLogout(): Promise<void> {
+    // A configured account means a PRIOR session's connection may have left
+    // signer state persisted inside the embed (the device share in the iframe
+    // origin's localStorage survives page reloads), even if this page load
+    // never connected. Capture before clearing so we know whether a
+    // best-effort iframe-side flush is warranted below.
+    let hadConfiguredAccount = false
+    try {
+      hadConfiguredAccount = (await Account.fromStorage(this.storage)) !== null
+    } catch {}
+
     // Clear Account from storage first — ensures getEmbeddedState() returns
     // EMBEDDED_SIGNER_NOT_CONFIGURED on next login even if iframe disconnect fails
     this.storage.remove(StorageKeys.ACCOUNT)
@@ -876,7 +954,6 @@ export class EmbeddedWalletApi {
     // Skip signer disconnect since there's no iframe/WebView storage to clear
     if (typeof document === 'undefined' && !this.messagePoster) {
       debugLog('Skipping signer disconnect: no messagePoster available in non-browser environment')
-      this.provider = null
       this.messenger = null
       this.iframeManager = null
       this.iframeManagerPromise = null
@@ -885,16 +962,80 @@ export class EmbeddedWalletApi {
       return
     }
     try {
-      const signer = await this.ensureSigner()
-      await signer.disconnect()
+      if (this.signer && this.iframeManager?.isLoaded()) {
+        // Live connection: tell the embed to flush its signer state.
+        // disconnect() is bounded by the logout RPC timeout in IframeManager,
+        // so a frozen iframe cannot hang the logout flow indefinitely.
+        await this.signer.disconnect()
+      } else if (hadConfiguredAccount) {
+        // No live connection (e.g. the page reloaded since the wallet was
+        // configured), but the embed may still hold persisted signer state
+        // from the session that configured it. Best-effort, time-boxed flush
+        // — never allowed to block or fail the logout (this catch swallows
+        // everything, and the handshake attempt is raced against a deadline).
+        await this.flushIframeStateOnLogout()
+      }
     } catch {}
 
-    this.provider = null
+    // Tear down the manager (window listener, MessagePort, iframe connection)
+    // rather than just dropping the reference — see getIframeManager().
+    // In React Native the remote must NOT be notified: a penpal DESTROY makes
+    // the WebView child remove its message listeners permanently (the child
+    // connects once and the SDK cannot reload a WebView), bricking every
+    // subsequent login until the host remounts the WebView.
+    this.iframeManager?.destroy({ notifyRemote: !this.messagePoster })
+
+    // Drop the hidden iframe element too (browser mode): after destroy() the
+    // child page can never reconnect to this manager, and a best-effort flush
+    // above may have created the element on a page that otherwise had none.
+    if (typeof document !== 'undefined') {
+      document.getElementById('openfort-iframe')?.remove()
+    }
+
+    // The EvmProvider is deliberately NOT dropped here. It subscribes to the
+    // shared event emitter in its constructor and is announced via EIP-6963
+    // (external code holds the instance across sessions), so recreating it per
+    // login cycle accumulated listeners on the shared emitter without bound.
+    // Its own ON_LOGOUT handler clears the cached signer and emits disconnect;
+    // the next request rebuilds through ensureSigner.
     this.messenger = null
     this.iframeManager = null
     this.iframeManagerPromise = null
     this.signer = null
     this.signerPromise = null
+  }
+
+  /**
+   * Best-effort flush of the embed's persisted signer state during a logout
+   * that has no live connection. Bounded twice over: the handshake attempt is
+   * raced against a short deadline so an unreachable embed cannot stall the
+   * logout, and the logout RPC itself is bounded inside IframeManager. Errors
+   * propagate to handleLogout's catch — logout always completes locally.
+   */
+  private async flushIframeStateOnLogout(): Promise<void> {
+    const manager = await this.getIframeManager()
+    // Suppress connection-lost notification: this is an opportunistic flush
+    // during logout — hosts must not react to its failure.
+    const initPromise = manager.initialize({ suppressConnectionLostNotify: true })
+    // The race below can abandon initPromise (deadline elapsed; the destroy()
+    // in handleLogout rejects it later) — pre-attach a handler so the
+    // abandoned rejection is not an unhandled rejection.
+    initPromise.catch(() => {})
+    let deadlineTimer: ReturnType<typeof setTimeout> | undefined
+    try {
+      await Promise.race([
+        initPromise,
+        new Promise<never>((_, reject) => {
+          deadlineTimer = setTimeout(
+            () => reject(new Error('Logout iframe flush: handshake deadline elapsed')),
+            LOGOUT_FLUSH_HANDSHAKE_DEADLINE_MS
+          )
+        }),
+      ])
+    } finally {
+      clearTimeout(deadlineTimer)
+    }
+    await manager.disconnect()
   }
 
   async onMessage(message: Record<string, unknown>): Promise<void> {
@@ -905,6 +1046,16 @@ export class EmbeddedWalletApi {
 
     debugLog('[HANDSHAKE DEBUG] EmbeddedWalletApi onMessage:', message)
 
+    // onMessage is the React Native WebView entry point. In browser mode
+    // (no messagePoster) there is nothing to route the message to — and
+    // falling through to getIframeManager() would create an iframe element
+    // without ever connecting to it, leaving a child whose one connection
+    // attempt times out before the first real operation.
+    if (!this.messagePoster) {
+      debugLog('[HANDSHAKE DEBUG] onMessage ignored: no messagePoster configured (browser mode)')
+      return
+    }
+
     // Check if this is a penpal message
     const isPenpalMessage =
       (message.namespace === 'penpal' && message.type === 'SYN') ||
@@ -912,7 +1063,7 @@ export class EmbeddedWalletApi {
 
     // If we have a ReactNativeMessenger already created, pass the message directly to it
     // This handles the case where synAck arrives while IframeManager is still initializing
-    if (isPenpalMessage && this.messenger && this.messagePoster) {
+    if (isPenpalMessage && this.messenger) {
       debugLog('[HANDSHAKE DEBUG] Passing message directly to existing ReactNativeMessenger')
       this.messenger.handleMessage(message)
       return

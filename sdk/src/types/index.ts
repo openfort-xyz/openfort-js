@@ -44,7 +44,9 @@ export {
 } from '../wallets/evm/sessionTypes'
 export { Provider, TypedDataPayload } from '../wallets/evm/types'
 export {
+  IframeConnectionDestroyedError,
   IframeHandshakeTimeoutError,
+  IframeRpcTimeoutError,
   IframeSignEmptyResponseError,
   IframeSignTimeoutError,
   MissingProjectEntropyError,
@@ -66,6 +68,7 @@ export {
   ChainTypeEnum,
   EmbeddedAccount,
   EmbeddedState,
+  EmbeddedWalletConnectionLostPayload,
   InitializeOAuthOptions,
   OAuthProvider,
   OpenfortEventMap,

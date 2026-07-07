@@ -25,6 +25,8 @@ export class ReactNativeMessenger implements Messenger {
 
   private messageBuffer: any[] = []
 
+  private flushScheduled = false
+
   // ID mapping for string <-> number conversion
   private nextNumericId = 1
 
@@ -54,14 +56,43 @@ export class ReactNativeMessenger implements Messenger {
     this.isInitialized = true
     this.hasBeenUsed = true
 
-    debugLog(`ReactNativeMessenger initialized, processing ${this.messageBuffer.length} buffered messages`)
+    debugLog(`ReactNativeMessenger initialized, ${this.messageBuffer.length} buffered messages pending flush`)
 
-    // Process any messages that arrived before initialization
-    const bufferedMessages = [...this.messageBuffer]
-    this.messageBuffer = []
+    // Deliver buffered messages on a microtask rather than synchronously.
+    // initialize() is called from inside penpal's connect() BEFORE it (and
+    // shakeHands) register their message handlers in the same synchronous
+    // block — a synchronous flush here would route buffered handshake
+    // messages (e.g. the iframe's first SYN) to zero handlers and drop them.
+    this.scheduleBufferFlush()
+  }
 
-    bufferedMessages.forEach((message) => {
-      this.processMessage(message)
+  private scheduleBufferFlush(): void {
+    if (this.flushScheduled || this.messageBuffer.length === 0) {
+      return
+    }
+    this.flushScheduled = true
+    queueMicrotask(() => {
+      this.flushScheduled = false
+      // destroy()/reset() may have run before the microtask fired.
+      if (!this.isInitialized) {
+        return
+      }
+      const bufferedMessages = this.messageBuffer
+      this.messageBuffer = []
+      debugLog(`ReactNativeMessenger flushing ${bufferedMessages.length} buffered messages`)
+      bufferedMessages.forEach((message) => {
+        // One malformed message must not abort the flush: the rest of the
+        // buffer can hold handshake messages (SYN/synAck) the connection
+        // depends on, and a throw here would also surface as an unhandled
+        // rejection inside the microtask instead of a connection error.
+        // processMessage guards its handler loop the same way, but its
+        // conversion/validation steps run before that guard.
+        try {
+          this.processMessage(message)
+        } catch (error) {
+          debugLog('ReactNativeMessenger: error processing buffered message, continuing flush:', error)
+        }
+      })
     })
   }
 
@@ -115,10 +146,13 @@ export class ReactNativeMessenger implements Messenger {
   handleMessage = (message: any): void => {
     debugLog('[HANDSHAKE DEBUG] ReactNativeMessenger.handleMessage called with:', message)
 
-    if (!this.isInitialized) {
+    // Buffer while uninitialized, and also while a flush is pending so a
+    // message arriving between initialize() and the flush microtask cannot be
+    // processed ahead of older buffered messages.
+    if (!this.isInitialized || this.flushScheduled) {
       const bufferSize = this.messageBuffer.length + 1
       debugLog(
-        '[HANDSHAKE DEBUG] ReactNativeMessenger: Message received but not initialized, ' +
+        '[HANDSHAKE DEBUG] ReactNativeMessenger: Message received before ready, ' +
           `buffering message (${bufferSize} total)`
       )
       this.messageBuffer.push(message)
@@ -353,6 +387,9 @@ export class ReactNativeMessenger implements Messenger {
     // Clear handlers and message buffer
     this.handlers.clear()
     this.messageBuffer = []
+    // A pending flush microtask bails on !isInitialized; clearing the flag
+    // here keeps handleMessage's buffering condition consistent too.
+    this.flushScheduled = false
 
     // Clear ID mappings
     this.stringToNumericId.clear()
@@ -372,6 +409,7 @@ export class ReactNativeMessenger implements Messenger {
     debugLog('ReactNativeMessenger reset for reuse')
     this.handlers.clear()
     this.messageBuffer = []
+    this.flushScheduled = false
     this.isInitialized = false
     this.hasBeenUsed = false
     // Reset ID mappings
