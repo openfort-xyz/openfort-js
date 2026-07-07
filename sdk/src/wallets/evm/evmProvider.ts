@@ -119,6 +119,9 @@ export class EvmProvider implements Provider {
 
   #handleLogout = async () => {
     this.#signer = undefined
+    // Session-scoped like the signer: the cached RPC provider is derived from
+    // the logged-in account's chainId, and this instance outlives logout.
+    this.#rpcProvider = null
     this.#eventEmitter.emit(ProviderEvent.DISCONNECT, { code: 4900, message: 'Disconnected' })
     this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [])
   }

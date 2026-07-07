@@ -408,12 +408,8 @@ describe('handleLogout()', () => {
   })
 
   it('keeps the EvmProvider across logout (it subscribes to the shared emitter)', async () => {
-    // The provider registers ON_LOGOUT/ON_SWITCH_ACCOUNT/CONNECTION_LOST
-    // handlers on the shared emitter in its constructor and is announced via
-    // EIP-6963 (external code holds the instance). Dropping it on logout made
-    // every login cycle construct a new provider whose subscriptions
-    // accumulated on the emitter without bound; the provider is designed to
-    // survive logout (its own ON_LOGOUT handler clears the cached signer).
+    // The provider subscribes to the shared emitter and is held externally
+    // via EIP-6963, so it must survive logout; only connection state clears.
     const { api } = makeApi()
     const signer = { disconnect: vi.fn().mockResolvedValue(undefined) }
     const manager = { hasFailed: false, isLoaded: () => true, destroy: vi.fn() }

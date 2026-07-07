@@ -99,4 +99,17 @@ describe('EvmProvider signer cache vs connection loss', () => {
 
     expect(ensureSigner).toHaveBeenCalledTimes(2)
   })
+
+  it('drops the cached RPC provider on logout (chainId is account-derived; the instance now survives logout)', async () => {
+    const { provider, openfortEventEmitter } = makeCachedSignerProvider()
+
+    const before = await provider.getRpcProvider()
+    expect(await provider.getRpcProvider()).toBe(before)
+
+    openfortEventEmitter.emit(OpenfortEvents.ON_LOGOUT)
+
+    // The next session may be a different account on a different chain —
+    // serving the previous session's provider would hit the wrong network.
+    expect(await provider.getRpcProvider()).not.toBe(before)
+  })
 })

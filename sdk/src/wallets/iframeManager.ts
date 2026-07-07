@@ -663,16 +663,12 @@ export class IframeManager {
         throw method === 'sign' ? new IframeSignTimeoutError(timeoutMs) : new IframeRpcTimeoutError(method, timeoutMs)
       }
       if (error instanceof PenpalError && error.code === 'CONNECTION_DESTROYED') {
-        // The connection was torn down while this call was in flight — a
-        // concurrent RPC timed out, the consumer destroyed the manager, or
-        // the REMOTE side destroyed the connection (e.g. the embed page tore
-        // its end down). For the local cases hasFailed is already set and
-        // this assignment is a no-op; for a remote-initiated destroy nothing
-        // else marks the manager, and without it the manager stays
-        // isLoaded()-but-dead forever — every subsequent operation would
-        // throw this same error until logout. No notification here: the
-        // local cases already notified, and rebuilding on the next operation
-        // covers the remote case without prompting host reactions.
+        // Torn down mid-call. Local teardown (concurrent timeout / consumer
+        // destroy) already set hasFailed, so this is a no-op there. A
+        // remote-initiated destroy has no other path to mark the manager —
+        // without this it stays isLoaded()-but-dead, throwing forever until
+        // logout. No notify: the next operation rebuilds against a fresh
+        // manager, which covers the remote case.
         this.hasFailed = true
         throw new IframeConnectionDestroyedError(method)
       }
