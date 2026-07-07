@@ -140,7 +140,6 @@ const shakeHands = <TMethods extends Methods>({
       // presents the shared deprecated participant id can therefore never be
       // reload-detected — an accepted trade-off, since a false reload report
       // (Sentry error + connection-lost event) is worse than a missed one.
-      // We don't need to run the rest of this function again either way.
       if (remoteParticipantId !== completedRemoteParticipantId) {
         completedRemoteParticipantId = remoteParticipantId
         log?.('Remote participant re-connected after handshake completion')

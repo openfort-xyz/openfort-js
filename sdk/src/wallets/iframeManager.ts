@@ -169,10 +169,10 @@ export class OTPRequiredError extends OpenfortError {
  */
 export class IframeRpcTimeoutError extends SignerError {
   constructor(method: string, timeoutMs: number, description?: string) {
-    // The description must flow through the constructor chain: OpenfortError
+    // Subclasses must pass their copy through this parameter: OpenfortError
     // sets the readonly `error_description` (the field consumers are told to
-    // display) from it, so patching `this.message` afterwards would leave the
-    // two diverged.
+    // display) from it, and patching `this.message` after super() would leave
+    // the two diverged.
     super(
       OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
       description ??
@@ -344,10 +344,9 @@ interface IframeManagerCallbacks {
   /**
    * Invoked when the connection degrades: an RPC or the handshake timed out,
    * or the embed page reloaded mid-session and re-handshaked. The parent
-   * (EmbeddedWalletApi) surfaces this to consumers as an SDK event. Note the
-   * per-reason semantics on {@link OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST}:
-   * for 'iframe-reloaded' the transport has already recovered and hosts must
-   * NOT reload the embed in reaction.
+   * (EmbeddedWalletApi) surfaces this to consumers as an SDK event — see
+   * {@link OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST} for the
+   * per-reason semantics.
    */
   onConnectionLost?: (reason: IframeConnectionLostReason) => void
 }
@@ -506,12 +505,12 @@ export class IframeManager {
     // of doInitialize, bail out before touching the messenger.
     this.assertAlive()
 
-    // Note: the messenger is NOT initialized here. connect() initializes it
-    // with the proper penpal message validator. Initializing it first had two
-    // problems: the permissive validator installed here won (messenger
-    // initialization is first-wins), and ReactNativeMessenger flushed any
-    // buffered handshake messages before connect()/shakeHands had registered
-    // their handlers, dropping the iframe's first SYN.
+    // The messenger is NOT initialized here — connect() initializes it with
+    // the proper penpal message validator. Messenger initialization is
+    // first-wins, so initializing here would lock in a permissive validator
+    // and make ReactNativeMessenger flush buffered handshake messages before
+    // connect()/shakeHands register their handlers, dropping the iframe's
+    // first SYN.
     this.connection = connect<IframeAPI>({
       messenger: this.messenger,
       timeout: HANDSHAKE_TIMEOUT_MS,
@@ -663,12 +662,12 @@ export class IframeManager {
         throw method === 'sign' ? new IframeSignTimeoutError(timeoutMs) : new IframeRpcTimeoutError(method, timeoutMs)
       }
       if (error instanceof PenpalError && error.code === 'CONNECTION_DESTROYED') {
-        // Torn down mid-call. Local teardown (concurrent timeout / consumer
-        // destroy) already set hasFailed, so this is a no-op there. A
-        // remote-initiated destroy has no other path to mark the manager —
-        // without this it stays isLoaded()-but-dead, throwing forever until
-        // logout. No notify: the next operation rebuilds against a fresh
-        // manager, which covers the remote case.
+        // Torn down mid-call. For a REMOTE-initiated destroy this is the only
+        // path that marks the manager for rebuild — without it, it stays
+        // isLoaded()-but-dead, throwing forever until logout. Local teardowns
+        // already left the manager unusable (timeout sets hasFailed, consumer
+        // destroy sets isDestroyed), so this is harmless there. No notify:
+        // the next operation rebuilds against a fresh manager.
         this.hasFailed = true
         throw new IframeConnectionDestroyedError(method)
       }

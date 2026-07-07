@@ -6,17 +6,13 @@ on:
   merge_group:
     branches:
       - main
-# A new push supersedes any in-flight run for the same ref — without this,
-# rapid pushes stack full runs that all burn runners to completion.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  # Main suite: the KNOWN shared E2E account with pre-provisioned wallet
-  # state, exactly as it always ran — serial (workers: 1, since tests share
-  # that account) across chromium/firefox/webkit. The connection-reliability
-  # stress spec is the only exclusion; it runs in the parallel guest-based
-  # job below instead of extending this one.
+  # Main suite: serial (tests share one E2E account) across
+  # chromium/firefox/webkit. The connection-reliability spec is guest-based
+  # and runs in the parallel `reliability` job below instead.
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -45,8 +41,6 @@ jobs:
     - name: Build SDK
       run: pnpm build
 
-    # Next.js incremental build cache — cuts the production build of the
-    # sample app on warm runs.
     - name: Cache Next.js build
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
@@ -68,8 +62,6 @@ jobs:
       run: pnpm build
       working-directory: examples/apps/auth-sample
 
-    # Browser binaries change only when the Playwright version does — cache
-    # them instead of re-downloading every run.
     - name: Cache Playwright browsers
       id: playwright-cache
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
@@ -102,8 +94,6 @@ jobs:
         NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
         NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
         E2E_TESTS_USER: ${{ vars.E2E_TESTS_USER }}
-      # Everything except the reliability project (guest-based, runs in the
-      # parallel job below) — i.e. the suite exactly as it ran before.
       run: pnpm playwright test --project=setup --project=chromium --project=firefox --project=webkit --reporter=dot
       working-directory: examples/apps/auth-sample
 
@@ -111,19 +101,17 @@ jobs:
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
-        # test-results/ holds the retry traces and error contexts — the dot
-        # reporter never writes playwright-report/, so without this the
-        # artifact was always empty and failures shipped no evidence.
+        # The dot reporter doesn't write playwright-report/; failure evidence
+        # (retry traces, error contexts) lands in test-results/.
         path: |
           examples/apps/auth-sample/playwright-report/
           examples/apps/auth-sample/test-results/
         retention-days: 30
         if-no-files-found: ignore
 
-  # Connection-reliability stress suite. Guest-account based (a fresh guest
-  # per test), so it never touches the shared E2E account — it runs here in
-  # parallel with the main job and with parallel workers, instead of adding
-  # ~10 serial minutes to it. Chromium only by design.
+  # Connection-reliability stress suite. A fresh guest account per test, so
+  # it never touches the shared E2E account and can run in parallel with the
+  # main job. Chromium only by design.
   reliability:
     timeout-minutes: 30
     runs-on: ubuntu-latest
@@ -173,7 +161,6 @@ jobs:
       run: pnpm build
       working-directory: examples/apps/auth-sample
 
-    # This job only needs chromium.
     - name: Cache Playwright browsers (chromium)
       id: playwright-cache
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0

@@ -90,7 +90,7 @@ describe('EvmProvider signer cache vs connection loss', () => {
     expect(ensureSigner).toHaveBeenCalledTimes(2)
   })
 
-  it('clears the cached signer on logout (existing behavior, kept)', async () => {
+  it('clears the cached signer on logout', async () => {
     const { provider, openfortEventEmitter, ensureSigner } = makeCachedSignerProvider()
 
     await provider.request({ method: 'personal_sign', params: ['0xmsg', '0xabc'] })
@@ -100,7 +100,7 @@ describe('EvmProvider signer cache vs connection loss', () => {
     expect(ensureSigner).toHaveBeenCalledTimes(2)
   })
 
-  it('drops the cached RPC provider on logout (chainId is account-derived; the instance now survives logout)', async () => {
+  it('drops the cached RPC provider on logout (its chainId is derived from the logged-in account)', async () => {
     const { provider, openfortEventEmitter } = makeCachedSignerProvider()
 
     const before = await provider.getRpcProvider()

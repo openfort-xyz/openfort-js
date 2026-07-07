@@ -166,9 +166,9 @@ export class Openfort {
       }
 
       // Forward all event types. Derived from the OpenfortEvents enum so a
-      // newly added event cannot be silently missing from the global emitter
-      // (a hardcoded copy of the list previously dropped new events). The UI
-      // flow events are not enum members yet, so they are appended explicitly.
+      // newly added event cannot be silently missing from the global emitter.
+      // The UI flow events are not enum members yet, so they are appended
+      // explicitly.
       const events: (keyof OpenfortEventMap)[] = [
         ...Object.values(OpenfortEvents),
         'onAuthFlowOpen',

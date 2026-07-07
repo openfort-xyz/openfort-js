@@ -129,9 +129,7 @@ const connectRemoteProxy = <TMethods extends Methods>(
       // `globalThis.setTimeout`, NOT `window.setTimeout`: this proxy also runs
       // in React Native (the messenger only rewrites the wire format), where
       // `window` is an alias RN happens to provide but non-browser runtimes
-      // (workers, some embedded JS engines) do not. The explicit qualifier is
-      // kept so node's `Timeout` return type doesn't leak into the browser
-      // build during tests.
+      // (workers, some embedded JS engines) do not.
       const timeoutId =
         timeout !== undefined
           ? globalThis.setTimeout(() => {

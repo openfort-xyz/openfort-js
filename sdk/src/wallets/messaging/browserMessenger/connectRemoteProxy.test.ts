@@ -3,10 +3,6 @@ import CallOptions from './CallOptions'
 import connectRemoteProxy from './connectRemoteProxy'
 import type { Message } from './types'
 
-// connectRemoteProxy uses `globalThis.setTimeout` (it must work outside
-// browsers — React Native routes RPCs through this same proxy), so no window
-// timer stubbing is needed here.
-
 // A minimal in-memory Messenger: it records outgoing CALL messages and lets the
 // test inject the matching REPLY, standing in for the iframe side of penpal.
 function makeFakeMessenger() {

@@ -112,8 +112,8 @@ describe('ReactNativeMessenger buffered-message flush ordering', () => {
     const messenger = makeMessenger()
     const received: unknown[] = []
 
-    // `penpal: 'reply'` with a malformed body drives convertFromDeprecatedFormat
-    // into the reply branch, which reads properties a bad payload may lack.
+    // `penpal: 'call'` with a null methodName drives convertFromDeprecatedFormat
+    // into the call branch, where `methodName.split('.')` throws.
     messenger.handleMessage({ penpal: 'call', id: 1, methodName: null })
     messenger.handleMessage(deprecatedSyn)
 

@@ -190,11 +190,8 @@ export class EmbeddedWalletApi {
     debugLog('[HANDSHAKE DEBUG] Creating IframeManager instance')
     return new IframeManager(configuration, this.storage, messenger, {
       onConnectionLost: (reason) => {
-        // Surface connection-health transitions to consumers. Hosts use this
-        // to react to an unresponsive embed — e.g. a React Native app may
-        // reload its hidden WebView on 'rpc-timeout'/'handshake-timeout'.
-        // For 'iframe-reloaded' the transport has ALREADY recovered and hosts
-        // must not reload in reaction (see the event's JSDoc).
+        // Surface connection-health transitions to consumers — see the
+        // event's JSDoc for the per-reason semantics hosts must follow.
         this.eventEmitter.emit(OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST, { reason })
       },
     })
