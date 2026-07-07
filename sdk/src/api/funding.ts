@@ -78,6 +78,36 @@ export type FundingPaymentMethodInput =
       country?: string
       /** URL the provider redirects back to after checkout. */
       redirectUrl?: string
+      /**
+       * Origin-chain refund address for an auto-bridged (chained) route — where
+       * the onramped intermediate is refunded if the bridge to the target
+       * bounces. Only needed when the route chains cross-VM (e.g. an EVM
+       * intermediate to a Solana target); same-VM chains refund automatically.
+       */
+      refundTo?: string
+      /**
+       * OTP-verified buyer email — REQUIRED for `apple_pay`/`google_pay`, which
+       * mint a Coinbase native order that needs partner-verified PII. Verify it
+       * via Openfort's own email OTP first. Ignored for `card`/`bank_transfer`.
+       */
+      email?: string
+      /**
+       * OTP-verified US mobile in E.164 — REQUIRED for `apple_pay`/`google_pay`.
+       * Verify it via Openfort's own phone OTP first. Ignored for
+       * `card`/`bank_transfer`.
+       * @example "+14155550123"
+       */
+      phoneNumber?: string
+      /**
+       * ISO-8601 time the phone OTP was verified. REQUIRED for
+       * `apple_pay`/`google_pay`; must be within Coinbase's 60-day re-verify window.
+       */
+      phoneNumberVerifiedAt?: string
+      /**
+       * ISO-8601 time the buyer accepted Coinbase's Guest Checkout terms (shown at
+       * the amount step). REQUIRED for `apple_pay`/`google_pay`.
+       */
+      agreementAcceptedAt?: string
     }
 
 export type FundingSessionStatus =

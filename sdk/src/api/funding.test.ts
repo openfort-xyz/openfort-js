@@ -151,6 +151,41 @@ describe('FundingApi', () => {
     }
   })
 
+  it('setPaymentMethod forwards the wallet-pay PII for a native apple_pay commit', async () => {
+    fetchMock
+      .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method' }))
+      .mockResolvedValueOnce(
+        okJson({
+          id: 'fnd_1',
+          status: 'waiting_payment',
+          paymentMethod: { type: 'onramp', method: 'apple_pay', angle: 'native', url: 'https://pay.coinbase.com/buy/1' },
+        })
+      )
+    const api = new FundingApi()
+    await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
+    await api.sessions.setPaymentMethod('fnd_1', {
+      paymentMethod: {
+        type: 'onramp',
+        method: 'apple_pay',
+        sourceAmount: '50.00',
+        sourceCurrency: 'USD',
+        email: 'buyer@example.com',
+        phoneNumber: '+14155550123',
+        phoneNumberVerifiedAt: '2026-07-07T12:00:00.000Z',
+        agreementAcceptedAt: '2026-07-07T12:01:00.000Z',
+      },
+    })
+    const body = JSON.parse(fetchMock.mock.calls[1][1].body)
+    expect(body.paymentMethod).toMatchObject({
+      type: 'onramp',
+      method: 'apple_pay',
+      email: 'buyer@example.com',
+      phoneNumber: '+14155550123',
+      phoneNumberVerifiedAt: '2026-07-07T12:00:00.000Z',
+      agreementAcceptedAt: '2026-07-07T12:01:00.000Z',
+    })
+  })
+
   it('methods() GETs the session-scoped resolved rows with the remembered secret', async () => {
     fetchMock
       .mockResolvedValueOnce(okJson({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method' }))
