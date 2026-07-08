@@ -18,6 +18,24 @@ const REQUIRED_TYPED_DATA_PROPERTIES = ['types', 'domain', 'primaryType', 'messa
 const isValidTypedDataPayload = (typedData: object): typedData is TypedDataPayload =>
   REQUIRED_TYPED_DATA_PROPERTIES.every((key) => key in typedData)
 
+export const parseTypedDataChainId = (chainId: string | number): number => {
+  if (typeof chainId === 'number') {
+    return chainId
+  }
+
+  const isHex = chainId.startsWith('0x')
+  if (isHex ? !/^0x[0-9a-fA-F]+$/.test(chainId) : !/^\d+$/.test(chainId)) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `Invalid chainId: ${chainId}`)
+  }
+
+  const parsed = Number.parseInt(chainId, isHex ? 16 : 10)
+  if (!Number.isSafeInteger(parsed)) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `Invalid chainId: ${chainId}`)
+  }
+
+  return parsed
+}
+
 const transformTypedData = (typedData: string | object, chainId: number): TypedDataPayload => {
   let transformedTypedData: object | TypedDataPayload
 
@@ -44,13 +62,7 @@ const transformTypedData = (typedData: string | object, chainId: number): TypedD
   const providedChainId: number | string | undefined = (transformedTypedData as any).domain?.chainId
   if (providedChainId) {
     // domain.chainId (if defined) can be a number, string, or hex value, but the backend & guardian only accept a number.
-    if (typeof providedChainId === 'string') {
-      if (providedChainId.startsWith('0x')) {
-        transformedTypedData.domain.chainId = parseInt(providedChainId, 16)
-      } else {
-        transformedTypedData.domain.chainId = parseInt(providedChainId, 10)
-      }
-    }
+    transformedTypedData.domain.chainId = parseTypedDataChainId(providedChainId)
 
     if (transformedTypedData.domain.chainId !== chainId) {
       throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `Invalid chainId, expected ${chainId}`)
