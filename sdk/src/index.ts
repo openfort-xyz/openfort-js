@@ -64,7 +64,8 @@ export {
   PasskeySeedInvalidError,
   PasskeyUserCancelledError,
 } from './core/passkey'
-// Export storage interface
+// Export storage interface and implementations
+export { ChromeExtensionStorage, isChromeExtensionStorage } from './storage/chromeExtensionStorage'
 export { IStorage as Storage } from './storage/istorage'
 // biome-ignore lint/performance/noReExportAll: Main SDK entry point needs to re-export all types
 export * from './types'
