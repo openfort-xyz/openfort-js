@@ -20509,6 +20509,14 @@
           },
           "details": {
             "$ref": "#/components/schemas/FieldErrors"
+          },
+          "code": {
+            "type": "string",
+            "description": "Machine-readable cause, when the thrower disambiguates one (e.g. funding_key_required)."
+          },
+          "param": {
+            "type": "string",
+            "description": "Offending request field path, when the thrower points at one (e.g. target.chain)."
           }
         },
         "required": [
