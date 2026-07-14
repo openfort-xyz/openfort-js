@@ -7,7 +7,7 @@ import { UserApi } from '../api/user'
 import { AuthManager } from '../auth/authManager'
 import { type IStorage, StorageKeys } from '../storage/istorage'
 import { LazyStorage } from '../storage/lazyStorage'
-import type { OpenfortEventMap } from '../types/types'
+import { type OpenfortEventMap, OpenfortEvents } from '../types/types'
 import TypedEventEmitter from '../utils/typedEventEmitter'
 import { type OpenfortSDKConfiguration, SDKConfiguration } from './config/config'
 import { OPENFORT_AUTH_ERROR_CODES, OPENFORT_ERROR_CODES } from './errors/authErrorCodes'
@@ -165,16 +165,12 @@ export class Openfort {
         })
       }
 
-      // Forward all event types
+      // Forward all event types. Derived from the OpenfortEvents enum so a
+      // newly added event cannot be silently missing from the global emitter.
+      // The UI flow events are not enum members yet, so they are appended
+      // explicitly.
       const events: (keyof OpenfortEventMap)[] = [
-        'onAuthInit',
-        'onAuthSuccess',
-        'onAuthFailure',
-        'onLogout',
-        'onSwitchAccount',
-        'onSignedMessage',
-        'onEmbeddedWalletCreated',
-        'onEmbeddedWalletRecovered',
+        ...Object.values(OpenfortEvents),
         'onAuthFlowOpen',
         'onAuthFlowClose',
         'onAuthFlowCancel',

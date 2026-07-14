@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Playwright drives the app via http://127.0.0.1:3000 while `next dev`
+  // binds to localhost — allow the alternate host for dev resources (HMR).
+  allowedDevOrigins: ['127.0.0.1'],
   transpilePackages: ['@rainbow-me/rainbowkit'],
   serverExternalPackages: ['pino', 'pino-pretty', 'thread-stream', 'lokijs', 'encoding'],
   turbopack: {

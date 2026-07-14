@@ -97,6 +97,7 @@ export class EvmProvider implements Provider {
 
     openfortEventEmitter.on(OpenfortEvents.ON_LOGOUT, this.#handleLogout)
     openfortEventEmitter.on(OpenfortEvents.ON_SWITCH_ACCOUNT, this.#handleSwitchAccount)
+    openfortEventEmitter.on(OpenfortEvents.ON_EMBEDDED_WALLET_CONNECTION_LOST, this.#handleConnectionLost)
   }
 
   #ensureSigner = async (): Promise<Signer> => {
@@ -106,8 +107,21 @@ export class EvmProvider implements Provider {
     return this.#signer
   }
 
+  #handleConnectionLost = async () => {
+    // The iframe manager underneath the cached signer has been poisoned
+    // (RPC/handshake timeout) or superseded (embed reload). Drop the cache so
+    // the next request goes through the injected ensureSigner, which rebuilds
+    // against a fresh manager — otherwise every provider call keeps hitting
+    // the dead manager and throws 'Previous connection attempt failed' until
+    // logout.
+    this.#signer = undefined
+  }
+
   #handleLogout = async () => {
     this.#signer = undefined
+    // Session-scoped like the signer: the cached RPC provider is derived from
+    // the logged-in account's chainId, and this instance outlives logout.
+    this.#rpcProvider = null
     this.#eventEmitter.emit(ProviderEvent.DISCONNECT, { code: 4900, message: 'Disconnected' })
     this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [])
   }

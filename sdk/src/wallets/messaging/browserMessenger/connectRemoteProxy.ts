@@ -12,7 +12,7 @@ type ReplyHandler = {
   methodPath: MethodPath
   resolve: (value: unknown) => void
   reject: (reason: unknown) => void
-  timeoutId?: number
+  timeoutId?: ReturnType<typeof setTimeout>
 }
 
 const methodsToTreatAsNative = new Set(['apply', 'call', 'bind'])
@@ -126,18 +126,13 @@ const connectRemoteProxy = <TMethods extends Methods>(
     const argsWithoutOptions = lastArgIsOptions ? args.slice(0, -1) : args
 
     return new Promise((resolve, reject) => {
-      // We reference `window.setTimeout` instead of just `setTimeout`
-      // so that the TypeScript engine doesn't
-      // get confused when running tests. Something within
-      // Karma + @rollup/plugin-typescript leaks node types into source
-      // files when running tests. Node's setTimeout has a return type of
-      // Timeout rather than number, resulting in a build error when
-      // running tests if we don't disambiguate the browser setTimeout
-      // from node's setTimeout. There may be a better way to configure
-      // Karma + Rollup + Typescript to avoid node type leakage.
+      // `globalThis.setTimeout`, NOT `window.setTimeout`: this proxy also runs
+      // in React Native (the messenger only rewrites the wire format), where
+      // `window` is an alias RN happens to provide but non-browser runtimes
+      // (workers, some embedded JS engines) do not.
       const timeoutId =
         timeout !== undefined
-          ? window.setTimeout(() => {
+          ? globalThis.setTimeout(() => {
               replyHandlers.delete(callId)
               reject(
                 new PenpalError(

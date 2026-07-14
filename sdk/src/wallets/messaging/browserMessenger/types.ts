@@ -28,8 +28,14 @@ export type Connection<TMethods extends Methods = Methods> = {
   /**
    * A method that, when called, will disconnect any communication.
    * You may call this even before a connection has been established.
+   *
+   * Pass `false` to tear down locally WITHOUT sending a DESTROY message to
+   * the other participant. Use this when the remote must stay connectable —
+   * e.g. a React Native WebView child page that cannot be reloaded: a
+   * DESTROY makes it remove its message listeners permanently, so every
+   * later handshake against it times out.
    */
-  destroy: () => void
+  destroy: (notifyRemote?: boolean) => void
 }
 
 /**
