@@ -21,6 +21,7 @@ const modules = {
     dir: 'dist',
     format: 'es',
     preserveModules: true,
+    sourcemap: true,
   },
   plugins: [
     nodeResolve({
@@ -64,6 +65,7 @@ const cjs = {
     preserveModules: true,
     entryFileNames: '[name].cjs',
     chunkFileNames: '[name].cjs',
+    sourcemap: true,
   },
   plugins: [
     nodeResolve({

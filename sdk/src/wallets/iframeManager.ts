@@ -489,6 +489,12 @@ export class IframeManager {
       if (error instanceof SessionEndedBeforeSetupError) {
         throw error
       }
+      // Only report terminal handshake failures. Callers which transparently
+      // retry suppress the first attempt, so a recovered timeout never creates
+      // a noisy Sentry issue.
+      if (!this.suppressHandshakeLostNotify) {
+        sentry.captureException(error)
+      }
       // Mark as failed so this instance won't be reused
       this.hasFailed = true
       throw error
@@ -545,7 +551,6 @@ export class IframeManager {
         debugLog('Connection rejected after destroy() — surfacing teardown error')
       }
       this.assertAlive()
-      sentry.captureException(error)
       // Internal cleanup only — do NOT mark `isDestroyed`. The consumer hasn't
       // torn the manager down; the handshake itself failed. Marking it
       // destroyed here would shadow the genuine "configure your origin" hint
