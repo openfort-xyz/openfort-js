@@ -5,6 +5,86 @@ import { PACKAGE, VERSION } from '../../version'
 
 const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296' // Prod
 
+const EXPECTED_ERROR_CODES = new Set([
+  'ALREADY_LOGGED_IN',
+  'INVALID_EMAIL',
+  'INVALID_EMAIL_OR_PASSWORD',
+  'INVALID_OTP',
+  'INVALID_PASSWORD',
+  'INVALID_TOKEN',
+  'NOT_LOGGED_IN',
+  'OTP_EXPIRED',
+  'SESSION_EXPIRED',
+  'USER_ALREADY_EXISTS',
+  'USER_EMAIL_NOT_FOUND',
+  'USER_NOT_AUTHORIZED',
+  'USER_NOT_FOUND',
+])
+
+const EXPECTED_HTTP_STATUSES = new Set([400, 401, 403, 409, 422, 429])
+const SENSITIVE_KEY = /authorization|cookie|credential|password|secret|token/i
+
+type BaseTags = {
+  projectEnvironment: 'production' | 'test' | 'unknown'
+  projectId: string
+  sdkName: string
+  sdkRuntime: 'browser' | 'react-native' | 'server'
+  sdkVersion: string
+}
+
+const getProjectEnvironment = (publishableKey: string): BaseTags['projectEnvironment'] => {
+  if (publishableKey.startsWith('pk_live_')) return 'production'
+  if (publishableKey.startsWith('pk_test_')) return 'test'
+  return 'unknown'
+}
+
+const getRuntime = (): BaseTags['sdkRuntime'] => {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') return 'react-native'
+  if (typeof window !== 'undefined') return 'browser'
+  return 'server'
+}
+
+const redactRecord = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(redactRecord)
+  if (!value || typeof value !== 'object') return value
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => [key, SENSITIVE_KEY.test(key) ? '[Filtered]' : redactRecord(entry)])
+  )
+}
+
+const sanitizeUrl = (value?: string): string | undefined => {
+  if (!value) return undefined
+  try {
+    const url = new URL(value)
+    return `${url.origin}${url.pathname}`
+  } catch {
+    return value.split(/[?#]/, 1)[0]
+  }
+}
+
+const getErrorCode = (error: unknown): string | undefined => {
+  if (!error || typeof error !== 'object') return undefined
+  const candidate = error as { error?: unknown; response?: { data?: unknown } }
+  if (typeof candidate.error === 'string') return candidate.error
+
+  const data = candidate.response?.data
+  if (!data || typeof data !== 'object') return undefined
+  const response = data as { code?: unknown; error?: unknown }
+  if (typeof response.code === 'string') return response.code
+  if (typeof response.error === 'string') return response.error
+  if (response.error && typeof response.error === 'object' && 'code' in response.error) {
+    const nestedCode = (response.error as { code?: unknown }).code
+    return typeof nestedCode === 'string' ? nestedCode : undefined
+  }
+  return undefined
+}
+
+const shouldCapture = (error: unknown, statusCode?: number): boolean => {
+  const errorCode = getErrorCode(error)
+  return !(statusCode && EXPECTED_HTTP_STATUSES.has(statusCode)) && !(errorCode && EXPECTED_ERROR_CODES.has(errorCode))
+}
+
 declare module '@sentry/core' {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   interface Client {
@@ -19,11 +99,7 @@ export class InternalSentry {
 
   private static queuedCalls: Array<{ fn: string; args: any[] }> = []
 
-  private static baseTags: {
-    projectId: string
-    sdk: string
-    sdkVersion: string
-  }
+  private static baseTags: BaseTags
 
   private static set sentry(sentry: Client) {
     // eslint-disable-next-line no-param-reassign
@@ -43,8 +119,7 @@ export class InternalSentry {
     // eslint-disable-next-line no-param-reassign
     sentry.captureAxiosError = (method: string, error: unknown, hint?: EventHint, scope?: Scope) => {
       if (error instanceof AxiosError) {
-        // Skip Sentry notification for 400 and 401 errors
-        if (error.response?.status === 400 || error.response?.status === 401) {
+        if (!shouldCapture(error, error.response?.status)) {
           return
         }
         // eslint-disable-next-line no-param-reassign
@@ -54,10 +129,8 @@ export class InternalSentry {
           captureContext: {
             ...hint?.captureContext,
             extra: {
-              errorResponseData: error.response?.data,
+              errorCode: getErrorCode(error),
               errorStatus: error.response?.status,
-              errorHeaders: error.response?.headers,
-              errorRequest: error.request,
             },
             tags: {
               ...InternalSentry.baseTags,
@@ -72,18 +145,14 @@ export class InternalSentry {
 
     // eslint-disable-next-line no-param-reassign
     sentry.captureError = (context: string, error: Error, hint?: EventHint, _scope?: Scope) => {
-      // Skip Sentry notification for 400 and 401 errors
-      // Check both AuthenticationError.statusCode and RequestError.statusCode
       const statusCode = (error as any).statusCode
-      if (statusCode === 400 || statusCode === 401) {
+      if (!shouldCapture(error, statusCode)) {
         return
       }
 
       // Extract error properties for OpenfortError instances
       const openfortError = error as any
       const errorCode = openfortError.error
-      const errorDescription = openfortError.error_description
-
       const captureContext = hint?.captureContext as any
       sentry.captureException(error, {
         ...hint,
@@ -92,7 +161,6 @@ export class InternalSentry {
           extra: {
             ...captureContext?.extra,
             errorCode,
-            errorDescription,
             errorClass: error.constructor.name,
             // Include specific error properties based on type
             ...(openfortError.statusCode && {
@@ -100,10 +168,6 @@ export class InternalSentry {
             }),
             ...(openfortError.audience && { audience: openfortError.audience }),
             ...(openfortError.scope && { scope: openfortError.scope }),
-            ...(openfortError.accountId && {
-              accountId: openfortError.accountId,
-            }),
-            ...(openfortError.userId && { userId: openfortError.userId }),
             ...(openfortError.provider && { provider: openfortError.provider }),
             ...(openfortError.recoveryMethod && {
               recoveryMethod: openfortError.recoveryMethod,
@@ -132,6 +196,15 @@ export class InternalSentry {
     sentry?: Client
     configuration?: OpenfortSDKConfiguration
   }): Promise<void> {
+    const publishableKey = configuration?.baseConfiguration.publishableKey ?? ''
+    InternalSentry.baseTags = {
+      projectEnvironment: getProjectEnvironment(publishableKey),
+      projectId: publishableKey,
+      sdkName: PACKAGE,
+      sdkRuntime: getRuntime(),
+      sdkVersion: VERSION,
+    }
+
     if (sentry) {
       InternalSentry.sentry = sentry
       return
@@ -156,17 +229,29 @@ export class InternalSentry {
       // that previously reported release: null now carry the SDK version.
       InternalSentry.sentry = new sentryImport.BrowserClient({
         dsn: SENTRY_DSN,
+        environment: InternalSentry.baseTags.projectEnvironment,
         release: `${PACKAGE}@${VERSION}`,
         integrations: [],
         stackParser: sentryImport.defaultStackParser,
         transport: sentryImport.makeFetchTransport,
+        beforeSend(event) {
+          return {
+            ...event,
+            contexts: redactRecord(event.contexts) as typeof event.contexts,
+            extra: redactRecord(event.extra) as typeof event.extra,
+            request: event.request
+              ? {
+                  method: event.request.method,
+                  url: sanitizeUrl(event.request.url),
+                }
+              : undefined,
+            tags: {
+              ...event.tags,
+              ...InternalSentry.baseTags,
+            },
+          }
+        },
       })
-
-      InternalSentry.baseTags = {
-        projectId: configuration?.baseConfiguration.publishableKey ?? '',
-        sdk: PACKAGE,
-        sdkVersion: VERSION,
-      }
 
       InternalSentry.processQueuedCalls()
     } catch {

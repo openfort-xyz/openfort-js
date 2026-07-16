@@ -47,6 +47,7 @@ vi.mock('../core/errors/sentry', () => ({
   },
 }))
 
+import { sentry } from '../core/errors/sentry'
 import { connect, PenpalError } from './messaging/browserMessenger'
 
 type Deferred<T> = {
@@ -295,6 +296,8 @@ describe('IframeManager handshake-timeout discriminator (OPENFORT-JS-D0)', () =>
     expect(message).not.toMatch(/configure your origin/i)
     // The original PenpalError is preserved for programmatic routing.
     expect((caught as { cause?: unknown }).cause).toBe(penpalError)
+    expect(sentry.captureException).toHaveBeenCalledOnce()
+    expect(sentry.captureException).toHaveBeenCalledWith(caught)
   })
 
   it('keeps the "configure your origin" hint for non-timeout handshake failures', async () => {
@@ -718,6 +721,7 @@ describe('IframeManager connection-lost notifications', () => {
     )
 
     expect(onConnectionLost).not.toHaveBeenCalled()
+    expect(sentry.captureException).not.toHaveBeenCalled()
   })
 
   it('does NOT notify when the logout RPC times out (intentional teardown)', async () => {
