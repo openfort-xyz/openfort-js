@@ -1,15 +1,6 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { CreateFundingSessionRequest, FundingSessionResponse } from '@openfort/openapi-clients/dist/backend'
 import { withApiError } from '../core/errors/withApiError'
-import {
-  createFundingEmitter,
-  type FundingAnalyticsSink,
-  type FundingSessionDimensions,
-  type PaymentMethodType,
-} from './fundingAnalytics'
-
-/** Extract a safe, already-sanitized message from a thrown funding error. */
-const analyticsMessage = (e: unknown): string => (e instanceof Error ? e.message : String(e))
 
 /**
  * Funding (cross-chain wallet deposit) resource.
@@ -174,134 +165,10 @@ export interface FundingChain {
 }
 
 export class FundingApi {
-  /** Best-effort analytics emitter; a no-op until a sink is attached. */
-  private emit: FundingAnalyticsSink
-
-  constructor(
-    private readonly backendApiClients: BackendApiClients,
-    sink?: FundingAnalyticsSink
-  ) {
-    this.emit = createFundingEmitter(sink)
-  }
-
-  /**
-   * Attach (or clear) the funding analytics sink at runtime. Client SDKs that
-   * resolve their handler after SDK construction (e.g. from a `uiConfig`) call
-   * this; SDK-config callers can instead pass it via `overrides.funding.onEvent`.
-   * Passing `undefined` restores the no-op emitter.
-   */
-  public setAnalyticsSink(sink?: FundingAnalyticsSink): void {
-    this.emit = createFundingEmitter(sink)
-  }
+  constructor(private readonly backendApiClients: BackendApiClients) {}
 
   private get fundingApi() {
     return this.backendApiClients.fundingApi
-  }
-
-  private static readonly TERMINAL: ReadonlySet<FundingSessionStatus> = new Set(['succeeded', 'bounced', 'expired'])
-
-  /**
-   * Per-session analytics state: first-observed timestamp + last seen status.
-   * Lets `get()`/`wait()` emit `funding_status_changed` and terminal timing
-   * (`secondsToTerminal`) without the caller threading any of it through.
-   */
-  private readonly tracked = new Map<string, { lastStatus: FundingSessionStatus; startedAt: number }>()
-
-  /** Record first observation of a session (idempotent). */
-  private trackStart(session: FundingSession): void {
-    if (!this.tracked.has(session.id)) {
-      this.tracked.set(session.id, { lastStatus: session.status, startedAt: Date.now() })
-    }
-  }
-
-  private secondsSinceStart(sessionId: string): number {
-    const started = this.tracked.get(sessionId)?.startedAt ?? Date.now()
-    return Math.round((Date.now() - started) / 1000)
-  }
-
-  /**
-   * Run a best-effort analytics block. Building an event reads session fields, so
-   * a malformed/partial session must never throw into the funding flow — the sink
-   * itself is already guarded, this guards the construction around it.
-   */
-  private safe(block: () => void): void {
-    try {
-      block()
-    } catch {
-      // analytics is best-effort; never surface into the deposit path
-    }
-  }
-
-  /** Routing dimensions attached to terminal events for breakdown without joins. */
-  private static dimensions(session: FundingSession): FundingSessionDimensions {
-    const pm = session.paymentMethod
-    return {
-      paymentMethodType: (pm?.type as PaymentMethodType | undefined) ?? null,
-      sourceChain: pm?.source.chain ?? null,
-      targetChain: session.target.chain,
-      targetCurrency: session.target.currency,
-    }
-  }
-
-  /** Emit `funding_session_created` for a freshly created session. */
-  private emitCreated(session: FundingSession): void {
-    this.safe(() =>
-      this.emit({
-        type: 'funding_session_created',
-        sessionId: session.id,
-        targetChain: session.target.chain,
-        targetCurrency: session.target.currency,
-        status: session.status,
-      })
-    )
-  }
-
-  /** Emit `funding_payment_method_set` from a session that now carries a payment method. */
-  private emitPaymentMethodSet(session: FundingSession): void {
-    this.safe(() => {
-      const pm = session.paymentMethod
-      if (!pm) return
-      this.emit({
-        type: 'funding_payment_method_set',
-        sessionId: session.id,
-        paymentMethodType: pm.type as PaymentMethodType,
-        sourceChain: pm.source.chain,
-        sourceCurrency: pm.source.currency,
-        sourceAmount: pm.source.amount,
-        receiverAddress: pm.receiverAddress ?? null,
-        minAmount: pm.minAmount,
-        feeKinds: pm.fees.map((f) => f.kind),
-        status: session.status,
-      })
-    })
-  }
-
-  /**
-   * Diff a freshly fetched session against its last seen status and emit the
-   * matching lifecycle event: `funding_status_changed` for a non-terminal move,
-   * or `funding_succeeded | funding_bounced | funding_expired` on a terminal one.
-   * No-ops when the status is unchanged or the session was never `trackStart`ed.
-   */
-  private emitStatusTransition(session: FundingSession): void {
-    const entry = this.tracked.get(session.id)
-    const from = entry?.lastStatus
-    if (entry) entry.lastStatus = session.status
-    if (from === undefined || from === session.status) return
-    this.safe(() => {
-      if (FundingApi.TERMINAL.has(session.status)) {
-        const secondsToTerminal = this.secondsSinceStart(session.id)
-        const dims = FundingApi.dimensions(session)
-        if (session.status === 'succeeded') {
-          this.emit({ type: 'funding_succeeded', sessionId: session.id, txHash: null, secondsToTerminal, ...dims })
-        } else if (session.status === 'bounced') {
-          this.emit({ type: 'funding_bounced', sessionId: session.id, secondsToTerminal, ...dims })
-        } else {
-          this.emit({ type: 'funding_expired', sessionId: session.id, secondsToTerminal, ...dims })
-        }
-      } else {
-        this.emit({ type: 'funding_status_changed', sessionId: session.id, from, to: session.status })
-      }
-    })
   }
 
   /**
@@ -354,16 +221,8 @@ export class FundingApi {
             })
           ).data,
         { context: 'funding.sessions.create' }
-      ).catch((e) => {
-        this.emit({ type: 'funding_session_error', sessionId: null, stage: 'create', message: analyticsMessage(e) })
-        throw e
-      })
-      const session = this.remember(FundingApi.toSession(response))
-      this.trackStart(session)
-      this.emitCreated(session)
-      // One-call create (paymentMethod set at creation) already carries an address.
-      if (session.paymentMethod) this.emitPaymentMethodSet(session)
-      return session
+      )
+      return this.remember(FundingApi.toSession(response))
     },
 
     setPaymentMethod: async (
@@ -380,18 +239,8 @@ export class FundingApi {
             })
           ).data,
         { context: 'funding.sessions.setPaymentMethod' }
-      ).catch((e) => {
-        this.emit({ type: 'funding_session_error', sessionId, stage: 'setPaymentMethod', message: analyticsMessage(e) })
-        throw e
-      })
-      const session = FundingApi.toSession(response)
-      this.trackStart(session)
-      // Advance the tracked status so a subsequent poll diffs from waiting_payment,
-      // not the pre-payment status (the meaningful event here is payment_method_set).
-      const entry = this.tracked.get(session.id)
-      if (entry) entry.lastStatus = session.status
-      this.emitPaymentMethodSet(session)
-      return session
+      )
+      return FundingApi.toSession(response)
     },
 
     get: async (sessionId: string, params?: { clientSecret?: string }): Promise<FundingSession> => {
@@ -399,14 +248,8 @@ export class FundingApi {
       const response = await withApiError(
         async () => (await this.fundingApi.getFundingSession({ sessionId, clientSecret })).data,
         { context: 'funding.sessions.get' }
-      ).catch((e) => {
-        this.emit({ type: 'funding_session_error', sessionId, stage: 'poll', message: analyticsMessage(e) })
-        throw e
-      })
-      const session = FundingApi.toSession(response)
-      this.trackStart(session)
-      this.emitStatusTransition(session)
-      return session
+      )
+      return FundingApi.toSession(response)
     },
 
     /**
