@@ -12,18 +12,21 @@ PostHog dashboard maps 1:1 across every platform**. JS SDKs import the types fro
 native SDK that can't import the module reimplements the same names/keys against
 this document.
 
-## Two classes of event — who emits what
+## Scope: session-lifecycle (truth) events only
 
-| Class | Events | Emitter |
-|---|---|---|
-| **Session-lifecycle (truth)** | `funding_session_created`, `funding_payment_method_set`, `funding_status_changed`, `funding_succeeded`, `funding_bounced`, `funding_expired`, `funding_session_error` | **`openfort-js`** (any SDK routing funding through `client.funding` gets them free). A native SDK that reimplements the funding calls emits them at the equivalent hops. |
-| **UI-intent** | `funding_route_selected`, `funding_address_copied`, `funding_session_abandoned` | **Each client SDK**, from its own view layer — the SDK core never observes these. |
+The tracked set is the events derived from the funding session state machine that
+`FundingApi` mediates. **`openfort-js` emits them itself**, so any SDK that routes
+funding through `client.funding` gets them for free — no view-layer work per SDK.
+
+View-layer **UI-intent** events (route selection, address-copy, session
+abandonment) are **intentionally not tracked for now**: the SDK core never
+observes them, and the current decision is to instrument only the js/api data
+layer. They can be reintroduced later as a separate client-emitted set.
 
 ## Session model
 
 A funding **session** is one deposit attempt. Group all events by `sessionId`
-(format `fnd_*`). `sessionId` is `null` only for `funding_address_copied` /
-`funding_route_selected` on a same-chain transfer (no Relay session is created).
+(format `fnd_*`).
 
 Backend status state machine (authoritative), mirrored by every SDK:
 
@@ -40,27 +43,22 @@ but Relay refunded them (bridge failure). `expired` = nothing arrived before the
 Property values reuse SDK vocabulary: `status` ∈ the state machine above;
 `paymentMethodType` ∈ `evm | solana | cex`.
 
-### Lifecycle (emitted by `openfort-js`)
-
 | Event | When | Properties |
 |---|---|---|
 | `funding_session_created` | `sessions.create` returned | `sessionId`, `targetChain` (CAIP-2), `targetCurrency`, `status` |
 | `funding_payment_method_set` | `sessions.setPaymentMethod` returned (or one-call create) — deposit address + quote now exist | `sessionId`, `paymentMethodType`, `sourceChain`, `sourceCurrency`, `sourceAmount` (source base units), `receiverAddress`, `minAmount`, `feeKinds[]`, `status` |
 | `funding_status_changed` | Poll observed a non-terminal transition | `sessionId`, `from`, `to` |
-| `funding_succeeded` | Terminal: funds delivered | `sessionId`, `txHash` (nullable), `secondsToTerminal` |
-| `funding_bounced` | Terminal: refunded | `sessionId`, `secondsToTerminal` |
-| `funding_expired` | Terminal: TTL elapsed, nothing arrived | `sessionId`, `secondsToTerminal` |
+| `funding_succeeded` | Terminal: funds delivered | `sessionId`, `txHash` (nullable), `secondsToTerminal`, **+ dimensions** |
+| `funding_bounced` | Terminal: refunded | `sessionId`, `secondsToTerminal`, **+ dimensions** |
+| `funding_expired` | Terminal: TTL elapsed, nothing arrived | `sessionId`, `secondsToTerminal`, **+ dimensions** |
 | `funding_session_error` | A funding call threw | `sessionId` (nullable on create), `stage` (`create` \| `setPaymentMethod` \| `poll`), `message` |
 
+**Terminal dimensions** (on `funding_succeeded` / `funding_bounced` /
+`funding_expired`): `paymentMethodType` (nullable), `sourceChain` (nullable, CAIP-2),
+`targetChain` (CAIP-2), `targetCurrency`. Carried on the terminal event itself so
+outcome/timing insights break down by route without cross-event joins.
+
 `secondsToTerminal` is measured from the SDK's first observation of the session.
-
-### UI-intent (emitted by each client SDK)
-
-| Event | When | Properties |
-|---|---|---|
-| `funding_route_selected` | User picked a source route in the UI | `kind` (`crypto` \| `cex`), `sourceChain`, `sourceCurrency`, `destChain` |
-| `funding_address_copied` | User copied the deposit address (high-intent) | `sessionId` (nullable), `chain`, `asset` |
-| `funding_session_abandoned` | Flow left (reset/unmount) with a non-terminal session | `sessionId`, `lastStatus`, `secondsInSession` |
 
 ## Wiring (JS SDKs)
 
@@ -75,14 +73,11 @@ new Openfort({
 client.funding.setAnalyticsSink((e) => posthog.capture(e.type, e))
 ```
 
-Emission is best-effort: a throwing sink can never break the deposit flow. A
-client SDK forwards both the lifecycle events (from the sink) and its own
-UI-intent events into the same backend.
+Emission is best-effort: a throwing sink can never break the deposit flow.
 
 ## Native SDK (Swift) implementation notes
 
 Emit the same event `type` strings and property keys. Lifecycle events fire at
 the equivalent funding hops (create / set-payment-method / poll / terminal /
-error); UI-intent events fire from the deposit UI. Keep `sessionId`, chain ids
-(CAIP-2), and `paymentMethodType` values byte-identical to the table above so
-funnels line up with the JS SDKs.
+error). Keep `sessionId`, chain ids (CAIP-2), and `paymentMethodType` values
+byte-identical to the table above so funnels line up with the JS SDKs.

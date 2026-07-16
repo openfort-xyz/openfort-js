@@ -27,6 +27,7 @@ export {
   createFundingEmitter,
   type FundingAnalyticsEvent,
   type FundingAnalyticsSink,
+  type FundingSessionDimensions,
   type PaymentMethodType,
 } from './api/fundingAnalytics'
 export { ProxyApi } from './api/proxy'

@@ -13,23 +13,24 @@ import type { FundingFee, FundingSessionStatus } from './funding'
  * names and property keys so a single PostHog dashboard maps 1:1 across every
  * platform.
  *
- * Two classes of event live in this union:
+ * Scope: **session-lifecycle (truth) events only** — the events derived from the
+ * funding session state machine that {@link FundingApi} mediates. `openfort-js`
+ * emits these itself (see {@link FundingApi.setAnalyticsSink}), so any SDK that
+ * routes funding through `client.funding` gets them for free, no view-layer work:
+ *   - `funding_session_created`
+ *   - `funding_payment_method_set`
+ *   - `funding_status_changed`
+ *   - `funding_succeeded` / `funding_bounced` / `funding_expired`
+ *   - `funding_session_error`
  *
- * 1. **Session-lifecycle (truth) events** — derived from the funding session
- *    state machine that {@link FundingApi} mediates. `openfort-js` emits these
- *    itself (see {@link FundingApi.setAnalyticsSink}), so any SDK that routes
- *    funding through `client.funding` gets them for free:
- *      - `funding_session_created`
- *      - `funding_payment_method_set`
- *      - `funding_status_changed`
- *      - `funding_succeeded` / `funding_bounced` / `funding_expired`
- *      - `funding_session_error`
+ * View-layer UI-intent events (route selection, address-copy, abandonment) are
+ * intentionally not modeled here for now: they can't be observed from the SDK
+ * core, and the current decision is to track only the js/api data layer. They
+ * can be added back as a separate client-emitted set if that changes.
  *
- * 2. **UI-intent events** — user actions in the view layer that the SDK never
- *    observes. Each client SDK emits these from its own UI:
- *      - `funding_route_selected`
- *      - `funding_address_copied`
- *      - `funding_session_abandoned`
+ * Every terminal event carries the session's routing dimensions
+ * (`paymentMethodType`, `sourceChain`, `targetChain`, `targetCurrency`) so
+ * outcome/timing insights can break down by them without cross-event joins.
  *
  * Event property values reuse the SDK's own vocabulary so a dashboard maps 1:1
  * to code: `status` values come from {@link FundingSessionStatus}, and
@@ -43,19 +44,21 @@ import type { FundingFee, FundingSessionStatus } from './funding'
  */
 export type PaymentMethodType = 'evm' | 'solana' | 'cex'
 
+/**
+ * Routing dimensions of a session, attached to terminal events so a single
+ * insight can segment outcomes/timing by them. `paymentMethodType`/`sourceChain`
+ * are null only if a session somehow terminates before a payment method was set.
+ */
+export interface FundingSessionDimensions {
+  paymentMethodType: PaymentMethodType | null
+  /** CAIP-2 source chain funds were sent from. */
+  sourceChain: string | null
+  /** CAIP-2 destination chain funds settle on. */
+  targetChain: string
+  targetCurrency: string
+}
+
 export type FundingAnalyticsEvent =
-  /** A source chain/currency was selected and a session flow kicked off for it. UI-intent (client-emitted). */
-  | {
-      type: 'funding_route_selected'
-      /** Which rail: self-custody wallet send vs exchange withdrawal. */
-      kind: 'crypto' | 'cex'
-      /** CAIP-2 source chain the user commits to sending from. */
-      sourceChain: string
-      /** Source currency symbol. */
-      sourceCurrency: string
-      /** CAIP-2 destination chain funds settle on. */
-      destChain: string
-    }
   /** `sessions.create` returned — a deposit attempt exists (no address yet). */
   | {
       type: 'funding_session_created'
@@ -83,16 +86,6 @@ export type FundingAnalyticsEvent =
       feeKinds: FundingFee['kind'][]
       status: FundingSessionStatus
     }
-  /** The user copied the deposit address — high-intent signal that they're about to send. UI-intent (client-emitted). */
-  | {
-      type: 'funding_address_copied'
-      /** Null for a same-chain transfer (no Relay session — funds go straight to the wallet). */
-      sessionId: string | null
-      /** CAIP-2 source chain the address lives on. */
-      chain: string
-      /** Source currency symbol being sent. */
-      asset: string
-    }
   /** The polled session moved between non-terminal states (e.g. waiting_payment → processing). */
   | {
       type: 'funding_status_changed'
@@ -101,32 +94,25 @@ export type FundingAnalyticsEvent =
       to: FundingSessionStatus
     }
   /** Terminal: funds delivered to the destination wallet. */
-  | {
+  | ({
       type: 'funding_succeeded'
       sessionId: string
       /** On-chain settlement hash when the session exposes one, else null. */
       txHash: string | null
       secondsToTerminal: number
-    }
+    } & FundingSessionDimensions)
   /** Terminal: source funds arrived but Relay refunded them (bridge failure). */
-  | {
+  | ({
       type: 'funding_bounced'
       sessionId: string
       secondsToTerminal: number
-    }
+    } & FundingSessionDimensions)
   /** Terminal: nothing arrived before the session's TTL. */
-  | {
+  | ({
       type: 'funding_expired'
       sessionId: string
       secondsToTerminal: number
-    }
-  /** The flow was left (reset/unmount) with a non-terminal session — high-intent drop-off. UI-intent (client-emitted). */
-  | {
-      type: 'funding_session_abandoned'
-      sessionId: string
-      lastStatus: FundingSessionStatus
-      secondsInSession: number
-    }
+    } & FundingSessionDimensions)
   /** A funding call threw. `stage` locates the failing hop. */
   | {
       type: 'funding_session_error'

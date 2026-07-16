@@ -231,26 +231,47 @@ describe('FundingApi analytics', () => {
     })
   })
 
-  it('emits funding_status_changed then funding_succeeded with timing across a wait', async () => {
+  // A fully-populated session as the get endpoint returns it (target + method).
+  const paid = {
+    target: { chain: 'eip155:8453', currency: 'USDC', address: '0x1' },
+    paymentMethod: {
+      type: 'evm',
+      source: { chain: 'eip155:137', currency: 'POL', amount: '1000' },
+      receiverAddress: '0xreceiver',
+      addressUri: 'ethereum:0xreceiver',
+      deeplinks: [],
+      fees: [],
+      minAmount: null,
+    },
+  }
+
+  it('emits funding_status_changed then funding_succeeded with timing + dimensions', async () => {
     funding.getFundingSession
-      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'waiting_payment', paymentMethod: null }))
-      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'processing', paymentMethod: null }))
-      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'succeeded', paymentMethod: null }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'waiting_payment', ...paid }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'processing', ...paid }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'succeeded', ...paid }))
     await withSink().sessions.wait('fnd_1', { clientSecret: 'cs_1', pollMs: 1 })
     expect(typesOf()).toEqual(['funding_status_changed', 'funding_succeeded'])
     expect(events[0]).toMatchObject({ from: 'waiting_payment', to: 'processing' })
     const terminal = events[1] as Extract<FundingAnalyticsEvent, { type: 'funding_succeeded' }>
-    expect(terminal.sessionId).toBe('fnd_1')
-    expect(terminal.txHash).toBeNull()
+    expect(terminal).toMatchObject({
+      sessionId: 'fnd_1',
+      txHash: null,
+      paymentMethodType: 'evm',
+      sourceChain: 'eip155:137',
+      targetChain: 'eip155:8453',
+      targetCurrency: 'USDC',
+    })
     expect(typeof terminal.secondsToTerminal).toBe('number')
   })
 
-  it('emits funding_bounced on a refunded terminal', async () => {
+  it('emits funding_bounced on a refunded terminal, carrying dimensions', async () => {
     funding.getFundingSession
-      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'processing', paymentMethod: null }))
-      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'bounced', paymentMethod: null }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'processing', ...paid }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'bounced', ...paid }))
     await withSink().sessions.wait('fnd_1', { clientSecret: 'cs_1', pollMs: 1 })
     expect(typesOf()).toEqual(['funding_bounced'])
+    expect(events[0]).toMatchObject({ sourceChain: 'eip155:137', targetChain: 'eip155:8453' })
   })
 
   it('emits funding_session_error tagged with the failing stage', async () => {

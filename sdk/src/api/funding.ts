@@ -1,7 +1,12 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { CreateFundingSessionRequest, FundingSessionResponse } from '@openfort/openapi-clients/dist/backend'
 import { withApiError } from '../core/errors/withApiError'
-import { createFundingEmitter, type FundingAnalyticsSink, type PaymentMethodType } from './fundingAnalytics'
+import {
+  createFundingEmitter,
+  type FundingAnalyticsSink,
+  type FundingSessionDimensions,
+  type PaymentMethodType,
+} from './fundingAnalytics'
 
 /** Extract a safe, already-sanitized message from a thrown funding error. */
 const analyticsMessage = (e: unknown): string => (e instanceof Error ? e.message : String(e))
@@ -227,6 +232,17 @@ export class FundingApi {
     }
   }
 
+  /** Routing dimensions attached to terminal events for breakdown without joins. */
+  private static dimensions(session: FundingSession): FundingSessionDimensions {
+    const pm = session.paymentMethod
+    return {
+      paymentMethodType: (pm?.type as PaymentMethodType | undefined) ?? null,
+      sourceChain: pm?.source.chain ?? null,
+      targetChain: session.target.chain,
+      targetCurrency: session.target.currency,
+    }
+  }
+
   /** Emit `funding_session_created` for a freshly created session. */
   private emitCreated(session: FundingSession): void {
     this.safe(() =>
@@ -274,12 +290,13 @@ export class FundingApi {
     this.safe(() => {
       if (FundingApi.TERMINAL.has(session.status)) {
         const secondsToTerminal = this.secondsSinceStart(session.id)
+        const dims = FundingApi.dimensions(session)
         if (session.status === 'succeeded') {
-          this.emit({ type: 'funding_succeeded', sessionId: session.id, txHash: null, secondsToTerminal })
+          this.emit({ type: 'funding_succeeded', sessionId: session.id, txHash: null, secondsToTerminal, ...dims })
         } else if (session.status === 'bounced') {
-          this.emit({ type: 'funding_bounced', sessionId: session.id, secondsToTerminal })
+          this.emit({ type: 'funding_bounced', sessionId: session.id, secondsToTerminal, ...dims })
         } else {
-          this.emit({ type: 'funding_expired', sessionId: session.id, secondsToTerminal })
+          this.emit({ type: 'funding_expired', sessionId: session.id, secondsToTerminal, ...dims })
         }
       } else {
         this.emit({ type: 'funding_status_changed', sessionId: session.id, from, to: session.status })
