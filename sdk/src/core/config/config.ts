@@ -1,6 +1,5 @@
 import type { IPasskeyHandler } from 'core/passkey'
 import type { ThirdPartyOAuthProvider } from 'types'
-import type { FundingAnalyticsSink } from '../../api/fundingAnalytics'
 import type { IStorage } from '../../storage/istorage'
 import { setCryptoDigestOverride } from '../../utils/crypto'
 
@@ -13,11 +12,6 @@ export interface SDKOverrides {
   }
   storage?: IStorage
   passkeyHandler?: IPasskeyHandler
-  /** Funding-session analytics. `onEvent` receives typed lifecycle events emitted
-   *  by `client.funding` — forward them to PostHog or any sink. */
-  funding?: {
-    onEvent?: FundingAnalyticsSink
-  }
 }
 
 export interface ThirdPartyAuthConfiguration {
@@ -121,8 +115,6 @@ export class SDKConfiguration {
 
   readonly disableTelemetry?: boolean
 
-  readonly fundingOnEvent?: FundingAnalyticsSink
-
   static instance: SDKConfiguration | null = null
 
   constructor({
@@ -145,7 +137,6 @@ export class SDKConfiguration {
     }
     this.shieldUrl = overrides?.shieldUrl || 'https://shield.openfort.io'
     this.storage = overrides?.storage
-    this.fundingOnEvent = overrides?.funding?.onEvent
     this.thirdPartyAuth = thirdPartyAuth
 
     this.nativeAppIdentifier = baseConfiguration.nativeAppIdentifier

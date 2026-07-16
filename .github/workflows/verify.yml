@@ -36,12 +36,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Security audit
-        # npm retired the audit endpoint this hits (HTTP 410), so `pnpm audit`
-        # now fails on every run regardless of dependencies. Keep the step for
-        # visibility but don't let the dead endpoint block CI.
         run: pnpm audit
-        continue-on-error: true
-
+      
       - name: sherif
         run: pnpm check:repo
 
