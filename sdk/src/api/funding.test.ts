@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockAxiosError } from '../__tests__/fixtures/auth'
 import { OpenfortError } from '../core/errors/openfortError'
 import { FundingApi } from './funding'
+import type { FundingAnalyticsEvent } from './fundingAnalytics'
 
 // Mock sentry so error-path tests don't touch the real reporter.
 vi.mock('../core/errors/sentry', () => ({
@@ -154,5 +155,139 @@ describe('FundingApi', () => {
         paymentMethod: { type: 'evm', source: { chain: 'eip155:137', currency: '0x0', amount: '1000' } },
       },
     })
+  })
+})
+
+describe('FundingApi analytics', () => {
+  let funding: ReturnType<typeof mockFundingApi>
+  let events: FundingAnalyticsEvent[]
+  const sink = (e: FundingAnalyticsEvent) => events.push(e)
+  const withSink = () => new FundingApi({ fundingApi: funding } as unknown as BackendApiClients, sink)
+  const typesOf = () => events.map((e) => e.type)
+
+  beforeEach(() => {
+    funding = mockFundingApi()
+    events = []
+  })
+
+  it('emits funding_session_created on create (no payment method yet)', async () => {
+    funding.createFundingSession.mockReturnValue(
+      ok({
+        id: 'fnd_1',
+        clientSecret: 'cs_1',
+        status: 'requires_payment_method',
+        target: { chain: 'eip155:8453', currency: 'USDC', address: '0x1' },
+        paymentMethod: null,
+      })
+    )
+    await withSink().sessions.create({
+      target: { chain: 'eip155:8453', currency: 'USDC', address: '0x1' },
+    })
+    expect(events).toEqual([
+      {
+        type: 'funding_session_created',
+        sessionId: 'fnd_1',
+        targetChain: 'eip155:8453',
+        targetCurrency: 'USDC',
+        status: 'requires_payment_method',
+      },
+    ])
+  })
+
+  it('emits created + payment_method_set for a one-call create', async () => {
+    funding.createFundingSession.mockReturnValue(
+      ok({
+        id: 'fnd_1',
+        clientSecret: 'cs_1',
+        status: 'waiting_payment',
+        target: { chain: 'eip155:8453', currency: 'USDC', address: '0x1' },
+        paymentMethod: {
+          type: 'evm',
+          source: { chain: 'eip155:137', currency: 'POL', amount: '1000' },
+          receiverAddress: '0xreceiver',
+          addressUri: 'ethereum:0xreceiver',
+          deeplinks: [],
+          fees: [{ kind: 'relayerService', amount: '5', currency: 'POL' }],
+          minAmount: '900',
+        },
+      })
+    )
+    await withSink().sessions.create({
+      target: { chain: 'eip155:8453', currency: 'USDC', address: '0x1' },
+      paymentMethod: { type: 'evm', source: { chain: 'eip155:137', currency: 'POL', amount: '1000' } },
+    })
+    expect(typesOf()).toEqual(['funding_session_created', 'funding_payment_method_set'])
+    expect(events[1]).toEqual({
+      type: 'funding_payment_method_set',
+      sessionId: 'fnd_1',
+      paymentMethodType: 'evm',
+      sourceChain: 'eip155:137',
+      sourceCurrency: 'POL',
+      sourceAmount: '1000',
+      receiverAddress: '0xreceiver',
+      minAmount: '900',
+      feeKinds: ['relayerService'],
+      status: 'waiting_payment',
+    })
+  })
+
+  it('emits funding_status_changed then funding_succeeded with timing across a wait', async () => {
+    funding.getFundingSession
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'waiting_payment', paymentMethod: null }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'processing', paymentMethod: null }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'succeeded', paymentMethod: null }))
+    await withSink().sessions.wait('fnd_1', { clientSecret: 'cs_1', pollMs: 1 })
+    expect(typesOf()).toEqual(['funding_status_changed', 'funding_succeeded'])
+    expect(events[0]).toMatchObject({ from: 'waiting_payment', to: 'processing' })
+    const terminal = events[1] as Extract<FundingAnalyticsEvent, { type: 'funding_succeeded' }>
+    expect(terminal.sessionId).toBe('fnd_1')
+    expect(terminal.txHash).toBeNull()
+    expect(typeof terminal.secondsToTerminal).toBe('number')
+  })
+
+  it('emits funding_bounced on a refunded terminal', async () => {
+    funding.getFundingSession
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'processing', paymentMethod: null }))
+      .mockReturnValueOnce(ok({ id: 'fnd_1', status: 'bounced', paymentMethod: null }))
+    await withSink().sessions.wait('fnd_1', { clientSecret: 'cs_1', pollMs: 1 })
+    expect(typesOf()).toEqual(['funding_bounced'])
+  })
+
+  it('emits funding_session_error tagged with the failing stage', async () => {
+    funding.getFundingSession.mockRejectedValue(createMockAxiosError(500, { raw: 'boom' }))
+    await withSink()
+      .sessions.get('fnd_1', { clientSecret: 'cs_1' })
+      .catch(() => {})
+    expect(typesOf()).toEqual(['funding_session_error'])
+    expect(events[0]).toMatchObject({ stage: 'poll', sessionId: 'fnd_1' })
+  })
+
+  it('a throwing sink never breaks the funding flow', async () => {
+    funding.createFundingSession.mockReturnValue(
+      ok({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method', paymentMethod: null })
+    )
+    const api = new FundingApi({ fundingApi: funding } as unknown as BackendApiClients, () => {
+      throw new Error('sink exploded')
+    })
+    const session = await api.sessions.create({
+      target: { chain: 'eip155:8453', currency: 'USDC', address: '0x1' },
+    })
+    expect(session.id).toBe('fnd_1')
+  })
+
+  it('setAnalyticsSink attaches a sink after construction', async () => {
+    funding.createFundingSession.mockReturnValue(
+      ok({
+        id: 'fnd_1',
+        clientSecret: 'cs_1',
+        status: 'requires_payment_method',
+        target: { chain: 'eip155:8453', currency: 'USDC', address: '0x1' },
+        paymentMethod: null,
+      })
+    )
+    const api = makeApi(funding)
+    api.setAnalyticsSink(sink)
+    await api.sessions.create({ target: { chain: 'eip155:8453', currency: 'USDC', address: '0x1' } })
+    expect(typesOf()).toEqual(['funding_session_created'])
   })
 })

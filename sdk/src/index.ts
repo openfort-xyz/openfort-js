@@ -23,6 +23,12 @@ export {
   type FundingWalletDeeplink,
   type PayLinkParams,
 } from './api/funding'
+export {
+  createFundingEmitter,
+  type FundingAnalyticsEvent,
+  type FundingAnalyticsSink,
+  type PaymentMethodType,
+} from './api/fundingAnalytics'
 export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'
 // Export error handling
