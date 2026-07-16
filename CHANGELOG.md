@@ -1,5 +1,23 @@
 # @openfort/openfort-js
 
+## 1.6.0
+
+### Minor Changes
+
+- [#334](https://github.com/openfort-xyz/openfort-js/pull/334) [`1494474`](https://github.com/openfort-xyz/openfort-js/commit/1494474a2506ddb878f475015c7102785ab81656) Thanks [@jamalavedra](https://github.com/jamalavedra)! - Add a canonical, SDK-agnostic funding-session analytics contract. `openfort-js`
+  now defines the `FundingAnalyticsEvent` union + `FundingAnalyticsSink` and emits
+  the session-lifecycle events (`funding_session_created`,
+  `funding_payment_method_set`, `funding_status_changed`, `funding_succeeded` /
+  `funding_bounced` / `funding_expired`, `funding_session_error`) from
+  `client.funding` as sessions are created, funded, and polled. Terminal events
+  carry the session's routing dimensions (`paymentMethodType`, `sourceChain`,
+  `targetChain`, `targetCurrency`) so outcome/timing insights break down without
+  cross-event joins. Wire a sink via `overrides.funding.onEvent` at SDK
+  construction, or `client.funding.setAnalyticsSink(sink)` at runtime, then forward
+  events to PostHog (or any backend). Emission is best-effort and never throws into
+  the deposit path. Scope is the session-lifecycle (js/api truth) events only;
+  view-layer UI-intent events are intentionally not modeled here.
+
 ## 1.5.3
 
 ### Patch Changes
