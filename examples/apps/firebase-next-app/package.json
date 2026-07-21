@@ -13,7 +13,7 @@
     "@openfort/openfort-js": "workspace:^",
     "@radix-ui/react-icons": "^1.3.2",
     "@tanstack/react-query": "^5.99.0",
-    "axios": "^1.15.0",
+    "axios": "^1.18.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^11.10.0",
