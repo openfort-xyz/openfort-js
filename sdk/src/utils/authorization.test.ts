@@ -1,37 +1,51 @@
-import { describe, expect, it } from 'vitest'
-import { hashAuthorization } from './authorization'
+import { describe, expect, it, vi } from 'vitest'
+import type { Signer } from '../wallets/isigner'
+import { signAuthorization } from './authorization'
 
 const VALID_ADDRESS = '0x1234567890abcdef1234567890abcdef12345678'
 
-describe('hashAuthorization input validation', () => {
-  it('produces a 32-byte hash for valid inputs', () => {
-    const hash = hashAuthorization({ chainId: 1, address: VALID_ADDRESS, nonce: 0 })
-    expect(hash).toMatch(/^0x[0-9a-fA-F]{64}$/)
+/** Returns a well-formed 65-byte signature so valid inputs reach the end. */
+const stubSigner = () =>
+  ({ sign: vi.fn().mockResolvedValue(`0x${'11'.repeat(32)}${'22'.repeat(32)}1b`) }) as unknown as Signer
+
+const sign = (chainId: number, address: string, nonce: number) =>
+  signAuthorization({ authorization: { chainId, address, nonce }, signer: stubSigner() })
+
+describe('EIP-7702 authorization input validation', () => {
+  it('signs a well-formed authorization', async () => {
+    const signed = await sign(1, VALID_ADDRESS, 0)
+    expect(signed.r).toMatch(/^0x[0-9a-f]{64}$/)
+    expect(signed.s).toMatch(/^0x[0-9a-f]{64}$/)
+    expect([0, 1]).toContain(signed.yParity)
   })
 
-  it('is deterministic', () => {
-    expect(hashAuthorization({ chainId: 8453, address: VALID_ADDRESS, nonce: 7 })).toBe(
-      hashAuthorization({ chainId: 8453, address: VALID_ADDRESS, nonce: 7 })
-    )
+  it('hashes the same inputs identically', async () => {
+    const signer = stubSigner()
+    await signAuthorization({ authorization: { chainId: 8453, address: VALID_ADDRESS, nonce: 7 }, signer })
+    await signAuthorization({ authorization: { chainId: 8453, address: VALID_ADDRESS, nonce: 7 }, signer })
+    const calls = (signer.sign as ReturnType<typeof vi.fn>).mock.calls
+    expect(calls[0][0]).toBe(calls[1][0])
   })
 
-  it('changes when any field changes', () => {
-    const base = hashAuthorization({ chainId: 1, address: VALID_ADDRESS, nonce: 0 })
-    expect(hashAuthorization({ chainId: 2, address: VALID_ADDRESS, nonce: 0 })).not.toBe(base)
-    expect(hashAuthorization({ chainId: 1, address: VALID_ADDRESS, nonce: 1 })).not.toBe(base)
-    expect(hashAuthorization({ chainId: 1, address: `0x${'a'.repeat(40)}`, nonce: 0 })).not.toBe(base)
+  it('hashes differently when any field changes', async () => {
+    const signer = stubSigner()
+    await signAuthorization({ authorization: { chainId: 1, address: VALID_ADDRESS, nonce: 0 }, signer })
+    await signAuthorization({ authorization: { chainId: 2, address: VALID_ADDRESS, nonce: 0 }, signer })
+    await signAuthorization({ authorization: { chainId: 1, address: VALID_ADDRESS, nonce: 1 }, signer })
+    const hashes = (signer.sign as ReturnType<typeof vi.fn>).mock.calls.map((call: unknown[]) => call[0])
+    expect(new Set(hashes).size).toBe(3)
   })
 
-  // A malformed address previously produced a structurally plausible
-  // authorization that was signed anyway -- a valid signature over wrong data.
+  // The encoder accepts any hex-shaped string, so the address is checked
+  // before signing.
   it.each([
     ['too short', '0x1234'],
     ['too long', `0x${'a'.repeat(42)}`],
     ['missing 0x prefix', 'a'.repeat(40)],
     ['non-hex characters', `0x${'z'.repeat(40)}`],
     ['empty', ''],
-  ])('rejects an address that is %s', (_label, address) => {
-    expect(() => hashAuthorization({ chainId: 1, address, nonce: 0 })).toThrow(/authorization address/i)
+  ])('refuses to sign an address that is %s', async (_label, address) => {
+    await expect(sign(1, address, 0)).rejects.toThrow(/authorization address/i)
   })
 
   it.each([
@@ -39,15 +53,23 @@ describe('hashAuthorization input validation', () => {
     ['fractional', 1.5],
     ['above 2^53', Number.MAX_SAFE_INTEGER + 2],
     ['NaN', Number.NaN],
-  ])('rejects a chainId that is %s', (_label, chainId) => {
-    expect(() => hashAuthorization({ chainId, address: VALID_ADDRESS, nonce: 0 })).toThrow(/chainId/i)
+  ])('refuses to sign a chainId that is %s', async (_label, chainId) => {
+    await expect(sign(chainId, VALID_ADDRESS, 0)).rejects.toThrow(/chainId/i)
   })
 
   it.each([
     ['negative', -1],
     ['fractional', 0.5],
     ['above 2^53', Number.MAX_SAFE_INTEGER + 2],
-  ])('rejects a nonce that is %s', (_label, nonce) => {
-    expect(() => hashAuthorization({ chainId: 1, address: VALID_ADDRESS, nonce })).toThrow(/nonce/i)
+  ])('refuses to sign a nonce that is %s', async (_label, nonce) => {
+    await expect(sign(1, VALID_ADDRESS, nonce)).rejects.toThrow(/nonce/i)
+  })
+
+  it('never calls the signer when validation fails', async () => {
+    const signer = stubSigner()
+    await expect(
+      signAuthorization({ authorization: { chainId: 1, address: '0xdeadbeef', nonce: 0 }, signer })
+    ).rejects.toThrow()
+    expect(signer.sign).not.toHaveBeenCalled()
   })
 })

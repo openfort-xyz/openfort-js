@@ -1,29 +1,89 @@
 # Security Policy
 
-Security vulnerabilities should be disclosed to the project maintainers through email to security@openfort.xyz.
+## Reporting a Vulnerability
 
-## Security Patches
+Report privately through
+[GitHub private vulnerability reporting](https://github.com/openfort-xyz/openfort-js/security/advisories/new),
+or by email to security@openfort.xyz. Please do not open a public issue for a
+security report.
 
-Security vulnerabilities will be patched as soon as responsibly possible, and published as an advisory on this repository and on the affected npm packages.
+Include:
 
-Projects that build on Openfort's contracts are encouraged to clearly state, in their source code and websites, how to be contacted about security issues in the event that a direct notification is considered necessary. We recommend including it in the NatSpec for the contract as `/// @custom:security-contact security@example.com`.
+- a description of the issue and its impact,
+- a suggested severity (Critical / High / Medium / Low),
+- the affected SDK version,
+- a minimal reproducible example.
 
-Additionally, we recommend installing the library through npm and setting up vulnerability alerts such as [Dependabot].
+**Response targets:** acknowledgement within 2 business days, initial triage
+within 5 business days, and a status update at least every 7 days until the
+issue is resolved.
 
-[Dependabot]: https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-supply-chain-security#what-is-dependabot
+## Scope
 
-### Supported Versions
+In scope — the packages published from this repository, in particular
+`@openfort/openfort-js`:
 
-Security patches will be released for the latest minor of a given major release. For example, if an issue is found in versions >=1.1.0 and the latest is 1.8.0, the patch will be released only in version 1.8.1.
+- key handling and the embedded-wallet iframe bridge,
+- session keys and delegated signing,
+- authentication flows and token storage,
+- signing paths (`personal_sign`, `eth_signTypedData_v4`, EIP-7702
+  authorizations).
 
-Only critical severity bug fixes will be backported to past major releases.
+Out of scope:
 
-| Version | Critical security fixes | Other security fixes |
-| ------- | ----------------------- | -------------------- |
-| 0.x     | :white_check_mark:      | :white_check_mark:   |
+- the Openfort dashboard and backend API — report those to
+  security@openfort.xyz, which covers all Openfort products,
+- issues that require an already-compromised device or a malicious host
+  application (an attacker executing JavaScript on the integrating origin can
+  already reach anything the SDK can),
+- dependency advisories with no exploitable path through this SDK,
+- the sample applications under `examples/`, which use sandbox credentials and
+  are illustrative only.
 
-Note as well that the Solidity language itself only guarantees security updates for the latest release.
+## Safe Harbor
+
+We will not pursue legal action for security research conducted in good faith
+under this policy. Good faith means: no access to other users' data or accounts
+beyond what is needed to demonstrate the issue, no service degradation, no data
+exfiltration, and private disclosure to us before any public discussion.
+
+## Supported Versions
+
+| Version | Supported |
+| ------- | --------- |
+| 1.x     | :white_check_mark: |
+| 0.x     | :x:       |
+
+Security patches are released on the latest minor of a supported major and
+published as a GitHub Security Advisory on this repository as well as to npm.
+
+## Supply Chain
+
+Measures applied to this repository and its releases:
+
+- dependencies must be at least 24 hours old before they can be installed
+  (`minimumReleaseAge`), limiting exposure to a compromised fresh publish,
+- install scripts are disabled by default (`ignore-scripts`), with an explicit
+  allowlist for the few packages that need them,
+- runtime dependencies are pinned to exact versions, so a published SDK version
+  always resolves the same tree,
+- releases are published from CI via npm Trusted Publishing (OIDC) with
+  provenance attestations; no long-lived npm token exists,
+- all GitHub Actions are pinned to full commit SHAs,
+- every pull request is scanned for secrets, and the release pipeline runs the
+  full verification suite on the exact commit being published.
+
+You can verify a release's provenance with:
+
+```bash
+npm audit signatures
+```
 
 ## Legal
 
-Smart contracts are a nascent technology and carry a high level of technical risk and uncertainty. Openfort's Contracts are made available under the GNU v3.0 License, which disclaims all warranties in relation to the project and which limits the liability of those that contribute and maintain the project, including Openfort. In your use of this project, you are solely responsible for any use of Openfort Contracts and you assume all risks associated with any such use. This Security Policy in no way evidences or represents an on-going duty by any contributor, including Openfort, to correct any flaws or alert you to all or any of the potential risks of utilizing the project.
+This project is made available under the Apache License 2.0, which disclaims
+all warranties and limits the liability of those who contribute to and maintain
+it, including Openfort. You are solely responsible for your use of this
+software and assume all associated risks. This Security Policy does not create
+an ongoing duty for any contributor, including Openfort, to correct any flaw or
+to alert you to any or all potential risks of using the project.

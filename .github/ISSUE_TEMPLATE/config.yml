@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/openfort-xyz/openfort-js/security/advisories/new
+    about: Report privately. Please do not open a public issue.
+  - name: Documentation
+    url: https://www.openfort.io/docs
+    about: Guides and API reference.
+  - name: Support
+    url: https://www.openfort.io/discord
+    about: Questions about integrating the SDK.

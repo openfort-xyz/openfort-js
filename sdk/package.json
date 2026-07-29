@@ -8,7 +8,7 @@
     "Openfort",
     "Openfort.js"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "files": [
     "dist",
     "package.json",
@@ -24,7 +24,8 @@
     "check": "biome check --write src",
     "format": "biome format --write src",
     "build": "pnpm packageList && node copyVersion.cjs && NODE_ENV=production pnpm rollup --config rollup.config.js && rm -rf dist/types && cp dist/index.d.ts dist/index.d.cts",
-    "stats": "open ./stats.html"
+    "stats": "open ./stats.html",
+    "size": "size-limit"
   },
   "publishConfig": {
     "access": "public",
@@ -80,5 +81,25 @@
   "module": "./dist/sdk/src/index.js",
   "type": "module",
   "types": "./dist/index.d.ts",
-  "sideEffects": false
+  "sideEffects": false,
+  "size-limit": [
+    {
+      "name": "import * from '@openfort/openfort-js'",
+      "path": "./dist/sdk/src/index.js",
+      "limit": "245 kB",
+      "import": "*"
+    },
+    {
+      "name": "import { Openfort }",
+      "path": "./dist/sdk/src/index.js",
+      "limit": "245 kB",
+      "import": "{ Openfort }"
+    },
+    {
+      "name": "import { OpenfortError } (see tree-shaking note)",
+      "path": "./dist/sdk/src/index.js",
+      "limit": "245 kB",
+      "import": "{ OpenfortError }"
+    }
+  ]
 }

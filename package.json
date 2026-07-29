@@ -14,7 +14,7 @@
     "test:unit": "pnpm --filter @openfort/openfort-js test:unit",
     "test:watch": "pnpm --filter @openfort/openfort-js test:watch",
     "preinstall": "pnpx only-allow pnpm",
-    "verify": "pnpm audit && pnpm check:repo && pnpm biome check && pnpm check:types && pnpm test:unit && pnpm knip --production && pnpm build && pnpm test:build",
+    "verify": "pnpm audit && pnpm check:repo && pnpm biome check && pnpm check:types && pnpm test:unit && pnpm knip --production && pnpm build && pnpm test:build && pnpm test:env && pnpm build:docs && pnpm size",
     "check": "biome check",
     "check:fix": "biome check --write --unsafe",
     "check:repo": "sherif",
@@ -42,7 +42,8 @@
     "changeset:publish": "pnpm build && changeset publish",
     "changeset:prepublish": "pnpm build",
     "test:build": "publint --strict ./sdk && attw --pack ./sdk",
-    "test:env": "pnpm --filter test-tsc test"
+    "test:env": "pnpm --filter test-tsc test",
+    "size": "pnpm --filter @openfort/openfort-js size"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -58,6 +59,7 @@
     "@changesets/cli": "^2.30.0",
     "@playwright/test": "^1.61.0",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@size-limit/preset-small-lib": "11.2.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
     "events": "^3.3.0",
@@ -65,9 +67,10 @@
     "publint": "^0.3.18",
     "sherif": "^0.8.4",
     "simple-git-hooks": "^2.13.1",
+    "size-limit": "11.2.0",
     "stream-browserify": "^3.0.0",
     "tslib": "^2.8.1",
-    "typedoc": "^0.24.8",
+    "typedoc": "^0.28.20",
     "typescript": "^5.9.3",
     "vm-browserify": "^1.1.2"
   },

@@ -98,3 +98,10 @@ jobs:
       # imports inside the shipped declarations are checked too.
       - name: Type-check built package as a consumer
         run: pnpm test:env
+
+      # Keeps the generated reference documentation buildable.
+      - name: Build API documentation
+        run: pnpm build:docs
+
+      - name: Bundle size budget
+        run: pnpm size

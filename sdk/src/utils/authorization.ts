@@ -142,7 +142,7 @@ function encodeAuthorizationRLP(chainId: number, address: string, nonce: number)
  * @param authorization - The authorization to hash
  * @returns The keccak256 hash as a hex string
  */
-export function hashAuthorization(authorization: Authorization): string {
+function hashAuthorization(authorization: Authorization): string {
   const { address, chainId, nonce } = authorization
 
   // RLP encode [chainId, address, nonce]
