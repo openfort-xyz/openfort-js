@@ -61,7 +61,6 @@ function sanitize(value: unknown): string {
 export function debugLog(...args: unknown[]): void {
   const configuration = SDKConfiguration.getInstance()
   if (configuration?.debug) {
-    // biome-ignore lint/suspicious/noConsole: this is the SDK's debug transport
     console.log(`${new Date().toISOString()} [SDK]`, ...args.map(sanitize))
   }
 }
