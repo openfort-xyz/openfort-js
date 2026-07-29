@@ -70,7 +70,33 @@ export type SignAuthorizationParams = {
  * Simple RLP encoding for authorization tuple [chainId, address, nonce]
  * Only handles the specific structure needed for EIP-7702 authorization hashing
  */
+const ADDRESS_PATTERN = /^0x[0-9a-fA-F]{40}$/
+
+/**
+ * Validates the inputs to an EIP-7702 authorization before it is encoded,
+ * hashed and signed.
+ *
+ * The encoder below does raw hex string surgery and will happily produce a
+ * structurally plausible authorization from a malformed address or an unsafe
+ * integer. Because signing happens before any on-chain validation, the failure
+ * mode is a *valid signature over the wrong data* — e.g. delegating to an
+ * unintended implementation address.
+ */
+function assertValidAuthorizationInputs(chainId: number, address: string, nonce: number): void {
+  if (!ADDRESS_PATTERN.test(address)) {
+    throw new Error(`Invalid EIP-7702 authorization address: expected a 20-byte 0x-prefixed hex string`)
+  }
+  if (!Number.isSafeInteger(chainId) || chainId < 0) {
+    throw new Error(`Invalid EIP-7702 authorization chainId: expected a non-negative safe integer, got ${chainId}`)
+  }
+  if (!Number.isSafeInteger(nonce) || nonce < 0) {
+    throw new Error(`Invalid EIP-7702 authorization nonce: expected a non-negative safe integer, got ${nonce}`)
+  }
+}
+
 function encodeAuthorizationRLP(chainId: number, address: string, nonce: number): string {
+  assertValidAuthorizationInputs(chainId, address, nonce)
+
   const encodeLength = (length: number, offset: number): string => {
     if (length < 56) {
       return (offset + length).toString(16).padStart(2, '0')
@@ -116,7 +142,7 @@ function encodeAuthorizationRLP(chainId: number, address: string, nonce: number)
  * @param authorization - The authorization to hash
  * @returns The keccak256 hash as a hex string
  */
-function hashAuthorization(authorization: Authorization): string {
+export function hashAuthorization(authorization: Authorization): string {
   const { address, chainId, nonce } = authorization
 
   // RLP encode [chainId, address, nonce]

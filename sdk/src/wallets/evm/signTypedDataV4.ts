@@ -42,19 +42,29 @@ const transformTypedData = (typedData: string | object, chainId: number): TypedD
   }
 
   const providedChainId: number | string | undefined = (transformedTypedData as any).domain?.chainId
-  if (providedChainId) {
-    // domain.chainId (if defined) can be a number, string, or hex value, but the backend & guardian only accept a number.
-    if (typeof providedChainId === 'string') {
-      if (providedChainId.startsWith('0x')) {
-        transformedTypedData.domain.chainId = parseInt(providedChainId, 16)
-      } else {
-        transformedTypedData.domain.chainId = parseInt(providedChainId, 10)
-      }
-    }
+  // domain.chainId is required: without it the signature is not bound to a
+  // chain.
+  if (providedChainId === undefined || providedChainId === null || providedChainId === '') {
+    throw new JsonRpcError(
+      RpcErrorCode.INVALID_PARAMS,
+      `Invalid typed data: domain.chainId is required, expected ${chainId}`
+    )
+  }
 
-    if (transformedTypedData.domain.chainId !== chainId) {
-      throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `Invalid chainId, expected ${chainId}`)
-    }
+  // domain.chainId (if defined) can be a number, string, or hex value, but the backend & guardian only accept a number.
+  if (typeof providedChainId === 'string') {
+    transformedTypedData.domain.chainId = providedChainId.startsWith('0x')
+      ? parseInt(providedChainId, 16)
+      : parseInt(providedChainId, 10)
+  }
+
+  const normalizedChainId = transformedTypedData.domain.chainId
+  if (typeof normalizedChainId !== 'number' || !Number.isSafeInteger(normalizedChainId) || normalizedChainId <= 0) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `Invalid chainId, expected ${chainId}`)
+  }
+
+  if (normalizedChainId !== chainId) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `Invalid chainId, expected ${chainId}`)
   }
 
   return transformedTypedData
@@ -72,6 +82,12 @@ export const signTypedDataV4 = async ({
   const typedDataParam: string | object = params[1]
   if (!fromAddress || !typedDataParam) {
     throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `${method} requires an address and a typed data JSON`)
+  }
+
+  // The signature is bound to the connected account. For UPGRADEABLE_V5/V6
+  // this address becomes the EIP-712 domain's verifyingContract.
+  if (fromAddress.toLowerCase() !== account.address.toLowerCase()) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `${method} requires the signer to be the from address`)
   }
 
   const { chainId } = await rpcProvider.detectNetwork()

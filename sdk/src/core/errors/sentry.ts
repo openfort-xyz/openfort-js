@@ -5,6 +5,46 @@ import { PACKAGE, VERSION } from '../../version'
 
 const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296' // Prod
 
+/** Property names excluded from telemetry payloads. */
+const SENSITIVE_KEY_PATTERN =
+  /^(authorization|cookie|set-cookie|x-player-token|token|access[_-]?token|refresh[_-]?token|private[_-]?key|encryption[_-]?key|encryption[_-]?session|passkey|password|secret|share|key)$/i
+
+const REDACTED = '[redacted]'
+
+/** Reads a single scalar field from an API error body, ignoring everything else. */
+function extractSafeField(data: unknown, field: string): string | undefined {
+  if (typeof data !== 'object' || data === null) return undefined
+  const value = (data as Record<string, unknown>)[field]
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined
+}
+
+/** Drops query strings, which may contain single-use tokens. */
+function stripQuery(url: string | undefined): string | undefined {
+  return url?.split('?')[0]
+}
+
+/**
+ * Applies to capture paths that bypass the wrappers above (e.g. bare
+ * `sentry.captureException` calls). Walks the outgoing event and replaces
+ * sensitive-looking values before it is sent.
+ */
+function scrubEvent<T>(value: T, depth = 0, seen = new WeakSet<object>()): T {
+  if (value === null || typeof value !== 'object' || depth > 8) return value
+  if (seen.has(value)) return value
+  seen.add(value)
+  if (Array.isArray(value)) {
+    return value.map((entry) => scrubEvent(entry, depth + 1, seen)) as unknown as T
+  }
+  for (const [key, entry] of Object.entries(value)) {
+    if (SENSITIVE_KEY_PATTERN.test(key)) {
+      ;(value as Record<string, unknown>)[key] = REDACTED
+    } else {
+      ;(value as Record<string, unknown>)[key] = scrubEvent(entry, depth + 1, seen)
+    }
+  }
+  return value
+}
+
 declare module '@sentry/core' {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   interface Client {
@@ -53,11 +93,14 @@ export class InternalSentry {
           ...hint,
           captureContext: {
             ...hint?.captureContext,
+            // Allowlisted fields only: request objects, response headers
+            // and bodies can contain authentication material and PII.
             extra: {
-              errorResponseData: error.response?.data,
               errorStatus: error.response?.status,
-              errorHeaders: error.response?.headers,
-              errorRequest: error.request,
+              errorCode: extractSafeField(error.response?.data, 'code'),
+              errorMessage: extractSafeField(error.response?.data, 'message'),
+              errorUrl: stripQuery(error.config?.url),
+              errorMethod: error.config?.method,
             },
             tags: {
               ...InternalSentry.baseTags,
@@ -160,6 +203,11 @@ export class InternalSentry {
         integrations: [],
         stackParser: sentryImport.defaultStackParser,
         transport: sentryImport.makeFetchTransport,
+        // Never attach IP address, cookies, or user headers.
+        sendDefaultPii: false,
+        // Applies to every event the client prepares, including bare
+        // captureException calls that skip the wrappers above.
+        beforeSend: (event) => scrubEvent(event),
       })
 
       InternalSentry.baseTags = {

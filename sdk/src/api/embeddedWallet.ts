@@ -76,16 +76,30 @@ export class EmbeddedWalletApi {
     })
   }
 
+  private cachedBackendApiClients: BackendApiClients | null = null
+
+  /**
+   * Memoized so every request reuses one axios instance. `storage` and
+   * `onLogout` let the 401 interceptor clear session state and notify the
+   * application.
+   */
   private get backendApiClients(): BackendApiClients {
+    if (this.cachedBackendApiClients) return this.cachedBackendApiClients
+
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
       throw new ConfigurationError('Configuration not found')
     }
-    return new BackendApiClients({
+    this.cachedBackendApiClients = new BackendApiClients({
       basePath: configuration.backendUrl,
       accessToken: configuration.baseConfiguration.publishableKey,
       nativeAppIdentifier: configuration.nativeAppIdentifier,
+      storage: this.storage,
+      onLogout: () => {
+        this.eventEmitter.emit('onLogout')
+      },
     })
+    return this.cachedBackendApiClients
   }
 
   private async getIframeManager(): Promise<IframeManager> {
@@ -298,6 +312,13 @@ export class EmbeddedWalletApi {
     iframe.style.display = 'none'
     iframe.id = 'openfort-iframe'
     iframe.referrerPolicy = 'strict-origin-when-cross-origin'
+    // `allow-same-origin` is required for the embed's own localStorage
+    // (device share). `allow-top-navigation` is withheld so the frame cannot
+    // navigate the host page.
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups')
+    // Cross-origin WebAuthn is denied inside an iframe by default. The
+    // ceremony runs in the parent; this allows it in the frame if needed.
+    iframe.setAttribute('allow', 'publickey-credentials-get *; publickey-credentials-create *')
     iframe.src = url
 
     document.body.appendChild(iframe)

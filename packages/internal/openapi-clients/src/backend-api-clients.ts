@@ -32,6 +32,9 @@ export interface BackendApiClientsOptions {
 	onLogout?: () => void;
 }
 
+/** Applied to every request; overridable per-call via axios config. */
+const DEFAULT_TIMEOUT_MS = 30_000;
+
 export class BackendApiClients {
 	public config: OpenfortAPIConfiguration;
 
@@ -71,14 +74,18 @@ export class BackendApiClients {
 		this.storage = options.storage;
 		this.onLogout = options.onLogout;
 
-		this.axiosInstance = axios.create();
-		this.fundingAxiosInstance = axios.create();
+		// Bounds requests against a stalled connection. Token refresh is
+		// promise-deduplicated, so one hung request blocks every caller.
+		this.axiosInstance = axios.create({ timeout: DEFAULT_TIMEOUT_MS });
+		this.fundingAxiosInstance = axios.create({ timeout: DEFAULT_TIMEOUT_MS });
 
 		for (const instance of [this.axiosInstance, this.fundingAxiosInstance]) {
 			axiosRetry(instance, {
 				retries: 3,
 				retryDelay: axiosRetry.exponentialDelay,
-				retryCondition: axiosRetry.isRetryableError,
+				// Retries GET/HEAD/OPTIONS/PUT/DELETE only. Non-idempotent
+				// requests such as signature submission must not be repeated.
+				retryCondition: axiosRetry.isNetworkOrIdempotentRequestError,
 			});
 		}
 
