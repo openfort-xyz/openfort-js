@@ -1,1 +1,28 @@
 title = "Openfort JS SDK gitleaks config"
+
+# Gitleaks v8 replaces the default ruleset when a config file is present, so
+# the defaults must be extended explicitly for any rules to be applied.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Intentionally public sandbox credentials used by the example apps"
+paths = [
+  '''examples/apps/auth-sample/cdp_api_key\.json$''',
+  '''examples/apps/html-sample/.*\.js$''',
+]
+
+[[allowlists]]
+description = "Publishable client-side keys and documented placeholders"
+regexes = [
+  '''pk_test_[0-9a-fA-F-]{36}''',
+  '''sk_test_\.\.\.''',
+  '''pk_test_\.\.\.''',
+]
+
+[[allowlists]]
+description = "Test fixtures and generated API specification examples"
+paths = [
+  '''sdk/src/__tests__/fixtures/.*\.ts$''',
+  '''packages/internal/openapi-clients/src/backend-openapi\.json$''',
+]

@@ -1,24 +1,58 @@
-name: Run pnpm build
+name: Verify
 on:
-    pull_request:
+  pull_request:
+  merge_group:
+    branches:
+      - main
+  # Callable so the release pipeline runs the exact same checks on the exact
+  # commit it is about to publish, rather than trusting that a PR was green.
+  workflow_call:
+
+# Each job declares only what it needs; this default-denies anything added later.
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  pnpm-build:
+  secret-scan:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+          # Full history, so the scan also covers earlier commits.
+          fetch-depth: 0
+
+      # gitleaks-action is free for public repositories; no GITLEAKS_LICENSE
+      # is required here. Rules come from .gitleaks.toml, which extends the
+      # default ruleset and allowlists the intentionally-public sample keys.
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+
+  verify:
     name: pnpm build
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     permissions:
       contents: read
     env:
       NODE_OPTIONS: --max-old-space-size=14366
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
@@ -36,11 +70,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Security audit
-        # npm retired the audit endpoint this hits (HTTP 410), so `pnpm audit`
-        # now fails on every run regardless of dependencies. Keep the step for
-        # visibility but don't let the dead endpoint block CI.
         run: pnpm audit
-        continue-on-error: true
 
       - name: sherif
         run: pnpm check:repo
@@ -48,8 +78,11 @@ jobs:
       - name: Code check (Biome)
         run: pnpm biome check
 
-      # - name: Check TypeScript types
-      #   run: pnpm check:types
+      - name: Check TypeScript types
+        run: pnpm check:types
+
+      - name: Unit tests
+        run: pnpm test:unit
 
       - name: Check for unused files, dependencies, and exports
         run: pnpm knip --production

@@ -22,13 +22,23 @@ yalc.lock
 docs/
 
 /examples/apps/web-betterauth/
-# Test and Playwright related artifacts
+# Test and Playwright related artifacts. The unanchored globs matter: Playwright
+# writes to the CWD it is invoked from, which is not always the auth-sample dir.
+# Traces can capture Authorization headers, so they must never be committable.
+test-results/
+playwright-report/
+blob-report/
 /examples/apps/auth-sample/test-results/
 /examples/apps/auth-sample/playwright-report/
 /examples/apps/auth-sample/blob-report/
 /examples/apps/auth-sample/playwright/.cache/
 /examples/apps/auth-sample/playwright/.auth/
 .claude/
+
+# Local-only agent and working notes
+CLAUDE.local.md
+*.local.md
+REVIEW_FIX_PLAN.md
 
 *.7z
 *.zip
