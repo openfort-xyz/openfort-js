@@ -130,6 +130,24 @@ export class EvmProvider implements Provider {
     this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [address])
   }
 
+  /**
+   * Resolves the RPC endpoint for a chain, preferring the caller-supplied one.
+   *
+   * @param chainId - EVM chain id to resolve an endpoint for.
+   * @returns The RPC URL to connect to.
+   * @throws {JsonRpcError} When the chain has neither a caller-supplied nor a built-in endpoint.
+   */
+  #resolveRpcUrl(chainId: number): string {
+    const rpcUrl = this.#customChains?.[chainId] ?? defaultChainRpcs[chainId]
+    if (!rpcUrl) {
+      throw new JsonRpcError(
+        RpcErrorCode.INVALID_PARAMS,
+        `No RPC URL configured for chain ${chainId}. Pass one via getEthereumProvider({ chains: { ${chainId}: '<rpc-url>' } }).`
+      )
+    }
+    return rpcUrl
+  }
+
   async getRpcProvider(): Promise<StaticJsonRpcProvider> {
     if (!this.#rpcProvider) {
       const account = await Account.fromStorage(this.#storage)
@@ -139,9 +157,9 @@ export class EvmProvider implements Provider {
       const chainId =
         account?.chainId || (this.#customChains ? Number(Object.keys(this.#customChains)[0]) : undefined) || 8453
 
+      const rpcUrl = this.#resolveRpcUrl(chainId)
       await import('@ethersproject/providers').then((module) => {
-        const rpcUrl = this.#customChains ? this.#customChains[chainId] : undefined
-        this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainId])
+        this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl)
       })
     }
     if (!this.#rpcProvider) {
@@ -357,12 +375,14 @@ export class EvmProvider implements Provider {
         }
         await this.#validateAndRefreshSession()
 
+        const chainIdNumber = parseInt(request.params[0].chainId, 16)
+        // Resolved up front so an unknown chain fails before the signer switches to it.
+        const rpcUrl = this.#resolveRpcUrl(chainIdNumber)
+
         try {
-          const chainIdNumber = parseInt(request.params[0].chainId, 16)
           await signer.switchChain({ chainId: chainIdNumber })
           await import('@ethersproject/providers').then((module) => {
-            const rpcUrl = this.#customChains ? this.#customChains[chainIdNumber] : undefined
-            this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl ?? defaultChainRpcs[chainIdNumber])
+            this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl)
           })
           this.#eventEmitter.emit(ProviderEvent.CHAIN_CHANGED, numberToHex(chainIdNumber))
         } catch (error) {

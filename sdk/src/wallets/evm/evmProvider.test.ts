@@ -113,3 +113,39 @@ describe('EvmProvider signer cache vs connection loss', () => {
     expect(await provider.getRpcProvider()).not.toBe(before)
   })
 })
+
+describe('EvmProvider RPC endpoint resolution', () => {
+  const makeProviderOnChain = (chainId: number, chains?: Record<number, string>) => {
+    const storage = makeStorage()
+    vi.mocked(storage.get).mockResolvedValue(JSON.stringify({ id: 'acc_1', chainId, address: '0xabc' }))
+
+    return new EvmProvider({
+      storage,
+      backendApiClients: {} as any,
+      openfortEventEmitter: new TypedEventEmitter<any>(),
+      ensureSigner: vi.fn(async () => ({}) as any),
+      validateAndRefreshSession: vi.fn().mockResolvedValue(undefined),
+      chains,
+    })
+  }
+
+  it('uses the built-in endpoint for a supported chain', async () => {
+    const provider = makeProviderOnChain(8453)
+
+    expect((await provider.getRpcProvider()).connection.url).toBe('https://mainnet.base.org')
+  })
+
+  it('prefers a caller-supplied endpoint over the built-in one', async () => {
+    const provider = makeProviderOnChain(8453, { 8453: 'https://base.example' })
+
+    expect((await provider.getRpcProvider()).connection.url).toBe('https://base.example')
+  })
+
+  it('throws instead of silently falling back to localhost on an unconfigured chain', async () => {
+    // ethers' StaticJsonRpcProvider defaults to http://localhost:8545 when
+    // handed `undefined`, which surfaces much later as an opaque network error.
+    const provider = makeProviderOnChain(1234567)
+
+    await expect(provider.getRpcProvider()).rejects.toThrow(/No RPC URL configured for chain 1234567/)
+  })
+})
