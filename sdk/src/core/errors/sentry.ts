@@ -98,6 +98,9 @@ export class InternalSentry {
             ...(openfortError.statusCode && {
               statusCode: openfortError.statusCode,
             }),
+            ...(openfortError.requestId && {
+              requestId: openfortError.requestId,
+            }),
             ...(openfortError.audience && { audience: openfortError.audience }),
             ...(openfortError.scope && { scope: openfortError.scope }),
             ...(openfortError.accountId && {

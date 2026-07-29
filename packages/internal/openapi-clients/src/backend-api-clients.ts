@@ -24,13 +24,48 @@ export interface IStorage {
 	flush(): void;
 }
 
+/**
+ * Summary of one API request, reported through {@link BackendApiClientsOptions.onRequest}.
+ */
+export interface OpenfortRequestInfo {
+	/** The `x-request-id` sent with the request. The Openfort API adopts it as
+	 * its own request/trace id, so this value can be searched directly in
+	 * Openfort's logs and traces. */
+	requestId: string;
+	/** Uppercase HTTP method, e.g. "POST". */
+	method: string;
+	/** Request URL as issued by the client. */
+	path: string;
+	/** HTTP status of the response; undefined when no response was received. */
+	status?: number;
+	/** Wall-clock duration of the call, including retries. */
+	durationMs: number;
+}
+
 export interface BackendApiClientsOptions {
 	basePath: string;
 	accessToken: string;
 	nativeAppIdentifier?: string;
 	storage?: IStorage;
 	onLogout?: () => void;
+	/**
+	 * Called after every API request (successful or not) with its request id,
+	 * method, path, status, and duration. Intended for logging/observability;
+	 * exceptions thrown by the callback are swallowed.
+	 */
+	onRequest?: (info: OpenfortRequestInfo) => void;
 }
+
+const REQUEST_ID_HEADER = "x-request-id";
+
+/** Correlation state stashed on the axios config; axios preserves custom
+ * config properties across retries (axios-retry itself relies on this). */
+type TimedConfig = {
+	[REQUEST_STARTED_AT]?: number;
+	[REQUEST_NOTIFIED]?: boolean;
+};
+const REQUEST_STARTED_AT = "__openfortStartedAt";
+const REQUEST_NOTIFIED = "__openfortNotified";
 
 export class BackendApiClients {
 	public config: OpenfortAPIConfiguration;
@@ -80,6 +115,7 @@ export class BackendApiClients {
 				retryDelay: axiosRetry.exponentialDelay,
 				retryCondition: axiosRetry.isRetryableError,
 			});
+			this.setupRequestIdCorrelation(instance, options.onRequest);
 		}
 
 		// Setup 401 error interceptor (shared instance only; funding opts out).
@@ -152,6 +188,78 @@ export class BackendApiClients {
 			this.config.backend,
 			undefined,
 			this.fundingAxiosInstance,
+		);
+	}
+
+	/**
+	 * Send a correlation id with every request and report each request's
+	 * outcome through the optional onRequest callback.
+	 *
+	 * The `x-request-id` is set before the request goes out, so it exists even
+	 * when no response ever arrives, and it is kept identical across
+	 * axios-retry attempts (one id per logical operation). The Openfort API
+	 * adopts it as its own request/trace id and echoes it back.
+	 */
+	private setupRequestIdCorrelation(
+		instance: AxiosInstance,
+		onRequest?: (info: OpenfortRequestInfo) => void,
+	): void {
+		instance.interceptors.request.use((config) => {
+			if (!config.headers.has(REQUEST_ID_HEADER)) {
+				config.headers.set(
+					REQUEST_ID_HEADER,
+					(globalThis.crypto as { randomUUID(): string }).randomUUID(),
+				);
+			}
+			// ??= so retries keep the first attempt's start time.
+			(config as TimedConfig)[REQUEST_STARTED_AT] ??= Date.now();
+			return config;
+		});
+
+		if (!onRequest) {
+			return;
+		}
+		const notify = (
+			config: { method?: string; url?: string; headers?: unknown } & TimedConfig,
+			status?: number,
+		): void => {
+			try {
+				// axios-retry resolves the outer promise with the retried attempt's
+				// response (same config object), so both my inner and outer handlers
+				// see it — notify exactly once per logical operation.
+				if (config[REQUEST_NOTIFIED]) {
+					return;
+				}
+				config[REQUEST_NOTIFIED] = true;
+				const headers = config.headers as {
+					get?: (name: string) => unknown;
+				} | null;
+				const requestId = headers?.get?.(REQUEST_ID_HEADER);
+				if (typeof requestId !== "string") {
+					return; // request never went through the request interceptor
+				}
+				onRequest({
+					requestId,
+					method: (config.method ?? "GET").toUpperCase(),
+					path: config.url ?? "",
+					status,
+					durationMs: Date.now() - (config[REQUEST_STARTED_AT] ?? Date.now()),
+				});
+			} catch {
+				// An observability callback must never affect the request.
+			}
+		};
+		instance.interceptors.response.use(
+			(response) => {
+				notify(response.config, response.status);
+				return response;
+			},
+			(error: AxiosError) => {
+				if (error.config) {
+					notify(error.config, error.response?.status);
+				}
+				return Promise.reject(error);
+			},
 		);
 	}
 
