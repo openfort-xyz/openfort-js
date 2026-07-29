@@ -1,4 +1,8 @@
-import axios, { type AxiosError, type AxiosInstance } from "axios";
+import axios, {
+	type AxiosError,
+	type AxiosInstance,
+	type InternalAxiosRequestConfig,
+} from "axios";
 import axiosRetry from "axios-retry";
 import {
 	AccsV1Api,
@@ -57,6 +61,40 @@ export interface BackendApiClientsOptions {
 }
 
 const REQUEST_ID_HEADER = "x-request-id";
+
+/**
+ * Generate a v4-format UUID for request correlation. Prefers WebCrypto but
+ * degrades gracefully: React Native (Hermes) has no `crypto` global unless
+ * polyfilled, and `react-native-get-random-values` provides only
+ * `getRandomValues`, not `randomUUID`. A correlation id needs uniqueness, not
+ * cryptographic strength, so the Math.random fallback is acceptable.
+ */
+function generateRequestId(): string {
+	const webCrypto = (
+		globalThis as {
+			crypto?: {
+				randomUUID?: () => string;
+				getRandomValues?: (array: Uint8Array) => Uint8Array;
+			};
+		}
+	).crypto;
+	if (webCrypto?.randomUUID) {
+		return webCrypto.randomUUID();
+	}
+	const bytes = new Uint8Array(16);
+	if (webCrypto?.getRandomValues) {
+		webCrypto.getRandomValues(bytes);
+	} else {
+		for (let i = 0; i < bytes.length; i++) {
+			bytes[i] = Math.floor(Math.random() * 256);
+		}
+	}
+	// Set the version (4) and variant (10xx) bits so the id parses as UUIDv4.
+	bytes[6] = (bytes[6] & 0x0f) | 0x40;
+	bytes[8] = (bytes[8] & 0x3f) | 0x80;
+	const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+	return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
 
 /** Correlation state stashed on the axios config; axios preserves custom
  * config properties across retries (axios-retry itself relies on this). */
@@ -206,10 +244,7 @@ export class BackendApiClients {
 	): void {
 		instance.interceptors.request.use((config) => {
 			if (!config.headers.has(REQUEST_ID_HEADER)) {
-				config.headers.set(
-					REQUEST_ID_HEADER,
-					(globalThis.crypto as { randomUUID(): string }).randomUUID(),
-				);
+				config.headers.set(REQUEST_ID_HEADER, generateRequestId());
 			}
 			// ??= so retries keep the first attempt's start time.
 			(config as TimedConfig)[REQUEST_STARTED_AT] ??= Date.now();
@@ -220,7 +255,7 @@ export class BackendApiClients {
 			return;
 		}
 		const notify = (
-			config: { method?: string; url?: string; headers?: unknown } & TimedConfig,
+			config: InternalAxiosRequestConfig & TimedConfig,
 			status?: number,
 		): void => {
 			try {
@@ -231,10 +266,7 @@ export class BackendApiClients {
 					return;
 				}
 				config[REQUEST_NOTIFIED] = true;
-				const headers = config.headers as {
-					get?: (name: string) => unknown;
-				} | null;
-				const requestId = headers?.get?.(REQUEST_ID_HEADER);
+				const requestId = config.headers.get(REQUEST_ID_HEADER);
 				if (typeof requestId !== "string") {
 					return; // request never went through the request interceptor
 				}
