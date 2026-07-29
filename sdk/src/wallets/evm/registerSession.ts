@@ -110,6 +110,9 @@ const buildOpenfortTransactions = async (
   feeSponsorshipId?: string
 ): Promise<SessionResponse> => {
   const param = params[0]
+  if (!param) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'wallet_grantPermissions requires a permissions object')
+  }
   const now = Math.floor(Date.now() / 1000)
   const expiry = Math.floor(new Date(Date.now() + param.expiry * 1000).getTime() / 1000)
   const formattedPermissions = param.permissions.map(formatPermissionRequest)

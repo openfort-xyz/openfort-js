@@ -47,3 +47,5 @@ REVIEW_FIX_PLAN.md
 *.tgz
 *.rar
 *.bz2
+
+coverage/

@@ -18,6 +18,9 @@
     "useUnknownInCatchVariables": true,
     "noImplicitOverride": true,
     "noUnusedLocals": true,
+    // Indexing JSON-RPC params and API response arrays must be checked, so
+    // missing entries surface as typed SDK errors.
+    "noUncheckedIndexedAccess": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "declaration": false,

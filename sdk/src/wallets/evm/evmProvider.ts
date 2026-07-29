@@ -201,7 +201,10 @@ export class EvmProvider implements Provider {
 
         const rpcProvider = await this.getRpcProvider()
         const { chainId } = await rpcProvider.detectNetwork()
-        const [transaction]: RpcTransactionRequest[] = request.params || []
+        const [transaction]: (RpcTransactionRequest | undefined)[] = request.params || []
+        if (!transaction) {
+          throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `${request.method} requires a transaction object`)
+        }
 
         if (!transaction.chainId) {
           transaction.chainId = chainId.toString()

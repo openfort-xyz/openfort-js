@@ -88,6 +88,9 @@ export const revokeSession = async ({
   feeSponsorshipId,
 }: WalletRequestPermissionsParams): Promise<SessionResponse> => {
   const param = params[0]
+  if (!param) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'wallet_revokePermissions requires a permissions object')
+  }
   if (!param.permissionContext) {
     await signer.disconnect()
     return {} as SessionResponse

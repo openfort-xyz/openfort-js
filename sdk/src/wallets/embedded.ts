@@ -3,7 +3,7 @@ import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
 import { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
-import { ConfigurationError, SessionError } from '../core/errors/openfortError'
+import { ConfigurationError, SessionError, SignerError } from '../core/errors/openfortError'
 import { withApiError } from '../core/errors/withApiError'
 import type { IPasskeyHandler } from '../core/passkey'
 import { PasskeyHandler } from '../core/passkey'
@@ -140,6 +140,13 @@ export class EmbeddedSigner implements Signer {
         const accountExistsInChainId = accounts.find((ac) => ac.chainId === params.chainId)
         // intentionally take first account from the list, as they all should have the same owner EOA
         const account = accountExistsInChainId || accounts[0]
+        // An empty account list surfaces as a typed SDK error.
+        if (!account) {
+          throw new SignerError(
+            OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
+            'No embedded wallet account is available to recover. Create a wallet before calling recover.'
+          )
+        }
         const recoverParams: SignerRecoverRequest = {
           account: account.id,
           ...(params.entropy && {

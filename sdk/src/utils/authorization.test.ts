@@ -24,7 +24,7 @@ describe('EIP-7702 authorization input validation', () => {
     await signAuthorization({ authorization: { chainId: 8453, address: VALID_ADDRESS, nonce: 7 }, signer })
     await signAuthorization({ authorization: { chainId: 8453, address: VALID_ADDRESS, nonce: 7 }, signer })
     const calls = (signer.sign as ReturnType<typeof vi.fn>).mock.calls
-    expect(calls[0][0]).toBe(calls[1][0])
+    expect(calls[0]![0]).toBe(calls[1]![0])
   })
 
   it('hashes differently when any field changes', async () => {

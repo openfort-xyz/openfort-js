@@ -81,8 +81,19 @@ jobs:
       - name: Check TypeScript types
         run: pnpm check:types
 
-      - name: Unit tests
-        run: pnpm test:unit
+      # Coverage is measured and published rather than gated. Thresholds can be
+      # introduced per directory as coverage grows.
+      - name: Unit tests with coverage
+        run: pnpm test:coverage
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage
+          path: sdk/coverage/
+          retention-days: 7
+          if-no-files-found: ignore
 
       - name: Check for unused files, dependencies, and exports
         run: pnpm knip --production

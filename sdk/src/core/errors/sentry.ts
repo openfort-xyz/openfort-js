@@ -5,6 +5,19 @@ import { PACKAGE, VERSION } from '../../version'
 
 const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296' // Prod
 
+/**
+ * The DSN this SDK reports to, parsed once. Incoming clients are checked
+ * against it so telemetry cannot be redirected to another destination.
+ */
+const EXPECTED_DSN = (() => {
+  const url = new URL(SENTRY_DSN)
+  return {
+    publicKey: url.username,
+    host: url.host,
+    projectId: url.pathname.replace(/^\//, ''),
+  }
+})()
+
 /** Property names excluded from telemetry payloads. */
 const SENSITIVE_KEY_PATTERN =
   /^(authorization|cookie|set-cookie|x-player-token|token|access[_-]?token|refresh[_-]?token|private[_-]?key|encryption[_-]?key|encryption[_-]?session|passkey|password|secret|share|key)$/i
@@ -73,9 +86,9 @@ export class InternalSentry {
     }
 
     if (
-      dsn.projectId !== SENTRY_DSN.split('https://')[1].split('/')[1] ||
-      dsn.host !== SENTRY_DSN.split('@')[1].split('/')[0] ||
-      dsn.publicKey !== SENTRY_DSN.split('@')[0].split('https://')[1]
+      dsn.projectId !== EXPECTED_DSN.projectId ||
+      dsn.host !== EXPECTED_DSN.host ||
+      dsn.publicKey !== EXPECTED_DSN.publicKey
     ) {
       throw new Error('Sentry DSN is not valid')
     }
