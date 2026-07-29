@@ -41,7 +41,8 @@
     "changeset:version": "pnpm install --lockfile-only && changeset version && cp sdk/CHANGELOG.md CHANGELOG.md && cd sdk && node copyVersion.cjs",
     "changeset:publish": "pnpm build && changeset publish",
     "changeset:prepublish": "pnpm build",
-    "test:build": "publint ./sdk && attw --pack ./sdk"
+    "test:build": "publint --strict ./sdk && attw --pack ./sdk",
+    "test:env": "pnpm --filter test-tsc test"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -51,7 +52,7 @@
     "node": ">=22.9"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.17.4",
+    "@arethetypeswrong/cli": "^0.18.2",
     "@biomejs/biome": "^2.4.11",
     "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.30.0",

@@ -1,0 +1,13 @@
+{
+  "name": "test-tsc",
+  "private": true,
+  "type": "module",
+  "description": "Type-checks the BUILT package the way a consumer would. Installs the tarball via file: rather than a workspace link, so dist/*.d.ts is exercised instead of source.",
+  "scripts": {
+    "test": "tsc --module esnext --moduleResolution bundler && tsc --module nodenext --moduleResolution nodenext"
+  },
+  "dependencies": {
+    "@openfort/openfort-js": "file:../../sdk",
+    "typescript": "^5.9.3"
+  }
+}

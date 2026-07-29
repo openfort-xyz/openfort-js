@@ -1,5 +1,5 @@
-import type { OpenfortSDKConfiguration } from 'types'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { OpenfortSDKConfiguration } from '../../types'
 import { PACKAGE, VERSION } from '../../version'
 
 // Each test re-imports ./sentry after configuring the mock, so the static

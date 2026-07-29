@@ -1,6 +1,6 @@
 import type { Client, EventHint, Scope } from '@sentry/core'
 import { AxiosError } from 'axios'
-import type { OpenfortSDKConfiguration } from 'types'
+import type { OpenfortSDKConfiguration } from '../../types'
 import { PACKAGE, VERSION } from '../../version'
 
 const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296' // Prod

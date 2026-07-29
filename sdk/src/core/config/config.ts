@@ -1,7 +1,7 @@
-import type { IPasskeyHandler } from 'core/passkey'
-import type { ThirdPartyOAuthProvider } from 'types'
 import type { IStorage } from '../../storage/istorage'
+import type { ThirdPartyOAuthProvider } from '../../types'
 import { setCryptoDigestOverride } from '../../utils/crypto'
+import type { IPasskeyHandler } from '../passkey'
 
 export interface SDKOverrides {
   backendUrl?: string

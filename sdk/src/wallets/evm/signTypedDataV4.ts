@@ -1,5 +1,5 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers'
-import type { Account } from 'core/configuration/account'
+import type { Account } from '../../core/configuration/account'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import type { TypedDataPayload } from './types'

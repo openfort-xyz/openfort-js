@@ -8,12 +8,14 @@ import dts from 'rollup-plugin-dts'
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf8'))
 
-import terser from '@rollup/plugin-terser'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 const packages = JSON.parse(readFileSync('./workspace-packages.json', { encoding: 'utf8' }))
 
 const getPackages = () => packages.map((pkg) => pkg.name)
+
+// Output is not minified: consumer bundlers minify with full cross-module
+// context. Sourcemaps ship so stack traces into the SDK stay readable.
 
 const modules = {
   input: `./src/index.ts`,
@@ -21,6 +23,7 @@ const modules = {
     dir: 'dist',
     format: 'es',
     preserveModules: true,
+    sourcemap: true,
   },
   plugins: [
     nodeResolve({
@@ -29,11 +32,13 @@ const modules = {
     json(),
     commonJs(),
     typescript({
+      noEmitOnError: true,
       declaration: true,
-      tsconfig: 'tsconfig.json',
+      declarationMap: true,
+      sourceMap: true,
+      tsconfig: 'tsconfig.build.json',
       declarationDir: './dist/types',
     }),
-    terser(),
     replace({
       exclude: 'node_modules/**',
       preventAssignment: true,
@@ -64,6 +69,7 @@ const cjs = {
     preserveModules: true,
     entryFileNames: '[name].cjs',
     chunkFileNames: '[name].cjs',
+    sourcemap: true,
   },
   plugins: [
     nodeResolve({
@@ -73,9 +79,9 @@ const cjs = {
     commonJs(),
     typescript({
       noEmitOnError: true,
-      tsconfig: 'tsconfig.json',
+      sourceMap: true,
+      tsconfig: 'tsconfig.build.json',
     }),
-    terser(),
     replace({
       exclude: 'node_modules/**',
       preventAssignment: true,

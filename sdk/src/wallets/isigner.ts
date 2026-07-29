@@ -1,4 +1,4 @@
-import type { Account } from 'core/configuration/account'
+import type { Account } from '../core/configuration/account'
 import type { RecoveryMethod } from '../types/types'
 import type { SignerConfigureRequest, SignerCreateRequest, SignerRecoverRequest } from './iframeManager'
 

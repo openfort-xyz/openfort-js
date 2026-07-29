@@ -92,3 +92,9 @@ jobs:
 
       - name: Verify package exports
         run: pnpm test:build
+
+      # publint and attw verify that the entry point resolves. This compiles a
+      # consumer project against the built .d.ts with skipLibCheck disabled, so
+      # imports inside the shipped declarations are checked too.
+      - name: Type-check built package as a consumer
+        run: pnpm test:env

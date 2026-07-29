@@ -1,12 +1,12 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { RevokeSessionRequest } from '@openfort/openapi-clients/dist/backend'
-import type { Hex } from 'wallets/evm/types'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { withApiError } from '../../core/errors/withApiError'
 import { AccountTypeEnum, type SessionResponse } from '../../types/types'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
+import type { Hex } from './types'
 
 type WalletRequestPermissionsParams = {
   params: RevokePermissionsRequestParams[]

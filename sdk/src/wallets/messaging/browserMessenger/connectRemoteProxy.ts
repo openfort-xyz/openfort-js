@@ -1,4 +1,4 @@
-import { randomUUID } from 'utils/crypto'
+import { randomUUID } from '../../../utils/crypto'
 import CallOptions from './CallOptions'
 import { deserializeError } from './errorSerialization'
 import { isReplyMessage } from './guards'

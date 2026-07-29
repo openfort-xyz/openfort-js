@@ -1,12 +1,12 @@
 import { BackendApiClients } from '@openfort/openapi-clients'
-import type { IPasskeyHandler } from 'core/passkey'
-import { PasskeyHandler } from 'core/passkey'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
 import { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
 import { AuthenticationError, ConfigurationError, SessionError, SignerError } from '../core/errors/openfortError'
 import { withApiError } from '../core/errors/withApiError'
+import type { IPasskeyHandler } from '../core/passkey'
+import { PasskeyHandler } from '../core/passkey'
 import { type IStorage, StorageKeys } from '../storage/istorage'
 import {
   AccountTypeEnum,

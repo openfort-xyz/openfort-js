@@ -1,4 +1,4 @@
-import { randomUUID } from 'utils/crypto'
+import { randomUUID } from '../../../utils/crypto'
 import { DEPRECATED_PENPAL_PARTICIPANT_ID } from './backwardCompatibility'
 import connectCallHandler from './connectCallHandler'
 import connectRemoteProxy from './connectRemoteProxy'

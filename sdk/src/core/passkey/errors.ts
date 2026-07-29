@@ -37,7 +37,7 @@ export class PasskeyUserCancelledError extends OpenfortError {
  * Error thrown when passkey creation fails.
  */
 export class PasskeyCreationFailedError extends OpenfortError {
-  public readonly cause?: Error
+  public override readonly cause?: Error
 
   constructor(message = 'Failed to create passkey', cause?: Error) {
     super(PASSKEY_ERROR_CODES.CREATION_FAILED, message)
@@ -63,7 +63,7 @@ export class PasskeyPRFNotSupportedError extends OpenfortError {
  * Error thrown when passkey assertion (get) fails.
  */
 export class PasskeyAssertionFailedError extends OpenfortError {
-  public readonly cause?: Error
+  public override readonly cause?: Error
 
   constructor(message = 'Failed to get passkey assertion', cause?: Error) {
     super(PASSKEY_ERROR_CODES.ASSERTION_FAILED, message)
