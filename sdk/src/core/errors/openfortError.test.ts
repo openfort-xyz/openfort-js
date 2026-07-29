@@ -354,3 +354,45 @@ describe('error serialization', () => {
     expect(serialized.name).toBe('AuthenticationError')
   })
 })
+
+describe('OpenfortError cause chain and version', () => {
+  it('stamps the SDK version so bug reports identify the build', () => {
+    const error = new OpenfortError('some_code', 'something failed')
+    expect(error.version).toMatch(/^@openfort\/openfort-js@/)
+  })
+
+  it('threads cause so the originating failure survives wrapping', () => {
+    const root = new Error('socket hang up')
+    const wrapped = new OpenfortError('request_error', 'request failed', { cause: root })
+    expect(wrapped.cause).toBe(root)
+  })
+
+  it('omits cause entirely when none is given', () => {
+    expect(new OpenfortError('c', 'd').cause).toBeUndefined()
+  })
+
+  it('walk() returns the root cause by default', () => {
+    const root = new Error('ECONNRESET')
+    const middle = new OpenfortError('mid', 'middle', { cause: root })
+    const outer = new OpenfortError('outer', 'outer', { cause: middle })
+    expect(outer.walk()).toBe(root)
+  })
+
+  it('walk(predicate) finds a specific error in the chain', () => {
+    const root = new SessionError('session_expired', 'expired')
+    const outer = new OpenfortError('outer', 'outer', { cause: root })
+    expect(outer.walk((e) => e instanceof SessionError)).toBe(root)
+  })
+
+  it('walk(predicate) returns null when nothing matches', () => {
+    const outer = new OpenfortError('outer', 'outer', { cause: new Error('x') })
+    expect(outer.walk((e) => e instanceof SessionError)).toBeNull()
+  })
+
+  it('preserves instanceof across subclasses without setPrototypeOf', () => {
+    const error = new SessionError('session_expired', 'expired')
+    expect(error).toBeInstanceOf(SessionError)
+    expect(error).toBeInstanceOf(OpenfortError)
+    expect(error).toBeInstanceOf(Error)
+  })
+})

@@ -7,6 +7,8 @@
  * - Static factory methods for creating errors from API payloads
  */
 
+import { PACKAGE, VERSION } from '../../version'
+
 /**
  * Base error class for all Openfort SDK errors
  *
@@ -36,14 +38,44 @@ export class OpenfortError extends Error {
    */
   public readonly error_description: string
 
-  constructor(error: string, error_description: string) {
-    super(error_description)
+  /**
+   * The SDK version that produced this error, so a bug report identifies the
+   * exact build without having to ask.
+   */
+  public readonly version: string = `${PACKAGE}@${VERSION}`
+
+  constructor(error: string, error_description: string, options?: { cause?: unknown }) {
+    // `cause` is forwarded so the originating failure stays reachable via
+    // `walk()`.
+    super(error_description, options?.cause !== undefined ? { cause: options.cause } : undefined)
     this.name = 'OpenfortError'
     this.error = error
     this.error_description = error_description
+  }
 
-    // Fix prototype chain for instanceof checks
-    Object.setPrototypeOf(this, OpenfortError.prototype)
+  /**
+   * Walks the `cause` chain, returning the first error matching `predicate`.
+   * Without a predicate, returns the root cause.
+   *
+   * @example
+   * ```typescript
+   * const rootCause = error.walk()
+   * const httpFailure = error.walk((e) => e instanceof RequestError)
+   * ```
+   */
+  walk(predicate?: (error: unknown) => boolean): unknown {
+    let current: unknown = this
+    while (current) {
+      if (predicate?.(current)) return current
+      const next: unknown = (current as { cause?: unknown }).cause
+      if (next === undefined || next === current) break
+      if (!predicate) {
+        current = next
+        continue
+      }
+      current = next
+    }
+    return predicate ? null : current
   }
 
   /**
@@ -97,7 +129,6 @@ export class AuthenticationError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'AuthenticationError'
-    Object.setPrototypeOf(this, AuthenticationError.prototype)
   }
 }
 
@@ -122,7 +153,6 @@ export class SessionError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'SessionError'
-    Object.setPrototypeOf(this, SessionError.prototype)
   }
 }
 
@@ -133,7 +163,6 @@ export class ConfigurationError extends OpenfortError {
   constructor(error_description: string) {
     super('invalid_configuration', error_description)
     this.name = 'ConfigurationError'
-    Object.setPrototypeOf(this, ConfigurationError.prototype)
   }
 }
 
@@ -155,7 +184,6 @@ export class SignerError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'SignerError'
-    Object.setPrototypeOf(this, SignerError.prototype)
   }
 }
 
@@ -170,7 +198,6 @@ export class UserError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'UserError'
-    Object.setPrototypeOf(this, UserError.prototype)
   }
 }
 
@@ -181,7 +208,6 @@ export class OTPError extends OpenfortError {
   constructor(error: string, error_description: string) {
     super(error, error_description)
     this.name = 'OTPError'
-    Object.setPrototypeOf(this, OTPError.prototype)
   }
 }
 
@@ -203,7 +229,6 @@ export class OAuthError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'OAuthError'
-    Object.setPrototypeOf(this, OAuthError.prototype)
   }
 }
 
@@ -214,7 +239,6 @@ export class AuthorizationError extends OpenfortError {
   constructor(error_description: string = 'User not authorized to access this ecosystem') {
     super('user_not_authorized', error_description)
     this.name = 'AuthorizationError'
-    Object.setPrototypeOf(this, AuthorizationError.prototype)
   }
 }
 
@@ -229,7 +253,6 @@ export class RecoveryError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'RecoveryError'
-    Object.setPrototypeOf(this, RecoveryError.prototype)
   }
 }
 
@@ -243,6 +266,5 @@ export class RequestError extends OpenfortError {
   ) {
     super('request_error', error_description)
     this.name = 'RequestError'
-    Object.setPrototypeOf(this, RequestError.prototype)
   }
 }
