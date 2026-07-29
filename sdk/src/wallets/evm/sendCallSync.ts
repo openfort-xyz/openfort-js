@@ -203,9 +203,9 @@ export const sendCallsSync = async ({
 
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature: string
-    // zkSync chains and EIP-7702 delegated accounts (Calibur, CaliburV9, …) sign
-    // the raw v0.8 typed-data hash — no EIP-191 hashMessage prefix.
-    if ([300, 324].includes(account.chainId!) || account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
+    // EIP-7702 delegated accounts (Calibur, CaliburV9, …) sign the raw v0.8
+    // typed-data hash — no EIP-191 hashMessage prefix.
+    if (account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)
