@@ -27,6 +27,11 @@ type WalletSendCallsParams = {
 
 type RawCall = { data?: `0x${string}`; to?: `0x${string}`; value?: bigint }
 
+// The signature endpoint holds the connection until the transaction reaches a
+// terminal state on-chain, so it needs a budget sized to block inclusion under
+// congestion rather than the client-wide default for request/response calls.
+const SIGNATURE_CONFIRMATION_TIMEOUT_MS = 120_000
+
 const convertToTransactionReceipt = (
   response: TransactionIntentResponse['response']
 ): TransactionReceipt<string, number, 'success' | 'reverted', TransactionType> => {
@@ -212,10 +217,13 @@ export const sendCallsSync = async ({
     }
     const response = await withApiError(
       async () =>
-        await backendClient.transactionIntentsApi.signature({
-          id: openfortTransaction.id,
-          signatureRequest: { signature },
-        }),
+        await backendClient.transactionIntentsApi.signature(
+          {
+            id: openfortTransaction.id,
+            signatureRequest: { signature },
+          },
+          { timeout: SIGNATURE_CONFIRMATION_TIMEOUT_MS }
+        ),
       { context: 'operation' }
     ).catch((error) => {
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)

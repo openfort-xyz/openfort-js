@@ -276,9 +276,6 @@ const LOGOUT_RPC_TIMEOUT_MS = 10_000
 export class SessionEndedBeforeSetupError extends OpenfortError {
   constructor() {
     super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'Wallet session ended before setup completed.')
-    // The base OpenfortError constructor resets the prototype to its own, so
-    // restore ours — otherwise `instanceof SessionEndedBeforeSetupError` is
-    // always false, both in tests and in initialize()'s teardown-race guard.
   }
 }
 

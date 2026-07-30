@@ -8,14 +8,16 @@ const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.i
 /**
  * The DSN this SDK reports to, parsed once. Incoming clients are checked
  * against it so telemetry cannot be redirected to another destination.
+ *
+ * Parsed with string operations rather than the `URL` constructor: this
+ * module is evaluated when the SDK is imported, and React Native's built-in
+ * `URL` implements only part of the spec — accessors such as `username`,
+ * `host` and `pathname` throw or return `undefined` unless the host app
+ * installs a polyfill.
  */
 const EXPECTED_DSN = (() => {
-  const url = new URL(SENTRY_DSN)
-  return {
-    publicKey: url.username,
-    host: url.host,
-    projectId: url.pathname.replace(/^\//, ''),
-  }
+  const [, publicKey = '', host = '', projectId = ''] = /^https:\/\/([^@]+)@([^/]+)\/(.+)$/.exec(SENTRY_DSN) ?? []
+  return { publicKey, host, projectId }
 })()
 
 /** Property names excluded from telemetry payloads. */
@@ -37,25 +39,47 @@ function stripQuery(url: string | undefined): string | undefined {
 }
 
 /**
- * Applies to capture paths that bypass the wrappers above (e.g. bare
- * `sentry.captureException` calls). Walks the outgoing event and replaces
- * sensitive-looking values before it is sent.
+ * Returns a scrubbed copy of `value`; the input is never written to. The
+ * scope shallow-merges `extra` and `contexts` entries, so nested values here
+ * are the application's live objects — writing redactions into them would
+ * corrupt application state, and a frozen object anywhere in the graph would
+ * make an in-place scrub throw inside `beforeSend`, which drops the event.
+ *
+ * `ancestors` tracks only the current path (entries are removed on the way
+ * back up), so a value referenced from two sibling positions is scrubbed in
+ * both; only a genuine cycle is cut off.
  */
-function scrubEvent<T>(value: T, depth = 0, seen = new WeakSet<object>()): T {
+function scrubValue(value: unknown, depth = 0, ancestors = new WeakSet<object>()): unknown {
   if (value === null || typeof value !== 'object' || depth > 8) return value
-  if (seen.has(value)) return value
-  seen.add(value)
+  if (ancestors.has(value)) return '[circular]'
+  ancestors.add(value)
+  let output: unknown
   if (Array.isArray(value)) {
-    return value.map((entry) => scrubEvent(entry, depth + 1, seen)) as unknown as T
-  }
-  for (const [key, entry] of Object.entries(value)) {
-    if (SENSITIVE_KEY_PATTERN.test(key)) {
-      ;(value as Record<string, unknown>)[key] = REDACTED
-    } else {
-      ;(value as Record<string, unknown>)[key] = scrubEvent(entry, depth + 1, seen)
+    output = value.map((entry) => scrubValue(entry, depth + 1, ancestors))
+  } else {
+    const copy: Record<string, unknown> = {}
+    for (const [key, entry] of Object.entries(value)) {
+      copy[key] = SENSITIVE_KEY_PATTERN.test(key) ? REDACTED : scrubValue(entry, depth + 1, ancestors)
     }
+    output = copy
   }
-  return value
+  ancestors.delete(value)
+  return output
+}
+
+/**
+ * Applies to capture paths that bypass the wrappers above (e.g. bare
+ * `sentry.captureException` calls). Produces a scrubbed copy of the outgoing
+ * event before it is sent.
+ */
+function scrubEvent<T extends object>(event: T): T {
+  // `sdkProcessingMetadata` is Sentry-internal bookkeeping that can hold live
+  // Scope and Client instances; it is stripped before transport and must keep
+  // its identity, so it bypasses the scrub.
+  const { sdkProcessingMetadata, ...rest } = event as T & { sdkProcessingMetadata?: unknown }
+  const scrubbed = scrubValue(rest) as T & { sdkProcessingMetadata?: unknown }
+  if (sdkProcessingMetadata !== undefined) scrubbed.sdkProcessingMetadata = sdkProcessingMetadata
+  return scrubbed
 }
 
 declare module '@sentry/core' {
@@ -213,7 +237,10 @@ export class InternalSentry {
       InternalSentry.sentry = new sentryImport.BrowserClient({
         dsn: SENTRY_DSN,
         release: `${PACKAGE}@${VERSION}`,
-        integrations: [],
+        // Serialises `error.cause` chains into the event, so a wrapped error
+        // still names the failing dependency in telemetry. The chain passes
+        // through `beforeSend` and is scrubbed like every other field.
+        integrations: [sentryImport.linkedErrorsIntegration()],
         stackParser: sentryImport.defaultStackParser,
         transport: sentryImport.makeFetchTransport,
         // Never attach IP address, cookies, or user headers.

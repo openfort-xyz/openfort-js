@@ -1,44 +1,59 @@
 import { SDKConfiguration } from '../core/config/config'
 
 /**
- * Property names whose values are never written to the console.
+ * Fragments of property names whose values are never written to the console.
  *
  * `debugLog` is the transport logger for the iframe RPC bridge, so objects
  * passed to it may contain sensitive fields. Console output is often
  * collected by third-party tooling, so these fields are replaced first.
+ *
+ * Matched as substrings of the lower-cased key: payload fields are compound
+ * names (`accessToken`, `deviceShare`, `shieldAPIKey`), and a new field built
+ * from one of these fragments should be redacted without anyone remembering
+ * to extend this list.
  */
-const REDACTED_KEYS = new Set([
-  'accesstoken',
+const REDACTED_KEY_FRAGMENTS = [
   'authorization',
-  'encryptionkey',
+  'credential',
   'encryptionsession',
+  'jwt',
   'key',
-  'passkey',
   'password',
-  'privatekey',
-  'recoverypassword',
-  'refreshtoken',
   'secret',
+  'seed',
   'share',
   'signature',
   'token',
-])
+]
+
+const isSensitiveKey = (key: string): boolean => {
+  const lower = key.toLowerCase()
+  return REDACTED_KEY_FRAGMENTS.some((fragment) => lower.includes(fragment))
+}
 
 const REDACTED = '[redacted]'
 const MAX_DEPTH = 6
 
-function redact(value: unknown, depth = 0, seen = new WeakSet<object>()): unknown {
+function redact(value: unknown, depth = 0, ancestors = new WeakSet<object>()): unknown {
   if (value === null || typeof value !== 'object') return value
   if (depth >= MAX_DEPTH) return '[depth limit]'
-  if (seen.has(value)) return '[circular]'
-  seen.add(value)
+  if (ancestors.has(value)) return '[circular]'
+  // Track only the current path — entries are removed on the way back up —
+  // so an object referenced from two sibling positions is rendered in both,
+  // and only a genuine cycle is cut off.
+  ancestors.add(value)
 
-  if (Array.isArray(value)) return value.map((entry) => redact(entry, depth + 1, seen))
-
-  const output: Record<string, unknown> = {}
-  for (const [key, entry] of Object.entries(value)) {
-    output[key] = REDACTED_KEYS.has(key.toLowerCase()) ? REDACTED : redact(entry, depth + 1, seen)
+  let output: unknown
+  if (Array.isArray(value)) {
+    output = value.map((entry) => redact(entry, depth + 1, ancestors))
+  } else {
+    const copy: Record<string, unknown> = {}
+    for (const [key, entry] of Object.entries(value)) {
+      copy[key] = isSensitiveKey(key) ? REDACTED : redact(entry, depth + 1, ancestors)
+    }
+    output = copy
   }
+  ancestors.delete(value)
   return output
 }
 

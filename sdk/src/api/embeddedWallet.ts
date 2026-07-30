@@ -313,12 +313,19 @@ export class EmbeddedWalletApi {
     iframe.id = 'openfort-iframe'
     iframe.referrerPolicy = 'strict-origin-when-cross-origin'
     // `allow-same-origin` is required for the embed's own localStorage
-    // (device share). `allow-top-navigation` is withheld so the frame cannot
-    // navigate the host page.
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups')
-    // Cross-origin WebAuthn is denied inside an iframe by default. The
-    // ceremony runs in the parent; this allows it in the frame if needed.
-    iframe.setAttribute('allow', 'publickey-credentials-get *; publickey-credentials-create *')
+    // (device share); `allow-top-navigation` stays withheld so the frame
+    // cannot navigate the host page. Popups must escape the sandbox: OAuth
+    // and recovery flows open provider pages that need to run unsandboxed.
+    // Modals and downloads cover the embed's confirmation prompts and key
+    // export.
+    iframe.setAttribute(
+      'sandbox',
+      'allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-popups-to-escape-sandbox'
+    )
+    // Cross-origin WebAuthn is denied inside an iframe by default. Listing
+    // the features without an origin scopes them to the frame's `src` origin,
+    // so a document navigated into the frame later gains nothing.
+    iframe.setAttribute('allow', 'publickey-credentials-get; publickey-credentials-create')
     iframe.src = url
 
     document.body.appendChild(iframe)

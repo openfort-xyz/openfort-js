@@ -36,6 +36,7 @@ export {
   AuthenticationError,
   AuthorizationError,
   ConfigurationError,
+  DEFAULT_DOCS_BASE_URL,
   OAuthError,
   OpenfortError,
   type OpenfortErrorOptions,

@@ -239,8 +239,17 @@ export class Openfort {
     return await this.openfortInternal.validateAndRefreshToken(forceRefresh)
   }
 
+  private cachedBackendApiClients: BackendApiClients | null = null
+
+  /**
+   * Memoized so every request reuses one axios instance; each construction
+   * wires its own retry handler and 401 interceptor, so a fresh instance per
+   * property access would multiply interceptors and connection pools.
+   */
   private get backendApiClients(): BackendApiClients {
-    return new BackendApiClients({
+    if (this.cachedBackendApiClients) return this.cachedBackendApiClients
+
+    this.cachedBackendApiClients = new BackendApiClients({
       basePath: this.configuration.backendUrl,
       accessToken: this.configuration.baseConfiguration.publishableKey,
       nativeAppIdentifier: this.configuration.nativeAppIdentifier,
@@ -250,6 +259,7 @@ export class Openfort {
         this.eventEmitter.emit('onLogout')
       },
     })
+    return this.cachedBackendApiClients
   }
 
   private get authManager(): AuthManager {

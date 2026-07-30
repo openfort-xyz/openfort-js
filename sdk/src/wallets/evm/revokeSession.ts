@@ -91,9 +91,15 @@ export const revokeSession = async ({
   if (!param) {
     throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'wallet_revokePermissions requires a permissions object')
   }
+  // `permissionContext` names the session being revoked. Without it there is
+  // nothing to revoke on the backend, and fabricating an empty
+  // `SessionResponse` would let a caller read `result.id` as a success
+  // signal for a revocation that never happened.
   if (!param.permissionContext) {
-    await signer.disconnect()
-    return {} as SessionResponse
+    throw new JsonRpcError(
+      RpcErrorCode.INVALID_PARAMS,
+      'wallet_revokePermissions requires permissionContext to identify the session to revoke'
+    )
   }
   const openfortTransaction = await buildOpenfortTransactions(
     param,

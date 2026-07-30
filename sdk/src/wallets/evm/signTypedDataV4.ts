@@ -41,14 +41,14 @@ const transformTypedData = (typedData: string | object, chainId: number): TypedD
     )
   }
 
+  // EIP-712 makes every domain field optional, and real payloads omit
+  // chainId (Snapshot votes, login/consent messages). A domain without a
+  // chainId is signed as-is; one WITH a chainId must name the connected
+  // chain, so a payload built for another network is rejected instead of
+  // producing a signature valid somewhere the user did not intend.
   const providedChainId: number | string | undefined = (transformedTypedData as any).domain?.chainId
-  // domain.chainId is required: without it the signature is not bound to a
-  // chain.
   if (providedChainId === undefined || providedChainId === null || providedChainId === '') {
-    throw new JsonRpcError(
-      RpcErrorCode.INVALID_PARAMS,
-      `Invalid typed data: domain.chainId is required, expected ${chainId}`
-    )
+    return transformedTypedData
   }
 
   // domain.chainId (if defined) can be a number, string, or hex value, but the backend & guardian only accept a number.
@@ -78,9 +78,12 @@ export const signTypedDataV4 = async ({
   rpcProvider,
   account,
 }: SignTypedDataV4Params): Promise<string> => {
-  const fromAddress: string = params[0]
+  const fromAddress: unknown = params[0]
   const typedDataParam: string | object = params[1]
-  if (!fromAddress || !typedDataParam) {
+  // Legacy `eth_signTypedData` callers order params as [typedData, address],
+  // so the first entry may be an object; report it as an RPC error rather
+  // than letting the address comparison below throw a bare TypeError.
+  if (typeof fromAddress !== 'string' || !fromAddress || !typedDataParam) {
     throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `${method} requires an address and a typed data JSON`)
   }
 

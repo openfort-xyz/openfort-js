@@ -173,6 +173,16 @@ export async function signAuthorization(params: SignAuthorizationParams): Promis
   // Parse the signature (format: 0x + r (64 chars) + s (64 chars) + v (2 chars))
   const sig = signatureHex.startsWith('0x') ? signatureHex.slice(2) : signatureHex
 
+  // The slicing below assumes exactly r(32) ‖ s(32) ‖ v(1). Anything shorter
+  // or non-hex would be silently truncated and later zero-padded into a
+  // structurally plausible authorization over the wrong data — reject it here,
+  // where the failure names the signer as the source.
+  if (!/^[0-9a-fA-F]{130}$/.test(sig)) {
+    throw new Error(
+      `Invalid EIP-7702 signature from signer: expected 65 bytes of hex (r, s, v), got ${Math.floor(sig.length / 2)} bytes`
+    )
+  }
+
   const r = `0x${sig.slice(0, 64)}`
   const s = `0x${sig.slice(64, 128)}`
   const vHex = sig.slice(128, 130)

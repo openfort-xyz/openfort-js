@@ -83,9 +83,16 @@ export class BackendApiClients {
 			axiosRetry(instance, {
 				retries: 3,
 				retryDelay: axiosRetry.exponentialDelay,
-				// Retries GET/HEAD/OPTIONS/PUT/DELETE only. Non-idempotent
-				// requests such as signature submission must not be repeated.
-				retryCondition: axiosRetry.isNetworkOrIdempotentRequestError,
+				// Retries GET/HEAD/OPTIONS/PUT/DELETE only, and only on network
+				// errors or retryable statuses. The method check must gate the
+				// network-error case too: a POST such as signature submission can
+				// reach the server and then lose the socket, and replaying it
+				// creates a duplicate transaction intent.
+				retryCondition: axiosRetry.isIdempotentRequestError,
+				// Each attempt gets the full timeout. By default the remaining
+				// budget is shared across attempts, so a retry after a slow
+				// failure starts with almost no time and aborts spuriously.
+				shouldResetTimeout: true,
 			});
 		}
 

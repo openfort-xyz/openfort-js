@@ -26,8 +26,16 @@ type ErrorConfig = {
   docsBaseUrl: string
 }
 
+/**
+ * Base URL used for docs links until `setErrorConfig` repoints it. Exported
+ * so callers that reconfigure the base (tests, ecosystem SDKs restoring
+ * state) can reset to the real default instead of hard-coding a copy that
+ * drifts.
+ */
+export const DEFAULT_DOCS_BASE_URL = 'https://www.openfort.io/docs'
+
 const errorConfig: ErrorConfig = {
-  docsBaseUrl: 'https://www.openfort.io/docs',
+  docsBaseUrl: DEFAULT_DOCS_BASE_URL,
 }
 
 /**
@@ -44,7 +52,9 @@ const errorConfig: ErrorConfig = {
  */
 export function setErrorConfig(config: Partial<ErrorConfig>): void {
   if (config.docsBaseUrl !== undefined) {
-    errorConfig.docsBaseUrl = config.docsBaseUrl.replace(/\/+$/, '')
+    let base = config.docsBaseUrl
+    while (base.endsWith('/')) base = base.slice(0, -1)
+    errorConfig.docsBaseUrl = base
   }
 }
 
@@ -121,13 +131,17 @@ export class OpenfortError extends Error {
    * ```
    */
   walk(predicate?: (error: unknown) => boolean): unknown {
+    // Cause chains can be cyclic: wrapping code sometimes re-attaches an
+    // outer error as a deeper cause. Visited-tracking bounds the traversal
+    // for cycles of any length, not just a self-referential `cause`.
+    const visited = new Set<unknown>()
     let current: unknown = this
     while (current) {
+      if (visited.has(current)) break
+      visited.add(current)
       if (predicate?.(current)) return current
       const next: unknown = (current as { cause?: unknown }).cause
-      // `next === current` guards a self-referential cause, which would
-      // otherwise spin forever.
-      if (next === undefined || next === current) break
+      if (next === undefined) break
       current = next
     }
     return predicate ? null : current
