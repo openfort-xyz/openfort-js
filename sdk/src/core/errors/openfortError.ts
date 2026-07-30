@@ -93,6 +93,14 @@ export class OpenfortError extends Error {
   public readonly error_description: string
 
   /**
+   * Correlation id of the failed API request (sent as `x-request-id`). The
+   * Openfort API adopts it as its own request/trace id, so this value can be
+   * searched directly in Openfort's logs and traces. Undefined for errors
+   * that did not originate from an API request.
+   */
+  public requestId?: string
+
+  /**
    * The SDK version that produced this error, so a bug report identifies the
    * exact build without having to ask.
    */

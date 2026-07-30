@@ -94,6 +94,7 @@ export class EmbeddedWalletApi {
       basePath: configuration.backendUrl,
       accessToken: configuration.baseConfiguration.publishableKey,
       nativeAppIdentifier: configuration.nativeAppIdentifier,
+      onRequest: configuration.onRequest,
       storage: this.storage,
       onLogout: () => {
         this.eventEmitter.emit('onLogout')

@@ -256,6 +256,7 @@ export class Openfort {
         // Emit logout event when 401 error occurs
         this.eventEmitter.emit('onLogout')
       },
+      onRequest: this.configuration.onRequest,
     })
     return this.cachedBackendApiClients
   }
