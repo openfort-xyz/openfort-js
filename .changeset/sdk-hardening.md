@@ -37,10 +37,51 @@ supported API or open an issue describing the use case.
   now be rejected.
 - EIP-7702 authorization inputs are validated before signing.
 
+**Fixed: `require()` of this package threw on `new Openfort()`**
+
+The CommonJS build called a dependency's module namespace object instead of its
+default export, so constructing the client from a CJS consumer failed with
+`TypeError: axiosRetry is not a function`. The build now emits the interop
+helper that unwraps the default export, and both the ESM and CJS entry points
+are loaded in CI to keep it that way.
+
+**New: `errors` and `types` entry points**
+
+`@openfort/openfort-js/errors` and `@openfort/openfort-js/types` expose the
+error classes and the shared types and enums without reaching the client. The
+root entry point initializes the global event emitter when it loads, so it
+cannot be tree-shaken; importing an error class through it pulled in signing,
+telemetry, and HTTP. Importing `OpenfortError` from `/errors` costs 313 B
+minified and brotlied, against 237 kB for the root entry point.
+
+```ts
+import { OpenfortError } from '@openfort/openfort-js/errors'
+import type { User } from '@openfort/openfort-js/types'
+```
+
 **Errors**
 
 Errors now record the SDK version, accept and forward `cause`, and expose
 `walk()` for inspecting the cause chain.
+
+Errors may also carry a link to the documentation page for the failure,
+readable as `error.docsUrl` and appended to `error.message`. Messages without
+such a link are unchanged. Ecosystem SDKs that publish their own documentation
+can repoint these links:
+
+```ts
+import { setErrorConfig } from '@openfort/openfort-js'
+
+setErrorConfig({ docsBaseUrl: 'https://docs.example.com/wallet' })
+```
+
+**Type-only exports are no longer runtime properties**
+
+Types such as `User` and `AuthResponse` were emitted as runtime properties
+bound to `undefined`. They are now erased, so they no longer appear in
+`Object.keys(require('@openfort/openfort-js'))`. Importing them as types is
+unaffected; only code that enumerated the module's runtime keys sees a
+difference.
 
 **Packaging**
 
