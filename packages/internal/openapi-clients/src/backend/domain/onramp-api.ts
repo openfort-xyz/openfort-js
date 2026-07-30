@@ -22,6 +22,8 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { OnrampMethodsResponse } from '../models';
+// @ts-ignore
 import { OnrampQuoteRequest } from '../models';
 // @ts-ignore
 import { OnrampQuotesResponse } from '../models';
@@ -36,10 +38,11 @@ import { OnrampSessionResponse } from '../models';
 export const OnrampApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
+         * 
          * @summary Create onramp session
          * @param {OnrampSessionRequest} onrampSessionRequest 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         createOnrampSession: async (onrampSessionRequest: OnrampSessionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -76,10 +79,80 @@ export const OnrampApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * 
+         * @summary Resolve onramp methods
+         * @param {string} targetChain 
+         * @param {string} targetCurrency 
+         * @param {string} [country] 
+         * @param {string} [methods] 
+         * @param {string} [cfIpcountry] 
+         * @param {string} [xForwardedFor] 
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        getOnrampMethods: async (targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, xForwardedFor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'targetChain' is not null or undefined
+            assertParamExists('getOnrampMethods', 'targetChain', targetChain)
+            // verify required parameter 'targetCurrency' is not null or undefined
+            assertParamExists('getOnrampMethods', 'targetCurrency', targetCurrency)
+            const localVarPath = `/v1/onramp/methods`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (targetChain !== undefined) {
+                localVarQueryParameter['targetChain'] = targetChain;
+            }
+
+            if (targetCurrency !== undefined) {
+                localVarQueryParameter['targetCurrency'] = targetCurrency;
+            }
+
+            if (country !== undefined) {
+                localVarQueryParameter['country'] = country;
+            }
+
+            if (methods !== undefined) {
+                localVarQueryParameter['methods'] = methods;
+            }
+
+            if (cfIpcountry != null) {
+                localVarHeaderParameter['cf-ipcountry'] = String(cfIpcountry);
+            }
+
+            if (xForwardedFor != null) {
+                localVarHeaderParameter['x-forwarded-for'] = String(xForwardedFor);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get onramp quote(s)
          * @param {OnrampQuoteRequest} onrampQuoteRequest 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         getOnrampQuote: async (onrampQuoteRequest: OnrampQuoteRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -126,10 +199,11 @@ export const OnrampApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = OnrampApiAxiosParamCreator(configuration)
     return {
         /**
-         * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
+         * 
          * @summary Create onramp session
          * @param {OnrampSessionRequest} onrampSessionRequest 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         async createOnrampSession(onrampSessionRequest: OnrampSessionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampSessionResponse>> {
@@ -137,10 +211,28 @@ export const OnrampApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * 
+         * @summary Resolve onramp methods
+         * @param {string} targetChain 
+         * @param {string} targetCurrency 
+         * @param {string} [country] 
+         * @param {string} [methods] 
+         * @param {string} [cfIpcountry] 
+         * @param {string} [xForwardedFor] 
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        async getOnrampMethods(targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, xForwardedFor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getOnrampMethods(targetChain, targetCurrency, country, methods, cfIpcountry, xForwardedFor, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get onramp quote(s)
          * @param {OnrampQuoteRequest} onrampQuoteRequest 
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         async getOnrampQuote(onrampQuoteRequest: OnrampQuoteRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampQuotesResponse>> {
@@ -158,20 +250,33 @@ export const OnrampApiFactory = function (configuration?: Configuration, basePat
     const localVarFp = OnrampApiFp(configuration)
     return {
         /**
-         * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
+         * 
          * @summary Create onramp session
          * @param {OnrampApiCreateOnrampSessionRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         createOnrampSession(requestParameters: OnrampApiCreateOnrampSessionRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampSessionResponse> {
             return localVarFp.createOnrampSession(requestParameters.onrampSessionRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * 
+         * @summary Resolve onramp methods
+         * @param {OnrampApiGetOnrampMethodsRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         */
+        getOnrampMethods(requestParameters: OnrampApiGetOnrampMethodsRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampMethodsResponse> {
+            return localVarFp.getOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, requestParameters.xForwardedFor, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get onramp quote(s)
          * @param {OnrampApiGetOnrampQuoteRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         getOnrampQuote(requestParameters: OnrampApiGetOnrampQuoteRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampQuotesResponse> {
@@ -192,6 +297,55 @@ export interface OnrampApiCreateOnrampSessionRequest {
      * @memberof OnrampApiCreateOnrampSession
      */
     readonly onrampSessionRequest: OnrampSessionRequest
+}
+
+/**
+ * Request parameters for getOnrampMethods operation in OnrampApi.
+ * @export
+ * @interface OnrampApiGetOnrampMethodsRequest
+ */
+export interface OnrampApiGetOnrampMethodsRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampApiGetOnrampMethods
+     */
+    readonly targetChain: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampApiGetOnrampMethods
+     */
+    readonly targetCurrency: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampApiGetOnrampMethods
+     */
+    readonly country?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampApiGetOnrampMethods
+     */
+    readonly methods?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampApiGetOnrampMethods
+     */
+    readonly cfIpcountry?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampApiGetOnrampMethods
+     */
+    readonly xForwardedFor?: string
 }
 
 /**
@@ -216,10 +370,11 @@ export interface OnrampApiGetOnrampQuoteRequest {
  */
 export class OnrampApi extends BaseAPI {
     /**
-     * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
+     * 
      * @summary Create onramp session
      * @param {OnrampApiCreateOnrampSessionRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof OnrampApi
      */
@@ -228,10 +383,24 @@ export class OnrampApi extends BaseAPI {
     }
 
     /**
-     * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+     * 
+     * @summary Resolve onramp methods
+     * @param {OnrampApiGetOnrampMethodsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @deprecated
+     * @throws {RequiredError}
+     * @memberof OnrampApi
+     */
+    public getOnrampMethods(requestParameters: OnrampApiGetOnrampMethodsRequest, options?: AxiosRequestConfig) {
+        return OnrampApiFp(this.configuration).getOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, requestParameters.xForwardedFor, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Get onramp quote(s)
      * @param {OnrampApiGetOnrampQuoteRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof OnrampApi
      */

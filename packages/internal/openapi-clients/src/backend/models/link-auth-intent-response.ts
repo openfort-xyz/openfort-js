@@ -15,18 +15,16 @@
 
 
 /**
- * 
+ * A minted Stripe LinkAuthIntent — the client renders the Link auth element with it.
  * @export
- * @enum {string}
+ * @interface LinkAuthIntentResponse
  */
-
-export const OnrampProvider = {
-    COINBASE: 'coinbase',
-    STRIPE: 'stripe',
-    MELD: 'meld'
-} as const;
-
-export type OnrampProvider = typeof OnrampProvider[keyof typeof OnrampProvider];
-
-
+export interface LinkAuthIntentResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkAuthIntentResponse
+     */
+    'id': string;
+}
 

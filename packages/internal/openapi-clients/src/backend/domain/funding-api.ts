@@ -22,17 +22,51 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
 // @ts-ignore
+import { CheckoutFundingOnrampSessionRequest } from '../models';
+// @ts-ignore
 import { CreateFundingSessionRequest } from '../models';
+// @ts-ignore
+import { CreateOnrampVerificationRequest } from '../models';
+// @ts-ignore
+import { CreateStripeLinkAuthIntentRequest } from '../models';
 // @ts-ignore
 import { FundingChainsResponse } from '../models';
 // @ts-ignore
+import { FundingConfigResponse } from '../models';
+// @ts-ignore
 import { FundingSessionResponse } from '../models';
+// @ts-ignore
+import { LinkAuthIntentResponse } from '../models';
+// @ts-ignore
+import { LinkTokenExchangeResponse } from '../models';
+// @ts-ignore
+import { OnrampMethodsResponse } from '../models';
+// @ts-ignore
+import { OnrampQuoteRequest } from '../models';
+// @ts-ignore
+import { OnrampQuoteResponse } from '../models';
+// @ts-ignore
+import { OnrampQuotesResponse } from '../models';
+// @ts-ignore
+import { OnrampSessionRequest } from '../models';
+// @ts-ignore
+import { OnrampSessionResponse } from '../models';
+// @ts-ignore
+import { OnrampVerificationResponse } from '../models';
+// @ts-ignore
+import { OnrampVerificationSubmitResponse } from '../models';
 // @ts-ignore
 import { PayLinkRequest } from '../models';
 // @ts-ignore
 import { PayLinkResponse } from '../models';
 // @ts-ignore
+import { SessionQuoteRequest } from '../models';
+// @ts-ignore
 import { SetPaymentMethodRequest } from '../models';
+// @ts-ignore
+import { SubmitOnrampVerificationRequest } from '../models';
+// @ts-ignore
+import { UpdateFundingConfigRequest } from '../models';
 /**
  * FundingApi - axios parameter creator
  * @export
@@ -40,16 +74,70 @@ import { SetPaymentMethodRequest } from '../models';
 export const FundingApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Creates a funding session for a destination.  A session is one cross-chain deposit attempt: pick a destination chain, token, and wallet, then set a payment method to mint a deposit address. The response includes a `clientSecret` used to advance and read the session.
-         * @summary Create a funding session.
-         * @param {CreateFundingSessionRequest} createFundingSessionRequest 
+         * Stripe Link (v2 headless) checkout: confirms the committed headless onramp session with the buyer\'s mandate acceptance (this request\'s ip + user agent) and returns the provider client secret for the client\'s performCheckout element. One-shot — the secret is never stored.
+         * @summary Check out a Stripe Link onramp session
+         * @param {string} sessionId The funding session ID (starts with fnd_).
+         * @param {CheckoutFundingOnrampSessionRequest} checkoutFundingOnrampSessionRequest 
+         * @param {string} [xForwardedFor] 
+         * @param {string} [userAgent] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createFundingSession: async (createFundingSessionRequest: CreateFundingSessionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createFundingSessionRequest' is not null or undefined
-            assertParamExists('createFundingSession', 'createFundingSessionRequest', createFundingSessionRequest)
-            const localVarPath = `/v2/funding/sessions`;
+        checkoutFundingOnrampSession: async (sessionId: string, checkoutFundingOnrampSessionRequest: CheckoutFundingOnrampSessionRequest, xForwardedFor?: string, userAgent?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sessionId' is not null or undefined
+            assertParamExists('checkoutFundingOnrampSession', 'sessionId', sessionId)
+            // verify required parameter 'checkoutFundingOnrampSessionRequest' is not null or undefined
+            assertParamExists('checkoutFundingOnrampSession', 'checkoutFundingOnrampSessionRequest', checkoutFundingOnrampSessionRequest)
+            const localVarPath = `/v2/funding/sessions/{sessionId}/onramp_checkout`
+                .replace(`{${"sessionId"}}`, encodeURIComponent(String(sessionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (xForwardedFor != null) {
+                localVarHeaderParameter['x-forwarded-for'] = String(xForwardedFor);
+            }
+
+            if (userAgent != null) {
+                localVarHeaderParameter['user-agent'] = String(userAgent);
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(checkoutFundingOnrampSessionRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
+         * @summary Create onramp session
+         * @param {OnrampSessionRequest} onrampSessionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createFundingOnrampSession: async (onrampSessionRequest: OnrampSessionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'onrampSessionRequest' is not null or undefined
+            assertParamExists('createFundingOnrampSession', 'onrampSessionRequest', onrampSessionRequest)
+            const localVarPath = `/v2/funding/onramp/sessions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -72,7 +160,92 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(onrampSessionRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Creates a funding session for a destination.  A session is one cross-chain deposit attempt: pick a destination chain, token, and wallet, then set a payment method to mint a deposit address. The response includes a `clientSecret` used to advance and read the session.
+         * @summary Create a funding session.
+         * @param {CreateFundingSessionRequest} createFundingSessionRequest 
+         * @param {string} [cfIpcountry] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createFundingSession: async (createFundingSessionRequest: CreateFundingSessionRequest, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createFundingSessionRequest' is not null or undefined
+            assertParamExists('createFundingSession', 'createFundingSessionRequest', createFundingSessionRequest)
+            const localVarPath = `/v2/funding/sessions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cfIpcountry != null) {
+                localVarHeaderParameter['cf-ipcountry'] = String(cfIpcountry);
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createFundingSessionRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Starts a Coinbase-issued OTP verification for the buyer\'s phone or email — the identity step of native wallet pay (Apple/Google Pay). Coinbase sends the code itself (no partner SMS/email vendor needed); submit it via the submit endpoint, then attach the returned ids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`. Sandbox: `+1000…` numbers and `@sandbox.test` emails never send anything and accept the code 000000.
+         * @summary Start a wallet-pay OTP verification
+         * @param {CreateOnrampVerificationRequest} createOnrampVerificationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createOnrampVerification: async (createOnrampVerificationRequest: CreateOnrampVerificationRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createOnrampVerificationRequest' is not null or undefined
+            assertParamExists('createOnrampVerification', 'createOnrampVerificationRequest', createOnrampVerificationRequest)
+            const localVarPath = `/v2/funding/onramp/verifications`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createOnrampVerificationRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -113,6 +286,230 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(payLinkRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Mints a Stripe LinkAuthIntent for the buyer\'s email — step 1 of the v2 embedded-components (headless) flow. The client renders Stripe\'s Link auth element with the returned id; after the buyer completes it, exchange the intent for its server-side token via the tokens endpoint. Requires the account\'s crypto_onramp_beta=v2 access (STRIPE_LINK_CLIENT_ID configured).
+         * @summary Create a Stripe Link auth intent
+         * @param {CreateStripeLinkAuthIntentRequest} createStripeLinkAuthIntentRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createStripeLinkAuthIntent: async (createStripeLinkAuthIntentRequest: CreateStripeLinkAuthIntentRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createStripeLinkAuthIntentRequest' is not null or undefined
+            assertParamExists('createStripeLinkAuthIntent', 'createStripeLinkAuthIntentRequest', createStripeLinkAuthIntentRequest)
+            const localVarPath = `/v2/funding/onramp/stripe/link_auth_intents`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createStripeLinkAuthIntentRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Exchanges a completed LinkAuthIntent for its OAuth token — step 3 of the v2 flow, after the buyer finishes the Link auth element. The token stays server-side; committing the session and checking out both look it up by the intent id.
+         * @summary Exchange a Stripe Link auth intent for its token
+         * @param {string} intentId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        exchangeStripeLinkToken: async (intentId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'intentId' is not null or undefined
+            assertParamExists('exchangeStripeLinkToken', 'intentId', intentId)
+            const localVarPath = `/v2/funding/onramp/stripe/link_auth_intents/{intentId}/tokens`
+                .replace(`{${"intentId"}}`, encodeURIComponent(String(intentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns the project\'s funding configuration (the dashboard \"Funding\" section). The Coinbase private key is never returned — only whether one is stored.
+         * @summary Get funding config
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFundingConfig: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/v2/funding/config`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay creds) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
+         * @summary Resolve onramp methods
+         * @param {string} targetChain 
+         * @param {string} targetCurrency 
+         * @param {string} [country] 
+         * @param {string} [methods] 
+         * @param {string} [cfIpcountry] 
+         * @param {string} [xForwardedFor] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFundingOnrampMethods: async (targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, xForwardedFor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'targetChain' is not null or undefined
+            assertParamExists('getFundingOnrampMethods', 'targetChain', targetChain)
+            // verify required parameter 'targetCurrency' is not null or undefined
+            assertParamExists('getFundingOnrampMethods', 'targetCurrency', targetCurrency)
+            const localVarPath = `/v2/funding/onramp/methods`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (targetChain !== undefined) {
+                localVarQueryParameter['targetChain'] = targetChain;
+            }
+
+            if (targetCurrency !== undefined) {
+                localVarQueryParameter['targetCurrency'] = targetCurrency;
+            }
+
+            if (country !== undefined) {
+                localVarQueryParameter['country'] = country;
+            }
+
+            if (methods !== undefined) {
+                localVarQueryParameter['methods'] = methods;
+            }
+
+            if (cfIpcountry != null) {
+                localVarHeaderParameter['cf-ipcountry'] = String(cfIpcountry);
+            }
+
+            if (xForwardedFor != null) {
+                localVarHeaderParameter['x-forwarded-for'] = String(xForwardedFor);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * @summary Get onramp quote(s)
+         * @param {OnrampQuoteRequest} onrampQuoteRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFundingOnrampQuote: async (onrampQuoteRequest: OnrampQuoteRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'onrampQuoteRequest' is not null or undefined
+            assertParamExists('getFundingOnrampQuote', 'onrampQuoteRequest', onrampQuoteRequest)
+            const localVarPath = `/v2/funding/onramp/quotes`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(onrampQuoteRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -163,6 +560,59 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Resolves the fiat onramp methods available for a session\'s destination and the buyer\'s region. Openfort auto-selects the provider per method — the client renders the rows and commits one via `setPaymentMethod` with `{ type: \"onramp\", method }`. Requires the session `clientSecret`.
+         * @summary Resolve a session\'s available funding methods.
+         * @param {string} sessionId The funding session ID (starts with fnd_).
+         * @param {string} [clientSecret] The session client secret returned at creation.
+         * @param {string} [country] Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP\&#39;s country.
+         * @param {string} [cfIpcountry] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFundingSessionMethods: async (sessionId: string, clientSecret?: string, country?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sessionId' is not null or undefined
+            assertParamExists('getFundingSessionMethods', 'sessionId', sessionId)
+            const localVarPath = `/v2/funding/sessions/{sessionId}/methods`
+                .replace(`{${"sessionId"}}`, encodeURIComponent(String(sessionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (clientSecret !== undefined) {
+                localVarQueryParameter['clientSecret'] = clientSecret;
+            }
+
+            if (country !== undefined) {
+                localVarQueryParameter['country'] = country;
+            }
+
+            if (cfIpcountry != null) {
+                localVarHeaderParameter['cf-ipcountry'] = String(cfIpcountry);
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Lists the source chains and currencies the funding rail can route from.  A live passthrough of the rail\'s dictionary (Relay), narrowed client-side to a curated subset. Public — it exposes no tenant data, so the source picker can load it before the user authenticates.
          * @summary List funding source chains.
          * @param {boolean} [livemode] Live (mainnet, default) or test (testnet) rail. Pass &#x60;false&#x60; from a test-mode (&#x60;pk_test_…&#x60;) client so the testnet chain list is returned.
@@ -198,20 +648,128 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Prices a fiat onramp route for a session before committing it. The provider is resolved exactly as `setPaymentMethod` would resolve it, so the quote matches the checkout the user will get. Requires the session `clientSecret`.
+         * @summary Quote a session\'s fiat funding route.
+         * @param {string} sessionId The funding session ID (starts with fnd_).
+         * @param {SessionQuoteRequest} sessionQuoteRequest 
+         * @param {string} [cfIpcountry] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        quoteFundingSession: async (sessionId: string, sessionQuoteRequest: SessionQuoteRequest, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sessionId' is not null or undefined
+            assertParamExists('quoteFundingSession', 'sessionId', sessionId)
+            // verify required parameter 'sessionQuoteRequest' is not null or undefined
+            assertParamExists('quoteFundingSession', 'sessionQuoteRequest', sessionQuoteRequest)
+            const localVarPath = `/v2/funding/sessions/{sessionId}/quotes`
+                .replace(`{${"sessionId"}}`, encodeURIComponent(String(sessionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cfIpcountry != null) {
+                localVarHeaderParameter['cf-ipcountry'] = String(cfIpcountry);
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sessionQuoteRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Sets the (single) payment method on a session.  Commits the source route the user will send from and mints the Relay deposit address. Requires the session `clientSecret`.
          * @summary Set a session\'s payment method.
          * @param {string} sessionId The funding session ID (starts with fnd_).
          * @param {SetPaymentMethodRequest} setPaymentMethodRequest 
+         * @param {string} [cfIpcountry] 
+         * @param {string} [origin] 
+         * @param {string} [xForwardedFor] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setPaymentMethod: async (sessionId: string, setPaymentMethodRequest: SetPaymentMethodRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        setPaymentMethod: async (sessionId: string, setPaymentMethodRequest: SetPaymentMethodRequest, cfIpcountry?: string, origin?: string, xForwardedFor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'sessionId' is not null or undefined
             assertParamExists('setPaymentMethod', 'sessionId', sessionId)
             // verify required parameter 'setPaymentMethodRequest' is not null or undefined
             assertParamExists('setPaymentMethod', 'setPaymentMethodRequest', setPaymentMethodRequest)
             const localVarPath = `/v2/funding/sessions/{sessionId}/payment_methods`
                 .replace(`{${"sessionId"}}`, encodeURIComponent(String(sessionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication pk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (cfIpcountry != null) {
+                localVarHeaderParameter['cf-ipcountry'] = String(cfIpcountry);
+            }
+
+            if (origin != null) {
+                localVarHeaderParameter['origin'] = String(origin);
+            }
+
+            if (xForwardedFor != null) {
+                localVarHeaderParameter['x-forwarded-for'] = String(xForwardedFor);
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(setPaymentMethodRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Submits the OTP the buyer received for a verification. On success the verification is valid for 60 days; its id rides on the wallet-pay commit.
+         * @summary Submit a wallet-pay OTP code
+         * @param {string} verificationId 
+         * @param {SubmitOnrampVerificationRequest} submitOnrampVerificationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        submitOnrampVerification: async (verificationId: string, submitOnrampVerificationRequest: SubmitOnrampVerificationRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'verificationId' is not null or undefined
+            assertParamExists('submitOnrampVerification', 'verificationId', verificationId)
+            // verify required parameter 'submitOnrampVerificationRequest' is not null or undefined
+            assertParamExists('submitOnrampVerification', 'submitOnrampVerificationRequest', submitOnrampVerificationRequest)
+            const localVarPath = `/v2/funding/onramp/verifications/{verificationId}/submit`
+                .replace(`{${"verificationId"}}`, encodeURIComponent(String(verificationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -234,7 +792,51 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(setPaymentMethodRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(submitOnrampVerificationRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Creates or replaces the project\'s funding configuration. The Coinbase private key is encrypted at rest; sending project id + key id without a private key keeps the stored one.
+         * @summary Update funding config
+         * @param {UpdateFundingConfigRequest} updateFundingConfigRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateFundingConfig: async (updateFundingConfigRequest: UpdateFundingConfigRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'updateFundingConfigRequest' is not null or undefined
+            assertParamExists('updateFundingConfig', 'updateFundingConfigRequest', updateFundingConfigRequest)
+            const localVarPath = `/v2/funding/config`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sk required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            // authentication user_project required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateFundingConfigRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -252,14 +854,51 @@ export const FundingApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = FundingApiAxiosParamCreator(configuration)
     return {
         /**
-         * Creates a funding session for a destination.  A session is one cross-chain deposit attempt: pick a destination chain, token, and wallet, then set a payment method to mint a deposit address. The response includes a `clientSecret` used to advance and read the session.
-         * @summary Create a funding session.
-         * @param {CreateFundingSessionRequest} createFundingSessionRequest 
+         * Stripe Link (v2 headless) checkout: confirms the committed headless onramp session with the buyer\'s mandate acceptance (this request\'s ip + user agent) and returns the provider client secret for the client\'s performCheckout element. One-shot — the secret is never stored.
+         * @summary Check out a Stripe Link onramp session
+         * @param {string} sessionId The funding session ID (starts with fnd_).
+         * @param {CheckoutFundingOnrampSessionRequest} checkoutFundingOnrampSessionRequest 
+         * @param {string} [xForwardedFor] 
+         * @param {string} [userAgent] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createFundingSession(createFundingSessionRequest: CreateFundingSessionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingSessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createFundingSession(createFundingSessionRequest, options);
+        async checkoutFundingOnrampSession(sessionId: string, checkoutFundingOnrampSessionRequest: CheckoutFundingOnrampSessionRequest, xForwardedFor?: string, userAgent?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CheckoutFundingOnrampSessionRequest>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkoutFundingOnrampSession(sessionId, checkoutFundingOnrampSessionRequest, xForwardedFor, userAgent, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
+         * @summary Create onramp session
+         * @param {OnrampSessionRequest} onrampSessionRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createFundingOnrampSession(onrampSessionRequest: OnrampSessionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampSessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createFundingOnrampSession(onrampSessionRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Creates a funding session for a destination.  A session is one cross-chain deposit attempt: pick a destination chain, token, and wallet, then set a payment method to mint a deposit address. The response includes a `clientSecret` used to advance and read the session.
+         * @summary Create a funding session.
+         * @param {CreateFundingSessionRequest} createFundingSessionRequest 
+         * @param {string} [cfIpcountry] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createFundingSession(createFundingSessionRequest: CreateFundingSessionRequest, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingSessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createFundingSession(createFundingSessionRequest, cfIpcountry, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Starts a Coinbase-issued OTP verification for the buyer\'s phone or email — the identity step of native wallet pay (Apple/Google Pay). Coinbase sends the code itself (no partner SMS/email vendor needed); submit it via the submit endpoint, then attach the returned ids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`. Sandbox: `+1000…` numbers and `@sandbox.test` emails never send anything and accept the code 000000.
+         * @summary Start a wallet-pay OTP verification
+         * @param {CreateOnrampVerificationRequest} createOnrampVerificationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createOnrampVerification(createOnrampVerificationRequest: CreateOnrampVerificationRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampVerificationResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createOnrampVerification(createOnrampVerificationRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -271,6 +910,65 @@ export const FundingApiFp = function(configuration?: Configuration) {
          */
         async createPayLink(payLinkRequest: PayLinkRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PayLinkResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPayLink(payLinkRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Mints a Stripe LinkAuthIntent for the buyer\'s email — step 1 of the v2 embedded-components (headless) flow. The client renders Stripe\'s Link auth element with the returned id; after the buyer completes it, exchange the intent for its server-side token via the tokens endpoint. Requires the account\'s crypto_onramp_beta=v2 access (STRIPE_LINK_CLIENT_ID configured).
+         * @summary Create a Stripe Link auth intent
+         * @param {CreateStripeLinkAuthIntentRequest} createStripeLinkAuthIntentRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createStripeLinkAuthIntent(createStripeLinkAuthIntentRequest: CreateStripeLinkAuthIntentRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkAuthIntentResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createStripeLinkAuthIntent(createStripeLinkAuthIntentRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Exchanges a completed LinkAuthIntent for its OAuth token — step 3 of the v2 flow, after the buyer finishes the Link auth element. The token stays server-side; committing the session and checking out both look it up by the intent id.
+         * @summary Exchange a Stripe Link auth intent for its token
+         * @param {string} intentId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async exchangeStripeLinkToken(intentId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LinkTokenExchangeResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.exchangeStripeLinkToken(intentId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Returns the project\'s funding configuration (the dashboard \"Funding\" section). The Coinbase private key is never returned — only whether one is stored.
+         * @summary Get funding config
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getFundingConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingConfigResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingConfig(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay creds) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
+         * @summary Resolve onramp methods
+         * @param {string} targetChain 
+         * @param {string} targetCurrency 
+         * @param {string} [country] 
+         * @param {string} [methods] 
+         * @param {string} [cfIpcountry] 
+         * @param {string} [xForwardedFor] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getFundingOnrampMethods(targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, xForwardedFor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingOnrampMethods(targetChain, targetCurrency, country, methods, cfIpcountry, xForwardedFor, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * @summary Get onramp quote(s)
+         * @param {OnrampQuoteRequest} onrampQuoteRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getFundingOnrampQuote(onrampQuoteRequest: OnrampQuoteRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampQuotesResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingOnrampQuote(onrampQuoteRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -286,6 +984,20 @@ export const FundingApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Resolves the fiat onramp methods available for a session\'s destination and the buyer\'s region. Openfort auto-selects the provider per method — the client renders the rows and commits one via `setPaymentMethod` with `{ type: \"onramp\", method }`. Requires the session `clientSecret`.
+         * @summary Resolve a session\'s available funding methods.
+         * @param {string} sessionId The funding session ID (starts with fnd_).
+         * @param {string} [clientSecret] The session client secret returned at creation.
+         * @param {string} [country] Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP\&#39;s country.
+         * @param {string} [cfIpcountry] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getFundingSessionMethods(sessionId: string, clientSecret?: string, country?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingSessionMethods(sessionId, clientSecret, country, cfIpcountry, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Lists the source chains and currencies the funding rail can route from.  A live passthrough of the rail\'s dictionary (Relay), narrowed client-side to a curated subset. Public — it exposes no tenant data, so the source picker can load it before the user authenticates.
          * @summary List funding source chains.
          * @param {boolean} [livemode] Live (mainnet, default) or test (testnet) rail. Pass &#x60;false&#x60; from a test-mode (&#x60;pk_test_…&#x60;) client so the testnet chain list is returned.
@@ -297,15 +1009,54 @@ export const FundingApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Prices a fiat onramp route for a session before committing it. The provider is resolved exactly as `setPaymentMethod` would resolve it, so the quote matches the checkout the user will get. Requires the session `clientSecret`.
+         * @summary Quote a session\'s fiat funding route.
+         * @param {string} sessionId The funding session ID (starts with fnd_).
+         * @param {SessionQuoteRequest} sessionQuoteRequest 
+         * @param {string} [cfIpcountry] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async quoteFundingSession(sessionId: string, sessionQuoteRequest: SessionQuoteRequest, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampQuoteResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.quoteFundingSession(sessionId, sessionQuoteRequest, cfIpcountry, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Sets the (single) payment method on a session.  Commits the source route the user will send from and mints the Relay deposit address. Requires the session `clientSecret`.
          * @summary Set a session\'s payment method.
          * @param {string} sessionId The funding session ID (starts with fnd_).
          * @param {SetPaymentMethodRequest} setPaymentMethodRequest 
+         * @param {string} [cfIpcountry] 
+         * @param {string} [origin] 
+         * @param {string} [xForwardedFor] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async setPaymentMethod(sessionId: string, setPaymentMethodRequest: SetPaymentMethodRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingSessionResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.setPaymentMethod(sessionId, setPaymentMethodRequest, options);
+        async setPaymentMethod(sessionId: string, setPaymentMethodRequest: SetPaymentMethodRequest, cfIpcountry?: string, origin?: string, xForwardedFor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingSessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setPaymentMethod(sessionId, setPaymentMethodRequest, cfIpcountry, origin, xForwardedFor, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Submits the OTP the buyer received for a verification. On success the verification is valid for 60 days; its id rides on the wallet-pay commit.
+         * @summary Submit a wallet-pay OTP code
+         * @param {string} verificationId 
+         * @param {SubmitOnrampVerificationRequest} submitOnrampVerificationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async submitOnrampVerification(verificationId: string, submitOnrampVerificationRequest: SubmitOnrampVerificationRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampVerificationSubmitResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.submitOnrampVerification(verificationId, submitOnrampVerificationRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Creates or replaces the project\'s funding configuration. The Coinbase private key is encrypted at rest; sending project id + key id without a private key keeps the stored one.
+         * @summary Update funding config
+         * @param {UpdateFundingConfigRequest} updateFundingConfigRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateFundingConfig(updateFundingConfigRequest: UpdateFundingConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingConfigResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateFundingConfig(updateFundingConfigRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -319,6 +1070,26 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = FundingApiFp(configuration)
     return {
         /**
+         * Stripe Link (v2 headless) checkout: confirms the committed headless onramp session with the buyer\'s mandate acceptance (this request\'s ip + user agent) and returns the provider client secret for the client\'s performCheckout element. One-shot — the secret is never stored.
+         * @summary Check out a Stripe Link onramp session
+         * @param {FundingApiCheckoutFundingOnrampSessionRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkoutFundingOnrampSession(requestParameters: FundingApiCheckoutFundingOnrampSessionRequest, options?: AxiosRequestConfig): AxiosPromise<CheckoutFundingOnrampSessionRequest> {
+            return localVarFp.checkoutFundingOnrampSession(requestParameters.sessionId, requestParameters.checkoutFundingOnrampSessionRequest, requestParameters.xForwardedFor, requestParameters.userAgent, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
+         * @summary Create onramp session
+         * @param {FundingApiCreateFundingOnrampSessionRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createFundingOnrampSession(requestParameters: FundingApiCreateFundingOnrampSessionRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampSessionResponse> {
+            return localVarFp.createFundingOnrampSession(requestParameters.onrampSessionRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Creates a funding session for a destination.  A session is one cross-chain deposit attempt: pick a destination chain, token, and wallet, then set a payment method to mint a deposit address. The response includes a `clientSecret` used to advance and read the session.
          * @summary Create a funding session.
          * @param {FundingApiCreateFundingSessionRequest} requestParameters Request parameters.
@@ -326,7 +1097,17 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @throws {RequiredError}
          */
         createFundingSession(requestParameters: FundingApiCreateFundingSessionRequest, options?: AxiosRequestConfig): AxiosPromise<FundingSessionResponse> {
-            return localVarFp.createFundingSession(requestParameters.createFundingSessionRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.createFundingSession(requestParameters.createFundingSessionRequest, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Starts a Coinbase-issued OTP verification for the buyer\'s phone or email — the identity step of native wallet pay (Apple/Google Pay). Coinbase sends the code itself (no partner SMS/email vendor needed); submit it via the submit endpoint, then attach the returned ids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`. Sandbox: `+1000…` numbers and `@sandbox.test` emails never send anything and accept the code 000000.
+         * @summary Start a wallet-pay OTP verification
+         * @param {FundingApiCreateOnrampVerificationRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createOnrampVerification(requestParameters: FundingApiCreateOnrampVerificationRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampVerificationResponse> {
+            return localVarFp.createOnrampVerification(requestParameters.createOnrampVerificationRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Builds a prefilled centralized-exchange (cex) transfer link for a session.  Returns a hosted exchange transfer URL: the user signs into their own exchange account and the exchange delivers the asset to the session\'s wallet, handling any bridging from the balance they hold. Destination address and chain are derived from the session, not the client. The active cex provider is resolved server-side. Requires the session `clientSecret`.
@@ -339,6 +1120,55 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createPayLink(requestParameters.payLinkRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * Mints a Stripe LinkAuthIntent for the buyer\'s email — step 1 of the v2 embedded-components (headless) flow. The client renders Stripe\'s Link auth element with the returned id; after the buyer completes it, exchange the intent for its server-side token via the tokens endpoint. Requires the account\'s crypto_onramp_beta=v2 access (STRIPE_LINK_CLIENT_ID configured).
+         * @summary Create a Stripe Link auth intent
+         * @param {FundingApiCreateStripeLinkAuthIntentRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createStripeLinkAuthIntent(requestParameters: FundingApiCreateStripeLinkAuthIntentRequest, options?: AxiosRequestConfig): AxiosPromise<LinkAuthIntentResponse> {
+            return localVarFp.createStripeLinkAuthIntent(requestParameters.createStripeLinkAuthIntentRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Exchanges a completed LinkAuthIntent for its OAuth token — step 3 of the v2 flow, after the buyer finishes the Link auth element. The token stays server-side; committing the session and checking out both look it up by the intent id.
+         * @summary Exchange a Stripe Link auth intent for its token
+         * @param {FundingApiExchangeStripeLinkTokenRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        exchangeStripeLinkToken(requestParameters: FundingApiExchangeStripeLinkTokenRequest, options?: AxiosRequestConfig): AxiosPromise<LinkTokenExchangeResponse> {
+            return localVarFp.exchangeStripeLinkToken(requestParameters.intentId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns the project\'s funding configuration (the dashboard \"Funding\" section). The Coinbase private key is never returned — only whether one is stored.
+         * @summary Get funding config
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFundingConfig(options?: AxiosRequestConfig): AxiosPromise<FundingConfigResponse> {
+            return localVarFp.getFundingConfig(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay creds) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
+         * @summary Resolve onramp methods
+         * @param {FundingApiGetFundingOnrampMethodsRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFundingOnrampMethods(requestParameters: FundingApiGetFundingOnrampMethodsRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampMethodsResponse> {
+            return localVarFp.getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, requestParameters.xForwardedFor, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+         * @summary Get onramp quote(s)
+         * @param {FundingApiGetFundingOnrampQuoteRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFundingOnrampQuote(requestParameters: FundingApiGetFundingOnrampQuoteRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampQuotesResponse> {
+            return localVarFp.getFundingOnrampQuote(requestParameters.onrampQuoteRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves a funding session, refreshing its status from the rail.  Requires the session `clientSecret` (query parameter).
          * @summary Get a funding session.
          * @param {FundingApiGetFundingSessionRequest} requestParameters Request parameters.
@@ -347,6 +1177,16 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          */
         getFundingSession(requestParameters: FundingApiGetFundingSessionRequest, options?: AxiosRequestConfig): AxiosPromise<FundingSessionResponse> {
             return localVarFp.getFundingSession(requestParameters.sessionId, requestParameters.clientSecret, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Resolves the fiat onramp methods available for a session\'s destination and the buyer\'s region. Openfort auto-selects the provider per method — the client renders the rows and commits one via `setPaymentMethod` with `{ type: \"onramp\", method }`. Requires the session `clientSecret`.
+         * @summary Resolve a session\'s available funding methods.
+         * @param {FundingApiGetFundingSessionMethodsRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFundingSessionMethods(requestParameters: FundingApiGetFundingSessionMethodsRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampMethodsResponse> {
+            return localVarFp.getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
         },
         /**
          * Lists the source chains and currencies the funding rail can route from.  A live passthrough of the rail\'s dictionary (Relay), narrowed client-side to a curated subset. Public — it exposes no tenant data, so the source picker can load it before the user authenticates.
@@ -359,6 +1199,16 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.listChains(requestParameters.livemode, options).then((request) => request(axios, basePath));
         },
         /**
+         * Prices a fiat onramp route for a session before committing it. The provider is resolved exactly as `setPaymentMethod` would resolve it, so the quote matches the checkout the user will get. Requires the session `clientSecret`.
+         * @summary Quote a session\'s fiat funding route.
+         * @param {FundingApiQuoteFundingSessionRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        quoteFundingSession(requestParameters: FundingApiQuoteFundingSessionRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampQuoteResponse> {
+            return localVarFp.quoteFundingSession(requestParameters.sessionId, requestParameters.sessionQuoteRequest, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Sets the (single) payment method on a session.  Commits the source route the user will send from and mints the Relay deposit address. Requires the session `clientSecret`.
          * @summary Set a session\'s payment method.
          * @param {FundingApiSetPaymentMethodRequest} requestParameters Request parameters.
@@ -366,10 +1216,79 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @throws {RequiredError}
          */
         setPaymentMethod(requestParameters: FundingApiSetPaymentMethodRequest, options?: AxiosRequestConfig): AxiosPromise<FundingSessionResponse> {
-            return localVarFp.setPaymentMethod(requestParameters.sessionId, requestParameters.setPaymentMethodRequest, options).then((request) => request(axios, basePath));
+            return localVarFp.setPaymentMethod(requestParameters.sessionId, requestParameters.setPaymentMethodRequest, requestParameters.cfIpcountry, requestParameters.origin, requestParameters.xForwardedFor, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Submits the OTP the buyer received for a verification. On success the verification is valid for 60 days; its id rides on the wallet-pay commit.
+         * @summary Submit a wallet-pay OTP code
+         * @param {FundingApiSubmitOnrampVerificationRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        submitOnrampVerification(requestParameters: FundingApiSubmitOnrampVerificationRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampVerificationSubmitResponse> {
+            return localVarFp.submitOnrampVerification(requestParameters.verificationId, requestParameters.submitOnrampVerificationRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Creates or replaces the project\'s funding configuration. The Coinbase private key is encrypted at rest; sending project id + key id without a private key keeps the stored one.
+         * @summary Update funding config
+         * @param {FundingApiUpdateFundingConfigRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateFundingConfig(requestParameters: FundingApiUpdateFundingConfigRequest, options?: AxiosRequestConfig): AxiosPromise<FundingConfigResponse> {
+            return localVarFp.updateFundingConfig(requestParameters.updateFundingConfigRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+/**
+ * Request parameters for checkoutFundingOnrampSession operation in FundingApi.
+ * @export
+ * @interface FundingApiCheckoutFundingOnrampSessionRequest
+ */
+export interface FundingApiCheckoutFundingOnrampSessionRequest {
+    /**
+     * The funding session ID (starts with fnd_).
+     * @type {string}
+     * @memberof FundingApiCheckoutFundingOnrampSession
+     */
+    readonly sessionId: string
+
+    /**
+     * 
+     * @type {CheckoutFundingOnrampSessionRequest}
+     * @memberof FundingApiCheckoutFundingOnrampSession
+     */
+    readonly checkoutFundingOnrampSessionRequest: CheckoutFundingOnrampSessionRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiCheckoutFundingOnrampSession
+     */
+    readonly xForwardedFor?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiCheckoutFundingOnrampSession
+     */
+    readonly userAgent?: string
+}
+
+/**
+ * Request parameters for createFundingOnrampSession operation in FundingApi.
+ * @export
+ * @interface FundingApiCreateFundingOnrampSessionRequest
+ */
+export interface FundingApiCreateFundingOnrampSessionRequest {
+    /**
+     * 
+     * @type {OnrampSessionRequest}
+     * @memberof FundingApiCreateFundingOnrampSession
+     */
+    readonly onrampSessionRequest: OnrampSessionRequest
+}
 
 /**
  * Request parameters for createFundingSession operation in FundingApi.
@@ -383,6 +1302,27 @@ export interface FundingApiCreateFundingSessionRequest {
      * @memberof FundingApiCreateFundingSession
      */
     readonly createFundingSessionRequest: CreateFundingSessionRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiCreateFundingSession
+     */
+    readonly cfIpcountry?: string
+}
+
+/**
+ * Request parameters for createOnrampVerification operation in FundingApi.
+ * @export
+ * @interface FundingApiCreateOnrampVerificationRequest
+ */
+export interface FundingApiCreateOnrampVerificationRequest {
+    /**
+     * 
+     * @type {CreateOnrampVerificationRequest}
+     * @memberof FundingApiCreateOnrampVerification
+     */
+    readonly createOnrampVerificationRequest: CreateOnrampVerificationRequest
 }
 
 /**
@@ -397,6 +1337,97 @@ export interface FundingApiCreatePayLinkRequest {
      * @memberof FundingApiCreatePayLink
      */
     readonly payLinkRequest: PayLinkRequest
+}
+
+/**
+ * Request parameters for createStripeLinkAuthIntent operation in FundingApi.
+ * @export
+ * @interface FundingApiCreateStripeLinkAuthIntentRequest
+ */
+export interface FundingApiCreateStripeLinkAuthIntentRequest {
+    /**
+     * 
+     * @type {CreateStripeLinkAuthIntentRequest}
+     * @memberof FundingApiCreateStripeLinkAuthIntent
+     */
+    readonly createStripeLinkAuthIntentRequest: CreateStripeLinkAuthIntentRequest
+}
+
+/**
+ * Request parameters for exchangeStripeLinkToken operation in FundingApi.
+ * @export
+ * @interface FundingApiExchangeStripeLinkTokenRequest
+ */
+export interface FundingApiExchangeStripeLinkTokenRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiExchangeStripeLinkToken
+     */
+    readonly intentId: string
+}
+
+/**
+ * Request parameters for getFundingOnrampMethods operation in FundingApi.
+ * @export
+ * @interface FundingApiGetFundingOnrampMethodsRequest
+ */
+export interface FundingApiGetFundingOnrampMethodsRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiGetFundingOnrampMethods
+     */
+    readonly targetChain: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiGetFundingOnrampMethods
+     */
+    readonly targetCurrency: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiGetFundingOnrampMethods
+     */
+    readonly country?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiGetFundingOnrampMethods
+     */
+    readonly methods?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiGetFundingOnrampMethods
+     */
+    readonly cfIpcountry?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiGetFundingOnrampMethods
+     */
+    readonly xForwardedFor?: string
+}
+
+/**
+ * Request parameters for getFundingOnrampQuote operation in FundingApi.
+ * @export
+ * @interface FundingApiGetFundingOnrampQuoteRequest
+ */
+export interface FundingApiGetFundingOnrampQuoteRequest {
+    /**
+     * 
+     * @type {OnrampQuoteRequest}
+     * @memberof FundingApiGetFundingOnrampQuote
+     */
+    readonly onrampQuoteRequest: OnrampQuoteRequest
 }
 
 /**
@@ -421,6 +1452,41 @@ export interface FundingApiGetFundingSessionRequest {
 }
 
 /**
+ * Request parameters for getFundingSessionMethods operation in FundingApi.
+ * @export
+ * @interface FundingApiGetFundingSessionMethodsRequest
+ */
+export interface FundingApiGetFundingSessionMethodsRequest {
+    /**
+     * The funding session ID (starts with fnd_).
+     * @type {string}
+     * @memberof FundingApiGetFundingSessionMethods
+     */
+    readonly sessionId: string
+
+    /**
+     * The session client secret returned at creation.
+     * @type {string}
+     * @memberof FundingApiGetFundingSessionMethods
+     */
+    readonly clientSecret?: string
+
+    /**
+     * Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP\&#39;s country.
+     * @type {string}
+     * @memberof FundingApiGetFundingSessionMethods
+     */
+    readonly country?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiGetFundingSessionMethods
+     */
+    readonly cfIpcountry?: string
+}
+
+/**
  * Request parameters for listChains operation in FundingApi.
  * @export
  * @interface FundingApiListChainsRequest
@@ -432,6 +1498,34 @@ export interface FundingApiListChainsRequest {
      * @memberof FundingApiListChains
      */
     readonly livemode?: boolean
+}
+
+/**
+ * Request parameters for quoteFundingSession operation in FundingApi.
+ * @export
+ * @interface FundingApiQuoteFundingSessionRequest
+ */
+export interface FundingApiQuoteFundingSessionRequest {
+    /**
+     * The funding session ID (starts with fnd_).
+     * @type {string}
+     * @memberof FundingApiQuoteFundingSession
+     */
+    readonly sessionId: string
+
+    /**
+     * 
+     * @type {SessionQuoteRequest}
+     * @memberof FundingApiQuoteFundingSession
+     */
+    readonly sessionQuoteRequest: SessionQuoteRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiQuoteFundingSession
+     */
+    readonly cfIpcountry?: string
 }
 
 /**
@@ -453,6 +1547,62 @@ export interface FundingApiSetPaymentMethodRequest {
      * @memberof FundingApiSetPaymentMethod
      */
     readonly setPaymentMethodRequest: SetPaymentMethodRequest
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiSetPaymentMethod
+     */
+    readonly cfIpcountry?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiSetPaymentMethod
+     */
+    readonly origin?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiSetPaymentMethod
+     */
+    readonly xForwardedFor?: string
+}
+
+/**
+ * Request parameters for submitOnrampVerification operation in FundingApi.
+ * @export
+ * @interface FundingApiSubmitOnrampVerificationRequest
+ */
+export interface FundingApiSubmitOnrampVerificationRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiSubmitOnrampVerification
+     */
+    readonly verificationId: string
+
+    /**
+     * 
+     * @type {SubmitOnrampVerificationRequest}
+     * @memberof FundingApiSubmitOnrampVerification
+     */
+    readonly submitOnrampVerificationRequest: SubmitOnrampVerificationRequest
+}
+
+/**
+ * Request parameters for updateFundingConfig operation in FundingApi.
+ * @export
+ * @interface FundingApiUpdateFundingConfigRequest
+ */
+export interface FundingApiUpdateFundingConfigRequest {
+    /**
+     * 
+     * @type {UpdateFundingConfigRequest}
+     * @memberof FundingApiUpdateFundingConfig
+     */
+    readonly updateFundingConfigRequest: UpdateFundingConfigRequest
 }
 
 /**
@@ -463,6 +1613,30 @@ export interface FundingApiSetPaymentMethodRequest {
  */
 export class FundingApi extends BaseAPI {
     /**
+     * Stripe Link (v2 headless) checkout: confirms the committed headless onramp session with the buyer\'s mandate acceptance (this request\'s ip + user agent) and returns the provider client secret for the client\'s performCheckout element. One-shot — the secret is never stored.
+     * @summary Check out a Stripe Link onramp session
+     * @param {FundingApiCheckoutFundingOnrampSessionRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public checkoutFundingOnrampSession(requestParameters: FundingApiCheckoutFundingOnrampSessionRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).checkoutFundingOnrampSession(requestParameters.sessionId, requestParameters.checkoutFundingOnrampSessionRequest, requestParameters.xForwardedFor, requestParameters.userAgent, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Creates an onramp session for the selected provider.  The provider is selected via the `provider` field. All request and response formats are unified and provider-agnostic. The service layer handles translation between the common format and provider-specific APIs.
+     * @summary Create onramp session
+     * @param {FundingApiCreateFundingOnrampSessionRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public createFundingOnrampSession(requestParameters: FundingApiCreateFundingOnrampSessionRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).createFundingOnrampSession(requestParameters.onrampSessionRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Creates a funding session for a destination.  A session is one cross-chain deposit attempt: pick a destination chain, token, and wallet, then set a payment method to mint a deposit address. The response includes a `clientSecret` used to advance and read the session.
      * @summary Create a funding session.
      * @param {FundingApiCreateFundingSessionRequest} requestParameters Request parameters.
@@ -471,7 +1645,19 @@ export class FundingApi extends BaseAPI {
      * @memberof FundingApi
      */
     public createFundingSession(requestParameters: FundingApiCreateFundingSessionRequest, options?: AxiosRequestConfig) {
-        return FundingApiFp(this.configuration).createFundingSession(requestParameters.createFundingSessionRequest, options).then((request) => request(this.axios, this.basePath));
+        return FundingApiFp(this.configuration).createFundingSession(requestParameters.createFundingSessionRequest, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Starts a Coinbase-issued OTP verification for the buyer\'s phone or email — the identity step of native wallet pay (Apple/Google Pay). Coinbase sends the code itself (no partner SMS/email vendor needed); submit it via the submit endpoint, then attach the returned ids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`. Sandbox: `+1000…` numbers and `@sandbox.test` emails never send anything and accept the code 000000.
+     * @summary Start a wallet-pay OTP verification
+     * @param {FundingApiCreateOnrampVerificationRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public createOnrampVerification(requestParameters: FundingApiCreateOnrampVerificationRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).createOnrampVerification(requestParameters.createOnrampVerificationRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -487,6 +1673,65 @@ export class FundingApi extends BaseAPI {
     }
 
     /**
+     * Mints a Stripe LinkAuthIntent for the buyer\'s email — step 1 of the v2 embedded-components (headless) flow. The client renders Stripe\'s Link auth element with the returned id; after the buyer completes it, exchange the intent for its server-side token via the tokens endpoint. Requires the account\'s crypto_onramp_beta=v2 access (STRIPE_LINK_CLIENT_ID configured).
+     * @summary Create a Stripe Link auth intent
+     * @param {FundingApiCreateStripeLinkAuthIntentRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public createStripeLinkAuthIntent(requestParameters: FundingApiCreateStripeLinkAuthIntentRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).createStripeLinkAuthIntent(requestParameters.createStripeLinkAuthIntentRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Exchanges a completed LinkAuthIntent for its OAuth token — step 3 of the v2 flow, after the buyer finishes the Link auth element. The token stays server-side; committing the session and checking out both look it up by the intent id.
+     * @summary Exchange a Stripe Link auth intent for its token
+     * @param {FundingApiExchangeStripeLinkTokenRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public exchangeStripeLinkToken(requestParameters: FundingApiExchangeStripeLinkTokenRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).exchangeStripeLinkToken(requestParameters.intentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns the project\'s funding configuration (the dashboard \"Funding\" section). The Coinbase private key is never returned — only whether one is stored.
+     * @summary Get funding config
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public getFundingConfig(options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).getFundingConfig(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay creds) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
+     * @summary Resolve onramp methods
+     * @param {FundingApiGetFundingOnrampMethodsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public getFundingOnrampMethods(requestParameters: FundingApiGetFundingOnrampMethodsRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, requestParameters.xForwardedFor, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
+     * @summary Get onramp quote(s)
+     * @param {FundingApiGetFundingOnrampQuoteRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public getFundingOnrampQuote(requestParameters: FundingApiGetFundingOnrampQuoteRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).getFundingOnrampQuote(requestParameters.onrampQuoteRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Retrieves a funding session, refreshing its status from the rail.  Requires the session `clientSecret` (query parameter).
      * @summary Get a funding session.
      * @param {FundingApiGetFundingSessionRequest} requestParameters Request parameters.
@@ -496,6 +1741,18 @@ export class FundingApi extends BaseAPI {
      */
     public getFundingSession(requestParameters: FundingApiGetFundingSessionRequest, options?: AxiosRequestConfig) {
         return FundingApiFp(this.configuration).getFundingSession(requestParameters.sessionId, requestParameters.clientSecret, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Resolves the fiat onramp methods available for a session\'s destination and the buyer\'s region. Openfort auto-selects the provider per method — the client renders the rows and commits one via `setPaymentMethod` with `{ type: \"onramp\", method }`. Requires the session `clientSecret`.
+     * @summary Resolve a session\'s available funding methods.
+     * @param {FundingApiGetFundingSessionMethodsRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public getFundingSessionMethods(requestParameters: FundingApiGetFundingSessionMethodsRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -511,6 +1768,18 @@ export class FundingApi extends BaseAPI {
     }
 
     /**
+     * Prices a fiat onramp route for a session before committing it. The provider is resolved exactly as `setPaymentMethod` would resolve it, so the quote matches the checkout the user will get. Requires the session `clientSecret`.
+     * @summary Quote a session\'s fiat funding route.
+     * @param {FundingApiQuoteFundingSessionRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public quoteFundingSession(requestParameters: FundingApiQuoteFundingSessionRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).quoteFundingSession(requestParameters.sessionId, requestParameters.sessionQuoteRequest, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Sets the (single) payment method on a session.  Commits the source route the user will send from and mints the Relay deposit address. Requires the session `clientSecret`.
      * @summary Set a session\'s payment method.
      * @param {FundingApiSetPaymentMethodRequest} requestParameters Request parameters.
@@ -519,7 +1788,31 @@ export class FundingApi extends BaseAPI {
      * @memberof FundingApi
      */
     public setPaymentMethod(requestParameters: FundingApiSetPaymentMethodRequest, options?: AxiosRequestConfig) {
-        return FundingApiFp(this.configuration).setPaymentMethod(requestParameters.sessionId, requestParameters.setPaymentMethodRequest, options).then((request) => request(this.axios, this.basePath));
+        return FundingApiFp(this.configuration).setPaymentMethod(requestParameters.sessionId, requestParameters.setPaymentMethodRequest, requestParameters.cfIpcountry, requestParameters.origin, requestParameters.xForwardedFor, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Submits the OTP the buyer received for a verification. On success the verification is valid for 60 days; its id rides on the wallet-pay commit.
+     * @summary Submit a wallet-pay OTP code
+     * @param {FundingApiSubmitOnrampVerificationRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public submitOnrampVerification(requestParameters: FundingApiSubmitOnrampVerificationRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).submitOnrampVerification(requestParameters.verificationId, requestParameters.submitOnrampVerificationRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Creates or replaces the project\'s funding configuration. The Coinbase private key is encrypted at rest; sending project id + key id without a private key keeps the stored one.
+     * @summary Update funding config
+     * @param {FundingApiUpdateFundingConfigRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FundingApi
+     */
+    public updateFundingConfig(requestParameters: FundingApiUpdateFundingConfigRequest, options?: AxiosRequestConfig) {
+        return FundingApiFp(this.configuration).updateFundingConfig(requestParameters.updateFundingConfigRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

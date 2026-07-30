@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { EvmTokenContractEntry } from './evm-token-contract-entry';
+// May contain unused imports in some cases
+// @ts-ignore
 import { SponsorSchema } from './sponsor-schema';
 
 /**
@@ -30,19 +33,27 @@ export interface FeeSponsorshipStrategy {
      */
     'sponsorSchema': SponsorSchema;
     /**
-     * Token contract UUID for charge_custom_tokens or fixed_rate schemas.
+     * Token contract UUID for charge_custom_tokens or fixed_rate schemas (EVM).
      * @type {string}
      * @memberof FeeSponsorshipStrategy
+     * @deprecated
      */
     'tokenContract'?: string;
     /**
-     * Token amount for charge_custom_tokens or fixed_rate schemas.
+     * Token amount for charge_custom_tokens or fixed_rate schemas (EVM).
      * @type {string}
      * @memberof FeeSponsorshipStrategy
+     * @deprecated
      */
     'tokenContractAmount'?: string;
     /**
-     * SPL mint addresses (base58) accepted as fee payment for Solana charge_custom_tokens policies. Solana-only; mutually exclusive with tokenContract / tokenContractAmount.
+     * ERC-20 tokens accepted as user-pay fee for EVM charge_custom_tokens policies. Mutually exclusive with the deprecated tokenContract / tokenContractAmount fields and with splTokens.
+     * @type {Array<EvmTokenContractEntry>}
+     * @memberof FeeSponsorshipStrategy
+     */
+    'tokenContracts'?: Array<EvmTokenContractEntry>;
+    /**
+     * SPL mint addresses (base58) accepted as fee payment for Solana charge_custom_tokens policies. Solana-only; mutually exclusive with tokenContract / tokenContracts.
      * @type {Array<string>}
      * @memberof FeeSponsorshipStrategy
      */

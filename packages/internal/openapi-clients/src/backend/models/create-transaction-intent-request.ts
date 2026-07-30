@@ -48,6 +48,12 @@ export interface CreateTransactionIntentRequest {
      */
     'policy'?: string;
     /**
+     * For a fee-sponsorship Policy that accepts several user-pay ERC-20 tokens, the on-chain address of the token the user pays the sponsored fee in. Must be one of the Policy\'s configured tokens on this chain; omit to use the Policy\'s first configured token.
+     * @type {string}
+     * @memberof CreateTransactionIntentRequest
+     */
+    'feeSponsorshipToken'?: string;
+    /**
      * Use this parameter to create a new Account for Player with the provided owner address.  If you omit this parameter and no Account exists for the Player, a custodial Account will be created.
      * @type {string}
      * @memberof CreateTransactionIntentRequest

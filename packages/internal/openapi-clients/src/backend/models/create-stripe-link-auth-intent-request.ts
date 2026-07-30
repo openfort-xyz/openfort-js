@@ -17,16 +17,14 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface CreateStripeLinkAuthIntentRequest
  */
-
-export const OnrampProvider = {
-    COINBASE: 'coinbase',
-    STRIPE: 'stripe',
-    MELD: 'meld'
-} as const;
-
-export type OnrampProvider = typeof OnrampProvider[keyof typeof OnrampProvider];
-
-
+export interface CreateStripeLinkAuthIntentRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateStripeLinkAuthIntentRequest
+     */
+    'email': string;
+}
 

@@ -45,6 +45,12 @@ export interface OnrampSessionResponse {
      */
     'clientSecret'?: string;
     /**
+     * Provider publishable key the embedded component initializes with (public by design).
+     * @type {string}
+     * @memberof OnrampSessionResponse
+     */
+    'publishableKey'?: string;
+    /**
      * 
      * @type {string}
      * @memberof OnrampSessionResponse

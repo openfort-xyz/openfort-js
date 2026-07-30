@@ -53,6 +53,18 @@ export interface SolanaTransactionStatusResponse {
      * @memberof SolanaTransactionStatusResponse
      */
     'errorMessage': string | null;
+    /**
+     * Jito bundle UUID for `signAndSendBundle` transactions; null otherwise. A submission handle — status is resolved via the first child signature.
+     * @type {string}
+     * @memberof SolanaTransactionStatusResponse
+     */
+    'bundleId': string | null;
+    /**
+     * All child signatures of a Jito bundle, in order. Empty for single-tx rows. `txSignature` holds the first (representative) child signature. Status lookup by a non-first child signature is not supported (documented limitation).
+     * @type {Array<string>}
+     * @memberof SolanaTransactionStatusResponse
+     */
+    'txSignatures': Array<string>;
 }
 
 

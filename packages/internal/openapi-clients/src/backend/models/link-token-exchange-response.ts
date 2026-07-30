@@ -15,18 +15,16 @@
 
 
 /**
- * 
+ * Result of exchanging a completed LinkAuthIntent (the OAuth token stays server-side).
  * @export
- * @enum {string}
+ * @interface LinkTokenExchangeResponse
  */
-
-export const OnrampProvider = {
-    COINBASE: 'coinbase',
-    STRIPE: 'stripe',
-    MELD: 'meld'
-} as const;
-
-export type OnrampProvider = typeof OnrampProvider[keyof typeof OnrampProvider];
-
-
+export interface LinkTokenExchangeResponse {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof LinkTokenExchangeResponse
+     */
+    'exchanged': boolean;
+}
 

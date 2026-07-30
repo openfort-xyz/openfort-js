@@ -15,129 +15,112 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { CryptoPaymentMethodRequest } from './crypto-payment-method-request';
-// May contain unused imports in some cases
-// @ts-ignore
-import { FundingSourceRequest } from './funding-source-request';
-// May contain unused imports in some cases
-// @ts-ignore
-import { OnrampPaymentMethodRequest } from './onramp-payment-method-request';
-// May contain unused imports in some cases
-// @ts-ignore
 import { OnrampPaymentMethodRequestStripeLink } from './onramp-payment-method-request-stripe-link';
 
 /**
- * A single payment method for a session — a crypto source or a fiat onramp.
+ * A fiat web2 onramp payment method. The provider is auto-selected server-side (buyer region + destination asset + project config) — it is never chosen by the client. The response\'s `paymentMethod` carries the hosted checkout `url` to open; the session then advances via the provider\'s settlement webhook.
  * @export
- * @interface PaymentMethodRequest
+ * @interface OnrampPaymentMethodRequest
  */
-export interface PaymentMethodRequest {
-    /**
-     * Self-custody source family.
-     * @type {string}
-     * @memberof PaymentMethodRequest
-     */
-    'type': PaymentMethodRequestTypeEnum;
+export interface OnrampPaymentMethodRequest {
     /**
      * 
-     * @type {FundingSourceRequest}
-     * @memberof PaymentMethodRequest
-     */
-    'source': FundingSourceRequest;
-    /**
-     * Origin-chain refund address for an auto-bridged (chained) route — where the onramped intermediate is refunded if the Relay bridge to the target bounces. Only consulted when the route chains cross-VM (e.g. an EVM intermediate to a Solana target); same-VM chains refund to the target address automatically.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
-    'refundTo'?: string;
+    'type': OnrampPaymentMethodRequestTypeEnum;
     /**
      * The funding method the user picked.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
-    'method': PaymentMethodRequestMethodEnum;
+    'method': OnrampPaymentMethodRequestMethodEnum;
     /**
      * Fiat amount to prefill in the provider checkout, in the source currency\'s human units (decimal string). Omit to let the user choose in-checkout.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'sourceAmount'?: string;
     /**
      * ISO-4217 fiat currency for `sourceAmount`.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'sourceCurrency'?: string;
     /**
      * Explicit buyer country override (ISO-3166 alpha-2). Wins over the request IP — the escape hatch for QA and apps that already know their user\'s region.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'country'?: string;
     /**
      * URL the provider redirects back to after checkout.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'redirectUrl'?: string;
     /**
+     * Origin-chain refund address for an auto-bridged (chained) route — where the onramped intermediate is refunded if the Relay bridge to the target bounces. Only consulted when the route chains cross-VM (e.g. an EVM intermediate to a Solana target); same-VM chains refund to the target address automatically.
+     * @type {string}
+     * @memberof OnrampPaymentMethodRequest
+     */
+    'refundTo'?: string;
+    /**
      * OTP-verified buyer email — REQUIRED for `apple_pay`/`google_pay` (Coinbase\'s native wallet-pay sheet needs partner-verified PII on Create Order). Ignored for `card`/`bank_transfer`. Openfort verifies it via its own email OTP.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'email'?: string;
     /**
      * OTP-verified US mobile in E.164 — REQUIRED for `apple_pay`/`google_pay`. Coinbase requires a partner-verified US cell; Openfort verifies it via its own phone OTP. Ignored for `card`/`bank_transfer`.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'phoneNumber'?: string;
     /**
      * ISO-8601 time the phone OTP was verified. REQUIRED for `apple_pay`/`google_pay`; must be within Coinbase\'s 60-day re-verify window.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'phoneNumberVerifiedAt'?: string;
     /**
      * ISO-8601 time the buyer accepted Coinbase\'s Guest Checkout terms (surfaced at the amount step). REQUIRED for `apple_pay`/`google_pay`.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'agreementAcceptedAt'?: string;
     /**
      * Coinbase Verification API record for the phone, from POST /v2/funding/onramp/verifications (channel \"sms\") + submit. Coinbase sends and checks the OTP itself; the id is valid 60 days.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'smsVerificationId'?: string;
     /**
      * Coinbase Verification API record for the email, from POST /v2/funding/onramp/verifications (channel \"email\") + submit.
      * @type {string}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'emailVerificationId'?: string;
     /**
      * 
      * @type {OnrampPaymentMethodRequestStripeLink}
-     * @memberof PaymentMethodRequest
+     * @memberof OnrampPaymentMethodRequest
      */
     'stripeLink'?: OnrampPaymentMethodRequestStripeLink;
 }
 
-export const PaymentMethodRequestTypeEnum = {
-    Evm: 'evm',
-    Solana: 'solana',
+export const OnrampPaymentMethodRequestTypeEnum = {
     Onramp: 'onramp'
 } as const;
 
-export type PaymentMethodRequestTypeEnum = typeof PaymentMethodRequestTypeEnum[keyof typeof PaymentMethodRequestTypeEnum];
-export const PaymentMethodRequestMethodEnum = {
+export type OnrampPaymentMethodRequestTypeEnum = typeof OnrampPaymentMethodRequestTypeEnum[keyof typeof OnrampPaymentMethodRequestTypeEnum];
+export const OnrampPaymentMethodRequestMethodEnum = {
     ApplePay: 'apple_pay',
     GooglePay: 'google_pay',
     Card: 'card',
     BankTransfer: 'bank_transfer'
 } as const;
 
-export type PaymentMethodRequestMethodEnum = typeof PaymentMethodRequestMethodEnum[keyof typeof PaymentMethodRequestMethodEnum];
+export type OnrampPaymentMethodRequestMethodEnum = typeof OnrampPaymentMethodRequestMethodEnum[keyof typeof OnrampPaymentMethodRequestMethodEnum];
 
 

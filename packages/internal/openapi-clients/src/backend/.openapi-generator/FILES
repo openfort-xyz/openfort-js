@@ -119,6 +119,7 @@ models/change-password-post-request.ts
 models/change-password-post200-response.ts
 models/charge-custom-token-policy-strategy.ts
 models/check-verification-otp-request.ts
+models/checkout-funding-onramp-session-request.ts
 models/checkout-request.ts
 models/checkout-response.ts
 models/checkout-subscription-request.ts
@@ -152,6 +153,7 @@ models/create-fee-sponsorship-request.ts
 models/create-forwarder-contract-request.ts
 models/create-funding-session-request.ts
 models/create-migration-request.ts
+models/create-onramp-verification-request.ts
 models/create-paymaster-request.ts
 models/create-policy-request.ts
 models/create-policy-rule-request.ts
@@ -160,6 +162,7 @@ models/create-policy-v2-rule-request.ts
 models/create-project-api-key-request.ts
 models/create-project-request.ts
 models/create-session-request.ts
+models/create-stripe-link-auth-intent-request.ts
 models/create-subscription-request.ts
 models/create-transaction-intent-request.ts
 models/create-trigger-request.ts
@@ -173,6 +176,7 @@ models/criteria-operator-match.ts
 models/criteria-operator-notin.ts
 models/criteria-operator.ts
 models/criteria-type.ts
+models/crypto-payment-method-request.ts
 models/currency.ts
 models/custom-auth-config.ts
 models/delete-account-response.ts
@@ -261,6 +265,8 @@ models/evm-message-criterion-request.ts
 models/evm-message-criterion.ts
 models/evm-network-criterion-request.ts
 models/evm-network-criterion.ts
+models/evm-token-contract-entry-response.ts
+models/evm-token-contract-entry.ts
 models/evm-typed-data-field-criterion-operator.ts
 models/evm-typed-data-field-criterion-request.ts
 models/evm-typed-data-field-criterion.ts
@@ -289,7 +295,12 @@ models/forwarder-contract-response.ts
 models/funding-chain-currency-response.ts
 models/funding-chain-response.ts
 models/funding-chains-response.ts
+models/funding-config-coinbase-request.ts
+models/funding-config-coinbase-response.ts
+models/funding-config-response.ts
+models/funding-crypto-payment-method-response.ts
 models/funding-fee-response.ts
+models/funding-onramp-payment-method-response.ts
 models/funding-payment-method-response.ts
 models/funding-session-response.ts
 models/funding-source-request.ts
@@ -325,6 +336,7 @@ models/jwks.ts
 models/jwt-key-response.ts
 models/jwt-key.ts
 models/line-oauth-config.ts
+models/link-auth-intent-response.ts
 models/link-email200-response.ts
 models/link-siwe-list-wallets-get200-response-inner.ts
 models/link-siwe-nonce-post200-response.ts
@@ -337,6 +349,7 @@ models/link-siwe-verify-post401-response.ts
 models/link-social-post-request-id-token.ts
 models/link-social-post-request.ts
 models/link-social-post200-response.ts
+models/link-token-exchange-response.ts
 models/linked-account-response-v2.ts
 models/linked-account-response.ts
 models/list-accounts-get200-response-inner.ts
@@ -382,6 +395,9 @@ models/oauth-provider.ts
 models/oauth-response.ts
 models/oidcauth-config.ts
 models/onramp-fee.ts
+models/onramp-methods-response.ts
+models/onramp-payment-method-request-stripe-link.ts
+models/onramp-payment-method-request.ts
 models/onramp-provider.ts
 models/onramp-quote-request.ts
 models/onramp-quote-response.ts
@@ -389,6 +405,8 @@ models/onramp-quotes-response.ts
 models/onramp-session-request.ts
 models/onramp-session-response-quote.ts
 models/onramp-session-response.ts
+models/onramp-verification-response.ts
+models/onramp-verification-submit-response.ts
 models/otp-verification-response.ts
 models/paging-queries.ts
 models/passkey-env.ts
@@ -489,6 +507,7 @@ models/reset-password-post-request.ts
 models/reset-password-request.ts
 models/reset-password-response.ts
 models/reset-password-token-get200-response.ts
+models/resolved-funding-method-response.ts
 models/response-response.ts
 models/response-type-list.ts
 models/revoke-other-sessions-post200-response.ts
@@ -505,6 +524,7 @@ models/send-verification-email-post200-response.ts
 models/send-verification-email-post400-response.ts
 models/session-list-queries.ts
 models/session-list-response.ts
+models/session-quote-request.ts
 models/session-response-expandable.ts
 models/session-response.ts
 models/session.ts
@@ -582,6 +602,7 @@ models/sponsor-schema.ts
 models/standard-details.ts
 models/stat.ts
 models/status.ts
+models/submit-onramp-verification-request.ts
 models/subscription-delete-response.ts
 models/subscription-list-response.ts
 models/subscription-response.ts
@@ -639,6 +660,7 @@ models/update-contract-request.ts
 models/update-developer-account-create-request.ts
 models/update-email-sample-request.ts
 models/update-fee-sponsorship-request.ts
+models/update-funding-config-request.ts
 models/update-migration-request.ts
 models/update-policy-request.ts
 models/update-policy-rule-request.ts
