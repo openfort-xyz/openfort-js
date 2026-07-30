@@ -38,3 +38,5 @@ yarn-error.log*
 
 # jetbrains
 .idea
+# Coinbase Developer Platform server credentials (never committed)
+cdp_api_key.json

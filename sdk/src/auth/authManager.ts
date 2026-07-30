@@ -7,7 +7,6 @@ import type {
   AuthV2ApiSiweVerifyPostRequest as SIWEApiSiweVerifyPostRequest,
   SocialSignInRequest,
 } from '@openfort/openapi-clients/dist/backend'
-import { debugLog } from 'utils/debug'
 import type { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
 import { ConfigurationError, OpenfortError } from '../core/errors/openfortError'
@@ -24,6 +23,7 @@ import {
   type User,
   type UserAccount,
 } from '../types/types'
+import { debugLog } from '../utils/debug'
 
 /**
  * Maps backend user to SDK user type

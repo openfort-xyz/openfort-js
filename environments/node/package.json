@@ -1,0 +1,12 @@
+{
+  "name": "test-node",
+  "private": true,
+  "type": "module",
+  "description": "Loads the BUILT package in Node, through the exports map, for both the ESM and CJS conditions. publint checks packaging metadata and attw checks types; neither executes the output, so without this nothing proves the shipped entry points actually evaluate.",
+  "scripts": {
+    "test": "node esm.mjs && node cjs.cjs"
+  },
+  "dependencies": {
+    "@openfort/openfort-js": "workspace:*"
+  }
+}

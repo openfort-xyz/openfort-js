@@ -29,7 +29,7 @@ const singlePromiseMap: Record<string, Promise<any>> = {}
  * @returns Promise that resolves/rejects with the operation result
  */
 export const singlePromise = <T>(cb: () => Promise<T>, key: string): Promise<T> => {
-  let promise: Promise<T> | null = singlePromiseMap[key]
+  let promise: Promise<T> | null = singlePromiseMap[key] ?? null
 
   if (!promise) {
     // No ongoing operation for this key, start a new one

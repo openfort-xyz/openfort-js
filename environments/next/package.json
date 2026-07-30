@@ -1,0 +1,21 @@
+{
+  "name": "test-next",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Builds the BUILT package inside a Next.js app. Prerendering executes the server component, so reaching for a browser global on any path the render touches fails the build; the client component is bundled by Next rather than resolved by Node, which covers specifiers the two treat differently. Scope: code the render actually executes — dead code is tree-shaken before it can throw. Build-only, so no credentials, network, or browser; behaviour under a real browser is covered by the Playwright suite in examples/apps/auth-sample.",
+  "scripts": {
+    "test": "next build"
+  },
+  "dependencies": {
+    "@openfort/openfort-js": "workspace:*",
+    "next": "16.2.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.17",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.9.3"
+  }
+}

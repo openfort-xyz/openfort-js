@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "es2022",
+    "lib": ["ES2022", "DOM"],
+    // publint and attw check that the entry point resolves; this extends
+    // checking into the shipped declarations themselves.
+    "skipLibCheck": false
+  },
+  "include": ["index.ts"]
+}

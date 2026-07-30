@@ -70,7 +70,33 @@ export type SignAuthorizationParams = {
  * Simple RLP encoding for authorization tuple [chainId, address, nonce]
  * Only handles the specific structure needed for EIP-7702 authorization hashing
  */
+const ADDRESS_PATTERN = /^0x[0-9a-fA-F]{40}$/
+
+/**
+ * Validates the inputs to an EIP-7702 authorization before it is encoded,
+ * hashed and signed.
+ *
+ * The encoder below does raw hex string surgery and will happily produce a
+ * structurally plausible authorization from a malformed address or an unsafe
+ * integer. Because signing happens before any on-chain validation, the failure
+ * mode is a *valid signature over the wrong data* — e.g. delegating to an
+ * unintended implementation address.
+ */
+function assertValidAuthorizationInputs(chainId: number, address: string, nonce: number): void {
+  if (!ADDRESS_PATTERN.test(address)) {
+    throw new Error(`Invalid EIP-7702 authorization address: expected a 20-byte 0x-prefixed hex string`)
+  }
+  if (!Number.isSafeInteger(chainId) || chainId < 0) {
+    throw new Error(`Invalid EIP-7702 authorization chainId: expected a non-negative safe integer, got ${chainId}`)
+  }
+  if (!Number.isSafeInteger(nonce) || nonce < 0) {
+    throw new Error(`Invalid EIP-7702 authorization nonce: expected a non-negative safe integer, got ${nonce}`)
+  }
+}
+
 function encodeAuthorizationRLP(chainId: number, address: string, nonce: number): string {
+  assertValidAuthorizationInputs(chainId, address, nonce)
+
   const encodeLength = (length: number, offset: number): string => {
     if (length < 56) {
       return (offset + length).toString(16).padStart(2, '0')
@@ -146,6 +172,16 @@ export async function signAuthorization(params: SignAuthorizationParams): Promis
 
   // Parse the signature (format: 0x + r (64 chars) + s (64 chars) + v (2 chars))
   const sig = signatureHex.startsWith('0x') ? signatureHex.slice(2) : signatureHex
+
+  // The slicing below assumes exactly r(32) ‖ s(32) ‖ v(1). Anything shorter
+  // or non-hex would be silently truncated and later zero-padded into a
+  // structurally plausible authorization over the wrong data — reject it here,
+  // where the failure names the signer as the source.
+  if (!/^[0-9a-fA-F]{130}$/.test(sig)) {
+    throw new Error(
+      `Invalid EIP-7702 signature from signer: expected 65 bytes of hex (r, s, v), got ${Math.floor(sig.length / 2)} bytes`
+    )
+  }
 
   const r = `0x${sig.slice(0, 64)}`
   const s = `0x${sig.slice(64, 128)}`

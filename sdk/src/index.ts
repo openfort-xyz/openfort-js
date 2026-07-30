@@ -36,13 +36,16 @@ export {
   AuthenticationError,
   AuthorizationError,
   ConfigurationError,
+  DEFAULT_DOCS_BASE_URL,
   OAuthError,
   OpenfortError,
+  type OpenfortErrorOptions,
   OTPError,
   RecoveryError,
   RequestError,
   SessionError,
   SignerError,
+  setErrorConfig,
   UserError,
 } from './core/errors/openfortError'
 // Export passkey module (Strategy pattern for platform-specific implementations)
@@ -65,7 +68,7 @@ export {
   PasskeyUserCancelledError,
 } from './core/passkey'
 // Export storage interface
-export { IStorage as Storage } from './storage/istorage'
+export type { IStorage as Storage } from './storage/istorage'
 // biome-ignore lint/performance/noReExportAll: Main SDK entry point needs to re-export all types
 export * from './types'
 // Export crypto utilities

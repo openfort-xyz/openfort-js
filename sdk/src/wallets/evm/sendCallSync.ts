@@ -27,6 +27,11 @@ type WalletSendCallsParams = {
 
 type RawCall = { data?: `0x${string}`; to?: `0x${string}`; value?: bigint }
 
+// The signature endpoint holds the connection until the transaction reaches a
+// terminal state on-chain, so it needs a budget sized to block inclusion under
+// congestion rather than the client-wide default for request/response calls.
+const SIGNATURE_CONFIRMATION_TIMEOUT_MS = 120_000
+
 const convertToTransactionReceipt = (
   response: TransactionIntentResponse['response']
 ): TransactionReceipt<string, number, 'success' | 'reverted', TransactionType> => {
@@ -203,19 +208,22 @@ export const sendCallsSync = async ({
 
   if (openfortTransaction?.nextAction?.payload?.signableHash) {
     let signature: string
-    // zkSync chains and EIP-7702 delegated accounts (Calibur, CaliburV9, …) sign
-    // the raw v0.8 typed-data hash — no EIP-191 hashMessage prefix.
-    if ([300, 324].includes(account.chainId!) || account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
+    // EIP-7702 delegated accounts (Calibur, CaliburV9, …) sign the raw v0.8
+    // typed-data hash — no EIP-191 hashMessage prefix.
+    if (account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)
     } else {
       signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)
     }
     const response = await withApiError(
       async () =>
-        await backendClient.transactionIntentsApi.signature({
-          id: openfortTransaction.id,
-          signatureRequest: { signature },
-        }),
+        await backendClient.transactionIntentsApi.signature(
+          {
+            id: openfortTransaction.id,
+            signatureRequest: { signature },
+          },
+          { timeout: SIGNATURE_CONFIRMATION_TIMEOUT_MS }
+        ),
       { context: 'operation' }
     ).catch((error) => {
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)

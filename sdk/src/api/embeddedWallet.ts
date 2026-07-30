@@ -1,12 +1,12 @@
 import { BackendApiClients } from '@openfort/openapi-clients'
-import type { IPasskeyHandler } from 'core/passkey'
-import { PasskeyHandler } from 'core/passkey'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
 import { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
 import { AuthenticationError, ConfigurationError, SessionError, SignerError } from '../core/errors/openfortError'
 import { withApiError } from '../core/errors/withApiError'
+import type { IPasskeyHandler } from '../core/passkey'
+import { PasskeyHandler } from '../core/passkey'
 import { type IStorage, StorageKeys } from '../storage/istorage'
 import {
   AccountTypeEnum,
@@ -76,17 +76,31 @@ export class EmbeddedWalletApi {
     })
   }
 
+  private cachedBackendApiClients: BackendApiClients | null = null
+
+  /**
+   * Memoized so every request reuses one axios instance. `storage` and
+   * `onLogout` let the 401 interceptor clear session state and notify the
+   * application.
+   */
   private get backendApiClients(): BackendApiClients {
+    if (this.cachedBackendApiClients) return this.cachedBackendApiClients
+
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
       throw new ConfigurationError('Configuration not found')
     }
-    return new BackendApiClients({
+    this.cachedBackendApiClients = new BackendApiClients({
       basePath: configuration.backendUrl,
       accessToken: configuration.baseConfiguration.publishableKey,
       nativeAppIdentifier: configuration.nativeAppIdentifier,
       onRequest: configuration.onRequest,
+      storage: this.storage,
+      onLogout: () => {
+        this.eventEmitter.emit('onLogout')
+      },
     })
+    return this.cachedBackendApiClients
   }
 
   private async getIframeManager(): Promise<IframeManager> {
@@ -299,6 +313,20 @@ export class EmbeddedWalletApi {
     iframe.style.display = 'none'
     iframe.id = 'openfort-iframe'
     iframe.referrerPolicy = 'strict-origin-when-cross-origin'
+    // `allow-same-origin` is required for the embed's own localStorage
+    // (device share); `allow-top-navigation` stays withheld so the frame
+    // cannot navigate the host page. Popups must escape the sandbox: OAuth
+    // and recovery flows open provider pages that need to run unsandboxed.
+    // Modals and downloads cover the embed's confirmation prompts and key
+    // export.
+    iframe.setAttribute(
+      'sandbox',
+      'allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups allow-popups-to-escape-sandbox'
+    )
+    // Cross-origin WebAuthn is denied inside an iframe by default. Listing
+    // the features without an origin scopes them to the frame's `src` origin,
+    // so a document navigated into the frame later gains nothing.
+    iframe.setAttribute('allow', 'publickey-credentials-get; publickey-credentials-create')
     iframe.src = url
 
     document.body.appendChild(iframe)

@@ -1,11 +1,14 @@
 {
 	"compilerOptions": {
-		"baseUrl": "./src",
+		// No `baseUrl` or `paths`. Every import here is relative or a package
+		// specifier, and it must stay that way: this package emits declarations,
+		// and a bare specifier resolved by a local path mapping survives into the
+		// emitted `.d.ts` where a consumer has no mapping to resolve it with.
 		"outDir": "./dist",
 		"rootDirs": ["src"],
 		"target": "es2022",
 		"module": "esnext",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"noEmit": true,
 		"allowJs": false,
 		"removeComments": false,

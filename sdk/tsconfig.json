@@ -1,15 +1,37 @@
 {
   "compilerOptions": {
-    "baseUrl": "./src",
+    // No `baseUrl`. Intra-package imports are relative: bare specifiers
+    // survive into emitted declarations and do not resolve for consumers.
     "rootDirs": ["src"],
     "target": "es2022",
     "module": "esnext",
-    "moduleResolution": "node",
+    // Matches how this source is actually consumed: rollup bundles it, so
+    // relative imports stay extensionless. `bundler` also honours dependencies'
+    // `exports` maps, meaning a deep import into a package that does not
+    // publish that subpath fails here instead of in a consumer's build.
+    "moduleResolution": "bundler",
     "noEmit": true,
     "allowJs": false,
     "removeComments": false,
     "strict": true,
-    "forceConsistentCasingInFileNames": false,
+    // Case-insensitive filesystems otherwise let an import compile locally
+    // and fail on Linux.
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "useUnknownInCatchVariables": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    // Implied by `target: es2022`, but stated so lowering the target later
+    // cannot silently switch class fields back to assignment semantics.
+    "useDefineForClassFields": true,
+    // Indexing JSON-RPC params and API response arrays must be checked, so
+    // missing entries surface as typed SDK errors.
+    "noUncheckedIndexedAccess": true,
+    // Type-only imports must say so, since the emitted import lists are what
+    // the bundler sees; an unmarked type import can survive into output.
+    "verbatimModuleSyntax": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "declaration": false,

@@ -78,7 +78,11 @@ export const getCallStatus = async ({
   authentication,
   backendClient,
 }: GetCallsStatusParams): Promise<GetCallsStatusReturnType> => {
-  const transactionIntent = await buildOpenfortTransactions(params[0], backendClient, authentication).catch((error) => {
+  const bundleId = params[0]
+  if (!bundleId) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'wallet_getCallsStatus requires a bundle identifier')
+  }
+  const transactionIntent = await buildOpenfortTransactions(bundleId, backendClient, authentication).catch((error) => {
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
   })
 

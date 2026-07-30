@@ -1,11 +1,11 @@
-import path from 'node:path'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
+// Deliberately no alias or path-mapping layer. `sdk/tsconfig.json` declares no
+// `baseUrl` and no `paths`, and every intra-package import is relative, so
+// tests, tsc and the rollup build all resolve identical specifiers. Adding
+// resolution here that the build does not have would let a test pass against a
+// module graph consumers never get.
 export default defineConfig({
-  // Resolve tsconfig `baseUrl` bare imports (e.g. `version`, `core/*`,
-  // `wallets/*`) the same way tsc and the rollup build do.
-  plugins: [tsconfigPaths()],
   test: {
     globals: true,
     environment: 'jsdom',
@@ -18,14 +18,20 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/**', 'dist/**', 'src/__tests__/**', '**/*.test.ts', '**/*.spec.ts', '**/types/**'],
+      // `src/types/` stays in the denominator: it declares the runtime enums
+      // (EmbeddedState, OpenfortEvents, …) and backs the published `./types`
+      // entry point, so it is executable surface, not type-only scaffolding.
+      exclude: ['node_modules/**', 'dist/**', 'src/__tests__/**', '**/*.test.ts', '**/*.spec.ts'],
     },
     include: ['src/**/*.{test,spec}.ts'],
     exclude: ['node_modules', 'dist'],
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+    // Assertions about types, checked by tsc rather than executed. The runtime
+    // suite cannot see a signature widening to `any`: every runtime assertion
+    // still passes while consumers silently lose inference on the generic
+    // surface (the event map, the API return types).
+    typecheck: {
+      include: ['src/**/*.test-d.ts'],
+      tsconfig: './tsconfig.json',
     },
   },
 })

@@ -4,22 +4,39 @@ on:
   push:
     branches: [main]
 
+# Each job declares only what it needs; this default-denies anything added later.
+permissions: {}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Releases are never cancelled. changesets publishes package-by-package and
+  # then creates tags and GitHub releases; cancelling between those steps would
+  # leave npm and the repository out of sync.
+  cancel-in-progress: false
 
 jobs:
+  # Run the full PR pipeline against this exact commit before publishing.
+  verify:
+    uses: ./.github/workflows/verify.yml
+    permissions:
+      contents: read
+
   release:
     name: Create version pull request and github release
+    needs: verify
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    # Configure this environment with required reviewers to add a manual
+    # approval before publishing, and to scope the npm trusted-publisher OIDC
+    # subject to the environment rather than the whole repository.
+    environment: npm
     permissions:
       contents: write       # To push commits and tags
       pull-requests: write  # To create and update PRs
       id-token: write       # For OIDC and provenance
-      # packages: write       # To publish package to GHCR
 
     steps:
+      # persist-credentials stays on: changesets/action pushes the version branch.
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
@@ -28,11 +45,12 @@ jobs:
         with:
           version: 10.16.1
 
+      # No dependency cache on the publishing job: the store is resolved from
+      # the lockfile instead. Costs roughly 30s on an infrequent job.
       - name: Set up Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: 24
-          cache: pnpm
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
@@ -50,4 +68,3 @@ jobs:
           NPM_CONFIG_PROVENANCE: true # this works only with npmjs and public repos, not ghcr
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    # we need this for PRs
           NPM_TOKEN: '' # bug in changesets/action - https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
-

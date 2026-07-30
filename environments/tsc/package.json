@@ -1,0 +1,13 @@
+{
+  "name": "test-tsc",
+  "private": true,
+  "type": "module",
+  "description": "Type-checks the BUILT package the way a consumer would. Resolves through the package exports map, so the built dist/*.d.ts is type-checked rather than source.",
+  "scripts": {
+    "test": "tsc --module esnext --moduleResolution bundler && tsc --module nodenext --moduleResolution nodenext"
+  },
+  "dependencies": {
+    "@openfort/openfort-js": "workspace:*",
+    "typescript": "^5.9.3"
+  }
+}
