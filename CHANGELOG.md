@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.1.0
+
+### Minor Changes
+
+- [#342](https://github.com/openfort-xyz/openfort-js/pull/342) [`7d86256`](https://github.com/openfort-xyz/openfort-js/commit/7d86256e2df74a8b54d81f7f9f4e69bd1d1fce53) Thanks [@n00m4d](https://github.com/n00m4d)! - Generate request ID
+
 ## 2.0.0
 
 ### Major Changes
