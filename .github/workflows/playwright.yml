@@ -16,6 +16,11 @@ jobs:
   # chromium/firefox/webkit. The connection-reliability spec is guest-based
   # and runs in the parallel `reliability` job below instead.
   test:
+    # Dependabot-triggered runs receive repository variables but not Actions
+    # secrets, so the auth-sample server cannot start authenticated flows and
+    # every test fails. The merge_group trigger still runs the suite with real
+    # secrets before anything lands on main.
+    if: github.actor != 'dependabot[bot]'
     timeout-minutes: 60
     runs-on: ubuntu-latest
     permissions:
@@ -104,6 +109,8 @@ jobs:
   # it never touches the shared E2E account and can run in parallel with the
   # main job. Chromium only by design.
   reliability:
+    # Same secrets restriction as `test` above.
+    if: github.actor != 'dependabot[bot]'
     timeout-minutes: 30
     runs-on: ubuntu-latest
     permissions:
