@@ -17,13 +17,14 @@
   "scripts": {
     "test": "pnpm check && pnpm test:unit",
     "test:unit": "vitest run",
+    "test:types": "vitest --typecheck.only --run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "packageList": "./scripts/generate-package-list.sh",
     "dev": "NODE_ENV=development pnpm rollup --config rollup.config.js --watch",
     "check": "biome check --write src",
     "format": "biome format --write src",
-    "build": "pnpm packageList && node copyVersion.cjs && NODE_ENV=production pnpm rollup --config rollup.config.js && rm -rf dist/types && cp dist/index.d.ts dist/index.d.cts",
+    "build": "pnpm packageList && node copyVersion.cjs && NODE_ENV=production pnpm rollup --config rollup.config.js && rm -rf dist/types && for n in index errors types; do cp \"dist/$n.d.ts\" \"dist/$n.d.cts\"; done",
     "stats": "open ./stats.html",
     "size": "size-limit"
   },
@@ -31,6 +32,14 @@
     "access": "public",
     "provenance": true,
     "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.9.3"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@ethersproject/abi": "5.8.0",
@@ -57,6 +66,36 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/cjs/sdk/src/index.cjs"
       }
+    },
+    "./errors": {
+      "import": {
+        "types": "./dist/errors.d.ts",
+        "default": "./dist/sdk/src/errors.js"
+      },
+      "require": {
+        "types": "./dist/errors.d.cts",
+        "default": "./dist/cjs/sdk/src/errors.cjs"
+      }
+    },
+    "./types": {
+      "import": {
+        "types": "./dist/types.d.ts",
+        "default": "./dist/sdk/src/types/types.js"
+      },
+      "require": {
+        "types": "./dist/types.d.cts",
+        "default": "./dist/cjs/sdk/src/types/types.cjs"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "errors": [
+        "./dist/errors.d.ts"
+      ],
+      "types": [
+        "./dist/types.d.ts"
+      ]
     }
   },
   "devDependencies": {
@@ -73,7 +112,6 @@
     "rollup-plugin-dts": "^5.3.1",
     "rollup-plugin-visualizer": "^5.14.0",
     "typescript": "^5.9.3",
-    "vite-tsconfig-paths": "6.1.1",
     "vitest": "^4.1.8"
   },
   "main": "./dist/cjs/sdk/src/index.cjs",
@@ -89,16 +127,28 @@
       "import": "*"
     },
     {
-      "name": "import { Openfort }",
+      "name": "import { Openfort } from '@openfort/openfort-js'",
       "path": "./dist/sdk/src/index.js",
       "limit": "245 kB",
       "import": "{ Openfort }"
     },
     {
-      "name": "import { OpenfortError } (see tree-shaking note)",
-      "path": "./dist/sdk/src/index.js",
-      "limit": "245 kB",
+      "name": "import * from '@openfort/openfort-js/errors'",
+      "path": "./dist/sdk/src/errors.js",
+      "limit": "1.75 kB",
+      "import": "*"
+    },
+    {
+      "name": "import { OpenfortError } from '@openfort/openfort-js/errors'",
+      "path": "./dist/sdk/src/errors.js",
+      "limit": "600 B",
       "import": "{ OpenfortError }"
+    },
+    {
+      "name": "import * from '@openfort/openfort-js/types'",
+      "path": "./dist/sdk/src/types/types.js",
+      "limit": "1.25 kB",
+      "import": "*"
     }
   ]
 }
