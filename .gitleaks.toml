@@ -6,13 +6,6 @@ title = "Openfort JS SDK gitleaks config"
 useDefault = true
 
 [[allowlists]]
-description = "Intentionally public sandbox credentials used by the example apps"
-paths = [
-  '''examples/apps/auth-sample/cdp_api_key\.json$''',
-  '''examples/apps/html-sample/.*\.js$''',
-]
-
-[[allowlists]]
 description = "Publishable client-side keys and documented placeholders"
 regexes = [
   '''pk_test_[0-9a-fA-F-]{36}''',

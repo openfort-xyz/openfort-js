@@ -36,15 +36,17 @@ export default defineConfig({
    * downloadable by anyone, and the HTML report embeds trace attachments that
    * include request metadata. `github` surfaces failures as inline PR
    * annotations (message, stack and snippet), which covers triage without
-   * writing files. Traces are still collected locally, where `html` is used. */
+   * writing files. */
   reporter: process.env.CI ? [['dot'], ['github']] : 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://127.0.0.1:3000',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* Traces embed request metadata and nothing in CI publishes them, so they
+     * are recorded only locally, where the `html` report can open them. See
+     * https://playwright.dev/docs/trace-viewer */
+    trace: process.env.CI ? 'off' : 'on-first-retry',
   },
   /* Configure projects for major browsers */
   projects: [

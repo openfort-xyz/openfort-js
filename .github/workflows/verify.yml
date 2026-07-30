@@ -12,7 +12,12 @@ on:
 permissions: {}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # In a `workflow_call` run, `github.workflow` evaluates to the CALLER's
+  # workflow name, so the caller and this workflow would compute identical
+  # groups and GitHub cancels whichever run holds the group first — on the
+  # release path, the release itself. The literal prefix keeps the groups
+  # distinct in every trigger context.
+  group: verify-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -27,7 +32,8 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
-          # Full history, so the scan also covers earlier commits.
+          # Full clone so the BASE_SHA..HEAD range below is resolvable; the
+          # scan itself covers only the commits this run introduces.
           fetch-depth: 0
 
       # The gitleaks binary is used directly rather than gitleaks-action, which
@@ -36,9 +42,15 @@ jobs:
       - name: Install gitleaks
         env:
           GITLEAKS_VERSION: 8.30.1
+          # Pinned checksum of the release asset; a substituted binary would
+          # otherwise execute as the CI user on every PR and on the release path.
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
         run: |
-          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
-            | tar -xz -C /usr/local/bin gitleaks
+          curl -sSfL -o gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check
+          tar -xz -C /usr/local/bin -f gitleaks.tar.gz gitleaks
+          rm gitleaks.tar.gz
           gitleaks version
 
       # Only the commits this run introduces are scanned. A full-history scan
@@ -151,7 +163,10 @@ jobs:
       fail-fast: false
       matrix:
         # The floor is the pinned devDependency; the rest are the later majors.
-        typescript: ['5.9.3', '6.0.2', '7.0.2', 'latest']
+        # Every entry is exact so the set under test changes only by commit —
+        # a floating tag would start testing a new compiler the day it ships,
+        # failing PRs that changed nothing.
+        typescript: ['5.9.3', '6.0.2', '7.0.2']
 
     steps:
       - name: Checkout repository
@@ -172,6 +187,13 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # The SDK's types resolve against the declaration output of workspace
+      # packages such as `@openfort/openapi-clients`. That output is gitignored
+      # and install does not run workspace build scripts, so it exists only
+      # after a build.
+      - name: Build project
+        run: pnpm build
 
       - name: Set TypeScript version
         run: pnpm add -w -D typescript@${{ matrix.typescript }}
