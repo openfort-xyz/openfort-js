@@ -112,6 +112,20 @@ describe('EvmProvider signer cache vs connection loss', () => {
     // serving the previous session's provider would hit the wrong network.
     expect(await provider.getRpcProvider()).not.toBe(before)
   })
+
+  it('drops the cached RPC provider on account switch', async () => {
+    const { provider, openfortEventEmitter } = makeCachedSignerProvider()
+
+    const before = await provider.getRpcProvider()
+
+    openfortEventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, '0xdef')
+
+    // The switched-to account may live on a different chain. Serving the old
+    // provider would leave eth_chainId and pass-through RPC calls on the
+    // previous account's chain while eth_requestAccounts (which re-reads
+    // storage) reports the new one.
+    expect(await provider.getRpcProvider()).not.toBe(before)
+  })
 })
 
 describe('EvmProvider RPC endpoint resolution', () => {

@@ -127,6 +127,11 @@ export class EvmProvider implements Provider {
   }
 
   #handleSwitchAccount = async (address: string) => {
+    // The switched-to account may live on a different chain — drop the cached
+    // provider so the next request rebuilds it from the freshly-stored
+    // account, keeping eth_chainId and pass-through RPC calls consistent with
+    // the chain eth_requestAccounts reports.
+    this.#rpcProvider = null
     this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CHANGED, [address])
   }
 
