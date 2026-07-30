@@ -7,6 +7,62 @@
  * - Static factory methods for creating errors from API payloads
  */
 
+import { PACKAGE, VERSION } from '../../version'
+
+/** Options accepted by every error in this module. */
+export type OpenfortErrorOptions = {
+  /** The originating failure, kept reachable through `walk()`. */
+  cause?: unknown
+  /**
+   * Path under the docs base URL describing this failure, e.g.
+   * `configuration/native-apps`. Supplying it appends a `Docs:` line to the
+   * message, so the error itself tells the reader where to go next.
+   */
+  docsPath?: string
+}
+
+type ErrorConfig = {
+  /** Base URL that `docsPath` is resolved against. */
+  docsBaseUrl: string
+}
+
+/**
+ * Base URL used for docs links until `setErrorConfig` repoints it. Exported
+ * so callers that reconfigure the base (tests, ecosystem SDKs restoring
+ * state) can reset to the real default instead of hard-coding a copy that
+ * drifts.
+ */
+export const DEFAULT_DOCS_BASE_URL = 'https://www.openfort.io/docs'
+
+const errorConfig: ErrorConfig = {
+  docsBaseUrl: DEFAULT_DOCS_BASE_URL,
+}
+
+/**
+ * Repoints the docs URLs embedded in error messages.
+ *
+ * Ecosystem SDKs wrap this one and publish their own documentation. Without
+ * this hook their users would be sent to openfort.io for a failure described
+ * on the wrapper's own site.
+ *
+ * @example
+ * ```typescript
+ * setErrorConfig({ docsBaseUrl: 'https://docs.example.com/wallet' })
+ * ```
+ */
+export function setErrorConfig(config: Partial<ErrorConfig>): void {
+  if (config.docsBaseUrl !== undefined) {
+    let base = config.docsBaseUrl
+    while (base.endsWith('/')) base = base.slice(0, -1)
+    errorConfig.docsBaseUrl = base
+  }
+}
+
+function resolveDocsUrl(docsPath: string | undefined): string | undefined {
+  if (!docsPath) return undefined
+  return `${errorConfig.docsBaseUrl}/${docsPath.replace(/^\/+/, '')}`
+}
+
 /**
  * Base error class for all Openfort SDK errors
  *
@@ -36,14 +92,59 @@ export class OpenfortError extends Error {
    */
   public readonly error_description: string
 
-  constructor(error: string, error_description: string) {
-    super(error_description)
+  /**
+   * The SDK version that produced this error, so a bug report identifies the
+   * exact build without having to ask.
+   */
+  public readonly version: string = `${PACKAGE}@${VERSION}`
+
+  /**
+   * Documentation page for this failure, when one was supplied. Read this
+   * rather than parsing the message: the message is prose and may be
+   * reformatted, whereas this is the resolved URL.
+   */
+  public readonly docsUrl?: string
+
+  constructor(error: string, error_description: string, options?: OpenfortErrorOptions) {
+    const docsUrl = resolveDocsUrl(options?.docsPath)
+    // `error_description` stays the sole content of `message` unless a docsPath
+    // was given, so callers matching on existing messages are unaffected and
+    // only errors that opt in gain the extra line.
+    const message = docsUrl ? `${error_description}\n\nDocs: ${docsUrl}` : error_description
+    // Pass `cause` only when given — `{ cause: undefined }` would still
+    // define the property on the error.
+    super(message, options?.cause !== undefined ? { cause: options.cause } : undefined)
     this.name = 'OpenfortError'
     this.error = error
     this.error_description = error_description
+    if (docsUrl !== undefined) this.docsUrl = docsUrl
+  }
 
-    // Fix prototype chain for instanceof checks
-    Object.setPrototypeOf(this, OpenfortError.prototype)
+  /**
+   * Walks the `cause` chain, returning the first error matching `predicate`.
+   * Without a predicate, returns the root cause.
+   *
+   * @example
+   * ```typescript
+   * const rootCause = error.walk()
+   * const httpFailure = error.walk((e) => e instanceof RequestError)
+   * ```
+   */
+  walk(predicate?: (error: unknown) => boolean): unknown {
+    // Cause chains can be cyclic: wrapping code sometimes re-attaches an
+    // outer error as a deeper cause. Visited-tracking bounds the traversal
+    // for cycles of any length, not just a self-referential `cause`.
+    const visited = new Set<unknown>()
+    let current: unknown = this
+    while (current) {
+      if (visited.has(current)) break
+      visited.add(current)
+      if (predicate?.(current)) return current
+      const next: unknown = (current as { cause?: unknown }).cause
+      if (next === undefined) break
+      current = next
+    }
+    return predicate ? null : current
   }
 
   /**
@@ -97,7 +198,6 @@ export class AuthenticationError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'AuthenticationError'
-    Object.setPrototypeOf(this, AuthenticationError.prototype)
   }
 }
 
@@ -122,7 +222,6 @@ export class SessionError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'SessionError'
-    Object.setPrototypeOf(this, SessionError.prototype)
   }
 }
 
@@ -130,10 +229,9 @@ export class SessionError extends OpenfortError {
  * Configuration errors (missing keys, invalid config)
  */
 export class ConfigurationError extends OpenfortError {
-  constructor(error_description: string) {
-    super('invalid_configuration', error_description)
+  constructor(error_description: string, options?: { cause?: unknown }) {
+    super('invalid_configuration', error_description, options)
     this.name = 'ConfigurationError'
-    Object.setPrototypeOf(this, ConfigurationError.prototype)
   }
 }
 
@@ -155,7 +253,6 @@ export class SignerError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'SignerError'
-    Object.setPrototypeOf(this, SignerError.prototype)
   }
 }
 
@@ -170,7 +267,6 @@ export class UserError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'UserError'
-    Object.setPrototypeOf(this, UserError.prototype)
   }
 }
 
@@ -181,7 +277,6 @@ export class OTPError extends OpenfortError {
   constructor(error: string, error_description: string) {
     super(error, error_description)
     this.name = 'OTPError'
-    Object.setPrototypeOf(this, OTPError.prototype)
   }
 }
 
@@ -203,7 +298,6 @@ export class OAuthError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'OAuthError'
-    Object.setPrototypeOf(this, OAuthError.prototype)
   }
 }
 
@@ -214,7 +308,6 @@ export class AuthorizationError extends OpenfortError {
   constructor(error_description: string = 'User not authorized to access this ecosystem') {
     super('user_not_authorized', error_description)
     this.name = 'AuthorizationError'
-    Object.setPrototypeOf(this, AuthorizationError.prototype)
   }
 }
 
@@ -229,7 +322,6 @@ export class RecoveryError extends OpenfortError {
   ) {
     super(error, error_description)
     this.name = 'RecoveryError'
-    Object.setPrototypeOf(this, RecoveryError.prototype)
   }
 }
 
@@ -243,6 +335,5 @@ export class RequestError extends OpenfortError {
   ) {
     super('request_error', error_description)
     this.name = 'RequestError'
-    Object.setPrototypeOf(this, RequestError.prototype)
   }
 }

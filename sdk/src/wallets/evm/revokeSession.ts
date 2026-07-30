@@ -1,12 +1,12 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { RevokeSessionRequest } from '@openfort/openapi-clients/dist/backend'
-import type { Hex } from 'wallets/evm/types'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { withApiError } from '../../core/errors/withApiError'
 import { AccountTypeEnum, type SessionResponse } from '../../types/types'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
+import type { Hex } from './types'
 
 type WalletRequestPermissionsParams = {
   params: RevokePermissionsRequestParams[]
@@ -88,9 +88,18 @@ export const revokeSession = async ({
   feeSponsorshipId,
 }: WalletRequestPermissionsParams): Promise<SessionResponse> => {
   const param = params[0]
+  if (!param) {
+    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'wallet_revokePermissions requires a permissions object')
+  }
+  // `permissionContext` names the session being revoked. Without it there is
+  // nothing to revoke on the backend, and fabricating an empty
+  // `SessionResponse` would let a caller read `result.id` as a success
+  // signal for a revocation that never happened.
   if (!param.permissionContext) {
-    await signer.disconnect()
-    return {} as SessionResponse
+    throw new JsonRpcError(
+      RpcErrorCode.INVALID_PARAMS,
+      'wallet_revokePermissions requires permissionContext to identify the session to revoke'
+    )
   }
   const openfortTransaction = await buildOpenfortTransactions(
     param,

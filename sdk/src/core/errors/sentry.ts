@@ -1,12 +1,83 @@
 import type { Client, EventHint, Scope } from '@sentry/core'
 import { AxiosError } from 'axios'
-import type { OpenfortSDKConfiguration } from 'types'
+import type { OpenfortSDKConfiguration } from '../../types'
+import { isSensitiveKey, REDACTED } from '../../utils/sensitiveKeys'
 import { PACKAGE, VERSION } from '../../version'
 
 const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296' // Prod
 
+/**
+ * The DSN this SDK reports to, parsed once. Incoming clients are checked
+ * against it so telemetry cannot be redirected to another destination.
+ *
+ * Parsed with string operations rather than the `URL` constructor: this
+ * module is evaluated when the SDK is imported, and React Native's built-in
+ * `URL` implements only part of the spec — accessors such as `username`,
+ * `host` and `pathname` throw or return `undefined` unless the host app
+ * installs a polyfill.
+ */
+const EXPECTED_DSN = (() => {
+  const [, publicKey = '', host = '', projectId = ''] = /^https:\/\/([^@]+)@([^/]+)\/(.+)$/.exec(SENTRY_DSN) ?? []
+  return { publicKey, host, projectId }
+})()
+
+/** Reads a single scalar field from an API error body, ignoring everything else. */
+function extractSafeField(data: unknown, field: string): string | undefined {
+  if (typeof data !== 'object' || data === null) return undefined
+  const value = (data as Record<string, unknown>)[field]
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined
+}
+
+/** Drops query strings, which may contain single-use tokens. */
+function stripQuery(url: string | undefined): string | undefined {
+  return url?.split('?')[0]
+}
+
+/**
+ * Returns a scrubbed copy of `value`; the input is never written to. The
+ * scope shallow-merges `extra` and `contexts` entries, so nested values here
+ * are the application's live objects — writing redactions into them would
+ * corrupt application state, and a frozen object anywhere in the graph would
+ * make an in-place scrub throw inside `beforeSend`, which drops the event.
+ *
+ * `ancestors` tracks only the current path (entries are removed on the way
+ * back up), so a value referenced from two sibling positions is scrubbed in
+ * both; only a genuine cycle is cut off.
+ */
+function scrubValue(value: unknown, depth = 0, ancestors = new WeakSet<object>()): unknown {
+  if (value === null || typeof value !== 'object' || depth > 8) return value
+  if (ancestors.has(value)) return '[circular]'
+  ancestors.add(value)
+  let output: unknown
+  if (Array.isArray(value)) {
+    output = value.map((entry) => scrubValue(entry, depth + 1, ancestors))
+  } else {
+    const copy: Record<string, unknown> = {}
+    for (const [key, entry] of Object.entries(value)) {
+      copy[key] = isSensitiveKey(key) ? REDACTED : scrubValue(entry, depth + 1, ancestors)
+    }
+    output = copy
+  }
+  ancestors.delete(value)
+  return output
+}
+
+/**
+ * Applies to capture paths that bypass the wrappers above (e.g. bare
+ * `sentry.captureException` calls). Produces a scrubbed copy of the outgoing
+ * event before it is sent.
+ */
+function scrubEvent<T extends object>(event: T): T {
+  // `sdkProcessingMetadata` is Sentry-internal bookkeeping that can hold live
+  // Scope and Client instances; it is stripped before transport and must keep
+  // its identity, so it bypasses the scrub.
+  const { sdkProcessingMetadata, ...rest } = event as T & { sdkProcessingMetadata?: unknown }
+  const scrubbed = scrubValue(rest) as T & { sdkProcessingMetadata?: unknown }
+  if (sdkProcessingMetadata !== undefined) scrubbed.sdkProcessingMetadata = sdkProcessingMetadata
+  return scrubbed
+}
+
 declare module '@sentry/core' {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   interface Client {
     captureAxiosError: (name: string, error: unknown, hint?: EventHint, scope?: Scope) => void
     captureError: (context: string, error: Error, hint?: EventHint, scope?: Scope) => void
@@ -33,9 +104,9 @@ export class InternalSentry {
     }
 
     if (
-      dsn.projectId !== SENTRY_DSN.split('https://')[1].split('/')[1] ||
-      dsn.host !== SENTRY_DSN.split('@')[1].split('/')[0] ||
-      dsn.publicKey !== SENTRY_DSN.split('@')[0].split('https://')[1]
+      dsn.projectId !== EXPECTED_DSN.projectId ||
+      dsn.host !== EXPECTED_DSN.host ||
+      dsn.publicKey !== EXPECTED_DSN.publicKey
     ) {
       throw new Error('Sentry DSN is not valid')
     }
@@ -53,11 +124,14 @@ export class InternalSentry {
           ...hint,
           captureContext: {
             ...hint?.captureContext,
+            // Allowlisted fields only: request objects, response headers
+            // and bodies can contain authentication material and PII.
             extra: {
-              errorResponseData: error.response?.data,
               errorStatus: error.response?.status,
-              errorHeaders: error.response?.headers,
-              errorRequest: error.request,
+              errorCode: extractSafeField(error.response?.data, 'code'),
+              errorMessage: extractSafeField(error.response?.data, 'message'),
+              errorUrl: stripQuery(error.config?.url),
+              errorMethod: error.config?.method,
             },
             tags: {
               ...InternalSentry.baseTags,
@@ -157,9 +231,17 @@ export class InternalSentry {
       InternalSentry.sentry = new sentryImport.BrowserClient({
         dsn: SENTRY_DSN,
         release: `${PACKAGE}@${VERSION}`,
-        integrations: [],
+        // Serialises `error.cause` chains into the event, so a wrapped error
+        // still names the failing dependency in telemetry. The chain passes
+        // through `beforeSend` and is scrubbed like every other field.
+        integrations: [sentryImport.linkedErrorsIntegration()],
         stackParser: sentryImport.defaultStackParser,
         transport: sentryImport.makeFetchTransport,
+        // Never attach IP address, cookies, or user headers.
+        sendDefaultPii: false,
+        // Applies to every event the client prepares, including bare
+        // captureException calls that skip the wrappers above.
+        beforeSend: (event) => scrubEvent(event),
       })
 
       InternalSentry.baseTags = {

@@ -8,7 +8,7 @@
     "Openfort",
     "Openfort.js"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "files": [
     "dist",
     "package.json",
@@ -17,32 +17,43 @@
   "scripts": {
     "test": "pnpm check && pnpm test:unit",
     "test:unit": "vitest run",
+    "test:types": "vitest --typecheck.only --run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "packageList": "./scripts/generate-package-list.sh",
     "dev": "NODE_ENV=development pnpm rollup --config rollup.config.js --watch",
     "check": "biome check --write src",
     "format": "biome format --write src",
-    "build": "pnpm packageList && node copyVersion.cjs && NODE_ENV=production pnpm rollup --config rollup.config.js && rm -rf dist/types && cp dist/index.d.ts dist/index.d.cts",
-    "stats": "open ./stats.html"
+    "build": "pnpm packageList && node copyVersion.cjs && NODE_ENV=production pnpm rollup --config rollup.config.js && rm -rf dist/types && for n in index errors types; do cp \"dist/$n.d.ts\" \"dist/$n.d.cts\"; done",
+    "stats": "open ./stats.html",
+    "size": "size-limit"
   },
   "publishConfig": {
+    "access": "public",
+    "provenance": true,
     "registry": "https://registry.npmjs.org/"
   },
+  "peerDependencies": {
+    "typescript": ">=5.9.3"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
   "dependencies": {
-    "@ethersproject/abi": "^5.8.0",
-    "@ethersproject/bytes": "^5.8.0",
-    "@ethersproject/hash": "^5.8.0",
-    "@ethersproject/keccak256": "^5.8.0",
-    "@ethersproject/providers": "^5.8.0",
-    "@ethersproject/transactions": "^5.8.0",
-    "@openfort/shield-js": "^0.1.36",
-    "@sentry/browser": "^9.47.1",
-    "@sentry/core": "^9.47.1",
-    "axios": "^1.15.0",
-    "axios-retry": "^4.5.0",
-    "eventemitter3": "5.0.1",
-    "human-id": "^4.1.3"
+    "@ethersproject/abi": "5.8.0",
+    "@ethersproject/bytes": "5.8.0",
+    "@ethersproject/hash": "5.8.0",
+    "@ethersproject/keccak256": "5.8.0",
+    "@ethersproject/providers": "5.8.0",
+    "@ethersproject/transactions": "5.8.0",
+    "@openfort/shield-js": "0.1.36",
+    "@sentry/browser": "9.47.1",
+    "@sentry/core": "9.47.1",
+    "axios": "1.18.1",
+    "axios-retry": "4.5.0",
+    "eventemitter3": "5.0.1"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -55,6 +66,36 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/cjs/sdk/src/index.cjs"
       }
+    },
+    "./errors": {
+      "import": {
+        "types": "./dist/errors.d.ts",
+        "default": "./dist/sdk/src/errors.js"
+      },
+      "require": {
+        "types": "./dist/errors.d.cts",
+        "default": "./dist/cjs/sdk/src/errors.cjs"
+      }
+    },
+    "./types": {
+      "import": {
+        "types": "./dist/types.d.ts",
+        "default": "./dist/sdk/src/types/types.js"
+      },
+      "require": {
+        "types": "./dist/types.d.cts",
+        "default": "./dist/cjs/sdk/src/types/types.cjs"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "errors": [
+        "./dist/errors.d.ts"
+      ],
+      "types": [
+        "./dist/types.d.ts"
+      ]
     }
   },
   "devDependencies": {
@@ -63,7 +104,6 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.1",
     "@rollup/plugin-replace": "^5.0.7",
-    "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/node": "^22.19.17",
     "@vitest/coverage-v8": "^4.1.8",
@@ -72,12 +112,50 @@
     "rollup-plugin-dts": "^5.3.1",
     "rollup-plugin-visualizer": "^5.14.0",
     "typescript": "^5.9.3",
-    "vite-tsconfig-paths": "6.1.1",
     "vitest": "^4.1.8"
   },
   "main": "./dist/cjs/sdk/src/index.cjs",
   "module": "./dist/sdk/src/index.js",
   "type": "module",
   "types": "./dist/index.d.ts",
-  "sideEffects": false
+  "sideEffects": [
+    "./dist/sdk/src/index.js",
+    "./dist/cjs/sdk/src/index.cjs",
+    "./dist/sdk/src/wallets/evm/types.js",
+    "./dist/cjs/sdk/src/wallets/evm/types.cjs",
+    "./dist/sdk/src/wallets/messaging/browserMessenger/backwardCompatibility.js",
+    "./dist/cjs/sdk/src/wallets/messaging/browserMessenger/backwardCompatibility.cjs"
+  ],
+  "size-limit": [
+    {
+      "name": "import * from '@openfort/openfort-js'",
+      "path": "./dist/sdk/src/index.js",
+      "limit": "245 kB",
+      "import": "*"
+    },
+    {
+      "name": "import { Openfort } from '@openfort/openfort-js'",
+      "path": "./dist/sdk/src/index.js",
+      "limit": "245 kB",
+      "import": "{ Openfort }"
+    },
+    {
+      "name": "import * from '@openfort/openfort-js/errors'",
+      "path": "./dist/sdk/src/errors.js",
+      "limit": "1.75 kB",
+      "import": "*"
+    },
+    {
+      "name": "import { OpenfortError } from '@openfort/openfort-js/errors'",
+      "path": "./dist/sdk/src/errors.js",
+      "limit": "600 B",
+      "import": "{ OpenfortError }"
+    },
+    {
+      "name": "import * from '@openfort/openfort-js/types'",
+      "path": "./dist/sdk/src/types/types.js",
+      "limit": "1.25 kB",
+      "import": "*"
+    }
+  ]
 }

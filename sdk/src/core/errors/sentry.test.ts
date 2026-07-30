@@ -1,5 +1,5 @@
-import type { OpenfortSDKConfiguration } from 'types'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { OpenfortSDKConfiguration } from '../../types'
 import { PACKAGE, VERSION } from '../../version'
 
 // Each test re-imports ./sentry after configuring the mock, so the static
@@ -34,6 +34,7 @@ const mockSentryBrowser = (): Record<string, unknown>[] => {
     },
     defaultStackParser: {},
     makeFetchTransport: () => ({}),
+    linkedErrorsIntegration: () => ({ name: 'LinkedErrors' }),
   }))
   return ctorOptions
 }
@@ -53,6 +54,20 @@ describe('InternalSentry.init', () => {
     const { InternalSentry } = await import('./sentry')
     await InternalSentry.init({ configuration: makeConfig(true) })
     expect(ctorOptions).toHaveLength(0)
+  })
+
+  it('beforeSend scrubs a copy and leaves the original event untouched', async () => {
+    const ctorOptions = mockSentryBrowser()
+    const { InternalSentry } = await import('./sentry')
+    await InternalSentry.init({ configuration: makeConfig(false) })
+    const beforeSend = ctorOptions[0]?.beforeSend as (event: Record<string, unknown>) => Record<string, unknown>
+    // Scope data is shallow-merged into the event, so nested values are the
+    // application's live objects — possibly frozen, and never ours to write to.
+    const live = Object.freeze({ accessToken: 'secret-token', operation: 'signMessage' })
+    const scrubbed = beforeSend({ extra: { data: live } }) as { extra: { data: Record<string, unknown> } }
+    expect(scrubbed.extra.data.accessToken).toBe('[redacted]')
+    expect(scrubbed.extra.data.operation).toBe('signMessage')
+    expect(live.accessToken).toBe('secret-token')
   })
 
   it('initializes the client with the SDK release tag when not disabled', async () => {

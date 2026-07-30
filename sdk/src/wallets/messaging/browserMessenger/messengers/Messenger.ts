@@ -15,4 +15,7 @@ interface Messenger {
   destroy: () => void
 }
 
-export default Messenger
+// Marked `export type` because `Messenger` is an interface: that tells every
+// consumer's compiler to erase the import entirely rather than emit a runtime
+// `require` for a module that contributes no value at runtime.
+export type { Messenger as default }

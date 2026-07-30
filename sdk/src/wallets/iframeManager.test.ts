@@ -537,7 +537,7 @@ describe('IframeManager per-call RPC timeouts', () => {
       await invoke(manager)
 
       expect(remoteMethod).toHaveBeenCalledTimes(1)
-      const options = remoteMethod.mock.calls[0].at(-1)
+      const options = remoteMethod.mock.calls[0]?.at(-1)
       expect(options?.timeout).toBe(timeout)
     })
 
@@ -743,7 +743,7 @@ describe('IframeManager connection-lost notifications', () => {
 
     // connect() was handed an onRemoteReconnect hook — fire it the way
     // shakeHands does when the embed page reloads and re-handshakes.
-    const connectOptions = vi.mocked(connect).mock.calls[0][0] as { onRemoteReconnect?: () => void }
+    const connectOptions = vi.mocked(connect).mock.calls[0]![0] as { onRemoteReconnect?: () => void }
     connectOptions.onRemoteReconnect?.()
 
     expect(onConnectionLost).toHaveBeenCalledTimes(1)

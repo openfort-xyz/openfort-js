@@ -1,24 +1,87 @@
-name: Run pnpm build
+name: Verify
 on:
-    pull_request:
+  pull_request:
+  merge_group:
+    branches:
+      - main
+  # Callable so the release pipeline runs the exact same checks on the exact
+  # commit it is about to publish, rather than trusting that a PR was green.
+  workflow_call:
+
+# Each job declares only what it needs; this default-denies anything added later.
+permissions: {}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # In a `workflow_call` run, `github.workflow` evaluates to the CALLER's
+  # workflow name, so the caller and this workflow would compute identical
+  # groups and GitHub cancels whichever run holds the group first — on the
+  # release path, the release itself. The literal prefix keeps the groups
+  # distinct in every trigger context.
+  group: verify-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  pnpm-build:
-    name: pnpm build
+  secret-scan:
+    name: gitleaks
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+          # Full clone so the BASE_SHA..HEAD range below is resolvable; the
+          # scan itself covers only the commits this run introduces.
+          fetch-depth: 0
+
+      # The gitleaks binary is used directly rather than gitleaks-action, which
+      # requires a paid licence for organisation-owned repositories. Rules come
+      # from .gitleaks.toml, which extends the default ruleset.
+      - name: Install gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          # Pinned checksum of the release asset; a substituted binary would
+          # otherwise execute as the CI user on every PR and on the release path.
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          curl -sSfL -o gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check
+          tar -xz -C /usr/local/bin -f gitleaks.tar.gz gitleaks
+          rm gitleaks.tar.gz
+          gitleaks version
+
+      # Only the commits this run introduces are scanned. A full-history scan
+      # would fail on pre-existing findings unrelated to the change, and takes
+      # over a minute. Run `gitleaks git` locally for a full audit.
+      - name: Scan for secrets
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -n "$BASE_SHA" ]; then
+            RANGE="$BASE_SHA..HEAD"
+          else
+            RANGE="HEAD~1..HEAD"
+          fi
+          echo "Scanning $RANGE"
+          gitleaks git --redact -v --exit-code 1 --log-opts="$RANGE"
+
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     env:
       NODE_OPTIONS: --max-old-space-size=14366
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
 
       - name: Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
@@ -36,11 +99,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Security audit
-        # npm retired the audit endpoint this hits (HTTP 410), so `pnpm audit`
-        # now fails on every run regardless of dependencies. Keep the step for
-        # visibility but don't let the dead endpoint block CI.
         run: pnpm audit
-        continue-on-error: true
 
       - name: sherif
         run: pnpm check:repo
@@ -48,14 +107,146 @@ jobs:
       - name: Code check (Biome)
         run: pnpm biome check
 
-      # - name: Check TypeScript types
-      #   run: pnpm check:types
+      # Builds the workspace packages that the SDK's types resolve against.
+      - name: Build project
+        run: pnpm build
+
+      - name: Check TypeScript types
+        run: pnpm check:types
+
+      # Assertions about inferred types. The unit suite cannot detect a
+      # signature widening to `any` — every runtime assertion still passes while
+      # consumers lose all checking inside the affected call.
+      - name: Type-level tests
+        run: pnpm test:types
+
+      # Coverage is measured and published rather than gated. Thresholds can be
+      # introduced per directory as coverage grows.
+      - name: Unit tests with coverage
+        run: pnpm test:coverage
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage
+          path: sdk/coverage/
+          retention-days: 7
+          if-no-files-found: ignore
 
       - name: Check for unused files, dependencies, and exports
         run: pnpm knip --production
 
+      - name: Verify package exports
+        run: pnpm test:build
+
+      # Keeps the generated reference documentation buildable.
+      - name: Build API documentation
+        run: pnpm build:docs
+
+      - name: Bundle size budget
+        run: pnpm size
+
+  # Type-checks the source against every TypeScript major a consumer might be
+  # on. The pinned devDependency only proves one version compiles, while the
+  # published types are compiled by whatever version the consumer has — and
+  # majors remove options, not just add them, so a config that works today can
+  # stop resolving entirely. Kept separate from `verify` so a failure names the
+  # version rather than looking like a generic type error.
+  types:
+    name: Types (typescript ${{ matrix.typescript }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # The floor is the pinned devDependency; the rest are the later majors.
+        # Every entry is exact so the set under test changes only by commit —
+        # a floating tag would start testing a new compiler the day it ships,
+        # failing PRs that changed nothing.
+        typescript: ['5.9.3', '6.0.2', '7.0.2']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10.16.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The SDK's types resolve against the declaration output of workspace
+      # packages such as `@openfort/openapi-clients`. That output is gitignored
+      # and install does not run workspace build scripts, so it exists only
+      # after a build.
       - name: Build project
         run: pnpm build
 
-      - name: Verify package exports
-        run: pnpm test:build
+      - name: Set TypeScript version
+        run: pnpm add -w -D typescript@${{ matrix.typescript }}
+
+      - name: Report resolved version
+        run: pnpm exec tsc --version
+
+      - name: Check TypeScript types
+        run: pnpm check:types
+
+  # Consumes the BUILT package the way a dependent project does. publint and
+  # attw (in `verify` above) only inspect packaging metadata and declarations;
+  # these jobs are the only ones that resolve the `exports` map and execute
+  # dist. A missing CJS interop shim reaches consumers otherwise.
+  #
+  # The matrix covers the `engines.node` floor as well as the version CI builds
+  # on. Testing only the newest Node would let us ship syntax or API usage that
+  # breaks the oldest release we claim to support.
+  consume:
+    name: Consume built package (node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      NODE_OPTIONS: --max-old-space-size=14366
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 10.16.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Type-check and load the built package (ESM + CJS)
+        run: pnpm test:env

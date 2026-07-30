@@ -1,0 +1,14 @@
+# Global owners.
+* @jamalavedra
+
+# The release pipeline and repository automation publish to npm. Changes here
+# should be reviewed by someone who can also approve a publish.
+/.github/ @jamalavedra
+
+# Secret-scanning configuration. An over-broad allowlist weakens the check
+# without any visible signal.
+/.gitleaks.toml @jamalavedra
+/.husky/ @jamalavedra
+
+# The published package surface.
+/sdk/ @jamalavedra

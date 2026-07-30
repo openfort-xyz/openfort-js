@@ -32,6 +32,9 @@ export interface BackendApiClientsOptions {
 	onLogout?: () => void;
 }
 
+/** Applied to every request; overridable per-call via axios config. */
+const DEFAULT_TIMEOUT_MS = 30_000;
+
 export class BackendApiClients {
 	public config: OpenfortAPIConfiguration;
 
@@ -71,14 +74,25 @@ export class BackendApiClients {
 		this.storage = options.storage;
 		this.onLogout = options.onLogout;
 
-		this.axiosInstance = axios.create();
-		this.fundingAxiosInstance = axios.create();
+		// Bounds requests against a stalled connection. Token refresh is
+		// promise-deduplicated, so one hung request blocks every caller.
+		this.axiosInstance = axios.create({ timeout: DEFAULT_TIMEOUT_MS });
+		this.fundingAxiosInstance = axios.create({ timeout: DEFAULT_TIMEOUT_MS });
 
 		for (const instance of [this.axiosInstance, this.fundingAxiosInstance]) {
 			axiosRetry(instance, {
 				retries: 3,
 				retryDelay: axiosRetry.exponentialDelay,
-				retryCondition: axiosRetry.isRetryableError,
+				// Retries GET/HEAD/OPTIONS/PUT/DELETE only, and only on network
+				// errors or retryable statuses. The method check must gate the
+				// network-error case too: a POST such as signature submission can
+				// reach the server and then lose the socket, and replaying it
+				// creates a duplicate transaction intent.
+				retryCondition: axiosRetry.isIdempotentRequestError,
+				// Each attempt gets the full timeout. By default the remaining
+				// budget is shared across attempts, so a retry after a slow
+				// failure starts with almost no time and aborts spuriously.
+				shouldResetTimeout: true,
 			});
 		}
 

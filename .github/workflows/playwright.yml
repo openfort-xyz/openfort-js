@@ -6,6 +6,8 @@ on:
   merge_group:
     branches:
       - main
+# Each job declares only what it needs; this default-denies anything added later.
+permissions: {}
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -18,11 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      actions: write
 
     steps:
     - name: Checkout
       uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      with:
+        persist-credentials: false
 
     - name: Setup pnpm
       uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
@@ -94,20 +97,8 @@ jobs:
         NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
         NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
         E2E_TESTS_USER: ${{ vars.E2E_TESTS_USER }}
-      run: pnpm playwright test --project=setup --project=chromium --project=firefox --project=webkit --reporter=dot
+      run: pnpm playwright test --project=setup --project=chromium --project=firefox --project=webkit
       working-directory: examples/apps/auth-sample
-
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        # The dot reporter doesn't write playwright-report/; failure evidence
-        # (retry traces, error contexts) lands in test-results/.
-        path: |
-          examples/apps/auth-sample/playwright-report/
-          examples/apps/auth-sample/test-results/
-        retention-days: 30
-        if-no-files-found: ignore
 
   # Connection-reliability stress suite. A fresh guest account per test, so
   # it never touches the shared E2E account and can run in parallel with the
@@ -117,11 +108,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      actions: write
 
     steps:
     - name: Checkout
       uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      with:
+        persist-credentials: false
 
     - name: Setup pnpm
       uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
@@ -191,15 +183,6 @@ jobs:
         NEXT_PUBLIC_REOWN_PROJECT_ID: ${{ vars.NEXT_PUBLIC_REOWN_PROJECT_ID }}
         NEXT_PUBLIC_COINBASE_PROJECTID: ${{ vars.NEXT_PUBLIC_COINBASE_PROJECTID }}
         NEXT_PUBLIC_MOONPAY_API_KEY: ${{ vars.NEXT_PUBLIC_MOONPAY_API_KEY }}
-      run: pnpm playwright test --project=reliability --workers=3 --reporter=dot
+      run: pnpm playwright test --project=reliability --workers=3
       working-directory: examples/apps/auth-sample
 
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report-reliability
-        path: |
-          examples/apps/auth-sample/playwright-report/
-          examples/apps/auth-sample/test-results/
-        retention-days: 30
-        if-no-files-found: ignore

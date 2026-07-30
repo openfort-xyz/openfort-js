@@ -31,15 +31,22 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters
+   * CI uses non-file reporters: workflow artifacts on a public repository are
+   * downloadable by anyone, and the HTML report embeds trace attachments that
+   * include request metadata. `github` surfaces failures as inline PR
+   * annotations (message, stack and snippet), which covers triage without
+   * writing files. */
+  reporter: process.env.CI ? [['dot'], ['github']] : 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://127.0.0.1:3000',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* Traces embed request metadata and nothing in CI publishes them, so they
+     * are recorded only locally, where the `html` report can open them. See
+     * https://playwright.dev/docs/trace-viewer */
+    trace: process.env.CI ? 'off' : 'on-first-retry',
   },
   /* Configure projects for major browsers */
   projects: [

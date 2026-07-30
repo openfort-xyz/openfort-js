@@ -1,4 +1,4 @@
-import { humanId } from 'human-id'
+import { humanId } from '../../utils/humanId'
 import {
   PasskeyAssertionFailedError,
   PasskeyCreationFailedError,
@@ -60,7 +60,7 @@ export class PasskeyHandler implements IPasskeyHandler {
   }
 
   static randomPasskeyName(): string {
-    return humanId({ capitalize: true, separator: ' ' })
+    return humanId()
   }
 
   private getChallengeBytes(): Uint8Array {

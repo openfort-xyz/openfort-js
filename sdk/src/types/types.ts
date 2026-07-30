@@ -2,7 +2,7 @@ import type {
   ChangeEmailPost200Response,
   ListAccountsGet200ResponseInner,
 } from '@openfort/openapi-clients/dist/backend'
-import type { PasskeyDetails } from 'wallets/types'
+import type { PasskeyDetails } from '../wallets/types'
 import type { UserAccount } from './types'
 
 export enum EmbeddedState {

@@ -1,5 +1,5 @@
-import type { MessagePoster } from 'wallets/types'
 import { debugLog } from '../../utils/debug'
+import type { MessagePoster } from '../types'
 import { PenpalError } from './browserMessenger'
 import type Messenger from './browserMessenger/messengers/Messenger'
 import type { InitializeMessengerOptions } from './browserMessenger/messengers/Messenger'

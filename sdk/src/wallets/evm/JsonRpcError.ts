@@ -15,7 +15,7 @@ export enum RpcErrorCode {
 }
 
 export class JsonRpcError extends Error {
-  public readonly message: string
+  public override readonly message: string
 
   public readonly code: ProviderErrorCode | RpcErrorCode
 

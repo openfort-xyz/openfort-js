@@ -176,7 +176,7 @@ describe('withApiError', () => {
       await expect(withApiError(mockFn, { onError })).rejects.toThrow()
 
       expect(onError).toHaveBeenCalledOnce()
-      expect(onError.mock.calls[0][0]).toBeInstanceOf(OpenfortError)
+      expect(onError.mock.calls[0]![0]).toBeInstanceOf(OpenfortError)
     })
 
     it('should skip Sentry when onError is provided', async () => {
@@ -253,7 +253,7 @@ describe('withApiError', () => {
 
       await expect(withApiError(mockFn, { onError })).rejects.toThrow()
 
-      const calledError = onError.mock.calls[0][0]
+      const calledError = onError.mock.calls[0]![0]
       expect(calledError).toBeInstanceOf(OpenfortError)
       expect(calledError.error).toBe('invalid_token')
       expect(calledError.error_description).toBe('Token is invalid')

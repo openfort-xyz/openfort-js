@@ -1,14 +1,14 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers'
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import type { GrantPermissionsParameters } from 'types'
-import type { EmbeddedSigner } from 'wallets/embedded'
 import { Account } from '../../core/configuration/account'
 import { Authentication } from '../../core/configuration/authentication'
 import type { IStorage } from '../../storage/istorage'
+import type { GrantPermissionsParameters } from '../../types'
 import { AccountTypeEnum, type OpenfortEventMap, OpenfortEvents } from '../../types/types'
 import { defaultChainRpcs } from '../../utils/chains'
 import { numberToHex } from '../../utils/crypto'
 import TypedEventEmitter from '../../utils/typedEventEmitter'
+import type { EmbeddedSigner } from '../embedded'
 import type { Signer } from '../isigner'
 import { addEthereumChain } from './addEthereumChain'
 import { estimateGas } from './estimateGas'
@@ -201,7 +201,10 @@ export class EvmProvider implements Provider {
 
         const rpcProvider = await this.getRpcProvider()
         const { chainId } = await rpcProvider.detectNetwork()
-        const [transaction]: RpcTransactionRequest[] = request.params || []
+        const [transaction]: (RpcTransactionRequest | undefined)[] = request.params || []
+        if (!transaction) {
+          throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `${request.method} requires a transaction object`)
+        }
 
         if (!transaction.chainId) {
           transaction.chainId = chainId.toString()

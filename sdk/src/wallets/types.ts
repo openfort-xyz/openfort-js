@@ -1,5 +1,5 @@
-import { VERSION } from 'version'
 import type { PasskeyEnv, RecoveryMethod } from '../types/types'
+import { VERSION } from '../version'
 
 export enum Event {
   RECOVER = 'recover',

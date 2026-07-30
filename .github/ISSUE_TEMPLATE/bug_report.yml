@@ -1,0 +1,48 @@
+name: Bug report
+description: Something in the SDK does not behave as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not paste secret keys, access tokens, or recovery material.**
+        Publishable keys (`pk_...`) are safe to share; secret keys (`sk_...`) are not.
+        For anything security-sensitive, use
+        [private vulnerability reporting](https://github.com/openfort-xyz/openfort-js/security/advisories/new)
+        instead of this form.
+  - type: input
+    id: version
+    attributes:
+      label: SDK version
+      description: The exact version of `@openfort/openfort-js`.
+      placeholder: 1.6.0
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Where does this reproduce? Most reports are environment-specific.
+      multiple: true
+      options:
+        - Browser (client-side)
+        - Next.js / SSR
+        - React Native / Expo
+        - Node.js
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: A minimal repository or StackBlitz link. Issues without one are usually not actionable.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual behaviour
+      description: Include the full error message and stack trace if there is one.
+    validations:
+      required: true

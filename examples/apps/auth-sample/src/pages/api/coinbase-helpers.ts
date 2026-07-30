@@ -8,9 +8,13 @@ export type createRequestParams = {
 }
 
 export async function fetchApiCredentials() {
-  const key = await import('../../../cdp_api_key.json')
-  const key_name = key.name
-  const key_secret = key.privateKey
+  const key_name = process.env.CDP_API_KEY_NAME
+  // The key is multi-line PEM; store it with literal \n in the env file.
+  const key_secret = process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, '\n')
+
+  if (!key_name || !key_secret) {
+    throw new Error('Coinbase onramp is not configured: set CDP_API_KEY_NAME and CDP_API_KEY_PRIVATE_KEY in .env.local')
+  }
 
   return { key_name, key_secret }
 }
