@@ -62,9 +62,11 @@ published as a GitHub Security Advisory on this repository as well as to npm.
 Measures applied to this repository and its releases:
 
 - dependencies must be at least 24 hours old before they can be installed
-  (`minimumReleaseAge`), limiting exposure to a compromised fresh publish,
-- install scripts are disabled by default (`ignore-scripts`), with an explicit
-  allowlist for the few packages that need them,
+  (`minimumReleaseAge`), limiting exposure to a compromised fresh publish;
+  the first-party packages `@openfort/shield-js` and `@openfort/openfort-node`
+  are exempt (`minimumReleaseAgeExclude`),
+- dependency install scripts are disabled (`ignore-dep-scripts`); only this
+  repository's own lifecycle scripts run,
 - runtime dependencies are pinned to exact versions, so a published SDK version
   always resolves the same tree,
 - releases are published from CI via npm Trusted Publishing (OIDC) with

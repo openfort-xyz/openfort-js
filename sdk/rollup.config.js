@@ -15,7 +15,9 @@ const packages = JSON.parse(readFileSync('./workspace-packages.json', { encoding
 const getPackages = () => packages.map((pkg) => pkg.name)
 
 // Output is not minified: consumer bundlers minify with full cross-module
-// context. Sourcemaps ship so stack traces into the SDK stay readable.
+// context. Sourcemaps ship so stack traces into the SDK stay readable; they
+// embed the original TypeScript (`inlineSources`) because the published
+// tarball contains no `src/` for a `sources` path to resolve against.
 
 // Published entry points, one per `exports` key in package.json. The root
 // entry evaluates `Openfort.getEventEmitter()` at module scope, so it can
@@ -50,8 +52,8 @@ const modules = {
     typescript({
       noEmitOnError: true,
       declaration: true,
-      declarationMap: true,
       sourceMap: true,
+      inlineSources: true,
       tsconfig: 'tsconfig.build.json',
       declarationDir: './dist/types',
     }),
@@ -104,6 +106,7 @@ const cjs = {
     typescript({
       noEmitOnError: true,
       sourceMap: true,
+      inlineSources: true,
       tsconfig: 'tsconfig.build.json',
     }),
     replace({

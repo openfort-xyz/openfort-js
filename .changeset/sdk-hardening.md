@@ -24,18 +24,26 @@ supported API or open an issue describing the use case.
 
 **Runtime improvements**
 
-- Debug logging redacts sensitive fields. If you enable `debug`, values such as
-  keys and tokens are replaced before anything is written to the console.
+- Debug logging redacts sensitive fields. If you enable `debug`, values whose
+  key names contain fragments such as `key`, `token`, `secret` or `share` are
+  replaced before anything is written to the console.
 - Error telemetry attaches an allowlisted set of fields instead of request and
   response objects, with an additional scrubbing step before events are sent.
-- Retries are limited to idempotent requests, so operations such as signature
-  submission are no longer repeated automatically.
-- Requests have a 30 second default timeout.
-- `eth_signTypedData_v4` verifies that the requested `from` address matches the
-  connected account and requires `domain.chainId`, so signatures are bound to
-  an account and a chain. Requests that previously succeeded without these may
-  now be rejected.
-- EIP-7702 authorization inputs are validated before signing.
+- Retries are limited to idempotent requests (GET/HEAD/OPTIONS/PUT/DELETE),
+  including on network errors, so operations such as signature submission are
+  never repeated automatically.
+- Requests have a 30 second default timeout per attempt; transaction
+  confirmation waits get a larger dedicated budget.
+- `eth_signTypedData_v4` verifies that the requested `from` address matches
+  the connected account. A `domain.chainId`, when present, must name the
+  connected chain; domains that omit it (per EIP-712 every domain field is
+  optional) are signed as before.
+- `wallet_revokePermissions` without a `permissionContext` now fails with
+  `INVALID_PARAMS` instead of returning an empty object typed as a completed
+  revocation.
+- EIP-7702 authorization inputs are validated before signing, and a malformed
+  signer response is rejected instead of being padded into a plausible-looking
+  signature.
 
 **Fixed: `require()` of this package threw on `new Openfort()`**
 
@@ -51,7 +59,7 @@ are loaded in CI to keep it that way.
 error classes and the shared types and enums without reaching the client. The
 root entry point initializes the global event emitter when it loads, so it
 cannot be tree-shaken; importing an error class through it pulled in signing,
-telemetry, and HTTP. Importing `OpenfortError` from `/errors` costs 313 B
+telemetry, and HTTP. Importing `OpenfortError` from `/errors` costs 433 B
 minified and brotlied, against 237 kB for the root entry point.
 
 ```ts
@@ -75,6 +83,9 @@ import { setErrorConfig } from '@openfort/openfort-js'
 setErrorConfig({ docsBaseUrl: 'https://docs.example.com/wallet' })
 ```
 
+`DEFAULT_DOCS_BASE_URL` is exported alongside it, so a wrapper can restore the
+default without hard-coding a copy of the URL.
+
 **Type-only exports are no longer runtime properties**
 
 Types such as `User` and `AuthResponse` were emitted as runtime properties
@@ -85,5 +96,15 @@ difference.
 
 **Packaging**
 
-The published bundle is no longer minified and ships sourcemaps and declaration
-maps, so stack traces from within the SDK are readable.
+The published bundle is no longer minified and ships sourcemaps with the
+original TypeScript embedded, so stack traces from within the SDK are readable
+and debuggers can step into SDK frames without the package shipping `src/`.
+
+`typescript` is declared as an optional peer dependency (`>=5.9.3`) to state
+the oldest compiler the published declarations are tested against. Package
+managers do not install it and JavaScript consumers are unaffected.
+
+The shipped code targets `es2022` and relies on native class semantics for
+`instanceof` on error classes. Toolchains that downlevel classes inside
+`node_modules` (older Metro or Babel presets) will break `instanceof
+OpenfortError`; exclude this package from transpilation or match the target.

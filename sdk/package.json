@@ -118,7 +118,14 @@
   "module": "./dist/sdk/src/index.js",
   "type": "module",
   "types": "./dist/index.d.ts",
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/sdk/src/index.js",
+    "./dist/cjs/sdk/src/index.cjs",
+    "./dist/sdk/src/wallets/evm/types.js",
+    "./dist/cjs/sdk/src/wallets/evm/types.cjs",
+    "./dist/sdk/src/wallets/messaging/browserMessenger/backwardCompatibility.js",
+    "./dist/cjs/sdk/src/wallets/messaging/browserMessenger/backwardCompatibility.cjs"
+  ],
   "size-limit": [
     {
       "name": "import * from '@openfort/openfort-js'",
