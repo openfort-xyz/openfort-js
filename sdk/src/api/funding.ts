@@ -1,5 +1,9 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import type { CreateFundingSessionRequest, FundingSessionResponse } from '@openfort/openapi-clients/dist/backend'
+import type {
+  CreateFundingSessionRequest,
+  FundingSessionResponse,
+  SetPaymentMethodRequest,
+} from '@openfort/openapi-clients/dist/backend'
 import { withApiError } from '../core/errors/withApiError'
 
 /**
@@ -57,13 +61,71 @@ interface FundingPaymentMethodBase {
   refundTo?: string
 }
 
+/** Backend ids of the fiat (web2) funding methods. */
+export type OnrampMethodId = 'apple_pay' | 'google_pay' | 'card' | 'bank_transfer'
+
 /**
- * The source route the user commits to — an EVM or Solana self-custody
- * transfer. To fund from a centralized exchange, use `payLink` instead.
+ * How the client executes a resolved fiat method: open `url` (`iframe`), mount
+ * the provider's in-page Pay button (`native`), or mount the provider's own
+ * component from the returned secrets (`embedded`).
+ */
+export type OnrampAngle = 'iframe' | 'native' | 'embedded'
+
+/**
+ * A fiat onramp commit. Openfort resolves the provider server-side from the
+ * buyer's region + the session's destination — there is no provider choice
+ * here. Wallet pay (`apple_pay`/`google_pay`) additionally requires the
+ * OTP-verified buyer identity: use `verifications` (Coinbase-issued OTP) and
+ * attach the record ids alongside the attested fields.
+ */
+export interface OnrampPaymentMethodInput {
+  type: 'onramp'
+  method: OnrampMethodId
+  /** Fiat amount to prefill, in the source currency's human units. */
+  sourceAmount?: string
+  /** ISO-4217 fiat currency for `sourceAmount`. */
+  sourceCurrency?: string
+  /** Explicit buyer-country override (ISO-3166 alpha-2); wins over the request IP. */
+  country?: string
+  /** URL the provider redirects back to after a hosted checkout. */
+  redirectUrl?: string
+  /** Origin-chain refund address for an auto-bridged (chained) route. */
+  refundTo?: string
+  /** OTP-verified buyer email — wallet pay only. */
+  email?: string
+  /** OTP-verified US mobile in E.164 — wallet pay only. */
+  phoneNumber?: string
+  /** ISO-8601 time the phone OTP was verified — wallet pay only. */
+  phoneNumberVerifiedAt?: string
+  /** ISO-8601 time the buyer accepted Coinbase's Guest Checkout terms — wallet pay only. */
+  agreementAcceptedAt?: string
+  /** Coinbase Verification API record for the phone (see `verifications`). */
+  smsVerificationId?: string
+  /** Coinbase Verification API record for the email (see `verifications`). */
+  emailVerificationId?: string
+  /**
+   * Stripe v2 embedded-components (Link-auth headless) flow — present when the
+   * client authenticated the buyer with Link and collected a payment method.
+   * Redeem the session's element secret afterwards via `sessions.checkout`.
+   */
+  stripeLink?: {
+    /** The LinkAuthIntent minted by `stripeLink.createAuthIntent`. */
+    linkAuthIntentId: string
+    /** Link-authenticated buyer id from the client's authenticate() callback. */
+    cryptoCustomerId: string
+    /** Payment token from the client's collectPaymentMethod() element. */
+    cryptoPaymentToken: string
+  }
+}
+
+/**
+ * The route the user commits to: an EVM or Solana self-custody transfer, or a
+ * fiat onramp (`onramp`). To fund from a centralized exchange, use `payLink`.
  */
 export type FundingPaymentMethodInput =
   | (FundingPaymentMethodBase & { type: 'evm' })
   | (FundingPaymentMethodBase & { type: 'solana' })
+  | OnrampPaymentMethodInput
 
 export type FundingSessionStatus =
   | 'requires_payment_method'
@@ -97,7 +159,8 @@ export interface FundingCexGuidance {
   requiresMemo: boolean
 }
 
-export interface FundingPaymentMethod {
+/** A committed crypto-rail payment method (Relay deposit address). */
+export interface FundingCryptoPaymentMethod {
   type: string
   source: FundingSource
   receiverAddress: string
@@ -108,6 +171,28 @@ export interface FundingPaymentMethod {
   fees: FundingFee[]
   minAmount: string | null
 }
+
+/**
+ * A committed fiat onramp payment method. The executing provider is resolved
+ * server-side and intentionally not part of the response — the client renders
+ * per `angle`: open `url`, mount it as the native Pay button, or mount the
+ * provider's embedded component from the secrets.
+ */
+export interface FundingOnrampPaymentMethod {
+  type: 'onramp'
+  method: OnrampMethodId | string
+  angle: OnrampAngle | string
+  url: string | null
+  /** Provider element secret (`embedded` angle), e.g. Stripe's session secret. */
+  providerClientSecret?: string | null
+  /** Provider publishable key for mounting the embedded component. */
+  providerPublishableKey?: string | null
+  fees: FundingFee[]
+  minAmount: string | null
+}
+
+/** Discriminate on `type`: `'onramp'` is fiat; everything else is a crypto rail. */
+export type FundingPaymentMethod = FundingCryptoPaymentMethod | FundingOnrampPaymentMethod
 
 export interface FundingSession {
   id: string
@@ -164,6 +249,57 @@ export interface FundingChain {
   currencies: FundingCurrency[]
 }
 
+/** One resolved fiat method row. The provider is auto-selected and never shown. */
+export interface ResolvedFundingMethod {
+  method: OnrampMethodId | string
+  /** Executing provider — for telemetry only, never display. */
+  provider: string
+  angle: OnrampAngle | string
+  label: string
+  /** Regional rail label for bank transfers ("ach" | "sepa" | "interac"). */
+  rail?: string
+  /** Client must still gate on device capability (e.g. Apple Pay needs an Apple device). */
+  requiresDeviceCheck?: boolean
+}
+
+/** Resolved fiat methods for a session's destination + the buyer's region. */
+export interface ResolvedFundingMethods {
+  /** Resolved ISO-3166 alpha-2 country, or null for rest-of-world. */
+  country: string | null
+  methods: ResolvedFundingMethod[]
+}
+
+export interface OnrampFee {
+  type: string
+  amount: string
+  currency: string
+}
+
+/** A priced onramp route for a session — matches the checkout the user will get. */
+export interface OnrampQuote {
+  provider?: string
+  sourceAmount: string
+  sourceCurrency: string
+  destinationAmount: string
+  destinationCurrency: string
+  destinationNetwork: string
+  fees: OnrampFee[]
+  exchangeRate: string
+}
+
+/** A started Coinbase-issued OTP verification (the code is on its way). */
+export interface OnrampVerificationStart {
+  verificationId: string
+  /** ISO-8601 — the OTP expires ~10 minutes after initiation. */
+  otpExpiresAt?: string
+}
+
+/** A completed verification — attach its id to a wallet-pay commit (valid ~60 days). */
+export interface OnrampVerificationRecord {
+  verificationId: string
+  verificationExpiresAt?: string
+}
+
 export class FundingApi {
   constructor(private readonly backendApiClients: BackendApiClients) {}
 
@@ -179,10 +315,17 @@ export class FundingApi {
    * exchange withdrawal guidance from the API today, so `cex` is always null.
    */
   private static toSession(response: FundingSessionResponse): FundingSession {
+    const pm = response.paymentMethod
     return {
       ...response,
       status: response.status as FundingSessionStatus,
-      paymentMethod: response.paymentMethod ? { ...response.paymentMethod, cex: null } : null,
+      // Fiat methods pass through as-is; crypto rails carry no exchange
+      // withdrawal guidance from the API today, so `cex` is always null.
+      paymentMethod: pm
+        ? pm.type === 'onramp'
+          ? (pm as FundingOnrampPaymentMethod)
+          : ({ ...pm, cex: null } as FundingCryptoPaymentMethod)
+        : null,
     }
   }
 
@@ -235,7 +378,12 @@ export class FundingApi {
           (
             await this.fundingApi.setPaymentMethod({
               sessionId,
-              setPaymentMethodRequest: { clientSecret, paymentMethod: params.paymentMethod },
+              setPaymentMethodRequest: {
+                clientSecret,
+                // The generator flattens the crypto|onramp request union onto a
+                // single shape; the SDK union is the source of truth.
+                paymentMethod: params.paymentMethod as unknown as SetPaymentMethodRequest['paymentMethod'],
+              },
             })
           ).data,
         { context: 'funding.sessions.setPaymentMethod' }
@@ -273,6 +421,136 @@ export class FundingApi {
         }
         await new Promise((resolve) => setTimeout(resolve, pollMs))
       }
+    },
+
+    /**
+     * The fiat methods available for this session's destination and the buyer's
+     * region, resolved server-side. Render the rows and commit one with
+     * `setPaymentMethod({ type: 'onramp', method })` — there is no provider
+     * choice on the client.
+     */
+    methods: async (
+      sessionId: string,
+      params?: { clientSecret?: string; country?: string }
+    ): Promise<ResolvedFundingMethods> => {
+      const clientSecret = this.resolveSecret(sessionId, params?.clientSecret)
+      const response = await withApiError(
+        async () =>
+          (await this.fundingApi.getFundingSessionMethods({ sessionId, clientSecret, country: params?.country })).data,
+        { context: 'funding.sessions.methods' }
+      )
+      return response as ResolvedFundingMethods
+    },
+
+    /**
+     * Price a fiat route for this session before committing it — resolved
+     * exactly as `setPaymentMethod` would resolve it, so the quote matches the
+     * checkout the user will get.
+     */
+    quote: async (
+      sessionId: string,
+      params: {
+        method: OnrampMethodId
+        sourceAmount: string
+        sourceCurrency: string
+        country?: string
+        clientSecret?: string
+      }
+    ): Promise<OnrampQuote> => {
+      const clientSecret = this.resolveSecret(sessionId, params.clientSecret)
+      const response = await withApiError(
+        async () =>
+          (
+            await this.fundingApi.quoteFundingSession({
+              sessionId,
+              sessionQuoteRequest: {
+                clientSecret,
+                method: params.method,
+                sourceAmount: params.sourceAmount,
+                sourceCurrency: params.sourceCurrency,
+                country: params.country,
+              },
+            })
+          ).data,
+        { context: 'funding.sessions.quote' }
+      )
+      return response as OnrampQuote
+    },
+
+    /**
+     * Stripe v2 (Link-auth headless) checkout: confirms the committed headless
+     * onramp session and returns the one-shot provider client secret for the
+     * client's performCheckout element.
+     */
+    checkout: async (sessionId: string, params?: { clientSecret?: string }): Promise<{ clientSecret: string }> => {
+      const clientSecret = this.resolveSecret(sessionId, params?.clientSecret)
+      const response = await withApiError(
+        async () =>
+          (
+            await this.fundingApi.checkoutFundingOnrampSession({
+              sessionId,
+              checkoutFundingOnrampSessionRequest: { clientSecret },
+            })
+          ).data,
+        { context: 'funding.sessions.checkout' }
+      )
+      return response as { clientSecret: string }
+    },
+  }
+
+  /**
+   * Coinbase-issued OTP verification for native wallet pay (Apple/Google Pay):
+   * Coinbase sends and checks the code itself. Verify the buyer's phone and
+   * email, then attach the returned ids to the wallet-pay commit as
+   * `smsVerificationId` / `emailVerificationId` (records stay valid ~60 days).
+   * Sandbox destinations (`+1000…` numbers, `@sandbox.test` emails) accept the
+   * fixed code 000000 on test-mode projects.
+   */
+  public readonly verifications = {
+    create: async (params: { channel: 'sms' | 'email'; destination: string }): Promise<OnrampVerificationStart> => {
+      const response = await withApiError(
+        async () => (await this.fundingApi.createOnrampVerification({ createOnrampVerificationRequest: params })).data,
+        { context: 'funding.verifications.create' }
+      )
+      return response as OnrampVerificationStart
+    },
+
+    submit: async (verificationId: string, otpCode: string): Promise<OnrampVerificationRecord> => {
+      const response = await withApiError(
+        async () =>
+          (
+            await this.fundingApi.submitOnrampVerification({
+              verificationId,
+              submitOnrampVerificationRequest: { otpCode },
+            })
+          ).data,
+        { context: 'funding.verifications.submit' }
+      )
+      return response as OnrampVerificationRecord
+    },
+  }
+
+  /**
+   * Stripe v2 embedded-components (Link-auth headless) helpers: mint the
+   * LinkAuthIntent the client's auth element needs, then exchange it for its
+   * server-side token after the buyer completes Link. The token never reaches
+   * the client — committing (`stripeLink` on the payment method) and
+   * `sessions.checkout` look it up by the intent id.
+   */
+  public readonly stripeLink = {
+    createAuthIntent: async (params: { email: string }): Promise<{ id: string }> => {
+      const response = await withApiError(
+        async () =>
+          (await this.fundingApi.createStripeLinkAuthIntent({ createStripeLinkAuthIntentRequest: params })).data,
+        { context: 'funding.stripeLink.createAuthIntent' }
+      )
+      return response as { id: string }
+    },
+
+    exchangeToken: async (intentId: string): Promise<void> => {
+      await withApiError(async () => (await this.fundingApi.exchangeStripeLinkToken({ intentId })).data, {
+        context: 'funding.stripeLink.exchangeToken',
+      })
     },
   }
 

@@ -2,7 +2,7 @@ import type { BackendApiClients } from '@openfort/openapi-clients'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockAxiosError } from '../__tests__/fixtures/auth'
 import { OpenfortError } from '../core/errors/openfortError'
-import { FundingApi } from './funding'
+import { FundingApi, type FundingCryptoPaymentMethod } from './funding'
 
 // Mock sentry so error-path tests don't touch the real reporter.
 vi.mock('../core/errors/sentry', () => ({
@@ -19,6 +19,13 @@ function mockFundingApi() {
     getFundingSession: vi.fn(),
     createPayLink: vi.fn(),
     listChains: vi.fn(),
+    getFundingSessionMethods: vi.fn(),
+    quoteFundingSession: vi.fn(),
+    checkoutFundingOnrampSession: vi.fn(),
+    createOnrampVerification: vi.fn(),
+    submitOnrampVerification: vi.fn(),
+    createStripeLinkAuthIntent: vi.fn(),
+    exchangeStripeLinkToken: vi.fn(),
   }
 }
 
@@ -44,6 +51,129 @@ describe('FundingApi', () => {
     expect(url).toBe('https://pay.example/checkout')
     expect(funding.createPayLink).toHaveBeenCalledWith({
       payLinkRequest: { sessionId: 'fnd_1', clientSecret: 'cs_1', amount: '10', asset: 'USDC' },
+    })
+  })
+
+  it('sessions.methods resolves the fiat rows with the remembered client secret', async () => {
+    funding.createFundingSession.mockReturnValue(
+      ok({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method', paymentMethod: null })
+    )
+    funding.getFundingSessionMethods.mockReturnValue(
+      ok({
+        country: 'US',
+        methods: [
+          { method: 'apple_pay', provider: 'coinbase', angle: 'native', label: 'Apple Pay', requiresDeviceCheck: true },
+        ],
+      })
+    )
+    const api = makeApi(funding)
+    await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
+    const resolved = await api.sessions.methods('fnd_1', { country: 'US' })
+    expect(resolved.country).toBe('US')
+    expect(resolved.methods[0]).toMatchObject({ method: 'apple_pay', angle: 'native' })
+    expect(funding.getFundingSessionMethods).toHaveBeenCalledWith({
+      sessionId: 'fnd_1',
+      clientSecret: 'cs_1',
+      country: 'US',
+    })
+  })
+
+  it('sessions.quote prices a route through the session-scoped quote endpoint', async () => {
+    funding.quoteFundingSession.mockReturnValue(
+      ok({
+        provider: 'stripe',
+        sourceAmount: '104.05',
+        sourceCurrency: 'USD',
+        destinationAmount: '100',
+        destinationCurrency: 'USDC',
+        destinationNetwork: 'base',
+        fees: [],
+        exchangeRate: '1.00',
+      })
+    )
+    const quote = await makeApi(funding).sessions.quote('fnd_1', {
+      method: 'card',
+      sourceAmount: '100',
+      sourceCurrency: 'USD',
+      clientSecret: 'cs_1',
+    })
+    expect(quote.destinationAmount).toBe('100')
+    expect(funding.quoteFundingSession).toHaveBeenCalledWith({
+      sessionId: 'fnd_1',
+      sessionQuoteRequest: {
+        clientSecret: 'cs_1',
+        method: 'card',
+        sourceAmount: '100',
+        sourceCurrency: 'USD',
+        country: undefined,
+      },
+    })
+  })
+
+  it('setPaymentMethod passes an onramp commit (wallet-pay identity + verification ids) through', async () => {
+    funding.setPaymentMethod.mockReturnValue(
+      ok({
+        id: 'fnd_1',
+        status: 'waiting_payment',
+        paymentMethod: {
+          type: 'onramp',
+          method: 'apple_pay',
+          angle: 'native',
+          url: 'https://pay.coinbase.com/o',
+          fees: [],
+          minAmount: null,
+        },
+      })
+    )
+    const session = await makeApi(funding).sessions.setPaymentMethod('fnd_1', {
+      clientSecret: 'cs_1',
+      paymentMethod: {
+        type: 'onramp',
+        method: 'apple_pay',
+        sourceAmount: '25.00',
+        sourceCurrency: 'USD',
+        email: 'a@b.co',
+        phoneNumber: '+14155550123',
+        phoneNumberVerifiedAt: '2026-07-30T00:00:00Z',
+        agreementAcceptedAt: '2026-07-30T00:00:00Z',
+        smsVerificationId: 'onramp_verification_sms',
+        emailVerificationId: 'onramp_verification_email',
+      },
+    })
+    expect(session.paymentMethod).toMatchObject({ type: 'onramp', angle: 'native', url: 'https://pay.coinbase.com/o' })
+    const sent = funding.setPaymentMethod.mock.calls[0]?.[0].setPaymentMethodRequest.paymentMethod ?? {}
+    expect(sent.smsVerificationId).toBe('onramp_verification_sms')
+    expect(sent.emailVerificationId).toBe('onramp_verification_email')
+  })
+
+  it('verifications.create + submit delegate to the Coinbase-issued OTP endpoints', async () => {
+    funding.createOnrampVerification.mockReturnValue(ok({ verificationId: 'onramp_verification_x', otpExpiresAt: 't' }))
+    funding.submitOnrampVerification.mockReturnValue(
+      ok({ verificationId: 'onramp_verification_x', verificationExpiresAt: 't2' })
+    )
+    const api = makeApi(funding)
+    const started = await api.verifications.create({ channel: 'sms', destination: '+14155550123' })
+    expect(started.verificationId).toBe('onramp_verification_x')
+    const record = await api.verifications.submit('onramp_verification_x', '000000')
+    expect(record.verificationExpiresAt).toBe('t2')
+    expect(funding.submitOnrampVerification).toHaveBeenCalledWith({
+      verificationId: 'onramp_verification_x',
+      submitOnrampVerificationRequest: { otpCode: '000000' },
+    })
+  })
+
+  it('stripeLink helpers mint and exchange the LinkAuthIntent; checkout returns the element secret', async () => {
+    funding.createStripeLinkAuthIntent.mockReturnValue(ok({ id: 'lai_1' }))
+    funding.exchangeStripeLinkToken.mockReturnValue(ok({ exchanged: true }))
+    funding.checkoutFundingOnrampSession.mockReturnValue(ok({ clientSecret: 'seti_secret' }))
+    const api = makeApi(funding)
+    expect((await api.stripeLink.createAuthIntent({ email: 'a@b.co' })).id).toBe('lai_1')
+    await api.stripeLink.exchangeToken('lai_1')
+    const checkout = await api.sessions.checkout('fnd_1', { clientSecret: 'cs_1' })
+    expect(checkout.clientSecret).toBe('seti_secret')
+    expect(funding.checkoutFundingOnrampSession).toHaveBeenCalledWith({
+      sessionId: 'fnd_1',
+      checkoutFundingOnrampSessionRequest: { clientSecret: 'cs_1' },
     })
   })
 
@@ -109,8 +239,10 @@ describe('FundingApi', () => {
       target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' },
     })
     expect(session.status).toBe('waiting_payment')
-    expect(session.paymentMethod?.cex).toBeNull()
-    expect(session.paymentMethod?.receiverAddress).toBe('0xreceiver')
+    // Crypto rail → the crypto member of the payment-method union.
+    const pm = session.paymentMethod as FundingCryptoPaymentMethod
+    expect(pm.cex).toBeNull()
+    expect(pm.receiverAddress).toBe('0xreceiver')
   })
 
   it('wait() polls until a terminal status', async () => {
