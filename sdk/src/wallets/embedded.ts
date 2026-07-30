@@ -140,7 +140,8 @@ export class EmbeddedSigner implements Signer {
         const accountExistsInChainId = accounts.find((ac) => ac.chainId === params.chainId)
         // intentionally take first account from the list, as they all should have the same owner EOA
         const account = accountExistsInChainId || accounts[0]
-        // An empty account list surfaces as a typed SDK error.
+        // `accounts` is non-empty in this branch; narrows the index access
+        // without a cast.
         if (!account) {
           throw new SignerError(
             OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,

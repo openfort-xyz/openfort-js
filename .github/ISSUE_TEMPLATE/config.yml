@@ -6,6 +6,9 @@ contact_links:
   - name: Documentation
     url: https://www.openfort.io/docs
     about: Guides and API reference.
-  - name: Support
-    url: https://www.openfort.io/discord
+  - name: Support (Telegram)
+    url: https://t.me/openfort
     about: Questions about integrating the SDK.
+  - name: Support (email)
+    url: mailto:support@openfort.io
+    about: Prefer email? Reach the support team directly.
