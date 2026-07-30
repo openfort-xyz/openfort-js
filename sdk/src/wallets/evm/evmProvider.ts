@@ -148,18 +148,29 @@ export class EvmProvider implements Provider {
     return rpcUrl
   }
 
+  /**
+   * Resolves the chain the provider operates on, without touching the network.
+   *
+   * @returns The account's chain id, else the first caller-supplied chain, else Base mainnet.
+   */
+  async #resolveChainId(): Promise<number> {
+    const account = await Account.fromStorage(this.#storage)
+    // when accountTypeEnum is EOA, account.chainId will be undefined.
+    // we will always return the first configured chain in the provider if one is provided.
+    // otherwise we revert to 8453
+    return account?.chainId || (this.#customChains ? Number(Object.keys(this.#customChains)[0]) : undefined) || 8453
+  }
+
   async getRpcProvider(): Promise<StaticJsonRpcProvider> {
     if (!this.#rpcProvider) {
-      const account = await Account.fromStorage(this.#storage)
-      // when accountTypeEnum is EOA, account.chainId will be undefined.
-      // we will always return the first configured chain in the provider if one is provided.
-      // otherwise we revert to 8453
-      const chainId =
-        account?.chainId || (this.#customChains ? Number(Object.keys(this.#customChains)[0]) : undefined) || 8453
-
+      const chainId = await this.#resolveChainId()
       const rpcUrl = this.#resolveRpcUrl(chainId)
       await import('@ethersproject/providers').then((module) => {
-        this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl)
+        // The chain is passed explicitly so the provider never issues a
+        // detection round-trip on construction. ethers v5 caches a *rejected*
+        // network promise, so a single dropped eth_chainId would otherwise
+        // poison this provider for the rest of the session.
+        this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl, chainId)
       })
     }
     if (!this.#rpcProvider) {
@@ -178,8 +189,13 @@ export class EvmProvider implements Provider {
       case 'eth_requestAccounts': {
         const account = await Account.fromStorage(this.#storage)
         if (account) {
-          const rpcProvider = await this.getRpcProvider()
-          const { chainId } = await rpcProvider.detectNetwork()
+          // Deliberately not via getRpcProvider().detectNetwork(): the chain id
+          // is only used to fill the connect event payload, so probing an RPC
+          // here would gate listing a locally-stored account on a network call
+          // the account itself never needs. For an EOA that probe hits whatever
+          // chain we defaulted to, and a failure surfaced as a wallet-creation
+          // error.
+          const chainId = await this.#resolveChainId()
           this.#eventEmitter.emit(ProviderEvent.ACCOUNTS_CONNECT, {
             chainId: numberToHex(chainId),
           })
@@ -382,7 +398,7 @@ export class EvmProvider implements Provider {
         try {
           await signer.switchChain({ chainId: chainIdNumber })
           await import('@ethersproject/providers').then((module) => {
-            this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl)
+            this.#rpcProvider = new module.StaticJsonRpcProvider(rpcUrl, chainIdNumber)
           })
           this.#eventEmitter.emit(ProviderEvent.CHAIN_CHANGED, numberToHex(chainIdNumber))
         } catch (error) {
