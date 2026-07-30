@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import {
   AuthenticationError,
   AuthorizationError,
@@ -10,6 +10,7 @@ import {
   RequestError,
   SessionError,
   SignerError,
+  setErrorConfig,
   UserError,
 } from './openfortError'
 
@@ -394,5 +395,58 @@ describe('OpenfortError cause chain and version', () => {
     expect(error).toBeInstanceOf(SessionError)
     expect(error).toBeInstanceOf(OpenfortError)
     expect(error).toBeInstanceOf(Error)
+  })
+
+  // `Openfort`'s synchronous init collapses every wiring fault into one
+  // ConfigurationError with a fixed message, so the cause chain is the only
+  // channel carrying which dependency actually failed. It has to survive both
+  // the subclass constructor and `walk()` for that to be diagnosable.
+  it('ConfigurationError forwards its cause and keeps it reachable via walk()', () => {
+    const cause = new TypeError('axiosRetry is not a function')
+    const error = new ConfigurationError('Openfort SDK synchronous initialization failed', { cause })
+
+    expect(error.cause).toBe(cause)
+    expect(error.walk()).toBe(cause)
+    expect(error.walk((e) => e instanceof TypeError)).toBe(cause)
+  })
+
+  it('ConfigurationError without a cause omits the property', () => {
+    const error = new ConfigurationError('missing publishable key')
+    expect(error.cause).toBeUndefined()
+    expect(error.walk()).toBe(error)
+  })
+
+  describe('docs links', () => {
+    afterEach(() => {
+      setErrorConfig({ docsBaseUrl: 'https://www.openfort.io/docs' })
+    })
+
+    it('leaves the message untouched when no docsPath is given', () => {
+      const error = new OpenfortError('some_code', 'something broke')
+      expect(error.message).toBe('something broke')
+      expect(error.docsUrl).toBeUndefined()
+    })
+
+    it('appends a Docs line and exposes the resolved URL', () => {
+      const error = new OpenfortError('some_code', 'something broke', {
+        docsPath: 'configuration/native-apps',
+      })
+      expect(error.docsUrl).toBe('https://www.openfort.io/docs/configuration/native-apps')
+      expect(error.message).toBe('something broke\n\nDocs: https://www.openfort.io/docs/configuration/native-apps')
+      // The structured description stays clean so callers can render it alone.
+      expect(error.error_description).toBe('something broke')
+    })
+
+    it('honours a reconfigured docs base URL', () => {
+      setErrorConfig({ docsBaseUrl: 'https://docs.example.com/wallet' })
+      const error = new OpenfortError('some_code', 'nope', { docsPath: 'errors/nope' })
+      expect(error.docsUrl).toBe('https://docs.example.com/wallet/errors/nope')
+    })
+
+    it('does not double up slashes at the join', () => {
+      setErrorConfig({ docsBaseUrl: 'https://docs.example.com/wallet/' })
+      const error = new OpenfortError('some_code', 'nope', { docsPath: '/errors/nope' })
+      expect(error.docsUrl).toBe('https://docs.example.com/wallet/errors/nope')
+    })
   })
 })

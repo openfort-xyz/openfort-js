@@ -570,9 +570,11 @@ export class IframeManager {
         - unity (non-webgl)
 
         You must configure your origin in the openfort dashboard before using the embedded wallet.
-
-        For more information, see: https://www.openfort.io/docs/configuration/native-apps
-        `
+        `,
+        // Routed through `docsPath` rather than written into the string so the
+        // URL tracks the configured docs base for ecosystem SDKs, and so the
+        // link is readable from `error.docsUrl` without parsing the prose.
+        { cause: error, docsPath: 'configuration/native-apps' }
       )
     }
   }

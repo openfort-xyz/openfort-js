@@ -9,6 +9,50 @@
 
 import { PACKAGE, VERSION } from '../../version'
 
+/** Options accepted by every error in this module. */
+export type OpenfortErrorOptions = {
+  /** The originating failure, kept reachable through `walk()`. */
+  cause?: unknown
+  /**
+   * Path under the docs base URL describing this failure, e.g.
+   * `configuration/native-apps`. Supplying it appends a `Docs:` line to the
+   * message, so the error itself tells the reader where to go next.
+   */
+  docsPath?: string
+}
+
+type ErrorConfig = {
+  /** Base URL that `docsPath` is resolved against. */
+  docsBaseUrl: string
+}
+
+const errorConfig: ErrorConfig = {
+  docsBaseUrl: 'https://www.openfort.io/docs',
+}
+
+/**
+ * Repoints the docs URLs embedded in error messages.
+ *
+ * Ecosystem SDKs wrap this one and publish their own documentation. Without
+ * this hook their users would be sent to openfort.io for a failure described
+ * on the wrapper's own site.
+ *
+ * @example
+ * ```typescript
+ * setErrorConfig({ docsBaseUrl: 'https://docs.example.com/wallet' })
+ * ```
+ */
+export function setErrorConfig(config: Partial<ErrorConfig>): void {
+  if (config.docsBaseUrl !== undefined) {
+    errorConfig.docsBaseUrl = config.docsBaseUrl.replace(/\/+$/, '')
+  }
+}
+
+function resolveDocsUrl(docsPath: string | undefined): string | undefined {
+  if (!docsPath) return undefined
+  return `${errorConfig.docsBaseUrl}/${docsPath.replace(/^\/+/, '')}`
+}
+
 /**
  * Base error class for all Openfort SDK errors
  *
@@ -44,13 +88,26 @@ export class OpenfortError extends Error {
    */
   public readonly version: string = `${PACKAGE}@${VERSION}`
 
-  constructor(error: string, error_description: string, options?: { cause?: unknown }) {
+  /**
+   * Documentation page for this failure, when one was supplied. Read this
+   * rather than parsing the message: the message is prose and may be
+   * reformatted, whereas this is the resolved URL.
+   */
+  public readonly docsUrl?: string
+
+  constructor(error: string, error_description: string, options?: OpenfortErrorOptions) {
+    const docsUrl = resolveDocsUrl(options?.docsPath)
+    // `error_description` stays the sole content of `message` unless a docsPath
+    // was given, so callers matching on existing messages are unaffected and
+    // only errors that opt in gain the extra line.
+    const message = docsUrl ? `${error_description}\n\nDocs: ${docsUrl}` : error_description
     // `cause` is forwarded so the originating failure stays reachable via
     // `walk()`.
-    super(error_description, options?.cause !== undefined ? { cause: options.cause } : undefined)
+    super(message, options?.cause !== undefined ? { cause: options.cause } : undefined)
     this.name = 'OpenfortError'
     this.error = error
     this.error_description = error_description
+    if (docsUrl !== undefined) this.docsUrl = docsUrl
   }
 
   /**
@@ -68,11 +125,9 @@ export class OpenfortError extends Error {
     while (current) {
       if (predicate?.(current)) return current
       const next: unknown = (current as { cause?: unknown }).cause
+      // `next === current` guards a self-referential cause, which would
+      // otherwise spin forever.
       if (next === undefined || next === current) break
-      if (!predicate) {
-        current = next
-        continue
-      }
       current = next
     }
     return predicate ? null : current
@@ -160,8 +215,8 @@ export class SessionError extends OpenfortError {
  * Configuration errors (missing keys, invalid config)
  */
 export class ConfigurationError extends OpenfortError {
-  constructor(error_description: string) {
-    super('invalid_configuration', error_description)
+  constructor(error_description: string, options?: { cause?: unknown }) {
+    super('invalid_configuration', error_description, options)
     this.name = 'ConfigurationError'
   }
 }

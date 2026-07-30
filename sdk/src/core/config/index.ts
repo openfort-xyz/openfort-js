@@ -1,7 +1,7 @@
 // biome-ignore lint/performance/noBarrelFile: Config barrel file for exporting configuration types
 export {
   OpenfortConfiguration,
-  OpenfortSDKConfiguration,
+  type OpenfortSDKConfiguration,
   ShieldConfiguration,
-  ThirdPartyAuthConfiguration,
+  type ThirdPartyAuthConfiguration,
 } from './config'
