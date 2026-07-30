@@ -51,11 +51,26 @@ describe('debugLog', () => {
     expect(output).not.toContain('secret')
   })
 
+  it('redacts compound key names by fragment', () => {
+    debugLog({ shieldAPIKey: 'shield-secret', deviceShare: 'share-value', idToken: 'id-token-value' })
+    const output = logged()
+    for (const secret of ['shield-secret', 'share-value', 'id-token-value']) {
+      expect(output).not.toContain(secret)
+    }
+  })
+
   it('survives circular references without throwing', () => {
     const circular: Record<string, unknown> = { name: 'root' }
     circular.self = circular
     expect(() => debugLog(circular)).not.toThrow()
     expect(logged()).toContain('[circular]')
+  })
+
+  it('renders an object referenced from two siblings in both places', () => {
+    const shared = { chainId: 8453 }
+    debugLog({ a: shared, b: shared })
+    expect(logged()).not.toContain('[circular]')
+    expect(logged().match(/8453/g)).toHaveLength(2)
   })
 
   it('escapes newlines so values cannot forge log lines', () => {

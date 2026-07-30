@@ -14,8 +14,9 @@ describe('randomUUID', () => {
 
   describe('fallback path (crypto.randomUUID unavailable)', () => {
     const withoutNativeRandomUUID = () => {
-      vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(undefined as never)
-      // The implementation guards on the property being present, so remove it.
+      // The implementation guards on the property being present, so the
+      // fallback is exercised by replacing the whole `crypto` object with one
+      // that lacks `randomUUID` — the shape older WebViews actually expose.
       return vi.spyOn(globalThis, 'crypto', 'get').mockReturnValue({
         getRandomValues: globalThis.crypto.getRandomValues.bind(globalThis.crypto),
         subtle: globalThis.crypto.subtle,

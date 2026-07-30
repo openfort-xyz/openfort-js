@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import * as errorsEntry from './errors'
 import * as sdk from './index'
+import * as typesEntry from './types/types'
 
 /**
  * Guards the public API surface. Anything exported cannot change without a
@@ -28,5 +30,17 @@ describe('public API surface', () => {
 
   it('matches the recorded surface', () => {
     expect(exported).toMatchSnapshot()
+  })
+})
+
+// The `./errors` and `./types` subpaths are published entry points in their
+// own right, so their runtime surfaces are pinned the same way as the root's.
+describe('subpath entry surfaces', () => {
+  it('./errors matches the recorded surface', () => {
+    expect(Object.keys(errorsEntry).sort()).toMatchSnapshot()
+  })
+
+  it('./types matches the recorded surface', () => {
+    expect(Object.keys(typesEntry).sort()).toMatchSnapshot()
   })
 })

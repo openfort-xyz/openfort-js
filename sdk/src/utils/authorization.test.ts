@@ -72,4 +72,18 @@ describe('EIP-7702 authorization input validation', () => {
     ).rejects.toThrow()
     expect(signer.sign).not.toHaveBeenCalled()
   })
+
+  // A short or non-hex signer response would otherwise be sliced and
+  // zero-padded into a plausible-looking 65-byte signature over the wrong
+  // bits — including a literal "NaN" where yParity belongs.
+  it.each([
+    ['truncated', `0x${'11'.repeat(32)}`],
+    ['empty', '0x'],
+    ['non-hex', `0x${'zz'.repeat(65)}`],
+  ])('rejects a signer response that is %s', async (_label, signature) => {
+    const signer = { sign: vi.fn().mockResolvedValue(signature) } as unknown as Signer
+    await expect(
+      signAuthorization({ authorization: { chainId: 1, address: VALID_ADDRESS, nonce: 0 }, signer })
+    ).rejects.toThrow(/signature/i)
+  })
 })

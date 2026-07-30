@@ -141,12 +141,15 @@ describe('AuthManager', () => {
   })
 
   describe('credential handling', () => {
-    it('never places the session token in a URL or query string', async () => {
+    it('sends the session token only in the authorization header', async () => {
       const { manager, backend } = createManager()
       await manager.validateCredentials(firstPartyAuth)
-      const serialized = JSON.stringify(backend.authApi.getSessionGet.mock.calls)
-      const urlish = serialized.match(/https?:\/\/[^"']+/g) ?? []
-      expect(urlish.some((url) => url.includes('first-party-token'))).toBe(false)
+      const [requestParams, options] = backend.authApi.getSessionGet.mock.calls[0] ?? []
+      expect(options?.headers?.authorization).toBe('Bearer first-party-token')
+      // The generated client serialises the first argument into the request's
+      // path and query, so a token anywhere in it would end up in a URL —
+      // logged by proxies and stored in server access logs.
+      expect(JSON.stringify(requestParams ?? {})).not.toContain('first-party-token')
     })
   })
 })

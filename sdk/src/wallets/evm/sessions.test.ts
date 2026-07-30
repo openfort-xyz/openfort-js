@@ -14,6 +14,7 @@ const createBackendClient = () => ({
     signatureSession: vi.fn().mockResolvedValue({ data: {} }),
     revokeSession: vi.fn().mockResolvedValue({ data: {} }),
   },
+  config: { backend: { accessToken: 'pk_test' } },
 })
 
 const args = (params: unknown[]) =>
@@ -43,29 +44,34 @@ describe('revokeSession', () => {
     })
   })
 
-  // Callers must be able to tell a completed revocation from a failed one.
-  it('disconnects the signer when no permissionContext is supplied', async () => {
+  // Callers must be able to tell a completed revocation from a failed one:
+  // fabricating a success response for a revocation that never reached the
+  // backend would let `result.id` read as confirmation.
+  it('rejects a request without a permissionContext instead of fabricating a response', async () => {
     const signer = createSigner()
-    const result = await revokeSession({
-      params: [{ permissionContext: undefined }],
-      signer,
-      account,
-      authentication,
-      backendClient: createBackendClient(),
-    } as never)
-    expect(signer.disconnect).toHaveBeenCalledTimes(1)
-    expect(result).toEqual({})
+    await expect(
+      revokeSession({
+        params: [{ permissionContext: undefined }],
+        signer,
+        account,
+        authentication,
+        backendClient: createBackendClient(),
+      } as never)
+    ).rejects.toMatchObject({ code: RpcErrorCode.INVALID_PARAMS })
+    expect(signer.disconnect).not.toHaveBeenCalled()
   })
 
-  it('does not disconnect the signer when a permissionContext is supplied', async () => {
+  it('revokes against the backend when a permissionContext is supplied', async () => {
     const signer = createSigner()
+    const backendClient = createBackendClient()
     await revokeSession({
       params: [{ permissionContext: '0xdeadbeef' }],
       signer,
       account,
       authentication,
-      backendClient: createBackendClient(),
-    } as never).catch(() => undefined)
+      backendClient,
+    } as never)
+    expect(backendClient.sessionsApi.revokeSession).toHaveBeenCalledTimes(1)
     expect(signer.disconnect).not.toHaveBeenCalled()
   })
 })

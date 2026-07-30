@@ -15,14 +15,23 @@ const typedData = (domainOverrides: Record<string, unknown> = {}) => ({
   message: { contents: 'hello' },
 })
 
+// Fully signable fixture: the signer returns a 65-byte signature and the
+// account carries a real factory address and 32-byte salt, so the "accepts"
+// tests below can assert that signing completes rather than merely that one
+// particular validation did not fire.
 const params = (overrides: Partial<Parameters<typeof signTypedDataV4>[0]> = {}) =>
   ({
     params: [ACCOUNT_ADDRESS, JSON.stringify(typedData())],
     method: 'eth_signTypedData_v4',
-    signer: { sign: vi.fn() },
+    signer: { sign: vi.fn().mockResolvedValue(`0x${'ab'.repeat(65)}`) },
     implementationType: 'UPGRADEABLE_V6',
     rpcProvider: { detectNetwork: vi.fn().mockResolvedValue({ chainId: CHAIN_ID }) },
-    account: { address: ACCOUNT_ADDRESS, ownerAddress: ACCOUNT_ADDRESS, factoryAddress: '0x', salt: '0x' },
+    account: {
+      address: ACCOUNT_ADDRESS,
+      ownerAddress: ACCOUNT_ADDRESS,
+      factoryAddress: '0x3333333333333333333333333333333333333333',
+      salt: `0x${'00'.repeat(32)}`,
+    },
     ...overrides,
   }) as unknown as Parameters<typeof signTypedDataV4>[0]
 
@@ -39,22 +48,26 @@ describe('signTypedDataV4 request validation', () => {
 
   it('accepts a from address differing only by case', async () => {
     const mixedCase = ACCOUNT_ADDRESS.toUpperCase().replace('0X', '0x')
-    // May still fail further down the signing path; it must not fail *here*.
-    const error = await signTypedDataV4(params({ params: [mixedCase, JSON.stringify(typedData())] } as never)).catch(
-      (caught: Error) => caught
-    )
-    expect(String((error as Error)?.message ?? '')).not.toContain('from address')
+    await expect(
+      signTypedDataV4(params({ params: [mixedCase, JSON.stringify(typedData())] } as never))
+    ).resolves.toMatch(/^0x[0-9a-f]+$/i)
   })
 
-  it('rejects typed data with no domain.chainId rather than signing it', async () => {
+  it('reports INVALID_PARAMS when the first param is not an address string', async () => {
+    // Legacy eth_signTypedData callers order params as [typedData, address].
+    await expect(signTypedDataV4(params({ params: [typedData(), ACCOUNT_ADDRESS] } as never))).rejects.toMatchObject({
+      code: RpcErrorCode.INVALID_PARAMS,
+    })
+  })
+
+  it('signs typed data whose domain omits chainId', async () => {
+    // EIP-712 makes every domain field optional; Snapshot votes and many
+    // login payloads carry no chainId.
     const withoutChainId = typedData()
     delete (withoutChainId.domain as Record<string, unknown>).chainId
     await expect(
       signTypedDataV4(params({ params: [ACCOUNT_ADDRESS, JSON.stringify(withoutChainId)] } as never))
-    ).rejects.toMatchObject({
-      code: RpcErrorCode.INVALID_PARAMS,
-      message: expect.stringContaining('chainId'),
-    })
+    ).resolves.toMatch(/^0x[0-9a-f]+$/i)
   })
 
   it('rejects a zero chainId', async () => {
@@ -71,9 +84,8 @@ describe('signTypedDataV4 request validation', () => {
 
   it('accepts a hex-encoded chainId matching the network', async () => {
     const hex = `0x${CHAIN_ID.toString(16)}`
-    const error = await signTypedDataV4(
-      params({ params: [ACCOUNT_ADDRESS, JSON.stringify(typedData({ chainId: hex }))] } as never)
-    ).catch((caught: Error) => caught)
-    expect(String((error as Error)?.message ?? '')).not.toContain('Invalid chainId')
+    await expect(
+      signTypedDataV4(params({ params: [ACCOUNT_ADDRESS, JSON.stringify(typedData({ chainId: hex }))] } as never))
+    ).resolves.toMatch(/^0x[0-9a-f]+$/i)
   })
 })

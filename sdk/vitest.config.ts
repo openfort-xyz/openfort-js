@@ -18,7 +18,10 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/**', 'dist/**', 'src/__tests__/**', '**/*.test.ts', '**/*.spec.ts', '**/types/**'],
+      // `src/types/` stays in the denominator: it declares the runtime enums
+      // (EmbeddedState, OpenfortEvents, …) and backs the published `./types`
+      // entry point, so it is executable surface, not type-only scaffolding.
+      exclude: ['node_modules/**', 'dist/**', 'src/__tests__/**', '**/*.test.ts', '**/*.spec.ts'],
     },
     include: ['src/**/*.{test,spec}.ts'],
     exclude: ['node_modules', 'dist'],

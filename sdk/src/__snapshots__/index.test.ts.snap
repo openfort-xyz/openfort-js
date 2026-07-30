@@ -11,6 +11,7 @@ exports[`public API surface > matches the recorded surface 1`] = `
   "BasicAuthProvider",
   "ChainTypeEnum",
   "ConfigurationError",
+  "DEFAULT_DOCS_BASE_URL",
   "EmbeddedState",
   "EmbeddedWalletApi",
   "FundingApi",
@@ -61,5 +62,42 @@ exports[`public API surface > matches the recorded surface 1`] = `
   "serializeSignedAuthorization",
   "setErrorConfig",
   "signAuthorization",
+]
+`;
+
+exports[`subpath entry surfaces > ./errors matches the recorded surface 1`] = `
+[
+  "AuthenticationError",
+  "AuthorizationError",
+  "ConfigurationError",
+  "DEFAULT_DOCS_BASE_URL",
+  "OAuthError",
+  "OPENFORT_AUTH_ERROR_CODES",
+  "OPENFORT_ERROR_CODES",
+  "OTPError",
+  "OpenfortError",
+  "RecoveryError",
+  "RequestError",
+  "SessionError",
+  "SignerError",
+  "UserError",
+  "setErrorConfig",
+]
+`;
+
+exports[`subpath entry surfaces > ./types matches the recorded surface 1`] = `
+[
+  "AccountType",
+  "AccountTypeEnum",
+  "AuthActionRequiredActions",
+  "AuthType",
+  "BasicAuthProvider",
+  "ChainTypeEnum",
+  "EmbeddedState",
+  "OAuthProvider",
+  "OpenfortEvents",
+  "RecoveryMethod",
+  "ThirdPartyAuthProvider",
+  "TokenType",
 ]
 `;

@@ -5,10 +5,13 @@ import type { AuthResponse, EmbeddedAccount, SignedMessagePayload, User } from '
 import { EmbeddedState, OpenfortEvents } from './types/types'
 
 /**
- * Type-level assertions on the public surface. These fail the build on
- * signature regressions that leave every runtime test green — chiefly a type
- * widening to `any`, which makes consumer code compile while giving up all
- * checking inside it.
+ * Type-level assertions on the public surface as declared in SOURCE. They
+ * fail the build when a signature in this repo widens to `any` — a change
+ * every runtime test survives, because consumer code still compiles while
+ * giving up all checking inside the affected call. Resolution failures that
+ * exist only in the BUILT declarations (`dist/*.d.ts`) are out of reach from
+ * here; `environments/tsc` compiles a consumer against the packed output to
+ * cover those.
  */
 
 declare const openfort: Openfort

@@ -3,6 +3,7 @@ import {
   AuthenticationError,
   AuthorizationError,
   ConfigurationError,
+  DEFAULT_DOCS_BASE_URL,
   OAuthError,
   OpenfortError,
   OTPError,
@@ -390,6 +391,15 @@ describe('OpenfortError cause chain and version', () => {
     expect(outer.walk((e) => e instanceof SessionError)).toBeNull()
   })
 
+  it('walk() terminates on a cyclic cause chain', () => {
+    const a = new OpenfortError('a', 'a')
+    const b = new Error('b')
+    ;(a as { cause?: unknown }).cause = b
+    ;(b as { cause?: unknown }).cause = a
+    expect(a.walk()).toBe(a)
+    expect(a.walk((e) => e instanceof SessionError)).toBeNull()
+  })
+
   it('preserves instanceof across subclasses without setPrototypeOf', () => {
     const error = new SessionError('session_expired', 'expired')
     expect(error).toBeInstanceOf(SessionError)
@@ -418,7 +428,7 @@ describe('OpenfortError cause chain and version', () => {
 
   describe('docs links', () => {
     afterEach(() => {
-      setErrorConfig({ docsBaseUrl: 'https://www.openfort.io/docs' })
+      setErrorConfig({ docsBaseUrl: DEFAULT_DOCS_BASE_URL })
     })
 
     it('leaves the message untouched when no docsPath is given', () => {
