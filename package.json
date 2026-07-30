@@ -19,7 +19,7 @@
     "check": "biome check",
     "check:fix": "biome check --write --unsafe",
     "check:repo": "sherif",
-    "check:types": "tsc --noEmit -p sdk/tsconfig.json && tsc --noEmit -p packages/internal/openapi-clients/tsconfig.json",
+    "check:types": "tsc --noEmit -p sdk/tsconfig.json && tsc --noEmit -p packages/internal/openapi-clients/tsconfig.json && tsc --noEmit -p packages/platform-bridge/tsconfig.json",
     "test:types": "pnpm --filter @openfort/openfort-js test:types",
     "clean": "rm -rf sdk/dist",
     "check:unused": "pnpm clean && knip",
