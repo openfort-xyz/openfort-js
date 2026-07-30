@@ -23,7 +23,7 @@
     "test:types": "pnpm --filter @openfort/openfort-js test:types",
     "clean": "rm -rf sdk/dist",
     "check:unused": "pnpm clean && knip",
-    "postinstall": "simple-git-hooks && ./.husky/install_gitleaks.sh",
+    "postinstall": "[ -n \"$CI\" ] || { simple-git-hooks && ./.husky/install_gitleaks.sh; }",
     "scan:secrets": "./.husky/run_gitleaks.sh",
     "stats": "pnpm --filter @openfort/openfort-js stats",
     "dev": "pnpm --filter @openfort/openfort-js dev",
