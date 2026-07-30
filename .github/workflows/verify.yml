@@ -69,7 +69,7 @@ jobs:
           gitleaks git --redact -v --exit-code 1 --log-opts="$RANGE"
 
   verify:
-    name: pnpm build
+    name: Verify
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

@@ -60,7 +60,10 @@ const transformTypedData = (typedData: string | object, chainId: number): TypedD
 
   const normalizedChainId = transformedTypedData.domain.chainId
   if (typeof normalizedChainId !== 'number' || !Number.isSafeInteger(normalizedChainId) || normalizedChainId <= 0) {
-    throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, `Invalid chainId, expected ${chainId}`)
+    throw new JsonRpcError(
+      RpcErrorCode.INVALID_PARAMS,
+      `Invalid chainId: domain.chainId must be a positive integer, expected ${chainId}`
+    )
   }
 
   if (normalizedChainId !== chainId) {

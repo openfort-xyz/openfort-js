@@ -111,8 +111,8 @@ export class OpenfortError extends Error {
     // was given, so callers matching on existing messages are unaffected and
     // only errors that opt in gain the extra line.
     const message = docsUrl ? `${error_description}\n\nDocs: ${docsUrl}` : error_description
-    // `cause` is forwarded so the originating failure stays reachable via
-    // `walk()`.
+    // Pass `cause` only when given — `{ cause: undefined }` would still
+    // define the property on the error.
     super(message, options?.cause !== undefined ? { cause: options.cause } : undefined)
     this.name = 'OpenfortError'
     this.error = error

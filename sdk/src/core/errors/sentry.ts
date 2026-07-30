@@ -1,6 +1,7 @@
 import type { Client, EventHint, Scope } from '@sentry/core'
 import { AxiosError } from 'axios'
 import type { OpenfortSDKConfiguration } from '../../types'
+import { isSensitiveKey, REDACTED } from '../../utils/sensitiveKeys'
 import { PACKAGE, VERSION } from '../../version'
 
 const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296' // Prod
@@ -19,12 +20,6 @@ const EXPECTED_DSN = (() => {
   const [, publicKey = '', host = '', projectId = ''] = /^https:\/\/([^@]+)@([^/]+)\/(.+)$/.exec(SENTRY_DSN) ?? []
   return { publicKey, host, projectId }
 })()
-
-/** Property names excluded from telemetry payloads. */
-const SENSITIVE_KEY_PATTERN =
-  /^(authorization|cookie|set-cookie|x-player-token|token|access[_-]?token|refresh[_-]?token|private[_-]?key|encryption[_-]?key|encryption[_-]?session|passkey|password|secret|share|key)$/i
-
-const REDACTED = '[redacted]'
 
 /** Reads a single scalar field from an API error body, ignoring everything else. */
 function extractSafeField(data: unknown, field: string): string | undefined {
@@ -59,7 +54,7 @@ function scrubValue(value: unknown, depth = 0, ancestors = new WeakSet<object>()
   } else {
     const copy: Record<string, unknown> = {}
     for (const [key, entry] of Object.entries(value)) {
-      copy[key] = SENSITIVE_KEY_PATTERN.test(key) ? REDACTED : scrubValue(entry, depth + 1, ancestors)
+      copy[key] = isSensitiveKey(key) ? REDACTED : scrubValue(entry, depth + 1, ancestors)
     }
     output = copy
   }
@@ -83,7 +78,6 @@ function scrubEvent<T extends object>(event: T): T {
 }
 
 declare module '@sentry/core' {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   interface Client {
     captureAxiosError: (name: string, error: unknown, hint?: EventHint, scope?: Scope) => void
     captureError: (context: string, error: Error, hint?: EventHint, scope?: Scope) => void

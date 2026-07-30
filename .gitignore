@@ -35,10 +35,8 @@ blob-report/
 /examples/apps/auth-sample/playwright/.auth/
 .claude/
 
-# Local-only agent and working notes
-CLAUDE.local.md
+# Local-only working notes
 *.local.md
-REVIEW_FIX_PLAN.md
 
 *.7z
 *.zip

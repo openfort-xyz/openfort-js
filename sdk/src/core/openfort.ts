@@ -141,9 +141,7 @@ export class Openfort {
     } catch (error) {
       // This block constructs the whole API surface, so anything thrown here is
       // a wiring fault — a bad module-interop shim, an absent dependency — and
-      // the message alone cannot say which. Forwarding the cause is what makes
-      // it recoverable: it keeps the real stack attached and reachable through
-      // `walk()`, so a report identifies the failing dependency.
+      // the message alone cannot say which; the cause carries the real stack.
       throw new ConfigurationError('Openfort SDK synchronous initialization failed', { cause: error })
     }
   }

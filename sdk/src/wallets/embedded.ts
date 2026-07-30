@@ -140,13 +140,10 @@ export class EmbeddedSigner implements Signer {
         const accountExistsInChainId = accounts.find((ac) => ac.chainId === params.chainId)
         // intentionally take first account from the list, as they all should have the same owner EOA
         const account = accountExistsInChainId || accounts[0]
-        // `accounts` is non-empty in this branch; narrows the index access
-        // without a cast.
+        // Unreachable: this branch only runs when `accounts` is non-empty.
+        // The guard satisfies `noUncheckedIndexedAccess` without a cast.
         if (!account) {
-          throw new SignerError(
-            OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
-            'No embedded wallet account is available to recover. Create a wallet before calling recover.'
-          )
+          throw new SignerError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'unreachable: accounts is non-empty')
         }
         const recoverParams: SignerRecoverRequest = {
           account: account.id,

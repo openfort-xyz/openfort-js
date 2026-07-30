@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Openfort, OpenfortError, type OpenfortSDKConfiguration } from '@openfort/openfort-js'
 import { ethers } from 'ethers'
 

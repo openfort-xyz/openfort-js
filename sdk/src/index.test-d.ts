@@ -19,8 +19,7 @@ declare const openfort: Openfort
 describe('API return types', () => {
   // `OpenfortEventMap extends Record<string, any>` and several payloads cross
   // the generated-client boundary, both of which resolve to `any` when a
-  // declaration fails to resolve. Naming the exact type is what makes that
-  // visible, so prefer `toEqualTypeOf` over `not.toBeAny` here.
+  // declaration fails to resolve; naming the exact type surfaces that.
   it('resolves concrete types rather than any', () => {
     expectTypeOf(openfort.user.get()).toEqualTypeOf<Promise<User>>()
     expectTypeOf(openfort.user.get()).not.toBeAny()
