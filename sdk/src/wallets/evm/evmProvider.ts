@@ -374,12 +374,9 @@ export class EvmProvider implements Provider {
         })
       }
       case 'eth_chainId': {
-        // Call detect network to fetch the chainId so to take advantage of
-        // the caching layer provided by StaticJsonRpcProvider.
-        // In case Openfort is changed from StaticJsonRpcProvider to a
-        // JsonRpcProvider, this function will still work as expected given
-        // that detectNetwork call _uncachedDetectNetwork which will force
-        // the provider to re-fetch the chainId from remote.
+        // The provider is constructed with an explicit network, so
+        // detectNetwork() resolves from the pinned value — no eth_chainId
+        // round-trip and no dependency on RPC availability.
         const rpcProvider = await this.getRpcProvider()
         const { chainId } = await rpcProvider.detectNetwork()
         return numberToHex(chainId)
