@@ -30,14 +30,31 @@ jobs:
           # Full history, so the scan also covers earlier commits.
           fetch-depth: 0
 
-      # gitleaks-action is free for public repositories; no GITLEAKS_LICENSE
-      # is required here. Rules come from .gitleaks.toml, which extends the
-      # default ruleset and allowlists the intentionally-public sample keys.
-      - name: Scan for secrets
-        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+      # The gitleaks binary is used directly rather than gitleaks-action, which
+      # requires a paid licence for organisation-owned repositories. Rules come
+      # from .gitleaks.toml, which extends the default ruleset.
+      - name: Install gitleaks
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+
+      # Only the commits this run introduces are scanned. A full-history scan
+      # would fail on pre-existing findings unrelated to the change, and takes
+      # over a minute. Run `gitleaks git` locally for a full audit.
+      - name: Scan for secrets
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -n "$BASE_SHA" ]; then
+            RANGE="$BASE_SHA..HEAD"
+          else
+            RANGE="HEAD~1..HEAD"
+          fi
+          echo "Scanning $RANGE"
+          gitleaks git --redact -v --exit-code 1 --log-opts="$RANGE"
 
   verify:
     name: pnpm build
@@ -78,6 +95,10 @@ jobs:
       - name: Code check (Biome)
         run: pnpm biome check
 
+      # Builds the workspace packages that the SDK's types resolve against.
+      - name: Build project
+        run: pnpm build
+
       - name: Check TypeScript types
         run: pnpm check:types
 
@@ -97,9 +118,6 @@ jobs:
 
       - name: Check for unused files, dependencies, and exports
         run: pnpm knip --production
-
-      - name: Build project
-        run: pnpm build
 
       - name: Verify package exports
         run: pnpm test:build

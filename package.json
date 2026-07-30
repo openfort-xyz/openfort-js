@@ -15,7 +15,7 @@
     "test:watch": "pnpm --filter @openfort/openfort-js test:watch",
     "test:coverage": "pnpm --filter @openfort/openfort-js test:coverage",
     "preinstall": "pnpx only-allow pnpm",
-    "verify": "pnpm audit && pnpm check:repo && pnpm biome check && pnpm check:types && pnpm test:coverage && pnpm knip --production && pnpm build && pnpm test:build && pnpm test:env && pnpm build:docs && pnpm size",
+    "verify": "pnpm audit && pnpm check:repo && pnpm biome check && pnpm build && pnpm check:types && pnpm test:coverage && pnpm knip --production && pnpm test:build && pnpm test:env && pnpm build:docs && pnpm size",
     "check": "biome check",
     "check:fix": "biome check --write --unsafe",
     "check:repo": "sherif",
