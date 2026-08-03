@@ -28951,22 +28951,12 @@
           },
           "angle": {
             "type": "string",
-            "description": "How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (mount the provider's component from the secrets below)."
+            "description": "How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (Stripe's Link element flow)."
           },
           "url": {
             "type": "string",
             "nullable": true,
             "description": "Hosted checkout URL to open, or null."
-          },
-          "providerClientSecret": {
-            "type": "string",
-            "nullable": true,
-            "description": "Provider session secret for embeddable checkouts (e.g. Stripe's embedded\nonramp element mounts with it), or null when the provider has none."
-          },
-          "providerPublishableKey": {
-            "type": "string",
-            "nullable": true,
-            "description": "Provider PUBLISHABLE key the embedded component initializes with (e.g.\n`new StripeOnramp(pk)`), or null. Public by design — pairs with\nproviderClientSecret for the \"embedded\" angle."
           },
           "providerSessionId": {
             "type": "string",
@@ -28989,8 +28979,6 @@
           "method",
           "angle",
           "url",
-          "providerClientSecret",
-          "providerPublishableKey",
           "providerSessionId",
           "fees",
           "minAmount"

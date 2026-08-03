@@ -66,8 +66,9 @@ export type OnrampMethodId = 'apple_pay' | 'google_pay' | 'card' | 'bank_transfe
 
 /**
  * How the client executes a resolved fiat method: open `url` (`iframe`), mount
- * the provider's in-page Pay button (`native`), or mount the provider's own
- * component from the returned secrets (`embedded`).
+ * the provider's in-page Pay button (`native`), or run Stripe's Link element
+ * flow (`embedded` — authenticate + collect via the coordinator, then commit
+ * with `stripeLink` and perform the checkout).
  */
 export type OnrampAngle = 'iframe' | 'native' | 'embedded'
 
@@ -175,18 +176,14 @@ export interface FundingCryptoPaymentMethod {
 /**
  * A committed fiat onramp payment method. The executing provider is resolved
  * server-side and intentionally not part of the response — the client renders
- * per `angle`: open `url`, mount it as the native Pay button, or mount the
- * provider's embedded component from the secrets.
+ * per `angle`: open `url`, mount it as the native Pay button, or run the
+ * Stripe Link element flow against `providerSessionId`.
  */
 export interface FundingOnrampPaymentMethod {
   type: 'onramp'
   method: OnrampMethodId | string
   angle: OnrampAngle | string
   url: string | null
-  /** Provider element secret (`embedded` angle), e.g. Stripe's session secret. */
-  providerClientSecret?: string | null
-  /** Provider publishable key for mounting the embedded component. */
-  providerPublishableKey?: string | null
   /**
    * The provider's own session id for this commit — for the Stripe Link (v2)
    * flow, pass it to the coordinator's `performCheckout`.

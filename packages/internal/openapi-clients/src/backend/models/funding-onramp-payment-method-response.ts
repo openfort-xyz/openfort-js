@@ -36,7 +36,7 @@ export interface FundingOnrampPaymentMethodResponse {
      */
     'method': string;
     /**
-     * How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (mount the provider\'s component from the secrets below).
+     * How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (Stripe\'s Link element flow).
      * @type {string}
      * @memberof FundingOnrampPaymentMethodResponse
      */
@@ -47,18 +47,6 @@ export interface FundingOnrampPaymentMethodResponse {
      * @memberof FundingOnrampPaymentMethodResponse
      */
     'url': string | null;
-    /**
-     * Provider session secret for embeddable checkouts (e.g. Stripe\'s embedded onramp element mounts with it), or null when the provider has none.
-     * @type {string}
-     * @memberof FundingOnrampPaymentMethodResponse
-     */
-    'providerClientSecret': string | null;
-    /**
-     * Provider PUBLISHABLE key the embedded component initializes with (e.g. `new StripeOnramp(pk)`), or null. Public by design — pairs with providerClientSecret for the \"embedded\" angle.
-     * @type {string}
-     * @memberof FundingOnrampPaymentMethodResponse
-     */
-    'providerPublishableKey': string | null;
     /**
      * The provider\'s own session/order id for this commit (e.g. Stripe\'s onramp session id the client passes to performCheckout), or null.
      * @type {string}
