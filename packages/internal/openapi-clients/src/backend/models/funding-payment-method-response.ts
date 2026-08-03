@@ -15,7 +15,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { FundingCryptoPaymentMethodResponse } from './funding-crypto-payment-method-response';
+// May contain unused imports in some cases
+// @ts-ignore
 import { FundingFeeResponse } from './funding-fee-response';
+// May contain unused imports in some cases
+// @ts-ignore
+import { FundingOnrampPaymentMethodResponse } from './funding-onramp-payment-method-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import { FundingSourceResponse } from './funding-source-response';
@@ -24,7 +30,7 @@ import { FundingSourceResponse } from './funding-source-response';
 import { FundingWalletDeeplinkResponse } from './funding-wallet-deeplink-response';
 
 /**
- * The resolved payment method — what the client renders.
+ * The resolved payment method — a crypto source route or a fiat onramp.
  * @export
  * @interface FundingPaymentMethodResponse
  */
@@ -66,10 +72,34 @@ export interface FundingPaymentMethodResponse {
      */
     'fees': Array<FundingFeeResponse>;
     /**
-     * Minimum the user must send for this route (source base units), or null.
+     * 
      * @type {string}
      * @memberof FundingPaymentMethodResponse
      */
     'minAmount': string | null;
+    /**
+     * The funding method (\"apple_pay\" | \"google_pay\" | \"card\" | \"bank_transfer\").
+     * @type {string}
+     * @memberof FundingPaymentMethodResponse
+     */
+    'method': string;
+    /**
+     * How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (Stripe\'s Link element flow).
+     * @type {string}
+     * @memberof FundingPaymentMethodResponse
+     */
+    'angle': string;
+    /**
+     * Hosted checkout URL to open, or null.
+     * @type {string}
+     * @memberof FundingPaymentMethodResponse
+     */
+    'url': string | null;
+    /**
+     * The provider\'s own session/order id for this commit (e.g. Stripe\'s onramp session id the client passes to performCheckout), or null.
+     * @type {string}
+     * @memberof FundingPaymentMethodResponse
+     */
+    'providerSessionId': string | null;
 }
 

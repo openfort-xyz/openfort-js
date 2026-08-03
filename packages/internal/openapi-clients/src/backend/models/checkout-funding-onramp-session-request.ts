@@ -17,16 +17,14 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface CheckoutFundingOnrampSessionRequest
  */
-
-export const OnrampProvider = {
-    COINBASE: 'coinbase',
-    STRIPE: 'stripe',
-    MELD: 'meld'
-} as const;
-
-export type OnrampProvider = typeof OnrampProvider[keyof typeof OnrampProvider];
-
-
+export interface CheckoutFundingOnrampSessionRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CheckoutFundingOnrampSessionRequest
+     */
+    'clientSecret': string;
+}
 

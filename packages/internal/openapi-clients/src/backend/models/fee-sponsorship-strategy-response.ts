@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { EvmTokenContractEntryResponse } from './evm-token-contract-entry-response';
 
 /**
  * Strategy information in fee sponsorship response.
@@ -27,19 +30,21 @@ export interface FeeSponsorshipStrategyResponse {
      */
     'sponsorSchema': string;
     /**
-     * Token contract ID for charge_custom_tokens or fixed_rate schemas.
+     * Token contract ID for charge_custom_tokens or fixed_rate schemas (EVM).
      * @type {string}
      * @memberof FeeSponsorshipStrategyResponse
+     * @deprecated
      */
     'tokenContract'?: string;
     /**
-     * Token amount for charge_custom_tokens or fixed_rate schemas.
+     * Token amount for charge_custom_tokens or fixed_rate schemas (EVM).
      * @type {string}
      * @memberof FeeSponsorshipStrategyResponse
+     * @deprecated
      */
     'tokenContractAmount'?: string;
     /**
-     * Whether the exchange rate is computed dynamically from cached prices. True when tokenContractAmount was not provided at creation time.
+     * Whether any accepted token is priced dynamically from cached prices. True when at least one token has no static amount. For per-token detail, read the amount on each tokenContracts entry.
      * @type {boolean}
      * @memberof FeeSponsorshipStrategyResponse
      */
@@ -50,5 +55,11 @@ export interface FeeSponsorshipStrategyResponse {
      * @memberof FeeSponsorshipStrategyResponse
      */
     'splTokens'?: Array<string>;
+    /**
+     * ERC-20 tokens accepted as user-pay fee for EVM charge_custom_tokens policies. Populated for both new (tokenContracts) and legacy (tokenContract) requests; legacy single-token policies appear as a 1-element array here.
+     * @type {Array<EvmTokenContractEntryResponse>}
+     * @memberof FeeSponsorshipStrategyResponse
+     */
+    'tokenContracts'?: Array<EvmTokenContractEntryResponse>;
 }
 

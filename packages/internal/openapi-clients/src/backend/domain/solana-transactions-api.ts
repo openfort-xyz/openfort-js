@@ -30,14 +30,15 @@ import { SolanaTransactionStatusResponse } from '../models';
 export const SolanaTransactionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Get the status of a Solana transaction by either its internal id or the caller-supplied externalId attached when the transaction was signed.  Exactly one of `id` or `externalId` must be provided. Lookups are scoped to the authenticated project.
+         * Get the status of a Solana transaction by its internal id, the caller-supplied externalId, or the Jito bundleId (for `signAndSendBundle` transactions).  Exactly one of `id`, `externalId`, or `bundleId` must be provided. Lookups are scoped to the authenticated project. Note: a bundle resolves only by `bundleId`, `externalId`, or its first child signature (`id`) — not by a non-first child.
          * @summary Get Solana transaction status
          * @param {string} [id] Internal Solana transaction ID (starts with &#x60;sol_&#x60;).
          * @param {string} [externalId] 
+         * @param {string} [bundleId] Jito bundle UUID returned by &#x60;signAndSendBundle&#x60;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSolanaTransactionStatus: async (id?: string, externalId?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getSolanaTransactionStatus: async (id?: string, externalId?: string, bundleId?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1/solana/transactions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -62,6 +63,10 @@ export const SolanaTransactionsApiAxiosParamCreator = function (configuration?: 
                 localVarQueryParameter['externalId'] = externalId;
             }
 
+            if (bundleId !== undefined) {
+                localVarQueryParameter['bundleId'] = bundleId;
+            }
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -84,15 +89,16 @@ export const SolanaTransactionsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = SolanaTransactionsApiAxiosParamCreator(configuration)
     return {
         /**
-         * Get the status of a Solana transaction by either its internal id or the caller-supplied externalId attached when the transaction was signed.  Exactly one of `id` or `externalId` must be provided. Lookups are scoped to the authenticated project.
+         * Get the status of a Solana transaction by its internal id, the caller-supplied externalId, or the Jito bundleId (for `signAndSendBundle` transactions).  Exactly one of `id`, `externalId`, or `bundleId` must be provided. Lookups are scoped to the authenticated project. Note: a bundle resolves only by `bundleId`, `externalId`, or its first child signature (`id`) — not by a non-first child.
          * @summary Get Solana transaction status
          * @param {string} [id] Internal Solana transaction ID (starts with &#x60;sol_&#x60;).
          * @param {string} [externalId] 
+         * @param {string} [bundleId] Jito bundle UUID returned by &#x60;signAndSendBundle&#x60;.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSolanaTransactionStatus(id?: string, externalId?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SolanaTransactionStatusResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getSolanaTransactionStatus(id, externalId, options);
+        async getSolanaTransactionStatus(id?: string, externalId?: string, bundleId?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SolanaTransactionStatusResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSolanaTransactionStatus(id, externalId, bundleId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -106,14 +112,14 @@ export const SolanaTransactionsApiFactory = function (configuration?: Configurat
     const localVarFp = SolanaTransactionsApiFp(configuration)
     return {
         /**
-         * Get the status of a Solana transaction by either its internal id or the caller-supplied externalId attached when the transaction was signed.  Exactly one of `id` or `externalId` must be provided. Lookups are scoped to the authenticated project.
+         * Get the status of a Solana transaction by its internal id, the caller-supplied externalId, or the Jito bundleId (for `signAndSendBundle` transactions).  Exactly one of `id`, `externalId`, or `bundleId` must be provided. Lookups are scoped to the authenticated project. Note: a bundle resolves only by `bundleId`, `externalId`, or its first child signature (`id`) — not by a non-first child.
          * @summary Get Solana transaction status
          * @param {SolanaTransactionsApiGetSolanaTransactionStatusRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getSolanaTransactionStatus(requestParameters: SolanaTransactionsApiGetSolanaTransactionStatusRequest = {}, options?: AxiosRequestConfig): AxiosPromise<SolanaTransactionStatusResponse> {
-            return localVarFp.getSolanaTransactionStatus(requestParameters.id, requestParameters.externalId, options).then((request) => request(axios, basePath));
+            return localVarFp.getSolanaTransactionStatus(requestParameters.id, requestParameters.externalId, requestParameters.bundleId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -137,6 +143,13 @@ export interface SolanaTransactionsApiGetSolanaTransactionStatusRequest {
      * @memberof SolanaTransactionsApiGetSolanaTransactionStatus
      */
     readonly externalId?: string
+
+    /**
+     * Jito bundle UUID returned by &#x60;signAndSendBundle&#x60;.
+     * @type {string}
+     * @memberof SolanaTransactionsApiGetSolanaTransactionStatus
+     */
+    readonly bundleId?: string
 }
 
 /**
@@ -147,7 +160,7 @@ export interface SolanaTransactionsApiGetSolanaTransactionStatusRequest {
  */
 export class SolanaTransactionsApi extends BaseAPI {
     /**
-     * Get the status of a Solana transaction by either its internal id or the caller-supplied externalId attached when the transaction was signed.  Exactly one of `id` or `externalId` must be provided. Lookups are scoped to the authenticated project.
+     * Get the status of a Solana transaction by its internal id, the caller-supplied externalId, or the Jito bundleId (for `signAndSendBundle` transactions).  Exactly one of `id`, `externalId`, or `bundleId` must be provided. Lookups are scoped to the authenticated project. Note: a bundle resolves only by `bundleId`, `externalId`, or its first child signature (`id`) — not by a non-first child.
      * @summary Get Solana transaction status
      * @param {SolanaTransactionsApiGetSolanaTransactionStatusRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -155,7 +168,7 @@ export class SolanaTransactionsApi extends BaseAPI {
      * @memberof SolanaTransactionsApi
      */
     public getSolanaTransactionStatus(requestParameters: SolanaTransactionsApiGetSolanaTransactionStatusRequest = {}, options?: AxiosRequestConfig) {
-        return SolanaTransactionsApiFp(this.configuration).getSolanaTransactionStatus(requestParameters.id, requestParameters.externalId, options).then((request) => request(this.axios, this.basePath));
+        return SolanaTransactionsApiFp(this.configuration).getSolanaTransactionStatus(requestParameters.id, requestParameters.externalId, requestParameters.bundleId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
