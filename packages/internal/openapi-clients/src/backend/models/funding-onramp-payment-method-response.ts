@@ -60,6 +60,12 @@ export interface FundingOnrampPaymentMethodResponse {
      */
     'providerPublishableKey': string | null;
     /**
+     * The provider\'s own session/order id for this commit (e.g. Stripe\'s onramp session id the client passes to performCheckout), or null.
+     * @type {string}
+     * @memberof FundingOnrampPaymentMethodResponse
+     */
+    'providerSessionId': string | null;
+    /**
      * 
      * @type {Array<FundingFeeResponse>}
      * @memberof FundingOnrampPaymentMethodResponse

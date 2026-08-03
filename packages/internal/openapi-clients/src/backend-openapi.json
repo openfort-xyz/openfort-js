@@ -24693,6 +24693,10 @@
           "requiresDeviceCheck": {
             "type": "boolean",
             "description": "Client must still gate on device capability (e.g. Apple Pay on Safari)."
+          },
+          "providerPublishableKey": {
+            "type": "string",
+            "description": "Provider PUBLISHABLE key for \"embedded\" rows — the client's elements need\nit BEFORE the commit (e.g. Stripe's Link auth element). Public by design."
           }
         },
         "required": [
@@ -28964,6 +28968,11 @@
             "nullable": true,
             "description": "Provider PUBLISHABLE key the embedded component initializes with (e.g.\n`new StripeOnramp(pk)`), or null. Public by design — pairs with\nproviderClientSecret for the \"embedded\" angle."
           },
+          "providerSessionId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The provider's own session/order id for this commit (e.g. Stripe's onramp\nsession id the client passes to performCheckout), or null."
+          },
           "fees": {
             "items": {
               "$ref": "#/components/schemas/FundingFeeResponse"
@@ -28982,6 +28991,7 @@
           "url",
           "providerClientSecret",
           "providerPublishableKey",
+          "providerSessionId",
           "fees",
           "minAmount"
         ],

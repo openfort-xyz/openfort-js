@@ -187,6 +187,11 @@ export interface FundingOnrampPaymentMethod {
   providerClientSecret?: string | null
   /** Provider publishable key for mounting the embedded component. */
   providerPublishableKey?: string | null
+  /**
+   * The provider's own session id for this commit — for the Stripe Link (v2)
+   * flow, pass it to the coordinator's `performCheckout`.
+   */
+  providerSessionId?: string | null
   fees: FundingFee[]
   minAmount: string | null
 }
@@ -260,6 +265,11 @@ export interface ResolvedFundingMethod {
   rail?: string
   /** Client must still gate on device capability (e.g. Apple Pay needs an Apple device). */
   requiresDeviceCheck?: boolean
+  /**
+   * Provider PUBLISHABLE key for `embedded` rows — the pre-commit elements
+   * (e.g. Stripe's Link auth) initialize with it. Public by design.
+   */
+  providerPublishableKey?: string
 }
 
 /** Resolved fiat methods for a session's destination + the buyer's region. */
