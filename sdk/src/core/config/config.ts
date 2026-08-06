@@ -1,7 +1,8 @@
-import type { IPasskeyHandler } from 'core/passkey'
-import type { ThirdPartyOAuthProvider } from 'types'
+import type { OpenfortRequestInfo } from '@openfort/openapi-clients'
 import type { IStorage } from '../../storage/istorage'
+import type { ThirdPartyOAuthProvider } from '../../types'
 import { setCryptoDigestOverride } from '../../utils/crypto'
+import type { IPasskeyHandler } from '../passkey'
 
 export interface SDKOverrides {
   backendUrl?: string
@@ -92,6 +93,14 @@ export type OpenfortSDKConfiguration = {
    * Defaults to `false`.
    */
   disableTelemetry?: boolean
+  /**
+   * Observability callback invoked after every Openfort API request
+   * (successful or not) with its request id, method, path, status, and
+   * duration. The request id is also sent as `x-request-id` and adopted by the
+   * Openfort API as its own request/trace id, so it joins your logs to
+   * Openfort's. Exceptions thrown by the callback are swallowed.
+   */
+  onRequest?: (info: OpenfortRequestInfo) => void
 }
 
 export class SDKConfiguration {
@@ -115,6 +124,8 @@ export class SDKConfiguration {
 
   readonly disableTelemetry?: boolean
 
+  readonly onRequest?: (info: OpenfortRequestInfo) => void
+
   static instance: SDKConfiguration | null = null
 
   constructor({
@@ -124,6 +135,7 @@ export class SDKConfiguration {
     thirdPartyAuth,
     debug,
     disableTelemetry,
+    onRequest,
   }: OpenfortSDKConfiguration) {
     this.shieldConfiguration = shieldConfiguration
     this.baseConfiguration = baseConfiguration
@@ -132,6 +144,7 @@ export class SDKConfiguration {
     this.iframeUrl = `${this.iframeUrl}/iframe/${this.baseConfiguration.publishableKey}`
     this.debug = debug
     this.disableTelemetry = disableTelemetry
+    this.onRequest = onRequest
     if (shieldConfiguration?.debug) {
       this.iframeUrl = `${this.iframeUrl}?debug=true`
     }

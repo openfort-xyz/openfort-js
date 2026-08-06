@@ -1,4 +1,4 @@
-import { randomUUID } from 'utils/crypto'
+import { randomUUID } from '../../../utils/crypto'
 import type { EIP6963AnnounceProviderEvent, EIP6963ProviderDetail, EIP6963ProviderInfo } from '../types'
 
 export const openfortProviderInfo = {

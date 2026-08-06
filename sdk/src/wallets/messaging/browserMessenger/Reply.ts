@@ -1,5 +1,3 @@
-const _brand: unique symbol = Symbol('Reply')
-
 class Reply<T = unknown> {
   readonly value: T
 

@@ -1,14 +1,12 @@
 import type { BackendApiClients } from '@openfort/openapi-clients'
-import { Authentication } from 'core/configuration/authentication'
-import { OPENFORT_AUTH_ERROR_CODES } from 'core/errors/authErrorCodes'
-import { ConfigurationError, SessionError } from 'core/errors/openfortError'
-import { withApiError } from 'core/errors/withApiError'
-import type { IPasskeyHandler } from 'core/passkey'
-import { PasskeyHandler } from 'core/passkey'
-import { debugLog } from 'utils/debug'
-import type TypedEventEmitter from 'utils/typedEventEmitter'
 import { SDKConfiguration } from '../core/config/config'
 import { Account } from '../core/configuration/account'
+import { Authentication } from '../core/configuration/authentication'
+import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
+import { ConfigurationError, SessionError, SignerError } from '../core/errors/openfortError'
+import { withApiError } from '../core/errors/withApiError'
+import type { IPasskeyHandler } from '../core/passkey'
+import { PasskeyHandler } from '../core/passkey'
 import { type IStorage, StorageKeys } from '../storage/istorage'
 import {
   AccountTypeEnum,
@@ -18,6 +16,8 @@ import {
   type PasskeyInfo,
   type RecoveryMethod,
 } from '../types/types'
+import { debugLog } from '../utils/debug'
+import type TypedEventEmitter from '../utils/typedEventEmitter'
 import type {
   IframeManager,
   SignerConfigureRequest,
@@ -140,6 +140,11 @@ export class EmbeddedSigner implements Signer {
         const accountExistsInChainId = accounts.find((ac) => ac.chainId === params.chainId)
         // intentionally take first account from the list, as they all should have the same owner EOA
         const account = accountExistsInChainId || accounts[0]
+        // Unreachable: this branch only runs when `accounts` is non-empty.
+        // The guard satisfies `noUncheckedIndexedAccess` without a cast.
+        if (!account) {
+          throw new SignerError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'unreachable: accounts is non-empty')
+        }
         const recoverParams: SignerRecoverRequest = {
           account: account.id,
           ...(params.entropy && {

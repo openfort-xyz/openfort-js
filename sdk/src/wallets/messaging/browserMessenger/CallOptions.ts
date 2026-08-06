@@ -1,5 +1,3 @@
-const _brand: unique symbol = Symbol('CallOptions')
-
 class CallOptions {
   readonly transferables?: Transferable[]
 

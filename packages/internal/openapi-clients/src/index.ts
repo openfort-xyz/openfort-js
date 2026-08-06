@@ -5,6 +5,7 @@ export {
 	BackendApiClients,
 	type BackendApiClientsOptions,
 	type IStorage,
+	type OpenfortRequestInfo,
 } from "./backend-api-clients";
 export {
 	BackendAPIConfiguration,

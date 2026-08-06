@@ -167,6 +167,16 @@ class WindowMessenger implements Messenger {
       return
     }
 
+    // Origin is checked before `data` is read, so a disallowed origin cannot
+    // affect messenger state.
+    if (!this.#isAllowedOrigin(origin)) {
+      this.#log?.(
+        `Received a message from origin \`${origin}\` which did not match ` +
+          `allowed origins \`[${this.#allowedOrigins.join(', ')}]\``
+      )
+      return
+    }
+
     // TODO: Used for backward-compatibility. Remove in next major version.
     if (isDeprecatedMessage(data)) {
       this.#log?.('Please upgrade the child window to the latest version of Penpal.')
@@ -176,14 +186,6 @@ class WindowMessenger implements Messenger {
     }
 
     if (!this.#validateReceivedMessage?.(data)) {
-      return
-    }
-
-    if (!this.#isAllowedOrigin(origin)) {
-      this.#log?.(
-        `Received a message from origin \`${origin}\` which did not match ` +
-          `allowed origins \`[${this.#allowedOrigins.join(', ')}]\``
-      )
       return
     }
 

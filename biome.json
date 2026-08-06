@@ -5,6 +5,7 @@
       "sdk/**",
       "packages/platform-bridge/**",
       "examples/**",
+      "environments/**",
       "test/**",
       "*.js",
       "*.ts",
@@ -13,9 +14,15 @@
       "!**/dist",
       "!**/node_modules",
       "!**/.next",
+      "!**/next-env.d.ts",
       "!**/coverage",
       "!**/*.css",
-      "!**/*.html"
+      "!**/*.html",
+      "!**/test-results",
+      "!**/playwright-report",
+      "!**/blob-report",
+      "!**/playwright/.auth",
+      "!**/.claude"
     ],
     "ignoreUnknown": true
   },

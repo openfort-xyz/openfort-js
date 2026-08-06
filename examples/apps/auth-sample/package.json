@@ -27,14 +27,14 @@
     "@walletconnect/core": "^2.23.9",
     "@walletconnect/types": "^2.23.9",
     "@walletconnect/utils": "^2.23.9",
-    "axios": "^1.15.0",
+    "axios": "^1.18.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.454.0",
-    "next": "16.2.3",
+    "next": "16.2.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.6.1",
@@ -52,7 +52,7 @@
     "@types/react": "^18.3.28",
     "@types/react-dom": "^18.3.7",
     "autoprefixer": "^10.5.0",
-    "postcss": "^8.5.9",
+    "postcss": "^8.5.18",
     "typescript": "^5.9.3"
   }
 }

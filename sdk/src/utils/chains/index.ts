@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+/**
+ * Fallback RPC endpoints, one per chain Openfort supports.
+ *
+ * Used only when the caller does not configure an RPC URL for the chain.
+ * See https://www.openfort.io/docs/configuration/chains
+ */
 export const defaultChainRpcs: { [key: number]: string } = {
   1: 'https://cloudflare-eth.com',
   10: 'https://optimism-rpc.publicnode.com',
@@ -9,7 +15,6 @@ export const defaultChainRpcs: { [key: number]: string } = {
   1946: 'https://rpc.minato.soneium.org',
   3008: 'https://kl1-testnet.kiooverse.xyz/rpc',
   4337: 'https://build.onbeam.com/rpc',
-  5611: 'https://opbnb-testnet-rpc.bnbchain.org',
   8453: 'https://mainnet.base.org',
   10143: 'https://testnet-rpc.monad.xyz',
   13337: 'https://build.onbeam.com/rpc/testnet',
@@ -18,18 +23,8 @@ export const defaultChainRpcs: { [key: number]: string } = {
   43113: 'https://api.avax-test.network/ext/bc/C/rpc',
   43114: 'https://api.avax.network/ext/bc/C/rpc',
   80002: 'https://polygon-amoy-bor-rpc.publicnode.com',
-  84358: 'https://subnets.avax.network/titan/mainnet/rpc',
   84532: 'https://sepolia.base.org',
   421614: 'https://sepolia-rollup.arbitrum.io/rpc',
-  510525: 'https://rpc.clankermon.com',
-  510530: 'https://open-loot.rpc.syndicate.io',
-  510531: 'https://open-loot.rpc.testnet.syndicate.io',
-  7225878: 'https://rpc.saakuru.network',
-  7777777: 'https://rpc.zora.energy',
   11155111: 'https://ethereum-sepolia-rpc.publicnode.com',
   11155420: 'https://optimism-sepolia-rpc.publicnode.com',
-  28122024: 'https://rpcv2-testnet.ancient8.gg',
-  666666666: 'https://rpc.degen.tips',
-  888888888: 'https://rpc.ancient8.gg',
-  999999999: 'https://sepolia.rpc.zora.energy',
 }

@@ -1,5 +1,4 @@
-/* eslint-disable no-console */
-import { Openfort, OpenfortError, type SDKConfiguration } from '@openfort/openfort-js'
+import { Openfort, OpenfortError, type OpenfortSDKConfiguration } from '@openfort/openfort-js'
 import { ethers } from 'ethers'
 
 const keyFunctionName = 'fxName'
@@ -135,7 +134,7 @@ window.callFunction = async (jsonData: string) => {
       case OPENFORT_FUNCTIONS.init: {
         const request = JSON.parse(data)
         if (!openfortClient) {
-          const configuration = {
+          const configuration: OpenfortSDKConfiguration = {
             baseConfiguration: {
               publishableKey: request.publishableKey,
               nativeAppIdentifier: request.nativeAppIdentifier,
@@ -143,7 +142,7 @@ window.callFunction = async (jsonData: string) => {
             shieldConfiguration: request.shieldPublishableKey
               ? {
                   shieldPublishableKey: request.shieldPublishableKey,
-                  shieldDebug: request.shieldDebug ?? false,
+                  debug: request.shieldDebug ?? false,
                 }
               : undefined,
             thirdPartyAuth: request.thirdPartyAuth?.provider
@@ -158,7 +157,7 @@ window.callFunction = async (jsonData: string) => {
               shieldUrl: request?.shieldUrl ?? 'https://shield.openfort.io',
             },
           }
-          openfortClient = new Openfort(configuration as unknown as SDKConfiguration)
+          openfortClient = new Openfort(configuration)
           console.log('Openfort client initialized')
         }
 

@@ -179,7 +179,6 @@ export class IframeRpcTimeoutError extends SignerError {
         `Iframe did not respond to ${method}() within ${timeoutMs}ms. The iframe may be frozen or unresponsive.`
     )
     this.name = 'IframeRpcTimeoutError'
-    Object.setPrototypeOf(this, IframeRpcTimeoutError.prototype)
   }
 }
 
@@ -197,7 +196,6 @@ export class IframeSignTimeoutError extends IframeRpcTimeoutError {
       `Iframe signer did not respond within ${timeoutMs}ms. The signing prompt may have been dismissed or the iframe is unresponsive.`
     )
     this.name = 'IframeSignTimeoutError'
-    Object.setPrototypeOf(this, IframeSignTimeoutError.prototype)
   }
 }
 
@@ -214,7 +212,6 @@ export class IframeConnectionDestroyedError extends SignerError {
   constructor(method: string) {
     super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, `Iframe connection was closed while ${method}() was in flight.`)
     this.name = 'IframeConnectionDestroyedError'
-    Object.setPrototypeOf(this, IframeConnectionDestroyedError.prototype)
   }
 }
 
@@ -228,7 +225,6 @@ export class IframeSignEmptyResponseError extends SignerError {
   constructor() {
     super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'Iframe signer returned an empty signature.')
     this.name = 'IframeSignEmptyResponseError'
-    Object.setPrototypeOf(this, IframeSignEmptyResponseError.prototype)
   }
 }
 
@@ -280,10 +276,6 @@ const LOGOUT_RPC_TIMEOUT_MS = 10_000
 export class SessionEndedBeforeSetupError extends OpenfortError {
   constructor() {
     super(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'Wallet session ended before setup completed.')
-    // The base OpenfortError constructor resets the prototype to its own, so
-    // restore ours — otherwise `instanceof SessionEndedBeforeSetupError` is
-    // always false, both in tests and in initialize()'s teardown-race guard.
-    Object.setPrototypeOf(this, SessionEndedBeforeSetupError.prototype)
   }
 }
 
@@ -301,13 +293,10 @@ export class IframeHandshakeTimeoutError extends OpenfortError {
   constructor(timeoutMs: number, cause: unknown) {
     super(
       OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
-      `Failed to establish iframe connection within ${timeoutMs}ms. The embedded wallet page did not respond — it may be unreachable or blocked by CSP/network.`
+      `Failed to establish iframe connection within ${timeoutMs}ms. The embedded wallet page did not respond — it may be unreachable or blocked by CSP/network.`,
+      { cause }
     )
     this.name = 'IframeHandshakeTimeoutError'
-    // The base OpenfortError constructor does not forward `cause`; set it
-    // explicitly so the underlying PenpalError stays inspectable.
-    ;(this as { cause?: unknown }).cause = cause
-    Object.setPrototypeOf(this, IframeHandshakeTimeoutError.prototype)
   }
 }
 
@@ -582,9 +571,11 @@ export class IframeManager {
         - unity (non-webgl)
 
         You must configure your origin in the openfort dashboard before using the embedded wallet.
-
-        For more information, see: https://www.openfort.io/docs/configuration/native-apps`
-        }`
+        `,
+        // Routed through `docsPath` rather than written into the string so the
+        // URL tracks the configured docs base for ecosystem SDKs, and so the
+        // link is readable from `error.docsUrl` without parsing the prose.
+        { cause: error, docsPath: 'configuration/native-apps' }
       )
     }
   }

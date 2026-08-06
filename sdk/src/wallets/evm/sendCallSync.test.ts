@@ -101,7 +101,7 @@ describe('sendCallsSync — signature gate (AA24 regression)', () => {
     expect(signer.sign).toHaveBeenCalledWith(SIGNABLE_HASH)
   })
 
-  it('signs the raw hash on zkSync chains (300/324) even when not delegated', async () => {
+  it('gates on the account type only — the chain id never selects the raw-hash path', async () => {
     const { args, signer } = setup({
       id: 'acc_3',
       accountType: AccountTypeEnum.SMART_ACCOUNT,
@@ -111,7 +111,7 @@ describe('sendCallsSync — signature gate (AA24 regression)', () => {
 
     await sendCallsSync(args)
 
-    expect(signer.sign).toHaveBeenCalledWith(SIGNABLE_HASH, false, false)
+    expect(signer.sign).toHaveBeenCalledWith(SIGNABLE_HASH)
   })
 })
 
