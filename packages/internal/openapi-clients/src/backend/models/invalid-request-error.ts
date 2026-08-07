@@ -44,6 +44,18 @@ export interface InvalidRequestError {
      * @memberof InvalidRequestError
      */
     'details'?: { [key: string]: FieldErrorsValue; };
+    /**
+     * Machine-readable cause, when the thrower disambiguates one (e.g. funding_key_required).
+     * @type {string}
+     * @memberof InvalidRequestError
+     */
+    'code'?: string;
+    /**
+     * Offending request field path, when the thrower points at one (e.g. target.chain).
+     * @type {string}
+     * @memberof InvalidRequestError
+     */
+    'param'?: string;
 }
 
 
