@@ -557,11 +557,15 @@ export class IframeManager {
       }
 
       const err = error as PenpalError
+      const isChromeExtension = typeof window !== 'undefined' && window.location.protocol === 'chrome-extension:'
       throw new OpenfortError(
         OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR,
         `Failed to establish iFrame connection: ${err.cause || err.message}
 
-        In apps built with:
+        ${
+          isChromeExtension
+            ? 'You are running in a Chrome extension. The wallet popup may have been closed or blocked.'
+            : `In apps built with:
         - react native
         - swift
         - unity (non-webgl)
