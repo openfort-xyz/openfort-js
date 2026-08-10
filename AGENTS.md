@@ -2,6 +2,12 @@
 
 Applies to humans and AI agents alike. `CLAUDE.md` points here.
 
+## Friction Logging
+
+- Run `pnpx frog list` first to see what friction is already known.
+- Log papercuts and friction (tooling, docs, APIs, tests, conventions) as you hit them with `pnpx frog log`.
+- Do not add global, system, or internal friction.
+
 ## Layout
 
 - `sdk/` — `@openfort/openfort-js`, the only published package.
