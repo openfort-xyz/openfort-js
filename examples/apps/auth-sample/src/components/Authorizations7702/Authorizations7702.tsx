@@ -112,7 +112,7 @@ const Authorizations7702: React.FC<{
         chain: appChain,
         account: simple7702Account,
         paymasterContext: {
-          feeSponsorshipId: process.env.NEXT_PUBLIC_POLICY_ID,
+          policyId: process.env.NEXT_PUBLIC_POLICY_ID,
         },
         paymaster: openfortPaymaster,
         transport: openfortTransport,
