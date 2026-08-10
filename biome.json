@@ -6,6 +6,7 @@
       "packages/platform-bridge/**",
       "examples/**",
       "environments/**",
+      "test/**",
       "*.js",
       "*.ts",
       "*.json",

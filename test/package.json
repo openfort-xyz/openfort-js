@@ -1,0 +1,27 @@
+{
+  "name": "test",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "stats": "npx vite-bundle-visualizer -o stats.html"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.html"
+    }
+  },
+  "devDependencies": {
+    "@openfort/openapi-clients": "workspace:*",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.2",
+    "vite-bundle-visualizer": "^1.2.1"
+  },
+  "dependencies": {
+    "@openfort/openfort-js": "workspace:*"
+  },
+  "sideEffects": false
+}

@@ -10,8 +10,13 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "privatePackages": {
-    "version": false,
-    "tag": false
-  }
+  "ignore": [
+    "firebase-next-app",
+    "platform-bridge",
+    "solana-vite",
+    "wagmi-vite",
+    "wagmi-next-app",
+    "nextjs",
+    "test"
+  ]
 }

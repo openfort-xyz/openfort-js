@@ -5,8 +5,8 @@ dist/
 .vscode
 .parcel-cache
 
-.env*
-!.env*.example
+.env
+.env.local
 
 
 .yarn/*
@@ -21,6 +21,7 @@ yalc.lock
 
 docs/
 
+/examples/apps/web-betterauth/
 # Test and Playwright related artifacts. The unanchored globs matter: Playwright
 # writes to the CWD it is invoked from, which is not always the auth-sample dir.
 # Traces can capture Authorization headers, so they must never be committable.
@@ -46,4 +47,3 @@ blob-report/
 *.bz2
 
 coverage/
-*.tsbuildinfo
