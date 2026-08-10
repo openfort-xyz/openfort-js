@@ -9,7 +9,7 @@
 		"axios-retry": "4.5.0"
 	},
 	"devDependencies": {
-		"jest": "^29.7.0",
+		"@rollup/plugin-typescript": "^11.1.6",
 		"rollup": "^4.60.1",
 		"typescript": "^5.9.3"
 	},
@@ -29,7 +29,6 @@
 		"dev": "rollup --config rollup.config.js -w",
 		"check": "biome check --write --unsafe",
 		"prepare": "pnpm build",
-		"test": "jest --passWithNoTests",
 		"typecheck": "tsc --noEmit --jsx preserve"
 	},
 	"type": "module",
