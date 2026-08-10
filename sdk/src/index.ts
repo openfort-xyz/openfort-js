@@ -3,7 +3,6 @@
 // Import Openfort for the singleton event emitter
 import { Openfort } from './core/openfort'
 
-export type { ShieldAuthOptions, ShieldOptions } from '@openfort/shield-js'
 // Export API namespaces
 // biome-ignore lint/performance/noBarrelFile: Main SDK entry point needs to export all public APIs
 export { AuthApi } from './api/auth'
@@ -37,14 +36,29 @@ export {
 } from './api/funding'
 export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'
-// Enumerated explicitly. `export *` here would publish internal config
-// types as public API.
+// Export error handling
 export {
-  OpenfortConfiguration,
-  type OpenfortSDKConfiguration,
-  ShieldConfiguration,
-  type ThirdPartyAuthConfiguration,
-} from './core/config/config'
+  OPENFORT_AUTH_ERROR_CODES,
+  OPENFORT_ERROR_CODES,
+  type OpenfortAuthErrorCode,
+  type OpenfortErrorCode,
+} from './core/errors/authErrorCodes'
+export {
+  AuthenticationError,
+  AuthorizationError,
+  ConfigurationError,
+  DEFAULT_DOCS_BASE_URL,
+  OAuthError,
+  OpenfortError,
+  type OpenfortErrorOptions,
+  OTPError,
+  RecoveryError,
+  RequestError,
+  SessionError,
+  SignerError,
+  setErrorConfig,
+  UserError,
+} from './core/errors/openfortError'
 // Export passkey module (Strategy pattern for platform-specific implementations)
 export type {
   IPasskeyHandler,
@@ -64,73 +78,12 @@ export {
   PasskeySeedInvalidError,
   PasskeyUserCancelledError,
 } from './core/passkey'
-// Export error handling (same surface as the `./errors` subpath entry point)
-// biome-ignore lint/performance/noReExportAll: mirrors ./errors verbatim so the two entry points cannot drift
-export * from './errors'
 // Export storage interface
 export type { IStorage as Storage } from './storage/istorage'
-export {
-  AccountTypeEnum,
-  AuthActionRequiredActions,
-  type AuthActionRequiredResponse,
-  type AuthInitPayload,
-  type AuthResponse,
-  AuthType,
-  BasicAuthProvider,
-  ChainTypeEnum,
-  type EmbeddedAccount,
-  EmbeddedState,
-  type EmbeddedWalletConnectionLostPayload,
-  type InitializeOAuthOptions,
-  OAuthProvider,
-  type OpenfortEventMap,
-  OpenfortEvents,
-  type PasskeyEnv,
-  RecoveryMethod,
-  type RecoveryMethodDetails,
-  type RecoveryParams,
-  type SessionResponse,
-  type SignedMessagePayload,
-  ThirdPartyAuthProvider as ThirdPartyOAuthProvider,
-  TokenType,
-  type TransactionIntentResponse,
-  type User,
-  type UserAccount,
-} from './types/types'
-export {
-  type Authorization,
-  type PrepareAuthorizationParams,
-  prepareAndSignAuthorization,
-  type SignAuthorizationParams,
-  type SignedAuthorization,
-  serializeSignedAuthorization,
-  signAuthorization,
-} from './utils/authorization'
+// biome-ignore lint/performance/noReExportAll: Main SDK entry point needs to re-export all types
+export * from './types'
 // Export crypto utilities
 export { cryptoDigest } from './utils/crypto'
-export type { RevokePermissionsRequestParams } from './wallets/evm/revokeSession'
-export type {
-  GrantPermissionsParameters,
-  GrantPermissionsReturnType,
-  Permission,
-  Policy,
-  Signer,
-} from './wallets/evm/sessionTypes'
-export type { Provider, TypedDataPayload } from './wallets/evm/types'
-export {
-  IframeConnectionDestroyedError,
-  IframeHandshakeTimeoutError,
-  IframeRpcTimeoutError,
-  IframeSignEmptyResponseError,
-  IframeSignTimeoutError,
-  MissingProjectEntropyError,
-  MissingRecoveryPasswordError,
-  NotConfiguredError,
-  OTPRequiredError,
-  SessionEndedBeforeSetupError,
-  WrongPasskeyError,
-  WrongRecoveryPasswordError,
-} from './wallets/iframeManager'
 // Export main SDK classes
 export { Openfort }
 

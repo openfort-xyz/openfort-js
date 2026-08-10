@@ -305,7 +305,6 @@ const ERROR_CODES = {
 
 /**
  * Full name for error codes
- * @deprecated Same object as {@link OPENFORT_ERROR_CODES}; use that instead.
  */
 export const OPENFORT_AUTH_ERROR_CODES = ERROR_CODES
 

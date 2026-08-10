@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { OpenfortSDKConfiguration } from '../../types'
 import { PACKAGE, VERSION } from '../../version'
-import type { OpenfortSDKConfiguration } from '../config/config'
 
 // Each test re-imports ./sentry after configuring the mock, so the static
 // InternalSentry singleton starts fresh and the dynamic import('@sentry/browser')

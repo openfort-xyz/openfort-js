@@ -580,6 +580,9 @@ importers:
       '@sentry/browser':
         specifier: 9.47.1
         version: 9.47.1
+      '@sentry/core':
+        specifier: 9.47.1
+        version: 9.47.1
       axios:
         specifier: '>=1.18.0'
         version: 1.18.1(supports-color@10.2.2)

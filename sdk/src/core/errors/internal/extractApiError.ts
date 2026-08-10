@@ -30,68 +30,101 @@ interface ApiErrorResponse {
   error_description?: string
 }
 
-// Two-arg constructor only: subclass third parameters carry class-specific
-// context (audience, userId, recoveryMethod…), never the HTTP status.
-type ErrorClass = new (code: string, description: string) => OpenfortError
-
-const CODES = OPENFORT_AUTH_ERROR_CODES
-
-/** Which error class each API error code maps to. Unlisted codes fall through. */
-const CODE_TO_ERROR: Partial<Record<string, ErrorClass>> = {
-  [CODES.INVALID_CREDENTIALS]: AuthenticationError,
-  [CODES.INVALID_EMAIL]: AuthenticationError,
-  [CODES.INVALID_PASSWORD]: AuthenticationError,
-  [CODES.INVALID_TOKEN]: AuthenticationError,
-  [CODES.PROVIDER_DISABLED]: AuthenticationError,
-  [CODES.EMAIL_NOT_VERIFIED]: AuthenticationError,
-  [CODES.SESSION_EXPIRED]: SessionError,
-  [CODES.SESSION_CREATION_FAILED]: SessionError,
-  [CODES.SESSION_RETRIEVAL_FAILED]: SessionError,
-  [CODES.NOT_LOGGED_IN]: SessionError,
-  [CODES.ALREADY_LOGGED_IN]: SessionError,
-  [CODES.REFRESH_TOKEN_ERROR]: SessionError,
-  [CODES.SOCIAL_ACCOUNT_ALREADY_LINKED]: OAuthError,
-  [CODES.OAUTH_PROVIDER_NOT_FOUND]: OAuthError,
-  [CODES.OAUTH_TOKEN_INVALID]: OAuthError,
-  [CODES.OAUTH_USER_INFO_FAILED]: OAuthError,
-  [CODES.USER_NOT_FOUND]: UserError,
-  // EMAIL_ALREADY_IN_USE aliases the same wire code as USER_ALREADY_EXISTS.
-  [CODES.USER_ALREADY_EXISTS]: UserError,
-  [CODES.USER_EMAIL_NOT_FOUND]: UserError,
-  [CODES.FAILED_TO_CREATE_USER]: UserError,
-  [CODES.FAILED_TO_UPDATE_USER]: UserError,
-  [CODES.PASSWORD_TOO_SHORT]: UserError,
-  [CODES.PASSWORD_TOO_LONG]: UserError,
-  [CODES.USER_ALREADY_HAS_PASSWORD]: UserError,
-  [CODES.OTP_INVALID]: OTPError,
-  [CODES.OTP_EXPIRED]: OTPError,
-  [CODES.OTP_SEND_FAILED]: OTPError,
-  [CODES.OTP_REQUIRED]: OTPError,
-  [CODES.MISSING_SIGNER]: SignerError,
-  [CODES.NOT_CONFIGURED]: SignerError,
-  [CODES.MISSING_RECOVERY_PASSWORD]: RecoveryError,
-  [CODES.WRONG_RECOVERY_PASSWORD]: RecoveryError,
-  [CODES.MISSING_PASSKEY]: RecoveryError,
-  [CODES.INCORRECT_PASSKEY]: RecoveryError,
-  [CODES.MISSING_PROJECT_ENTROPY]: RecoveryError,
-  [CODES.MISSING_USER_ENTROPY]: RecoveryError,
-  [CODES.INCORRECT_USER_ENTROPY]: RecoveryError,
-}
-
 /**
  * Maps error codes to specific error classes
  * @internal
  */
 function createSpecificError(code: string, description: string, statusCode?: number): OpenfortError {
-  const SpecificError = CODE_TO_ERROR[code]
-  if (SpecificError === AuthenticationError) return new AuthenticationError(code, description, statusCode)
-  if (SpecificError) return new SpecificError(code, description)
+  // Authentication errors
+  const authErrorCodes = [
+    OPENFORT_AUTH_ERROR_CODES.INVALID_CREDENTIALS,
+    OPENFORT_AUTH_ERROR_CODES.INVALID_EMAIL,
+    OPENFORT_AUTH_ERROR_CODES.INVALID_PASSWORD,
+    OPENFORT_AUTH_ERROR_CODES.INVALID_TOKEN,
+    OPENFORT_AUTH_ERROR_CODES.PROVIDER_DISABLED,
+    OPENFORT_AUTH_ERROR_CODES.EMAIL_NOT_VERIFIED,
+  ] as const
+  if (authErrorCodes.includes(code as any)) {
+    return new AuthenticationError(code, description, statusCode)
+  }
+
+  // Session errors
+  const sessionErrorCodes = [
+    OPENFORT_AUTH_ERROR_CODES.SESSION_EXPIRED,
+    OPENFORT_AUTH_ERROR_CODES.SESSION_CREATION_FAILED,
+    OPENFORT_AUTH_ERROR_CODES.SESSION_RETRIEVAL_FAILED,
+    OPENFORT_AUTH_ERROR_CODES.NOT_LOGGED_IN,
+    OPENFORT_AUTH_ERROR_CODES.ALREADY_LOGGED_IN,
+    OPENFORT_AUTH_ERROR_CODES.REFRESH_TOKEN_ERROR,
+  ] as const
+  if (sessionErrorCodes.includes(code as any)) {
+    return new SessionError(code, description)
+  }
+
+  // OAuth errors
+  const oauthErrorCodes = [
+    OPENFORT_AUTH_ERROR_CODES.SOCIAL_ACCOUNT_ALREADY_LINKED,
+    OPENFORT_AUTH_ERROR_CODES.OAUTH_PROVIDER_NOT_FOUND,
+    OPENFORT_AUTH_ERROR_CODES.OAUTH_TOKEN_INVALID,
+    OPENFORT_AUTH_ERROR_CODES.OAUTH_USER_INFO_FAILED,
+  ] as const
+  if (oauthErrorCodes.includes(code as any)) {
+    return new OAuthError(code, description)
+  }
+
+  // User errors
+  const userErrorCodes = [
+    OPENFORT_AUTH_ERROR_CODES.USER_NOT_FOUND,
+    OPENFORT_AUTH_ERROR_CODES.USER_ALREADY_EXISTS,
+    OPENFORT_AUTH_ERROR_CODES.EMAIL_ALREADY_IN_USE,
+    OPENFORT_AUTH_ERROR_CODES.USER_EMAIL_NOT_FOUND,
+    OPENFORT_AUTH_ERROR_CODES.FAILED_TO_CREATE_USER,
+    OPENFORT_AUTH_ERROR_CODES.FAILED_TO_UPDATE_USER,
+    OPENFORT_AUTH_ERROR_CODES.PASSWORD_TOO_SHORT,
+    OPENFORT_AUTH_ERROR_CODES.PASSWORD_TOO_LONG,
+    OPENFORT_AUTH_ERROR_CODES.USER_ALREADY_HAS_PASSWORD,
+  ] as const
+  if (userErrorCodes.includes(code as any)) {
+    return new UserError(code, description)
+  }
+
+  // OTP errors
+  const otpErrorCodes = [
+    OPENFORT_AUTH_ERROR_CODES.OTP_INVALID,
+    OPENFORT_AUTH_ERROR_CODES.OTP_EXPIRED,
+    OPENFORT_AUTH_ERROR_CODES.OTP_SEND_FAILED,
+    OPENFORT_AUTH_ERROR_CODES.OTP_REQUIRED,
+  ] as const
+  if (otpErrorCodes.includes(code as any)) {
+    return new OTPError(code, description)
+  }
+
+  // Signer errors
+  const signerErrorCodes = [OPENFORT_AUTH_ERROR_CODES.MISSING_SIGNER, OPENFORT_AUTH_ERROR_CODES.NOT_CONFIGURED] as const
+  if (signerErrorCodes.includes(code as any)) {
+    return new SignerError(code, description)
+  }
+
+  // Recovery errors
+  const recoveryErrorCodes = [
+    OPENFORT_AUTH_ERROR_CODES.MISSING_RECOVERY_PASSWORD,
+    OPENFORT_AUTH_ERROR_CODES.WRONG_RECOVERY_PASSWORD,
+    OPENFORT_AUTH_ERROR_CODES.MISSING_PASSKEY,
+    OPENFORT_AUTH_ERROR_CODES.INCORRECT_PASSKEY,
+    OPENFORT_AUTH_ERROR_CODES.MISSING_PROJECT_ENTROPY,
+    OPENFORT_AUTH_ERROR_CODES.MISSING_USER_ENTROPY,
+    OPENFORT_AUTH_ERROR_CODES.INCORRECT_USER_ENTROPY,
+  ] as const
+  if (recoveryErrorCodes.includes(code as any)) {
+    return new RecoveryError(code, description)
+  }
 
   // Authorization errors (403 or specific code)
-  if (code === CODES.USER_NOT_AUTHORIZED || statusCode === 403) {
+  if (code === OPENFORT_AUTH_ERROR_CODES.USER_NOT_AUTHORIZED || statusCode === 403) {
     return new AuthorizationError(description)
   }
 
+  // Default to base OpenfortError
   return new OpenfortError(code, description)
 }
 

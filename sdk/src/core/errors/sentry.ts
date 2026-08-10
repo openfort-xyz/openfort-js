@@ -1,18 +1,8 @@
-import type { EventHint, Scope } from '@sentry/browser'
-
-/**
- * The subset of the Sentry Client surface this module touches, typed
- * structurally so no dependency on @sentry/core is needed; any Sentry-family
- * client (browser, react-native) satisfies it.
- */
-interface Client {
-  getDsn(): { projectId?: string | number; host?: string; publicKey?: string } | undefined
-  captureException(exception: unknown, hint?: EventHint, scope?: Scope): string
-}
-
+import type { Client, EventHint, Scope } from '@sentry/core'
+import { AxiosError } from 'axios'
+import type { OpenfortSDKConfiguration } from '../../types'
 import { isSensitiveKey, REDACTED } from '../../utils/sensitiveKeys'
 import { PACKAGE, VERSION } from '../../version'
-import type { OpenfortSDKConfiguration } from '../config/config'
 
 const SENTRY_DSN = 'https://64a03e4967fb4dad3ecb914918c777b6@o4504593015242752.ingest.us.sentry.io/4509292415287296' // Prod
 
@@ -30,6 +20,18 @@ const EXPECTED_DSN = (() => {
   const [, publicKey = '', host = '', projectId = ''] = /^https:\/\/([^@]+)@([^/]+)\/(.+)$/.exec(SENTRY_DSN) ?? []
   return { publicKey, host, projectId }
 })()
+
+/** Reads a single scalar field from an API error body, ignoring everything else. */
+function extractSafeField(data: unknown, field: string): string | undefined {
+  if (typeof data !== 'object' || data === null) return undefined
+  const value = (data as Record<string, unknown>)[field]
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined
+}
+
+/** Drops query strings, which may contain single-use tokens. */
+function stripQuery(url: string | undefined): string | undefined {
+  return url?.split('?')[0]
+}
 
 /**
  * Returns a scrubbed copy of `value`; the input is never written to. The
@@ -75,14 +77,16 @@ function scrubEvent<T extends object>(event: T): T {
   return scrubbed
 }
 
-/** The Sentry client with the wrapped capture method the SDK bolts on. */
-type OpenfortSentryClient = Client & {
-  captureError: (context: string, error: Error, hint?: EventHint, scope?: Scope) => void
+declare module '@sentry/core' {
+  interface Client {
+    captureAxiosError: (name: string, error: unknown, hint?: EventHint, scope?: Scope) => void
+    captureError: (context: string, error: Error, hint?: EventHint, scope?: Scope) => void
+  }
 }
 
 // biome-ignore lint/complexity/noStaticOnlyClass: Sentry wrapper uses static-only pattern for singleton-like behavior
 export class InternalSentry {
-  private static sentryInstance: OpenfortSentryClient
+  private static sentryInstance: Client
 
   private static queuedCalls: Array<{ fn: string; args: any[] }> = []
 
@@ -107,9 +111,41 @@ export class InternalSentry {
       throw new Error('Sentry DSN is not valid')
     }
 
-    const client = sentry as OpenfortSentryClient
     // eslint-disable-next-line no-param-reassign
-    client.captureError = (context: string, error: Error, hint?: EventHint, _scope?: Scope) => {
+    sentry.captureAxiosError = (method: string, error: unknown, hint?: EventHint, scope?: Scope) => {
+      if (error instanceof AxiosError) {
+        // Skip Sentry notification for 400 and 401 errors
+        if (error.response?.status === 400 || error.response?.status === 401) {
+          return
+        }
+        // eslint-disable-next-line no-param-reassign
+        error.name = method
+        sentry.captureException(error, {
+          ...hint,
+          captureContext: {
+            ...hint?.captureContext,
+            // Allowlisted fields only: request objects, response headers
+            // and bodies can contain authentication material and PII.
+            extra: {
+              errorStatus: error.response?.status,
+              errorCode: extractSafeField(error.response?.data, 'code'),
+              errorMessage: extractSafeField(error.response?.data, 'message'),
+              errorUrl: stripQuery(error.config?.url),
+              errorMethod: error.config?.method,
+            },
+            tags: {
+              ...InternalSentry.baseTags,
+              method,
+            },
+          },
+        })
+      } else {
+        sentry.captureException(error, hint, scope)
+      }
+    }
+
+    // eslint-disable-next-line no-param-reassign
+    sentry.captureError = (context: string, error: Error, hint?: EventHint, _scope?: Scope) => {
       // Skip Sentry notification for 400 and 401 errors
       // Check both AuthenticationError.statusCode and RequestError.statusCode
       const statusCode = (error as any).statusCode
@@ -159,10 +195,10 @@ export class InternalSentry {
       })
     }
 
-    InternalSentry.sentryInstance = client
+    InternalSentry.sentryInstance = sentry
   }
 
-  public static get sentry(): OpenfortSentryClient {
+  public static get sentry(): Client {
     return InternalSentry.proxy
   }
 
@@ -223,7 +259,7 @@ export class InternalSentry {
     }
   }
 
-  private static proxy = new Proxy({} as OpenfortSentryClient, {
+  private static proxy = new Proxy({} as Client, {
     get(_, prop: string) {
       if (InternalSentry.sentryInstance && typeof (InternalSentry.sentryInstance as any)[prop] === 'function') {
         return (...args: any[]) => (InternalSentry.sentryInstance as any)[prop](...args)

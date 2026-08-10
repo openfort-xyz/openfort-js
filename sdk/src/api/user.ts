@@ -3,7 +3,7 @@ import { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
 import { SessionError } from '../core/errors/openfortError'
 import type { IStorage } from '../storage/istorage'
-import type { User } from '../types/types'
+import type { User } from '../types'
 
 export class UserApi {
   constructor(

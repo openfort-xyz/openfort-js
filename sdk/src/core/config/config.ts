@@ -1,6 +1,6 @@
 import type { OpenfortRequestInfo } from '@openfort/openapi-clients'
 import type { IStorage } from '../../storage/istorage'
-import type { ThirdPartyAuthProvider as ThirdPartyOAuthProvider } from '../../types/types'
+import type { ThirdPartyOAuthProvider } from '../../types'
 import { setCryptoDigestOverride } from '../../utils/crypto'
 import type { IPasskeyHandler } from '../passkey'
 

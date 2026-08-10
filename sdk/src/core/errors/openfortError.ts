@@ -135,11 +135,6 @@ export class OpenfortError extends Error {
    * @example
    * ```typescript
    * const rootCause = error.walk()
-   * ```
-   *
-   * @deprecated Unused in practice; will be removed in the next major. Walk
-   * `error.cause` directly if you need the chain.
-   * ```typescript
    * const httpFailure = error.walk((e) => e instanceof RequestError)
    * ```
    */
