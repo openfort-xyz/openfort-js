@@ -55,24 +55,9 @@ export class Account implements EmbeddedAccount {
   public readonly type?: string
 
   save(storage: IStorage): void {
-    storage.save(
-      StorageKeys.ACCOUNT,
-      JSON.stringify({
-        id: this.id,
-        chainType: this.chainType,
-        address: this.address,
-        accountType: this.accountType,
-        chainId: this.chainId,
-        ownerAddress: this.ownerAddress,
-        createdAt: this.createdAt,
-        implementationType: this.implementationType,
-        factoryAddress: this.factoryAddress,
-        implementationAddress: this.implementationAddress,
-        salt: this.salt,
-        recoveryMethod: this.recoveryMethod,
-        recoveryMethodDetails: this.recoveryMethodDetails,
-      })
-    )
+    // Spread copies the data fields (methods live on the prototype); the legacy
+    // `type` field is deliberately not persisted — undefined drops it from JSON.
+    storage.save(StorageKeys.ACCOUNT, JSON.stringify({ ...this, type: undefined }))
   }
 
   static parseRecoveryMethod = (responseRecoveryMethod: string | undefined): RecoveryMethod | undefined => {

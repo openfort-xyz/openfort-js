@@ -349,12 +349,7 @@ export interface TransactionIntentResponse {
   createdAt: number
   updatedAt: number
   abstractionType: TransactionAbstractionType
-  details?:
-    | AccountAbstractionV6Details
-    | AccountAbstractionV8Details
-    | AccountAbstractionV9Details
-    | ZKSyncDetails
-    | StandardDetails
+  details?: AccountAbstractionV6Details | AccountAbstractionV8Details | AccountAbstractionV9Details | StandardDetails
   chainId: number
   response?: ResponseResponse
   interactions?: Interaction[]
@@ -472,23 +467,8 @@ interface AccountAbstractionV9Details {
   userOperationHash: string
 }
 
-interface UserOperationV9 {
-  callData: string
-  callGasLimit: string
-  factory?: string
-  factoryData?: string
-  maxFeePerGas: string
-  maxPriorityFeePerGas: string
-  nonce: string
-  paymaster?: string
-  paymasterVerificationGasLimit?: string
-  paymasterPostOpGasLimit?: string
-  paymasterData?: string
-  preVerificationGas: string
-  sender: string
-  signature: string
-  verificationGasLimit: string
-}
+// Byte-identical to V8; EntryPoint v0.9 kept the userOperation shape.
+type UserOperationV9 = UserOperationV8
 
 interface UserOperationV8 {
   callData: string
@@ -506,19 +486,6 @@ interface UserOperationV8 {
   sender: string
   signature: string
   verificationGasLimit: string
-}
-
-interface ZKSyncDetails {
-  from: string
-  to: string
-  data?: string
-  nonce: string
-  gas: string
-  maxFeePerGas: string
-  maxPriorityFeePerGas: string
-  paymaster?: string
-  paymasterInput?: string
-  value?: string
 }
 
 interface StandardDetails {
