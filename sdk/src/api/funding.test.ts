@@ -81,7 +81,7 @@ describe('FundingApi', () => {
     })
     expect(resolved.methods[1]).toMatchObject({ label: 'ACH', rail: 'ach' })
     expect(resolved.methods[2]).toMatchObject({ label: 'Bank transfer' })
-    expect(resolved.methods[2].requiresDeviceCheck).toBeUndefined()
+    expect(resolved.methods[2]?.requiresDeviceCheck).toBeUndefined()
     expect(funding.getFundingSessionMethods).toHaveBeenCalledWith({
       sessionId: 'fnd_1',
       clientSecret: 'cs_1',
