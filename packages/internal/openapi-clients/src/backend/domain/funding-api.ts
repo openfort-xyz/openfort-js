@@ -32,7 +32,7 @@ import { CreateStripeLinkAuthIntentRequest } from '../models';
 // @ts-ignore
 import { FundingChainsResponse } from '../models';
 // @ts-ignore
-import { FundingConfigResponse } from '../models';
+import { FundingProjectConfig } from '../models';
 // @ts-ignore
 import { FundingSessionResponse } from '../models';
 // @ts-ignore
@@ -371,7 +371,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Returns the project\'s funding configuration (the dashboard \"Funding\" section). The Coinbase private key is never returned — only whether one is stored.
+         * Returns the project\'s funding configuration (the dashboard \"Funding\" section), or the defaults when nothing has been saved yet.
          * @summary Get funding config
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -416,11 +416,10 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} [country] 
          * @param {string} [methods] 
          * @param {string} [cfIpcountry] 
-         * @param {string} [xForwardedFor] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFundingOnrampMethods: async (targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, xForwardedFor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getFundingOnrampMethods: async (targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'targetChain' is not null or undefined
             assertParamExists('getFundingOnrampMethods', 'targetChain', targetChain)
             // verify required parameter 'targetCurrency' is not null or undefined
@@ -459,10 +458,6 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
 
             if (cfIpcountry != null) {
                 localVarHeaderParameter['cf-ipcountry'] = String(cfIpcountry);
-            }
-
-            if (xForwardedFor != null) {
-                localVarHeaderParameter['x-forwarded-for'] = String(xForwardedFor);
             }
 
 
@@ -800,7 +795,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Creates or replaces the project\'s funding configuration. The Coinbase private key is encrypted at rest; sending project id + key id without a private key keeps the stored one.
+         * Creates or replaces the project\'s funding configuration.
          * @summary Update funding config
          * @param {UpdateFundingConfigRequest} updateFundingConfigRequest 
          * @param {*} [options] Override http request option.
@@ -935,12 +930,12 @@ export const FundingApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Returns the project\'s funding configuration (the dashboard \"Funding\" section). The Coinbase private key is never returned — only whether one is stored.
+         * Returns the project\'s funding configuration (the dashboard \"Funding\" section), or the defaults when nothing has been saved yet.
          * @summary Get funding config
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFundingConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingConfigResponse>> {
+        async getFundingConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingProjectConfig>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingConfig(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -952,12 +947,11 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * @param {string} [country] 
          * @param {string} [methods] 
          * @param {string} [cfIpcountry] 
-         * @param {string} [xForwardedFor] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFundingOnrampMethods(targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, xForwardedFor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingOnrampMethods(targetChain, targetCurrency, country, methods, cfIpcountry, xForwardedFor, options);
+        async getFundingOnrampMethods(targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingOnrampMethods(targetChain, targetCurrency, country, methods, cfIpcountry, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1049,13 +1043,13 @@ export const FundingApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Creates or replaces the project\'s funding configuration. The Coinbase private key is encrypted at rest; sending project id + key id without a private key keeps the stored one.
+         * Creates or replaces the project\'s funding configuration.
          * @summary Update funding config
          * @param {UpdateFundingConfigRequest} updateFundingConfigRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateFundingConfig(updateFundingConfigRequest: UpdateFundingConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingConfigResponse>> {
+        async updateFundingConfig(updateFundingConfigRequest: UpdateFundingConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingProjectConfig>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateFundingConfig(updateFundingConfigRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1140,12 +1134,12 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.exchangeStripeLinkToken(requestParameters.intentId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Returns the project\'s funding configuration (the dashboard \"Funding\" section). The Coinbase private key is never returned — only whether one is stored.
+         * Returns the project\'s funding configuration (the dashboard \"Funding\" section), or the defaults when nothing has been saved yet.
          * @summary Get funding config
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFundingConfig(options?: AxiosRequestConfig): AxiosPromise<FundingConfigResponse> {
+        getFundingConfig(options?: AxiosRequestConfig): AxiosPromise<FundingProjectConfig> {
             return localVarFp.getFundingConfig(options).then((request) => request(axios, basePath));
         },
         /**
@@ -1156,7 +1150,7 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @throws {RequiredError}
          */
         getFundingOnrampMethods(requestParameters: FundingApiGetFundingOnrampMethodsRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampMethodsResponse> {
-            return localVarFp.getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, requestParameters.xForwardedFor, options).then((request) => request(axios, basePath));
+            return localVarFp.getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.  All request and response formats are unified and provider-agnostic.
@@ -1229,13 +1223,13 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.submitOnrampVerification(requestParameters.verificationId, requestParameters.submitOnrampVerificationRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * Creates or replaces the project\'s funding configuration. The Coinbase private key is encrypted at rest; sending project id + key id without a private key keeps the stored one.
+         * Creates or replaces the project\'s funding configuration.
          * @summary Update funding config
          * @param {FundingApiUpdateFundingConfigRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateFundingConfig(requestParameters: FundingApiUpdateFundingConfigRequest, options?: AxiosRequestConfig): AxiosPromise<FundingConfigResponse> {
+        updateFundingConfig(requestParameters: FundingApiUpdateFundingConfigRequest, options?: AxiosRequestConfig): AxiosPromise<FundingProjectConfig> {
             return localVarFp.updateFundingConfig(requestParameters.updateFundingConfigRequest, options).then((request) => request(axios, basePath));
         },
     };
@@ -1407,13 +1401,6 @@ export interface FundingApiGetFundingOnrampMethodsRequest {
      * @memberof FundingApiGetFundingOnrampMethods
      */
     readonly cfIpcountry?: string
-
-    /**
-     * 
-     * @type {string}
-     * @memberof FundingApiGetFundingOnrampMethods
-     */
-    readonly xForwardedFor?: string
 }
 
 /**
@@ -1697,7 +1684,7 @@ export class FundingApi extends BaseAPI {
     }
 
     /**
-     * Returns the project\'s funding configuration (the dashboard \"Funding\" section). The Coinbase private key is never returned — only whether one is stored.
+     * Returns the project\'s funding configuration (the dashboard \"Funding\" section), or the defaults when nothing has been saved yet.
      * @summary Get funding config
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1716,7 +1703,7 @@ export class FundingApi extends BaseAPI {
      * @memberof FundingApi
      */
     public getFundingOnrampMethods(requestParameters: FundingApiGetFundingOnrampMethodsRequest, options?: AxiosRequestConfig) {
-        return FundingApiFp(this.configuration).getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, requestParameters.xForwardedFor, options).then((request) => request(this.axios, this.basePath));
+        return FundingApiFp(this.configuration).getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1804,7 +1791,7 @@ export class FundingApi extends BaseAPI {
     }
 
     /**
-     * Creates or replaces the project\'s funding configuration. The Coinbase private key is encrypted at rest; sending project id + key id without a private key keeps the stored one.
+     * Creates or replaces the project\'s funding configuration.
      * @summary Update funding config
      * @param {FundingApiUpdateFundingConfigRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.

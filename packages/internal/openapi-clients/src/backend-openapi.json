@@ -564,46 +564,6 @@
                         }
                       ]
                     }
-                  },
-                  "Optimistic Transaction for custodial account": {
-                    "value": {
-                      "id": "tin_c502d628-5bb3-42f2-b8f5-62ba4d71df3a",
-                      "createdAt": 1689869074,
-                      "object": "transactionIntent",
-                      "userOperationHash": "0x25d3...005c",
-                      "details": {
-                        "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
-                        "to": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
-                        "gas": "0x5208",
-                        "maxFeePerGas": "0x3b9aca00",
-                        "maxPriorityFeePerGas": "0x3b9aca00",
-                        "nonce": "0x0",
-                        "data": "0x3c44...",
-                        "paymaster": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
-                        "paymasterInput": "0x3c44..."
-                      },
-                      "chainId": 300,
-                      "abstractionType": "zkSync",
-                      "updatedAt": 1689869074,
-                      "policy": {
-                        "id": "pol_..."
-                      },
-                      "player": {
-                        "id": "pla_..."
-                      },
-                      "account": {
-                        "id": "acc_..."
-                      },
-                      "interactions": [
-                        {
-                          "functionName": "mint",
-                          "contract": "con_...",
-                          "functionArgs": [
-                            "0x63B7...484f"
-                          ]
-                        }
-                      ]
-                    }
                   }
                 }
               }
@@ -5762,14 +5722,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
           }
         ]
       }
@@ -5860,86 +5812,6 @@
             }
           }
         }
-      }
-    },
-    "/v1/onramp/methods": {
-      "get": {
-        "operationId": "getOnrampMethods",
-        "responses": {
-          "200": {
-            "description": "Available onramp methods resolved successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampMethodsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          }
-        },
-        "summary": "Resolve onramp methods",
-        "tags": [
-          "Onramp"
-        ],
-        "deprecated": true,
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "targetChain",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "targetCurrency",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "country",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "methods",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
       }
     },
     "/v1/logs": {
@@ -9039,7 +8911,7 @@
             }
           }
         },
-        "description": "Returns the project's funding configuration (the dashboard \"Funding\" section).\nThe Coinbase private key is never returned — only whether one is stored.",
+        "description": "Returns the project's funding configuration (the dashboard \"Funding\" section),\nor the defaults when nothing has been saved yet.",
         "summary": "Get funding config",
         "tags": [
           "Funding"
@@ -9071,7 +8943,7 @@
             "description": "Bad request - invalid parameters."
           }
         },
-        "description": "Creates or replaces the project's funding configuration. The Coinbase private\nkey is encrypted at rest; sending project id + key id without a private key\nkeeps the stored one.",
+        "description": "Creates or replaces the project's funding configuration.",
         "summary": "Update funding config",
         "tags": [
           "Funding"
@@ -20392,7 +20264,6 @@
           "accountAbstractionV6",
           "accountAbstractionV8",
           "accountAbstractionV9",
-          "zkSync",
           "standard"
         ],
         "type": "string",
@@ -20400,7 +20271,6 @@
           "AAV6",
           "AAV8",
           "AAV9",
-          "ZKSYNC",
           "EOA"
         ]
       },
@@ -20449,69 +20319,6 @@
           "fromStatus",
           "toStatus",
           "at"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ZKSyncDetails": {
-        "properties": {
-          "from": {
-            "type": "string",
-            "description": "The transaction sender.",
-            "example": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387"
-          },
-          "to": {
-            "type": "string",
-            "description": "The transaction recipient or contract address."
-          },
-          "data": {
-            "type": "string",
-            "description": "A contract hashed method call with encoded args.",
-            "example": "0x8c5a..."
-          },
-          "nonce": {
-            "type": "string",
-            "description": "Unique number identifying this transaction.",
-            "example": "0"
-          },
-          "gas": {
-            "type": "string",
-            "description": "The gas limit for the transaction.",
-            "example": "21000"
-          },
-          "maxFeePerGas": {
-            "type": "string",
-            "description": "Total fee per gas (in wei), inclusive of `maxPriorityFeePerGas`. Only applies to EIP-1559 Transactions.",
-            "example": "1000000000"
-          },
-          "maxPriorityFeePerGas": {
-            "type": "string",
-            "description": "Max priority fee per gas (in wei). Only applies to EIP-1559 Transactions.",
-            "example": "1000000000"
-          },
-          "paymaster": {
-            "type": "string",
-            "description": "Address of the paymaster account that will pay the fees.",
-            "example": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387"
-          },
-          "paymasterInput": {
-            "type": "string",
-            "description": "Input data to the paymaster",
-            "example": "0x8c5a..."
-          },
-          "value": {
-            "type": "string",
-            "description": "Value in wei sent with this transaction.",
-            "example": "1000000000000000000"
-          }
-        },
-        "required": [
-          "from",
-          "to",
-          "nonce",
-          "gas",
-          "maxFeePerGas",
-          "maxPriorityFeePerGas"
         ],
         "type": "object",
         "additionalProperties": false
@@ -21136,9 +20943,6 @@
           },
           "details": {
             "anyOf": [
-              {
-                "$ref": "#/components/schemas/ZKSyncDetails"
-              },
               {
                 "$ref": "#/components/schemas/AccountAbstractionV6Details"
               },
@@ -22108,9 +21912,6 @@
           },
           "details": {
             "anyOf": [
-              {
-                "$ref": "#/components/schemas/ZKSyncDetails"
-              },
               {
                 "$ref": "#/components/schemas/AccountAbstractionV6Details"
               },
@@ -24672,7 +24473,7 @@
         "additionalProperties": false
       },
       "ResolvedFundingMethodResponse": {
-        "description": "One resolved funding method the SDK/widget renders. The provider is included\nfor telemetry but is NOT shown to the user. `angle` is \"iframe\" | \"native\".",
+        "description": "One resolved funding method the SDK/widget renders. The provider is included\nfor telemetry but is NOT shown to the user. `angle` is \"iframe\" | \"native\".\nClients derive display labels and device-capability gating (e.g. Apple Pay\non Safari) from `method` and `rail`.",
         "properties": {
           "method": {
             "type": "string"
@@ -24683,16 +24484,9 @@
           "angle": {
             "type": "string"
           },
-          "label": {
-            "type": "string"
-          },
           "rail": {
             "type": "string",
             "description": "Regional bank rail for bank_transfer (\"ach\" | \"sepa\" | \"interac\")."
-          },
-          "requiresDeviceCheck": {
-            "type": "boolean",
-            "description": "Client must still gate on device capability (e.g. Apple Pay on Safari)."
           },
           "providerPublishableKey": {
             "type": "string",
@@ -24702,8 +24496,7 @@
         "required": [
           "method",
           "provider",
-          "angle",
-          "label"
+          "angle"
         ],
         "type": "object",
         "additionalProperties": false
@@ -24726,6 +24519,19 @@
         "required": [
           "country",
           "methods"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MePermissionsResponse": {
+        "properties": {
+          "isStaff": {
+            "type": "boolean",
+            "description": "True when the authenticated user is an Openfort staff member."
+          }
+        },
+        "required": [
+          "isStaff"
         ],
         "type": "object",
         "additionalProperties": false
@@ -26039,7 +25845,7 @@
           },
           "accountType": {
             "type": "string",
-            "description": "The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.",
+            "description": "The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, Simple). Defaults to UpgradeableV6.",
             "example": "UpgradeableV6"
           },
           "defaultGuardian": {
@@ -29415,30 +29221,8 @@
         "type": "object",
         "additionalProperties": false
       },
-      "FundingConfigCoinbaseResponse": {
-        "description": "Coinbase creds as returned to the dashboard — the private key is NEVER echoed.",
-        "properties": {
-          "projectId": {
-            "type": "string"
-          },
-          "keyId": {
-            "type": "string"
-          },
-          "privateKeySet": {
-            "type": "boolean",
-            "description": "Whether a private key is stored (the key itself is write-only)."
-          }
-        },
-        "required": [
-          "projectId",
-          "keyId",
-          "privateKeySet"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "FundingConfigResponse": {
-        "description": "GET/PUT /v2/funding/config response — the resolved project funding config.",
+      "FundingProjectConfig": {
+        "description": "Funding project configuration — the per-project-environment settings written\nby the dashboard \"Funding\" section and read by the onramp routing layer.\n\nOne shape end to end: the repository maps it to/from snake_case columns, the\nrequest adds nothing but optionality, and the response is this type verbatim.",
         "properties": {
           "ecosystem": {
             "type": "string"
@@ -29463,15 +29247,12 @@
             "items": {
               "type": "string"
             },
-            "type": "array"
+            "type": "array",
+            "description": "Enabled web2 methods (FundingMethod values), in display order."
           },
-          "coinbase": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FundingConfigCoinbaseResponse"
-              }
-            ],
-            "nullable": true
+          "walletPayEnabled": {
+            "type": "boolean",
+            "description": "Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds."
           },
           "depositAddressEnabled": {
             "type": "boolean"
@@ -29488,36 +29269,18 @@
           "crossChainBridging",
           "onrampEnabled",
           "onrampMethods",
-          "coinbase",
+          "walletPayEnabled",
           "depositAddressEnabled",
           "depositFromWalletEnabled"
         ],
         "type": "object",
         "additionalProperties": false
       },
-      "FundingConfigCoinbaseRequest": {
-        "description": "Coinbase CDP creds for native wallet pay. Send `privateKey` to set/rotate it.",
-        "properties": {
-          "projectId": {
-            "type": "string"
-          },
-          "keyId": {
-            "type": "string"
-          },
-          "privateKey": {
-            "type": "string",
-            "description": "Omit or send empty to keep the existing stored key (write-only secret)."
-          }
-        },
-        "required": [
-          "projectId",
-          "keyId"
-        ],
-        "type": "object",
-        "additionalProperties": false
+      "FundingConfigResponse": {
+        "$ref": "#/components/schemas/FundingProjectConfig",
+        "description": "GET/PUT /v2/funding/config response — the resolved project funding config."
       },
-      "UpdateFundingConfigRequest": {
-        "description": "Body for PUT /v2/funding/config — the dashboard \"Funding\" section config.",
+      "Pick_FundingProjectConfig.Exclude_keyofFundingProjectConfig.recommendedAmount__": {
         "properties": {
           "ecosystem": {
             "type": "string"
@@ -29526,9 +29289,6 @@
             "type": "string"
           },
           "defaultCurrency": {
-            "type": "string"
-          },
-          "recommendedAmount": {
             "type": "string"
           },
           "crossChainBridging": {
@@ -29542,10 +29302,11 @@
               "type": "string"
             },
             "type": "array",
-            "description": "Enabled web2 methods (apple_pay | google_pay | card | bank_transfer), in order."
+            "description": "Enabled web2 methods (FundingMethod values), in display order."
           },
-          "coinbase": {
-            "$ref": "#/components/schemas/FundingConfigCoinbaseRequest"
+          "walletPayEnabled": {
+            "type": "boolean",
+            "description": "Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds."
           },
           "depositAddressEnabled": {
             "type": "boolean"
@@ -29561,6 +29322,60 @@
           "crossChainBridging",
           "onrampEnabled",
           "onrampMethods",
+          "walletPayEnabled",
+          "depositAddressEnabled",
+          "depositFromWalletEnabled"
+        ],
+        "type": "object",
+        "description": "From T, pick a set of properties whose keys are in the union K"
+      },
+      "UpdateFundingConfigRequest": {
+        "description": "Body for PUT /v2/funding/config — the dashboard \"Funding\" section config.\nThe stored shape verbatim, except `recommendedAmount` may be omitted instead\nof sent as null.",
+        "properties": {
+          "ecosystem": {
+            "type": "string"
+          },
+          "defaultChain": {
+            "type": "string"
+          },
+          "defaultCurrency": {
+            "type": "string"
+          },
+          "crossChainBridging": {
+            "type": "boolean"
+          },
+          "onrampEnabled": {
+            "type": "boolean"
+          },
+          "onrampMethods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "Enabled web2 methods (FundingMethod values), in display order."
+          },
+          "walletPayEnabled": {
+            "type": "boolean",
+            "description": "Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds."
+          },
+          "depositAddressEnabled": {
+            "type": "boolean"
+          },
+          "depositFromWalletEnabled": {
+            "type": "boolean"
+          },
+          "recommendedAmount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ecosystem",
+          "defaultChain",
+          "defaultCurrency",
+          "crossChainBridging",
+          "onrampEnabled",
+          "onrampMethods",
+          "walletPayEnabled",
           "depositAddressEnabled",
           "depositFromWalletEnabled"
         ],
@@ -31804,6 +31619,37 @@
         "type": "object",
         "additionalProperties": false
       },
+      "SMTPVerificationResponse": {
+        "description": "Result of the confirmation email Openfort sends through the configuration.",
+        "properties": {
+          "delivered": {
+            "type": "boolean",
+            "description": "True when the SMTP server accepted and delivered the confirmation email."
+          },
+          "code": {
+            "type": "string",
+            "description": "SMTP client error identifier, e.g. \"EAUTH\", \"ETIMEDOUT\". Absent when delivered."
+          },
+          "responseCode": {
+            "type": "number",
+            "format": "double",
+            "description": "SMTP reply code, e.g. 535. Absent when delivered."
+          },
+          "response": {
+            "type": "string",
+            "description": "Raw reply from the SMTP server. Absent when delivered."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human readable failure reason. Absent when delivered."
+          }
+        },
+        "required": [
+          "delivered"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "EntityType.SMTP_CONFIG": {
         "enum": [
           "smtpConfig"
@@ -31813,7 +31659,7 @@
           "SMTP_CONFIG"
         ]
       },
-      "SMTPConfigResponse": {
+      "CreateSMTPConfigResponse": {
         "properties": {
           "user": {
             "type": "string"
@@ -31836,6 +31682,9 @@
           },
           "object": {
             "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/SMTPVerificationResponse"
           }
         },
         "required": [
@@ -31845,13 +31694,11 @@
           "port",
           "from",
           "useSSL",
-          "object"
+          "object",
+          "verification"
         ],
         "type": "object",
         "additionalProperties": false
-      },
-      "CreateSMTPConfigResponse": {
-        "$ref": "#/components/schemas/SMTPConfigResponse"
       },
       "UpsertSMTPConfigRequest": {
         "properties": {
@@ -31887,6 +31734,59 @@
             "example": true
           }
         },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TestSMTPConfigResponse": {
+        "properties": {
+          "verification": {
+            "$ref": "#/components/schemas/SMTPVerificationResponse"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
+          }
+        },
+        "required": [
+          "verification",
+          "object"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SMTPConfigResponse": {
+        "properties": {
+          "user": {
+            "type": "string"
+          },
+          "pass": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "number",
+            "format": "double"
+          },
+          "from": {
+            "type": "string"
+          },
+          "useSSL": {
+            "type": "boolean"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.SMTP_CONFIG"
+          }
+        },
+        "required": [
+          "user",
+          "pass",
+          "host",
+          "port",
+          "from",
+          "useSSL",
+          "object"
+        ],
         "type": "object",
         "additionalProperties": false
       },

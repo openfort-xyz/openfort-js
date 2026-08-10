@@ -15,7 +15,7 @@
 
 
 /**
- * One resolved funding method the SDK/widget renders. The provider is included for telemetry but is NOT shown to the user. `angle` is \"iframe\" | \"native\".
+ * One resolved funding method the SDK/widget renders. The provider is included for telemetry but is NOT shown to the user. `angle` is \"iframe\" | \"native\". Clients derive display labels and device-capability gating (e.g. Apple Pay on Safari) from `method` and `rail`.
  * @export
  * @interface ResolvedFundingMethodResponse
  */
@@ -39,23 +39,11 @@ export interface ResolvedFundingMethodResponse {
      */
     'angle': string;
     /**
-     * 
-     * @type {string}
-     * @memberof ResolvedFundingMethodResponse
-     */
-    'label': string;
-    /**
      * Regional bank rail for bank_transfer (\"ach\" | \"sepa\" | \"interac\").
      * @type {string}
      * @memberof ResolvedFundingMethodResponse
      */
     'rail'?: string;
-    /**
-     * Client must still gate on device capability (e.g. Apple Pay on Safari).
-     * @type {boolean}
-     * @memberof ResolvedFundingMethodResponse
-     */
-    'requiresDeviceCheck'?: boolean;
     /**
      * Provider PUBLISHABLE key for \"embedded\" rows — the client\'s elements need it BEFORE the commit (e.g. Stripe\'s Link auth element). Public by design.
      * @type {string}

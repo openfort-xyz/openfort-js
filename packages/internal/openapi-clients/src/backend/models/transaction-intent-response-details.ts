@@ -28,9 +28,6 @@ import { StandardDetails } from './standard-details';
 // May contain unused imports in some cases
 // @ts-ignore
 import { UserOperationV9 } from './user-operation-v9';
-// May contain unused imports in some cases
-// @ts-ignore
-import { ZKSyncDetails } from './zksync-details';
 
 /**
  * Specific transaction details based on its type
@@ -38,6 +35,18 @@ import { ZKSyncDetails } from './zksync-details';
  * @interface TransactionIntentResponseDetails
  */
 export interface TransactionIntentResponseDetails {
+    /**
+     * 
+     * @type {UserOperationV9}
+     * @memberof TransactionIntentResponseDetails
+     */
+    'userOperation': UserOperationV9;
+    /**
+     * A User Operation hash.
+     * @type {string}
+     * @memberof TransactionIntentResponseDetails
+     */
+    'userOperationHash': string;
     /**
      * The transaction sender.
      * @type {string}
@@ -81,34 +90,10 @@ export interface TransactionIntentResponseDetails {
      */
     'maxPriorityFeePerGas': string;
     /**
-     * Address of the paymaster account that will pay the fees.
-     * @type {string}
-     * @memberof TransactionIntentResponseDetails
-     */
-    'paymaster'?: string;
-    /**
-     * Input data to the paymaster
-     * @type {string}
-     * @memberof TransactionIntentResponseDetails
-     */
-    'paymasterInput'?: string;
-    /**
      * Value in wei sent with this transaction.
      * @type {string}
      * @memberof TransactionIntentResponseDetails
      */
     'value'?: string;
-    /**
-     * 
-     * @type {UserOperationV9}
-     * @memberof TransactionIntentResponseDetails
-     */
-    'userOperation': UserOperationV9;
-    /**
-     * A User Operation hash.
-     * @type {string}
-     * @memberof TransactionIntentResponseDetails
-     */
-    'userOperationHash': string;
 }
 

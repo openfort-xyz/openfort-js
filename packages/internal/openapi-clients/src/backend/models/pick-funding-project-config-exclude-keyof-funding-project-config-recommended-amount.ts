@@ -15,70 +15,64 @@
 
 
 /**
- * Body for PUT /v2/funding/config — the dashboard \"Funding\" section config. The stored shape verbatim, except `recommendedAmount` may be omitted instead of sent as null.
+ * From T, pick a set of properties whose keys are in the union K
  * @export
- * @interface UpdateFundingConfigRequest
+ * @interface PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
  */
-export interface UpdateFundingConfigRequest {
+export interface PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount {
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'ecosystem': string;
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'defaultChain': string;
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'defaultCurrency': string;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'crossChainBridging': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'onrampEnabled': boolean;
     /**
      * Enabled web2 methods (FundingMethod values), in display order.
      * @type {Array<string>}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'onrampMethods': Array<string>;
     /**
      * Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'walletPayEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'depositAddressEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmount
      */
     'depositFromWalletEnabled': boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateFundingConfigRequest
-     */
-    'recommendedAmount'?: string;
 }
 

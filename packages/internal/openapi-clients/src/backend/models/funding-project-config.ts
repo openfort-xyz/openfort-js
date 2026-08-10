@@ -13,74 +13,71 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { FundingConfigCoinbaseResponse } from './funding-config-coinbase-response';
 
 /**
- * GET/PUT /v2/funding/config response — the resolved project funding config.
+ * Funding project configuration — the per-project-environment settings written by the dashboard \"Funding\" section and read by the onramp routing layer.  One shape end to end: the repository maps it to/from snake_case columns, the request adds nothing but optionality, and the response is this type verbatim.
  * @export
- * @interface FundingConfigResponse
+ * @interface FundingProjectConfig
  */
-export interface FundingConfigResponse {
+export interface FundingProjectConfig {
     /**
      * 
      * @type {string}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'ecosystem': string;
     /**
      * 
      * @type {string}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'defaultChain': string;
     /**
      * 
      * @type {string}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'defaultCurrency': string;
     /**
      * 
      * @type {string}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'recommendedAmount': string | null;
     /**
      * 
      * @type {boolean}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'crossChainBridging': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'onrampEnabled': boolean;
     /**
-     * 
+     * Enabled web2 methods (FundingMethod values), in display order.
      * @type {Array<string>}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'onrampMethods': Array<string>;
     /**
-     * 
-     * @type {FundingConfigCoinbaseResponse}
-     * @memberof FundingConfigResponse
+     * Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds.
+     * @type {boolean}
+     * @memberof FundingProjectConfig
      */
-    'coinbase': FundingConfigCoinbaseResponse | null;
+    'walletPayEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'depositAddressEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof FundingConfigResponse
+     * @memberof FundingProjectConfig
      */
     'depositFromWalletEnabled': boolean;
 }

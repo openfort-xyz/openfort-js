@@ -33,7 +33,7 @@ export interface CreateAccountRequest {
      */
     'externalOwnerAddress'?: string;
     /**
-     * The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, ZKSyncUpgradeableV2). Defaults to UpgradeableV6.
+     * The type of smart account that will be created (e.g. UpgradeableV6, UpgradeableV5, Simple). Defaults to UpgradeableV6.
      * @type {string}
      * @memberof CreateAccountRequest
      */

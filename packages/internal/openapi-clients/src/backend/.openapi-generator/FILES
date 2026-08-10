@@ -162,6 +162,7 @@ models/create-policy-v2-rule-request.ts
 models/create-project-api-key-request.ts
 models/create-project-request.ts
 models/create-session-request.ts
+models/create-smtpconfig-response.ts
 models/create-stripe-link-auth-intent-request.ts
 models/create-subscription-request.ts
 models/create-transaction-intent-request.ts
@@ -295,13 +296,11 @@ models/forwarder-contract-response.ts
 models/funding-chain-currency-response.ts
 models/funding-chain-response.ts
 models/funding-chains-response.ts
-models/funding-config-coinbase-request.ts
-models/funding-config-coinbase-response.ts
-models/funding-config-response.ts
 models/funding-crypto-payment-method-response.ts
 models/funding-fee-response.ts
 models/funding-onramp-payment-method-response.ts
 models/funding-payment-method-response.ts
+models/funding-project-config.ts
 models/funding-session-response.ts
 models/funding-source-request.ts
 models/funding-source-response.ts
@@ -363,6 +362,7 @@ models/login-with-id-token-request.ts
 models/logout-request.ts
 models/loot-locker-oauth-config.ts
 models/mapping-strategy.ts
+models/me-permissions-response.ts
 models/message-bird-sms-provider-config.ts
 models/mfa-email-challenge-response.ts
 models/mfa-email-verify-request.ts
@@ -427,6 +427,7 @@ models/phone-number-verify-post-request.ts
 models/phone-number-verify-post200-response-user.ts
 models/phone-number-verify-post200-response.ts
 models/pick-contract-response-id.ts
+models/pick-funding-project-config-exclude-keyof-funding-project-config-recommended-amount.ts
 models/pick-json-fragment-exclude-keyof-json-fragment-inputs-or-outputs.ts
 models/pick-json-fragment-type-exclude-keyof-json-fragment-type-components.ts
 models/pick-player-response-id.ts
@@ -563,6 +564,7 @@ models/sms-provider-twilio.ts
 models/sms-provider-txtlocal.ts
 models/sms-provider-vonage.ts
 models/smtpconfig-response.ts
+models/smtpverification-response.ts
 models/social-sign-in-request-id-token.ts
 models/social-sign-in-request.ts
 models/social-sign-in200-response-user.ts
@@ -610,6 +612,7 @@ models/supabase-auth-config.ts
 models/switch-chain-queries-v2.ts
 models/switch-chain-request.ts
 models/test-account-config.ts
+models/test-smtpconfig-response.ts
 models/test-trigger200-response.ts
 models/third-party-link-request.ts
 models/third-party-oauth-provider-accelbyte.ts
@@ -698,4 +701,3 @@ models/webhook-response.ts
 models/webhook-secret-info-response.ts
 models/webhook-secret-rotate-response.ts
 models/withdrawal-policy-request.ts
-models/zksync-details.ts

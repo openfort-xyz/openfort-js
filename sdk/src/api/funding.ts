@@ -257,8 +257,9 @@ export interface ResolvedFundingMethod {
   /** Executing provider — for telemetry only, never display. */
   provider: string
   angle: OnrampAngle | string
+  /** Display label, derived client-side from `method` + `rail`. */
   label: string
-  /** Regional rail label for bank transfers ("ach" | "sepa" | "interac"). */
+  /** Regional bank rail for bank transfers ("ach" | "sepa" | "interac"). */
   rail?: string
   /** Client must still gate on device capability (e.g. Apple Pay needs an Apple device). */
   requiresDeviceCheck?: boolean
@@ -267,6 +268,26 @@ export interface ResolvedFundingMethod {
    * (e.g. Stripe's Link auth) initialize with it. Public by design.
    */
   providerPublishableKey?: string
+}
+
+/** The API sends `method` + `rail`; the label and device gating are client concerns. */
+const METHOD_PRESENTATION: Record<OnrampMethodId, { label: string; requiresDeviceCheck?: boolean }> = {
+  apple_pay: { label: 'Apple Pay', requiresDeviceCheck: true },
+  google_pay: { label: 'Google Pay', requiresDeviceCheck: true },
+  card: { label: 'Card' },
+  bank_transfer: { label: 'Bank transfer' },
+}
+
+const RAIL_LABEL: Record<string, string> = { ach: 'ACH', sepa: 'SEPA', interac: 'Interac' }
+
+function presentMethodRow(row: Omit<ResolvedFundingMethod, 'label' | 'requiresDeviceCheck'>): ResolvedFundingMethod {
+  const fixed = METHOD_PRESENTATION[row.method as OnrampMethodId]
+  const railLabel = row.rail ? RAIL_LABEL[row.rail] : undefined
+  return {
+    ...row,
+    label: railLabel ?? fixed?.label ?? row.method,
+    ...(fixed?.requiresDeviceCheck ? { requiresDeviceCheck: true } : {}),
+  }
 }
 
 /** Resolved fiat methods for a session's destination + the buyer's region. */
@@ -446,7 +467,10 @@ export class FundingApi {
           (await this.fundingApi.getFundingSessionMethods({ sessionId, clientSecret, country: params?.country })).data,
         { context: 'funding.sessions.methods' }
       )
-      return response as ResolvedFundingMethods
+      return {
+        country: response.country ?? null,
+        methods: (response.methods ?? []).map(presentMethodRow),
+      }
     },
 
     /**

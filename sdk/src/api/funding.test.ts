@@ -58,11 +58,14 @@ describe('FundingApi', () => {
     funding.createFundingSession.mockReturnValue(
       ok({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method', paymentMethod: null })
     )
+    // The API sends method + rail only; label and device gating are derived here.
     funding.getFundingSessionMethods.mockReturnValue(
       ok({
         country: 'US',
         methods: [
-          { method: 'apple_pay', provider: 'coinbase', angle: 'native', label: 'Apple Pay', requiresDeviceCheck: true },
+          { method: 'apple_pay', provider: 'coinbase', angle: 'native' },
+          { method: 'bank_transfer', provider: 'stripe', angle: 'iframe', rail: 'ach' },
+          { method: 'bank_transfer', provider: 'meld', angle: 'iframe' },
         ],
       })
     )
@@ -70,7 +73,15 @@ describe('FundingApi', () => {
     await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
     const resolved = await api.sessions.methods('fnd_1', { country: 'US' })
     expect(resolved.country).toBe('US')
-    expect(resolved.methods[0]).toMatchObject({ method: 'apple_pay', angle: 'native' })
+    expect(resolved.methods[0]).toMatchObject({
+      method: 'apple_pay',
+      angle: 'native',
+      label: 'Apple Pay',
+      requiresDeviceCheck: true,
+    })
+    expect(resolved.methods[1]).toMatchObject({ label: 'ACH', rail: 'ach' })
+    expect(resolved.methods[2]).toMatchObject({ label: 'Bank transfer' })
+    expect(resolved.methods[2].requiresDeviceCheck).toBeUndefined()
     expect(funding.getFundingSessionMethods).toHaveBeenCalledWith({
       sessionId: 'fnd_1',
       clientSecret: 'cs_1',
