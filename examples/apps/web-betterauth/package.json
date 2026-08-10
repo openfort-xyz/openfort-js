@@ -1,0 +1,31 @@
+{
+  "name": "@openfort-betterauth/web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@openfort/openfort-js": "workspace:^",
+    "@tanstack/react-query": "^5.99.0",
+    "better-auth": "^1.6.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "viem": "2.38.4",
+    "wagmi": "^2.19.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/node": "^22.19.17",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "tailwindcss": "^4.2.2",
+    "typescript": "~5.8.3",
+    "vite": "^8.0.8"
+  }
+}

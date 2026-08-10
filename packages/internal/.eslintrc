@@ -1,9 +1,0 @@
-{
-  "ignorePatterns": ["**sample-app**/"],
-  "extends": ["../../.eslintrc"],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json",
-    "tsconfigRootDir": "."
-  }
-}

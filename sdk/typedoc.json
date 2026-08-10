@@ -1,5 +1,19 @@
 {
-  "extends": ["../typedoc.base.json"],
+  "$schema": "https://typedoc.org/schema.json",
+  "includeVersion": false,
+  "readme": "none",
+  "sort": ["kind"],
+  "kindSortOrder": [
+    "Class",
+    "Interface",
+    "Enum",
+    "TypeAlias",
+    "Variable",
+    "Function",
+    "Property",
+    "Constructor",
+    "Method"
+  ],
   "entryPoints": ["src/index.ts"],
   "tsconfig": "./tsconfig.typedoc.json"
 }
