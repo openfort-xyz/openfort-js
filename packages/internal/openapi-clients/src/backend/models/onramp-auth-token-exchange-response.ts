@@ -15,16 +15,16 @@
 
 
 /**
- * A minted Stripe LinkAuthIntent — the client renders the Link auth element with it.
+ * Result of exchanging a completed auth intent (the provider token stays server-side).
  * @export
- * @interface LinkAuthIntentResponse
+ * @interface OnrampAuthTokenExchangeResponse
  */
-export interface LinkAuthIntentResponse {
+export interface OnrampAuthTokenExchangeResponse {
     /**
      * 
-     * @type {string}
-     * @memberof LinkAuthIntentResponse
+     * @type {boolean}
+     * @memberof OnrampAuthTokenExchangeResponse
      */
-    'id': string;
+    'exchanged': boolean;
 }
 

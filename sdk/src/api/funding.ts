@@ -66,9 +66,9 @@ export type OnrampMethodId = 'apple_pay' | 'google_pay' | 'card' | 'bank_transfe
 
 /**
  * How the client executes a resolved fiat method: open `url` (`iframe`), mount
- * the provider's in-page Pay button (`native`), or run Stripe's Link element
- * flow (`embedded` — authenticate + collect via the coordinator, then commit
- * with `stripeLink` and perform the checkout).
+ * the provider's in-page Pay button (`native`), or run the provider's headless
+ * element flow (`embedded` — authenticate + collect via the provider's
+ * elements, then commit with `embedded` and perform the checkout).
  */
 export type OnrampAngle = 'iframe' | 'native' | 'embedded'
 
@@ -76,8 +76,8 @@ export type OnrampAngle = 'iframe' | 'native' | 'embedded'
  * A fiat onramp commit. Openfort resolves the provider server-side from the
  * buyer's region + the session's destination — there is no provider choice
  * here. Wallet pay (`apple_pay`/`google_pay`) additionally requires the
- * OTP-verified buyer identity: use `verifications` (Coinbase-issued OTP) and
- * attach the record ids alongside the attested fields.
+ * OTP-verified buyer identity: use `verifications` and attach the record ids
+ * alongside the attested fields.
  */
 export interface OnrampPaymentMethodInput {
   type: 'onramp'
@@ -98,24 +98,24 @@ export interface OnrampPaymentMethodInput {
   phoneNumber?: string
   /** ISO-8601 time the phone OTP was verified — wallet pay only. */
   phoneNumberVerifiedAt?: string
-  /** ISO-8601 time the buyer accepted Coinbase's Guest Checkout terms — wallet pay only. */
+  /** ISO-8601 time the buyer accepted the checkout terms — wallet pay only. */
   agreementAcceptedAt?: string
-  /** Coinbase Verification API record for the phone (see `verifications`). */
+  /** Verification record for the phone (see `verifications`). */
   smsVerificationId?: string
-  /** Coinbase Verification API record for the email (see `verifications`). */
+  /** Verification record for the email (see `verifications`). */
   emailVerificationId?: string
   /**
-   * Stripe v2 embedded-components (Link-auth headless) flow — present when the
-   * client authenticated the buyer with Link and collected a payment method.
+   * Embedded (headless element) flow — present when the client authenticated
+   * the buyer with the provider's auth element and collected a payment method.
    * Redeem the session's element secret afterwards via `sessions.checkout`.
    */
-  stripeLink?: {
-    /** The LinkAuthIntent minted by `stripeLink.createAuthIntent`. */
-    linkAuthIntentId: string
-    /** Link-authenticated buyer id from the client's authenticate() callback. */
-    cryptoCustomerId: string
-    /** Payment token from the client's collectPaymentMethod() element. */
-    cryptoPaymentToken: string
+  embedded?: {
+    /** The auth intent minted by `embedded.createAuthIntent`. */
+    authIntentId: string
+    /** Authenticated buyer id from the client's embedded auth element. */
+    customerRef: string
+    /** Payment token from the client's embedded payment element. */
+    paymentToken: string
   }
 }
 
@@ -177,7 +177,7 @@ export interface FundingCryptoPaymentMethod {
  * A committed fiat onramp payment method. The executing provider is resolved
  * server-side and intentionally not part of the response — the client renders
  * per `angle`: open `url`, mount it as the native Pay button, or run the
- * Stripe Link element flow against `providerSessionId`.
+ * embedded element flow against `providerSessionId`.
  */
 export interface FundingOnrampPaymentMethod {
   type: 'onramp'
@@ -185,8 +185,8 @@ export interface FundingOnrampPaymentMethod {
   angle: OnrampAngle | string
   url: string | null
   /**
-   * The provider's own session id for this commit — for the Stripe Link (v2)
-   * flow, pass it to the coordinator's `performCheckout`.
+   * The provider's own session id for this commit — for the embedded flow,
+   * the id the client's checkout element executes against.
    */
   providerSessionId?: string | null
   fees: FundingFee[]
@@ -265,7 +265,7 @@ export interface ResolvedFundingMethod {
   requiresDeviceCheck?: boolean
   /**
    * Provider PUBLISHABLE key for `embedded` rows — the pre-commit elements
-   * (e.g. Stripe's Link auth) initialize with it. Public by design.
+   * (the embedded auth element) initialize with it. Public by design.
    */
   providerPublishableKey?: string
 }
@@ -315,7 +315,7 @@ export interface OnrampQuote {
   exchangeRate: string
 }
 
-/** A started Coinbase-issued OTP verification (the code is on its way). */
+/** A started OTP verification (the code is on its way). */
 export interface OnrampVerificationStart {
   verificationId: string
   /** ISO-8601 — the OTP expires ~10 minutes after initiation. */
@@ -509,9 +509,9 @@ export class FundingApi {
     },
 
     /**
-     * Stripe v2 (Link-auth headless) checkout: confirms the committed headless
-     * onramp session and returns the one-shot provider client secret for the
-     * client's performCheckout element.
+     * Embedded (headless) checkout: confirms the committed headless onramp
+     * session and returns the one-shot provider client secret for the client's
+     * embedded checkout element.
      */
     checkout: async (sessionId: string, params?: { clientSecret?: string }): Promise<{ clientSecret: string }> => {
       const clientSecret = this.resolveSecret(sessionId, params?.clientSecret)
@@ -530,12 +530,10 @@ export class FundingApi {
   }
 
   /**
-   * Coinbase-issued OTP verification for native wallet pay (Apple/Google Pay):
-   * Coinbase sends and checks the code itself. Verify the buyer's phone and
-   * email, then attach the returned ids to the wallet-pay commit as
-   * `smsVerificationId` / `emailVerificationId` (records stay valid ~60 days).
-   * Sandbox destinations (`+1000…` numbers, `@sandbox.test` emails) accept the
-   * fixed code 000000 on test-mode projects.
+   * OTP verification for native wallet pay (Apple/Google Pay): the code is
+   * sent and checked server-side. Verify the buyer's phone and email, then
+   * attach the returned ids to the wallet-pay commit as `smsVerificationId` /
+   * `emailVerificationId`.
    */
   public readonly verifications = {
     create: async (params: { channel: 'sms' | 'email'; destination: string }): Promise<OnrampVerificationStart> => {
@@ -562,25 +560,24 @@ export class FundingApi {
   }
 
   /**
-   * Stripe v2 embedded-components (Link-auth headless) helpers: mint the
-   * LinkAuthIntent the client's auth element needs, then exchange it for its
-   * server-side token after the buyer completes Link. The token never reaches
-   * the client — committing (`stripeLink` on the payment method) and
-   * `sessions.checkout` look it up by the intent id.
+   * Embedded (headless element) helpers: mint the auth intent the client's
+   * embedded auth element needs, then exchange it for its server-side token
+   * after the buyer completes the element. The token never reaches the client —
+   * committing (`embedded` on the payment method) and `sessions.checkout` look
+   * it up by the intent id.
    */
-  public readonly stripeLink = {
+  public readonly embedded = {
     createAuthIntent: async (params: { email: string }): Promise<{ id: string }> => {
       const response = await withApiError(
-        async () =>
-          (await this.fundingApi.createStripeLinkAuthIntent({ createStripeLinkAuthIntentRequest: params })).data,
-        { context: 'funding.stripeLink.createAuthIntent' }
+        async () => (await this.fundingApi.createOnrampAuthIntent({ createOnrampAuthIntentRequest: params })).data,
+        { context: 'funding.embedded.createAuthIntent' }
       )
       return response as { id: string }
     },
 
     exchangeToken: async (intentId: string): Promise<void> => {
-      await withApiError(async () => (await this.fundingApi.exchangeStripeLinkToken({ intentId })).data, {
-        context: 'funding.stripeLink.exchangeToken',
+      await withApiError(async () => (await this.fundingApi.exchangeOnrampAuthToken({ intentId })).data, {
+        context: 'funding.embedded.exchangeToken',
       })
     },
   }

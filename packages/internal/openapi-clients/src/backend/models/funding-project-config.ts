@@ -63,7 +63,7 @@ export interface FundingProjectConfig {
      */
     'onrampMethods': Array<string>;
     /**
-     * Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds.
+     * Whether native wallet pay (Apple/Google Pay) is offered. Signing uses platform-wide credentials.
      * @type {boolean}
      * @memberof FundingProjectConfig
      */

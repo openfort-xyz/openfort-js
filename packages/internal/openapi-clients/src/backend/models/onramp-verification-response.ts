@@ -15,7 +15,7 @@
 
 
 /**
- * A started Coinbase onramp verification — Coinbase sent the OTP to the destination.
+ * A started onramp verification — the OTP is on its way to the destination.
  * @export
  * @interface OnrampVerificationResponse
  */

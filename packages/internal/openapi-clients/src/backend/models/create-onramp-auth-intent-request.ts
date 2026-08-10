@@ -17,13 +17,13 @@
 /**
  * 
  * @export
- * @interface CreateStripeLinkAuthIntentRequest
+ * @interface CreateOnrampAuthIntentRequest
  */
-export interface CreateStripeLinkAuthIntentRequest {
+export interface CreateOnrampAuthIntentRequest {
     /**
      * 
      * @type {string}
-     * @memberof CreateStripeLinkAuthIntentRequest
+     * @memberof CreateOnrampAuthIntentRequest
      */
     'email': string;
 }

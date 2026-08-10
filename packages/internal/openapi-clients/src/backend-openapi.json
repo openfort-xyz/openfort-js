@@ -5362,370 +5362,6 @@
         ]
       }
     },
-    "/v2/funding/onramp/verifications": {
-      "post": {
-        "operationId": "createOnrampVerification",
-        "responses": {
-          "200": {
-            "description": "Verification started; the OTP is on its way.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampVerificationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid destination or rate limited."
-          }
-        },
-        "description": "Starts a Coinbase-issued OTP verification for the buyer's phone or email —\nthe identity step of native wallet pay (Apple/Google Pay). Coinbase sends\nthe code itself (no partner SMS/email vendor needed); submit it via the\nsubmit endpoint, then attach the returned ids to the wallet-pay commit as\n`smsVerificationId`/`emailVerificationId`. Sandbox: `+1000…` numbers and\n`@sandbox.test` emails never send anything and accept the code 000000.",
-        "summary": "Start a wallet-pay OTP verification",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "destination": {
-                    "type": "string"
-                  },
-                  "channel": {
-                    "type": "string",
-                    "enum": [
-                      "sms",
-                      "email"
-                    ]
-                  }
-                },
-                "required": [
-                  "destination",
-                  "channel"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/verifications/{verificationId}/submit": {
-      "post": {
-        "operationId": "submitOnrampVerification",
-        "responses": {
-          "200": {
-            "description": "Verification completed.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampVerificationSubmitResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - incorrect or expired code."
-          }
-        },
-        "description": "Submits the OTP the buyer received for a verification. On success the\nverification is valid for 60 days; its id rides on the wallet-pay commit.",
-        "summary": "Submit a wallet-pay OTP code",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "verificationId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "otpCode": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "otpCode"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/stripe/link_auth_intents": {
-      "post": {
-        "operationId": "createStripeLinkAuthIntent",
-        "responses": {
-          "200": {
-            "description": "Link auth intent created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinkAuthIntentResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - Stripe Link onramp not configured."
-          }
-        },
-        "description": "Mints a Stripe LinkAuthIntent for the buyer's email — step 1 of the v2\nembedded-components (headless) flow. The client renders Stripe's Link auth\nelement with the returned id; after the buyer completes it, exchange the\nintent for its server-side token via the tokens endpoint. Requires the\naccount's crypto_onramp_beta=v2 access (STRIPE_LINK_CLIENT_ID configured).",
-        "summary": "Create a Stripe Link auth intent",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "email"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/stripe/link_auth_intents/{intentId}/tokens": {
-      "post": {
-        "operationId": "exchangeStripeLinkToken",
-        "responses": {
-          "200": {
-            "description": "Token exchanged and stored.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinkTokenExchangeResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - Stripe Link onramp not configured."
-          }
-        },
-        "description": "Exchanges a completed LinkAuthIntent for its OAuth token — step 3 of the\nv2 flow, after the buyer finishes the Link auth element. The token stays\nserver-side; committing the session and checking out both look it up by\nthe intent id.",
-        "summary": "Exchange a Stripe Link auth intent for its token",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "intentId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/onramp/sessions": {
-      "post": {
-        "operationId": "createFundingOnrampSession",
-        "responses": {
-          "200": {
-            "description": "Onramp session created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampSessionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "description": "Creates an onramp session for the selected provider.\n\nThe provider is selected via the `provider` field. All request and response formats are unified\nand provider-agnostic. The service layer handles translation between the common format and\nprovider-specific APIs.",
-        "summary": "Create onramp session",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnrampSessionRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/quotes": {
-      "post": {
-        "operationId": "getFundingOnrampQuote",
-        "responses": {
-          "200": {
-            "description": "Onramp quote(s) retrieved successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampQuotesResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          },
-          "500": {
-            "description": "Internal server error."
-          }
-        },
-        "description": "Retrieves onramp quote(s) without creating an actual transaction.\n\nIf provider is specified, returns a single quote for that provider.\nIf provider is not specified, returns quotes from all available providers.\n\nAll request and response formats are unified and provider-agnostic.",
-        "summary": "Get onramp quote(s)",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnrampQuoteRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/methods": {
-      "get": {
-        "operationId": "getFundingOnrampMethods",
-        "responses": {
-          "200": {
-            "description": "Available onramp methods resolved successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampMethodsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          }
-        },
-        "description": "Resolves the fiat onramp methods available for a destination and the buyer's\nregion. Openfort auto-selects the provider per method (by country, asset, and\nwhether the project has native wallet-pay creds) — the provider is never\nshown to or chosen by the end user; only the resolved method rows are returned.\n\nThe country is taken from the `country` query param, else the request IP\n(`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated\nallowlist in display order; omit to return all web2 methods.",
-        "summary": "Resolve onramp methods",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "targetChain",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "targetCurrency",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "country",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "methods",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
     "/v1/onramp/sessions": {
       "post": {
         "operationId": "createOnrampSession",
@@ -5747,6 +5383,7 @@
             "description": "Internal server error."
           }
         },
+        "description": "Creates an onramp session for the selected provider.",
         "summary": "Create onramp session",
         "tags": [
           "Onramp"
@@ -5791,6 +5428,7 @@
             "description": "Internal server error."
           }
         },
+        "description": "Retrieves onramp quote(s) without creating an actual transaction.\n\nIf provider is specified, returns a single quote for that provider.\nIf provider is not specified, returns quotes from all available providers.",
         "summary": "Get onramp quote(s)",
         "tags": [
           "Onramp"
@@ -8407,6 +8045,285 @@
         }
       }
     },
+    "/v2/funding/onramp/verifications": {
+      "post": {
+        "operationId": "createOnrampVerification",
+        "responses": {
+          "200": {
+            "description": "Verification started; the OTP is on its way.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampVerificationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid destination."
+          },
+          "429": {
+            "description": "Too many verification requests."
+          }
+        },
+        "description": "Starts an OTP verification for the buyer's phone or email — the identity\nstep of native wallet pay (Apple/Google Pay). The code is sent to the\ndestination; submit it via the submit endpoint, then attach the returned\nids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`.",
+        "summary": "Start a wallet-pay OTP verification",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "destination": {
+                    "type": "string"
+                  },
+                  "channel": {
+                    "type": "string",
+                    "enum": [
+                      "sms",
+                      "email"
+                    ]
+                  }
+                },
+                "required": [
+                  "destination",
+                  "channel"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/verifications/{verificationId}/submit": {
+      "post": {
+        "operationId": "submitOnrampVerification",
+        "responses": {
+          "200": {
+            "description": "Verification completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampVerificationSubmitResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - incorrect or expired code."
+          }
+        },
+        "description": "Submits the OTP the buyer received for a verification. On success the\nreturned id rides on the wallet-pay commit.",
+        "summary": "Submit a wallet-pay OTP code",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "verificationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "otpCode": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "otpCode"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/auth_intents": {
+      "post": {
+        "operationId": "createOnrampAuthIntent",
+        "responses": {
+          "200": {
+            "description": "Auth intent created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampAuthIntentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - embedded onramp not configured."
+          }
+        },
+        "description": "Mints an auth intent for the buyer's email — step 1 of the embedded\n(headless element) flow. The client renders the provider's auth element\nwith the returned id; after the buyer completes it, exchange the intent\nfor its server-side token via the tokens endpoint.",
+        "summary": "Create an embedded-flow auth intent",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/auth_intents/{intentId}/tokens": {
+      "post": {
+        "operationId": "exchangeOnrampAuthToken",
+        "responses": {
+          "200": {
+            "description": "Token exchanged and stored.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampAuthTokenExchangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - embedded onramp not configured."
+          }
+        },
+        "description": "Exchanges a completed auth intent for its provider token — step 3 of the\nembedded flow, after the buyer finishes the auth element. The token stays\nserver-side; committing the session and checking out both look it up by\nthe intent id.",
+        "summary": "Exchange an embedded-flow auth intent for its token",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "intentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/methods": {
+      "get": {
+        "operationId": "getFundingOnrampMethods",
+        "responses": {
+          "200": {
+            "description": "Available onramp methods resolved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampMethodsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          }
+        },
+        "description": "Resolves the fiat onramp methods available for a destination and the buyer's\nregion. Openfort auto-selects the provider per method (by country, asset, and\nwhether the project has native wallet-pay unlocked) — the provider is never\nshown to or chosen by the end user; only the resolved method rows are returned.\n\nThe country is taken from the `country` query param, else the request IP\n(`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated\nallowlist in display order; omit to return all web2 methods.",
+        "summary": "Resolve onramp methods",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "targetChain",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "targetCurrency",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "country",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "methods",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
     "/v2/funding/chains": {
       "get": {
         "operationId": "ListChains",
@@ -8556,6 +8473,14 @@
           },
           {
             "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
             "name": "x-forwarded-for",
             "required": false,
             "schema": {
@@ -8598,14 +8523,14 @@
             }
           },
           "400": {
-            "description": "Bad request - session has no headless onramp or the Link token expired."
+            "description": "Bad request - session has no headless onramp or the auth token expired."
           },
           "404": {
             "description": "Not found."
           }
         },
-        "description": "Stripe Link (v2 headless) checkout: confirms the committed headless onramp\nsession with the buyer's mandate acceptance (this request's ip + user\nagent) and returns the provider client secret for the client's\nperformCheckout element. One-shot — the secret is never stored.",
-        "summary": "Check out a Stripe Link onramp session",
+        "description": "Embedded (headless) checkout: confirms the committed headless onramp\nsession with the buyer's mandate acceptance (this request's ip + user\nagent) and returns the provider client secret for the client's embedded\ncheckout element. One-shot — the secret is never stored.",
+        "summary": "Check out an embedded onramp session",
         "tags": [
           "Funding"
         ],
@@ -8620,6 +8545,14 @@
             "in": "path",
             "name": "sessionId",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -8703,7 +8636,7 @@
             }
           },
           {
-            "description": "The session client secret returned at creation.",
+            "description": "The session client secret returned at creation.\nDeliberately a query parameter (GET semantics): the secret is\nshort-lived and session-scoped; every other endpoint takes it in the\nPOST body.",
             "in": "query",
             "name": "clientSecret",
             "required": false,
@@ -24175,66 +24108,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "OnrampVerificationResponse": {
-        "description": "A started Coinbase onramp verification — Coinbase sent the OTP to the destination.",
-        "properties": {
-          "verificationId": {
-            "type": "string"
-          },
-          "otpExpiresAt": {
-            "type": "string",
-            "description": "ISO-8601 — the OTP expires ~10 minutes after initiation."
-          }
-        },
-        "required": [
-          "verificationId"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampVerificationSubmitResponse": {
-        "description": "A completed Coinbase onramp verification — attach the id to a wallet-pay commit.",
-        "properties": {
-          "verificationId": {
-            "type": "string"
-          },
-          "verificationExpiresAt": {
-            "type": "string",
-            "description": "ISO-8601 — the verification record stays valid ~60 days."
-          }
-        },
-        "required": [
-          "verificationId"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "LinkAuthIntentResponse": {
-        "description": "A minted Stripe LinkAuthIntent — the client renders the Link auth element with it.",
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "LinkTokenExchangeResponse": {
-        "description": "Result of exchanging a completed LinkAuthIntent (the OAuth token stays server-side).",
-        "properties": {
-          "exchanged": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "exchanged"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
       "OnrampProvider": {
         "enum": [
           "coinbase",
@@ -24468,57 +24341,6 @@
           "destinationCurrency",
           "destinationNetwork",
           "sourceAmount"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ResolvedFundingMethodResponse": {
-        "description": "One resolved funding method the SDK/widget renders. The provider is included\nfor telemetry but is NOT shown to the user. `angle` is \"iframe\" | \"native\".\nClients derive display labels and device-capability gating (e.g. Apple Pay\non Safari) from `method` and `rail`.",
-        "properties": {
-          "method": {
-            "type": "string"
-          },
-          "provider": {
-            "type": "string"
-          },
-          "angle": {
-            "type": "string"
-          },
-          "rail": {
-            "type": "string",
-            "description": "Regional bank rail for bank_transfer (\"ach\" | \"sepa\" | \"interac\")."
-          },
-          "providerPublishableKey": {
-            "type": "string",
-            "description": "Provider PUBLISHABLE key for \"embedded\" rows — the client's elements need\nit BEFORE the commit (e.g. Stripe's Link auth element). Public by design."
-          }
-        },
-        "required": [
-          "method",
-          "provider",
-          "angle"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampMethodsResponse": {
-        "description": "Resolved onramp methods for a destination + region (provider auto-selected, hidden).",
-        "properties": {
-          "country": {
-            "type": "string",
-            "nullable": true,
-            "description": "Resolved ISO-3166 alpha-2 country, or null for rest-of-world."
-          },
-          "methods": {
-            "items": {
-              "$ref": "#/components/schemas/ResolvedFundingMethodResponse"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "country",
-          "methods"
         ],
         "type": "object",
         "additionalProperties": false
@@ -28516,6 +28338,117 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OnrampVerificationResponse": {
+        "description": "A started onramp verification — the OTP is on its way to the destination.",
+        "properties": {
+          "verificationId": {
+            "type": "string"
+          },
+          "otpExpiresAt": {
+            "type": "string",
+            "description": "ISO-8601 — the OTP expires ~10 minutes after initiation."
+          }
+        },
+        "required": [
+          "verificationId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampVerificationSubmitResponse": {
+        "description": "A completed onramp verification — attach the id to a wallet-pay commit.",
+        "properties": {
+          "verificationId": {
+            "type": "string"
+          },
+          "verificationExpiresAt": {
+            "type": "string",
+            "description": "ISO-8601 — the verification record stays valid ~60 days."
+          }
+        },
+        "required": [
+          "verificationId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampAuthIntentResponse": {
+        "description": "A minted embedded-flow auth intent — the client renders the provider's auth element with it.",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampAuthTokenExchangeResponse": {
+        "description": "Result of exchanging a completed auth intent (the provider token stays server-side).",
+        "properties": {
+          "exchanged": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "exchanged"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ResolvedFundingMethodResponse": {
+        "description": "One resolved funding method the SDK/widget renders. The provider is included\nfor telemetry but is NOT shown to the user. `angle` is \"iframe\" | \"native\".\nClients derive display labels and device-capability gating (e.g. Apple Pay\non Safari) from `method` and `rail`.",
+        "properties": {
+          "method": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "angle": {
+            "type": "string"
+          },
+          "rail": {
+            "type": "string",
+            "description": "Regional bank rail for bank_transfer (\"ach\" | \"sepa\" | \"interac\")."
+          },
+          "providerPublishableKey": {
+            "type": "string",
+            "description": "Provider PUBLISHABLE key for \"embedded\" rows — the client's pre-commit\nelements (the embedded auth element) initialize with it. Public by design."
+          }
+        },
+        "required": [
+          "method",
+          "provider",
+          "angle"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampMethodsResponse": {
+        "description": "Resolved onramp methods for a destination + region (provider auto-selected, hidden).",
+        "properties": {
+          "country": {
+            "type": "string",
+            "nullable": true,
+            "description": "Resolved ISO-3166 alpha-2 country, or null for rest-of-world."
+          },
+          "methods": {
+            "items": {
+              "$ref": "#/components/schemas/ResolvedFundingMethodResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "country",
+          "methods"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "FundingChainCurrencyResponse": {
         "description": "A source currency available on a chain.",
         "properties": {
@@ -28757,7 +28690,7 @@
           },
           "angle": {
             "type": "string",
-            "description": "How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (Stripe's Link element flow)."
+            "description": "How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (the provider's headless element flow)."
           },
           "url": {
             "type": "string",
@@ -28767,7 +28700,7 @@
           "providerSessionId": {
             "type": "string",
             "nullable": true,
-            "description": "The provider's own session/order id for this commit (e.g. Stripe's onramp\nsession id the client passes to performCheckout), or null."
+            "description": "The provider's own session/order id for this commit (for embedded rows,\nthe id the client's checkout element executes against), or null."
           },
           "fees": {
             "items": {
@@ -29014,54 +28947,54 @@
           },
           "email": {
             "type": "string",
-            "description": "OTP-verified buyer email — REQUIRED for `apple_pay`/`google_pay` (Coinbase's\nnative wallet-pay sheet needs partner-verified PII on Create Order). Ignored\nfor `card`/`bank_transfer`. Openfort verifies it via its own email OTP.",
+            "description": "OTP-verified buyer email — REQUIRED for `apple_pay`/`google_pay` (the\nnative wallet-pay sheet needs verified buyer identity). Ignored for\n`card`/`bank_transfer`. Openfort verifies it via its own email OTP.",
             "example": "buyer@example.com"
           },
           "phoneNumber": {
             "type": "string",
-            "description": "OTP-verified US mobile in E.164 — REQUIRED for `apple_pay`/`google_pay`.\nCoinbase requires a partner-verified US cell; Openfort verifies it via its\nown phone OTP. Ignored for `card`/`bank_transfer`.",
+            "description": "OTP-verified US mobile in E.164 — REQUIRED for `apple_pay`/`google_pay`;\nthe wallet-pay rail currently requires a verified US cell. Ignored for\n`card`/`bank_transfer`.",
             "example": "+14155550123"
           },
           "phoneNumberVerifiedAt": {
             "type": "string",
-            "description": "ISO-8601 time the phone OTP was verified. REQUIRED for `apple_pay`/`google_pay`;\nmust be within Coinbase's 60-day re-verify window.",
+            "description": "ISO-8601 time the phone OTP was verified. REQUIRED for\n`apple_pay`/`google_pay`; must be recent enough for the wallet-pay rail's\nre-verify window.",
             "example": "2026-07-07T12:00:00.000Z"
           },
           "agreementAcceptedAt": {
             "type": "string",
-            "description": "ISO-8601 time the buyer accepted Coinbase's Guest Checkout terms (surfaced at\nthe amount step). REQUIRED for `apple_pay`/`google_pay`.",
+            "description": "ISO-8601 time the buyer accepted the checkout terms surfaced at the\namount step. REQUIRED for `apple_pay`/`google_pay`.",
             "example": "2026-07-07T12:01:00.000Z"
           },
           "smsVerificationId": {
             "type": "string",
-            "description": "Coinbase Verification API record for the phone, from\nPOST /v2/funding/onramp/verifications (channel \"sms\") + submit. Coinbase\nsends and checks the OTP itself; the id is valid 60 days."
+            "description": "Verification record for the phone, from\nPOST /v2/funding/onramp/verifications (channel \"sms\") + submit."
           },
           "emailVerificationId": {
             "type": "string",
-            "description": "Coinbase Verification API record for the email, from\nPOST /v2/funding/onramp/verifications (channel \"email\") + submit."
+            "description": "Verification record for the email, from\nPOST /v2/funding/onramp/verifications (channel \"email\") + submit."
           },
-          "stripeLink": {
+          "embedded": {
             "properties": {
-              "cryptoPaymentToken": {
+              "paymentToken": {
                 "type": "string",
-                "description": "Payment token from the client's collectPaymentMethod() element."
+                "description": "Payment token from the client's embedded payment element."
               },
-              "cryptoCustomerId": {
+              "customerRef": {
                 "type": "string",
-                "description": "Link-authenticated buyer id from the client's authenticate() callback."
+                "description": "Authenticated buyer id from the client's embedded auth element."
               },
-              "linkAuthIntentId": {
+              "authIntentId": {
                 "type": "string",
-                "description": "The LinkAuthIntent minted by POST /v2/funding/onramp/stripe/link_auth_intents."
+                "description": "The auth intent minted by POST /v2/funding/onramp/auth_intents."
               }
             },
             "required": [
-              "cryptoPaymentToken",
-              "cryptoCustomerId",
-              "linkAuthIntentId"
+              "paymentToken",
+              "customerRef",
+              "authIntentId"
             ],
             "type": "object",
-            "description": "Stripe v2 embedded-components (Link-auth headless) flow. Present when the\nclient authenticated the buyer with Link and collected a payment method —\nthe commit then creates a HEADLESS Stripe session and the client redeems\nits secret via POST /sessions/{id}/onramp_checkout. Requires the account's\ncrypto_onramp_beta=v2 access; ignored when the resolved provider isn't Stripe."
+            "description": "Embedded (headless) element flow. Present when the client authenticated\nthe buyer with the provider's embedded auth element and collected a\npayment method — the commit then creates a headless provider session and\nthe client redeems its secret via POST /sessions/{id}/onramp_checkout.\nIgnored when the resolved method doesn't execute embedded."
           }
         },
         "required": [
@@ -29252,7 +29185,7 @@
           },
           "walletPayEnabled": {
             "type": "boolean",
-            "description": "Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds."
+            "description": "Whether native wallet pay (Apple/Google Pay) is offered. Signing uses platform-wide credentials."
           },
           "depositAddressEnabled": {
             "type": "boolean"
@@ -29306,7 +29239,7 @@
           },
           "walletPayEnabled": {
             "type": "boolean",
-            "description": "Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds."
+            "description": "Whether native wallet pay (Apple/Google Pay) is offered. Signing uses platform-wide credentials."
           },
           "depositAddressEnabled": {
             "type": "boolean"
@@ -29356,7 +29289,7 @@
           },
           "walletPayEnabled": {
             "type": "boolean",
-            "description": "Whether Coinbase wallet pay is offered. Signing uses the platform CDP creds."
+            "description": "Whether native wallet pay (Apple/Google Pay) is offered. Signing uses platform-wide credentials."
           },
           "depositAddressEnabled": {
             "type": "boolean"

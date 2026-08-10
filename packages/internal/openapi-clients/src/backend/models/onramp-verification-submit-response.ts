@@ -15,7 +15,7 @@
 
 
 /**
- * A completed Coinbase onramp verification — attach the id to a wallet-pay commit.
+ * A completed onramp verification — attach the id to a wallet-pay commit.
  * @export
  * @interface OnrampVerificationSubmitResponse
  */

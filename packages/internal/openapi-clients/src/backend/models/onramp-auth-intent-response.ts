@@ -15,16 +15,16 @@
 
 
 /**
- * Result of exchanging a completed LinkAuthIntent (the OAuth token stays server-side).
+ * A minted embedded-flow auth intent — the client renders the provider\'s auth element with it.
  * @export
- * @interface LinkTokenExchangeResponse
+ * @interface OnrampAuthIntentResponse
  */
-export interface LinkTokenExchangeResponse {
+export interface OnrampAuthIntentResponse {
     /**
      * 
-     * @type {boolean}
-     * @memberof LinkTokenExchangeResponse
+     * @type {string}
+     * @memberof OnrampAuthIntentResponse
      */
-    'exchanged': boolean;
+    'id': string;
 }
 

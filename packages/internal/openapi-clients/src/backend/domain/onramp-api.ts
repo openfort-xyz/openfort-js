@@ -36,7 +36,7 @@ import { OnrampSessionResponse } from '../models';
 export const OnrampApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * Creates an onramp session for the selected provider.
          * @summary Create onramp session
          * @param {OnrampSessionRequest} onrampSessionRequest 
          * @param {*} [options] Override http request option.
@@ -77,7 +77,7 @@ export const OnrampApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * 
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.
          * @summary Get onramp quote(s)
          * @param {OnrampQuoteRequest} onrampQuoteRequest 
          * @param {*} [options] Override http request option.
@@ -128,7 +128,7 @@ export const OnrampApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = OnrampApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * Creates an onramp session for the selected provider.
          * @summary Create onramp session
          * @param {OnrampSessionRequest} onrampSessionRequest 
          * @param {*} [options] Override http request option.
@@ -140,7 +140,7 @@ export const OnrampApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * 
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.
          * @summary Get onramp quote(s)
          * @param {OnrampQuoteRequest} onrampQuoteRequest 
          * @param {*} [options] Override http request option.
@@ -162,7 +162,7 @@ export const OnrampApiFactory = function (configuration?: Configuration, basePat
     const localVarFp = OnrampApiFp(configuration)
     return {
         /**
-         * 
+         * Creates an onramp session for the selected provider.
          * @summary Create onramp session
          * @param {OnrampApiCreateOnrampSessionRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -173,7 +173,7 @@ export const OnrampApiFactory = function (configuration?: Configuration, basePat
             return localVarFp.createOnrampSession(requestParameters.onrampSessionRequest, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.
          * @summary Get onramp quote(s)
          * @param {OnrampApiGetOnrampQuoteRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -222,7 +222,7 @@ export interface OnrampApiGetOnrampQuoteRequest {
  */
 export class OnrampApi extends BaseAPI {
     /**
-     * 
+     * Creates an onramp session for the selected provider.
      * @summary Create onramp session
      * @param {OnrampApiCreateOnrampSessionRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -235,7 +235,7 @@ export class OnrampApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.
      * @summary Get onramp quote(s)
      * @param {OnrampApiGetOnrampQuoteRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.

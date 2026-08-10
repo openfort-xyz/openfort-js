@@ -36,7 +36,7 @@ export interface FundingOnrampPaymentMethodResponse {
      */
     'method': string;
     /**
-     * How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (Stripe\'s Link element flow).
+     * How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (the provider\'s headless element flow).
      * @type {string}
      * @memberof FundingOnrampPaymentMethodResponse
      */
@@ -48,7 +48,7 @@ export interface FundingOnrampPaymentMethodResponse {
      */
     'url': string | null;
     /**
-     * The provider\'s own session/order id for this commit (e.g. Stripe\'s onramp session id the client passes to performCheckout), or null.
+     * The provider\'s own session/order id for this commit (for embedded rows, the id the client\'s checkout element executes against), or null.
      * @type {string}
      * @memberof FundingOnrampPaymentMethodResponse
      */

@@ -45,7 +45,7 @@ export interface ResolvedFundingMethodResponse {
      */
     'rail'?: string;
     /**
-     * Provider PUBLISHABLE key for \"embedded\" rows — the client\'s elements need it BEFORE the commit (e.g. Stripe\'s Link auth element). Public by design.
+     * Provider PUBLISHABLE key for \"embedded\" rows — the client\'s pre-commit elements (the embedded auth element) initialize with it. Public by design.
      * @type {string}
      * @memberof ResolvedFundingMethodResponse
      */

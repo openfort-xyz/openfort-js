@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { OnrampPaymentMethodRequestStripeLink } from './onramp-payment-method-request-stripe-link';
+import { OnrampPaymentMethodRequestEmbedded } from './onramp-payment-method-request-embedded';
 
 /**
  * A fiat web2 onramp payment method. The provider is auto-selected server-side (buyer region + destination asset + project config) — it is never chosen by the client. The response\'s `paymentMethod` carries the hosted checkout `url` to open; the session then advances via the provider\'s settlement webhook.
@@ -66,47 +66,47 @@ export interface OnrampPaymentMethodRequest {
      */
     'refundTo'?: string;
     /**
-     * OTP-verified buyer email — REQUIRED for `apple_pay`/`google_pay` (Coinbase\'s native wallet-pay sheet needs partner-verified PII on Create Order). Ignored for `card`/`bank_transfer`. Openfort verifies it via its own email OTP.
+     * OTP-verified buyer email — REQUIRED for `apple_pay`/`google_pay` (the native wallet-pay sheet needs verified buyer identity). Ignored for `card`/`bank_transfer`. Openfort verifies it via its own email OTP.
      * @type {string}
      * @memberof OnrampPaymentMethodRequest
      */
     'email'?: string;
     /**
-     * OTP-verified US mobile in E.164 — REQUIRED for `apple_pay`/`google_pay`. Coinbase requires a partner-verified US cell; Openfort verifies it via its own phone OTP. Ignored for `card`/`bank_transfer`.
+     * OTP-verified US mobile in E.164 — REQUIRED for `apple_pay`/`google_pay`; the wallet-pay rail currently requires a verified US cell. Ignored for `card`/`bank_transfer`.
      * @type {string}
      * @memberof OnrampPaymentMethodRequest
      */
     'phoneNumber'?: string;
     /**
-     * ISO-8601 time the phone OTP was verified. REQUIRED for `apple_pay`/`google_pay`; must be within Coinbase\'s 60-day re-verify window.
+     * ISO-8601 time the phone OTP was verified. REQUIRED for `apple_pay`/`google_pay`; must be recent enough for the wallet-pay rail\'s re-verify window.
      * @type {string}
      * @memberof OnrampPaymentMethodRequest
      */
     'phoneNumberVerifiedAt'?: string;
     /**
-     * ISO-8601 time the buyer accepted Coinbase\'s Guest Checkout terms (surfaced at the amount step). REQUIRED for `apple_pay`/`google_pay`.
+     * ISO-8601 time the buyer accepted the checkout terms surfaced at the amount step. REQUIRED for `apple_pay`/`google_pay`.
      * @type {string}
      * @memberof OnrampPaymentMethodRequest
      */
     'agreementAcceptedAt'?: string;
     /**
-     * Coinbase Verification API record for the phone, from POST /v2/funding/onramp/verifications (channel \"sms\") + submit. Coinbase sends and checks the OTP itself; the id is valid 60 days.
+     * Verification record for the phone, from POST /v2/funding/onramp/verifications (channel \"sms\") + submit.
      * @type {string}
      * @memberof OnrampPaymentMethodRequest
      */
     'smsVerificationId'?: string;
     /**
-     * Coinbase Verification API record for the email, from POST /v2/funding/onramp/verifications (channel \"email\") + submit.
+     * Verification record for the email, from POST /v2/funding/onramp/verifications (channel \"email\") + submit.
      * @type {string}
      * @memberof OnrampPaymentMethodRequest
      */
     'emailVerificationId'?: string;
     /**
      * 
-     * @type {OnrampPaymentMethodRequestStripeLink}
+     * @type {OnrampPaymentMethodRequestEmbedded}
      * @memberof OnrampPaymentMethodRequest
      */
-    'stripeLink'?: OnrampPaymentMethodRequestStripeLink;
+    'embedded'?: OnrampPaymentMethodRequestEmbedded;
 }
 
 export const OnrampPaymentMethodRequestTypeEnum = {

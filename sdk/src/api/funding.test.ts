@@ -24,8 +24,8 @@ function mockFundingApi() {
     checkoutFundingOnrampSession: vi.fn(),
     createOnrampVerification: vi.fn(),
     submitOnrampVerification: vi.fn(),
-    createStripeLinkAuthIntent: vi.fn(),
-    exchangeStripeLinkToken: vi.fn(),
+    createOnrampAuthIntent: vi.fn(),
+    exchangeOnrampAuthToken: vi.fn(),
   }
 }
 
@@ -173,13 +173,13 @@ describe('FundingApi', () => {
     })
   })
 
-  it('stripeLink helpers mint and exchange the LinkAuthIntent; checkout returns the element secret', async () => {
-    funding.createStripeLinkAuthIntent.mockReturnValue(ok({ id: 'lai_1' }))
-    funding.exchangeStripeLinkToken.mockReturnValue(ok({ exchanged: true }))
+  it('embedded helpers mint and exchange the auth intent; checkout returns the element secret', async () => {
+    funding.createOnrampAuthIntent.mockReturnValue(ok({ id: 'lai_1' }))
+    funding.exchangeOnrampAuthToken.mockReturnValue(ok({ exchanged: true }))
     funding.checkoutFundingOnrampSession.mockReturnValue(ok({ clientSecret: 'seti_secret' }))
     const api = makeApi(funding)
-    expect((await api.stripeLink.createAuthIntent({ email: 'a@b.co' })).id).toBe('lai_1')
-    await api.stripeLink.exchangeToken('lai_1')
+    expect((await api.embedded.createAuthIntent({ email: 'a@b.co' })).id).toBe('lai_1')
+    await api.embedded.exchangeToken('lai_1')
     const checkout = await api.sessions.checkout('fnd_1', { clientSecret: 'cs_1' })
     expect(checkout.clientSecret).toBe('seti_secret')
     expect(funding.checkoutFundingOnrampSession).toHaveBeenCalledWith({
