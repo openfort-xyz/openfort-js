@@ -22,8 +22,7 @@
 
 export const OnrampProvider = {
     COINBASE: 'coinbase',
-    STRIPE: 'stripe',
-    MELD: 'meld'
+    STRIPE: 'stripe'
 } as const;
 
 export type OnrampProvider = typeof OnrampProvider[keyof typeof OnrampProvider];

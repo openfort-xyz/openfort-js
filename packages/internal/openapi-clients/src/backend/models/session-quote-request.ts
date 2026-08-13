@@ -15,7 +15,7 @@
 
 
 /**
- * Price a fiat onramp route for a session before committing it. The provider is resolved exactly as `setPaymentMethod` would resolve it, so the quoted price matches the checkout the user will get.
+ * Price a fiat onramp route for a session before committing it. The provider is resolved exactly as `setPaymentMethod` would resolve it, so the quoted price matches the checkout the user will get. `sourceAmount` in the response is the fee-inclusive total the buyer pays. Some providers price all card-family methods identically (bank-rail-specific pricing may not be reflected).
  * @export
  * @interface SessionQuoteRequest
  */

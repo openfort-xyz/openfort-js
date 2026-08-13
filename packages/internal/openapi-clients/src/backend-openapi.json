@@ -24111,14 +24111,12 @@
       "OnrampProvider": {
         "enum": [
           "coinbase",
-          "stripe",
-          "meld"
+          "stripe"
         ],
         "type": "string",
         "x-enum-varnames": [
           "COINBASE",
-          "STRIPE",
-          "MELD"
+          "STRIPE"
         ]
       },
       "OnrampFee": {
@@ -29068,7 +29066,7 @@
         "additionalProperties": false
       },
       "SessionQuoteRequest": {
-        "description": "Price a fiat onramp route for a session before committing it. The provider is\nresolved exactly as `setPaymentMethod` would resolve it, so the quoted price\nmatches the checkout the user will get.",
+        "description": "Price a fiat onramp route for a session before committing it. The provider is\nresolved exactly as `setPaymentMethod` would resolve it, so the quoted price\nmatches the checkout the user will get. `sourceAmount` in the response is the\nfee-inclusive total the buyer pays. Some providers price all card-family\nmethods identically (bank-rail-specific pricing may not be reflected).",
         "properties": {
           "clientSecret": {
             "type": "string",

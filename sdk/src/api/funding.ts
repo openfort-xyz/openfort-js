@@ -65,12 +65,13 @@ interface FundingPaymentMethodBase {
 export type OnrampMethodId = 'apple_pay' | 'google_pay' | 'card' | 'bank_transfer'
 
 /**
- * How the client executes a resolved fiat method: open `url` (`iframe`), mount
+ * How the client executes a resolved fiat method: open `url` in a popup or
+ * new tab (`popup` — the hosted checkout page cannot be iframed), mount
  * the provider's in-page Pay button (`native`), or run the provider's headless
  * element flow (`embedded` — authenticate + collect via the provider's
  * elements, then commit with `embedded` and perform the checkout).
  */
-export type OnrampAngle = 'iframe' | 'native' | 'embedded'
+export type OnrampAngle = 'popup' | 'native' | 'embedded'
 
 /**
  * A fiat onramp commit. Openfort resolves the provider server-side from the
