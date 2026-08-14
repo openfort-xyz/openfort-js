@@ -64,8 +64,8 @@ describe('FundingApi', () => {
         country: 'US',
         methods: [
           { method: 'apple_pay', provider: 'coinbase', angle: 'native' },
-          { method: 'bank_transfer', provider: 'stripe', angle: 'iframe', rail: 'ach' },
-          { method: 'bank_transfer', provider: 'meld', angle: 'iframe' },
+          { method: 'bank_transfer', provider: 'stripe', angle: 'embedded', rail: 'ach' },
+          { method: 'bank_transfer', provider: 'coinbase', angle: 'popup' },
         ],
       })
     )

@@ -348,8 +348,6 @@ export class FundingApi {
     return {
       ...response,
       status: response.status as FundingSessionStatus,
-      // Fiat methods pass through as-is; crypto rails carry no exchange
-      // withdrawal guidance from the API today, so `cex` is always null.
       paymentMethod: pm
         ? pm.type === 'onramp'
           ? (pm as FundingOnrampPaymentMethod)
