@@ -9,6 +9,7 @@ export { AuthApi } from './api/auth'
 export { EmbeddedWalletApi } from './api/embeddedWallet'
 export {
   type CreateFundingSessionParams,
+  type CryptoFundingPaymentMethodInput,
   FundingApi,
   type FundingCexGuidance,
   type FundingChain,

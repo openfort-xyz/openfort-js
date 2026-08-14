@@ -296,11 +296,12 @@ models/forwarder-contract-response.ts
 models/funding-chain-currency-response.ts
 models/funding-chain-response.ts
 models/funding-chains-response.ts
+models/funding-config-response.ts
+models/funding-credentials-request.ts
 models/funding-crypto-payment-method-response.ts
 models/funding-fee-response.ts
 models/funding-onramp-payment-method-response.ts
 models/funding-payment-method-response.ts
-models/funding-project-config.ts
 models/funding-session-response.ts
 models/funding-source-request.ts
 models/funding-source-response.ts
@@ -400,6 +401,7 @@ models/onramp-payment-method-request-embedded.ts
 models/onramp-payment-method-request.ts
 models/onramp-provider.ts
 models/onramp-quote-request.ts
+models/onramp-quote-response-relay.ts
 models/onramp-quote-response.ts
 models/onramp-quotes-response.ts
 models/onramp-session-request.ts
@@ -427,7 +429,8 @@ models/phone-number-verify-post-request.ts
 models/phone-number-verify-post200-response-user.ts
 models/phone-number-verify-post200-response.ts
 models/pick-contract-response-id.ts
-models/pick-funding-project-config-exclude-keyof-funding-project-config-recommended-amount.ts
+models/pick-funding-project-config-exclude-keyof-funding-project-config-credentials.ts
+models/pick-funding-project-config-exclude-keyof-funding-project-config-recommended-amount-or-credentials-or-stripe-publishable-key.ts
 models/pick-json-fragment-exclude-keyof-json-fragment-inputs-or-outputs.ts
 models/pick-json-fragment-type-exclude-keyof-json-fragment-type-components.ts
 models/pick-player-response-id.ts

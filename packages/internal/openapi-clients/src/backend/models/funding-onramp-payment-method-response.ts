@@ -24,7 +24,7 @@ import { FundingFeeResponse } from './funding-fee-response';
  */
 export interface FundingOnrampPaymentMethodResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingOnrampPaymentMethodResponse
      */
@@ -36,7 +36,7 @@ export interface FundingOnrampPaymentMethodResponse {
      */
     'method': string;
     /**
-     * How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (the provider\'s headless element flow).
+     * How to execute: \"popup\" (open `url` in a popup/new tab — the hosted page cannot be iframed), \"native\" (in-page provider SDK), or \"embedded\" (the provider\'s headless element flow).
      * @type {string}
      * @memberof FundingOnrampPaymentMethodResponse
      */
@@ -54,13 +54,13 @@ export interface FundingOnrampPaymentMethodResponse {
      */
     'providerSessionId': string | null;
     /**
-     * 
+     *
      * @type {Array<FundingFeeResponse>}
      * @memberof FundingOnrampPaymentMethodResponse
      */
     'fees': Array<FundingFeeResponse>;
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingOnrampPaymentMethodResponse
      */
@@ -72,5 +72,3 @@ export const FundingOnrampPaymentMethodResponseTypeEnum = {
 } as const;
 
 export type FundingOnrampPaymentMethodResponseTypeEnum = typeof FundingOnrampPaymentMethodResponseTypeEnum[keyof typeof FundingOnrampPaymentMethodResponseTypeEnum];
-
-

@@ -2,7 +2,7 @@ import type { BackendApiClients } from '@openfort/openapi-clients'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockAxiosError } from '../__tests__/fixtures/auth'
 import { OpenfortError } from '../core/errors/openfortError'
-import { FundingApi, type FundingCryptoPaymentMethod } from './funding'
+import { FundingApi } from './funding'
 
 // Mock sentry so error-path tests don't touch the real reporter.
 vi.mock('../core/errors/sentry', () => ({
@@ -64,14 +64,14 @@ describe('FundingApi', () => {
         country: 'US',
         methods: [
           { method: 'apple_pay', provider: 'coinbase', angle: 'native' },
-          { method: 'bank_transfer', provider: 'stripe', angle: 'embedded', rail: 'ach' },
-          { method: 'bank_transfer', provider: 'coinbase', angle: 'popup' },
+          { method: 'bank_transfer', provider: 'stripe', angle: 'popup', rail: 'ach' },
+          { method: 'card', provider: 'coinbase', angle: 'popup' },
         ],
       })
     )
     const api = makeApi(funding)
     await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
-    const resolved = await api.sessions.methods('fnd_1', { country: 'US' })
+    const resolved = await api.sessions.methods('fnd_1', { country: 'US', subdivision: 'NY' })
     expect(resolved.country).toBe('US')
     expect(resolved.methods[0]).toMatchObject({
       method: 'apple_pay',
@@ -80,12 +80,13 @@ describe('FundingApi', () => {
       requiresDeviceCheck: true,
     })
     expect(resolved.methods[1]).toMatchObject({ label: 'ACH', rail: 'ach' })
-    expect(resolved.methods[2]).toMatchObject({ label: 'Bank transfer' })
+    expect(resolved.methods[2]).toMatchObject({ label: 'Card' })
     expect(resolved.methods[2]?.requiresDeviceCheck).toBeUndefined()
     expect(funding.getFundingSessionMethods).toHaveBeenCalledWith({
       sessionId: 'fnd_1',
       clientSecret: 'cs_1',
       country: 'US',
+      subdivision: 'NY',
     })
   })
 
@@ -100,15 +101,25 @@ describe('FundingApi', () => {
         destinationNetwork: 'base',
         fees: [],
         exchangeRate: '1.00',
+        relay: {
+          destinationAmount: '99.5',
+          destinationCurrency: '0xtoken',
+          destinationChain: 'eip155:42161',
+          fees: [{ type: 'relayerService', amount: '0.5', currency: 'USDC' }],
+          minAmount: '1000000',
+        },
       })
     )
     const quote = await makeApi(funding).sessions.quote('fnd_1', {
       method: 'card',
       sourceAmount: '100',
       sourceCurrency: 'USD',
+      subdivision: 'NY',
+      refundTo: '0xrefund',
       clientSecret: 'cs_1',
     })
     expect(quote.destinationAmount).toBe('100')
+    expect(quote.relay?.destinationAmount).toBe('99.5')
     expect(funding.quoteFundingSession).toHaveBeenCalledWith({
       sessionId: 'fnd_1',
       sessionQuoteRequest: {
@@ -117,6 +128,8 @@ describe('FundingApi', () => {
         sourceAmount: '100',
         sourceCurrency: 'USD',
         country: undefined,
+        subdivision: 'NY',
+        refundTo: '0xrefund',
       },
     })
   })
@@ -143,6 +156,7 @@ describe('FundingApi', () => {
         method: 'apple_pay',
         sourceAmount: '25.00',
         sourceCurrency: 'USD',
+        subdivision: 'NY',
         email: 'a@b.co',
         phoneNumber: '+14155550123',
         phoneNumberVerifiedAt: '2026-07-30T00:00:00Z',
@@ -155,6 +169,7 @@ describe('FundingApi', () => {
     const sent = funding.setPaymentMethod.mock.calls[0]?.[0].setPaymentMethodRequest.paymentMethod ?? {}
     expect(sent.smsVerificationId).toBe('onramp_verification_sms')
     expect(sent.emailVerificationId).toBe('onramp_verification_email')
+    expect(sent.subdivision).toBe('NY')
   })
 
   it('verifications.create + submit delegate to the Coinbase-issued OTP endpoints', async () => {
@@ -203,14 +218,14 @@ describe('FundingApi', () => {
     await expect(makeApi(funding).chains()).rejects.toThrow('amount must be at least 5')
   })
 
-  it('chains calls listChains and returns the array', async () => {
+  it('chains forwards testnet selection and returns the array', async () => {
     funding.listChains.mockReturnValue(
       ok({ chains: [{ id: 'eip155:8453', name: 'Base', logo: null, vmType: 'evm', currencies: [] }] })
     )
-    const chains = await makeApi(funding).chains()
+    const chains = await makeApi(funding).chains({ livemode: false })
     expect(chains).toHaveLength(1)
     expect(chains[0]?.id).toBe('eip155:8453')
-    expect(funding.listChains).toHaveBeenCalledWith({})
+    expect(funding.listChains).toHaveBeenCalledWith({ livemode: false })
   })
 
   it('remembers the clientSecret from create() so get() needs no explicit secret', async () => {
@@ -250,10 +265,14 @@ describe('FundingApi', () => {
       target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' },
     })
     expect(session.status).toBe('waiting_payment')
-    // Crypto rail → the crypto member of the payment-method union.
-    const pm = session.paymentMethod as FundingCryptoPaymentMethod
-    expect(pm.cex).toBeNull()
-    expect(pm.receiverAddress).toBe('0xreceiver')
+    // Crypto rail → the response union narrows without a cast.
+    const pm = session.paymentMethod
+    if (pm?.type === 'evm') {
+      expect(pm.cex).toBeNull()
+      expect(pm.receiverAddress).toBe('0xreceiver')
+    } else {
+      throw new Error('expected an EVM payment method')
+    }
   })
 
   it('wait() polls until a terminal status', async () => {

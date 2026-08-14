@@ -50,17 +50,6 @@ export interface CreateFundingSessionParams {
   paymentMethod?: FundingPaymentMethodInput
 }
 
-interface FundingPaymentMethodBase {
-  source: FundingSource
-  /**
-   * Origin-chain refund address (refunds land on the source chain). Optional —
-   * the server defaults it to the target address for same-VM routes, or to a
-   * source-VM stand-in for cross-VM routes (e.g. an EVM source funding a Solana
-   * wallet), where the destination address isn't valid on the source chain.
-   */
-  refundTo?: string
-}
-
 /** Backend ids of the fiat (web2) funding methods. */
 export type OnrampMethodId = 'apple_pay' | 'google_pay' | 'card' | 'bank_transfer'
 
@@ -89,6 +78,8 @@ export interface OnrampPaymentMethodInput {
   sourceCurrency?: string
   /** Explicit buyer-country override (ISO-3166 alpha-2); wins over the request IP. */
   country?: string
+  /** ISO-3166-2 subdivision code, for example `NY`. */
+  subdivision?: string
   /** URL the provider redirects back to after a hosted checkout. */
   redirectUrl?: string
   /** Origin-chain refund address for an auto-bridged (chained) route. */
@@ -121,13 +112,23 @@ export interface OnrampPaymentMethodInput {
 }
 
 /**
- * The route the user commits to: an EVM or Solana self-custody transfer, or a
- * fiat onramp (`onramp`). To fund from a centralized exchange, use `payLink`.
+ * A self-custody crypto transfer that can be created and polled without further
+ * client interaction.
+ *
+ * @example
+ * ```ts
+ * const paymentMethod: CryptoFundingPaymentMethodInput = {
+ *   type: 'evm',
+ *   source: { chain: 'eip155:137', currency: '0xToken', amount: '1000000' },
+ * }
+ * ```
  */
-export type FundingPaymentMethodInput =
-  | (FundingPaymentMethodBase & { type: 'evm' })
-  | (FundingPaymentMethodBase & { type: 'solana' })
-  | OnrampPaymentMethodInput
+export type CryptoFundingPaymentMethodInput =
+  | { type: 'evm'; source: FundingSource; refundTo?: string }
+  | { type: 'solana'; source: FundingSource; refundTo?: string }
+
+/** The route committed to a session: self-custody crypto or an interactive fiat onramp. */
+export type FundingPaymentMethodInput = CryptoFundingPaymentMethodInput | OnrampPaymentMethodInput
 
 export type FundingSessionStatus =
   | 'requires_payment_method'
@@ -163,7 +164,7 @@ export interface FundingCexGuidance {
 
 /** A committed crypto-rail payment method (Relay deposit address). */
 export interface FundingCryptoPaymentMethod {
-  type: string
+  type: 'evm' | 'solana'
   source: FundingSource
   receiverAddress: string
   addressUri: string
@@ -314,6 +315,15 @@ export interface OnrampQuote {
   destinationNetwork: string
   fees: OnrampFee[]
   exchangeRate: string
+  /** Relay leg for an auto-bridged route; absent when the provider delivers directly. */
+  relay?: {
+    destinationAmount: string
+    destinationCurrency: string
+    destinationChain: string
+    fees: OnrampFee[]
+    /** Minimum intermediate input in base units. */
+    minAmount: string | null
+  }
 }
 
 /** A started OTP verification (the code is on its way). */
@@ -458,12 +468,19 @@ export class FundingApi {
      */
     methods: async (
       sessionId: string,
-      params?: { clientSecret?: string; country?: string }
+      params?: { clientSecret?: string; country?: string; subdivision?: string }
     ): Promise<ResolvedFundingMethods> => {
       const clientSecret = this.resolveSecret(sessionId, params?.clientSecret)
       const response = await withApiError(
         async () =>
-          (await this.fundingApi.getFundingSessionMethods({ sessionId, clientSecret, country: params?.country })).data,
+          (
+            await this.fundingApi.getFundingSessionMethods({
+              sessionId,
+              clientSecret,
+              country: params?.country,
+              subdivision: params?.subdivision,
+            })
+          ).data,
         { context: 'funding.sessions.methods' }
       )
       return {
@@ -484,6 +501,9 @@ export class FundingApi {
         sourceAmount: string
         sourceCurrency: string
         country?: string
+        subdivision?: string
+        /** Origin-chain refund address used when pricing a cross-VM chained route. */
+        refundTo?: string
         clientSecret?: string
       }
     ): Promise<OnrampQuote> => {
@@ -499,6 +519,8 @@ export class FundingApi {
                 sourceAmount: params.sourceAmount,
                 sourceCurrency: params.sourceCurrency,
                 country: params.country,
+                subdivision: params.subdivision,
+                refundTo: params.refundTo,
               },
             })
           ).data,
@@ -590,7 +612,7 @@ export class FundingApi {
    */
   public readonly fund = async (params: {
     target: FundingTarget
-    paymentMethod: FundingPaymentMethodInput
+    paymentMethod: CryptoFundingPaymentMethodInput
     /** Lock the deposit to a fixed amount (destination base units). */
     amountUnits?: string
     metadata?: Record<string, string>
@@ -640,10 +662,13 @@ export class FundingApi {
    * The source chains + currencies the rail can route from — a live passthrough
    * of the provider's supported routes, for building the source picker.
    */
-  public readonly chains = async (): Promise<FundingChain[]> => {
-    const response = await withApiError(async () => (await this.fundingApi.listChains({})).data, {
-      context: 'funding.chains',
-    })
+  public readonly chains = async (params?: { livemode?: boolean }): Promise<FundingChain[]> => {
+    const response = await withApiError(
+      async () => (await this.fundingApi.listChains({ livemode: params?.livemode })).data,
+      {
+        context: 'funding.chains',
+      }
+    )
     return response.chains
   }
 }

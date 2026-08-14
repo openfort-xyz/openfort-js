@@ -22,6 +22,9 @@ import { OnrampProvider } from './onramp-provider';
 // May contain unused imports in some cases
 // @ts-ignore
 import { OnrampQuoteResponse } from './onramp-quote-response';
+// May contain unused imports in some cases
+// @ts-ignore
+import { OnrampQuoteResponseRelay } from './onramp-quote-response-relay';
 
 /**
  * Response type for quote requests that can return either a single quote or multiple quotes. - Returns OnrampQuoteResponse when provider is specified - Returns OnrampQuoteResponse[] when provider is not specified
@@ -30,54 +33,57 @@ import { OnrampQuoteResponse } from './onramp-quote-response';
  */
 export interface OnrampQuotesResponse {
     /**
-     * 
+     *
      * @type {OnrampProvider}
      * @memberof OnrampQuotesResponse
      */
     'provider': OnrampProvider;
     /**
-     * 
+     *
      * @type {string}
      * @memberof OnrampQuotesResponse
      */
     'sourceAmount': string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof OnrampQuotesResponse
      */
     'sourceCurrency': string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof OnrampQuotesResponse
      */
     'destinationAmount': string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof OnrampQuotesResponse
      */
     'destinationCurrency': string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof OnrampQuotesResponse
      */
     'destinationNetwork': string;
     /**
-     * 
+     *
      * @type {Array<OnrampFee>}
      * @memberof OnrampQuotesResponse
      */
     'fees': Array<OnrampFee>;
     /**
-     * 
+     *
      * @type {string}
      * @memberof OnrampQuotesResponse
      */
     'exchangeRate': string;
+    /**
+     *
+     * @type {OnrampQuoteResponseRelay}
+     * @memberof OnrampQuotesResponse
+     */
+    'relay'?: OnrampQuoteResponseRelay;
 }
-
-
-

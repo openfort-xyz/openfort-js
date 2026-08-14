@@ -40,9 +40,9 @@ export interface FundingPaymentMethodResponse {
      * @type {string}
      * @memberof FundingPaymentMethodResponse
      */
-    'type': string;
+    'type': FundingPaymentMethodResponseTypeEnum;
     /**
-     * 
+     *
      * @type {FundingSourceResponse}
      * @memberof FundingPaymentMethodResponse
      */
@@ -66,13 +66,13 @@ export interface FundingPaymentMethodResponse {
      */
     'deeplinks': Array<FundingWalletDeeplinkResponse>;
     /**
-     * 
+     *
      * @type {Array<FundingFeeResponse>}
      * @memberof FundingPaymentMethodResponse
      */
     'fees': Array<FundingFeeResponse>;
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingPaymentMethodResponse
      */
@@ -84,7 +84,7 @@ export interface FundingPaymentMethodResponse {
      */
     'method': string;
     /**
-     * How to execute: \"iframe\" (open `url`), \"native\" (in-page provider SDK), or \"embedded\" (the provider\'s headless element flow).
+     * How to execute: \"popup\" (open `url` in a popup/new tab — the hosted page cannot be iframed), \"native\" (in-page provider SDK), or \"embedded\" (the provider\'s headless element flow).
      * @type {string}
      * @memberof FundingPaymentMethodResponse
      */
@@ -103,3 +103,10 @@ export interface FundingPaymentMethodResponse {
     'providerSessionId': string | null;
 }
 
+export const FundingPaymentMethodResponseTypeEnum = {
+    Evm: 'evm',
+    Solana: 'solana',
+    Onramp: 'onramp'
+} as const;
+
+export type FundingPaymentMethodResponseTypeEnum = typeof FundingPaymentMethodResponseTypeEnum[keyof typeof FundingPaymentMethodResponseTypeEnum];

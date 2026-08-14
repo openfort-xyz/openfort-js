@@ -15,25 +15,25 @@
 
 
 /**
- * One resolved funding method the SDK/widget renders. The provider is included for telemetry but is NOT shown to the user. `angle` is \"iframe\" | \"native\". Clients derive display labels and device-capability gating (e.g. Apple Pay on Safari) from `method` and `rail`.
+ * One resolved funding method the SDK/widget renders. The provider is included for telemetry but is NOT shown to the user. `angle` is \"popup\" | \"native\" | \"embedded\". Clients derive display labels and device-capability gating (e.g. Apple Pay on Safari) from `method` and `rail`.
  * @export
  * @interface ResolvedFundingMethodResponse
  */
 export interface ResolvedFundingMethodResponse {
     /**
-     * 
+     *
      * @type {string}
      * @memberof ResolvedFundingMethodResponse
      */
     'method': string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ResolvedFundingMethodResponse
      */
     'provider': string;
     /**
-     * 
+     *
      * @type {string}
      * @memberof ResolvedFundingMethodResponse
      */
@@ -51,4 +51,3 @@ export interface ResolvedFundingMethodResponse {
      */
     'providerPublishableKey'?: string;
 }
-

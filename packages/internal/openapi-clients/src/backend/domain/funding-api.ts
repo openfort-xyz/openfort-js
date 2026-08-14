@@ -32,7 +32,7 @@ import { CreateOnrampVerificationRequest } from '../models';
 // @ts-ignore
 import { FundingChainsResponse } from '../models';
 // @ts-ignore
-import { FundingProjectConfig } from '../models';
+import { FundingConfigResponse } from '../models';
 // @ts-ignore
 import { FundingSessionResponse } from '../models';
 // @ts-ignore
@@ -69,10 +69,10 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
          * Embedded (headless) checkout: confirms the committed headless onramp session with the buyer\'s mandate acceptance (this request\'s ip + user agent) and returns the provider client secret for the client\'s embedded checkout element. One-shot — the secret is never stored.
          * @summary Check out an embedded onramp session
          * @param {string} sessionId The funding session ID (starts with fnd_).
-         * @param {CheckoutFundingOnrampSessionRequest} checkoutFundingOnrampSessionRequest 
-         * @param {string} [cfConnectingIp] 
-         * @param {string} [xForwardedFor] 
-         * @param {string} [userAgent] 
+         * @param {CheckoutFundingOnrampSessionRequest} checkoutFundingOnrampSessionRequest
+         * @param {string} [cfConnectingIp]
+         * @param {string} [xForwardedFor]
+         * @param {string} [userAgent]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -111,7 +111,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -127,8 +127,8 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Creates a funding session for a destination.  A session is one cross-chain deposit attempt: pick a destination chain, token, and wallet, then set a payment method to mint a deposit address. The response includes a `clientSecret` used to advance and read the session.
          * @summary Create a funding session.
-         * @param {CreateFundingSessionRequest} createFundingSessionRequest 
-         * @param {string} [cfIpcountry] 
+         * @param {CreateFundingSessionRequest} createFundingSessionRequest
+         * @param {string} [cfIpcountry]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -156,7 +156,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -172,7 +172,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Mints an auth intent for the buyer\'s email — step 1 of the embedded (headless element) flow. The client renders the provider\'s auth element with the returned id; after the buyer completes it, exchange the intent for its server-side token via the tokens endpoint.
          * @summary Create an embedded-flow auth intent
-         * @param {CreateOnrampAuthIntentRequest} createOnrampAuthIntentRequest 
+         * @param {CreateOnrampAuthIntentRequest} createOnrampAuthIntentRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -196,7 +196,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -212,7 +212,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Starts an OTP verification for the buyer\'s phone or email — the identity step of native wallet pay (Apple/Google Pay). The code is sent to the destination; submit it via the submit endpoint, then attach the returned ids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`.
          * @summary Start a wallet-pay OTP verification
-         * @param {CreateOnrampVerificationRequest} createOnrampVerificationRequest 
+         * @param {CreateOnrampVerificationRequest} createOnrampVerificationRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -236,7 +236,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -252,7 +252,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Builds a prefilled centralized-exchange (cex) transfer link for a session.  Returns a hosted exchange transfer URL: the user signs into their own exchange account and the exchange delivers the asset to the session\'s wallet, handling any bridging from the balance they hold. Destination address and chain are derived from the session, not the client. The active cex provider is resolved server-side. Requires the session `clientSecret`.
          * @summary Build a centralized-exchange transfer link for a session.
-         * @param {PayLinkRequest} payLinkRequest 
+         * @param {PayLinkRequest} payLinkRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -276,7 +276,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -292,7 +292,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Exchanges a completed auth intent for its provider token — step 3 of the embedded flow, after the buyer finishes the auth element. The token stays server-side; committing the session and checking out both look it up by the intent id.
          * @summary Exchange an embedded-flow auth intent for its token
-         * @param {string} intentId 
+         * @param {string} intentId
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -317,7 +317,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -355,7 +355,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -368,15 +368,16 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
          * @summary Resolve onramp methods
-         * @param {string} targetChain 
-         * @param {string} targetCurrency 
-         * @param {string} [country] 
-         * @param {string} [methods] 
-         * @param {string} [cfIpcountry] 
+         * @param {string} targetChain
+         * @param {string} targetCurrency
+         * @param {string} [country]
+         * @param {string} [subdivision]
+         * @param {string} [methods]
+         * @param {string} [cfIpcountry]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFundingOnrampMethods: async (targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getFundingOnrampMethods: async (targetChain: string, targetCurrency: string, country?: string, subdivision?: string, methods?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'targetChain' is not null or undefined
             assertParamExists('getFundingOnrampMethods', 'targetChain', targetChain)
             // verify required parameter 'targetCurrency' is not null or undefined
@@ -409,6 +410,10 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['country'] = country;
             }
 
+            if (subdivision !== undefined) {
+                localVarQueryParameter['subdivision'] = subdivision;
+            }
+
             if (methods !== undefined) {
                 localVarQueryParameter['methods'] = methods;
             }
@@ -418,7 +423,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -461,7 +466,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -477,11 +482,12 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} sessionId The funding session ID (starts with fnd_).
          * @param {string} [clientSecret] The session client secret returned at creation. Deliberately a query parameter (GET semantics): the secret is short-lived and session-scoped; every other endpoint takes it in the POST body.
          * @param {string} [country] Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP\&#39;s country.
-         * @param {string} [cfIpcountry] 
+         * @param {string} [subdivision]
+         * @param {string} [cfIpcountry]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFundingSessionMethods: async (sessionId: string, clientSecret?: string, country?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getFundingSessionMethods: async (sessionId: string, clientSecret?: string, country?: string, subdivision?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'sessionId' is not null or undefined
             assertParamExists('getFundingSessionMethods', 'sessionId', sessionId)
             const localVarPath = `/v2/funding/sessions/{sessionId}/methods`
@@ -509,12 +515,16 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['country'] = country;
             }
 
+            if (subdivision !== undefined) {
+                localVarQueryParameter['subdivision'] = subdivision;
+            }
+
             if (cfIpcountry != null) {
                 localVarHeaderParameter['cf-ipcountry'] = String(cfIpcountry);
             }
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -549,7 +559,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
-    
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -563,8 +573,8 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
          * Prices a fiat onramp route for a session before committing it. The provider is resolved exactly as `setPaymentMethod` would resolve it, so the quote matches the checkout the user will get. Requires the session `clientSecret`.
          * @summary Quote a session\'s fiat funding route.
          * @param {string} sessionId The funding session ID (starts with fnd_).
-         * @param {SessionQuoteRequest} sessionQuoteRequest 
-         * @param {string} [cfIpcountry] 
+         * @param {SessionQuoteRequest} sessionQuoteRequest
+         * @param {string} [cfIpcountry]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -595,7 +605,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -612,11 +622,11 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
          * Sets the (single) payment method on a session.  Commits the source route the user will send from and mints the Relay deposit address. Requires the session `clientSecret`.
          * @summary Set a session\'s payment method.
          * @param {string} sessionId The funding session ID (starts with fnd_).
-         * @param {SetPaymentMethodRequest} setPaymentMethodRequest 
-         * @param {string} [cfIpcountry] 
-         * @param {string} [origin] 
-         * @param {string} [cfConnectingIp] 
-         * @param {string} [xForwardedFor] 
+         * @param {SetPaymentMethodRequest} setPaymentMethodRequest
+         * @param {string} [cfIpcountry]
+         * @param {string} [origin]
+         * @param {string} [cfConnectingIp]
+         * @param {string} [xForwardedFor]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -659,7 +669,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             }
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -675,8 +685,8 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Submits the OTP the buyer received for a verification. On success the returned id rides on the wallet-pay commit.
          * @summary Submit a wallet-pay OTP code
-         * @param {string} verificationId 
-         * @param {SubmitOnrampVerificationRequest} submitOnrampVerificationRequest 
+         * @param {string} verificationId
+         * @param {SubmitOnrampVerificationRequest} submitOnrampVerificationRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -703,7 +713,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -719,7 +729,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * Creates or replaces the project\'s funding configuration.
          * @summary Update funding config
-         * @param {UpdateFundingConfigRequest} updateFundingConfigRequest 
+         * @param {UpdateFundingConfigRequest} updateFundingConfigRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -747,7 +757,7 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -774,10 +784,10 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * Embedded (headless) checkout: confirms the committed headless onramp session with the buyer\'s mandate acceptance (this request\'s ip + user agent) and returns the provider client secret for the client\'s embedded checkout element. One-shot — the secret is never stored.
          * @summary Check out an embedded onramp session
          * @param {string} sessionId The funding session ID (starts with fnd_).
-         * @param {CheckoutFundingOnrampSessionRequest} checkoutFundingOnrampSessionRequest 
-         * @param {string} [cfConnectingIp] 
-         * @param {string} [xForwardedFor] 
-         * @param {string} [userAgent] 
+         * @param {CheckoutFundingOnrampSessionRequest} checkoutFundingOnrampSessionRequest
+         * @param {string} [cfConnectingIp]
+         * @param {string} [xForwardedFor]
+         * @param {string} [userAgent]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -788,8 +798,8 @@ export const FundingApiFp = function(configuration?: Configuration) {
         /**
          * Creates a funding session for a destination.  A session is one cross-chain deposit attempt: pick a destination chain, token, and wallet, then set a payment method to mint a deposit address. The response includes a `clientSecret` used to advance and read the session.
          * @summary Create a funding session.
-         * @param {CreateFundingSessionRequest} createFundingSessionRequest 
-         * @param {string} [cfIpcountry] 
+         * @param {CreateFundingSessionRequest} createFundingSessionRequest
+         * @param {string} [cfIpcountry]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -800,7 +810,7 @@ export const FundingApiFp = function(configuration?: Configuration) {
         /**
          * Mints an auth intent for the buyer\'s email — step 1 of the embedded (headless element) flow. The client renders the provider\'s auth element with the returned id; after the buyer completes it, exchange the intent for its server-side token via the tokens endpoint.
          * @summary Create an embedded-flow auth intent
-         * @param {CreateOnrampAuthIntentRequest} createOnrampAuthIntentRequest 
+         * @param {CreateOnrampAuthIntentRequest} createOnrampAuthIntentRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -811,7 +821,7 @@ export const FundingApiFp = function(configuration?: Configuration) {
         /**
          * Starts an OTP verification for the buyer\'s phone or email — the identity step of native wallet pay (Apple/Google Pay). The code is sent to the destination; submit it via the submit endpoint, then attach the returned ids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`.
          * @summary Start a wallet-pay OTP verification
-         * @param {CreateOnrampVerificationRequest} createOnrampVerificationRequest 
+         * @param {CreateOnrampVerificationRequest} createOnrampVerificationRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -822,7 +832,7 @@ export const FundingApiFp = function(configuration?: Configuration) {
         /**
          * Builds a prefilled centralized-exchange (cex) transfer link for a session.  Returns a hosted exchange transfer URL: the user signs into their own exchange account and the exchange delivers the asset to the session\'s wallet, handling any bridging from the balance they hold. Destination address and chain are derived from the session, not the client. The active cex provider is resolved server-side. Requires the session `clientSecret`.
          * @summary Build a centralized-exchange transfer link for a session.
-         * @param {PayLinkRequest} payLinkRequest 
+         * @param {PayLinkRequest} payLinkRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -833,7 +843,7 @@ export const FundingApiFp = function(configuration?: Configuration) {
         /**
          * Exchanges a completed auth intent for its provider token — step 3 of the embedded flow, after the buyer finishes the auth element. The token stays server-side; committing the session and checking out both look it up by the intent id.
          * @summary Exchange an embedded-flow auth intent for its token
-         * @param {string} intentId 
+         * @param {string} intentId
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -847,23 +857,24 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFundingConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingProjectConfig>> {
+        async getFundingConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingConfigResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingConfig(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
          * @summary Resolve onramp methods
-         * @param {string} targetChain 
-         * @param {string} targetCurrency 
-         * @param {string} [country] 
-         * @param {string} [methods] 
-         * @param {string} [cfIpcountry] 
+         * @param {string} targetChain
+         * @param {string} targetCurrency
+         * @param {string} [country]
+         * @param {string} [subdivision]
+         * @param {string} [methods]
+         * @param {string} [cfIpcountry]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFundingOnrampMethods(targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingOnrampMethods(targetChain, targetCurrency, country, methods, cfIpcountry, options);
+        async getFundingOnrampMethods(targetChain: string, targetCurrency: string, country?: string, subdivision?: string, methods?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingOnrampMethods(targetChain, targetCurrency, country, subdivision, methods, cfIpcountry, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -884,12 +895,13 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * @param {string} sessionId The funding session ID (starts with fnd_).
          * @param {string} [clientSecret] The session client secret returned at creation. Deliberately a query parameter (GET semantics): the secret is short-lived and session-scoped; every other endpoint takes it in the POST body.
          * @param {string} [country] Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP\&#39;s country.
-         * @param {string} [cfIpcountry] 
+         * @param {string} [subdivision]
+         * @param {string} [cfIpcountry]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFundingSessionMethods(sessionId: string, clientSecret?: string, country?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingSessionMethods(sessionId, clientSecret, country, cfIpcountry, options);
+        async getFundingSessionMethods(sessionId: string, clientSecret?: string, country?: string, subdivision?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingSessionMethods(sessionId, clientSecret, country, subdivision, cfIpcountry, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -907,8 +919,8 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * Prices a fiat onramp route for a session before committing it. The provider is resolved exactly as `setPaymentMethod` would resolve it, so the quote matches the checkout the user will get. Requires the session `clientSecret`.
          * @summary Quote a session\'s fiat funding route.
          * @param {string} sessionId The funding session ID (starts with fnd_).
-         * @param {SessionQuoteRequest} sessionQuoteRequest 
-         * @param {string} [cfIpcountry] 
+         * @param {SessionQuoteRequest} sessionQuoteRequest
+         * @param {string} [cfIpcountry]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -920,11 +932,11 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * Sets the (single) payment method on a session.  Commits the source route the user will send from and mints the Relay deposit address. Requires the session `clientSecret`.
          * @summary Set a session\'s payment method.
          * @param {string} sessionId The funding session ID (starts with fnd_).
-         * @param {SetPaymentMethodRequest} setPaymentMethodRequest 
-         * @param {string} [cfIpcountry] 
-         * @param {string} [origin] 
-         * @param {string} [cfConnectingIp] 
-         * @param {string} [xForwardedFor] 
+         * @param {SetPaymentMethodRequest} setPaymentMethodRequest
+         * @param {string} [cfIpcountry]
+         * @param {string} [origin]
+         * @param {string} [cfConnectingIp]
+         * @param {string} [xForwardedFor]
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -935,8 +947,8 @@ export const FundingApiFp = function(configuration?: Configuration) {
         /**
          * Submits the OTP the buyer received for a verification. On success the returned id rides on the wallet-pay commit.
          * @summary Submit a wallet-pay OTP code
-         * @param {string} verificationId 
-         * @param {SubmitOnrampVerificationRequest} submitOnrampVerificationRequest 
+         * @param {string} verificationId
+         * @param {SubmitOnrampVerificationRequest} submitOnrampVerificationRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -947,11 +959,11 @@ export const FundingApiFp = function(configuration?: Configuration) {
         /**
          * Creates or replaces the project\'s funding configuration.
          * @summary Update funding config
-         * @param {UpdateFundingConfigRequest} updateFundingConfigRequest 
+         * @param {UpdateFundingConfigRequest} updateFundingConfigRequest
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateFundingConfig(updateFundingConfigRequest: UpdateFundingConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingProjectConfig>> {
+        async updateFundingConfig(updateFundingConfigRequest: UpdateFundingConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingConfigResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateFundingConfig(updateFundingConfigRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1031,7 +1043,7 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFundingConfig(options?: AxiosRequestConfig): AxiosPromise<FundingProjectConfig> {
+        getFundingConfig(options?: AxiosRequestConfig): AxiosPromise<FundingConfigResponse> {
             return localVarFp.getFundingConfig(options).then((request) => request(axios, basePath));
         },
         /**
@@ -1042,7 +1054,7 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @throws {RequiredError}
          */
         getFundingOnrampMethods(requestParameters: FundingApiGetFundingOnrampMethodsRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampMethodsResponse> {
-            return localVarFp.getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
+            return localVarFp.getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.subdivision, requestParameters.methods, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves a funding session, refreshing its status from the rail.  Requires the session `clientSecret` (query parameter).
@@ -1062,7 +1074,7 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @throws {RequiredError}
          */
         getFundingSessionMethods(requestParameters: FundingApiGetFundingSessionMethodsRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampMethodsResponse> {
-            return localVarFp.getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
+            return localVarFp.getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.subdivision, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
         },
         /**
          * Lists the source chains and currencies the funding rail can route from.  A live passthrough of the rail\'s dictionary (Relay), narrowed client-side to a curated subset. Public — it exposes no tenant data, so the source picker can load it before the user authenticates.
@@ -1111,7 +1123,7 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateFundingConfig(requestParameters: FundingApiUpdateFundingConfigRequest, options?: AxiosRequestConfig): AxiosPromise<FundingProjectConfig> {
+        updateFundingConfig(requestParameters: FundingApiUpdateFundingConfigRequest, options?: AxiosRequestConfig): AxiosPromise<FundingConfigResponse> {
             return localVarFp.updateFundingConfig(requestParameters.updateFundingConfigRequest, options).then((request) => request(axios, basePath));
         },
     };
@@ -1131,28 +1143,28 @@ export interface FundingApiCheckoutFundingOnrampSessionRequest {
     readonly sessionId: string
 
     /**
-     * 
+     *
      * @type {CheckoutFundingOnrampSessionRequest}
      * @memberof FundingApiCheckoutFundingOnrampSession
      */
     readonly checkoutFundingOnrampSessionRequest: CheckoutFundingOnrampSessionRequest
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiCheckoutFundingOnrampSession
      */
     readonly cfConnectingIp?: string
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiCheckoutFundingOnrampSession
      */
     readonly xForwardedFor?: string
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiCheckoutFundingOnrampSession
      */
@@ -1166,14 +1178,14 @@ export interface FundingApiCheckoutFundingOnrampSessionRequest {
  */
 export interface FundingApiCreateFundingSessionRequest {
     /**
-     * 
+     *
      * @type {CreateFundingSessionRequest}
      * @memberof FundingApiCreateFundingSession
      */
     readonly createFundingSessionRequest: CreateFundingSessionRequest
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiCreateFundingSession
      */
@@ -1187,7 +1199,7 @@ export interface FundingApiCreateFundingSessionRequest {
  */
 export interface FundingApiCreateOnrampAuthIntentRequest {
     /**
-     * 
+     *
      * @type {CreateOnrampAuthIntentRequest}
      * @memberof FundingApiCreateOnrampAuthIntent
      */
@@ -1201,7 +1213,7 @@ export interface FundingApiCreateOnrampAuthIntentRequest {
  */
 export interface FundingApiCreateOnrampVerificationRequest {
     /**
-     * 
+     *
      * @type {CreateOnrampVerificationRequest}
      * @memberof FundingApiCreateOnrampVerification
      */
@@ -1215,7 +1227,7 @@ export interface FundingApiCreateOnrampVerificationRequest {
  */
 export interface FundingApiCreatePayLinkRequest {
     /**
-     * 
+     *
      * @type {PayLinkRequest}
      * @memberof FundingApiCreatePayLink
      */
@@ -1229,7 +1241,7 @@ export interface FundingApiCreatePayLinkRequest {
  */
 export interface FundingApiExchangeOnrampAuthTokenRequest {
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiExchangeOnrampAuthToken
      */
@@ -1243,35 +1255,42 @@ export interface FundingApiExchangeOnrampAuthTokenRequest {
  */
 export interface FundingApiGetFundingOnrampMethodsRequest {
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiGetFundingOnrampMethods
      */
     readonly targetChain: string
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiGetFundingOnrampMethods
      */
     readonly targetCurrency: string
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiGetFundingOnrampMethods
      */
     readonly country?: string
 
     /**
-     * 
+     *
+     * @type {string}
+     * @memberof FundingApiGetFundingOnrampMethods
+     */
+    readonly subdivision?: string
+
+    /**
+     *
      * @type {string}
      * @memberof FundingApiGetFundingOnrampMethods
      */
     readonly methods?: string
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiGetFundingOnrampMethods
      */
@@ -1327,7 +1346,14 @@ export interface FundingApiGetFundingSessionMethodsRequest {
     readonly country?: string
 
     /**
-     * 
+     *
+     * @type {string}
+     * @memberof FundingApiGetFundingSessionMethods
+     */
+    readonly subdivision?: string
+
+    /**
+     *
      * @type {string}
      * @memberof FundingApiGetFundingSessionMethods
      */
@@ -1362,14 +1388,14 @@ export interface FundingApiQuoteFundingSessionRequest {
     readonly sessionId: string
 
     /**
-     * 
+     *
      * @type {SessionQuoteRequest}
      * @memberof FundingApiQuoteFundingSession
      */
     readonly sessionQuoteRequest: SessionQuoteRequest
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiQuoteFundingSession
      */
@@ -1390,35 +1416,35 @@ export interface FundingApiSetPaymentMethodRequest {
     readonly sessionId: string
 
     /**
-     * 
+     *
      * @type {SetPaymentMethodRequest}
      * @memberof FundingApiSetPaymentMethod
      */
     readonly setPaymentMethodRequest: SetPaymentMethodRequest
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiSetPaymentMethod
      */
     readonly cfIpcountry?: string
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiSetPaymentMethod
      */
     readonly origin?: string
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiSetPaymentMethod
      */
     readonly cfConnectingIp?: string
 
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiSetPaymentMethod
      */
@@ -1432,14 +1458,14 @@ export interface FundingApiSetPaymentMethodRequest {
  */
 export interface FundingApiSubmitOnrampVerificationRequest {
     /**
-     * 
+     *
      * @type {string}
      * @memberof FundingApiSubmitOnrampVerification
      */
     readonly verificationId: string
 
     /**
-     * 
+     *
      * @type {SubmitOnrampVerificationRequest}
      * @memberof FundingApiSubmitOnrampVerification
      */
@@ -1453,7 +1479,7 @@ export interface FundingApiSubmitOnrampVerificationRequest {
  */
 export interface FundingApiUpdateFundingConfigRequest {
     /**
-     * 
+     *
      * @type {UpdateFundingConfigRequest}
      * @memberof FundingApiUpdateFundingConfig
      */
@@ -1559,7 +1585,7 @@ export class FundingApi extends BaseAPI {
      * @memberof FundingApi
      */
     public getFundingOnrampMethods(requestParameters: FundingApiGetFundingOnrampMethodsRequest, options?: AxiosRequestConfig) {
-        return FundingApiFp(this.configuration).getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
+        return FundingApiFp(this.configuration).getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.subdivision, requestParameters.methods, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1583,7 +1609,7 @@ export class FundingApi extends BaseAPI {
      * @memberof FundingApi
      */
     public getFundingSessionMethods(requestParameters: FundingApiGetFundingSessionMethodsRequest, options?: AxiosRequestConfig) {
-        return FundingApiFp(this.configuration).getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
+        return FundingApiFp(this.configuration).getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.subdivision, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1646,4 +1672,3 @@ export class FundingApi extends BaseAPI {
         return FundingApiFp(this.configuration).updateFundingConfig(requestParameters.updateFundingConfigRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
-
