@@ -15,82 +15,82 @@
 
 
 /**
- * Body for PUT /v2/funding/config — the dashboard \"Funding\" section config. The stored shape verbatim, except `recommendedAmount` may be omitted instead of sent as null.
+ * Funding project configuration — the per-project-environment settings written by the dashboard \"Funding\" section and read by the onramp routing layer.  One shape end to end: the repository maps it to/from snake_case columns, the request adds nothing but optionality, and the response is this type verbatim.
  * @export
- * @interface UpdateFundingConfigRequest
+ * @interface FundingProjectConfig
  */
-export interface UpdateFundingConfigRequest {
+export interface FundingProjectConfig {
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'ecosystem': string;
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'defaultChain': string;
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'defaultCurrency': string;
     /**
      * 
+     * @type {string}
+     * @memberof FundingProjectConfig
+     */
+    'recommendedAmount': string | null;
+    /**
+     * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'crossChainBridging': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'onrampEnabled': boolean;
     /**
      * Enabled web2 methods (FundingMethod values), in display order.
      * @type {Array<string>}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'onrampMethods': Array<string>;
     /**
      * Whether native wallet pay (Apple/Google Pay) is offered. Signing uses platform-wide credentials.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'walletPayEnabled': boolean;
     /**
      * Whether Stripe\'s in-page (embedded) rail is offered. Uses platform-wide credentials.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'stripeEnabled': boolean;
     /**
      * Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'hostedCheckoutEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'depositAddressEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingProjectConfig
      */
     'depositFromWalletEnabled': boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateFundingConfigRequest
-     */
-    'recommendedAmount'?: string;
 }
 

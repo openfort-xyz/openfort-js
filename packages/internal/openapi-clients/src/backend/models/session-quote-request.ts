@@ -51,17 +51,11 @@ export interface SessionQuoteRequest {
      */
     'country'?: string;
     /**
-     * ISO-3166-2 subdivision code (for example `NY`).
-     * @type {string}
+     * Integration angles the client can execute; omit for no restriction. Must match the `angles` the commit will send so the quoted provider is the one that executes.
+     * @type {Array<string>}
      * @memberof SessionQuoteRequest
      */
-    'subdivision'?: string;
-    /**
-     * Origin-chain refund address used when pricing a cross-VM chained route.
-     * @type {string}
-     * @memberof SessionQuoteRequest
-     */
-    'refundTo'?: string;
+    'angles'?: Array<SessionQuoteRequestAnglesEnum>;
 }
 
 export const SessionQuoteRequestMethodEnum = {
@@ -72,3 +66,12 @@ export const SessionQuoteRequestMethodEnum = {
 } as const;
 
 export type SessionQuoteRequestMethodEnum = typeof SessionQuoteRequestMethodEnum[keyof typeof SessionQuoteRequestMethodEnum];
+export const SessionQuoteRequestAnglesEnum = {
+    Popup: 'popup',
+    Native: 'native',
+    Embedded: 'embedded'
+} as const;
+
+export type SessionQuoteRequestAnglesEnum = typeof SessionQuoteRequestAnglesEnum[keyof typeof SessionQuoteRequestAnglesEnum];
+
+

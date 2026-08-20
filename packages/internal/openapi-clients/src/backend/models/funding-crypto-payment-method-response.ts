@@ -34,9 +34,9 @@ export interface FundingCryptoPaymentMethodResponse {
      * @type {string}
      * @memberof FundingCryptoPaymentMethodResponse
      */
-    'type': FundingCryptoPaymentMethodResponseTypeEnum;
+    'type': string;
     /**
-     *
+     * 
      * @type {FundingSourceResponse}
      * @memberof FundingCryptoPaymentMethodResponse
      */
@@ -60,7 +60,7 @@ export interface FundingCryptoPaymentMethodResponse {
      */
     'deeplinks': Array<FundingWalletDeeplinkResponse>;
     /**
-     *
+     * 
      * @type {Array<FundingFeeResponse>}
      * @memberof FundingCryptoPaymentMethodResponse
      */
@@ -73,9 +73,3 @@ export interface FundingCryptoPaymentMethodResponse {
     'minAmount': string | null;
 }
 
-export const FundingCryptoPaymentMethodResponseTypeEnum = {
-    Evm: 'evm',
-    Solana: 'solana'
-} as const;
-
-export type FundingCryptoPaymentMethodResponseTypeEnum = typeof FundingCryptoPaymentMethodResponseTypeEnum[keyof typeof FundingCryptoPaymentMethodResponseTypeEnum];

@@ -78,8 +78,14 @@ export interface OnrampPaymentMethodInput {
   sourceCurrency?: string
   /** Explicit buyer-country override (ISO-3166 alpha-2); wins over the request IP. */
   country?: string
-  /** ISO-3166-2 subdivision code, for example `NY`. */
-  subdivision?: string
+  /**
+   * Integration angles this client can execute; omit for no restriction. A
+   * client that can't run a flow (React Native has no DOM for `embedded`
+   * elements and no Safari context for the `native` wallet-pay sheet) sends
+   * `['popup']` — routing then skips providers whose flow resolves to an
+   * excluded angle, falling through to the hosted popup checkout when allowed.
+   */
+  angles?: OnrampAngle[]
   /** URL the provider redirects back to after a hosted checkout. */
   redirectUrl?: string
   /** Origin-chain refund address for an auto-bridged (chained) route. */
@@ -339,6 +345,40 @@ export interface OnrampVerificationRecord {
   verificationExpiresAt?: string
 }
 
+/**
+ * Where a buyer stands with the onramp provider's identity checks.
+ * `providedFields` names the requirements already satisfied (e.g.
+ * `identifiers`, `attestation`), so a client asks only for what's left.
+ * Tier ladder: L0 = nothing collected (lowest limits) · L1 = identity form ·
+ * L2 = L1 + government ID.
+ */
+export interface OnrampIdentity {
+  /** Regulatory region the provider judged the buyer to be in. */
+  region: 'us' | 'eu' | null
+  level: 'L0' | 'L1' | 'L2' | 'PENDING' | 'REJECTED' | 'REQUIRES_KYC'
+  providedFields: string[]
+}
+
+/** Where a buyer stands on raising their spending limit. */
+export interface OnrampLimitUpgrade {
+  status: 'unrequested' | 'resubmit' | 'pending' | 'active' | 'inactive'
+  /** False once the provider has stopped offering the upgrade at all. */
+  available: boolean
+}
+
+/**
+ * Spending limits for the buyer. `limits` keeps the provider's own shape and
+ * is deliberately not narrowed. The normalized fields beside it are safe to
+ * read: MONETARY VALUES ARE IN MINOR UNITS (cents), and
+ * `remainingTransactions: null` means unlimited, never zero.
+ */
+export interface OnrampLimits {
+  limits: Record<string, unknown> | null
+  remainingMinor?: number | null
+  remainingTransactions?: number | null
+  upgrade?: OnrampLimitUpgrade | null
+}
+
 export class FundingApi {
   constructor(private readonly backendApiClients: BackendApiClients) {}
 
@@ -468,7 +508,7 @@ export class FundingApi {
      */
     methods: async (
       sessionId: string,
-      params?: { clientSecret?: string; country?: string; subdivision?: string }
+      params?: { clientSecret?: string; country?: string; angles?: OnrampAngle[] }
     ): Promise<ResolvedFundingMethods> => {
       const clientSecret = this.resolveSecret(sessionId, params?.clientSecret)
       const response = await withApiError(
@@ -478,7 +518,7 @@ export class FundingApi {
               sessionId,
               clientSecret,
               country: params?.country,
-              subdivision: params?.subdivision,
+              angles: params?.angles?.join(','),
             })
           ).data,
         { context: 'funding.sessions.methods' }
@@ -501,9 +541,8 @@ export class FundingApi {
         sourceAmount: string
         sourceCurrency: string
         country?: string
-        subdivision?: string
-        /** Origin-chain refund address used when pricing a cross-VM chained route. */
-        refundTo?: string
+        /** Angles this client can execute — must match the commit's `angles`. */
+        angles?: OnrampAngle[]
         clientSecret?: string
       }
     ): Promise<OnrampQuote> => {
@@ -519,8 +558,7 @@ export class FundingApi {
                 sourceAmount: params.sourceAmount,
                 sourceCurrency: params.sourceCurrency,
                 country: params.country,
-                subdivision: params.subdivision,
-                refundTo: params.refundTo,
+                angles: params.angles,
               },
             })
           ).data,
@@ -601,6 +639,110 @@ export class FundingApi {
         context: 'funding.embedded.exchangeToken',
       })
     },
+
+    /**
+     * The buyer's verification state with the provider: which region's rules
+     * apply, the tier reached, and which requirements are already satisfied.
+     * Drives the EU sub-steps — without it a client can only guess which
+     * declarations a buyer still owes.
+     */
+    identity: async (params: { authIntentId: string; customerRef: string }): Promise<OnrampIdentity> => {
+      const response = await withApiError(
+        async () =>
+          (
+            await this.fundingApi.getOnrampIdentity({
+              authIntentId: params.authIntentId,
+              customerRef: params.customerRef,
+            })
+          ).data,
+        { context: 'funding.embedded.identity' }
+      )
+      return {
+        // tsoa renders the nullable region as a literal 'null' enum member.
+        region: response.region === 'us' || response.region === 'eu' ? response.region : null,
+        level: response.level,
+        providedFields: response.providedFields ?? [],
+      }
+    },
+  }
+
+  /**
+   * The fiat methods available for a destination and the buyer's region,
+   * WITHOUT a session — the discovery call for rendering funding options
+   * before anything is committed. Session-scoped resolution lives at
+   * `sessions.methods`.
+   */
+  public readonly methods = async (params: {
+    /** Destination CAIP-2 chain id, e.g. "eip155:8453". */
+    targetChain: string
+    /** Destination token contract, or the zero address for native. */
+    targetCurrency: string
+    /** Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP. */
+    country?: string
+    /** Allowlist in display order; narrows within the project-enabled set. */
+    methods?: OnrampMethodId[]
+    /** Angles this client can execute; omit for no restriction. */
+    angles?: OnrampAngle[]
+  }): Promise<ResolvedFundingMethods> => {
+    const response = await withApiError(
+      async () =>
+        (
+          await this.fundingApi.getFundingOnrampMethods({
+            targetChain: params.targetChain,
+            targetCurrency: params.targetCurrency,
+            country: params.country,
+            methods: params.methods?.join(','),
+            angles: params.angles?.join(','),
+          })
+        ).data,
+      { context: 'funding.methods' }
+    )
+    return {
+      country: response.country ?? null,
+      methods: (response.methods ?? []).map(presentMethodRow),
+    }
+  }
+
+  /**
+   * The buyer's current transaction limits, so a client can offer a
+   * verification step-up instead of letting the commit fail. Identify the
+   * buyer by the embedded flow's auth intent OR by the wallet-pay verified
+   * phone — never both. Monetary values are in CENTS.
+   */
+  public readonly limits = async (
+    params:
+      | { authIntentId: string; walletAddress?: string; network?: string }
+      | { phoneNumber: string; method: 'apple_pay' | 'google_pay' }
+  ): Promise<OnrampLimits> => {
+    const response = await withApiError(
+      async () =>
+        (
+          await this.fundingApi.getOnrampLimits(
+            'authIntentId' in params
+              ? { authIntentId: params.authIntentId, walletAddress: params.walletAddress, network: params.network }
+              : { phoneNumber: params.phoneNumber, method: params.method }
+          )
+        ).data,
+      { context: 'funding.limits' }
+    )
+    return response as OnrampLimits
+  }
+
+  /**
+   * Start the provider-hosted identity form that raises a wallet-pay buyer's
+   * limits. The URL is single-use and short-lived — request a fresh one per
+   * attempt. The form is provider-hosted because it collects a partial SSN;
+   * that data never passes through Openfort.
+   */
+  public readonly startLimitUpgrade = async (params: {
+    phoneNumber: string
+    method: 'apple_pay' | 'google_pay'
+  }): Promise<{ url: string; expiresAt: string }> => {
+    const response = await withApiError(
+      async () => (await this.fundingApi.startOnrampLimitUpgrade({ startOnrampLimitUpgradeRequest: params })).data,
+      { context: 'funding.startLimitUpgrade' }
+    )
+    return response
   }
 
   /**

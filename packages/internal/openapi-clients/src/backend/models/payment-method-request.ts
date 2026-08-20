@@ -39,7 +39,7 @@ export interface PaymentMethodRequest {
      */
     'type': PaymentMethodRequestTypeEnum;
     /**
-     *
+     * 
      * @type {FundingSourceRequest}
      * @memberof PaymentMethodRequest
      */
@@ -75,17 +75,17 @@ export interface PaymentMethodRequest {
      */
     'country'?: string;
     /**
-     * ISO-3166-2 subdivision code (for example `NY`); required where regional provider rules differ.
-     * @type {string}
-     * @memberof PaymentMethodRequest
-     */
-    'subdivision'?: string;
-    /**
      * URL the provider redirects back to after checkout.
      * @type {string}
      * @memberof PaymentMethodRequest
      */
     'redirectUrl'?: string;
+    /**
+     * Integration angles the client can execute; omit for no restriction. A client that can\'t run a flow (React Native has no DOM for `embedded` elements and no Safari context for the `native` wallet-pay sheet) sends e.g. `[\"popup\"]` — routing then skips providers whose flow resolves to an excluded angle, falling through to the hosted popup checkout when allowed.
+     * @type {Array<string>}
+     * @memberof PaymentMethodRequest
+     */
+    'angles'?: Array<PaymentMethodRequestAnglesEnum>;
     /**
      * OTP-verified buyer email — REQUIRED for `apple_pay`/`google_pay` (the native wallet-pay sheet needs verified buyer identity). Ignored for `card`/`bank_transfer`. Openfort verifies it via its own email OTP.
      * @type {string}
@@ -123,7 +123,7 @@ export interface PaymentMethodRequest {
      */
     'emailVerificationId'?: string;
     /**
-     *
+     * 
      * @type {OnrampPaymentMethodRequestEmbedded}
      * @memberof PaymentMethodRequest
      */
@@ -145,3 +145,12 @@ export const PaymentMethodRequestMethodEnum = {
 } as const;
 
 export type PaymentMethodRequestMethodEnum = typeof PaymentMethodRequestMethodEnum[keyof typeof PaymentMethodRequestMethodEnum];
+export const PaymentMethodRequestAnglesEnum = {
+    Popup: 'popup',
+    Native: 'native',
+    Embedded: 'embedded'
+} as const;
+
+export type PaymentMethodRequestAnglesEnum = typeof PaymentMethodRequestAnglesEnum[keyof typeof PaymentMethodRequestAnglesEnum];
+
+
