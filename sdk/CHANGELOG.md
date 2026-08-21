@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.2.1
+
+### Patch Changes
+
+- [#360](https://github.com/openfort-xyz/openfort-js/pull/360) [`f597b8a`](https://github.com/openfort-xyz/openfort-js/commit/f597b8a45b45e0d056ce9fc9b386364ae0b31d88) Thanks [@n00m4d](https://github.com/n00m4d)! - Load only the four `@sentry/browser` pieces the SDK uses instead of the whole namespace, so bundlers drop Replay and Feedback: the `import { Openfort }` bundle shrinks from ~239 kB to ~152 kB (brotli). Telemetry behaviour is unchanged.
+
 ## 2.2.0
 
 ### Minor Changes
