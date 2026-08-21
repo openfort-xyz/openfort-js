@@ -221,9 +221,11 @@ export class InternalSentry {
 
     // Never let telemetry break the host app. The dynamic import can fail to
     // resolve in some bundlers (notably Metro / React Native), so swallow any
-    // error — queued capture calls simply stay unsent.
+    // error — queued capture calls simply stay unsent. It goes through our own
+    // module (not `import('@sentry/browser')` directly): a namespace import of
+    // Sentry defeats tree-shaking and ships Replay/Feedback, ~90 kB brotli.
     try {
-      const sentryImport = await import('@sentry/browser')
+      const { createSentryClient } = await import('./sentryClient')
 
       // `release` is applied by the client to every event it prepares (see
       // applyClientOptions in @sentry/core), so it covers the wrapped
@@ -231,17 +233,9 @@ export class InternalSentry {
       // calls (e.g. wallets/iframeManager.ts) without a per-event processor.
       // This is what lets telemetry answer "is this fix shipped?" — the events
       // that previously reported release: null now carry the SDK version.
-      InternalSentry.sentry = new sentryImport.BrowserClient({
+      InternalSentry.sentry = createSentryClient({
         dsn: SENTRY_DSN,
         release: `${PACKAGE}@${VERSION}`,
-        // Serialises `error.cause` chains into the event, so a wrapped error
-        // still names the failing dependency in telemetry. The chain passes
-        // through `beforeSend` and is scrubbed like every other field.
-        integrations: [sentryImport.linkedErrorsIntegration()],
-        stackParser: sentryImport.defaultStackParser,
-        transport: sentryImport.makeFetchTransport,
-        // Never attach IP address, cookies, or user headers.
-        sendDefaultPii: false,
         // Applies to every event the client prepares, including bare
         // captureException calls that skip the wrappers above.
         beforeSend: (event) => scrubEvent(event),
