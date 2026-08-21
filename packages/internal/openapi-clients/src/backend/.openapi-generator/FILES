@@ -396,12 +396,15 @@ models/oidcauth-config.ts
 models/onramp-auth-intent-response.ts
 models/onramp-auth-token-exchange-response.ts
 models/onramp-fee.ts
+models/onramp-identity-response.ts
+models/onramp-limit-upgrade-response.ts
+models/onramp-limit-upgrade-status-response.ts
+models/onramp-limits-response.ts
 models/onramp-methods-response.ts
 models/onramp-payment-method-request-embedded.ts
 models/onramp-payment-method-request.ts
 models/onramp-provider.ts
 models/onramp-quote-request.ts
-models/onramp-quote-response-relay.ts
 models/onramp-quote-response.ts
 models/onramp-quotes-response.ts
 models/onramp-session-request.ts
@@ -605,6 +608,7 @@ models/sponsor-schema-fixedrate.ts
 models/sponsor-schema-payforuser.ts
 models/sponsor-schema.ts
 models/standard-details.ts
+models/start-onramp-limit-upgrade-request.ts
 models/stat.ts
 models/status.ts
 models/submit-onramp-verification-request.ts

@@ -24,7 +24,7 @@ import { OnrampPaymentMethodRequestEmbedded } from './onramp-payment-method-requ
  */
 export interface OnrampPaymentMethodRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof OnrampPaymentMethodRequest
      */
@@ -53,12 +53,6 @@ export interface OnrampPaymentMethodRequest {
      * @memberof OnrampPaymentMethodRequest
      */
     'country'?: string;
-    /**
-     * ISO-3166-2 subdivision code (for example `NY`); required where regional provider rules differ.
-     * @type {string}
-     * @memberof OnrampPaymentMethodRequest
-     */
-    'subdivision'?: string;
     /**
      * URL the provider redirects back to after checkout.
      * @type {string}
@@ -108,7 +102,7 @@ export interface OnrampPaymentMethodRequest {
      */
     'emailVerificationId'?: string;
     /**
-     *
+     * 
      * @type {OnrampPaymentMethodRequestEmbedded}
      * @memberof OnrampPaymentMethodRequest
      */
@@ -128,3 +122,5 @@ export const OnrampPaymentMethodRequestMethodEnum = {
 } as const;
 
 export type OnrampPaymentMethodRequestMethodEnum = typeof OnrampPaymentMethodRequestMethodEnum[keyof typeof OnrampPaymentMethodRequestMethodEnum];
+
+

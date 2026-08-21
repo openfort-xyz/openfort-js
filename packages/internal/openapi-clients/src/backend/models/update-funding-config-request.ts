@@ -24,31 +24,31 @@ import { FundingCredentialsRequest } from './funding-credentials-request';
  */
 export interface UpdateFundingConfigRequest {
     /**
-     *
+     * 
      * @type {string}
      * @memberof UpdateFundingConfigRequest
      */
     'ecosystem': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof UpdateFundingConfigRequest
      */
     'defaultChain': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof UpdateFundingConfigRequest
      */
     'defaultCurrency': string;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof UpdateFundingConfigRequest
      */
     'crossChainBridging': boolean;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof UpdateFundingConfigRequest
      */
@@ -78,13 +78,13 @@ export interface UpdateFundingConfigRequest {
      */
     'hostedCheckoutEnabled': boolean;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof UpdateFundingConfigRequest
      */
     'depositAddressEnabled': boolean;
     /**
-     *
+     * 
      * @type {boolean}
      * @memberof UpdateFundingConfigRequest
      */
@@ -102,9 +102,10 @@ export interface UpdateFundingConfigRequest {
      */
     'stripePublishableKey'?: string | null;
     /**
-     *
+     * 
      * @type {FundingCredentialsRequest}
      * @memberof UpdateFundingConfigRequest
      */
     'credentials'?: FundingCredentialsRequest;
 }
+

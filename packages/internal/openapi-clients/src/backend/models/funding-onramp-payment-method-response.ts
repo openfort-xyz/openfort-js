@@ -24,7 +24,7 @@ import { FundingFeeResponse } from './funding-fee-response';
  */
 export interface FundingOnrampPaymentMethodResponse {
     /**
-     *
+     * 
      * @type {string}
      * @memberof FundingOnrampPaymentMethodResponse
      */
@@ -54,13 +54,13 @@ export interface FundingOnrampPaymentMethodResponse {
      */
     'providerSessionId': string | null;
     /**
-     *
+     * 
      * @type {Array<FundingFeeResponse>}
      * @memberof FundingOnrampPaymentMethodResponse
      */
     'fees': Array<FundingFeeResponse>;
     /**
-     *
+     * 
      * @type {string}
      * @memberof FundingOnrampPaymentMethodResponse
      */
@@ -72,3 +72,5 @@ export const FundingOnrampPaymentMethodResponseTypeEnum = {
 } as const;
 
 export type FundingOnrampPaymentMethodResponseTypeEnum = typeof FundingOnrampPaymentMethodResponseTypeEnum[keyof typeof FundingOnrampPaymentMethodResponseTypeEnum];
+
+

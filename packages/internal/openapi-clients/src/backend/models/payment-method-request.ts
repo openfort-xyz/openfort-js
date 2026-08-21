@@ -39,7 +39,7 @@ export interface PaymentMethodRequest {
      */
     'type': PaymentMethodRequestTypeEnum;
     /**
-     *
+     * 
      * @type {FundingSourceRequest}
      * @memberof PaymentMethodRequest
      */
@@ -74,12 +74,6 @@ export interface PaymentMethodRequest {
      * @memberof PaymentMethodRequest
      */
     'country'?: string;
-    /**
-     * ISO-3166-2 subdivision code (for example `NY`); required where regional provider rules differ.
-     * @type {string}
-     * @memberof PaymentMethodRequest
-     */
-    'subdivision'?: string;
     /**
      * URL the provider redirects back to after checkout.
      * @type {string}
@@ -123,7 +117,7 @@ export interface PaymentMethodRequest {
      */
     'emailVerificationId'?: string;
     /**
-     *
+     * 
      * @type {OnrampPaymentMethodRequestEmbedded}
      * @memberof PaymentMethodRequest
      */
@@ -145,3 +139,5 @@ export const PaymentMethodRequestMethodEnum = {
 } as const;
 
 export type PaymentMethodRequestMethodEnum = typeof PaymentMethodRequestMethodEnum[keyof typeof PaymentMethodRequestMethodEnum];
+
+

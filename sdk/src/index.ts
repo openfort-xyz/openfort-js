@@ -26,6 +26,10 @@ export {
   type FundingWalletDeeplink,
   type OnrampAngle,
   type OnrampFee,
+  type OnrampIdentity,
+  type OnrampLimits,
+  type OnrampLimitUpgrade,
+  type OnrampLimitUpgradeStatus,
   type OnrampMethodId,
   type OnrampPaymentMethodInput,
   type OnrampQuote,
@@ -34,6 +38,7 @@ export {
   type PayLinkParams,
   type ResolvedFundingMethod,
   type ResolvedFundingMethods,
+  type WalletPayMethodId,
 } from './api/funding'
 export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'

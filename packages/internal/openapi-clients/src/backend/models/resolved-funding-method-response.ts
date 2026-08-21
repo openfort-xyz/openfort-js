@@ -21,19 +21,19 @@
  */
 export interface ResolvedFundingMethodResponse {
     /**
-     *
+     * 
      * @type {string}
      * @memberof ResolvedFundingMethodResponse
      */
     'method': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ResolvedFundingMethodResponse
      */
     'provider': string;
     /**
-     *
+     * 
      * @type {string}
      * @memberof ResolvedFundingMethodResponse
      */
@@ -51,3 +51,4 @@ export interface ResolvedFundingMethodResponse {
      */
     'providerPublishableKey'?: string;
 }
+

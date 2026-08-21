@@ -8307,14 +8307,6 @@
           },
           {
             "in": "query",
-            "name": "subdivision",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
             "name": "methods",
             "required": false,
             "schema": {
@@ -8662,14 +8654,6 @@
             }
           },
           {
-            "in": "query",
-            "name": "subdivision",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "in": "header",
             "name": "cf-ipcountry",
             "required": false,
@@ -8727,6 +8711,22 @@
           {
             "in": "header",
             "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
             "required": false,
             "schema": {
               "type": "string"
@@ -8912,6 +8912,203 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateFundingConfigRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/identity": {
+      "get": {
+        "operationId": "getOnrampIdentity",
+        "responses": {
+          "200": {
+            "description": "Buyer identity state resolved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampIdentityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - auth token expired or embedded onramp not configured."
+          }
+        },
+        "description": "Reads the buyer's identity state at the provider — which regulatory\nregion they fall under, the verification tier they have reached, and\nwhich identity steps they have already satisfied.\n\nThe embedded flow needs this to prompt for exactly what is outstanding:\nwithout it a client can only infer the remaining steps, and re-asks for\ndeclarations the buyer already made.",
+        "summary": "Read the buyer's onramp identity state",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "authIntentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "customerRef",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/limits": {
+      "get": {
+        "operationId": "getOnrampLimits",
+        "responses": {
+          "200": {
+            "description": "Transaction limits resolved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampLimitsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - auth token expired or embedded onramp not configured."
+          }
+        },
+        "description": "Reads the buyer's current transaction limits. Clients compare the\nintended purchase against these to offer a verification step-up instead\nof letting the commit fail.\n\nMonetary values are in CENTS.",
+        "summary": "Read the buyer's onramp transaction limits",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "authIntentId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "phoneNumber",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "apple_pay",
+                "google_pay"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "walletAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "network",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/limits/upgrade": {
+      "post": {
+        "operationId": "startOnrampLimitUpgrade",
+        "responses": {
+          "200": {
+            "description": "Limit upgrade started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampLimitUpgradeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - buyer not eligible, blocked, or rate limited."
+          }
+        },
+        "description": "Starts the provider-hosted identity form that raises a wallet-pay buyer's\nlimits, returning the URL to embed.\n\nThe form is hosted by the provider because it collects a partial SSN —\nthat data never passes through Openfort. The URL is single-use and\nshort-lived, so request a fresh one per attempt rather than caching it.",
+        "summary": "Start a wallet-pay limit upgrade",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "apple_pay",
+                      "google_pay"
+                    ]
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "method",
+                  "phoneNumber"
+                ],
+                "type": "object"
               }
             }
           }
@@ -24293,39 +24490,6 @@
           },
           "exchangeRate": {
             "type": "string"
-          },
-          "relay": {
-            "properties": {
-              "minAmount": {
-                "type": "string",
-                "nullable": true,
-                "description": "Minimum intermediate input in base units."
-              },
-              "fees": {
-                "items": {
-                  "$ref": "#/components/schemas/OnrampFee"
-                },
-                "type": "array"
-              },
-              "destinationChain": {
-                "type": "string"
-              },
-              "destinationCurrency": {
-                "type": "string"
-              },
-              "destinationAmount": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "minAmount",
-              "fees",
-              "destinationChain",
-              "destinationCurrency",
-              "destinationAmount"
-            ],
-            "type": "object",
-            "description": "Relay leg for an auto-bridged route; absent for direct provider delivery."
           }
         },
         "required": [
@@ -28677,10 +28841,6 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "evm",
-              "solana"
-            ],
             "description": "Source family (\"evm\" or \"solana\")."
           },
           "source": {
@@ -28988,10 +29148,6 @@
             "description": "Explicit buyer country override (ISO-3166 alpha-2). Wins over the request\nIP — the escape hatch for QA and apps that already know their user's region.",
             "example": "US"
           },
-          "subdivision": {
-            "type": "string",
-            "description": "ISO-3166-2 subdivision code (for example `NY`); required where regional provider rules differ."
-          },
           "redirectUrl": {
             "type": "string",
             "description": "URL the provider redirects back to after checkout."
@@ -29153,14 +29309,6 @@
           "country": {
             "type": "string",
             "description": "Explicit buyer country override (ISO-3166 alpha-2); defaults to the request IP."
-          },
-          "subdivision": {
-            "type": "string",
-            "description": "ISO-3166-2 subdivision code (for example `NY`)."
-          },
-          "refundTo": {
-            "type": "string",
-            "description": "Origin-chain refund address used when pricing a cross-VM chained route."
           }
         },
         "required": [
@@ -29337,11 +29485,11 @@
           },
           "coinbaseHeadlessConfigured": {
             "type": "boolean",
-            "description": "The project's CDP keys and Coinbase webhook secret are set."
+            "description": "The project's CDP key pair is set (webhook secret is separate and optional)."
           },
           "stripeEmbeddedConfigured": {
             "type": "boolean",
-            "description": "The project's Stripe API, Link OAuth, and webhook credentials are set."
+            "description": "The project's Stripe secret key and Link OAuth client are set (webhook secret is separate and optional)."
           }
         },
         "required": [
@@ -29527,6 +29675,123 @@
           "hostedCheckoutEnabled",
           "depositAddressEnabled",
           "depositFromWalletEnabled"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampLimitUpgradeResponse": {
+        "description": "A started, provider-hosted limit upgrade — embed the URL before it expires.",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Single-use and short-lived; request a fresh one per attempt."
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "ISO-8601."
+          }
+        },
+        "required": [
+          "url",
+          "expiresAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampLimitsResponse": {
+        "description": "The buyer's current transaction limits, as the provider shapes them.\nMONETARY VALUES ARE IN CENTS.\n\nThe normalized fields are populated for the wallet-pay (phone) form; the\nembedded (auth-intent) form returns only the raw `limits` passthrough.",
+        "properties": {
+          "limits": {
+            "$ref": "#/components/schemas/Record_string.unknown_"
+          },
+          "remainingMinor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Remaining spend this period, MINOR units. Null when the provider gave none."
+          },
+          "remainingTransactions": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Remaining purchases; null means UNLIMITED, never zero."
+          },
+          "upgrade": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OnrampLimitUpgradeStatusResponse"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "limits"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampLimitUpgradeStatusResponse": {
+        "description": "Where a buyer stands on raising their spending limit.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "unrequested",
+              "resubmit",
+              "pending",
+              "active",
+              "inactive"
+            ]
+          },
+          "available": {
+            "type": "boolean",
+            "description": "False once the provider has stopped offering the upgrade at all."
+          }
+        },
+        "required": [
+          "status",
+          "available"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampIdentityResponse": {
+        "description": "The buyer's identity state at the resolved provider. `providedFields` names\nthe identity steps already satisfied (\"identifiers\", \"attestation\", …), so\nthe client prompts only for what is outstanding rather than guessing.",
+        "properties": {
+          "region": {
+            "type": "string",
+            "enum": [
+              "us",
+              "eu",
+              null
+            ],
+            "nullable": true,
+            "description": "Regulatory region the provider judged the buyer to be in."
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "L0",
+              "L1",
+              "L2",
+              "PENDING",
+              "REJECTED",
+              "REQUIRES_KYC"
+            ],
+            "description": "Verification tier reached; anything but L0/L1/L2 means more is needed."
+          },
+          "providedFields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "region",
+          "level",
+          "providedFields"
         ],
         "type": "object",
         "additionalProperties": false

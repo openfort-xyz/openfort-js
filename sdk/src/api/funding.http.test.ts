@@ -46,13 +46,6 @@ const server = createServer(async (request, response) => {
         destinationNetwork: 'arbitrum',
         fees: [],
         exchangeRate: '1',
-        relay: {
-          destinationAmount: '24.40',
-          destinationCurrency: '0xtarget',
-          destinationChain: 'eip155:42161',
-          fees: [],
-          minAmount: '1000000',
-        },
       })
     )
     return
@@ -81,6 +74,18 @@ const server = createServer(async (request, response) => {
     response.end(JSON.stringify({ exchanged: true }))
     return
   }
+  if (request.url?.startsWith('/v2/funding/onramp/identity?')) {
+    response.end(JSON.stringify({ region: 'us', level: 'L1', providedFields: [] }))
+    return
+  }
+  if (request.url?.startsWith('/v2/funding/onramp/limits?')) {
+    response.end(JSON.stringify({ limits: { daily: 50000 }, remainingMinor: 12000 }))
+    return
+  }
+  if (request.url === '/v2/funding/onramp/limits/upgrade') {
+    response.end(JSON.stringify({ url: 'https://provider.example/upgrade', expiresAt: 'soon' }))
+    return
+  }
   if (request.url === '/v2/funding/chains?livemode=false') {
     response.end(JSON.stringify({ chains: [] }))
     return
@@ -105,29 +110,32 @@ afterAll(async () => {
 describe('FundingApi HTTP contract', () => {
   it('serializes session onramp operations through the generated client', async () => {
     seen.length = 0
-    await funding.sessions.methods('fnd_1', { clientSecret: 'cs_1', country: 'US', subdivision: 'NY' })
+    await funding.sessions.methods('fnd_1', { clientSecret: 'cs_1', country: 'US' })
     const quote = await funding.sessions.quote('fnd_1', {
       clientSecret: 'cs_1',
       method: 'card',
       sourceAmount: '25.00',
       sourceCurrency: 'USD',
-      subdivision: 'NY',
-      refundTo: '0xrefund',
+      country: 'US',
     })
     await funding.sessions.setPaymentMethod('fnd_1', {
       clientSecret: 'cs_1',
-      paymentMethod: { type: 'onramp', method: 'card', subdivision: 'NY' },
+      paymentMethod: { type: 'onramp', method: 'card', country: 'US' },
     })
     await funding.sessions.checkout('fnd_1', { clientSecret: 'cs_1' })
     await funding.verifications.create({ channel: 'sms', destination: '+14155550123' })
     await funding.verifications.submit('verification_1', '000000')
     await funding.embedded.createAuthIntent({ email: 'buyer@example.com' })
     await funding.embedded.exchangeToken('lai_1')
+    await funding.embedded.identity({ authIntentId: 'lai_1', customerRef: 'cus_1' })
+    await funding.embedded.limits({ authIntentId: 'lai_1', network: 'base' })
+    await funding.walletPay.limits({ phoneNumber: '+14155550123', method: 'apple_pay' })
+    await funding.walletPay.startLimitUpgrade({ phoneNumber: '+14155550123', method: 'apple_pay' })
     await funding.chains({ livemode: false })
 
-    expect(quote.relay?.destinationAmount).toBe('24.40')
+    expect(quote.destinationAmount).toBe('24.50')
     expect(seen.map(({ method, url }) => `${method} ${url}`)).toEqual([
-      'GET /v2/funding/sessions/fnd_1/methods?clientSecret=cs_1&country=US&subdivision=NY',
+      'GET /v2/funding/sessions/fnd_1/methods?clientSecret=cs_1&country=US',
       'POST /v2/funding/sessions/fnd_1/quotes',
       'POST /v2/funding/sessions/fnd_1/payment_methods',
       'POST /v2/funding/sessions/fnd_1/onramp_checkout',
@@ -135,12 +143,17 @@ describe('FundingApi HTTP contract', () => {
       'POST /v2/funding/onramp/verifications/verification_1/submit',
       'POST /v2/funding/onramp/auth_intents',
       'POST /v2/funding/onramp/auth_intents/lai_1/tokens',
+      'GET /v2/funding/onramp/identity?authIntentId=lai_1&customerRef=cus_1',
+      'GET /v2/funding/onramp/limits?authIntentId=lai_1&network=base',
+      'GET /v2/funding/onramp/limits?phoneNumber=%2B14155550123&method=apple_pay',
+      'POST /v2/funding/onramp/limits/upgrade',
       'GET /v2/funding/chains?livemode=false',
     ])
     expect(seen.slice(0, -1).every(({ authorization }) => authorization === 'Bearer pk_test_http')).toBe(true)
     expect(seen.at(-1)?.authorization).toBeUndefined()
-    expect(seen[1]?.body).toMatchObject({ subdivision: 'NY', refundTo: '0xrefund' })
-    expect(seen[2]?.body).toMatchObject({ paymentMethod: { type: 'onramp', subdivision: 'NY' } })
+    expect(seen[1]?.body).toMatchObject({ country: 'US' })
+    expect(seen[2]?.body).toMatchObject({ paymentMethod: { type: 'onramp', country: 'US' } })
+    expect(seen[11]?.body).toEqual({ phoneNumber: '+14155550123', method: 'apple_pay' })
   })
 
   it('maps a generated-client structured error', async () => {

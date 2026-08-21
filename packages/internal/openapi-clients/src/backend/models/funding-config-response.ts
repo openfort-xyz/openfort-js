@@ -99,13 +99,13 @@ export interface FundingConfigResponse {
      */
     'stripePublishableKey': string;
     /**
-     * The project\'s CDP keys and Coinbase webhook secret are set.
+     * The project\'s CDP key pair is set (webhook secret is separate and optional).
      * @type {boolean}
      * @memberof FundingConfigResponse
      */
     'coinbaseHeadlessConfigured': boolean;
     /**
-     * The project\'s Stripe API, Link OAuth, and webhook credentials are set.
+     * The project\'s Stripe secret key and Link OAuth client are set (webhook secret is separate and optional).
      * @type {boolean}
      * @memberof FundingConfigResponse
      */

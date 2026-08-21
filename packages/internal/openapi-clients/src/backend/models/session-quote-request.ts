@@ -50,18 +50,6 @@ export interface SessionQuoteRequest {
      * @memberof SessionQuoteRequest
      */
     'country'?: string;
-    /**
-     * ISO-3166-2 subdivision code (for example `NY`).
-     * @type {string}
-     * @memberof SessionQuoteRequest
-     */
-    'subdivision'?: string;
-    /**
-     * Origin-chain refund address used when pricing a cross-VM chained route.
-     * @type {string}
-     * @memberof SessionQuoteRequest
-     */
-    'refundTo'?: string;
 }
 
 export const SessionQuoteRequestMethodEnum = {
@@ -72,3 +60,5 @@ export const SessionQuoteRequestMethodEnum = {
 } as const;
 
 export type SessionQuoteRequestMethodEnum = typeof SessionQuoteRequestMethodEnum[keyof typeof SessionQuoteRequestMethodEnum];
+
+
