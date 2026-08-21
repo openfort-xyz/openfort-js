@@ -22,6 +22,7 @@
       "!**/playwright-report",
       "!**/blob-report",
       "!**/playwright/.auth",
+      "!**/.vercel",
       "!**/.claude"
     ],
     "ignoreUnknown": true

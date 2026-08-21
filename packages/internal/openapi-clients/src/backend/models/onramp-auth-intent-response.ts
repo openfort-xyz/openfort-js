@@ -15,19 +15,16 @@
 
 
 /**
- * 
+ * A minted embedded-flow auth intent — the client renders the provider\'s auth element with it.
  * @export
- * @enum {string}
+ * @interface OnrampAuthIntentResponse
  */
-
-export const TransactionAbstractionType = {
-    AAV6: 'accountAbstractionV6',
-    AAV8: 'accountAbstractionV8',
-    AAV9: 'accountAbstractionV9',
-    EOA: 'standard'
-} as const;
-
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
-
-
+export interface OnrampAuthIntentResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof OnrampAuthIntentResponse
+     */
+    'id': string;
+}
 

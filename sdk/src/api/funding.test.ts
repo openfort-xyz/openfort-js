@@ -19,6 +19,16 @@ function mockFundingApi() {
     getFundingSession: vi.fn(),
     createPayLink: vi.fn(),
     listChains: vi.fn(),
+    getFundingSessionMethods: vi.fn(),
+    quoteFundingSession: vi.fn(),
+    checkoutFundingOnrampSession: vi.fn(),
+    createOnrampVerification: vi.fn(),
+    submitOnrampVerification: vi.fn(),
+    createOnrampAuthIntent: vi.fn(),
+    exchangeOnrampAuthToken: vi.fn(),
+    getOnrampIdentity: vi.fn(),
+    getOnrampLimits: vi.fn(),
+    startOnrampLimitUpgrade: vi.fn(),
   }
 }
 
@@ -47,6 +57,174 @@ describe('FundingApi', () => {
     })
   })
 
+  it('sessions.methods resolves the fiat rows with the remembered client secret', async () => {
+    funding.createFundingSession.mockReturnValue(
+      ok({ id: 'fnd_1', clientSecret: 'cs_1', status: 'requires_payment_method', paymentMethod: null })
+    )
+    // The API sends method + rail only; label and device gating are derived here.
+    funding.getFundingSessionMethods.mockReturnValue(
+      ok({
+        country: 'US',
+        methods: [
+          { method: 'apple_pay', provider: 'coinbase', angle: 'native' },
+          { method: 'bank_transfer', provider: 'stripe', angle: 'popup', rail: 'ach' },
+          { method: 'card', provider: 'coinbase', angle: 'popup' },
+        ],
+      })
+    )
+    const api = makeApi(funding)
+    await api.sessions.create({ target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' } })
+    const resolved = await api.sessions.methods('fnd_1', { country: 'US' })
+    expect(resolved.country).toBe('US')
+    expect(resolved.methods[0]).toMatchObject({
+      method: 'apple_pay',
+      angle: 'native',
+      label: 'Apple Pay',
+      requiresDeviceCheck: true,
+    })
+    expect(resolved.methods[1]).toMatchObject({ label: 'ACH', rail: 'ach' })
+    expect(resolved.methods[2]).toMatchObject({ label: 'Card' })
+    expect(resolved.methods[2]?.requiresDeviceCheck).toBeUndefined()
+    expect(funding.getFundingSessionMethods).toHaveBeenCalledWith({
+      sessionId: 'fnd_1',
+      clientSecret: 'cs_1',
+      country: 'US',
+    })
+  })
+
+  it('sessions.quote prices a route through the session-scoped quote endpoint', async () => {
+    funding.quoteFundingSession.mockReturnValue(
+      ok({
+        provider: 'stripe',
+        sourceAmount: '104.05',
+        sourceCurrency: 'USD',
+        destinationAmount: '100',
+        destinationCurrency: 'USDC',
+        destinationNetwork: 'base',
+        fees: [],
+        exchangeRate: '1.00',
+      })
+    )
+    const quote = await makeApi(funding).sessions.quote('fnd_1', {
+      method: 'card',
+      sourceAmount: '100',
+      sourceCurrency: 'USD',
+      country: 'US',
+      clientSecret: 'cs_1',
+    })
+    expect(quote.destinationAmount).toBe('100')
+    expect(funding.quoteFundingSession).toHaveBeenCalledWith({
+      sessionId: 'fnd_1',
+      sessionQuoteRequest: {
+        clientSecret: 'cs_1',
+        method: 'card',
+        sourceAmount: '100',
+        sourceCurrency: 'USD',
+        country: 'US',
+      },
+    })
+  })
+
+  it('embedded.identity and embedded.limits read the buyer state by auth intent', async () => {
+    funding.getOnrampIdentity.mockReturnValue(ok({ region: 'eu', level: 'L0', providedFields: ['identifiers'] }))
+    funding.getOnrampLimits.mockReturnValue(ok({ limits: { daily: 50000 }, remainingMinor: 12000 }))
+    const api = makeApi(funding)
+    const identity = await api.embedded.identity({ authIntentId: 'lai_1', customerRef: 'cus_1' })
+    expect(identity).toEqual({ region: 'eu', level: 'L0', providedFields: ['identifiers'] })
+    expect(funding.getOnrampIdentity).toHaveBeenCalledWith({ authIntentId: 'lai_1', customerRef: 'cus_1' })
+    const limits = await api.embedded.limits({ authIntentId: 'lai_1', walletAddress: '0xwallet', network: 'base' })
+    expect(limits.remainingMinor).toBe(12000)
+    expect(funding.getOnrampLimits).toHaveBeenCalledWith({
+      authIntentId: 'lai_1',
+      walletAddress: '0xwallet',
+      network: 'base',
+    })
+  })
+
+  it('walletPay.limits and startLimitUpgrade identify the buyer by verified phone', async () => {
+    funding.getOnrampLimits.mockReturnValue(
+      ok({ limits: {}, remainingTransactions: null, upgrade: { status: 'unrequested', available: true } })
+    )
+    funding.startOnrampLimitUpgrade.mockReturnValue(ok({ url: 'https://provider.example/upgrade', expiresAt: 'soon' }))
+    const api = makeApi(funding)
+    const limits = await api.walletPay.limits({ phoneNumber: '+14155550123', method: 'apple_pay' })
+    expect(limits.upgrade?.available).toBe(true)
+    expect(funding.getOnrampLimits).toHaveBeenCalledWith({ phoneNumber: '+14155550123', method: 'apple_pay' })
+    const upgrade = await api.walletPay.startLimitUpgrade({ phoneNumber: '+14155550123', method: 'apple_pay' })
+    expect(upgrade.url).toBe('https://provider.example/upgrade')
+    expect(funding.startOnrampLimitUpgrade).toHaveBeenCalledWith({
+      startOnrampLimitUpgradeRequest: { phoneNumber: '+14155550123', method: 'apple_pay' },
+    })
+  })
+
+  it('setPaymentMethod passes an onramp commit (wallet-pay identity + verification ids) through', async () => {
+    funding.setPaymentMethod.mockReturnValue(
+      ok({
+        id: 'fnd_1',
+        status: 'waiting_payment',
+        paymentMethod: {
+          type: 'onramp',
+          method: 'apple_pay',
+          angle: 'native',
+          url: 'https://pay.coinbase.com/o',
+          fees: [],
+          minAmount: null,
+        },
+      })
+    )
+    const session = await makeApi(funding).sessions.setPaymentMethod('fnd_1', {
+      clientSecret: 'cs_1',
+      paymentMethod: {
+        type: 'onramp',
+        method: 'apple_pay',
+        sourceAmount: '25.00',
+        sourceCurrency: 'USD',
+        email: 'a@b.co',
+        phoneNumber: '+14155550123',
+        phoneNumberVerifiedAt: '2026-07-30T00:00:00Z',
+        agreementAcceptedAt: '2026-07-30T00:00:00Z',
+        smsVerificationId: 'onramp_verification_sms',
+        emailVerificationId: 'onramp_verification_email',
+      },
+    })
+    expect(session.paymentMethod).toMatchObject({ type: 'onramp', angle: 'native', url: 'https://pay.coinbase.com/o' })
+    const sent = funding.setPaymentMethod.mock.calls[0]?.[0].setPaymentMethodRequest.paymentMethod ?? {}
+    expect(sent.smsVerificationId).toBe('onramp_verification_sms')
+    expect(sent.emailVerificationId).toBe('onramp_verification_email')
+    expect(sent.sourceAmount).toBe('25.00')
+  })
+
+  it('verifications.create + submit delegate to the Coinbase-issued OTP endpoints', async () => {
+    funding.createOnrampVerification.mockReturnValue(ok({ verificationId: 'onramp_verification_x', otpExpiresAt: 't' }))
+    funding.submitOnrampVerification.mockReturnValue(
+      ok({ verificationId: 'onramp_verification_x', verificationExpiresAt: 't2' })
+    )
+    const api = makeApi(funding)
+    const started = await api.verifications.create({ channel: 'sms', destination: '+14155550123' })
+    expect(started.verificationId).toBe('onramp_verification_x')
+    const record = await api.verifications.submit('onramp_verification_x', '000000')
+    expect(record.verificationExpiresAt).toBe('t2')
+    expect(funding.submitOnrampVerification).toHaveBeenCalledWith({
+      verificationId: 'onramp_verification_x',
+      submitOnrampVerificationRequest: { otpCode: '000000' },
+    })
+  })
+
+  it('embedded helpers mint and exchange the auth intent; checkout returns the element secret', async () => {
+    funding.createOnrampAuthIntent.mockReturnValue(ok({ id: 'lai_1' }))
+    funding.exchangeOnrampAuthToken.mockReturnValue(ok({ exchanged: true }))
+    funding.checkoutFundingOnrampSession.mockReturnValue(ok({ clientSecret: 'seti_secret' }))
+    const api = makeApi(funding)
+    expect((await api.embedded.createAuthIntent({ email: 'a@b.co' })).id).toBe('lai_1')
+    await api.embedded.exchangeToken('lai_1')
+    const checkout = await api.sessions.checkout('fnd_1', { clientSecret: 'cs_1' })
+    expect(checkout.clientSecret).toBe('seti_secret')
+    expect(funding.checkoutFundingOnrampSession).toHaveBeenCalledWith({
+      sessionId: 'fnd_1',
+      checkoutFundingOnrampSessionRequest: { clientSecret: 'cs_1' },
+    })
+  })
+
   it('maps an underlying axios error to an OpenfortError without leaking internals', async () => {
     const internals = 'Error: ECONNREFUSED at db.internal:5432'
     funding.listChains.mockRejectedValue(createMockAxiosError(500, { raw: internals }))
@@ -62,14 +240,14 @@ describe('FundingApi', () => {
     await expect(makeApi(funding).chains()).rejects.toThrow('amount must be at least 5')
   })
 
-  it('chains calls listChains and returns the array', async () => {
+  it('chains forwards testnet selection and returns the array', async () => {
     funding.listChains.mockReturnValue(
       ok({ chains: [{ id: 'eip155:8453', name: 'Base', logo: null, vmType: 'evm', currencies: [] }] })
     )
-    const chains = await makeApi(funding).chains()
+    const chains = await makeApi(funding).chains({ livemode: false })
     expect(chains).toHaveLength(1)
     expect(chains[0]?.id).toBe('eip155:8453')
-    expect(funding.listChains).toHaveBeenCalledWith({})
+    expect(funding.listChains).toHaveBeenCalledWith({ livemode: false })
   })
 
   it('remembers the clientSecret from create() so get() needs no explicit secret', async () => {
@@ -109,8 +287,14 @@ describe('FundingApi', () => {
       target: { chain: 'eip155:8453', currency: '0x0', address: '0x1' },
     })
     expect(session.status).toBe('waiting_payment')
-    expect(session.paymentMethod?.cex).toBeNull()
-    expect(session.paymentMethod?.receiverAddress).toBe('0xreceiver')
+    // Crypto rail → the response union narrows without a cast.
+    const pm = session.paymentMethod
+    if (pm?.type === 'evm') {
+      expect(pm.cex).toBeNull()
+      expect(pm.receiverAddress).toBe('0xreceiver')
+    } else {
+      throw new Error('expected an EVM payment method')
+    }
   })
 
   it('wait() polls until a terminal status', async () => {

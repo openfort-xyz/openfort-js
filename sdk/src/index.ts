@@ -9,11 +9,14 @@ export { AuthApi } from './api/auth'
 export { EmbeddedWalletApi } from './api/embeddedWallet'
 export {
   type CreateFundingSessionParams,
+  type CryptoFundingPaymentMethodInput,
   FundingApi,
   type FundingCexGuidance,
   type FundingChain,
+  type FundingCryptoPaymentMethod,
   type FundingCurrency,
   type FundingFee,
+  type FundingOnrampPaymentMethod,
   type FundingPaymentMethod,
   type FundingPaymentMethodInput,
   type FundingSession,
@@ -21,7 +24,21 @@ export {
   type FundingSource,
   type FundingTarget,
   type FundingWalletDeeplink,
+  type OnrampAngle,
+  type OnrampFee,
+  type OnrampIdentity,
+  type OnrampLimits,
+  type OnrampLimitUpgrade,
+  type OnrampLimitUpgradeStatus,
+  type OnrampMethodId,
+  type OnrampPaymentMethodInput,
+  type OnrampQuote,
+  type OnrampVerificationRecord,
+  type OnrampVerificationStart,
   type PayLinkParams,
+  type ResolvedFundingMethod,
+  type ResolvedFundingMethods,
+  type WalletPayMethodId,
 } from './api/funding'
 export { ProxyApi } from './api/proxy'
 export { UserApi } from './api/user'

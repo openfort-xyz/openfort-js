@@ -17,17 +17,14 @@
 /**
  * 
  * @export
- * @enum {string}
+ * @interface CheckoutFundingOnrampSessionRequest
  */
-
-export const TransactionAbstractionType = {
-    AAV6: 'accountAbstractionV6',
-    AAV8: 'accountAbstractionV8',
-    AAV9: 'accountAbstractionV9',
-    EOA: 'standard'
-} as const;
-
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
-
-
+export interface CheckoutFundingOnrampSessionRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CheckoutFundingOnrampSessionRequest
+     */
+    'clientSecret': string;
+}
 

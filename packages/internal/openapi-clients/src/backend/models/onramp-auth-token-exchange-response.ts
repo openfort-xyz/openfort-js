@@ -15,19 +15,16 @@
 
 
 /**
- * 
+ * Result of exchanging a completed auth intent (the provider token stays server-side).
  * @export
- * @enum {string}
+ * @interface OnrampAuthTokenExchangeResponse
  */
-
-export const TransactionAbstractionType = {
-    AAV6: 'accountAbstractionV6',
-    AAV8: 'accountAbstractionV8',
-    AAV9: 'accountAbstractionV9',
-    EOA: 'standard'
-} as const;
-
-export type TransactionAbstractionType = typeof TransactionAbstractionType[keyof typeof TransactionAbstractionType];
-
-
+export interface OnrampAuthTokenExchangeResponse {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof OnrampAuthTokenExchangeResponse
+     */
+    'exchanged': boolean;
+}
 

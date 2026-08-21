@@ -119,6 +119,7 @@ models/change-password-post-request.ts
 models/change-password-post200-response.ts
 models/charge-custom-token-policy-strategy.ts
 models/check-verification-otp-request.ts
+models/checkout-funding-onramp-session-request.ts
 models/checkout-request.ts
 models/checkout-response.ts
 models/checkout-subscription-request.ts
@@ -152,6 +153,8 @@ models/create-fee-sponsorship-request.ts
 models/create-forwarder-contract-request.ts
 models/create-funding-session-request.ts
 models/create-migration-request.ts
+models/create-onramp-auth-intent-request.ts
+models/create-onramp-verification-request.ts
 models/create-paymaster-request.ts
 models/create-policy-request.ts
 models/create-policy-rule-request.ts
@@ -160,6 +163,7 @@ models/create-policy-v2-rule-request.ts
 models/create-project-api-key-request.ts
 models/create-project-request.ts
 models/create-session-request.ts
+models/create-smtpconfig-response.ts
 models/create-subscription-request.ts
 models/create-transaction-intent-request.ts
 models/create-trigger-request.ts
@@ -173,6 +177,7 @@ models/criteria-operator-match.ts
 models/criteria-operator-notin.ts
 models/criteria-operator.ts
 models/criteria-type.ts
+models/crypto-payment-method-request.ts
 models/currency.ts
 models/custom-auth-config.ts
 models/delete-account-response.ts
@@ -261,6 +266,8 @@ models/evm-message-criterion-request.ts
 models/evm-message-criterion.ts
 models/evm-network-criterion-request.ts
 models/evm-network-criterion.ts
+models/evm-token-contract-entry-response.ts
+models/evm-token-contract-entry.ts
 models/evm-typed-data-field-criterion-operator.ts
 models/evm-typed-data-field-criterion-request.ts
 models/evm-typed-data-field-criterion.ts
@@ -289,7 +296,11 @@ models/forwarder-contract-response.ts
 models/funding-chain-currency-response.ts
 models/funding-chain-response.ts
 models/funding-chains-response.ts
+models/funding-config-response.ts
+models/funding-credentials-request.ts
+models/funding-crypto-payment-method-response.ts
 models/funding-fee-response.ts
+models/funding-onramp-payment-method-response.ts
 models/funding-payment-method-response.ts
 models/funding-session-response.ts
 models/funding-source-request.ts
@@ -350,6 +361,7 @@ models/login-with-id-token-request.ts
 models/logout-request.ts
 models/loot-locker-oauth-config.ts
 models/mapping-strategy.ts
+models/me-permissions-response.ts
 models/message-bird-sms-provider-config.ts
 models/mfa-email-challenge-response.ts
 models/mfa-email-verify-request.ts
@@ -381,7 +393,16 @@ models/oauth-provider-twitter.ts
 models/oauth-provider.ts
 models/oauth-response.ts
 models/oidcauth-config.ts
+models/onramp-auth-intent-response.ts
+models/onramp-auth-token-exchange-response.ts
 models/onramp-fee.ts
+models/onramp-identity-response.ts
+models/onramp-limit-upgrade-response.ts
+models/onramp-limit-upgrade-status-response.ts
+models/onramp-limits-response.ts
+models/onramp-methods-response.ts
+models/onramp-payment-method-request-embedded.ts
+models/onramp-payment-method-request.ts
 models/onramp-provider.ts
 models/onramp-quote-request.ts
 models/onramp-quote-response.ts
@@ -389,6 +410,8 @@ models/onramp-quotes-response.ts
 models/onramp-session-request.ts
 models/onramp-session-response-quote.ts
 models/onramp-session-response.ts
+models/onramp-verification-response.ts
+models/onramp-verification-submit-response.ts
 models/otp-verification-response.ts
 models/paging-queries.ts
 models/passkey-env.ts
@@ -409,6 +432,8 @@ models/phone-number-verify-post-request.ts
 models/phone-number-verify-post200-response-user.ts
 models/phone-number-verify-post200-response.ts
 models/pick-contract-response-id.ts
+models/pick-funding-project-config-exclude-keyof-funding-project-config-credentials.ts
+models/pick-funding-project-config-exclude-keyof-funding-project-config-recommended-amount-or-credentials-or-stripe-publishable-key.ts
 models/pick-json-fragment-exclude-keyof-json-fragment-inputs-or-outputs.ts
 models/pick-json-fragment-type-exclude-keyof-json-fragment-type-components.ts
 models/pick-player-response-id.ts
@@ -489,6 +514,7 @@ models/reset-password-post-request.ts
 models/reset-password-request.ts
 models/reset-password-response.ts
 models/reset-password-token-get200-response.ts
+models/resolved-funding-method-response.ts
 models/response-response.ts
 models/response-type-list.ts
 models/revoke-other-sessions-post200-response.ts
@@ -505,6 +531,7 @@ models/send-verification-email-post200-response.ts
 models/send-verification-email-post400-response.ts
 models/session-list-queries.ts
 models/session-list-response.ts
+models/session-quote-request.ts
 models/session-response-expandable.ts
 models/session-response.ts
 models/session.ts
@@ -543,6 +570,7 @@ models/sms-provider-twilio.ts
 models/sms-provider-txtlocal.ts
 models/sms-provider-vonage.ts
 models/smtpconfig-response.ts
+models/smtpverification-response.ts
 models/social-sign-in-request-id-token.ts
 models/social-sign-in-request.ts
 models/social-sign-in200-response-user.ts
@@ -580,8 +608,10 @@ models/sponsor-schema-fixedrate.ts
 models/sponsor-schema-payforuser.ts
 models/sponsor-schema.ts
 models/standard-details.ts
+models/start-onramp-limit-upgrade-request.ts
 models/stat.ts
 models/status.ts
+models/submit-onramp-verification-request.ts
 models/subscription-delete-response.ts
 models/subscription-list-response.ts
 models/subscription-response.ts
@@ -589,6 +619,7 @@ models/supabase-auth-config.ts
 models/switch-chain-queries-v2.ts
 models/switch-chain-request.ts
 models/test-account-config.ts
+models/test-smtpconfig-response.ts
 models/test-trigger200-response.ts
 models/third-party-link-request.ts
 models/third-party-oauth-provider-accelbyte.ts
@@ -639,6 +670,7 @@ models/update-contract-request.ts
 models/update-developer-account-create-request.ts
 models/update-email-sample-request.ts
 models/update-fee-sponsorship-request.ts
+models/update-funding-config-request.ts
 models/update-migration-request.ts
 models/update-policy-request.ts
 models/update-policy-rule-request.ts
@@ -676,4 +708,3 @@ models/webhook-response.ts
 models/webhook-secret-info-response.ts
 models/webhook-secret-rotate-response.ts
 models/withdrawal-policy-request.ts
-models/zksync-details.ts
