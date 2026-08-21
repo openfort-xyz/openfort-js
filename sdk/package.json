@@ -130,13 +130,13 @@
     {
       "name": "import * from '@openfort/openfort-js'",
       "path": "./dist/sdk/src/index.js",
-      "limit": "245 kB",
+      "limit": "165 kB",
       "import": "*"
     },
     {
       "name": "import { Openfort } from '@openfort/openfort-js'",
       "path": "./dist/sdk/src/index.js",
-      "limit": "245 kB",
+      "limit": "165 kB",
       "import": "{ Openfort }"
     },
     {
