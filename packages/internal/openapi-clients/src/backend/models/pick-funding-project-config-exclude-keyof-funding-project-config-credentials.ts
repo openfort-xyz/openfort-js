@@ -13,99 +13,90 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { FundingCredentialsRequest } from './funding-credentials-request';
 
 /**
- * Body for PUT /v2/funding/config — the dashboard \"Funding\" section config. The stored shape verbatim, except credentials are write-only and partial.
+ * From T, pick a set of properties whose keys are in the union K
  * @export
- * @interface UpdateFundingConfigRequest
+ * @interface PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
  */
-export interface UpdateFundingConfigRequest {
+export interface PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials {
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'ecosystem': string;
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'defaultChain': string;
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'defaultCurrency': string;
     /**
      * 
+     * @type {string}
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
+     */
+    'recommendedAmount': string;
+    /**
+     * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'crossChainBridging': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'onrampEnabled': boolean;
     /**
      * Enabled web2 methods (FundingMethod values), in display order.
      * @type {Array<string>}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'onrampMethods': Array<string>;
     /**
      * Whether native wallet pay (Apple/Google Pay) is offered. Needs the project\'s own CDP keys.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'walletPayEnabled': boolean;
     /**
      * Whether Stripe\'s in-page (embedded) rail is offered. Needs the project\'s own Link OAuth client.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'stripeEnabled': boolean;
     /**
      * Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'hostedCheckoutEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'depositAddressEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
     'depositFromWalletEnabled': boolean;
     /**
-     * Null and omitted both mean \"no recommended amount\".
+     * The project\'s Stripe publishable key, handed to the client so the embedded component can initialize. Public by design — it belongs to the same Stripe account as the embedded credentials below, so it is per-project too.
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigCredentials
      */
-    'recommendedAmount'?: string | null;
-    /**
-     * Follows the credential rules, since it belongs to the same Stripe account: omit to keep what is stored, send an empty string to clear it.
-     * @type {string}
-     * @memberof UpdateFundingConfigRequest
-     */
-    'stripePublishableKey'?: string | null;
-    /**
-     * 
-     * @type {FundingCredentialsRequest}
-     * @memberof UpdateFundingConfigRequest
-     */
-    'credentials'?: FundingCredentialsRequest;
+    'stripePublishableKey': string;
 }
 

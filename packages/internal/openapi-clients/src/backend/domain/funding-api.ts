@@ -32,7 +32,7 @@ import { CreateOnrampVerificationRequest } from '../models';
 // @ts-ignore
 import { FundingChainsResponse } from '../models';
 // @ts-ignore
-import { FundingProjectConfig } from '../models';
+import { FundingConfigResponse } from '../models';
 // @ts-ignore
 import { FundingSessionResponse } from '../models';
 // @ts-ignore
@@ -1032,7 +1032,7 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFundingConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingProjectConfig>> {
+        async getFundingConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingConfigResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingConfig(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1180,7 +1180,7 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateFundingConfig(updateFundingConfigRequest: UpdateFundingConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingProjectConfig>> {
+        async updateFundingConfig(updateFundingConfigRequest: UpdateFundingConfigRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FundingConfigResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateFundingConfig(updateFundingConfigRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1260,7 +1260,7 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFundingConfig(options?: AxiosRequestConfig): AxiosPromise<FundingProjectConfig> {
+        getFundingConfig(options?: AxiosRequestConfig): AxiosPromise<FundingConfigResponse> {
             return localVarFp.getFundingConfig(options).then((request) => request(axios, basePath));
         },
         /**
@@ -1370,7 +1370,7 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateFundingConfig(requestParameters: FundingApiUpdateFundingConfigRequest, options?: AxiosRequestConfig): AxiosPromise<FundingProjectConfig> {
+        updateFundingConfig(requestParameters: FundingApiUpdateFundingConfigRequest, options?: AxiosRequestConfig): AxiosPromise<FundingConfigResponse> {
             return localVarFp.updateFundingConfig(requestParameters.updateFundingConfigRequest, options).then((request) => request(axios, basePath));
         },
     };

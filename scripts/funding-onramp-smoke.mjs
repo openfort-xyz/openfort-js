@@ -60,7 +60,7 @@ try {
       address: '0x03508bB71268BBA25ECaCC8F620e01866650532c',
     },
   })
-  const region = { country: 'US', subdivision: 'ny' }
+  const region = { country: 'US' }
   const methods = await openfort.funding.sessions.methods(session.id, region)
   const card = methods.methods.find(({ method, angle }) => method === 'card' && angle === 'popup')
   if (!card) throw new Error('Expected the Coinbase popup card method')

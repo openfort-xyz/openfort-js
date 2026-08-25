@@ -321,15 +321,6 @@ export interface OnrampQuote {
   destinationNetwork: string
   fees: OnrampFee[]
   exchangeRate: string
-  /** Relay leg for an auto-bridged route; absent when the provider delivers directly. */
-  relay?: {
-    destinationAmount: string
-    destinationCurrency: string
-    destinationChain: string
-    fees: OnrampFee[]
-    /** Minimum intermediate input in base units. */
-    minAmount: string | null
-  }
 }
 
 /** A started OTP verification (the code is on its way). */
@@ -346,38 +337,48 @@ export interface OnrampVerificationRecord {
 }
 
 /**
- * Where a buyer stands with the onramp provider's identity checks.
- * `providedFields` names the requirements already satisfied (e.g.
- * `identifiers`, `attestation`), so a client asks only for what's left.
- * Tier ladder: L0 = nothing collected (lowest limits) · L1 = identity form ·
- * L2 = L1 + government ID.
+ * The buyer's identity state at the resolved provider. `providedFields` names
+ * the identity steps already satisfied ("identifiers", "attestation", …), so
+ * the client prompts only for what is outstanding.
  */
 export interface OnrampIdentity {
   /** Regulatory region the provider judged the buyer to be in. */
   region: 'us' | 'eu' | null
+  /** Verification tier reached; anything but L0/L1/L2 means more is needed. */
   level: 'L0' | 'L1' | 'L2' | 'PENDING' | 'REJECTED' | 'REQUIRES_KYC'
   providedFields: string[]
 }
 
 /** Where a buyer stands on raising their spending limit. */
-export interface OnrampLimitUpgrade {
+export interface OnrampLimitUpgradeStatus {
   status: 'unrequested' | 'resubmit' | 'pending' | 'active' | 'inactive'
   /** False once the provider has stopped offering the upgrade at all. */
   available: boolean
 }
 
 /**
- * Spending limits for the buyer. `limits` keeps the provider's own shape and
- * is deliberately not narrowed. The normalized fields beside it are safe to
- * read: MONETARY VALUES ARE IN MINOR UNITS (cents), and
- * `remainingTransactions: null` means unlimited, never zero.
+ * The buyer's current transaction limits. `limits` is the provider's own
+ * shape, passed through unchanged. MONETARY VALUES ARE IN MINOR UNITS (cents).
  */
 export interface OnrampLimits {
-  limits: Record<string, unknown> | null
+  limits: Record<string, unknown>
+  /** Remaining spend this period, minor units. Null when the provider gave none. */
   remainingMinor?: number | null
+  /** Remaining purchases; null means unlimited, never zero. */
   remainingTransactions?: number | null
-  upgrade?: OnrampLimitUpgrade | null
+  upgrade?: OnrampLimitUpgradeStatus | null
 }
+
+/** A started, provider-hosted limit upgrade — present the URL before it expires. */
+export interface OnrampLimitUpgrade {
+  /** Single-use and short-lived; request a fresh one per attempt. */
+  url: string
+  /** ISO-8601. */
+  expiresAt: string
+}
+
+/** The wallet-pay methods, which identify a buyer by their verified phone. */
+export type WalletPayMethodId = Extract<OnrampMethodId, 'apple_pay' | 'google_pay'>
 
 export class FundingApi {
   constructor(private readonly backendApiClients: BackendApiClients) {}
@@ -641,10 +642,9 @@ export class FundingApi {
     },
 
     /**
-     * The buyer's verification state with the provider: which region's rules
-     * apply, the tier reached, and which requirements are already satisfied.
-     * Drives the EU sub-steps — without it a client can only guess which
-     * declarations a buyer still owes.
+     * The buyer's identity state at the provider — region, verification tier,
+     * and the identity steps already satisfied — so the element flow asks only
+     * for what is outstanding.
      */
     identity: async (params: { authIntentId: string; customerRef: string }): Promise<OnrampIdentity> => {
       const response = await withApiError(
@@ -663,6 +663,21 @@ export class FundingApi {
         level: response.level,
         providedFields: response.providedFields ?? [],
       }
+    },
+
+    /**
+     * The buyer's transaction limits for the embedded flow, identified by the
+     * auth intent. Monetary values are in minor units (cents).
+     */
+    limits: async (params: {
+      authIntentId: string
+      walletAddress?: string
+      network?: string
+    }): Promise<OnrampLimits> => {
+      const response = await withApiError(async () => (await this.fundingApi.getOnrampLimits(params)).data, {
+        context: 'funding.embedded.limits',
+      })
+      return response as OnrampLimits
     },
   }
 
@@ -704,45 +719,33 @@ export class FundingApi {
   }
 
   /**
-   * The buyer's current transaction limits, so a client can offer a
-   * verification step-up instead of letting the commit fail. Identify the
-   * buyer by the embedded flow's auth intent OR by the wallet-pay verified
-   * phone — never both. Monetary values are in CENTS.
+   * Native wallet pay (Apple/Google Pay) limit helpers. The rail identifies a
+   * buyer by their OTP-verified phone (see `verifications`).
    */
-  public readonly limits = async (
-    params:
-      | { authIntentId: string; walletAddress?: string; network?: string }
-      | { phoneNumber: string; method: 'apple_pay' | 'google_pay' }
-  ): Promise<OnrampLimits> => {
-    const response = await withApiError(
-      async () =>
-        (
-          await this.fundingApi.getOnrampLimits(
-            'authIntentId' in params
-              ? { authIntentId: params.authIntentId, walletAddress: params.walletAddress, network: params.network }
-              : { phoneNumber: params.phoneNumber, method: params.method }
-          )
-        ).data,
-      { context: 'funding.limits' }
-    )
-    return response as OnrampLimits
-  }
+  public readonly walletPay = {
+    /** The buyer's transaction limits at their current tier. Monetary values are in minor units (cents). */
+    limits: async (params: { phoneNumber: string; method: WalletPayMethodId }): Promise<OnrampLimits> => {
+      const response = await withApiError(async () => (await this.fundingApi.getOnrampLimits(params)).data, {
+        context: 'funding.walletPay.limits',
+      })
+      return response as OnrampLimits
+    },
 
-  /**
-   * Start the provider-hosted identity form that raises a wallet-pay buyer's
-   * limits. The URL is single-use and short-lived — request a fresh one per
-   * attempt. The form is provider-hosted because it collects a partial SSN;
-   * that data never passes through Openfort.
-   */
-  public readonly startLimitUpgrade = async (params: {
-    phoneNumber: string
-    method: 'apple_pay' | 'google_pay'
-  }): Promise<{ url: string; expiresAt: string }> => {
-    const response = await withApiError(
-      async () => (await this.fundingApi.startOnrampLimitUpgrade({ startOnrampLimitUpgradeRequest: params })).data,
-      { context: 'funding.startLimitUpgrade' }
-    )
-    return response
+    /**
+     * Start the provider-hosted identity form that raises the buyer's limit.
+     * Hosted by the provider on purpose: it collects a partial SSN, which never
+     * passes through Openfort. The returned URL is single-use and short-lived.
+     */
+    startLimitUpgrade: async (params: {
+      phoneNumber: string
+      method: WalletPayMethodId
+    }): Promise<OnrampLimitUpgrade> => {
+      const response = await withApiError(
+        async () => (await this.fundingApi.startOnrampLimitUpgrade({ startOnrampLimitUpgradeRequest: params })).data,
+        { context: 'funding.walletPay.startLimitUpgrade' }
+      )
+      return response as OnrampLimitUpgrade
+    },
   }
 
   /**

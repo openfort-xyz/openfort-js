@@ -1,5 +1,19 @@
 # @openfort/openfort-js
 
+## 2.2.1
+
+### Patch Changes
+
+- [#360](https://github.com/openfort-xyz/openfort-js/pull/360) [`f597b8a`](https://github.com/openfort-xyz/openfort-js/commit/f597b8a45b45e0d056ce9fc9b386364ae0b31d88) Thanks [@n00m4d](https://github.com/n00m4d)! - Load only the four `@sentry/browser` pieces the SDK uses instead of the whole namespace, so bundlers drop Replay and Feedback: the `import { Openfort }` bundle shrinks from ~239 kB to ~152 kB (brotli). Telemetry behaviour is unchanged.
+
+## 2.2.0
+
+### Minor Changes
+
+- [#348](https://github.com/openfort-xyz/openfort-js/pull/348) [`59cb163`](https://github.com/openfort-xyz/openfort-js/commit/59cb1634817a166adbf14753185d3353955b7932) Thanks [@joalavedra](https://github.com/joalavedra)! - Added session-scoped onramp methods, embedded checkout helpers, the embedded-flow identity and limits reads (`funding.embedded.identity`, `funding.embedded.limits`), the wallet-pay limit helpers (`funding.walletPay.limits`, `funding.walletPay.startLimitUpgrade`), and testnet funding-chain selection. Regenerated the backend client against the current `/v2/funding` contract. Restricted `fund()` to non-interactive crypto payment methods.
+
+  Local cross-repository verification: start the API with a disposable database, a test project with hosted card funding enabled, `COINBASE_API_URL=http://127.0.0.1:3199`, and `COINBASE_WEBHOOK_SECRET=smoke_secret`; then run `OPENFORT_PUBLISHABLE_KEY=pk_test_... COINBASE_WEBHOOK_SECRET=smoke_secret pnpm smoke:funding-onramp`.
+
 ## 2.1.0
 
 ### Minor Changes

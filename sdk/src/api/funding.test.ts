@@ -105,23 +105,16 @@ describe('FundingApi', () => {
         destinationNetwork: 'base',
         fees: [],
         exchangeRate: '1.00',
-        relay: {
-          destinationAmount: '99.5',
-          destinationCurrency: '0xtoken',
-          destinationChain: 'eip155:42161',
-          fees: [{ type: 'relayerService', amount: '0.5', currency: 'USDC' }],
-          minAmount: '1000000',
-        },
       })
     )
     const quote = await makeApi(funding).sessions.quote('fnd_1', {
       method: 'card',
       sourceAmount: '100',
       sourceCurrency: 'USD',
+      country: 'US',
       clientSecret: 'cs_1',
     })
     expect(quote.destinationAmount).toBe('100')
-    expect(quote.relay?.destinationAmount).toBe('99.5')
     expect(funding.quoteFundingSession).toHaveBeenCalledWith({
       sessionId: 'fnd_1',
       sessionQuoteRequest: {
@@ -129,9 +122,41 @@ describe('FundingApi', () => {
         method: 'card',
         sourceAmount: '100',
         sourceCurrency: 'USD',
-        country: undefined,
+        country: 'US',
         angles: undefined,
       },
+    })
+  })
+
+  it('embedded.identity and embedded.limits read the buyer state by auth intent', async () => {
+    funding.getOnrampIdentity.mockReturnValue(ok({ region: 'eu', level: 'L0', providedFields: ['identifiers'] }))
+    funding.getOnrampLimits.mockReturnValue(ok({ limits: { daily: 50000 }, remainingMinor: 12000 }))
+    const api = makeApi(funding)
+    const identity = await api.embedded.identity({ authIntentId: 'lai_1', customerRef: 'cus_1' })
+    expect(identity).toEqual({ region: 'eu', level: 'L0', providedFields: ['identifiers'] })
+    expect(funding.getOnrampIdentity).toHaveBeenCalledWith({ authIntentId: 'lai_1', customerRef: 'cus_1' })
+    const limits = await api.embedded.limits({ authIntentId: 'lai_1', walletAddress: '0xwallet', network: 'base' })
+    expect(limits.remainingMinor).toBe(12000)
+    expect(funding.getOnrampLimits).toHaveBeenCalledWith({
+      authIntentId: 'lai_1',
+      walletAddress: '0xwallet',
+      network: 'base',
+    })
+  })
+
+  it('walletPay.limits and startLimitUpgrade identify the buyer by verified phone', async () => {
+    funding.getOnrampLimits.mockReturnValue(
+      ok({ limits: {}, remainingTransactions: null, upgrade: { status: 'unrequested', available: true } })
+    )
+    funding.startOnrampLimitUpgrade.mockReturnValue(ok({ url: 'https://provider.example/upgrade', expiresAt: 'soon' }))
+    const api = makeApi(funding)
+    const limits = await api.walletPay.limits({ phoneNumber: '+14155550123', method: 'apple_pay' })
+    expect(limits.upgrade?.available).toBe(true)
+    expect(funding.getOnrampLimits).toHaveBeenCalledWith({ phoneNumber: '+14155550123', method: 'apple_pay' })
+    const upgrade = await api.walletPay.startLimitUpgrade({ phoneNumber: '+14155550123', method: 'apple_pay' })
+    expect(upgrade.url).toBe('https://provider.example/upgrade')
+    expect(funding.startOnrampLimitUpgrade).toHaveBeenCalledWith({
+      startOnrampLimitUpgradeRequest: { phoneNumber: '+14155550123', method: 'apple_pay' },
     })
   })
 
@@ -169,6 +194,7 @@ describe('FundingApi', () => {
     const sent = funding.setPaymentMethod.mock.calls[0]?.[0].setPaymentMethodRequest.paymentMethod ?? {}
     expect(sent.smsVerificationId).toBe('onramp_verification_sms')
     expect(sent.emailVerificationId).toBe('onramp_verification_email')
+    expect(sent.sourceAmount).toBe('25.00')
   })
 
   it('methods() resolves fiat rows without a session, joining methods and angles', async () => {
@@ -230,41 +256,10 @@ describe('FundingApi', () => {
     expect(sent.angles).toEqual(['popup'])
   })
 
-  it('embedded.identity reads the buyer state and maps the tsoa null-string region to null', async () => {
-    funding.getOnrampIdentity
-      .mockReturnValueOnce(ok({ region: 'eu', level: 'L0', providedFields: ['attestation'] }))
-      .mockReturnValueOnce(ok({ region: 'null', level: 'REQUIRES_KYC', providedFields: [] }))
-    const api = makeApi(funding)
-    const eu = await api.embedded.identity({ authIntentId: 'lai_1', customerRef: 'cus_1' })
-    expect(eu).toEqual({ region: 'eu', level: 'L0', providedFields: ['attestation'] })
-    expect(funding.getOnrampIdentity).toHaveBeenCalledWith({ authIntentId: 'lai_1', customerRef: 'cus_1' })
-    const unknown = await api.embedded.identity({ authIntentId: 'lai_1', customerRef: 'cus_1' })
+  it('embedded.identity maps the tsoa null-string region to null', async () => {
+    funding.getOnrampIdentity.mockReturnValueOnce(ok({ region: 'null', level: 'REQUIRES_KYC', providedFields: [] }))
+    const unknown = await makeApi(funding).embedded.identity({ authIntentId: 'lai_1', customerRef: 'cus_1' })
     expect(unknown.region).toBeNull()
-  })
-
-  it('limits() identifies the buyer by auth intent or by verified phone, never mixing the forms', async () => {
-    funding.getOnrampLimits.mockReturnValue(
-      ok({ limits: { maximum: 80000 }, remainingMinor: 50000, remainingTransactions: null })
-    )
-    const api = makeApi(funding)
-    const byIntent = await api.limits({ authIntentId: 'lai_1', walletAddress: '0x1', network: 'base' })
-    expect(byIntent.remainingMinor).toBe(50000)
-    expect(funding.getOnrampLimits).toHaveBeenCalledWith({
-      authIntentId: 'lai_1',
-      walletAddress: '0x1',
-      network: 'base',
-    })
-    await api.limits({ phoneNumber: '+14155550123', method: 'apple_pay' })
-    expect(funding.getOnrampLimits).toHaveBeenLastCalledWith({ phoneNumber: '+14155550123', method: 'apple_pay' })
-  })
-
-  it('startLimitUpgrade returns the single-use hosted form url', async () => {
-    funding.startOnrampLimitUpgrade.mockReturnValue(ok({ url: 'https://pay.example/upgrade', expiresAt: 't' }))
-    const upgrade = await makeApi(funding).startLimitUpgrade({ phoneNumber: '+14155550123', method: 'google_pay' })
-    expect(upgrade).toEqual({ url: 'https://pay.example/upgrade', expiresAt: 't' })
-    expect(funding.startOnrampLimitUpgrade).toHaveBeenCalledWith({
-      startOnrampLimitUpgradeRequest: { phoneNumber: '+14155550123', method: 'google_pay' },
-    })
   })
 
   it('verifications.create + submit delegate to the Coinbase-issued OTP endpoints', async () => {

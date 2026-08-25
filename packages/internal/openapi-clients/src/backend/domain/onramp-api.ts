@@ -80,13 +80,11 @@ export const OnrampApiAxiosParamCreator = function (configuration?: Configuratio
          * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.
          * @summary Get onramp quote(s)
          * @param {OnrampQuoteRequest} onrampQuoteRequest 
-         * @param {string} [cfConnectingIp] 
-         * @param {string} [xForwardedFor] 
          * @param {*} [options] Override http request option.
          * @deprecated
          * @throws {RequiredError}
          */
-        getOnrampQuote: async (onrampQuoteRequest: OnrampQuoteRequest, cfConnectingIp?: string, xForwardedFor?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getOnrampQuote: async (onrampQuoteRequest: OnrampQuoteRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'onrampQuoteRequest' is not null or undefined
             assertParamExists('getOnrampQuote', 'onrampQuoteRequest', onrampQuoteRequest)
             const localVarPath = `/v1/onramp/quotes`;
@@ -104,14 +102,6 @@ export const OnrampApiAxiosParamCreator = function (configuration?: Configuratio
             // authentication pk required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (cfConnectingIp != null) {
-                localVarHeaderParameter['cf-connecting-ip'] = String(cfConnectingIp);
-            }
-
-            if (xForwardedFor != null) {
-                localVarHeaderParameter['x-forwarded-for'] = String(xForwardedFor);
-            }
 
 
     
@@ -153,14 +143,12 @@ export const OnrampApiFp = function(configuration?: Configuration) {
          * Retrieves onramp quote(s) without creating an actual transaction.  If provider is specified, returns a single quote for that provider. If provider is not specified, returns quotes from all available providers.
          * @summary Get onramp quote(s)
          * @param {OnrampQuoteRequest} onrampQuoteRequest 
-         * @param {string} [cfConnectingIp] 
-         * @param {string} [xForwardedFor] 
          * @param {*} [options] Override http request option.
          * @deprecated
          * @throws {RequiredError}
          */
-        async getOnrampQuote(onrampQuoteRequest: OnrampQuoteRequest, cfConnectingIp?: string, xForwardedFor?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampQuotesResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getOnrampQuote(onrampQuoteRequest, cfConnectingIp, xForwardedFor, options);
+        async getOnrampQuote(onrampQuoteRequest: OnrampQuoteRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampQuotesResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getOnrampQuote(onrampQuoteRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -193,7 +181,7 @@ export const OnrampApiFactory = function (configuration?: Configuration, basePat
          * @throws {RequiredError}
          */
         getOnrampQuote(requestParameters: OnrampApiGetOnrampQuoteRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampQuotesResponse> {
-            return localVarFp.getOnrampQuote(requestParameters.onrampQuoteRequest, requestParameters.cfConnectingIp, requestParameters.xForwardedFor, options).then((request) => request(axios, basePath));
+            return localVarFp.getOnrampQuote(requestParameters.onrampQuoteRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -224,20 +212,6 @@ export interface OnrampApiGetOnrampQuoteRequest {
      * @memberof OnrampApiGetOnrampQuote
      */
     readonly onrampQuoteRequest: OnrampQuoteRequest
-
-    /**
-     * 
-     * @type {string}
-     * @memberof OnrampApiGetOnrampQuote
-     */
-    readonly cfConnectingIp?: string
-
-    /**
-     * 
-     * @type {string}
-     * @memberof OnrampApiGetOnrampQuote
-     */
-    readonly xForwardedFor?: string
 }
 
 /**
@@ -270,7 +244,7 @@ export class OnrampApi extends BaseAPI {
      * @memberof OnrampApi
      */
     public getOnrampQuote(requestParameters: OnrampApiGetOnrampQuoteRequest, options?: AxiosRequestConfig) {
-        return OnrampApiFp(this.configuration).getOnrampQuote(requestParameters.onrampQuoteRequest, requestParameters.cfConnectingIp, requestParameters.xForwardedFor, options).then((request) => request(this.axios, this.basePath));
+        return OnrampApiFp(this.configuration).getOnrampQuote(requestParameters.onrampQuoteRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

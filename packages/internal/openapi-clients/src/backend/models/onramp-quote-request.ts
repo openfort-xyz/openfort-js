@@ -54,12 +54,6 @@ export interface OnrampQuoteRequest {
      */
     'sourceAmount': string;
     /**
-     * Where the funds would land. Optional because a quote doesn\'t move money, but a provider may still validate the address against the destination network — so pass the session\'s real one wherever it is known.
-     * @type {string}
-     * @memberof OnrampQuoteRequest
-     */
-    'destinationAddress'?: string;
-    /**
      * 
      * @type {string}
      * @memberof OnrampQuoteRequest

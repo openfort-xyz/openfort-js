@@ -13,99 +13,102 @@
  */
 
 
-// May contain unused imports in some cases
-// @ts-ignore
-import { FundingCredentialsRequest } from './funding-credentials-request';
 
 /**
- * Body for PUT /v2/funding/config — the dashboard \"Funding\" section config. The stored shape verbatim, except credentials are write-only and partial.
+ * GET/PUT /v2/funding/config response — the project funding config with the credentials replaced by presence flags. Stored secrets are write-only: the dashboard renders \"configured / not configured\", never a value it could echo back.
  * @export
- * @interface UpdateFundingConfigRequest
+ * @interface FundingConfigResponse
  */
-export interface UpdateFundingConfigRequest {
+export interface FundingConfigResponse {
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'ecosystem': string;
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'defaultChain': string;
     /**
      * 
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'defaultCurrency': string;
     /**
      * 
+     * @type {string}
+     * @memberof FundingConfigResponse
+     */
+    'recommendedAmount': string;
+    /**
+     * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'crossChainBridging': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'onrampEnabled': boolean;
     /**
      * Enabled web2 methods (FundingMethod values), in display order.
      * @type {Array<string>}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'onrampMethods': Array<string>;
     /**
      * Whether native wallet pay (Apple/Google Pay) is offered. Needs the project\'s own CDP keys.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'walletPayEnabled': boolean;
     /**
      * Whether Stripe\'s in-page (embedded) rail is offered. Needs the project\'s own Link OAuth client.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'stripeEnabled': boolean;
     /**
      * Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered.
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'hostedCheckoutEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'depositAddressEnabled': boolean;
     /**
      * 
      * @type {boolean}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
     'depositFromWalletEnabled': boolean;
     /**
-     * Null and omitted both mean \"no recommended amount\".
+     * The project\'s Stripe publishable key, handed to the client so the embedded component can initialize. Public by design — it belongs to the same Stripe account as the embedded credentials below, so it is per-project too.
      * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * @memberof FundingConfigResponse
      */
-    'recommendedAmount'?: string | null;
+    'stripePublishableKey': string;
     /**
-     * Follows the credential rules, since it belongs to the same Stripe account: omit to keep what is stored, send an empty string to clear it.
-     * @type {string}
-     * @memberof UpdateFundingConfigRequest
+     * The project\'s CDP key pair is set (webhook secret is separate and optional).
+     * @type {boolean}
+     * @memberof FundingConfigResponse
      */
-    'stripePublishableKey'?: string | null;
+    'coinbaseHeadlessConfigured': boolean;
     /**
-     * 
-     * @type {FundingCredentialsRequest}
-     * @memberof UpdateFundingConfigRequest
+     * The project\'s Stripe secret key and Link OAuth client are set (webhook secret is separate and optional).
+     * @type {boolean}
+     * @memberof FundingConfigResponse
      */
-    'credentials'?: FundingCredentialsRequest;
+    'stripeEmbeddedConfigured': boolean;
 }
 
