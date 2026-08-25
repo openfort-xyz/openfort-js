@@ -1,2 +1,2 @@
-export const VERSION = '2.2.1'
+export const VERSION = '2.3.0'
 export const PACKAGE = '@openfort/openfort-js'

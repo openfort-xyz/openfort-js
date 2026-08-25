@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.3.0
+
+### Minor Changes
+
+- [#357](https://github.com/openfort-xyz/openfort-js/pull/357) [`a518488`](https://github.com/openfort-xyz/openfort-js/commit/a51848800ada415d0760d57ea1514fc2e6f3a09d) Thanks [@joalavedra](https://github.com/joalavedra)! - Added the headless onramp surface to `openfort.funding`: sessionless `methods()` discovery, `embedded.identity()`, buyer `limits()` (auth-intent and verified-phone forms), `startLimitUpgrade()`, and an `angles` capability filter on methods, quotes, and commits so clients that can only open a browser (React Native) never resolve a flow they cannot execute. Regenerated the backend client against the funding routing branch, which also removed the `subdivision` and quote `refundTo` parameters that no longer exist in the API contract.
+
 ## 2.2.1
 
 ### Patch Changes
