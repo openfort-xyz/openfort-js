@@ -81,6 +81,12 @@ export interface PaymentMethodRequest {
      */
     'redirectUrl'?: string;
     /**
+     * Integration angles the client can execute; omit for no restriction. A client that can\'t run a flow (React Native has no DOM for `embedded` elements and no Safari context for the `native` wallet-pay sheet) sends e.g. `[\"popup\"]` — routing then skips providers whose flow resolves to an excluded angle, falling through to the hosted popup checkout when allowed.
+     * @type {Array<string>}
+     * @memberof PaymentMethodRequest
+     */
+    'angles'?: Array<PaymentMethodRequestAnglesEnum>;
+    /**
      * OTP-verified buyer email — REQUIRED for `apple_pay`/`google_pay` (the native wallet-pay sheet needs verified buyer identity). Ignored for `card`/`bank_transfer`. Openfort verifies it via its own email OTP.
      * @type {string}
      * @memberof PaymentMethodRequest
@@ -139,5 +145,12 @@ export const PaymentMethodRequestMethodEnum = {
 } as const;
 
 export type PaymentMethodRequestMethodEnum = typeof PaymentMethodRequestMethodEnum[keyof typeof PaymentMethodRequestMethodEnum];
+export const PaymentMethodRequestAnglesEnum = {
+    Popup: 'popup',
+    Native: 'native',
+    Embedded: 'embedded'
+} as const;
+
+export type PaymentMethodRequestAnglesEnum = typeof PaymentMethodRequestAnglesEnum[keyof typeof PaymentMethodRequestAnglesEnum];
 
 

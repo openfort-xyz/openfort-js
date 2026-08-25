@@ -78,6 +78,14 @@ export interface OnrampPaymentMethodInput {
   sourceCurrency?: string
   /** Explicit buyer-country override (ISO-3166 alpha-2); wins over the request IP. */
   country?: string
+  /**
+   * Integration angles this client can execute; omit for no restriction. A
+   * client that can't run a flow (React Native has no DOM for `embedded`
+   * elements and no Safari context for the `native` wallet-pay sheet) sends
+   * `['popup']` — routing then skips providers whose flow resolves to an
+   * excluded angle, falling through to the hosted popup checkout when allowed.
+   */
+  angles?: OnrampAngle[]
   /** URL the provider redirects back to after a hosted checkout. */
   redirectUrl?: string
   /** Origin-chain refund address for an auto-bridged (chained) route. */
@@ -501,7 +509,7 @@ export class FundingApi {
      */
     methods: async (
       sessionId: string,
-      params?: { clientSecret?: string; country?: string }
+      params?: { clientSecret?: string; country?: string; angles?: OnrampAngle[] }
     ): Promise<ResolvedFundingMethods> => {
       const clientSecret = this.resolveSecret(sessionId, params?.clientSecret)
       const response = await withApiError(
@@ -511,6 +519,7 @@ export class FundingApi {
               sessionId,
               clientSecret,
               country: params?.country,
+              angles: params?.angles?.join(','),
             })
           ).data,
         { context: 'funding.sessions.methods' }
@@ -533,6 +542,8 @@ export class FundingApi {
         sourceAmount: string
         sourceCurrency: string
         country?: string
+        /** Angles this client can execute — must match the commit's `angles`. */
+        angles?: OnrampAngle[]
         clientSecret?: string
       }
     ): Promise<OnrampQuote> => {
@@ -548,6 +559,7 @@ export class FundingApi {
                 sourceAmount: params.sourceAmount,
                 sourceCurrency: params.sourceCurrency,
                 country: params.country,
+                angles: params.angles,
               },
             })
           ).data,
@@ -635,10 +647,22 @@ export class FundingApi {
      * for what is outstanding.
      */
     identity: async (params: { authIntentId: string; customerRef: string }): Promise<OnrampIdentity> => {
-      const response = await withApiError(async () => (await this.fundingApi.getOnrampIdentity(params)).data, {
-        context: 'funding.embedded.identity',
-      })
-      return response as unknown as OnrampIdentity
+      const response = await withApiError(
+        async () =>
+          (
+            await this.fundingApi.getOnrampIdentity({
+              authIntentId: params.authIntentId,
+              customerRef: params.customerRef,
+            })
+          ).data,
+        { context: 'funding.embedded.identity' }
+      )
+      return {
+        // tsoa renders the nullable region as a literal 'null' enum member.
+        region: response.region === 'us' || response.region === 'eu' ? response.region : null,
+        level: response.level,
+        providedFields: response.providedFields ?? [],
+      }
     },
 
     /**
@@ -655,6 +679,43 @@ export class FundingApi {
       })
       return response as OnrampLimits
     },
+  }
+
+  /**
+   * The fiat methods available for a destination and the buyer's region,
+   * WITHOUT a session — the discovery call for rendering funding options
+   * before anything is committed. Session-scoped resolution lives at
+   * `sessions.methods`.
+   */
+  public readonly methods = async (params: {
+    /** Destination CAIP-2 chain id, e.g. "eip155:8453". */
+    targetChain: string
+    /** Destination token contract, or the zero address for native. */
+    targetCurrency: string
+    /** Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP. */
+    country?: string
+    /** Allowlist in display order; narrows within the project-enabled set. */
+    methods?: OnrampMethodId[]
+    /** Angles this client can execute; omit for no restriction. */
+    angles?: OnrampAngle[]
+  }): Promise<ResolvedFundingMethods> => {
+    const response = await withApiError(
+      async () =>
+        (
+          await this.fundingApi.getFundingOnrampMethods({
+            targetChain: params.targetChain,
+            targetCurrency: params.targetCurrency,
+            country: params.country,
+            methods: params.methods?.join(','),
+            angles: params.angles?.join(','),
+          })
+        ).data,
+      { context: 'funding.methods' }
+    )
+    return {
+      country: response.country ?? null,
+      methods: (response.methods ?? []).map(presentMethodRow),
+    }
   }
 
   /**

@@ -50,6 +50,12 @@ export interface SessionQuoteRequest {
      * @memberof SessionQuoteRequest
      */
     'country'?: string;
+    /**
+     * Integration angles the client can execute; omit for no restriction. Must match the `angles` the commit will send so the quoted provider is the one that executes.
+     * @type {Array<string>}
+     * @memberof SessionQuoteRequest
+     */
+    'angles'?: Array<SessionQuoteRequestAnglesEnum>;
 }
 
 export const SessionQuoteRequestMethodEnum = {
@@ -60,5 +66,12 @@ export const SessionQuoteRequestMethodEnum = {
 } as const;
 
 export type SessionQuoteRequestMethodEnum = typeof SessionQuoteRequestMethodEnum[keyof typeof SessionQuoteRequestMethodEnum];
+export const SessionQuoteRequestAnglesEnum = {
+    Popup: 'popup',
+    Native: 'native',
+    Embedded: 'embedded'
+} as const;
+
+export type SessionQuoteRequestAnglesEnum = typeof SessionQuoteRequestAnglesEnum[keyof typeof SessionQuoteRequestAnglesEnum];
 
 

@@ -60,6 +60,12 @@ export interface OnrampPaymentMethodRequest {
      */
     'redirectUrl'?: string;
     /**
+     * Integration angles the client can execute; omit for no restriction. A client that can\'t run a flow (React Native has no DOM for `embedded` elements and no Safari context for the `native` wallet-pay sheet) sends e.g. `[\"popup\"]` — routing then skips providers whose flow resolves to an excluded angle, falling through to the hosted popup checkout when allowed.
+     * @type {Array<string>}
+     * @memberof OnrampPaymentMethodRequest
+     */
+    'angles'?: Array<OnrampPaymentMethodRequestAnglesEnum>;
+    /**
      * Origin-chain refund address for an auto-bridged (chained) route — where the onramped intermediate is refunded if the Relay bridge to the target bounces. Only consulted when the route chains cross-VM (e.g. an EVM intermediate to a Solana target); same-VM chains refund to the target address automatically.
      * @type {string}
      * @memberof OnrampPaymentMethodRequest
@@ -122,5 +128,12 @@ export const OnrampPaymentMethodRequestMethodEnum = {
 } as const;
 
 export type OnrampPaymentMethodRequestMethodEnum = typeof OnrampPaymentMethodRequestMethodEnum[keyof typeof OnrampPaymentMethodRequestMethodEnum];
+export const OnrampPaymentMethodRequestAnglesEnum = {
+    Popup: 'popup',
+    Native: 'native',
+    Embedded: 'embedded'
+} as const;
+
+export type OnrampPaymentMethodRequestAnglesEnum = typeof OnrampPaymentMethodRequestAnglesEnum[keyof typeof OnrampPaymentMethodRequestAnglesEnum];
 
 

@@ -8045,1076 +8045,6 @@
         }
       }
     },
-    "/v2/funding/onramp/verifications": {
-      "post": {
-        "operationId": "createOnrampVerification",
-        "responses": {
-          "200": {
-            "description": "Verification started; the OTP is on its way.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampVerificationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid destination."
-          },
-          "429": {
-            "description": "Too many verification requests."
-          }
-        },
-        "description": "Starts an OTP verification for the buyer's phone or email — the identity\nstep of native wallet pay (Apple/Google Pay). The code is sent to the\ndestination; submit it via the submit endpoint, then attach the returned\nids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`.",
-        "summary": "Start a wallet-pay OTP verification",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "destination": {
-                    "type": "string"
-                  },
-                  "channel": {
-                    "type": "string",
-                    "enum": [
-                      "sms",
-                      "email"
-                    ]
-                  }
-                },
-                "required": [
-                  "destination",
-                  "channel"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/verifications/{verificationId}/submit": {
-      "post": {
-        "operationId": "submitOnrampVerification",
-        "responses": {
-          "200": {
-            "description": "Verification completed.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampVerificationSubmitResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - incorrect or expired code."
-          }
-        },
-        "description": "Submits the OTP the buyer received for a verification. On success the\nreturned id rides on the wallet-pay commit.",
-        "summary": "Submit a wallet-pay OTP code",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "verificationId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "otpCode": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "otpCode"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/auth_intents": {
-      "post": {
-        "operationId": "createOnrampAuthIntent",
-        "responses": {
-          "200": {
-            "description": "Auth intent created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampAuthIntentResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - embedded onramp not configured."
-          }
-        },
-        "description": "Mints an auth intent for the buyer's email — step 1 of the embedded\n(headless element) flow. The client renders the provider's auth element\nwith the returned id; after the buyer completes it, exchange the intent\nfor its server-side token via the tokens endpoint.",
-        "summary": "Create an embedded-flow auth intent",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "email"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/auth_intents/{intentId}/tokens": {
-      "post": {
-        "operationId": "exchangeOnrampAuthToken",
-        "responses": {
-          "200": {
-            "description": "Token exchanged and stored.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampAuthTokenExchangeResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - embedded onramp not configured."
-          }
-        },
-        "description": "Exchanges a completed auth intent for its provider token — step 3 of the\nembedded flow, after the buyer finishes the auth element. The token stays\nserver-side; committing the session and checking out both look it up by\nthe intent id.",
-        "summary": "Exchange an embedded-flow auth intent for its token",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "intentId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/onramp/methods": {
-      "get": {
-        "operationId": "getFundingOnrampMethods",
-        "responses": {
-          "200": {
-            "description": "Available onramp methods resolved successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampMethodsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          }
-        },
-        "description": "Resolves the fiat onramp methods available for a destination and the buyer's\nregion. Openfort auto-selects the provider per method (by country, asset, and\nwhether the project has native wallet-pay unlocked) — the provider is never\nshown to or chosen by the end user; only the resolved method rows are returned.\n\nThe country is taken from the `country` query param, else the request IP\n(`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated\nallowlist in display order; omit to return all web2 methods.",
-        "summary": "Resolve onramp methods",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "targetChain",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "targetCurrency",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "country",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "methods",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/chains": {
-      "get": {
-        "operationId": "ListChains",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingChainsResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Lists the source chains and currencies the funding rail can route from.\n\nA live passthrough of the rail's dictionary (Relay), narrowed client-side\nto a curated subset. Public — it exposes no tenant data, so the source\npicker can load it before the user authenticates.",
-        "summary": "List funding source chains.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [],
-        "parameters": [
-          {
-            "description": "Live (mainnet, default) or test (testnet) rail. Pass `false`\nfrom a test-mode (`pk_test_…`) client so the testnet chain list is returned.",
-            "in": "query",
-            "name": "livemode",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/sessions": {
-      "post": {
-        "operationId": "createFundingSession",
-        "responses": {
-          "201": {
-            "description": "Created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingSessionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request."
-          },
-          "401": {
-            "description": "Unauthorized."
-          }
-        },
-        "description": "Creates a funding session for a destination.\n\nA session is one cross-chain deposit attempt: pick a destination chain,\ntoken, and wallet, then set a payment method to mint a deposit address.\nThe response includes a `clientSecret` used to advance and read the session.",
-        "summary": "Create a funding session.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFundingSessionRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/sessions/{sessionId}/payment_methods": {
-      "post": {
-        "operationId": "SetPaymentMethod",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingSessionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request."
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Sets the (single) payment method on a session.\n\nCommits the source route the user will send from and mints the Relay\ndeposit address. Requires the session `clientSecret`.",
-        "summary": "Set a session's payment method.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "origin",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-connecting-ip",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetPaymentMethodRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/sessions/{sessionId}/onramp_checkout": {
-      "post": {
-        "operationId": "checkoutFundingOnrampSession",
-        "responses": {
-          "200": {
-            "description": "Checkout confirmed; client secret returned.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "clientSecret": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "clientSecret"
-                  ],
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - session has no headless onramp or the auth token expired."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Embedded (headless) checkout: confirms the committed headless onramp\nsession with the buyer's mandate acceptance (this request's ip + user\nagent) and returns the provider client secret for the client's embedded\ncheckout element. One-shot — the secret is never stored.",
-        "summary": "Check out an embedded onramp session",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-connecting-ip",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "user-agent",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "clientSecret": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "clientSecret"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/sessions/{sessionId}/methods": {
-      "get": {
-        "operationId": "getFundingSessionMethods",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampMethodsResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Resolves the fiat onramp methods available for a session's destination and\nthe buyer's region. Openfort auto-selects the provider per method — the\nclient renders the rows and commits one via `setPaymentMethod` with\n`{ type: \"onramp\", method }`. Requires the session `clientSecret`.",
-        "summary": "Resolve a session's available funding methods.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "The session client secret returned at creation.\nDeliberately a query parameter (GET semantics): the secret is\nshort-lived and session-scoped; every other endpoint takes it in the\nPOST body.",
-            "in": "query",
-            "name": "clientSecret",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Explicit buyer-country override (ISO-3166 alpha-2); defaults\nto the request IP's country.",
-            "in": "query",
-            "name": "country",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/sessions/{sessionId}/quotes": {
-      "post": {
-        "operationId": "quoteFundingSession",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampQuoteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request."
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Prices a fiat onramp route for a session before committing it. The provider\nis resolved exactly as `setPaymentMethod` would resolve it, so the quote\nmatches the checkout the user will get. Requires the session `clientSecret`.",
-        "summary": "Quote a session's fiat funding route.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-connecting-ip",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SessionQuoteRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/sessions/{sessionId}": {
-      "get": {
-        "operationId": "getFundingSession",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingSessionResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Retrieves a funding session, refreshing its status from the rail.\n\nRequires the session `clientSecret` (query parameter).",
-        "summary": "Get a funding session.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "The session client secret returned at creation.",
-            "in": "query",
-            "name": "clientSecret",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/pay_link": {
-      "post": {
-        "operationId": "CreatePayLink",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayLinkResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request."
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Builds a prefilled centralized-exchange (cex) transfer link for a session.\n\nReturns a hosted exchange transfer URL: the user signs into their own\nexchange account and the exchange delivers the asset to the session's\nwallet, handling any bridging from the balance they hold. Destination\naddress and chain are derived from the session, not the client. The active\ncex provider is resolved server-side. Requires the session `clientSecret`.",
-        "summary": "Build a centralized-exchange transfer link for a session.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PayLinkRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/config": {
-      "get": {
-        "operationId": "getFundingConfig",
-        "responses": {
-          "200": {
-            "description": "Funding config retrieved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingConfigResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Returns the project's funding configuration (the dashboard \"Funding\" section),\nor the defaults when nothing has been saved yet.",
-        "summary": "Get funding config",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": []
-      },
-      "put": {
-        "operationId": "updateFundingConfig",
-        "responses": {
-          "200": {
-            "description": "Funding config saved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingConfigResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid parameters."
-          }
-        },
-        "description": "Creates or replaces the project's funding configuration.",
-        "summary": "Update funding config",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateFundingConfigRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/identity": {
-      "get": {
-        "operationId": "getOnrampIdentity",
-        "responses": {
-          "200": {
-            "description": "Buyer identity state resolved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampIdentityResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - auth token expired or embedded onramp not configured."
-          }
-        },
-        "description": "Reads the buyer's identity state at the provider — which regulatory\nregion they fall under, the verification tier they have reached, and\nwhich identity steps they have already satisfied.\n\nThe embedded flow needs this to prompt for exactly what is outstanding:\nwithout it a client can only infer the remaining steps, and re-asks for\ndeclarations the buyer already made.",
-        "summary": "Read the buyer's onramp identity state",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "authIntentId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "customerRef",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/onramp/limits": {
-      "get": {
-        "operationId": "getOnrampLimits",
-        "responses": {
-          "200": {
-            "description": "Transaction limits resolved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampLimitsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - auth token expired or embedded onramp not configured."
-          }
-        },
-        "description": "Reads the buyer's current transaction limits. Clients compare the\nintended purchase against these to offer a verification step-up instead\nof letting the commit fail.\n\nMonetary values are in CENTS.",
-        "summary": "Read the buyer's onramp transaction limits",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "authIntentId",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "phoneNumber",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "method",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "apple_pay",
-                "google_pay"
-              ]
-            }
-          },
-          {
-            "in": "query",
-            "name": "walletAddress",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "network",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-connecting-ip",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/onramp/limits/upgrade": {
-      "post": {
-        "operationId": "startOnrampLimitUpgrade",
-        "responses": {
-          "200": {
-            "description": "Limit upgrade started.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampLimitUpgradeResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - buyer not eligible, blocked, or rate limited."
-          }
-        },
-        "description": "Starts the provider-hosted identity form that raises a wallet-pay buyer's\nlimits, returning the URL to embed.\n\nThe form is hosted by the provider because it collects a partial SSN —\nthat data never passes through Openfort. The URL is single-use and\nshort-lived, so request a fresh one per attempt rather than caching it.",
-        "summary": "Start a wallet-pay limit upgrade",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "method": {
-                    "type": "string",
-                    "enum": [
-                      "apple_pay",
-                      "google_pay"
-                    ]
-                  },
-                  "phoneNumber": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "method",
-                  "phoneNumber"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
     "/v2/fee-sponsorship": {
       "get": {
         "operationId": "ListFeeSponsorships",
@@ -19770,6 +18700,1093 @@
           }
         }
       }
+    },
+    "/v2/funding/onramp/verifications": {
+      "post": {
+        "operationId": "createOnrampVerification",
+        "responses": {
+          "200": {
+            "description": "Verification started; the OTP is on its way.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampVerificationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid destination."
+          },
+          "429": {
+            "description": "Too many verification requests."
+          }
+        },
+        "description": "Starts an OTP verification for the buyer's phone or email — the identity\nstep of native wallet pay (Apple/Google Pay). The code is sent to the\ndestination; submit it via the submit endpoint, then attach the returned\nids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`.",
+        "summary": "Start a wallet-pay OTP verification",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "destination": {
+                    "type": "string"
+                  },
+                  "channel": {
+                    "type": "string",
+                    "enum": [
+                      "sms",
+                      "email"
+                    ]
+                  }
+                },
+                "required": [
+                  "destination",
+                  "channel"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/verifications/{verificationId}/submit": {
+      "post": {
+        "operationId": "submitOnrampVerification",
+        "responses": {
+          "200": {
+            "description": "Verification completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampVerificationSubmitResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - incorrect or expired code."
+          }
+        },
+        "description": "Submits the OTP the buyer received for a verification. On success the\nreturned id rides on the wallet-pay commit.",
+        "summary": "Submit a wallet-pay OTP code",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "verificationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "otpCode": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "otpCode"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/auth_intents": {
+      "post": {
+        "operationId": "createOnrampAuthIntent",
+        "responses": {
+          "200": {
+            "description": "Auth intent created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampAuthIntentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - embedded onramp not configured."
+          }
+        },
+        "description": "Mints an auth intent for the buyer's email — step 1 of the embedded\n(headless element) flow. The client renders the provider's auth element\nwith the returned id; after the buyer completes it, exchange the intent\nfor its server-side token via the tokens endpoint.",
+        "summary": "Create an embedded-flow auth intent",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/auth_intents/{intentId}/tokens": {
+      "post": {
+        "operationId": "exchangeOnrampAuthToken",
+        "responses": {
+          "200": {
+            "description": "Token exchanged and stored.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampAuthTokenExchangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - embedded onramp not configured."
+          }
+        },
+        "description": "Exchanges a completed auth intent for its provider token — step 3 of the\nembedded flow, after the buyer finishes the auth element. The token stays\nserver-side; committing the session and checking out both look it up by\nthe intent id.",
+        "summary": "Exchange an embedded-flow auth intent for its token",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "intentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/identity": {
+      "get": {
+        "operationId": "getOnrampIdentity",
+        "responses": {
+          "200": {
+            "description": "Buyer identity state resolved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampIdentityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - auth token expired or embedded onramp not configured."
+          }
+        },
+        "description": "Reads the buyer's identity state at the provider — which regulatory\nregion they fall under, the verification tier they have reached, and\nwhich identity steps they have already satisfied.\n\nThe embedded flow needs this to prompt for exactly what is outstanding:\nwithout it a client can only infer the remaining steps, and re-asks for\ndeclarations the buyer already made.",
+        "summary": "Read the buyer's onramp identity state",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "authIntentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "customerRef",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/limits": {
+      "get": {
+        "operationId": "getOnrampLimits",
+        "responses": {
+          "200": {
+            "description": "Transaction limits resolved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampLimitsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - auth token expired or embedded onramp not configured."
+          }
+        },
+        "description": "Reads the buyer's current transaction limits. Clients compare the\nintended purchase against these to offer a verification step-up instead\nof letting the commit fail.\n\nMonetary values are in CENTS.",
+        "summary": "Read the buyer's onramp transaction limits",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "authIntentId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "phoneNumber",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "apple_pay",
+                "google_pay"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "walletAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "network",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/limits/upgrade": {
+      "post": {
+        "operationId": "startOnrampLimitUpgrade",
+        "responses": {
+          "200": {
+            "description": "Limit upgrade started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampLimitUpgradeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - buyer not eligible, blocked, or rate limited."
+          }
+        },
+        "description": "Starts the provider-hosted identity form that raises a wallet-pay buyer's\nlimits, returning the URL to embed.\n\nThe form is hosted by the provider because it collects a partial SSN —\nthat data never passes through Openfort. The URL is single-use and\nshort-lived, so request a fresh one per attempt rather than caching it.",
+        "summary": "Start a wallet-pay limit upgrade",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "apple_pay",
+                      "google_pay"
+                    ]
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "method",
+                  "phoneNumber"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/methods": {
+      "get": {
+        "operationId": "getFundingOnrampMethods",
+        "responses": {
+          "200": {
+            "description": "Available onramp methods resolved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampMethodsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          }
+        },
+        "description": "Resolves the fiat onramp methods available for a destination and the buyer's\nregion. Openfort auto-selects the provider per method (by country, asset, and\nwhether the project has native wallet-pay unlocked) — the provider is never\nshown to or chosen by the end user; only the resolved method rows are returned.\n\nThe country is taken from the `country` query param, else the request IP\n(`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated\nallowlist in display order; omit to return all web2 methods. `angles` is an\noptional comma-separated list of integration angles the client can execute\n(e.g. \"popup\" from React Native); omit for no restriction.",
+        "summary": "Resolve onramp methods",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "targetChain",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "targetCurrency",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "country",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "methods",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "angles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/chains": {
+      "get": {
+        "operationId": "ListChains",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingChainsResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Lists the source chains and currencies the funding rail can route from.\n\nA live passthrough of the rail's dictionary (Relay), narrowed client-side\nto a curated subset. Public — it exposes no tenant data, so the source\npicker can load it before the user authenticates.",
+        "summary": "List funding source chains.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "description": "Live (mainnet, default) or test (testnet) rail. Pass `false`\nfrom a test-mode (`pk_test_…`) client so the testnet chain list is returned.",
+            "in": "query",
+            "name": "livemode",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/sessions": {
+      "post": {
+        "operationId": "createFundingSession",
+        "responses": {
+          "201": {
+            "description": "Created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Creates a funding session for a destination.\n\nA session is one cross-chain deposit attempt: pick a destination chain,\ntoken, and wallet, then set a payment method to mint a deposit address.\nThe response includes a `clientSecret` used to advance and read the session.",
+        "summary": "Create a funding session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFundingSessionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/payment_methods": {
+      "post": {
+        "operationId": "SetPaymentMethod",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Sets the (single) payment method on a session.\n\nCommits the source route the user will send from and mints the Relay\ndeposit address. Requires the session `clientSecret`.",
+        "summary": "Set a session's payment method.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "origin",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPaymentMethodRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/onramp_checkout": {
+      "post": {
+        "operationId": "checkoutFundingOnrampSession",
+        "responses": {
+          "200": {
+            "description": "Checkout confirmed; client secret returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "clientSecret": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "clientSecret"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - session has no headless onramp or the auth token expired."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Embedded (headless) checkout: confirms the committed headless onramp\nsession with the buyer's mandate acceptance (this request's ip + user\nagent) and returns the provider client secret for the client's embedded\ncheckout element. One-shot — the secret is never stored.",
+        "summary": "Check out an embedded onramp session",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "user-agent",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "clientSecret": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "clientSecret"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/methods": {
+      "get": {
+        "operationId": "getFundingSessionMethods",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampMethodsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Resolves the fiat onramp methods available for a session's destination and\nthe buyer's region. Openfort auto-selects the provider per method — the\nclient renders the rows and commits one via `setPaymentMethod` with\n`{ type: \"onramp\", method }`. Requires the session `clientSecret`.",
+        "summary": "Resolve a session's available funding methods.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The session client secret returned at creation.\nDeliberately a query parameter (GET semantics): the secret is\nshort-lived and session-scoped; every other endpoint takes it in the\nPOST body.",
+            "in": "query",
+            "name": "clientSecret",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Explicit buyer-country override (ISO-3166 alpha-2); defaults\nto the request IP's country.",
+            "in": "query",
+            "name": "country",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated integration angles the client can execute\n(e.g. \"popup\" from React Native); omit for no restriction.",
+            "in": "query",
+            "name": "angles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/quotes": {
+      "post": {
+        "operationId": "quoteFundingSession",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampQuoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Prices a fiat onramp route for a session before committing it. The provider\nis resolved exactly as `setPaymentMethod` would resolve it, so the quote\nmatches the checkout the user will get. Requires the session `clientSecret`.",
+        "summary": "Quote a session's fiat funding route.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionQuoteRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}": {
+      "get": {
+        "operationId": "getFundingSession",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Retrieves a funding session, refreshing its status from the rail.\n\nRequires the session `clientSecret` (query parameter).",
+        "summary": "Get a funding session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The session client secret returned at creation.",
+            "in": "query",
+            "name": "clientSecret",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/pay_link": {
+      "post": {
+        "operationId": "CreatePayLink",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayLinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Builds a prefilled centralized-exchange (cex) transfer link for a session.\n\nReturns a hosted exchange transfer URL: the user signs into their own\nexchange account and the exchange delivers the asset to the session's\nwallet, handling any bridging from the balance they hold. Destination\naddress and chain are derived from the session, not the client. The active\ncex provider is resolved server-side. Requires the session `clientSecret`.",
+        "summary": "Build a centralized-exchange transfer link for a session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayLinkRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/config": {
+      "get": {
+        "operationId": "getFundingConfig",
+        "responses": {
+          "200": {
+            "description": "Funding config retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingConfigResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Returns the project's funding configuration (the dashboard \"Funding\" section),\nor the defaults when nothing has been saved yet.",
+        "summary": "Get funding config",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": []
+      },
+      "put": {
+        "operationId": "updateFundingConfig",
+        "responses": {
+          "200": {
+            "description": "Funding config saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingConfigResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters."
+          }
+        },
+        "description": "Creates or replaces the project's funding configuration.",
+        "summary": "Update funding config",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFundingConfigRequest"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -29152,6 +29169,21 @@
             "type": "string",
             "description": "URL the provider redirects back to after checkout."
           },
+          "angles": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "popup",
+                "native",
+                "embedded"
+              ]
+            },
+            "type": "array",
+            "description": "Integration angles the client can execute; omit for no restriction. A\nclient that can't run a flow (React Native has no DOM for `embedded`\nelements and no Safari context for the `native` wallet-pay sheet) sends\ne.g. `[\"popup\"]` — routing then skips providers whose flow resolves to an\nexcluded angle, falling through to the hosted popup checkout when allowed.",
+            "example": [
+              "popup"
+            ]
+          },
           "refundTo": {
             "type": "string",
             "description": "Origin-chain refund address for an auto-bridged (chained) route — where the\nonramped intermediate is refunded if the Relay bridge to the target bounces.\nOnly consulted when the route chains cross-VM (e.g. an EVM intermediate to a\nSolana target); same-VM chains refund to the target address automatically."
@@ -29309,6 +29341,21 @@
           "country": {
             "type": "string",
             "description": "Explicit buyer country override (ISO-3166 alpha-2); defaults to the request IP."
+          },
+          "angles": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "popup",
+                "native",
+                "embedded"
+              ]
+            },
+            "type": "array",
+            "description": "Integration angles the client can execute; omit for no restriction. Must\nmatch the `angles` the commit will send so the quoted provider is the one\nthat executes.",
+            "example": [
+              "popup"
+            ]
           }
         },
         "required": [

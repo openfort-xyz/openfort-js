@@ -374,17 +374,18 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
+         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods. `angles` is an optional comma-separated list of integration angles the client can execute (e.g. \"popup\" from React Native); omit for no restriction.
          * @summary Resolve onramp methods
          * @param {string} targetChain 
          * @param {string} targetCurrency 
          * @param {string} [country] 
          * @param {string} [methods] 
+         * @param {string} [angles] 
          * @param {string} [cfIpcountry] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFundingOnrampMethods: async (targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getFundingOnrampMethods: async (targetChain: string, targetCurrency: string, country?: string, methods?: string, angles?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'targetChain' is not null or undefined
             assertParamExists('getFundingOnrampMethods', 'targetChain', targetChain)
             // verify required parameter 'targetCurrency' is not null or undefined
@@ -419,6 +420,10 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
 
             if (methods !== undefined) {
                 localVarQueryParameter['methods'] = methods;
+            }
+
+            if (angles !== undefined) {
+                localVarQueryParameter['angles'] = angles;
             }
 
             if (cfIpcountry != null) {
@@ -485,11 +490,12 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
          * @param {string} sessionId The funding session ID (starts with fnd_).
          * @param {string} [clientSecret] The session client secret returned at creation. Deliberately a query parameter (GET semantics): the secret is short-lived and session-scoped; every other endpoint takes it in the POST body.
          * @param {string} [country] Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP\&#39;s country.
+         * @param {string} [angles] Comma-separated integration angles the client can execute (e.g. \&quot;popup\&quot; from React Native); omit for no restriction.
          * @param {string} [cfIpcountry] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFundingSessionMethods: async (sessionId: string, clientSecret?: string, country?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getFundingSessionMethods: async (sessionId: string, clientSecret?: string, country?: string, angles?: string, cfIpcountry?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'sessionId' is not null or undefined
             assertParamExists('getFundingSessionMethods', 'sessionId', sessionId)
             const localVarPath = `/v2/funding/sessions/{sessionId}/methods`
@@ -515,6 +521,10 @@ export const FundingApiAxiosParamCreator = function (configuration?: Configurati
 
             if (country !== undefined) {
                 localVarQueryParameter['country'] = country;
+            }
+
+            if (angles !== undefined) {
+                localVarQueryParameter['angles'] = angles;
             }
 
             if (cfIpcountry != null) {
@@ -1027,18 +1037,19 @@ export const FundingApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
+         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods. `angles` is an optional comma-separated list of integration angles the client can execute (e.g. \"popup\" from React Native); omit for no restriction.
          * @summary Resolve onramp methods
          * @param {string} targetChain 
          * @param {string} targetCurrency 
          * @param {string} [country] 
          * @param {string} [methods] 
+         * @param {string} [angles] 
          * @param {string} [cfIpcountry] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFundingOnrampMethods(targetChain: string, targetCurrency: string, country?: string, methods?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingOnrampMethods(targetChain, targetCurrency, country, methods, cfIpcountry, options);
+        async getFundingOnrampMethods(targetChain: string, targetCurrency: string, country?: string, methods?: string, angles?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingOnrampMethods(targetChain, targetCurrency, country, methods, angles, cfIpcountry, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1059,12 +1070,13 @@ export const FundingApiFp = function(configuration?: Configuration) {
          * @param {string} sessionId The funding session ID (starts with fnd_).
          * @param {string} [clientSecret] The session client secret returned at creation. Deliberately a query parameter (GET semantics): the secret is short-lived and session-scoped; every other endpoint takes it in the POST body.
          * @param {string} [country] Explicit buyer-country override (ISO-3166 alpha-2); defaults to the request IP\&#39;s country.
+         * @param {string} [angles] Comma-separated integration angles the client can execute (e.g. \&quot;popup\&quot; from React Native); omit for no restriction.
          * @param {string} [cfIpcountry] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFundingSessionMethods(sessionId: string, clientSecret?: string, country?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingSessionMethods(sessionId, clientSecret, country, cfIpcountry, options);
+        async getFundingSessionMethods(sessionId: string, clientSecret?: string, country?: string, angles?: string, cfIpcountry?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OnrampMethodsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFundingSessionMethods(sessionId, clientSecret, country, angles, cfIpcountry, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1252,14 +1264,14 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getFundingConfig(options).then((request) => request(axios, basePath));
         },
         /**
-         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
+         * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods. `angles` is an optional comma-separated list of integration angles the client can execute (e.g. \"popup\" from React Native); omit for no restriction.
          * @summary Resolve onramp methods
          * @param {FundingApiGetFundingOnrampMethodsRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getFundingOnrampMethods(requestParameters: FundingApiGetFundingOnrampMethodsRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampMethodsResponse> {
-            return localVarFp.getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
+            return localVarFp.getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.angles, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieves a funding session, refreshing its status from the rail.  Requires the session `clientSecret` (query parameter).
@@ -1279,7 +1291,7 @@ export const FundingApiFactory = function (configuration?: Configuration, basePa
          * @throws {RequiredError}
          */
         getFundingSessionMethods(requestParameters: FundingApiGetFundingSessionMethodsRequest, options?: AxiosRequestConfig): AxiosPromise<OnrampMethodsResponse> {
-            return localVarFp.getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
+            return localVarFp.getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.angles, requestParameters.cfIpcountry, options).then((request) => request(axios, basePath));
         },
         /**
          * Reads the buyer\'s identity state at the provider — which regulatory region they fall under, the verification tier they have reached, and which identity steps they have already satisfied.  The embedded flow needs this to prompt for exactly what is outstanding: without it a client can only infer the remaining steps, and re-asks for declarations the buyer already made.
@@ -1522,6 +1534,13 @@ export interface FundingApiGetFundingOnrampMethodsRequest {
      * @type {string}
      * @memberof FundingApiGetFundingOnrampMethods
      */
+    readonly angles?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof FundingApiGetFundingOnrampMethods
+     */
     readonly cfIpcountry?: string
 }
 
@@ -1572,6 +1591,13 @@ export interface FundingApiGetFundingSessionMethodsRequest {
      * @memberof FundingApiGetFundingSessionMethods
      */
     readonly country?: string
+
+    /**
+     * Comma-separated integration angles the client can execute (e.g. \&quot;popup\&quot; from React Native); omit for no restriction.
+     * @type {string}
+     * @memberof FundingApiGetFundingSessionMethods
+     */
+    readonly angles?: string
 
     /**
      * 
@@ -1903,7 +1929,7 @@ export class FundingApi extends BaseAPI {
     }
 
     /**
-     * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods.
+     * Resolves the fiat onramp methods available for a destination and the buyer\'s region. Openfort auto-selects the provider per method (by country, asset, and whether the project has native wallet-pay unlocked) — the provider is never shown to or chosen by the end user; only the resolved method rows are returned.  The country is taken from the `country` query param, else the request IP (`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated allowlist in display order; omit to return all web2 methods. `angles` is an optional comma-separated list of integration angles the client can execute (e.g. \"popup\" from React Native); omit for no restriction.
      * @summary Resolve onramp methods
      * @param {FundingApiGetFundingOnrampMethodsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -1911,7 +1937,7 @@ export class FundingApi extends BaseAPI {
      * @memberof FundingApi
      */
     public getFundingOnrampMethods(requestParameters: FundingApiGetFundingOnrampMethodsRequest, options?: AxiosRequestConfig) {
-        return FundingApiFp(this.configuration).getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
+        return FundingApiFp(this.configuration).getFundingOnrampMethods(requestParameters.targetChain, requestParameters.targetCurrency, requestParameters.country, requestParameters.methods, requestParameters.angles, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1935,7 +1961,7 @@ export class FundingApi extends BaseAPI {
      * @memberof FundingApi
      */
     public getFundingSessionMethods(requestParameters: FundingApiGetFundingSessionMethodsRequest, options?: AxiosRequestConfig) {
-        return FundingApiFp(this.configuration).getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
+        return FundingApiFp(this.configuration).getFundingSessionMethods(requestParameters.sessionId, requestParameters.clientSecret, requestParameters.country, requestParameters.angles, requestParameters.cfIpcountry, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

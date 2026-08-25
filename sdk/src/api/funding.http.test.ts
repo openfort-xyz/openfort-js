@@ -74,6 +74,10 @@ const server = createServer(async (request, response) => {
     response.end(JSON.stringify({ exchanged: true }))
     return
   }
+  if (request.url?.startsWith('/v2/funding/onramp/methods')) {
+    response.end(JSON.stringify({ country: 'US', methods: [{ method: 'card', provider: 'coinbase', angle: 'popup' }] }))
+    return
+  }
   if (request.url?.startsWith('/v2/funding/onramp/identity?')) {
     response.end(JSON.stringify({ region: 'us', level: 'L1', providedFields: [] }))
     return
@@ -110,17 +114,18 @@ afterAll(async () => {
 describe('FundingApi HTTP contract', () => {
   it('serializes session onramp operations through the generated client', async () => {
     seen.length = 0
-    await funding.sessions.methods('fnd_1', { clientSecret: 'cs_1', country: 'US' })
+    await funding.sessions.methods('fnd_1', { clientSecret: 'cs_1', country: 'US', angles: ['popup', 'native'] })
     const quote = await funding.sessions.quote('fnd_1', {
       clientSecret: 'cs_1',
       method: 'card',
       sourceAmount: '25.00',
       sourceCurrency: 'USD',
       country: 'US',
+      angles: ['popup'],
     })
     await funding.sessions.setPaymentMethod('fnd_1', {
       clientSecret: 'cs_1',
-      paymentMethod: { type: 'onramp', method: 'card', country: 'US' },
+      paymentMethod: { type: 'onramp', method: 'card', country: 'US', angles: ['popup'] },
     })
     await funding.sessions.checkout('fnd_1', { clientSecret: 'cs_1' })
     await funding.verifications.create({ channel: 'sms', destination: '+14155550123' })
@@ -135,7 +140,7 @@ describe('FundingApi HTTP contract', () => {
 
     expect(quote.destinationAmount).toBe('24.50')
     expect(seen.map(({ method, url }) => `${method} ${url}`)).toEqual([
-      'GET /v2/funding/sessions/fnd_1/methods?clientSecret=cs_1&country=US',
+      'GET /v2/funding/sessions/fnd_1/methods?clientSecret=cs_1&country=US&angles=popup%2Cnative',
       'POST /v2/funding/sessions/fnd_1/quotes',
       'POST /v2/funding/sessions/fnd_1/payment_methods',
       'POST /v2/funding/sessions/fnd_1/onramp_checkout',
@@ -151,9 +156,17 @@ describe('FundingApi HTTP contract', () => {
     ])
     expect(seen.slice(0, -1).every(({ authorization }) => authorization === 'Bearer pk_test_http')).toBe(true)
     expect(seen.at(-1)?.authorization).toBeUndefined()
-    expect(seen[1]?.body).toMatchObject({ country: 'US' })
-    expect(seen[2]?.body).toMatchObject({ paymentMethod: { type: 'onramp', country: 'US' } })
+    expect(seen[1]?.body).toMatchObject({ country: 'US', angles: ['popup'] })
+    expect(seen[2]?.body).toMatchObject({ paymentMethod: { type: 'onramp', country: 'US', angles: ['popup'] } })
     expect(seen[11]?.body).toEqual({ phoneNumber: '+14155550123', method: 'apple_pay' })
+  })
+
+  it('serializes the sessionless discovery read', async () => {
+    seen.length = 0
+    await funding.methods({ targetChain: 'eip155:8453', targetCurrency: '0x0', angles: ['popup'] })
+    expect(seen.map(({ method, url }) => `${method} ${url}`)).toEqual([
+      'GET /v2/funding/onramp/methods?targetChain=eip155%3A8453&targetCurrency=0x0&angles=popup',
+    ])
   })
 
   it('maps a generated-client structured error', async () => {
