@@ -221,15 +221,15 @@ export const TransactionsApiAxiosParamCreator = function (configuration?: Config
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionExpandableV2>} [expand] Specifies the fields to expand in the response. &#x60;timeline&#x60; adds the lifecycle history (one monitor lookup per request); &#x60;userOperation&#x60; and &#x60;logs&#x60; add the heavyweight execution payload and receipt logs, which are otherwise omitted.
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
-         * @param {Array<string>} [account] Filter by account ID (starts with acc_).
-         * @param {Array<string>} [user] Filter by user ID (starts with usr_).
-         * @param {Array<string>} [wallet] Filter by wallet ID (starts with pla_).
-         * @param {Array<string>} [feeSponsorship] Filter by fee sponsorship ID (starts with pol_).
+         * @param {Array<string>} [accountId] Filter by account ID (starts with acc_).
+         * @param {Array<string>} [userId] Filter by user ID (starts with usr_).
+         * @param {Array<string>} [walletId] Filter by wallet ID (starts with pla_).
+         * @param {Array<string>} [feeSponsorshipId] Filter by fee sponsorship ID (starts with pol_).
          * @param {TransactionStatusV2} [status] Filter by transaction status.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listTransactionsV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<TransactionExpandableV2>, chainId?: number, account?: Array<string>, user?: Array<string>, wallet?: Array<string>, feeSponsorship?: Array<string>, status?: TransactionStatusV2, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listTransactionsV2: async (limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<TransactionExpandableV2>, chainId?: number, accountId?: Array<string>, userId?: Array<string>, walletId?: Array<string>, feeSponsorshipId?: Array<string>, status?: TransactionStatusV2, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v2/transactions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -270,20 +270,20 @@ export const TransactionsApiAxiosParamCreator = function (configuration?: Config
                 localVarQueryParameter['chainId'] = chainId;
             }
 
-            if (account) {
-                localVarQueryParameter['account'] = account;
+            if (accountId) {
+                localVarQueryParameter['accountId'] = accountId;
             }
 
-            if (user) {
-                localVarQueryParameter['user'] = user;
+            if (userId) {
+                localVarQueryParameter['userId'] = userId;
             }
 
-            if (wallet) {
-                localVarQueryParameter['wallet'] = wallet;
+            if (walletId) {
+                localVarQueryParameter['walletId'] = walletId;
             }
 
-            if (feeSponsorship) {
-                localVarQueryParameter['feeSponsorship'] = feeSponsorship;
+            if (feeSponsorshipId) {
+                localVarQueryParameter['feeSponsorshipId'] = feeSponsorshipId;
             }
 
             if (status !== undefined) {
@@ -402,16 +402,16 @@ export const TransactionsApiFp = function(configuration?: Configuration) {
          * @param {PrismaSortOrder} [order] Specifies the order in which to sort the results.
          * @param {Array<TransactionExpandableV2>} [expand] Specifies the fields to expand in the response. &#x60;timeline&#x60; adds the lifecycle history (one monitor lookup per request); &#x60;userOperation&#x60; and &#x60;logs&#x60; add the heavyweight execution payload and receipt logs, which are otherwise omitted.
          * @param {number} [chainId] The chain ID. Must be a [supported chain](/development/chains).
-         * @param {Array<string>} [account] Filter by account ID (starts with acc_).
-         * @param {Array<string>} [user] Filter by user ID (starts with usr_).
-         * @param {Array<string>} [wallet] Filter by wallet ID (starts with pla_).
-         * @param {Array<string>} [feeSponsorship] Filter by fee sponsorship ID (starts with pol_).
+         * @param {Array<string>} [accountId] Filter by account ID (starts with acc_).
+         * @param {Array<string>} [userId] Filter by user ID (starts with usr_).
+         * @param {Array<string>} [walletId] Filter by wallet ID (starts with pla_).
+         * @param {Array<string>} [feeSponsorshipId] Filter by fee sponsorship ID (starts with pol_).
          * @param {TransactionStatusV2} [status] Filter by transaction status.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listTransactionsV2(limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<TransactionExpandableV2>, chainId?: number, account?: Array<string>, user?: Array<string>, wallet?: Array<string>, feeSponsorship?: Array<string>, status?: TransactionStatusV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionListResponseV2>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listTransactionsV2(limit, skip, order, expand, chainId, account, user, wallet, feeSponsorship, status, options);
+        async listTransactionsV2(limit?: number, skip?: number, order?: PrismaSortOrder, expand?: Array<TransactionExpandableV2>, chainId?: number, accountId?: Array<string>, userId?: Array<string>, walletId?: Array<string>, feeSponsorshipId?: Array<string>, status?: TransactionStatusV2, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TransactionListResponseV2>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listTransactionsV2(limit, skip, order, expand, chainId, accountId, userId, walletId, feeSponsorshipId, status, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -474,7 +474,7 @@ export const TransactionsApiFactory = function (configuration?: Configuration, b
          * @throws {RequiredError}
          */
         listTransactionsV2(requestParameters: TransactionsApiListTransactionsV2Request = {}, options?: AxiosRequestConfig): AxiosPromise<TransactionListResponseV2> {
-            return localVarFp.listTransactionsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.expand, requestParameters.chainId, requestParameters.account, requestParameters.user, requestParameters.wallet, requestParameters.feeSponsorship, requestParameters.status, options).then((request) => request(axios, basePath));
+            return localVarFp.listTransactionsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.expand, requestParameters.chainId, requestParameters.accountId, requestParameters.userId, requestParameters.walletId, requestParameters.feeSponsorshipId, requestParameters.status, options).then((request) => request(axios, basePath));
         },
         /**
          * Submits the signature of `nextAction.hash` and broadcasts the transaction.
@@ -591,28 +591,28 @@ export interface TransactionsApiListTransactionsV2Request {
      * @type {Array<string>}
      * @memberof TransactionsApiListTransactionsV2
      */
-    readonly account?: Array<string>
+    readonly accountId?: Array<string>
 
     /**
      * Filter by user ID (starts with usr_).
      * @type {Array<string>}
      * @memberof TransactionsApiListTransactionsV2
      */
-    readonly user?: Array<string>
+    readonly userId?: Array<string>
 
     /**
      * Filter by wallet ID (starts with pla_).
      * @type {Array<string>}
      * @memberof TransactionsApiListTransactionsV2
      */
-    readonly wallet?: Array<string>
+    readonly walletId?: Array<string>
 
     /**
      * Filter by fee sponsorship ID (starts with pol_).
      * @type {Array<string>}
      * @memberof TransactionsApiListTransactionsV2
      */
-    readonly feeSponsorship?: Array<string>
+    readonly feeSponsorshipId?: Array<string>
 
     /**
      * Filter by transaction status.
@@ -695,7 +695,7 @@ export class TransactionsApi extends BaseAPI {
      * @memberof TransactionsApi
      */
     public listTransactionsV2(requestParameters: TransactionsApiListTransactionsV2Request = {}, options?: AxiosRequestConfig) {
-        return TransactionsApiFp(this.configuration).listTransactionsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.expand, requestParameters.chainId, requestParameters.account, requestParameters.user, requestParameters.wallet, requestParameters.feeSponsorship, requestParameters.status, options).then((request) => request(this.axios, this.basePath));
+        return TransactionsApiFp(this.configuration).listTransactionsV2(requestParameters.limit, requestParameters.skip, requestParameters.order, requestParameters.expand, requestParameters.chainId, requestParameters.accountId, requestParameters.userId, requestParameters.walletId, requestParameters.feeSponsorshipId, requestParameters.status, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

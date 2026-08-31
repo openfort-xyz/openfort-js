@@ -64,25 +64,25 @@ export interface TransactionListQueriesV2 {
      * @type {Array<string>}
      * @memberof TransactionListQueriesV2
      */
-    'account'?: Array<string>;
+    'accountId'?: Array<string>;
     /**
      * Filter by user ID (starts with usr_).
      * @type {Array<string>}
      * @memberof TransactionListQueriesV2
      */
-    'user'?: Array<string>;
+    'userId'?: Array<string>;
     /**
      * Filter by wallet ID (starts with pla_).
      * @type {Array<string>}
      * @memberof TransactionListQueriesV2
      */
-    'wallet'?: Array<string>;
+    'walletId'?: Array<string>;
     /**
      * Filter by fee sponsorship ID (starts with pol_).
      * @type {Array<string>}
      * @memberof TransactionListQueriesV2
      */
-    'feeSponsorship'?: Array<string>;
+    'feeSponsorshipId'?: Array<string>;
     /**
      * 
      * @type {TransactionStatusV2}

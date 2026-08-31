@@ -22,7 +22,6 @@
 
 export const TransactionExpandableV2 = {
     Account: 'account',
-    User: 'user',
     FeeSponsorship: 'feeSponsorship',
     Timeline: 'timeline',
     UserOperation: 'userOperation',

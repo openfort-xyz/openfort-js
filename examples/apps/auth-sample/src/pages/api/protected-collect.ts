@@ -33,9 +33,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const transaction = await openfort.transactions.create({
-      account: account_id,
+      accountId: account_id,
       chainId: chainId,
-      feeSponsorship: policy_id,
+      feeSponsorshipId: policy_id,
       calls: [interaction_mint],
     })
 
