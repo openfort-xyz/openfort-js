@@ -325,9 +325,10 @@ window.callFunction = async (jsonData: string) => {
       }
       case OPENFORT_FUNCTIONS.sendSignatureTransactionIntentRequest: {
         const request = JSON.parse(data)
-        const transactionIntentResponse = await openfortClient.proxy.sendSignatureTransactionIntentRequest(
-          request.transactionIntentId,
-          request.userOperationHash,
+        // Game SDKs still send the v1 key names; the proxy submits to /v2/transactions either way.
+        const transactionResponse = await openfortClient.proxy.sendTransactionSignatureRequest(
+          request.transactionId ?? request.transactionIntentId,
+          request.hash ?? request.userOperationHash,
           request.signature,
           request.optimistic
         )
@@ -338,7 +339,7 @@ window.callFunction = async (jsonData: string) => {
             requestId,
             success: true,
           },
-          ...transactionIntentResponse,
+          ...transactionResponse,
         })
         break
       }
