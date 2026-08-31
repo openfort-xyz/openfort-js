@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.4.0
+
+### Minor Changes
+
+- [#363](https://github.com/openfort-xyz/openfort-js/pull/363) [`70584a1`](https://github.com/openfort-xyz/openfort-js/commit/70584a191d62ba7326ce7c4d595769b951359c03) Thanks [@n00m4d](https://github.com/n00m4d)! - Transactions V2
+
 ## 2.3.0
 
 ### Minor Changes
