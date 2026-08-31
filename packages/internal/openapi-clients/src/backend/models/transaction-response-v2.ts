@@ -18,9 +18,6 @@
 import { AccountV2Response } from './account-v2-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import { AuthUserResponse } from './auth-user-response';
-// May contain unused imports in some cases
-// @ts-ignore
 import { EntityTypeTRANSACTION } from './entity-type-transaction';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -110,12 +107,6 @@ export interface TransactionResponseV2 {
      * @memberof TransactionResponseV2
      */
     'account'?: AccountV2Response;
-    /**
-     * 
-     * @type {AuthUserResponse}
-     * @memberof TransactionResponseV2
-     */
-    'user'?: AuthUserResponse;
     /**
      * 
      * @type {FeeSponsorshipResponse}

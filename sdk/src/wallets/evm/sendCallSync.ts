@@ -82,8 +82,8 @@ const buildOpenfortTransactions = async (
       const response = await backendApiClients.transactionsApi.createTransactionV2(
         {
           createTransactionRequestV2: {
-            account: account.id,
-            feeSponsorship: feeSponsorshipId,
+            accountId: account.id,
+            feeSponsorshipId,
             authorization: signedAuthorization,
             chainId: account.chainId!,
             calls: interactions,

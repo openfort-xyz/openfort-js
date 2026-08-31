@@ -7724,7 +7724,7 @@
           {
             "description": "Filter by account ID (starts with acc_).",
             "in": "query",
-            "name": "account",
+            "name": "accountId",
             "required": false,
             "schema": {
               "type": "array",
@@ -7739,7 +7739,7 @@
           {
             "description": "Filter by user ID (starts with usr_).",
             "in": "query",
-            "name": "user",
+            "name": "userId",
             "required": false,
             "schema": {
               "type": "array",
@@ -7754,7 +7754,7 @@
           {
             "description": "Filter by wallet ID (starts with pla_).",
             "in": "query",
-            "name": "wallet",
+            "name": "walletId",
             "required": false,
             "schema": {
               "type": "array",
@@ -7769,7 +7769,7 @@
           {
             "description": "Filter by fee sponsorship ID (starts with pol_).",
             "in": "query",
-            "name": "feeSponsorship",
+            "name": "feeSponsorshipId",
             "required": false,
             "schema": {
               "type": "array",
@@ -27843,10 +27843,6 @@
             "$ref": "#/components/schemas/AccountV2Response",
             "description": "The executing account. Present only with `expand=account`."
           },
-          "user": {
-            "$ref": "#/components/schemas/AuthUserResponse",
-            "description": "The user that owns the wallet. Present only with `expand=user`."
-          },
           "feeSponsorship": {
             "$ref": "#/components/schemas/FeeSponsorshipResponse",
             "description": "The fee sponsorship paying for gas. Present only with `expand=feeSponsorship`."
@@ -27944,7 +27940,6 @@
         "type": "string",
         "enum": [
           "account",
-          "user",
           "feeSponsorship",
           "timeline",
           "userOperation",
@@ -27982,7 +27977,7 @@
             "description": "The chain ID. Must be a [supported chain](/development/chains).",
             "example": 80002
           },
-          "account": {
+          "accountId": {
             "items": {
               "type": "string"
             },
@@ -27992,7 +27987,7 @@
               "acc_dc981458-a653-4539-b120-a321915b2896"
             ]
           },
-          "user": {
+          "userId": {
             "items": {
               "type": "string"
             },
@@ -28002,7 +27997,7 @@
               "usr_556166c9-77ad-4a39-aaf8-c432defa8a0f"
             ]
           },
-          "wallet": {
+          "walletId": {
             "items": {
               "type": "string"
             },
@@ -28012,7 +28007,7 @@
               "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
             ]
           },
-          "feeSponsorship": {
+          "feeSponsorshipId": {
             "items": {
               "type": "string"
             },
@@ -28039,12 +28034,12 @@
             "description": "The chain ID. Must be a [supported chain](/development/chains).",
             "example": 80002
           },
-          "account": {
+          "accountId": {
             "type": "string",
             "description": "ID of the account that executes the transaction (starts with `acc_`).",
             "example": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60"
           },
-          "feeSponsorship": {
+          "feeSponsorshipId": {
             "type": "string",
             "description": "ID of the fee sponsorship that pays for gas (starts with `pol_`).\nOmit to pay gas from the account's native token balance.",
             "example": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd"
@@ -28073,7 +28068,7 @@
         },
         "required": [
           "chainId",
-          "account",
+          "accountId",
           "calls"
         ],
         "type": "object",

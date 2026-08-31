@@ -34,13 +34,13 @@ export interface CreateTransactionRequestV2 {
      * @type {string}
      * @memberof CreateTransactionRequestV2
      */
-    'account': string;
+    'accountId': string;
     /**
      * ID of the fee sponsorship that pays for gas (starts with `pol_`). Omit to pay gas from the account\'s native token balance.
      * @type {string}
      * @memberof CreateTransactionRequestV2
      */
-    'feeSponsorship'?: string;
+    'feeSponsorshipId'?: string;
     /**
      * For a fee sponsorship that accepts several user-pay ERC-20 tokens, the on-chain address of the token the user pays the fee in. Must be one of the sponsorship\'s configured tokens on this chain.
      * @type {string}
