@@ -39,18 +39,18 @@ const BackendMintButton: React.FC<{
       transport: http(),
     })
     const signature = await walletClient.signMessage({
-      message: { raw: collectResponseJSON.userOperationHash },
+      message: { raw: collectResponseJSON.hash },
     })
     if (!signature) {
       throw new Error('Failed to sign message with session key')
     }
 
-    const response = await openfort.proxy.sendSignatureTransactionIntentRequest(
-      collectResponseJSON.transactionIntentId,
+    const response = await openfort.proxy.sendTransactionSignatureRequest(
+      collectResponseJSON.transactionId,
       null,
       signature
     )
-    return response?.response?.transactionHash ?? null
+    return response?.receipt?.transactionHash ?? null
   }, [sessionKey, accountId])
 
   const handleMintToken = async () => {

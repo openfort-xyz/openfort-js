@@ -2,7 +2,7 @@ import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { withApiError } from '../../core/errors/withApiError'
-import type { TransactionIntentResponse } from '../../types/types'
+import type { TransactionResponse } from '../../types/types'
 import type { Prettify } from '../../utils/helpers'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
@@ -42,12 +42,14 @@ const buildOpenfortTransactions = async (
   transactionIntentId: string,
   backendApiClients: BackendApiClients,
   authentication: Authentication
-): Promise<TransactionIntentResponse> =>
-  withApiError<TransactionIntentResponse>(
+): Promise<TransactionResponse> =>
+  withApiError<TransactionResponse>(
     async () => {
-      const response = await backendApiClients.transactionIntentsApi.getTransactionIntent(
+      const response = await backendApiClients.transactionsApi.getTransactionV2(
         {
           id: transactionIntentId,
+          // receipt logs are expand-gated on v2; wallet_getCallsStatus surfaces them
+          expand: ['logs'],
         },
         {
           headers: authentication.thirdPartyProvider
@@ -67,7 +69,7 @@ const buildOpenfortTransactions = async (
               },
         }
       )
-      return response.data
+      return response.data as TransactionResponse
       // eslint-disable-next-line @typescript-eslint/naming-convention
     },
     { context: 'operation' }
@@ -87,21 +89,21 @@ export const getCallStatus = async ({
   })
 
   return {
-    status: !transactionIntent.response ? 'PENDING' : 'CONFIRMED',
-    receipts: transactionIntent.response
+    status: !transactionIntent.receipt ? 'PENDING' : 'CONFIRMED',
+    receipts: transactionIntent.receipt
       ? [
           {
-            status: transactionIntent.response.status === 0 ? 'reverted' : 'success',
+            status: transactionIntent.receipt.status,
             logs:
-              transactionIntent.response.logs?.map((log) => ({
+              transactionIntent.receipt.logs?.map((log) => ({
                 address: log.address as `0x${string}`,
                 data: log.data as `0x${string}`,
                 topics: log.topics as `0x${string}`[],
               })) || [],
-            blockHash: (transactionIntent.response.transactionHash as `0x${string}`) || '',
-            blockNumber: BigInt(transactionIntent.response.blockNumber || 0),
-            gasUsed: BigInt(transactionIntent.response.gasUsed || 0),
-            transactionHash: (transactionIntent.response.transactionHash as `0x${string}`) || '',
+            blockHash: (transactionIntent.receipt.transactionHash as `0x${string}`) || '',
+            blockNumber: BigInt(transactionIntent.receipt.blockNumber || 0),
+            gasUsed: BigInt(transactionIntent.receipt.gasUsed || 0),
+            transactionHash: (transactionIntent.receipt.transactionHash as `0x${string}`) || '',
           },
         ]
       : undefined,

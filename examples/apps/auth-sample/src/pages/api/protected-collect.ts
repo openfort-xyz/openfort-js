@@ -32,16 +32,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       functionArgs: [account_id, 1],
     }
 
-    const transactionIntent = await openfort.transactionIntents.create({
+    const transaction = await openfort.transactions.create({
       account: account_id,
       chainId: chainId,
-      policy: policy_id,
-      interactions: [interaction_mint],
+      feeSponsorship: policy_id,
+      calls: [interaction_mint],
     })
 
     res.send({
-      transactionIntentId: transactionIntent.id,
-      userOperationHash: transactionIntent.nextAction?.payload.signableHash,
+      transactionId: transaction.id,
+      hash: transaction.nextAction?.hash,
     })
   } catch (e) {
     console.log(e)

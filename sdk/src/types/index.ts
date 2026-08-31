@@ -89,7 +89,6 @@ export {
   type SignedMessagePayload,
   ThirdPartyAuthProvider as ThirdPartyOAuthProvider,
   TokenType,
-  type TransactionIntentResponse,
   type User,
   type UserAccount,
 } from './types'

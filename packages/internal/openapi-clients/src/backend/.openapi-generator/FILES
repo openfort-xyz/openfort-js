@@ -31,6 +31,7 @@ domain/solana-rpcapi.ts
 domain/solana-transactions-api.ts
 domain/subscriptions-api.ts
 domain/transaction-intents-api.ts
+domain/transactions-api.ts
 domain/users-api.ts
 git_push.sh
 index.ts
@@ -166,6 +167,7 @@ models/create-session-request.ts
 models/create-smtpconfig-response.ts
 models/create-subscription-request.ts
 models/create-transaction-intent-request.ts
+models/create-transaction-request-v2.ts
 models/create-trigger-request.ts
 models/criteria-operator-equal.ts
 models/criteria-operator-greaterthan.ts
@@ -182,7 +184,9 @@ models/currency.ts
 models/custom-auth-config.ts
 models/delete-account-response.ts
 models/delete-backend-wallet-response.ts
+models/delete-project-request.ts
 models/delete-smtpconfig-response.ts
+models/deletion-protection-request.ts
 models/developer-account-delete-response.ts
 models/developer-account-get-message-response.ts
 models/developer-account-list-queries.ts
@@ -226,11 +230,13 @@ models/entity-type-policyrule.ts
 models/entity-type-policyv2-rule.ts
 models/entity-type-policyv2.ts
 models/entity-type-project.ts
+models/entity-type-projectdeletion.ts
 models/entity-type-readcontract.ts
 models/entity-type-session.ts
 models/entity-type-signature.ts
 models/entity-type-smtpconfig.ts
 models/entity-type-subscription.ts
+models/entity-type-transaction.ts
 models/entity-type-transactionintent.ts
 models/entity-type-trigger.ts
 models/entity-type-user.ts
@@ -238,6 +244,7 @@ models/entity-type-wallet.ts
 models/epic-games-oauth-config.ts
 models/error-type-invalidrequesterror.ts
 models/estimate-transaction-intent-gas-result.ts
+models/estimate-transaction-response-v2.ts
 models/eth-value-criterion-operator.ts
 models/eth-value-criterion-request.ts
 models/eth-value-criterion.ts
@@ -493,8 +500,10 @@ models/prisma-sort-order.ts
 models/private-key-policy.ts
 models/program-id-criterion-request.ts
 models/program-id-criterion.ts
+models/project-deletion-response.ts
 models/project-list-response.ts
 models/project-logs.ts
+models/project-response-scheduled-deletion.ts
 models/project-response.ts
 models/project-stats-request.ts
 models/project-stats-response.ts
@@ -536,6 +545,7 @@ models/session-response-expandable.ts
 models/session-response.ts
 models/session.ts
 models/set-payment-method-request.ts
+models/sign-hash-action.ts
 models/sign-in-anonymous-post200-response.ts
 models/sign-in-email-otp-post-request.ts
 models/sign-in-email-otp-post200-response.ts
@@ -612,6 +622,7 @@ models/start-onramp-limit-upgrade-request.ts
 models/stat.ts
 models/status.ts
 models/submit-onramp-verification-request.ts
+models/submit-transaction-signature-request-v2.ts
 models/subscription-delete-response.ts
 models/subscription-list-response.ts
 models/subscription-response.ts
@@ -638,6 +649,9 @@ models/transaction-abstraction-type.ts
 models/transaction-confirmed-event-response.ts
 models/transaction-error-explanation.ts
 models/transaction-error.ts
+models/transaction-event-v2.ts
+models/transaction-execution.ts
+models/transaction-expandable-v2.ts
 models/transaction-intent-list-queries.ts
 models/transaction-intent-list-response.ts
 models/transaction-intent-response-account.ts
@@ -647,9 +661,16 @@ models/transaction-intent-response-player.ts
 models/transaction-intent-response-policy.ts
 models/transaction-intent-response.ts
 models/transaction-intent.ts
+models/transaction-list-queries-v2.ts
+models/transaction-list-response-v2.ts
+models/transaction-receipt-v2.ts
 models/transaction-response-log.ts
+models/transaction-response-v2-execution.ts
+models/transaction-response-v2.ts
 models/transaction-stat.ts
+models/transaction-status-v2.ts
 models/transaction-status.ts
+models/transaction-timeline-entry-v2.ts
 models/transition.ts
 models/trigger-delete-response.ts
 models/trigger-response.ts
@@ -684,6 +705,8 @@ models/usage-summary-response-operations.ts
 models/usage-summary-response-plan.ts
 models/usage-summary-response.ts
 models/user-list-queries.ts
+models/user-operation-execution-user-operation.ts
+models/user-operation-execution.ts
 models/user-operation-v6.ts
 models/user-operation-v8.ts
 models/user-operation-v9.ts

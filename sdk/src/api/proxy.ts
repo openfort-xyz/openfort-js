@@ -4,7 +4,7 @@ import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
 import { ConfigurationError, SignerError } from '../core/errors/openfortError'
 import { withApiError } from '../core/errors/withApiError'
 import type { IStorage } from '../storage/istorage'
-import type { SessionResponse, TransactionIntentResponse } from '../types/types'
+import type { SessionResponse, TransactionResponse } from '../types/types'
 
 export class ProxyApi {
   constructor(
@@ -15,12 +15,19 @@ export class ProxyApi {
     private getSignerSignFunction?: () => Promise<(message: string | Uint8Array) => Promise<string>>
   ) {}
 
-  async sendSignatureTransactionIntentRequest(
-    transactionIntentId: string,
-    signableHash: string | null = null,
+  /**
+   * Signs (when needed) and submits the signature of a /v2/transactions transaction.
+   * @param transactionId The transaction id (tin_).
+   * @param hash The nextAction.hash to sign with the configured signer; ignored when a signature is given.
+   * @param signature A ready-made signature (e.g. from a session key).
+   * @param optimistic Resolve at broadcast instead of waiting for the receipt.
+   */
+  async sendTransactionSignatureRequest(
+    transactionId: string,
+    hash: string | null = null,
     signature: string | null = null,
     optimistic: boolean = false
-  ): Promise<TransactionIntentResponse> {
+  ): Promise<TransactionResponse> {
     await this.ensureInitialized()
     const configuration = SDKConfiguration.getInstance()
     if (!configuration) {
@@ -29,8 +36,8 @@ export class ProxyApi {
     await this.validateAndRefreshToken()
     let newSignature = signature
     if (!newSignature) {
-      if (!signableHash) {
-        throw new ConfigurationError('No signableHash or signature provided')
+      if (!hash) {
+        throw new ConfigurationError('No hash or signature provided')
       }
 
       if (!this.getSignerSignFunction) {
@@ -42,22 +49,22 @@ export class ProxyApi {
 
       const signFunction = await this.getSignerSignFunction()
 
-      newSignature = await signFunction(signableHash)
+      newSignature = await signFunction(hash)
     }
 
     const request = {
-      id: transactionIntentId,
-      signatureRequest: {
+      id: transactionId,
+      submitTransactionSignatureRequestV2: {
         signature: newSignature,
-        optimistic,
+        waitForReceipt: !optimistic,
       },
     }
-    return withApiError<TransactionIntentResponse>(
+    return withApiError<TransactionResponse>(
       async () => {
-        const result = await this.backendApiClients.transactionIntentsApi.signature(request)
-        return result.data
+        const result = await this.backendApiClients.transactionsApi.submitTransactionSignatureV2(request)
+        return result.data as TransactionResponse
       },
-      { context: 'sendSignatureTransactionIntentRequest' }
+      { context: 'sendTransactionSignatureRequest' }
     )
   }
 

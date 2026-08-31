@@ -3,7 +3,7 @@ import type { Account } from '../../core/configuration/account'
 import { AccountTypeEnum } from '../../types/types'
 import { sendCallsSync } from './sendCallSync'
 
-// The on-chain digest the API returns as `signableHash`. Calibur's validateUserOp
+// The on-chain digest the API returns as `nextAction.hash`. Calibur's validateUserOp
 // recovers the signer with `ECDSA.recover(signableHash, sig)`, so delegated accounts
 // MUST sign it raw (no EIP-191 prefix) — that is `signer.sign(hash, false, false)`.
 // A regular smart account expects the default EIP-191 path: `signer.sign(hash)`.
@@ -20,17 +20,19 @@ const designatorFor = (impl: string) => `0xef0100${impl.slice(2)}`
 
 const makeBackendClient = () => ({
   config: { backend: { accessToken: 'pk_test' } },
-  transactionIntentsApi: {
-    createTransactionIntent: vi.fn().mockResolvedValue({
+  transactionsApi: {
+    createTransactionV2: vi.fn().mockResolvedValue({
       data: {
         id: 'tin_1',
-        nextAction: { payload: { signableHash: SIGNABLE_HASH } },
+        status: 'awaiting_signature',
+        nextAction: { type: 'sign_hash', hash: SIGNABLE_HASH },
       },
     }),
-    signature: vi.fn().mockResolvedValue({
+    submitTransactionSignatureV2: vi.fn().mockResolvedValue({
       data: {
         id: 'tin_1',
-        response: { status: 1, transactionHash: '0xabc', logs: [] },
+        status: 'succeeded',
+        receipt: { status: 'success', transactionHash: '0xabc', logs: [], createdAt: 1 },
       },
     }),
   },
@@ -60,12 +62,12 @@ const setup = (account: Partial<Account>, rpcProvider = makeRpcProvider()) => {
     args: args as unknown as Parameters<typeof sendCallsSync>[0],
     signer,
     rpcProvider,
-    createTransactionIntent: backendClient.transactionIntentsApi.createTransactionIntent,
+    createTransactionV2: backendClient.transactionsApi.createTransactionV2,
   }
 }
 
-const signedAuthorizationOf = (createTransactionIntent: ReturnType<typeof vi.fn>) =>
-  createTransactionIntent.mock.calls[0]?.[0]?.createTransactionIntentRequest?.signedAuthorization
+const signedAuthorizationOf = (createTransactionV2: ReturnType<typeof vi.fn>) =>
+  createTransactionV2.mock.calls[0]?.[0]?.createTransactionRequestV2?.authorization
 
 const delegatedAccount = (overrides: Partial<Account> = {}): Partial<Account> => ({
   id: 'acc_1',
@@ -119,36 +121,33 @@ describe('sendCallsSync — EIP-7702 authorization gate', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('skips re-authorization when already delegated to the expected implementation', async () => {
-    const { args, signer, createTransactionIntent } = setup(delegatedAccount())
+    const { args, signer, createTransactionV2 } = setup(delegatedAccount())
 
     await sendCallsSync(args)
 
     // Only the signableHash is signed — no separate authorization signature.
     expect(signer.sign).toHaveBeenCalledTimes(1)
-    expect(signedAuthorizationOf(createTransactionIntent)).toBeUndefined()
+    expect(signedAuthorizationOf(createTransactionV2)).toBeUndefined()
   })
 
   it('re-authorizes a bare EOA and passes the signed authorization to the backend', async () => {
-    const { args, signer, createTransactionIntent } = setup(delegatedAccount(), makeRpcProvider('0x'))
+    const { args, signer, createTransactionV2 } = setup(delegatedAccount(), makeRpcProvider('0x'))
 
     await sendCallsSync(args)
 
     // One signature for the authorization, one for the signableHash.
     expect(signer.sign).toHaveBeenCalledTimes(2)
     expect(signer.sign).toHaveBeenLastCalledWith(SIGNABLE_HASH, false, false)
-    expect(signedAuthorizationOf(createTransactionIntent)).toEqual(expect.stringMatching(/^0x[0-9a-f]+$/i))
+    expect(signedAuthorizationOf(createTransactionV2)).toEqual(expect.stringMatching(/^0x[0-9a-f]+$/i))
   })
 
   it('re-authorizes when the EOA is delegated to a DIFFERENT implementation (the AA24 case)', async () => {
-    const { args, signer, createTransactionIntent } = setup(
-      delegatedAccount(),
-      makeRpcProvider(designatorFor(OTHER_IMPL))
-    )
+    const { args, signer, createTransactionV2 } = setup(delegatedAccount(), makeRpcProvider(designatorFor(OTHER_IMPL)))
 
     await sendCallsSync(args)
 
     expect(signer.sign).toHaveBeenCalledTimes(2)
-    expect(signedAuthorizationOf(createTransactionIntent)).toEqual(expect.stringMatching(/^0x[0-9a-f]+$/i))
+    expect(signedAuthorizationOf(createTransactionV2)).toEqual(expect.stringMatching(/^0x[0-9a-f]+$/i))
   })
 
   it('re-authorizes (fails open) when the delegation check cannot read on-chain code', async () => {
@@ -156,11 +155,11 @@ describe('sendCallsSync — EIP-7702 authorization gate', () => {
       getCode: vi.fn().mockRejectedValue(new Error('rpc down')),
       getTransactionCount: vi.fn().mockResolvedValue(0),
     }
-    const { args, createTransactionIntent } = setup(delegatedAccount(), rpcProvider)
+    const { args, createTransactionV2 } = setup(delegatedAccount(), rpcProvider)
 
     await sendCallsSync(args)
 
-    expect(signedAuthorizationOf(createTransactionIntent)).toEqual(expect.stringMatching(/^0x[0-9a-f]+$/i))
+    expect(signedAuthorizationOf(createTransactionV2)).toEqual(expect.stringMatching(/^0x[0-9a-f]+$/i))
   })
 
   it('throws an actionable error when a delegated account has no implementationAddress', async () => {

@@ -40,5 +40,6 @@ export * from './domain/solana-rpcapi';
 export * from './domain/solana-transactions-api';
 export * from './domain/subscriptions-api';
 export * from './domain/transaction-intents-api';
+export * from './domain/transactions-api';
 export * from './domain/users-api';
 

@@ -63,13 +63,13 @@ export interface PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecomme
      */
     'walletPayEnabled': boolean;
     /**
-     * Whether Stripe\'s in-page (embedded) rail is offered. Needs the project\'s own Link OAuth client.
+     * Whether the Stripe rail is offered. With the project\'s own Link OAuth client it runs in-page (embedded); without one it degrades to the hosted popup on the project\'s secret key alone.
      * @type {boolean}
      * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmountOrCredentialsOrStripePublishableKey
      */
     'stripeEnabled': boolean;
     /**
-     * Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered.
+     * Whether Coinbase hosted-checkout popup rows (including the rest-of-world fallback) are offered.
      * @type {boolean}
      * @memberof PickFundingProjectConfigExcludeKeyofFundingProjectConfigRecommendedAmountOrCredentialsOrStripePublishableKey
      */
