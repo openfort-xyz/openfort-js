@@ -24,6 +24,9 @@ import { ChildProjectListResponse } from './child-project-list-response';
 import { EntityTypePROJECT } from './entity-type-project';
 // May contain unused imports in some cases
 // @ts-ignore
+import { ProjectResponseScheduledDeletion } from './project-response-scheduled-deletion';
+// May contain unused imports in some cases
+// @ts-ignore
 import { WebhookResponse } from './webhook-response';
 
 /**
@@ -98,6 +101,18 @@ export interface ProjectResponse {
      * @memberof ProjectResponse
      */
     'isActive': boolean;
+    /**
+     * \"Permanent\" marker: the project is exempt from the automatic inactivity deletion sweep. Toggled by Openfort staff only; manual owner deletion ignores it.
+     * @type {boolean}
+     * @memberof ProjectResponse
+     */
+    'deletionProtected'?: boolean;
+    /**
+     * 
+     * @type {ProjectResponseScheduledDeletion}
+     * @memberof ProjectResponse
+     */
+    'scheduledDeletion'?: ProjectResponseScheduledDeletion;
 }
 
 

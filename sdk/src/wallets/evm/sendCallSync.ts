@@ -6,8 +6,8 @@ import { withApiError } from '../../core/errors/withApiError'
 import {
   AccountTypeEnum,
   type Interaction,
-  type TransactionIntentResponse,
   type TransactionReceipt,
+  type TransactionResponse,
   type TransactionType,
 } from '../../types/types'
 import { prepareAndSignAuthorization, serializeSignedAuthorization } from '../../utils/authorization'
@@ -33,23 +33,23 @@ type RawCall = { data?: `0x${string}`; to?: `0x${string}`; value?: bigint }
 const SIGNATURE_CONFIRMATION_TIMEOUT_MS = 120_000
 
 const convertToTransactionReceipt = (
-  response: TransactionIntentResponse['response']
+  receipt: TransactionResponse['receipt']
 ): TransactionReceipt<string, number, 'success' | 'reverted', TransactionType> => {
-  const firstLog = response?.logs?.[0]
+  const firstLog = receipt?.logs?.[0]
 
   return {
     blockHash: firstLog?.blockHash,
-    blockNumber: response?.blockNumber?.toString(),
+    blockNumber: receipt?.blockNumber?.toString(),
     contractAddress: undefined,
-    cumulativeGasUsed: response?.gasUsed,
-    effectiveGasPrice: response?.gasFee,
+    cumulativeGasUsed: receipt?.gasUsed,
+    effectiveGasPrice: receipt?.gasFee,
     from: undefined,
-    gasUsed: response?.gasUsed,
-    logs: response?.logs || [],
+    gasUsed: receipt?.gasUsed,
+    logs: receipt?.logs || [],
     logsBloom: undefined,
-    status: response?.status === 1 ? 'success' : response?.status === 0 ? 'reverted' : undefined,
-    to: response?.to,
-    transactionHash: response?.transactionHash,
+    status: receipt?.status,
+    to: receipt?.to,
+    transactionHash: receipt?.transactionHash,
     transactionIndex: firstLog?.transactionIndex,
     type: 'eip1559',
     blobGasPrice: undefined,
@@ -65,7 +65,7 @@ const buildOpenfortTransactions = async (
   authentication: Authentication,
   feeSponsorshipId?: string,
   signedAuthorization?: string
-): Promise<TransactionIntentResponse> => {
+): Promise<TransactionResponse> => {
   const interactions: Interaction[] = calls.map((call) => {
     if (!call.to) {
       throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'wallet_sendCalls requires a "to" field')
@@ -77,16 +77,16 @@ const buildOpenfortTransactions = async (
     }
   })
 
-  return withApiError<TransactionIntentResponse>(
+  return withApiError<TransactionResponse>(
     async () => {
-      const response = await backendApiClients.transactionIntentsApi.createTransactionIntent(
+      const response = await backendApiClients.transactionsApi.createTransactionV2(
         {
-          createTransactionIntentRequest: {
+          createTransactionRequestV2: {
             account: account.id,
-            policy: feeSponsorshipId,
-            signedAuthorization: signedAuthorization,
+            feeSponsorship: feeSponsorshipId,
+            authorization: signedAuthorization,
             chainId: account.chainId!,
-            interactions,
+            calls: interactions,
           },
         },
         {
@@ -107,7 +107,7 @@ const buildOpenfortTransactions = async (
               },
         }
       )
-      return response.data
+      return response.data as TransactionResponse
       // eslint-disable-next-line @typescript-eslint/naming-convention
     },
     { context: 'operation' }
@@ -202,25 +202,25 @@ export const sendCallsSync = async ({
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
   })
 
-  if (openfortTransaction.response?.error?.reason) {
-    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, openfortTransaction.response.error.reason)
+  if (openfortTransaction.receipt?.error?.reason) {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, openfortTransaction.receipt.error.reason)
   }
 
-  if (openfortTransaction?.nextAction?.payload?.signableHash) {
+  if (openfortTransaction.nextAction?.type === 'sign_hash' && openfortTransaction.nextAction.hash) {
     let signature: string
     // EIP-7702 delegated accounts (Calibur, CaliburV9, …) sign the raw v0.8
     // typed-data hash — no EIP-191 hashMessage prefix.
     if (account.accountType === AccountTypeEnum.DELEGATED_ACCOUNT) {
-      signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash, false, false)
+      signature = await signer.sign(openfortTransaction.nextAction.hash, false, false)
     } else {
-      signature = await signer.sign(openfortTransaction.nextAction.payload.signableHash)
+      signature = await signer.sign(openfortTransaction.nextAction.hash)
     }
     const response = await withApiError(
       async () =>
-        await backendClient.transactionIntentsApi.signature(
+        await backendClient.transactionsApi.submitTransactionSignatureV2(
           {
             id: openfortTransaction.id,
-            signatureRequest: { signature },
+            submitTransactionSignatureRequestV2: { signature },
           },
           { timeout: SIGNATURE_CONFIRMATION_TIMEOUT_MS }
         ),
@@ -229,26 +229,31 @@ export const sendCallsSync = async ({
       throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
     })
 
-    if (response.data.response?.status === 0) {
-      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, response.data.response?.error?.reason ?? '')
+    const submitted = response.data as TransactionResponse
+    if (submitted.status === 'reverted' || submitted.status === 'failed') {
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, submitted.receipt?.error?.reason ?? '')
     }
 
-    if (!response.data.response) {
-      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, 'No transaction response received')
+    if (!submitted.receipt) {
+      throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, 'No transaction receipt received')
     }
 
     return {
       id: openfortTransaction.id,
-      receipt: convertToTransactionReceipt(response.data.response),
+      receipt: convertToTransactionReceipt(submitted.receipt),
     }
   }
 
-  if (!openfortTransaction.response) {
-    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, 'No transaction response received')
+  if (openfortTransaction.status === 'reverted' || openfortTransaction.status === 'failed') {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, openfortTransaction.receipt?.error?.reason ?? '')
+  }
+
+  if (!openfortTransaction.receipt) {
+    throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, 'No transaction receipt received')
   }
 
   return {
     id: openfortTransaction.id,
-    receipt: convertToTransactionReceipt(openfortTransaction.response),
+    receipt: convertToTransactionReceipt(openfortTransaction.receipt),
   }
 }

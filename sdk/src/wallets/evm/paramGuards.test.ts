@@ -12,7 +12,7 @@ describe('JSON-RPC parameter guards', () => {
       ({
         params,
         authentication: { token: 'token', userId: 'usr_1' },
-        backendClient: { transactionIntentsApi: { getTransactionIntent: vi.fn() } },
+        backendClient: { transactionsApi: { getTransactionV2: vi.fn() } },
       }) as never
 
     it('rejects an empty params array', async () => {
@@ -30,7 +30,7 @@ describe('JSON-RPC parameter guards', () => {
     })
 
     it('does not reach the backend when the argument is missing', async () => {
-      const backendClient = { transactionIntentsApi: { getTransactionIntent: vi.fn() } }
+      const backendClient = { transactionsApi: { getTransactionV2: vi.fn() } }
       await expect(
         getCallStatus({
           params: [],
@@ -38,7 +38,7 @@ describe('JSON-RPC parameter guards', () => {
           backendClient,
         } as never)
       ).rejects.toThrow()
-      expect(backendClient.transactionIntentsApi.getTransactionIntent).not.toHaveBeenCalled()
+      expect(backendClient.transactionsApi.getTransactionV2).not.toHaveBeenCalled()
     })
   })
 })

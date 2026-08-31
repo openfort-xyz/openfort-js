@@ -5439,7 +5439,24 @@
             "pk": []
           }
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -7499,6 +7516,889 @@
         }
       }
     },
+    "/v2/transactions": {
+      "get": {
+        "operationId": "listTransactionsV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionListResponseV2"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "object": "list",
+                      "url": "/v2/transactions",
+                      "data": [
+                        {
+                          "id": "tin_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                          "object": "transaction",
+                          "createdAt": 1689869074,
+                          "updatedAt": 1689869080,
+                          "chainId": 80002,
+                          "status": "succeeded",
+                          "accountId": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60",
+                          "walletId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                          "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
+                          "calls": [
+                            {
+                              "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                              "functionName": "mint",
+                              "functionArgs": [
+                                "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+                              ]
+                            }
+                          ],
+                          "execution": {
+                            "type": "userOperation",
+                            "entryPointVersion": "0.8",
+                            "userOperationHash": "0x1a3d1d2fbb8a9c1a3f0f7d2b6c4a8b2b1e1d5c9a7f3e2b1c0d9e8f7a6b5c4d3e",
+                            "userOperation": {
+                              "sender": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387",
+                              "nonce": "0x1",
+                              "callData": "0x8c5a3c2e000000000000000000000000662d24bf7ea2dd6a7d0935f680a6056b94fe934d",
+                              "callGasLimit": "0x186a0",
+                              "verificationGasLimit": "0x186a0",
+                              "preVerificationGas": "0x5208",
+                              "maxFeePerGas": "0x59682f00",
+                              "maxPriorityFeePerGas": "0x59682f00",
+                              "paymaster": "0x8c99A2E1A5F81DF3A3fE9d7e1F5c9F2c1e3B4a5D",
+                              "paymasterVerificationGasLimit": "0xc350",
+                              "paymasterPostOpGasLimit": "0xc350",
+                              "paymasterData": "0x01",
+                              "signature": "0xabcdef01"
+                            }
+                          },
+                          "receipt": {
+                            "createdAt": 1689869080,
+                            "status": "success",
+                            "transactionHash": "0x9f2b5c1e7d3a4b6c8e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
+                            "blockNumber": 12345678,
+                            "to": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
+                            "gasUsed": "210000",
+                            "gasFee": "315000000000000",
+                            "logs": []
+                          },
+                          "timeline": [
+                            {
+                              "event": "awaiting_signature",
+                              "at": 1689869074
+                            },
+                            {
+                              "event": "submitted",
+                              "at": 1689869075
+                            },
+                            {
+                              "event": "indexed",
+                              "at": 1689869079
+                            },
+                            {
+                              "event": "confirmed",
+                              "at": 1689869080
+                            },
+                            {
+                              "event": "succeeded",
+                              "at": 1689869080
+                            }
+                          ],
+                          "costUsd": "0.42"
+                        },
+                        {
+                          "id": "tin_9c1b2a3d-4e5f-4a6b-8c7d-0e1f2a3b4c5d",
+                          "object": "transaction",
+                          "createdAt": 1689869074,
+                          "updatedAt": 1689869074,
+                          "chainId": 80002,
+                          "status": "awaiting_signature",
+                          "accountId": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60",
+                          "walletId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                          "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
+                          "calls": [
+                            {
+                              "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                              "functionName": "mint",
+                              "functionArgs": [
+                                "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+                              ]
+                            }
+                          ],
+                          "nextAction": {
+                            "type": "sign_hash",
+                            "hash": "0x1a3d1d2fbb8a9c1a3f0f7d2b6c4a8b2b1e1d5c9a7f3e2b1c0d9e8f7a6b5c4d3e"
+                          }
+                        }
+                      ],
+                      "start": 0,
+                      "end": 2,
+                      "total": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Returns a list of transactions, most recent first.",
+        "summary": "List transactions.",
+        "tags": [
+          "Transactions"
+        ],
+        "security": [
+          {
+            "sk": [
+              "transactions:read"
+            ]
+          },
+          {
+            "user_project": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Specifies the maximum number of records to return.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "description": "Specifies the offset for the first records to return.",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "description": "Specifies the order in which to sort the results.",
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Prisma.SortOrder"
+            }
+          },
+          {
+            "description": "Specifies the fields to expand in the response. `timeline` adds the lifecycle history (one\nmonitor lookup per request); `userOperation` and `logs` add the heavyweight execution payload\nand receipt logs, which are otherwise omitted.",
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/TransactionExpandableV2"
+              }
+            }
+          },
+          {
+            "description": "The chain ID. Must be a [supported chain](/development/chains).",
+            "in": "query",
+            "name": "chainId",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": 80002
+          },
+          {
+            "description": "Filter by account ID (starts with acc_).",
+            "in": "query",
+            "name": "account",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "acc_dc981458-a653-4539-b120-a321915b2896"
+            ]
+          },
+          {
+            "description": "Filter by user ID (starts with usr_).",
+            "in": "query",
+            "name": "user",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "usr_556166c9-77ad-4a39-aaf8-c432defa8a0f"
+            ]
+          },
+          {
+            "description": "Filter by wallet ID (starts with pla_).",
+            "in": "query",
+            "name": "wallet",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+            ]
+          },
+          {
+            "description": "Filter by fee sponsorship ID (starts with pol_).",
+            "in": "query",
+            "name": "feeSponsorship",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "pol_7e07ae30-2a4d-48fa-803f-361da94905dd"
+            ]
+          },
+          {
+            "description": "Filter by transaction status.",
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/TransactionStatusV2"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createTransactionV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponseV2"
+                },
+                "examples": {
+                  "Custodial account": {
+                    "value": {
+                      "id": "tin_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "transaction",
+                      "createdAt": 1689869074,
+                      "updatedAt": 1689869080,
+                      "chainId": 80002,
+                      "status": "succeeded",
+                      "accountId": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60",
+                      "walletId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
+                      "calls": [
+                        {
+                          "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                          "functionName": "mint",
+                          "functionArgs": [
+                            "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+                          ]
+                        }
+                      ],
+                      "execution": {
+                        "type": "userOperation",
+                        "entryPointVersion": "0.8",
+                        "userOperationHash": "0x1a3d1d2fbb8a9c1a3f0f7d2b6c4a8b2b1e1d5c9a7f3e2b1c0d9e8f7a6b5c4d3e",
+                        "userOperation": {
+                          "sender": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387",
+                          "nonce": "0x1",
+                          "callData": "0x8c5a3c2e000000000000000000000000662d24bf7ea2dd6a7d0935f680a6056b94fe934d",
+                          "callGasLimit": "0x186a0",
+                          "verificationGasLimit": "0x186a0",
+                          "preVerificationGas": "0x5208",
+                          "maxFeePerGas": "0x59682f00",
+                          "maxPriorityFeePerGas": "0x59682f00",
+                          "paymaster": "0x8c99A2E1A5F81DF3A3fE9d7e1F5c9F2c1e3B4a5D",
+                          "paymasterVerificationGasLimit": "0xc350",
+                          "paymasterPostOpGasLimit": "0xc350",
+                          "paymasterData": "0x01",
+                          "signature": "0xabcdef01"
+                        }
+                      },
+                      "receipt": {
+                        "createdAt": 1689869080,
+                        "status": "success",
+                        "transactionHash": "0x9f2b5c1e7d3a4b6c8e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
+                        "blockNumber": 12345678,
+                        "to": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
+                        "gasUsed": "210000",
+                        "gasFee": "315000000000000",
+                        "logs": []
+                      },
+                      "timeline": [
+                        {
+                          "event": "awaiting_signature",
+                          "at": 1689869074
+                        },
+                        {
+                          "event": "submitted",
+                          "at": 1689869075
+                        },
+                        {
+                          "event": "indexed",
+                          "at": 1689869079
+                        },
+                        {
+                          "event": "confirmed",
+                          "at": 1689869080
+                        },
+                        {
+                          "event": "succeeded",
+                          "at": 1689869080
+                        }
+                      ],
+                      "costUsd": "0.42"
+                    }
+                  },
+                  "Account awaiting the user's signature": {
+                    "value": {
+                      "id": "tin_9c1b2a3d-4e5f-4a6b-8c7d-0e1f2a3b4c5d",
+                      "object": "transaction",
+                      "createdAt": 1689869074,
+                      "updatedAt": 1689869074,
+                      "chainId": 80002,
+                      "status": "awaiting_signature",
+                      "accountId": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60",
+                      "walletId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
+                      "calls": [
+                        {
+                          "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                          "functionName": "mint",
+                          "functionArgs": [
+                            "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+                          ]
+                        }
+                      ],
+                      "nextAction": {
+                        "type": "sign_hash",
+                        "hash": "0x1a3d1d2fbb8a9c1a3f0f7d2b6c4a8b2b1e1d5c9a7f3e2b1c0d9e8f7a6b5c4d3e"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request has invalid parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Creates a transaction for an account.\n\nFor accounts whose key is held by the user, the response has `status: \"awaiting_signature\"` and a\n`nextAction` with the hash to sign; submit the signature with `POST /v2/transactions/{id}/signature`.\nFor custodial and backend-wallet accounts the transaction is signed and broadcast in the same call\nand the response already carries a `receipt` (unless `waitForReceipt` is `false`).",
+        "summary": "Create a transaction.",
+        "tags": [
+          "Transactions"
+        ],
+        "security": [
+          {
+            "sk": [
+              "transactions:write"
+            ]
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "pk_access_token": []
+          },
+          {
+            "auth_token": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "Project ID to act on behalf of (for ecosystem operations).",
+            "in": "header",
+            "name": "X-Behalf-Of-Project",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTransactionRequestV2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/transactions/{id}": {
+      "get": {
+        "operationId": "getTransactionV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponseV2"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "tin_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "transaction",
+                      "createdAt": 1689869074,
+                      "updatedAt": 1689869080,
+                      "chainId": 80002,
+                      "status": "succeeded",
+                      "accountId": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60",
+                      "walletId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
+                      "calls": [
+                        {
+                          "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                          "functionName": "mint",
+                          "functionArgs": [
+                            "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+                          ]
+                        }
+                      ],
+                      "execution": {
+                        "type": "userOperation",
+                        "entryPointVersion": "0.8",
+                        "userOperationHash": "0x1a3d1d2fbb8a9c1a3f0f7d2b6c4a8b2b1e1d5c9a7f3e2b1c0d9e8f7a6b5c4d3e",
+                        "userOperation": {
+                          "sender": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387",
+                          "nonce": "0x1",
+                          "callData": "0x8c5a3c2e000000000000000000000000662d24bf7ea2dd6a7d0935f680a6056b94fe934d",
+                          "callGasLimit": "0x186a0",
+                          "verificationGasLimit": "0x186a0",
+                          "preVerificationGas": "0x5208",
+                          "maxFeePerGas": "0x59682f00",
+                          "maxPriorityFeePerGas": "0x59682f00",
+                          "paymaster": "0x8c99A2E1A5F81DF3A3fE9d7e1F5c9F2c1e3B4a5D",
+                          "paymasterVerificationGasLimit": "0xc350",
+                          "paymasterPostOpGasLimit": "0xc350",
+                          "paymasterData": "0x01",
+                          "signature": "0xabcdef01"
+                        }
+                      },
+                      "receipt": {
+                        "createdAt": 1689869080,
+                        "status": "success",
+                        "transactionHash": "0x9f2b5c1e7d3a4b6c8e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
+                        "blockNumber": 12345678,
+                        "to": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
+                        "gasUsed": "210000",
+                        "gasFee": "315000000000000",
+                        "logs": []
+                      },
+                      "timeline": [
+                        {
+                          "event": "awaiting_signature",
+                          "at": 1689869074
+                        },
+                        {
+                          "event": "submitted",
+                          "at": 1689869075
+                        },
+                        {
+                          "event": "indexed",
+                          "at": 1689869079
+                        },
+                        {
+                          "event": "confirmed",
+                          "at": 1689869080
+                        },
+                        {
+                          "event": "succeeded",
+                          "at": 1689869080
+                        }
+                      ],
+                      "costUsd": "0.42"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaction not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Retrieves a transaction. Poll this endpoint until `status` is terminal\n(`succeeded`, `reverted` or `failed`).",
+        "summary": "Get a transaction.",
+        "tags": [
+          "Transactions"
+        ],
+        "security": [
+          {
+            "sk": [
+              "transactions:read"
+            ]
+          },
+          {
+            "user_project": []
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "pk_access_token": []
+          },
+          {
+            "auth_token": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The transaction ID (starts with tin_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "tin_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          },
+          {
+            "description": "Specifies the expandable fields.",
+            "in": "query",
+            "name": "expand",
+            "required": false,
+            "schema": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/TransactionExpandableV2"
+              }
+            },
+            "example": [
+              "account",
+              "timeline"
+            ]
+          }
+        ]
+      }
+    },
+    "/v2/transactions/estimate": {
+      "post": {
+        "operationId": "estimateTransactionV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateTransactionResponseV2"
+                },
+                "examples": {
+                  "Gas estimation": {
+                    "value": {
+                      "gas": "210000",
+                      "gasPrice": "1500000000",
+                      "fee": "315000000000000",
+                      "feeUsd": "0.42"
+                    }
+                  },
+                  "Gas estimation with token sponsorship": {
+                    "value": {
+                      "gas": "210000",
+                      "gasPrice": "1500000000",
+                      "fee": "315000000000000",
+                      "feeUsd": "0.42",
+                      "feeInToken": "420000"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request has invalid parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Estimates the gas cost of a transaction without sending it.\n\nWith a fee sponsorship that charges the user in an ERC-20 token, `feeInToken` is the estimated\namount of that token.",
+        "summary": "Estimate a transaction's gas cost.",
+        "tags": [
+          "Transactions"
+        ],
+        "security": [
+          {
+            "sk": [
+              "transactions:write"
+            ]
+          },
+          {
+            "pk_third_party": []
+          },
+          {
+            "pk_access_token": []
+          },
+          {
+            "auth_token": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTransactionRequestV2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/transactions/{id}/signature": {
+      "post": {
+        "operationId": "submitTransactionSignatureV2",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponseV2"
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "id": "tin_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                      "object": "transaction",
+                      "createdAt": 1689869074,
+                      "updatedAt": 1689869080,
+                      "chainId": 80002,
+                      "status": "succeeded",
+                      "accountId": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60",
+                      "walletId": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584",
+                      "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
+                      "calls": [
+                        {
+                          "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                          "functionName": "mint",
+                          "functionArgs": [
+                            "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
+                          ]
+                        }
+                      ],
+                      "execution": {
+                        "type": "userOperation",
+                        "entryPointVersion": "0.8",
+                        "userOperationHash": "0x1a3d1d2fbb8a9c1a3f0f7d2b6c4a8b2b1e1d5c9a7f3e2b1c0d9e8f7a6b5c4d3e",
+                        "userOperation": {
+                          "sender": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387",
+                          "nonce": "0x1",
+                          "callData": "0x8c5a3c2e000000000000000000000000662d24bf7ea2dd6a7d0935f680a6056b94fe934d",
+                          "callGasLimit": "0x186a0",
+                          "verificationGasLimit": "0x186a0",
+                          "preVerificationGas": "0x5208",
+                          "maxFeePerGas": "0x59682f00",
+                          "maxPriorityFeePerGas": "0x59682f00",
+                          "paymaster": "0x8c99A2E1A5F81DF3A3fE9d7e1F5c9F2c1e3B4a5D",
+                          "paymasterVerificationGasLimit": "0xc350",
+                          "paymasterPostOpGasLimit": "0xc350",
+                          "paymasterData": "0x01",
+                          "signature": "0xabcdef01"
+                        }
+                      },
+                      "receipt": {
+                        "createdAt": 1689869080,
+                        "status": "success",
+                        "transactionHash": "0x9f2b5c1e7d3a4b6c8e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
+                        "blockNumber": 12345678,
+                        "to": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
+                        "gasUsed": "210000",
+                        "gasFee": "315000000000000",
+                        "logs": []
+                      },
+                      "timeline": [
+                        {
+                          "event": "awaiting_signature",
+                          "at": 1689869074
+                        },
+                        {
+                          "event": "submitted",
+                          "at": 1689869075
+                        },
+                        {
+                          "event": "indexed",
+                          "at": 1689869079
+                        },
+                        {
+                          "event": "confirmed",
+                          "at": 1689869080
+                        },
+                        {
+                          "event": "succeeded",
+                          "at": 1689869080
+                        }
+                      ],
+                      "costUsd": "0.42"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaction not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Submits the signature of `nextAction.hash` and broadcasts the transaction.",
+        "summary": "Submit a transaction signature.",
+        "tags": [
+          "Transactions"
+        ],
+        "security": [
+          {
+            "pk": []
+          },
+          {
+            "sk": [
+              "transactions:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The transaction ID (starts with tin_).",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "tin_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitTransactionSignatureRequestV2"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/policies": {
       "get": {
         "operationId": "ListPolicies",
@@ -8039,6 +8939,1093 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/EvaluatePolicyV2Request"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/verifications": {
+      "post": {
+        "operationId": "createOnrampVerification",
+        "responses": {
+          "200": {
+            "description": "Verification started; the OTP is on its way.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampVerificationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid destination."
+          },
+          "429": {
+            "description": "Too many verification requests."
+          }
+        },
+        "description": "Starts an OTP verification for the buyer's phone or email — the identity\nstep of native wallet pay (Apple/Google Pay). The code is sent to the\ndestination; submit it via the submit endpoint, then attach the returned\nids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`.",
+        "summary": "Start a wallet-pay OTP verification",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "destination": {
+                    "type": "string"
+                  },
+                  "channel": {
+                    "type": "string",
+                    "enum": [
+                      "sms",
+                      "email"
+                    ]
+                  }
+                },
+                "required": [
+                  "destination",
+                  "channel"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/verifications/{verificationId}/submit": {
+      "post": {
+        "operationId": "submitOnrampVerification",
+        "responses": {
+          "200": {
+            "description": "Verification completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampVerificationSubmitResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - incorrect or expired code."
+          }
+        },
+        "description": "Submits the OTP the buyer received for a verification. On success the\nreturned id rides on the wallet-pay commit.",
+        "summary": "Submit a wallet-pay OTP code",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "verificationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "otpCode": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "otpCode"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/auth_intents": {
+      "post": {
+        "operationId": "createOnrampAuthIntent",
+        "responses": {
+          "200": {
+            "description": "Auth intent created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampAuthIntentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - embedded onramp not configured."
+          }
+        },
+        "description": "Mints an auth intent for the buyer's email — step 1 of the embedded\n(headless element) flow. The client renders the provider's auth element\nwith the returned id; after the buyer completes it, exchange the intent\nfor its server-side token via the tokens endpoint.",
+        "summary": "Create an embedded-flow auth intent",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/auth_intents/{intentId}/tokens": {
+      "post": {
+        "operationId": "exchangeOnrampAuthToken",
+        "responses": {
+          "200": {
+            "description": "Token exchanged and stored.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampAuthTokenExchangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - embedded onramp not configured."
+          }
+        },
+        "description": "Exchanges a completed auth intent for its provider token — step 3 of the\nembedded flow, after the buyer finishes the auth element. The token stays\nserver-side; committing the session and checking out both look it up by\nthe intent id.",
+        "summary": "Exchange an embedded-flow auth intent for its token",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "intentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/identity": {
+      "get": {
+        "operationId": "getOnrampIdentity",
+        "responses": {
+          "200": {
+            "description": "Buyer identity state resolved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampIdentityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - auth token expired or embedded onramp not configured."
+          }
+        },
+        "description": "Reads the buyer's identity state at the provider — which regulatory\nregion they fall under, the verification tier they have reached, and\nwhich identity steps they have already satisfied.\n\nThe embedded flow needs this to prompt for exactly what is outstanding:\nwithout it a client can only infer the remaining steps, and re-asks for\ndeclarations the buyer already made.",
+        "summary": "Read the buyer's onramp identity state",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "authIntentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "customerRef",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/limits": {
+      "get": {
+        "operationId": "getOnrampLimits",
+        "responses": {
+          "200": {
+            "description": "Transaction limits resolved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampLimitsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - auth token expired or embedded onramp not configured."
+          }
+        },
+        "description": "Reads the buyer's current transaction limits. Clients compare the\nintended purchase against these to offer a verification step-up instead\nof letting the commit fail.\n\nMonetary values are in CENTS.",
+        "summary": "Read the buyer's onramp transaction limits",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "authIntentId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "phoneNumber",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "apple_pay",
+                "google_pay"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "walletAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "network",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/onramp/limits/upgrade": {
+      "post": {
+        "operationId": "startOnrampLimitUpgrade",
+        "responses": {
+          "200": {
+            "description": "Limit upgrade started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampLimitUpgradeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - buyer not eligible, blocked, or rate limited."
+          }
+        },
+        "description": "Starts the provider-hosted identity form that raises a wallet-pay buyer's\nlimits, returning the URL to embed.\n\nThe form is hosted by the provider because it collects a partial SSN —\nthat data never passes through Openfort. The URL is single-use and\nshort-lived, so request a fresh one per attempt rather than caching it.",
+        "summary": "Start a wallet-pay limit upgrade",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "apple_pay",
+                      "google_pay"
+                    ]
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "method",
+                  "phoneNumber"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/onramp/methods": {
+      "get": {
+        "operationId": "getFundingOnrampMethods",
+        "responses": {
+          "200": {
+            "description": "Available onramp methods resolved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampMethodsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - missing required fields or invalid parameters."
+          }
+        },
+        "description": "Resolves the fiat onramp methods available for a destination and the buyer's\nregion. Openfort auto-selects the provider per method (by country, asset, and\nwhether the project has native wallet-pay unlocked) — the provider is never\nshown to or chosen by the end user; only the resolved method rows are returned.\n\nThe country is taken from the `country` query param, else the request IP\n(`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated\nallowlist in display order; omit to return all web2 methods. `angles` is an\noptional comma-separated list of integration angles the client can execute\n(e.g. \"popup\" from React Native); omit for no restriction.",
+        "summary": "Resolve onramp methods",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "targetChain",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "targetCurrency",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "country",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "methods",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "angles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/chains": {
+      "get": {
+        "operationId": "ListChains",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingChainsResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Lists the source chains and currencies the funding rail can route from.\n\nA live passthrough of the rail's dictionary (Relay), narrowed client-side\nto a curated subset. Public — it exposes no tenant data, so the source\npicker can load it before the user authenticates.",
+        "summary": "List funding source chains.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "description": "Live (mainnet, default) or test (testnet) rail. Pass `false`\nfrom a test-mode (`pk_test_…`) client so the testnet chain list is returned.",
+            "in": "query",
+            "name": "livemode",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/sessions": {
+      "post": {
+        "operationId": "createFundingSession",
+        "responses": {
+          "201": {
+            "description": "Created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "description": "Creates a funding session for a destination.\n\nA session is one cross-chain deposit attempt: pick a destination chain,\ntoken, and wallet, then set a payment method to mint a deposit address.\nThe response includes a `clientSecret` used to advance and read the session.",
+        "summary": "Create a funding session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFundingSessionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/payment_methods": {
+      "post": {
+        "operationId": "SetPaymentMethod",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Sets the (single) payment method on a session.\n\nCommits the source route the user will send from and mints the Relay\ndeposit address. Requires the session `clientSecret`.",
+        "summary": "Set a session's payment method.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "origin",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPaymentMethodRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/onramp_checkout": {
+      "post": {
+        "operationId": "checkoutFundingOnrampSession",
+        "responses": {
+          "200": {
+            "description": "Checkout confirmed; client secret returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "clientSecret": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "clientSecret"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - session has no headless onramp or the auth token expired."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Embedded (headless) checkout: confirms the committed headless onramp\nsession with the buyer's mandate acceptance (this request's ip + user\nagent) and returns the provider client secret for the client's embedded\ncheckout element. One-shot — the secret is never stored.",
+        "summary": "Check out an embedded onramp session",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "user-agent",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "clientSecret": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "clientSecret"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/methods": {
+      "get": {
+        "operationId": "getFundingSessionMethods",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampMethodsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Resolves the fiat onramp methods available for a session's destination and\nthe buyer's region. Openfort auto-selects the provider per method — the\nclient renders the rows and commits one via `setPaymentMethod` with\n`{ type: \"onramp\", method }`. Requires the session `clientSecret`.",
+        "summary": "Resolve a session's available funding methods.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The session client secret returned at creation.\nDeliberately a query parameter (GET semantics): the secret is\nshort-lived and session-scoped; every other endpoint takes it in the\nPOST body.",
+            "in": "query",
+            "name": "clientSecret",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Explicit buyer-country override (ISO-3166 alpha-2); defaults\nto the request IP's country.",
+            "in": "query",
+            "name": "country",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated integration angles the client can execute\n(e.g. \"popup\" from React Native); omit for no restriction.",
+            "in": "query",
+            "name": "angles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/sessions/{sessionId}/quotes": {
+      "post": {
+        "operationId": "quoteFundingSession",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnrampQuoteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Prices a fiat onramp route for a session before committing it. The provider\nis resolved exactly as `setPaymentMethod` would resolve it, so the quote\nmatches the checkout the user will get. Requires the session `clientSecret`.",
+        "summary": "Quote a session's fiat funding route.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-ipcountry",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "cf-connecting-ip",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-forwarded-for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionQuoteRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/sessions/{sessionId}": {
+      "get": {
+        "operationId": "getFundingSession",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Retrieves a funding session, refreshing its status from the rail.\n\nRequires the session `clientSecret` (query parameter).",
+        "summary": "Get a funding session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "The funding session ID (starts with fnd_).",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The session client secret returned at creation.",
+            "in": "query",
+            "name": "clientSecret",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/funding/pay_link": {
+      "post": {
+        "operationId": "CreatePayLink",
+        "responses": {
+          "200": {
+            "description": "Successful response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayLinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        },
+        "description": "Builds a prefilled centralized-exchange (cex) transfer link for a session.\n\nReturns a hosted exchange transfer URL: the user signs into their own\nexchange account and the exchange delivers the asset to the session's\nwallet, handling any bridging from the balance they hold. Destination\naddress and chain are derived from the session, not the client. The active\ncex provider is resolved server-side. Requires the session `clientSecret`.",
+        "summary": "Build a centralized-exchange transfer link for a session.",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "pk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayLinkRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/funding/config": {
+      "get": {
+        "operationId": "getFundingConfig",
+        "responses": {
+          "200": {
+            "description": "Funding config retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingConfigResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Returns the project's funding configuration (the dashboard \"Funding\" section),\nor the defaults when nothing has been saved yet.",
+        "summary": "Get funding config",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": []
+      },
+      "put": {
+        "operationId": "updateFundingConfig",
+        "responses": {
+          "200": {
+            "description": "Funding config saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundingConfigResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters."
+          }
+        },
+        "description": "Creates or replaces the project's funding configuration.",
+        "summary": "Update funding config",
+        "tags": [
+          "Funding"
+        ],
+        "security": [
+          {
+            "user_project": []
+          },
+          {
+            "sk": []
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFundingConfigRequest"
               }
             }
           }
@@ -18700,1093 +20687,6 @@
           }
         }
       }
-    },
-    "/v2/funding/onramp/verifications": {
-      "post": {
-        "operationId": "createOnrampVerification",
-        "responses": {
-          "200": {
-            "description": "Verification started; the OTP is on its way.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampVerificationResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid destination."
-          },
-          "429": {
-            "description": "Too many verification requests."
-          }
-        },
-        "description": "Starts an OTP verification for the buyer's phone or email — the identity\nstep of native wallet pay (Apple/Google Pay). The code is sent to the\ndestination; submit it via the submit endpoint, then attach the returned\nids to the wallet-pay commit as `smsVerificationId`/`emailVerificationId`.",
-        "summary": "Start a wallet-pay OTP verification",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "destination": {
-                    "type": "string"
-                  },
-                  "channel": {
-                    "type": "string",
-                    "enum": [
-                      "sms",
-                      "email"
-                    ]
-                  }
-                },
-                "required": [
-                  "destination",
-                  "channel"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/verifications/{verificationId}/submit": {
-      "post": {
-        "operationId": "submitOnrampVerification",
-        "responses": {
-          "200": {
-            "description": "Verification completed.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampVerificationSubmitResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - incorrect or expired code."
-          }
-        },
-        "description": "Submits the OTP the buyer received for a verification. On success the\nreturned id rides on the wallet-pay commit.",
-        "summary": "Submit a wallet-pay OTP code",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "verificationId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "otpCode": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "otpCode"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/auth_intents": {
-      "post": {
-        "operationId": "createOnrampAuthIntent",
-        "responses": {
-          "200": {
-            "description": "Auth intent created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampAuthIntentResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - embedded onramp not configured."
-          }
-        },
-        "description": "Mints an auth intent for the buyer's email — step 1 of the embedded\n(headless element) flow. The client renders the provider's auth element\nwith the returned id; after the buyer completes it, exchange the intent\nfor its server-side token via the tokens endpoint.",
-        "summary": "Create an embedded-flow auth intent",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "email"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/auth_intents/{intentId}/tokens": {
-      "post": {
-        "operationId": "exchangeOnrampAuthToken",
-        "responses": {
-          "200": {
-            "description": "Token exchanged and stored.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampAuthTokenExchangeResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - embedded onramp not configured."
-          }
-        },
-        "description": "Exchanges a completed auth intent for its provider token — step 3 of the\nembedded flow, after the buyer finishes the auth element. The token stays\nserver-side; committing the session and checking out both look it up by\nthe intent id.",
-        "summary": "Exchange an embedded-flow auth intent for its token",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "intentId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/onramp/identity": {
-      "get": {
-        "operationId": "getOnrampIdentity",
-        "responses": {
-          "200": {
-            "description": "Buyer identity state resolved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampIdentityResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - auth token expired or embedded onramp not configured."
-          }
-        },
-        "description": "Reads the buyer's identity state at the provider — which regulatory\nregion they fall under, the verification tier they have reached, and\nwhich identity steps they have already satisfied.\n\nThe embedded flow needs this to prompt for exactly what is outstanding:\nwithout it a client can only infer the remaining steps, and re-asks for\ndeclarations the buyer already made.",
-        "summary": "Read the buyer's onramp identity state",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "authIntentId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "customerRef",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/onramp/limits": {
-      "get": {
-        "operationId": "getOnrampLimits",
-        "responses": {
-          "200": {
-            "description": "Transaction limits resolved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampLimitsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - auth token expired or embedded onramp not configured."
-          }
-        },
-        "description": "Reads the buyer's current transaction limits. Clients compare the\nintended purchase against these to offer a verification step-up instead\nof letting the commit fail.\n\nMonetary values are in CENTS.",
-        "summary": "Read the buyer's onramp transaction limits",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "authIntentId",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "phoneNumber",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "method",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "apple_pay",
-                "google_pay"
-              ]
-            }
-          },
-          {
-            "in": "query",
-            "name": "walletAddress",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "network",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-connecting-ip",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/onramp/limits/upgrade": {
-      "post": {
-        "operationId": "startOnrampLimitUpgrade",
-        "responses": {
-          "200": {
-            "description": "Limit upgrade started.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampLimitUpgradeResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - buyer not eligible, blocked, or rate limited."
-          }
-        },
-        "description": "Starts the provider-hosted identity form that raises a wallet-pay buyer's\nlimits, returning the URL to embed.\n\nThe form is hosted by the provider because it collects a partial SSN —\nthat data never passes through Openfort. The URL is single-use and\nshort-lived, so request a fresh one per attempt rather than caching it.",
-        "summary": "Start a wallet-pay limit upgrade",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "method": {
-                    "type": "string",
-                    "enum": [
-                      "apple_pay",
-                      "google_pay"
-                    ]
-                  },
-                  "phoneNumber": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "method",
-                  "phoneNumber"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/onramp/methods": {
-      "get": {
-        "operationId": "getFundingOnrampMethods",
-        "responses": {
-          "200": {
-            "description": "Available onramp methods resolved successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampMethodsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - missing required fields or invalid parameters."
-          }
-        },
-        "description": "Resolves the fiat onramp methods available for a destination and the buyer's\nregion. Openfort auto-selects the provider per method (by country, asset, and\nwhether the project has native wallet-pay unlocked) — the provider is never\nshown to or chosen by the end user; only the resolved method rows are returned.\n\nThe country is taken from the `country` query param, else the request IP\n(`cf-ipcountry` behind Cloudflare). `methods` is an optional comma-separated\nallowlist in display order; omit to return all web2 methods. `angles` is an\noptional comma-separated list of integration angles the client can execute\n(e.g. \"popup\" from React Native); omit for no restriction.",
-        "summary": "Resolve onramp methods",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "targetChain",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "targetCurrency",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "country",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "methods",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "angles",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/chains": {
-      "get": {
-        "operationId": "ListChains",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingChainsResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Lists the source chains and currencies the funding rail can route from.\n\nA live passthrough of the rail's dictionary (Relay), narrowed client-side\nto a curated subset. Public — it exposes no tenant data, so the source\npicker can load it before the user authenticates.",
-        "summary": "List funding source chains.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [],
-        "parameters": [
-          {
-            "description": "Live (mainnet, default) or test (testnet) rail. Pass `false`\nfrom a test-mode (`pk_test_…`) client so the testnet chain list is returned.",
-            "in": "query",
-            "name": "livemode",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/sessions": {
-      "post": {
-        "operationId": "createFundingSession",
-        "responses": {
-          "201": {
-            "description": "Created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingSessionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request."
-          },
-          "401": {
-            "description": "Unauthorized."
-          }
-        },
-        "description": "Creates a funding session for a destination.\n\nA session is one cross-chain deposit attempt: pick a destination chain,\ntoken, and wallet, then set a payment method to mint a deposit address.\nThe response includes a `clientSecret` used to advance and read the session.",
-        "summary": "Create a funding session.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFundingSessionRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/sessions/{sessionId}/payment_methods": {
-      "post": {
-        "operationId": "SetPaymentMethod",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingSessionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request."
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Sets the (single) payment method on a session.\n\nCommits the source route the user will send from and mints the Relay\ndeposit address. Requires the session `clientSecret`.",
-        "summary": "Set a session's payment method.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "origin",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-connecting-ip",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetPaymentMethodRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/sessions/{sessionId}/onramp_checkout": {
-      "post": {
-        "operationId": "checkoutFundingOnrampSession",
-        "responses": {
-          "200": {
-            "description": "Checkout confirmed; client secret returned.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "clientSecret": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "clientSecret"
-                  ],
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - session has no headless onramp or the auth token expired."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Embedded (headless) checkout: confirms the committed headless onramp\nsession with the buyer's mandate acceptance (this request's ip + user\nagent) and returns the provider client secret for the client's embedded\ncheckout element. One-shot — the secret is never stored.",
-        "summary": "Check out an embedded onramp session",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-connecting-ip",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "user-agent",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "clientSecret": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "clientSecret"
-                ],
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/sessions/{sessionId}/methods": {
-      "get": {
-        "operationId": "getFundingSessionMethods",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampMethodsResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Resolves the fiat onramp methods available for a session's destination and\nthe buyer's region. Openfort auto-selects the provider per method — the\nclient renders the rows and commits one via `setPaymentMethod` with\n`{ type: \"onramp\", method }`. Requires the session `clientSecret`.",
-        "summary": "Resolve a session's available funding methods.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "The session client secret returned at creation.\nDeliberately a query parameter (GET semantics): the secret is\nshort-lived and session-scoped; every other endpoint takes it in the\nPOST body.",
-            "in": "query",
-            "name": "clientSecret",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Explicit buyer-country override (ISO-3166 alpha-2); defaults\nto the request IP's country.",
-            "in": "query",
-            "name": "country",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Comma-separated integration angles the client can execute\n(e.g. \"popup\" from React Native); omit for no restriction.",
-            "in": "query",
-            "name": "angles",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/sessions/{sessionId}/quotes": {
-      "post": {
-        "operationId": "quoteFundingSession",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnrampQuoteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request."
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Prices a fiat onramp route for a session before committing it. The provider\nis resolved exactly as `setPaymentMethod` would resolve it, so the quote\nmatches the checkout the user will get. Requires the session `clientSecret`.",
-        "summary": "Quote a session's fiat funding route.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-ipcountry",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "cf-connecting-ip",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-forwarded-for",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SessionQuoteRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/sessions/{sessionId}": {
-      "get": {
-        "operationId": "getFundingSession",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingSessionResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Retrieves a funding session, refreshing its status from the rail.\n\nRequires the session `clientSecret` (query parameter).",
-        "summary": "Get a funding session.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [
-          {
-            "description": "The funding session ID (starts with fnd_).",
-            "in": "path",
-            "name": "sessionId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "The session client secret returned at creation.",
-            "in": "query",
-            "name": "clientSecret",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ]
-      }
-    },
-    "/v2/funding/pay_link": {
-      "post": {
-        "operationId": "CreatePayLink",
-        "responses": {
-          "200": {
-            "description": "Successful response.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PayLinkResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request."
-          },
-          "401": {
-            "description": "Unauthorized."
-          },
-          "404": {
-            "description": "Not found."
-          }
-        },
-        "description": "Builds a prefilled centralized-exchange (cex) transfer link for a session.\n\nReturns a hosted exchange transfer URL: the user signs into their own\nexchange account and the exchange delivers the asset to the session's\nwallet, handling any bridging from the balance they hold. Destination\naddress and chain are derived from the session, not the client. The active\ncex provider is resolved server-side. Requires the session `clientSecret`.",
-        "summary": "Build a centralized-exchange transfer link for a session.",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "pk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PayLinkRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v2/funding/config": {
-      "get": {
-        "operationId": "getFundingConfig",
-        "responses": {
-          "200": {
-            "description": "Funding config retrieved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingConfigResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Returns the project's funding configuration (the dashboard \"Funding\" section),\nor the defaults when nothing has been saved yet.",
-        "summary": "Get funding config",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": []
-      },
-      "put": {
-        "operationId": "updateFundingConfig",
-        "responses": {
-          "200": {
-            "description": "Funding config saved.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FundingConfigResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid parameters."
-          }
-        },
-        "description": "Creates or replaces the project's funding configuration.",
-        "summary": "Update funding config",
-        "tags": [
-          "Funding"
-        ],
-        "security": [
-          {
-            "user_project": []
-          },
-          {
-            "sk": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateFundingConfigRequest"
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -24554,6 +25454,10 @@
           "sourceAmount": {
             "type": "string"
           },
+          "destinationAddress": {
+            "type": "string",
+            "description": "Where the funds would land. Optional because a quote doesn't move money,\nbut a provider may still validate the address against the destination\nnetwork — so pass the session's real one wherever it is known."
+          },
           "paymentMethod": {
             "type": "string"
           },
@@ -26416,6 +27320,816 @@
         },
         "required": [
           "accounts"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionStatusV2": {
+        "enum": [
+          "awaiting_signature",
+          "submitted",
+          "succeeded",
+          "reverted",
+          "failed"
+        ],
+        "type": "string",
+        "x-enum-varnames": [
+          "AWAITING_SIGNATURE",
+          "SUBMITTED",
+          "SUCCEEDED",
+          "REVERTED",
+          "FAILED"
+        ]
+      },
+      "AccountV2Response": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "wallet": {
+            "type": "string"
+          },
+          "accountType": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "ownerAddress": {
+            "type": "string"
+          },
+          "chainType": {
+            "type": "string"
+          },
+          "chainId": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "updatedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "smartAccount": {
+            "$ref": "#/components/schemas/SmartAccountData"
+          },
+          "recoveryMethod": {
+            "type": "string"
+          },
+          "recoveryMethodDetails": {
+            "$ref": "#/components/schemas/RecoveryMethodDetails"
+          },
+          "custody": {
+            "type": "string",
+            "enum": [
+              "Developer",
+              "User"
+            ],
+            "description": "Indicates key custody: \"Developer\" for TEE managed keys, \"User\" for user-managed keys.",
+            "example": "Developer"
+          }
+        },
+        "required": [
+          "id",
+          "wallet",
+          "accountType",
+          "address",
+          "chainType",
+          "createdAt",
+          "updatedAt",
+          "custody"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EvmTokenContractEntryResponse": {
+        "description": "A single ERC-20 token entry returned in an EVM multi-token policy.",
+        "properties": {
+          "contract": {
+            "type": "string",
+            "description": "Token contract ID.",
+            "example": "con_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Static exchange rate, or undefined when the dynamic cached rate is used.",
+            "example": "1000000000000000000"
+          }
+        },
+        "required": [
+          "contract"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FeeSponsorshipStrategyResponse": {
+        "description": "Strategy information in fee sponsorship response.",
+        "properties": {
+          "sponsorSchema": {
+            "type": "string",
+            "description": "The sponsorship schema type.",
+            "example": "pay_for_user"
+          },
+          "tokenContract": {
+            "type": "string",
+            "description": "Token contract ID for charge_custom_tokens or fixed_rate schemas (EVM).",
+            "example": "con_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+            "deprecated": true
+          },
+          "tokenContractAmount": {
+            "type": "string",
+            "description": "Token amount for charge_custom_tokens or fixed_rate schemas (EVM).",
+            "example": "1000000000000000000",
+            "deprecated": true
+          },
+          "dynamicExchangeRate": {
+            "type": "boolean",
+            "description": "Whether any accepted token is priced dynamically from cached prices.\nTrue when at least one token has no static amount. For per-token detail,\nread the amount on each tokenContracts entry.",
+            "example": true
+          },
+          "splTokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "SPL mint addresses accepted for fee payment on Solana\ncharge_custom_tokens policies.",
+            "example": [
+              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            ]
+          },
+          "tokenContracts": {
+            "items": {
+              "$ref": "#/components/schemas/EvmTokenContractEntryResponse"
+            },
+            "type": "array",
+            "description": "ERC-20 tokens accepted as user-pay fee for EVM charge_custom_tokens policies.\nPopulated for both new (tokenContracts) and legacy (tokenContract) requests;\nlegacy single-token policies appear as a 1-element array here.",
+            "example": [
+              {
+                "contract": "con_48eeba57-2cd5-4159-a2cb-057a23a35e65",
+                "amount": "1000000000000000000"
+              }
+            ]
+          }
+        },
+        "required": [
+          "sponsorSchema"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EntityType.FEE_SPONSORSHIP": {
+        "enum": [
+          "feeSponsorship"
+        ],
+        "type": "string",
+        "x-enum-varnames": [
+          "FEE_SPONSORSHIP"
+        ]
+      },
+      "FeeSponsorshipResponse": {
+        "description": "Fee sponsorship policy response.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.FEE_SPONSORSHIP"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Name of the fee sponsorship policy.",
+            "example": "My DeFi Gas Sponsorship"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description or comment for the fee sponsorship.",
+            "example": "Sponsors gas for free-tier users"
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "description": "Chain ID for single-chain sponsorship.",
+            "example": 8453,
+            "deprecated": true
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether the policy is enabled.",
+            "example": true
+          },
+          "strategy": {
+            "$ref": "#/components/schemas/FeeSponsorshipStrategyResponse",
+            "description": "Sponsorship strategy configuration."
+          },
+          "paymasterId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Paymaster ID (optional).",
+            "example": "pay_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          },
+          "forwarderContractId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Forwarder contract ID (optional, for meta-transactions).",
+            "example": "cfo_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          },
+          "policyId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Linked policy ID for criteria-based transaction filtering.",
+            "example": "ply_48eeba57-2cd5-4159-a2cb-057a23a35e65"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt",
+          "name",
+          "description",
+          "chainId",
+          "enabled",
+          "strategy",
+          "paymasterId",
+          "forwarderContractId",
+          "policyId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Call": {
+        "$ref": "#/components/schemas/Interaction",
+        "description": "A single call executed by the transaction. Either a raw call (`to`/`value`/`data`)\nor a contract call resolved through a registered contract (`contract`/`functionName`/`functionArgs`)."
+      },
+      "UserOperationExecution": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "userOperation"
+            ],
+            "nullable": false
+          },
+          "entryPointVersion": {
+            "type": "string",
+            "enum": [
+              "0.6",
+              "0.8",
+              "0.9"
+            ],
+            "description": "ERC-4337 EntryPoint version the user operation targets.",
+            "example": "0.8"
+          },
+          "userOperationHash": {
+            "type": "string"
+          },
+          "userOperation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserOperationV6"
+              },
+              {
+                "$ref": "#/components/schemas/UserOperationV8"
+              },
+              {
+                "$ref": "#/components/schemas/UserOperationV9"
+              }
+            ],
+            "description": "The full user operation. Present only with `expand=userOperation`."
+          }
+        },
+        "required": [
+          "type",
+          "entryPointVersion",
+          "userOperationHash"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionExecution": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "transaction"
+            ],
+            "nullable": false
+          },
+          "from": {
+            "type": "string",
+            "example": "0x8ab66318aCC6b29A27e74e534bfe3ecf81C50387"
+          },
+          "to": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "description": "Value in wei.",
+            "example": "1000000000000000000"
+          },
+          "nonce": {
+            "type": "string",
+            "example": "0"
+          },
+          "gas": {
+            "type": "string",
+            "example": "21000"
+          },
+          "maxFeePerGas": {
+            "type": "string",
+            "example": "1000000000"
+          },
+          "maxPriorityFeePerGas": {
+            "type": "string",
+            "example": "1000000000"
+          }
+        },
+        "required": [
+          "type",
+          "from",
+          "to",
+          "nonce",
+          "gas",
+          "maxFeePerGas",
+          "maxPriorityFeePerGas"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SignHashAction": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "sign_hash"
+            ],
+            "nullable": false
+          },
+          "hash": {
+            "type": "string",
+            "description": "Chain-agnostic hash to sign with the account's signer, then submit via `POST /v2/transactions/{id}/signature`.",
+            "example": "0x1a3d1d2fbb8a9c1a3f0f7d2b6c4a8b2b1e1d5c9a7f3e2b1c0d9e8f7a6b5c4d3e"
+          }
+        },
+        "required": [
+          "type",
+          "hash"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionReceiptV2": {
+        "properties": {
+          "createdAt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Unix timestamp (seconds) when the receipt was recorded."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "reverted"
+            ]
+          },
+          "transactionHash": {
+            "type": "string"
+          },
+          "blockNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "to": {
+            "type": "string",
+            "description": "Address the transaction was sent to (the EntryPoint for user operations)."
+          },
+          "gasUsed": {
+            "type": "string"
+          },
+          "gasFee": {
+            "type": "string"
+          },
+          "l1GasUsed": {
+            "type": "string"
+          },
+          "l1GasFee": {
+            "type": "string"
+          },
+          "logs": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionResponseLog"
+            },
+            "type": "array",
+            "description": "The transaction's event logs. Present only with `expand=logs`."
+          },
+          "error": {
+            "$ref": "#/components/schemas/TransactionError",
+            "description": "Present when the transaction reverted or failed."
+          }
+        },
+        "required": [
+          "createdAt",
+          "status"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionEventV2": {
+        "description": "Timeline events: every `TransactionStatusV2` value (a state change), plus monitoring-only events that\nrefine a state without changing it. `status` always equals the last status-valued event.",
+        "enum": [
+          "awaiting_signature",
+          "submitted",
+          "indexed",
+          "confirmed",
+          "dropped",
+          "replaced",
+          "expired",
+          "succeeded",
+          "reverted",
+          "failed"
+        ],
+        "type": "string",
+        "x-enum-varnames": [
+          "AWAITING_SIGNATURE",
+          "SUBMITTED",
+          "INDEXED",
+          "CONFIRMED",
+          "DROPPED",
+          "REPLACED",
+          "EXPIRED",
+          "SUCCEEDED",
+          "REVERTED",
+          "FAILED"
+        ]
+      },
+      "TransactionTimelineEntryV2": {
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/TransactionEventV2"
+          },
+          "at": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Unix timestamp (seconds). Absent when the exact time is unknown (e.g. `submitted` for a\ntransaction the monitor did not track)."
+          }
+        },
+        "required": [
+          "event"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EntityType.TRANSACTION": {
+        "enum": [
+          "transaction"
+        ],
+        "type": "string",
+        "x-enum-varnames": [
+          "TRANSACTION"
+        ]
+      },
+      "TransactionResponseV2": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.TRANSACTION"
+          },
+          "createdAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "example": 80002
+          },
+          "status": {
+            "$ref": "#/components/schemas/TransactionStatusV2"
+          },
+          "accountId": {
+            "type": "string",
+            "description": "ID of the account that executes the transaction (starts with `acc_`).",
+            "example": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "walletId": {
+            "type": "string",
+            "description": "ID of the wallet that owns the account (starts with `pla_`). Absent for backend wallets.",
+            "example": "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+          },
+          "feeSponsorshipId": {
+            "type": "string",
+            "description": "ID of the fee sponsorship paying for gas (starts with `pol_`). Absent when the account pays its own gas.",
+            "example": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd"
+          },
+          "account": {
+            "$ref": "#/components/schemas/AccountV2Response",
+            "description": "The executing account. Present only with `expand=account`."
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUserResponse",
+            "description": "The user that owns the wallet. Present only with `expand=user`."
+          },
+          "feeSponsorship": {
+            "$ref": "#/components/schemas/FeeSponsorshipResponse",
+            "description": "The fee sponsorship paying for gas. Present only with `expand=feeSponsorship`."
+          },
+          "calls": {
+            "items": {
+              "$ref": "#/components/schemas/Call"
+            },
+            "type": "array",
+            "description": "The calls this transaction executes."
+          },
+          "execution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserOperationExecution"
+              },
+              {
+                "$ref": "#/components/schemas/TransactionExecution"
+              }
+            ],
+            "description": "How the transaction is executed on-chain, discriminated by `type`: `userOperation` (ERC-4337 smart\naccounts, including EIP-7702 delegated accounts) or `transaction` (plain EOA transaction).\nAbsent only when the transaction failed before it could be built (`status: \"failed\"`, see `receipt.error`)."
+          },
+          "nextAction": {
+            "$ref": "#/components/schemas/SignHashAction",
+            "description": "Present while `status` is `awaiting_signature`."
+          },
+          "receipt": {
+            "$ref": "#/components/schemas/TransactionReceiptV2",
+            "description": "Present once the transaction reached a terminal status."
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionTimelineEntryV2"
+            },
+            "type": "array",
+            "description": "Lifecycle history in order, present only with `expand=timeline`. Status-valued events come from\nthis API's own records and always agree with `status`; monitoring-only events (`indexed`,\n`confirmed`, `dropped`, `replaced`, `expired`) come from the user-operation monitor, are\nbest-effort, and are never present for plain EOA transactions."
+          },
+          "costUsd": {
+            "type": "string",
+            "description": "The actual transaction cost in USD, available after on-chain confirmation.",
+            "example": "0.42"
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "createdAt",
+          "updatedAt",
+          "chainId",
+          "status",
+          "accountId"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionListResponseV2": {
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ResponseType.LIST"
+          },
+          "url": {
+            "type": "string"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionResponseV2"
+            },
+            "type": "array"
+          },
+          "start": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "end": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "object",
+          "url",
+          "data",
+          "start",
+          "end",
+          "total"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransactionExpandableV2": {
+        "type": "string",
+        "enum": [
+          "account",
+          "user",
+          "feeSponsorship",
+          "timeline",
+          "userOperation",
+          "logs"
+        ]
+      },
+      "TransactionListQueriesV2": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the maximum number of records to return.",
+            "minimum": 1
+          },
+          "skip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Specifies the offset for the first records to return.",
+            "minimum": 0
+          },
+          "order": {
+            "$ref": "#/components/schemas/Prisma.SortOrder",
+            "description": "Specifies the order in which to sort the results."
+          },
+          "expand": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionExpandableV2"
+            },
+            "type": "array",
+            "description": "Specifies the fields to expand in the response. `timeline` adds the lifecycle history (one\nmonitor lookup per request); `userOperation` and `logs` add the heavyweight execution payload\nand receipt logs, which are otherwise omitted."
+          },
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Must be a [supported chain](/development/chains).",
+            "example": 80002
+          },
+          "account": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "Filter by account ID (starts with acc_).",
+            "example": [
+              "acc_dc981458-a653-4539-b120-a321915b2896"
+            ]
+          },
+          "user": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "Filter by user ID (starts with usr_).",
+            "example": [
+              "usr_556166c9-77ad-4a39-aaf8-c432defa8a0f"
+            ]
+          },
+          "wallet": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "Filter by wallet ID (starts with pla_).",
+            "example": [
+              "pla_6f6c9067-89fa-4fc8-ac72-c242a268c584"
+            ]
+          },
+          "feeSponsorship": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "description": "Filter by fee sponsorship ID (starts with pol_).",
+            "example": [
+              "pol_7e07ae30-2a4d-48fa-803f-361da94905dd"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/TransactionStatusV2",
+            "description": "Filter by transaction status.",
+            "example": "succeeded"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CreateTransactionRequestV2": {
+        "properties": {
+          "chainId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The chain ID. Must be a [supported chain](/development/chains).",
+            "example": 80002
+          },
+          "account": {
+            "type": "string",
+            "description": "ID of the account that executes the transaction (starts with `acc_`).",
+            "example": "acc_e1b24353-1741-4a3d-9e91-2b0fd2942f60"
+          },
+          "feeSponsorship": {
+            "type": "string",
+            "description": "ID of the fee sponsorship that pays for gas (starts with `pol_`).\nOmit to pay gas from the account's native token balance.",
+            "example": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd"
+          },
+          "feeSponsorshipToken": {
+            "type": "string",
+            "description": "For a fee sponsorship that accepts several user-pay ERC-20 tokens, the on-chain address of the\ntoken the user pays the fee in. Must be one of the sponsorship's configured tokens on this chain.",
+            "example": "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb"
+          },
+          "calls": {
+            "items": {
+              "$ref": "#/components/schemas/Call"
+            },
+            "type": "array"
+          },
+          "waitForReceipt": {
+            "type": "boolean",
+            "description": "Whether to hold the request until the transaction is mined and the `receipt` is available (default `true`).\nSet to `false` to respond as soon as the transaction is broadcast (`status: \"submitted\"`) and poll\n`GET /v2/transactions/{id}` for the outcome.",
+            "example": false
+          },
+          "authorization": {
+            "type": "string",
+            "description": "EIP-7702 signed authorization (hex) for a delegated account that is not yet delegated on-chain.",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1c"
+          }
+        },
+        "required": [
+          "chainId",
+          "account",
+          "calls"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EstimateTransactionResponseV2": {
+        "properties": {
+          "gas": {
+            "type": "string",
+            "description": "Estimated gas.",
+            "example": "210000"
+          },
+          "gasPrice": {
+            "type": "string",
+            "description": "Gas price used for the estimation (wei).",
+            "example": "1000000000"
+          },
+          "fee": {
+            "type": "string",
+            "description": "Estimated fee in the chain's native token (wei).",
+            "example": "210000000000000"
+          },
+          "feeUsd": {
+            "type": "string",
+            "description": "Estimated fee in USD.",
+            "example": "0.42"
+          },
+          "feeInToken": {
+            "type": "string",
+            "description": "Estimated fee in the sponsorship's ERC-20 token (token base units). Present for token-paying sponsorships."
+          }
+        },
+        "required": [
+          "gas",
+          "gasPrice",
+          "fee",
+          "feeUsd"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SubmitTransactionSignatureRequestV2": {
+        "properties": {
+          "signature": {
+            "type": "string",
+            "description": "Signature of `nextAction.hash` by the account owner or a valid session key.",
+            "example": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          },
+          "waitForReceipt": {
+            "type": "boolean",
+            "description": "Whether to hold the request until the transaction is mined and the `receipt` is available (default `true`).\nSet to `false` to respond as soon as the transaction is broadcast (`status: \"submitted\"`) and poll\n`GET /v2/transactions/{id}` for the outcome.",
+            "example": false
+          }
+        },
+        "required": [
+          "signature"
         ],
         "type": "object",
         "additionalProperties": false
@@ -28626,6 +30340,123 @@
         "type": "object",
         "additionalProperties": false
       },
+      "OnrampIdentityResponse": {
+        "description": "The buyer's identity state at the resolved provider. `providedFields` names\nthe identity steps already satisfied (\"identifiers\", \"attestation\", …), so\nthe client prompts only for what is outstanding rather than guessing.",
+        "properties": {
+          "region": {
+            "type": "string",
+            "enum": [
+              "us",
+              "eu",
+              null
+            ],
+            "nullable": true,
+            "description": "Regulatory region the provider judged the buyer to be in."
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "L0",
+              "L1",
+              "L2",
+              "PENDING",
+              "REJECTED",
+              "REQUIRES_KYC"
+            ],
+            "description": "Verification tier reached; anything but L0/L1/L2 means more is needed."
+          },
+          "providedFields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "region",
+          "level",
+          "providedFields"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampLimitUpgradeStatusResponse": {
+        "description": "Where a buyer stands on raising their spending limit.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "unrequested",
+              "resubmit",
+              "pending",
+              "active",
+              "inactive"
+            ]
+          },
+          "available": {
+            "type": "boolean",
+            "description": "False once the provider has stopped offering the upgrade at all."
+          }
+        },
+        "required": [
+          "status",
+          "available"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampLimitsResponse": {
+        "description": "The buyer's current transaction limits, as the provider shapes them.\nMONETARY VALUES ARE IN CENTS.\n\nThe normalized fields are populated for the wallet-pay (phone) form; the\nembedded (auth-intent) form returns only the raw `limits` passthrough.",
+        "properties": {
+          "limits": {
+            "$ref": "#/components/schemas/Record_string.unknown_"
+          },
+          "remainingMinor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Remaining spend this period, MINOR units. Null when the provider gave none."
+          },
+          "remainingTransactions": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Remaining purchases; null means UNLIMITED, never zero."
+          },
+          "upgrade": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OnrampLimitUpgradeStatusResponse"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "limits"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OnrampLimitUpgradeResponse": {
+        "description": "A started, provider-hosted limit upgrade — embed the URL before it expires.",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Single-use and short-lived; request a fresh one per attempt."
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "ISO-8601."
+          }
+        },
+        "required": [
+          "url",
+          "expiresAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "ResolvedFundingMethodResponse": {
         "description": "One resolved funding method the SDK/widget renders. The provider is included\nfor telemetry but is NOT shown to the user. `angle` is \"popup\" | \"native\" | \"embedded\".\nClients derive display labels and device-capability gating (e.g. Apple Pay\non Safari) from `method` and `rail`.",
         "properties": {
@@ -29445,11 +31276,11 @@
           },
           "stripeEnabled": {
             "type": "boolean",
-            "description": "Whether Stripe's in-page (embedded) rail is offered. Needs the project's own Link OAuth client."
+            "description": "Whether the Stripe rail is offered. With the project's own Link OAuth\nclient it runs in-page (embedded); without one it degrades to the\nhosted popup on the project's secret key alone."
           },
           "hostedCheckoutEnabled": {
             "type": "boolean",
-            "description": "Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered."
+            "description": "Whether Coinbase hosted-checkout popup rows (including the rest-of-world fallback) are offered."
           },
           "depositAddressEnabled": {
             "type": "boolean"
@@ -29514,11 +31345,11 @@
           },
           "stripeEnabled": {
             "type": "boolean",
-            "description": "Whether Stripe's in-page (embedded) rail is offered. Needs the project's own Link OAuth client."
+            "description": "Whether the Stripe rail is offered. With the project's own Link OAuth\nclient it runs in-page (embedded); without one it degrades to the\nhosted popup on the project's secret key alone."
           },
           "hostedCheckoutEnabled": {
             "type": "boolean",
-            "description": "Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered."
+            "description": "Whether Coinbase hosted-checkout popup rows (including the rest-of-world fallback) are offered."
           },
           "depositAddressEnabled": {
             "type": "boolean"
@@ -29534,9 +31365,13 @@
             "type": "boolean",
             "description": "The project's CDP key pair is set (webhook secret is separate and optional)."
           },
+          "stripeConfigured": {
+            "type": "boolean",
+            "description": "The project's Stripe secret key is set (webhook secret is separate and optional)."
+          },
           "stripeEmbeddedConfigured": {
             "type": "boolean",
-            "description": "The project's Stripe secret key and Link OAuth client are set (webhook secret is separate and optional)."
+            "description": "The project's Stripe secret key AND Link OAuth client are set — the\nembedded in-page rail is unlocked. Without the optional Link OAuth\nclient, Stripe runs through the hosted popup on the secret key alone."
           }
         },
         "required": [
@@ -29554,6 +31389,7 @@
           "depositFromWalletEnabled",
           "stripePublishableKey",
           "coinbaseHeadlessConfigured",
+          "stripeConfigured",
           "stripeEmbeddedConfigured"
         ],
         "type": "object",
@@ -29624,11 +31460,11 @@
           },
           "stripeEnabled": {
             "type": "boolean",
-            "description": "Whether Stripe's in-page (embedded) rail is offered. Needs the project's own Link OAuth client."
+            "description": "Whether the Stripe rail is offered. With the project's own Link OAuth\nclient it runs in-page (embedded); without one it degrades to the\nhosted popup on the project's secret key alone."
           },
           "hostedCheckoutEnabled": {
             "type": "boolean",
-            "description": "Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered."
+            "description": "Whether Coinbase hosted-checkout popup rows (including the rest-of-world fallback) are offered."
           },
           "depositAddressEnabled": {
             "type": "boolean"
@@ -29684,11 +31520,11 @@
           },
           "stripeEnabled": {
             "type": "boolean",
-            "description": "Whether Stripe's in-page (embedded) rail is offered. Needs the project's own Link OAuth client."
+            "description": "Whether the Stripe rail is offered. With the project's own Link OAuth\nclient it runs in-page (embedded); without one it degrades to the\nhosted popup on the project's secret key alone."
           },
           "hostedCheckoutEnabled": {
             "type": "boolean",
-            "description": "Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered."
+            "description": "Whether Coinbase hosted-checkout popup rows (including the rest-of-world fallback) are offered."
           },
           "depositAddressEnabled": {
             "type": "boolean"
@@ -29722,284 +31558,6 @@
           "hostedCheckoutEnabled",
           "depositAddressEnabled",
           "depositFromWalletEnabled"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampLimitUpgradeResponse": {
-        "description": "A started, provider-hosted limit upgrade — embed the URL before it expires.",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "Single-use and short-lived; request a fresh one per attempt."
-          },
-          "expiresAt": {
-            "type": "string",
-            "description": "ISO-8601."
-          }
-        },
-        "required": [
-          "url",
-          "expiresAt"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampLimitsResponse": {
-        "description": "The buyer's current transaction limits, as the provider shapes them.\nMONETARY VALUES ARE IN CENTS.\n\nThe normalized fields are populated for the wallet-pay (phone) form; the\nembedded (auth-intent) form returns only the raw `limits` passthrough.",
-        "properties": {
-          "limits": {
-            "$ref": "#/components/schemas/Record_string.unknown_"
-          },
-          "remainingMinor": {
-            "type": "number",
-            "format": "double",
-            "nullable": true,
-            "description": "Remaining spend this period, MINOR units. Null when the provider gave none."
-          },
-          "remainingTransactions": {
-            "type": "number",
-            "format": "double",
-            "nullable": true,
-            "description": "Remaining purchases; null means UNLIMITED, never zero."
-          },
-          "upgrade": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OnrampLimitUpgradeStatusResponse"
-              }
-            ],
-            "nullable": true
-          }
-        },
-        "required": [
-          "limits"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampLimitUpgradeStatusResponse": {
-        "description": "Where a buyer stands on raising their spending limit.",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "unrequested",
-              "resubmit",
-              "pending",
-              "active",
-              "inactive"
-            ]
-          },
-          "available": {
-            "type": "boolean",
-            "description": "False once the provider has stopped offering the upgrade at all."
-          }
-        },
-        "required": [
-          "status",
-          "available"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "OnrampIdentityResponse": {
-        "description": "The buyer's identity state at the resolved provider. `providedFields` names\nthe identity steps already satisfied (\"identifiers\", \"attestation\", …), so\nthe client prompts only for what is outstanding rather than guessing.",
-        "properties": {
-          "region": {
-            "type": "string",
-            "enum": [
-              "us",
-              "eu",
-              null
-            ],
-            "nullable": true,
-            "description": "Regulatory region the provider judged the buyer to be in."
-          },
-          "level": {
-            "type": "string",
-            "enum": [
-              "L0",
-              "L1",
-              "L2",
-              "PENDING",
-              "REJECTED",
-              "REQUIRES_KYC"
-            ],
-            "description": "Verification tier reached; anything but L0/L1/L2 means more is needed."
-          },
-          "providedFields": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "region",
-          "level",
-          "providedFields"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "EvmTokenContractEntryResponse": {
-        "description": "A single ERC-20 token entry returned in an EVM multi-token policy.",
-        "properties": {
-          "contract": {
-            "type": "string",
-            "description": "Token contract ID.",
-            "example": "con_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          "amount": {
-            "type": "string",
-            "description": "Static exchange rate, or undefined when the dynamic cached rate is used.",
-            "example": "1000000000000000000"
-          }
-        },
-        "required": [
-          "contract"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "FeeSponsorshipStrategyResponse": {
-        "description": "Strategy information in fee sponsorship response.",
-        "properties": {
-          "sponsorSchema": {
-            "type": "string",
-            "description": "The sponsorship schema type.",
-            "example": "pay_for_user"
-          },
-          "tokenContract": {
-            "type": "string",
-            "description": "Token contract ID for charge_custom_tokens or fixed_rate schemas (EVM).",
-            "example": "con_48eeba57-2cd5-4159-a2cb-057a23a35e65",
-            "deprecated": true
-          },
-          "tokenContractAmount": {
-            "type": "string",
-            "description": "Token amount for charge_custom_tokens or fixed_rate schemas (EVM).",
-            "example": "1000000000000000000",
-            "deprecated": true
-          },
-          "dynamicExchangeRate": {
-            "type": "boolean",
-            "description": "Whether any accepted token is priced dynamically from cached prices.\nTrue when at least one token has no static amount. For per-token detail,\nread the amount on each tokenContracts entry.",
-            "example": true
-          },
-          "splTokens": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "description": "SPL mint addresses accepted for fee payment on Solana\ncharge_custom_tokens policies.",
-            "example": [
-              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ]
-          },
-          "tokenContracts": {
-            "items": {
-              "$ref": "#/components/schemas/EvmTokenContractEntryResponse"
-            },
-            "type": "array",
-            "description": "ERC-20 tokens accepted as user-pay fee for EVM charge_custom_tokens policies.\nPopulated for both new (tokenContracts) and legacy (tokenContract) requests;\nlegacy single-token policies appear as a 1-element array here.",
-            "example": [
-              {
-                "contract": "con_48eeba57-2cd5-4159-a2cb-057a23a35e65",
-                "amount": "1000000000000000000"
-              }
-            ]
-          }
-        },
-        "required": [
-          "sponsorSchema"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "EntityType.FEE_SPONSORSHIP": {
-        "enum": [
-          "feeSponsorship"
-        ],
-        "type": "string",
-        "x-enum-varnames": [
-          "FEE_SPONSORSHIP"
-        ]
-      },
-      "FeeSponsorshipResponse": {
-        "description": "Fee sponsorship policy response.",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "object": {
-            "$ref": "#/components/schemas/EntityType.FEE_SPONSORSHIP"
-          },
-          "createdAt": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true,
-            "description": "Name of the fee sponsorship policy.",
-            "example": "My DeFi Gas Sponsorship"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "description": "Description or comment for the fee sponsorship.",
-            "example": "Sponsors gas for free-tier users"
-          },
-          "chainId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true,
-            "description": "Chain ID for single-chain sponsorship.",
-            "example": 8453,
-            "deprecated": true
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "Whether the policy is enabled.",
-            "example": true
-          },
-          "strategy": {
-            "$ref": "#/components/schemas/FeeSponsorshipStrategyResponse",
-            "description": "Sponsorship strategy configuration."
-          },
-          "paymasterId": {
-            "type": "string",
-            "nullable": true,
-            "description": "Paymaster ID (optional).",
-            "example": "pay_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          "forwarderContractId": {
-            "type": "string",
-            "nullable": true,
-            "description": "Forwarder contract ID (optional, for meta-transactions).",
-            "example": "cfo_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          },
-          "policyId": {
-            "type": "string",
-            "nullable": true,
-            "description": "Linked policy ID for criteria-based transaction filtering.",
-            "example": "ply_48eeba57-2cd5-4159-a2cb-057a23a35e65"
-          }
-        },
-        "required": [
-          "id",
-          "object",
-          "createdAt",
-          "name",
-          "description",
-          "chainId",
-          "enabled",
-          "strategy",
-          "paymasterId",
-          "forwarderContractId",
-          "policyId"
         ],
         "type": "object",
         "additionalProperties": false
@@ -30801,70 +32359,6 @@
         "required": [
           "newPublicKey",
           "walletAuthToken"
-        ],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "AccountV2Response": {
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "wallet": {
-            "type": "string"
-          },
-          "accountType": {
-            "type": "string"
-          },
-          "address": {
-            "type": "string"
-          },
-          "ownerAddress": {
-            "type": "string"
-          },
-          "chainType": {
-            "type": "string"
-          },
-          "chainId": {
-            "type": "number",
-            "format": "double"
-          },
-          "createdAt": {
-            "type": "number",
-            "format": "double"
-          },
-          "updatedAt": {
-            "type": "number",
-            "format": "double"
-          },
-          "smartAccount": {
-            "$ref": "#/components/schemas/SmartAccountData"
-          },
-          "recoveryMethod": {
-            "type": "string"
-          },
-          "recoveryMethodDetails": {
-            "$ref": "#/components/schemas/RecoveryMethodDetails"
-          },
-          "custody": {
-            "type": "string",
-            "enum": [
-              "Developer",
-              "User"
-            ],
-            "description": "Indicates key custody: \"Developer\" for TEE managed keys, \"User\" for user-managed keys.",
-            "example": "Developer"
-          }
-        },
-        "required": [
-          "id",
-          "wallet",
-          "accountType",
-          "address",
-          "chainType",
-          "createdAt",
-          "updatedAt",
-          "custody"
         ],
         "type": "object",
         "additionalProperties": false
@@ -31725,6 +33219,24 @@
           },
           "isActive": {
             "type": "boolean"
+          },
+          "deletionProtected": {
+            "type": "boolean",
+            "description": "\"Permanent\" marker: the project is exempt from the automatic inactivity\ndeletion sweep. Toggled by Openfort staff only; manual owner deletion\nignores it."
+          },
+          "scheduledDeletion": {
+            "properties": {
+              "deleteAfter": {
+                "type": "string",
+                "description": "ISO 8601 timestamp after which the purge may start.",
+                "example": "2026-09-08T03:00:00.000Z"
+              }
+            },
+            "required": [
+              "deleteAfter"
+            ],
+            "type": "object",
+            "description": "Present when the project is scheduled for deletion due to inactivity.\nPurely informational for the dashboard: any authenticated activity on\nthe project — including the dashboard visit that fetched this response —\ncancels the schedule automatically at the next daily inactivity check."
           }
         },
         "required": [
@@ -31989,6 +33501,71 @@
         },
         "required": [
           "name"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "DeletionProtectionRequest": {
+        "properties": {
+          "protected": {
+            "type": "boolean",
+            "description": "true marks the project \"permanent\" (exempt from the automatic inactivity\ndeletion sweep); false removes the exemption."
+          }
+        },
+        "required": [
+          "protected"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EntityType.PROJECT_DELETION": {
+        "enum": [
+          "project.deletion"
+        ],
+        "type": "string",
+        "x-enum-varnames": [
+          "PROJECT_DELETION"
+        ]
+      },
+      "ProjectDeletionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The project being deleted.",
+            "example": "pro_00000000-0000-0000-0000-000000000000"
+          },
+          "object": {
+            "$ref": "#/components/schemas/EntityType.PROJECT_DELETION"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending"
+            ],
+            "nullable": false,
+            "description": "Deletion state. Access is cut immediately; the purge itself runs\nasynchronously."
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "status"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "DeleteProjectRequest": {
+        "properties": {
+          "confirmation": {
+            "type": "string",
+            "description": "The exact name of the project, typed as confirmation. Deletion is\nirreversible: it wipes all project data across every Openfort service,\nincluding embedded-wallet key material.",
+            "example": "My Project",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "confirmation"
         ],
         "type": "object",
         "additionalProperties": false

@@ -13,6 +13,7 @@ import {
 	RPCApi,
 	SessionsApi,
 	TransactionIntentsApi,
+	TransactionsApi,
 	UsersApi,
 } from "./backend";
 import {
@@ -111,6 +112,8 @@ export class BackendApiClients {
 	public config: OpenfortAPIConfiguration;
 
 	public transactionIntentsApi: TransactionIntentsApi;
+
+	public transactionsApi: TransactionsApi;
 
 	public accountsApi: AccsV1Api;
 
@@ -211,6 +214,11 @@ export class BackendApiClients {
 			this.axiosInstance,
 		);
 		this.transactionIntentsApi = new TransactionIntentsApi(
+			this.config.backend,
+			undefined,
+			this.axiosInstance,
+		);
+		this.transactionsApi = new TransactionsApi(
 			this.config.backend,
 			undefined,
 			this.axiosInstance,

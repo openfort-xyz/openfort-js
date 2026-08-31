@@ -343,6 +343,94 @@ const TRANSACTION_ABSTRACTION_TYPE = {
 
 type TransactionAbstractionType = (typeof TRANSACTION_ABSTRACTION_TYPE)[keyof typeof TRANSACTION_ABSTRACTION_TYPE]
 
+// ---- /v2/transactions ------------------------------------------------------------------------
+
+/** Lifecycle status of a /v2/transactions transaction. Terminal: succeeded, reverted, failed, expired. */
+export type TransactionStatus = 'awaiting_signature' | 'submitted' | 'succeeded' | 'reverted' | 'failed' | 'expired'
+
+/** Timeline events: every TransactionStatus value plus monitoring-only refinements. */
+export type TransactionEvent = TransactionStatus | 'indexed' | 'confirmed' | 'dropped' | 'replaced'
+
+export interface TransactionTimelineEntry {
+  event: TransactionEvent
+  at?: number
+}
+
+export interface SignHashAction {
+  type: 'sign_hash'
+  hash: string
+}
+
+export interface UserOperationExecution {
+  type: 'userOperation'
+  entryPointVersion: '0.6' | '0.8' | '0.9'
+  userOperationHash: string
+  /** Present only with expand=userOperation. */
+  userOperation?: Record<string, unknown>
+}
+
+export interface TransactionExecution {
+  type: 'transaction'
+  from: string
+  to: string
+  data?: string
+  value?: string
+  nonce: string
+  gas: string
+  maxFeePerGas: string
+  maxPriorityFeePerGas: string
+}
+
+export interface TransactionErrorResponse {
+  reason: string
+  name?: string
+  explanation?: { cause: string; solution: string }
+}
+
+export interface TransactionReceiptResponse {
+  createdAt: number
+  status: 'success' | 'reverted'
+  transactionHash?: string
+  blockNumber?: number
+  to?: string
+  gasUsed?: string
+  gasFee?: string
+  l1GasUsed?: string
+  l1GasFee?: string
+  /** Present only with expand=logs. */
+  logs?: Log[]
+  error?: TransactionErrorResponse
+}
+
+/** A /v2/transactions transaction. */
+export interface TransactionResponse {
+  id: string
+  object: 'transaction'
+  createdAt: number
+  updatedAt: number
+  chainId: number
+  status: TransactionStatus
+  accountId: string
+  walletId?: string
+  feeSponsorshipId?: string
+  calls?: Interaction[]
+  execution?: UserOperationExecution | TransactionExecution
+  nextAction?: SignHashAction
+  receipt?: TransactionReceiptResponse
+  /** Present only with expand=timeline. */
+  timeline?: TransactionTimelineEntry[]
+  costUsd?: string
+}
+
+export interface EstimateTransactionGasResult {
+  gas: string
+  gasPrice: string
+  fee: string
+  feeUsd: string
+  feeInToken?: string
+}
+
+/** @deprecated v1 /transaction_intents shape; still returned inside the v1 player expand. */
 export interface TransactionIntentResponse {
   id: string
   object: 'transactionIntent'

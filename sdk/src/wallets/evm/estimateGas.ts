@@ -2,7 +2,7 @@ import type { BackendApiClients } from '@openfort/openapi-clients'
 import type { Account } from '../../core/configuration/account'
 import type { Authentication } from '../../core/configuration/authentication'
 import { withApiError } from '../../core/errors/withApiError'
-import type { EstimateTransactionIntentGasResult, Interaction } from '../../types/types'
+import type { EstimateTransactionGasResult, Interaction } from '../../types/types'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 
 type EthEstimateGasParams = {
@@ -21,7 +21,7 @@ const buildOpenfortTransactions = async (
   account: Account,
   authentication: Authentication,
   feeSponsorshipId?: string
-): Promise<EstimateTransactionIntentGasResult> => {
+): Promise<EstimateTransactionGasResult> => {
   const interactions: Interaction[] = calls.map((call) => {
     if (!call.to) {
       throw new JsonRpcError(RpcErrorCode.INVALID_PARAMS, 'eth_estimateGas requires a "to" field')
@@ -33,14 +33,15 @@ const buildOpenfortTransactions = async (
     }
   })
 
-  return withApiError<EstimateTransactionIntentGasResult>(
+  return withApiError<EstimateTransactionGasResult>(
     async () => {
-      const response = await backendApiClients.transactionIntentsApi.estimateTransactionIntentCost(
+      const response = await backendApiClients.transactionsApi.estimateTransactionV2(
         {
-          createTransactionIntentRequest: {
-            policy: feeSponsorshipId,
+          createTransactionRequestV2: {
+            account: account.id,
+            feeSponsorship: feeSponsorshipId,
             chainId: account.chainId!,
-            interactions,
+            calls: interactions,
           },
         },
         {
@@ -61,7 +62,7 @@ const buildOpenfortTransactions = async (
               },
         }
       )
-      return response.data
+      return response.data as EstimateTransactionGasResult
       // eslint-disable-next-line @typescript-eslint/naming-convention
     },
     { context: 'operation' }
@@ -85,5 +86,5 @@ export const estimateGas = async ({
     throw new JsonRpcError(RpcErrorCode.TRANSACTION_REJECTED, error.message)
   })
 
-  return openfortTransaction.estimatedTXGas as `0x${string}`
+  return openfortTransaction.gas as `0x${string}`
 }

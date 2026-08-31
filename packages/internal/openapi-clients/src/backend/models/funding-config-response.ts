@@ -69,13 +69,13 @@ export interface FundingConfigResponse {
      */
     'walletPayEnabled': boolean;
     /**
-     * Whether Stripe\'s in-page (embedded) rail is offered. Needs the project\'s own Link OAuth client.
+     * Whether the Stripe rail is offered. With the project\'s own Link OAuth client it runs in-page (embedded); without one it degrades to the hosted popup on the project\'s secret key alone.
      * @type {boolean}
      * @memberof FundingConfigResponse
      */
     'stripeEnabled': boolean;
     /**
-     * Whether hosted-checkout popup rows (including the rest-of-world fallback) are offered.
+     * Whether Coinbase hosted-checkout popup rows (including the rest-of-world fallback) are offered.
      * @type {boolean}
      * @memberof FundingConfigResponse
      */
@@ -105,7 +105,13 @@ export interface FundingConfigResponse {
      */
     'coinbaseHeadlessConfigured': boolean;
     /**
-     * The project\'s Stripe secret key and Link OAuth client are set (webhook secret is separate and optional).
+     * The project\'s Stripe secret key is set (webhook secret is separate and optional).
+     * @type {boolean}
+     * @memberof FundingConfigResponse
+     */
+    'stripeConfigured': boolean;
+    /**
+     * The project\'s Stripe secret key AND Link OAuth client are set — the embedded in-page rail is unlocked. Without the optional Link OAuth client, Stripe runs through the hosted popup on the secret key alone.
      * @type {boolean}
      * @memberof FundingConfigResponse
      */
