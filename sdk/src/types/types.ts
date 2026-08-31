@@ -182,10 +182,6 @@ interface NextActionResponse {
   payload: NextActionPayload
 }
 
-interface EntityIdResponse {
-  id: string
-}
-
 export interface Interaction {
   to?: string
   value?: string
@@ -253,20 +249,6 @@ export type TransactionReceipt<
   type?: type
 }
 
-interface ResponseResponse {
-  createdAt: number
-  blockNumber?: number
-  transactionHash?: string
-  l1GasUsed?: string
-  gasUsed?: string
-  gasFee?: string
-  l1GasFee?: string
-  status?: number
-  logs?: Log[]
-  to?: string
-  error?: any
-}
-
 export interface SessionResponse {
   id: string
   object: 'session'
@@ -279,69 +261,7 @@ export interface SessionResponse {
   whitelist?: string[]
   limit?: number
   nextAction?: NextActionResponse
-  transactionIntents?: TransactionIntentResponse[]
 }
-
-interface PolicyStrategy {
-  sponsorSchema: 'fixed_rate'
-  depositor?: string | null
-  tokenContract: string
-  tokenContractAmount: string
-}
-
-interface TransactionIntentResponsePolicy {
-  id: string
-  object: 'policy'
-  createdAt: number
-  name: string | null
-  deleted: boolean
-  enabled: boolean
-  chainId: number
-  paymaster?: EntityIdResponse
-  strategy: PolicyStrategy
-  transactionIntents: EntityIdResponse[]
-  policyRules: EntityIdResponse[]
-}
-
-interface TransactionIntentResponseAccount {
-  id: string
-  object: 'developerAccount'
-  createdAt: number
-  address: string
-  ownerAddress: string
-  deployed: boolean
-  custodial: boolean
-  embeddedSigner: boolean
-  chainId: number
-  accountType: string
-  pendingOwnerAddress?: string
-  transactionIntents?: EntityIdResponse[]
-  player: EntityIdResponse
-  name?: string
-}
-
-interface TransactionIntentResponsePlayer {
-  id: string
-  object: 'player'
-  createdAt: number
-  name: string
-  description?: string
-  metadata?: {
-    [key: string]: PlayerMetadataValue
-  }
-  transactionIntents?: EntityIdResponse[]
-  accounts?: EntityIdResponse[]
-}
-
-const TRANSACTION_ABSTRACTION_TYPE = {
-  accountAbstractionV6: 'accountAbstractionV6',
-  accountAbstractionV8: 'accountAbstractionV8',
-  accountAbstractionV9: 'accountAbstractionV9',
-  zksync: 'zkSync',
-  standard: 'standard',
-} as const
-
-type TransactionAbstractionType = (typeof TRANSACTION_ABSTRACTION_TYPE)[keyof typeof TRANSACTION_ABSTRACTION_TYPE]
 
 // ---- /v2/transactions ------------------------------------------------------------------------
 
@@ -430,38 +350,6 @@ export interface EstimateTransactionGasResult {
   feeInToken?: string
 }
 
-/** @deprecated v1 /transaction_intents shape; still returned inside the v1 player expand. */
-export interface TransactionIntentResponse {
-  id: string
-  object: 'transactionIntent'
-  createdAt: number
-  updatedAt: number
-  abstractionType: TransactionAbstractionType
-  details?:
-    | AccountAbstractionV6Details
-    | AccountAbstractionV8Details
-    | AccountAbstractionV9Details
-    | ZKSyncDetails
-    | StandardDetails
-  chainId: number
-  response?: ResponseResponse
-  interactions?: Interaction[]
-  nextAction?: NextActionResponse
-  policy?: TransactionIntentResponsePolicy | EntityIdResponse
-  player?: TransactionIntentResponsePlayer | EntityIdResponse
-  account: TransactionIntentResponseAccount | EntityIdResponse
-}
-
-export interface EstimateTransactionIntentGasResult {
-  estimatedTXGas: string
-  estimatedTXGasFee: string
-  estimatedTXGasFeeUSD: string
-  estimatedTXGasFeeToken?: string
-  gasPrice: string
-}
-
-type PlayerMetadataValue = unknown
-
 export type { ListAccountsGet200ResponseInner as UserAccount }
 
 /**
@@ -529,95 +417,6 @@ export enum AuthActionRequiredActions {
 
 export interface AuthActionRequiredResponse {
   action: AuthActionRequiredActions
-}
-
-interface AccountAbstractionV6Details {
-  userOperation: UserOperationV6
-  userOperationHash: string
-}
-
-interface UserOperationV6 {
-  callData: string
-  callGasLimit: string
-  initCode?: string
-  maxFeePerGas: string
-  maxPriorityFeePerGas: string
-  nonce: string
-  paymasterAndData?: string
-  preVerificationGas: string
-  sender: string
-  signature: string
-  verificationGasLimit: string
-}
-
-interface AccountAbstractionV8Details {
-  userOperation: UserOperationV8
-  userOperationHash: string
-}
-
-interface AccountAbstractionV9Details {
-  userOperation: UserOperationV9
-  userOperationHash: string
-}
-
-interface UserOperationV9 {
-  callData: string
-  callGasLimit: string
-  factory?: string
-  factoryData?: string
-  maxFeePerGas: string
-  maxPriorityFeePerGas: string
-  nonce: string
-  paymaster?: string
-  paymasterVerificationGasLimit?: string
-  paymasterPostOpGasLimit?: string
-  paymasterData?: string
-  preVerificationGas: string
-  sender: string
-  signature: string
-  verificationGasLimit: string
-}
-
-interface UserOperationV8 {
-  callData: string
-  callGasLimit: string
-  factory?: string
-  factoryData?: string
-  maxFeePerGas: string
-  maxPriorityFeePerGas: string
-  nonce: string
-  paymaster?: string
-  paymasterVerificationGasLimit?: string
-  paymasterPostOpGasLimit?: string
-  paymasterData?: string
-  preVerificationGas: string
-  sender: string
-  signature: string
-  verificationGasLimit: string
-}
-
-interface ZKSyncDetails {
-  from: string
-  to: string
-  data?: string
-  nonce: string
-  gas: string
-  maxFeePerGas: string
-  maxPriorityFeePerGas: string
-  paymaster?: string
-  paymasterInput?: string
-  value?: string
-}
-
-interface StandardDetails {
-  from: string
-  to: string
-  data?: string
-  nonce: string
-  gas: string
-  maxFeePerGas: string
-  maxPriorityFeePerGas: string
-  value?: string
 }
 
 export enum AccountTypeEnum {

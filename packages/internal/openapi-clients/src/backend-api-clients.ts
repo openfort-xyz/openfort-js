@@ -12,7 +12,6 @@ import {
 	FundingApi,
 	RPCApi,
 	SessionsApi,
-	TransactionIntentsApi,
 	TransactionsApi,
 	UsersApi,
 } from "./backend";
@@ -111,8 +110,6 @@ const DEFAULT_TIMEOUT_MS = 30_000;
 export class BackendApiClients {
 	public config: OpenfortAPIConfiguration;
 
-	public transactionIntentsApi: TransactionIntentsApi;
-
 	public transactionsApi: TransactionsApi;
 
 	public accountsApi: AccsV1Api;
@@ -209,11 +206,6 @@ export class BackendApiClients {
 			this.axiosInstance,
 		);
 		this.userApi = new UsersApi(
-			this.config.backend,
-			undefined,
-			this.axiosInstance,
-		);
-		this.transactionIntentsApi = new TransactionIntentsApi(
 			this.config.backend,
 			undefined,
 			this.axiosInstance,
