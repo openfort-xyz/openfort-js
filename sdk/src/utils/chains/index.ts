@@ -13,7 +13,6 @@ export const defaultChainRpcs: { [key: number]: string } = {
   97: 'https://bsc-testnet.publicnode.com',
   137: 'https://polygon-rpc.com',
   1946: 'https://rpc.minato.soneium.org',
-  3008: 'https://kl1-testnet.kiooverse.xyz/rpc',
   4337: 'https://build.onbeam.com/rpc',
   8453: 'https://mainnet.base.org',
   10143: 'https://testnet-rpc.monad.xyz',
