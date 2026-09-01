@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.4.2
+
+### Patch Changes
+
+- [#367](https://github.com/openfort-xyz/openfort-js/pull/367) [`bdd1fd4`](https://github.com/openfort-xyz/openfort-js/commit/bdd1fd4d2b9e64ace6473b5b724943a47a07a668) Thanks [@n00m4d](https://github.com/n00m4d)! - Transactions v2 response values naming change
+
 ## 2.4.1
 
 ### Patch Changes
