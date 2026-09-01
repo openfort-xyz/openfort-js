@@ -185,7 +185,7 @@ interface NextActionResponse {
 export interface Interaction {
   to?: string
   value?: string
-  contract?: string
+  contractId?: string
   functionName?: string
   functionArgs?: any[]
   dataSuffix?: string
@@ -309,7 +309,6 @@ export interface TransactionErrorResponse {
 
 export interface TransactionReceiptResponse {
   createdAt: number
-  status: 'success' | 'reverted'
   transactionHash?: string
   blockNumber?: number
   to?: string

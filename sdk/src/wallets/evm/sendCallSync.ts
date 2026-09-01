@@ -33,8 +33,9 @@ type RawCall = { data?: `0x${string}`; to?: `0x${string}`; value?: bigint }
 const SIGNATURE_CONFIRMATION_TIMEOUT_MS = 120_000
 
 const convertToTransactionReceipt = (
-  receipt: TransactionResponse['receipt']
+  transaction: TransactionResponse
 ): TransactionReceipt<string, number, 'success' | 'reverted', TransactionType> => {
+  const receipt = transaction.receipt
   const firstLog = receipt?.logs?.[0]
 
   return {
@@ -47,7 +48,7 @@ const convertToTransactionReceipt = (
     gasUsed: receipt?.gasUsed,
     logs: receipt?.logs || [],
     logsBloom: undefined,
-    status: receipt?.status,
+    status: transaction.status === 'succeeded' ? 'success' : 'reverted',
     to: receipt?.to,
     transactionHash: receipt?.transactionHash,
     transactionIndex: firstLog?.transactionIndex,
@@ -240,7 +241,7 @@ export const sendCallsSync = async ({
 
     return {
       id: openfortTransaction.id,
-      receipt: convertToTransactionReceipt(submitted.receipt),
+      receipt: convertToTransactionReceipt(submitted),
     }
   }
 
@@ -254,6 +255,6 @@ export const sendCallsSync = async ({
 
   return {
     id: openfortTransaction.id,
-    receipt: convertToTransactionReceipt(openfortTransaction.receipt),
+    receipt: convertToTransactionReceipt(openfortTransaction),
   }
 }

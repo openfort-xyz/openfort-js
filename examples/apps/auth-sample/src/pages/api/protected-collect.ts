@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const interaction_mint = {
-      contract: contract_id,
+      contractId: contract_id,
       functionName: 'mint',
       functionArgs: [account_id, 1],
     }

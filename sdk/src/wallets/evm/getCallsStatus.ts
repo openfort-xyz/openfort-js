@@ -93,7 +93,7 @@ export const getCallStatus = async ({
     receipts: transactionIntent.receipt
       ? [
           {
-            status: transactionIntent.receipt.status,
+            status: transactionIntent.status === 'succeeded' ? ('success' as const) : ('reverted' as const),
             logs:
               transactionIntent.receipt.logs?.map((log) => ({
                 address: log.address as `0x${string}`,

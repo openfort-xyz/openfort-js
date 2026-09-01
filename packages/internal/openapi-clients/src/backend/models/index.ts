@@ -77,6 +77,7 @@ export * from './basic-auth-provider-web3';
 export * from './better-auth-config';
 export * from './billing-subscription-response';
 export * from './billing-subscription-response-plan';
+export * from './call';
 export * from './change-email-post200-response';
 export * from './change-email-post-request';
 export * from './change-password-post200-response';

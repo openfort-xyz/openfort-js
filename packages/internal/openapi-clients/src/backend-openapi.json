@@ -7545,7 +7545,7 @@
                           "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
                           "calls": [
                             {
-                              "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                              "contractId": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
                               "functionName": "mint",
                               "functionArgs": [
                                 "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
@@ -7574,7 +7574,6 @@
                           },
                           "receipt": {
                             "createdAt": 1689869080,
-                            "status": "success",
                             "transactionHash": "0x9f2b5c1e7d3a4b6c8e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
                             "blockNumber": 12345678,
                             "to": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
@@ -7618,7 +7617,7 @@
                           "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
                           "calls": [
                             {
-                              "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                              "contractId": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
                               "functionName": "mint",
                               "functionArgs": [
                                 "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
@@ -7816,7 +7815,7 @@
                       "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
                       "calls": [
                         {
-                          "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                          "contractId": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
                           "functionName": "mint",
                           "functionArgs": [
                             "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
@@ -7845,7 +7844,6 @@
                       },
                       "receipt": {
                         "createdAt": 1689869080,
-                        "status": "success",
                         "transactionHash": "0x9f2b5c1e7d3a4b6c8e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
                         "blockNumber": 12345678,
                         "to": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
@@ -7891,7 +7889,7 @@
                       "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
                       "calls": [
                         {
-                          "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                          "contractId": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
                           "functionName": "mint",
                           "functionArgs": [
                             "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
@@ -8008,7 +8006,7 @@
                       "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
                       "calls": [
                         {
-                          "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                          "contractId": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
                           "functionName": "mint",
                           "functionArgs": [
                             "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
@@ -8037,7 +8035,6 @@
                       },
                       "receipt": {
                         "createdAt": 1689869080,
-                        "status": "success",
                         "transactionHash": "0x9f2b5c1e7d3a4b6c8e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
                         "blockNumber": 12345678,
                         "to": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
@@ -8263,7 +8260,7 @@
                       "feeSponsorshipId": "pol_7e07ae30-2a4d-48fa-803f-361da94905dd",
                       "calls": [
                         {
-                          "contract": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
+                          "contractId": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35",
                           "functionName": "mint",
                           "functionArgs": [
                             "0x662D24Bf7Ea2dD6a7D0935F680a6056b94fE934d"
@@ -8292,7 +8289,6 @@
                       },
                       "receipt": {
                         "createdAt": 1689869080,
-                        "status": "success",
                         "transactionHash": "0x9f2b5c1e7d3a4b6c8e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d",
                         "blockNumber": 12345678,
                         "to": "0x4337084D9E255Ff0702461CF8895CE9E3b5Ff108",
@@ -27567,8 +27563,44 @@
         "additionalProperties": false
       },
       "Call": {
-        "$ref": "#/components/schemas/Interaction",
-        "description": "A single call executed by the transaction. Either a raw call (`to`/`value`/`data`)\nor a contract call resolved through a registered contract (`contract`/`functionName`/`functionArgs`)."
+        "description": "A single call executed by the transaction. Either a raw call (`to`/`value`/`data`)\nor a contract call resolved through a registered contract (`contractId`/`functionName`/`functionArgs`).",
+        "properties": {
+          "to": {
+            "type": "string",
+            "description": "The address that receives the call. Use *only* for raw calls and native token transfers; a\n`pla_...` or `acc_...` id is converted to the corresponding address.",
+            "example": "0x3994801f2BF191D22aA60c2ce3728c4D0e856a7B"
+          },
+          "value": {
+            "type": "string",
+            "description": "The value sent with the call, as a stringified number in WEI (factor 10^18).",
+            "example": "1000000000000000000"
+          },
+          "data": {
+            "type": "string",
+            "description": "Raw calldata (hex) for the call. Use instead of `contractId`/`functionName`."
+          },
+          "dataSuffix": {
+            "type": "string",
+            "description": "Hex data appended to the encoded function call."
+          },
+          "contractId": {
+            "type": "string",
+            "description": "ID of the contract the call interacts with. Must have been added to Openfort first, starts with `con_`.",
+            "example": "con_0cddb398-1dc6-4e6f-8726-9ec7cea85f35"
+          },
+          "functionName": {
+            "type": "string",
+            "description": "The function name of the contract. Accepts a function signature as well (e.g. mint(address)).",
+            "example": "mint"
+          },
+          "functionArgs": {
+            "items": {},
+            "type": "array",
+            "description": "The function arguments of the contract, formatted as strings."
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
       },
       "UserOperationExecution": {
         "properties": {
@@ -27697,13 +27729,6 @@
             "format": "int32",
             "description": "Unix timestamp (seconds) when the receipt was recorded."
           },
-          "status": {
-            "type": "string",
-            "enum": [
-              "success",
-              "reverted"
-            ]
-          },
           "transactionHash": {
             "type": "string"
           },
@@ -27740,8 +27765,7 @@
           }
         },
         "required": [
-          "createdAt",
-          "status"
+          "createdAt"
         ],
         "type": "object",
         "additionalProperties": false
