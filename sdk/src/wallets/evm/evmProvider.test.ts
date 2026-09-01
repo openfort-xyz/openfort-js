@@ -112,6 +112,20 @@ describe('EvmProvider signer cache vs connection loss', () => {
     // serving the previous session's provider would hit the wrong network.
     expect(await provider.getRpcProvider()).not.toBe(before)
   })
+
+  it('drops the cached RPC provider on account switch', async () => {
+    const { provider, openfortEventEmitter } = makeCachedSignerProvider()
+
+    const before = await provider.getRpcProvider()
+
+    openfortEventEmitter.emit(OpenfortEvents.ON_SWITCH_ACCOUNT, '0xdef')
+
+    // The switched-to account may live on a different chain. Serving the old
+    // provider would leave eth_chainId and pass-through RPC calls on the
+    // previous account's chain while eth_requestAccounts (which re-reads
+    // storage) reports the new one.
+    expect(await provider.getRpcProvider()).not.toBe(before)
+  })
 })
 
 describe('EvmProvider RPC endpoint resolution', () => {
@@ -147,5 +161,65 @@ describe('EvmProvider RPC endpoint resolution', () => {
     const provider = makeProviderOnChain(1234567)
 
     await expect(provider.getRpcProvider()).rejects.toThrow(/No RPC URL configured for chain 1234567/)
+  })
+
+  it('pins the network on construction so no eth_chainId round-trip is needed', async () => {
+    // Without the explicit network argument ethers schedules a detection
+    // request and caches the resulting promise — including when it rejects.
+    const rpcProvider = await makeProviderOnChain(8453).getRpcProvider()
+
+    expect(rpcProvider.network.chainId).toBe(8453)
+  })
+})
+
+describe('EvmProvider eth_requestAccounts', () => {
+  const makeConnectProvider = (account: Record<string, unknown>, chains?: Record<number, string>) => {
+    const storage = makeStorage()
+    vi.mocked(storage.get).mockResolvedValue(JSON.stringify(account))
+
+    const provider = new EvmProvider({
+      storage,
+      backendApiClients: {} as any,
+      openfortEventEmitter: new TypedEventEmitter<any>(),
+      ensureSigner: vi.fn(async () => ({}) as any),
+      validateAndRefreshSession: vi.fn().mockResolvedValue(undefined),
+      chains,
+    })
+
+    // Any RPC access at all is the regression: serving a stored account must
+    // not depend on the network, so the spy rejects rather than stubbing.
+    const getRpcProvider = vi
+      .spyOn(provider, 'getRpcProvider')
+      .mockRejectedValue(new Error('could not detect network (event="noNetwork", code=NETWORK_ERROR)'))
+
+    const connects: unknown[] = []
+    provider.on('connect', (payload: unknown) => connects.push(payload))
+
+    return { provider, getRpcProvider, connects }
+  }
+
+  it('returns the account and emits connect without touching the RPC provider', async () => {
+    const { provider, getRpcProvider, connects } = makeConnectProvider({
+      id: 'acc_1',
+      chainId: 1,
+      address: '0xabc',
+    })
+
+    await expect(provider.request({ method: 'eth_requestAccounts' })).resolves.toEqual(['0xabc'])
+    expect(getRpcProvider).not.toHaveBeenCalled()
+    expect(connects).toEqual([{ chainId: '0x1' }])
+  })
+
+  it('falls back to the first configured chain for an EOA, which stores no chainId', async () => {
+    const { provider, getRpcProvider, connects } = makeConnectProvider(
+      { id: 'acc_1', address: '0xabc' },
+      {
+        11155111: 'https://sepolia.example',
+      }
+    )
+
+    await expect(provider.request({ method: 'eth_requestAccounts' })).resolves.toEqual(['0xabc'])
+    expect(getRpcProvider).not.toHaveBeenCalled()
+    expect(connects).toEqual([{ chainId: '0xaa36a7' }])
   })
 })
