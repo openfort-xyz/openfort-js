@@ -18,13 +18,13 @@
 import { AccountV2Response } from './account-v2-response';
 // May contain unused imports in some cases
 // @ts-ignore
+import { Call } from './call';
+// May contain unused imports in some cases
+// @ts-ignore
 import { EntityTypeTRANSACTION } from './entity-type-transaction';
 // May contain unused imports in some cases
 // @ts-ignore
 import { FeeSponsorshipResponse } from './fee-sponsorship-response';
-// May contain unused imports in some cases
-// @ts-ignore
-import { Interaction } from './interaction';
 // May contain unused imports in some cases
 // @ts-ignore
 import { SignHashAction } from './sign-hash-action';
@@ -115,10 +115,10 @@ export interface TransactionResponseV2 {
     'feeSponsorship'?: FeeSponsorshipResponse;
     /**
      * The calls this transaction executes.
-     * @type {Array<Interaction>}
+     * @type {Array<Call>}
      * @memberof TransactionResponseV2
      */
-    'calls'?: Array<Interaction>;
+    'calls'?: Array<Call>;
     /**
      * 
      * @type {TransactionResponseV2Execution}

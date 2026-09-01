@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { Interaction } from './interaction';
+import { Call } from './call';
 
 /**
  * 
@@ -49,10 +49,10 @@ export interface CreateTransactionRequestV2 {
     'feeSponsorshipToken'?: string;
     /**
      * 
-     * @type {Array<Interaction>}
+     * @type {Array<Call>}
      * @memberof CreateTransactionRequestV2
      */
-    'calls': Array<Interaction>;
+    'calls': Array<Call>;
     /**
      * Whether to hold the request until the transaction is mined and the `receipt` is available (default `true`). Set to `false` to respond as soon as the transaction is broadcast (`status: \"submitted\"`) and poll `GET /v2/transactions/{id}` for the outcome.
      * @type {boolean}

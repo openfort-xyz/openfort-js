@@ -37,12 +37,6 @@ export interface TransactionReceiptV2 {
      * @type {string}
      * @memberof TransactionReceiptV2
      */
-    'status': TransactionReceiptV2StatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof TransactionReceiptV2
-     */
     'transactionHash'?: string;
     /**
      * 
@@ -93,12 +87,4 @@ export interface TransactionReceiptV2 {
      */
     'error'?: TransactionError;
 }
-
-export const TransactionReceiptV2StatusEnum = {
-    Success: 'success',
-    Reverted: 'reverted'
-} as const;
-
-export type TransactionReceiptV2StatusEnum = typeof TransactionReceiptV2StatusEnum[keyof typeof TransactionReceiptV2StatusEnum];
-
 
