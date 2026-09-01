@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.4.3
+
+### Patch Changes
+
+- [#369](https://github.com/openfort-xyz/openfort-js/pull/369) [`90735b4`](https://github.com/openfort-xyz/openfort-js/commit/90735b4e1c20971c735f426f3bac2c63e9025dc1) Thanks [@jamalavedra](https://github.com/jamalavedra)! - Remove KL1 testnet (chain 3008) from the default chain RPC list
+
 ## 2.4.2
 
 ### Patch Changes
