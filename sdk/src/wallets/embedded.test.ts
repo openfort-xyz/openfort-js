@@ -38,3 +38,19 @@ describe('EmbeddedSigner.disconnect', () => {
     expect(storage.remove).toHaveBeenCalledWith(StorageKeys.ACCOUNT)
   })
 })
+
+describe('EmbeddedSigner.sign', () => {
+  it('returns the iframe signature without emitting any event', async () => {
+    // sign() is the chokepoint for ALL signing — transactions, user
+    // operations, session keys, delegations — so an ON_SIGNED_MESSAGE here
+    // would count far more than the messages the event claims to report.
+    const eventEmitter = { emit: vi.fn(), on: vi.fn(), off: vi.fn() }
+    const iframeManager = { sign: vi.fn().mockResolvedValue('0xsignature') }
+    const signer = new EmbeddedSigner(iframeManager as any, makeStorage(), {} as any, {} as any, eventEmitter as any)
+
+    await expect(signer.sign('0xdigest', false, false)).resolves.toBe('0xsignature')
+
+    expect(iframeManager.sign).toHaveBeenCalledWith('0xdigest', false, false, undefined)
+    expect(eventEmitter.emit).not.toHaveBeenCalled()
+  })
+})
