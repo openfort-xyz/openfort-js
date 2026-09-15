@@ -1,14 +1,17 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers'
-import { AccountType } from '../../types/types'
+import { AccountType, type OpenfortEventMap, OpenfortEvents, type SignedMessagePayload } from '../../types/types'
+import type TypedEventEmitter from '../../utils/typedEventEmitter'
 import type { Signer } from '../isigner'
 import type { Hex, RpcTransactionRequest, TransactionSerializable, TransactionType, TypedDataPayload } from './types'
 
 type SignMessageParameters = {
   hash: string
+  type: SignedMessagePayload['type']
   implementationType: string
   chainId: number
   signer: Signer
   address: string
+  eventEmitter: TypedEventEmitter<OpenfortEventMap>
   factoryAddress?: string
   ownerAddress?: string
   salt?: string
@@ -16,7 +19,8 @@ type SignMessageParameters = {
 const erc6492MagicBytes = '0x6492649264926492649264926492649264926492649264926492649264926492' as const
 
 export const signMessage = async (parameters: SignMessageParameters): Promise<string> => {
-  const { hash, signer, ownerAddress, factoryAddress, salt, chainId, address, implementationType } = parameters
+  const { hash, type, signer, ownerAddress, factoryAddress, salt, chainId, address, implementationType, eventEmitter } =
+    parameters
   let typedDataHash = hash
   if ([AccountType.UPGRADEABLE_V5, AccountType.UPGRADEABLE_V6].includes(implementationType as AccountType)) {
     const updatedDomain: TypedDataPayload['domain'] = {
@@ -38,6 +42,8 @@ export const signMessage = async (parameters: SignMessageParameters): Promise<st
   }
 
   const signature = await signer.sign(typedDataHash, false, false)
+  // Both paths land here, so the event below reports what the caller receives.
+  let result = signature
   if (factoryAddress && salt) {
     if ([AccountType.UPGRADEABLE_V5, AccountType.UPGRADEABLE_V6].includes(implementationType as AccountType)) {
       const { id } = await import('@ethersproject/hash')
@@ -50,10 +56,13 @@ export const signMessage = async (parameters: SignMessageParameters): Promise<st
         ['address', 'bytes', 'bytes'],
         [factoryAddress, factoryCalldata, signature]
       )
-      return hexConcat([metadata, erc6492MagicBytes])
+      result = hexConcat([metadata, erc6492MagicBytes])
     }
   }
-  return signature
+  // `hash`, not `typedDataHash`: the digest the caller asked to sign, before
+  // the V5/V6 re-wrap into an OpenfortMessage envelope.
+  eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, { type, message: hash, signature: result })
+  return result
 }
 
 /**

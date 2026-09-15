@@ -229,12 +229,10 @@ export class EmbeddedSigner implements Signer {
     requireHash?: boolean,
     chainType?: string
   ): Promise<string> {
-    const signature = await this.iframeManager.sign(message, requireArrayify, requireHash, chainType)
-    this.eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, {
-      message,
-      signature,
-    })
-    return signature
+    // No ON_SIGNED_MESSAGE here: this is the chokepoint for ALL signing —
+    // transactions, user operations, session keys and delegations included —
+    // so the event is emitted by the message/typed-data call sites instead.
+    return await this.iframeManager.sign(message, requireArrayify, requireHash, chainType)
   }
 
   async export(): Promise<string> {

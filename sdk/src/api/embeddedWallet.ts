@@ -559,6 +559,25 @@ export class EmbeddedWalletApi {
   }
 
   /**
+   * Signs an arbitrary payload with the configured signer.
+   *
+   * Deliberately does not emit {@link OpenfortEvents.ON_SIGNED_MESSAGE}: only the
+   * caller knows whether what it signed was a user-facing message or an internal
+   * digest such as a transaction intent's hash.
+   */
+  private async signWithSigner(
+    payload: string | Uint8Array,
+    options?: { hashMessage?: boolean; arrayifyMessage?: boolean }
+  ): Promise<string> {
+    await this.validateAndRefreshToken()
+
+    const signer = await this.ensureSigner()
+    const { hashMessage = true, arrayifyMessage = false } = options || {}
+    const account = await Account.fromStorage(this.storage)
+    return await signer.sign(payload, arrayifyMessage, hashMessage, account?.chainType)
+  }
+
+  /**
    * Signs a personal message using the configured signer
    * @param message The message to sign
    * @param options Optional parameters to control message signing behavior
@@ -568,14 +587,24 @@ export class EmbeddedWalletApi {
     message: string | Uint8Array,
     options?: { hashMessage?: boolean; arrayifyMessage?: boolean }
   ): Promise<string> {
-    await this.validateAndRefreshToken()
-
-    const signer = await this.ensureSigner()
-    const { hashMessage = true, arrayifyMessage = false } = options || {}
-    const account = await Account.fromStorage(this.storage)
-    const signature = await signer.sign(message, arrayifyMessage, hashMessage, account?.chainType)
+    const signature = await this.signWithSigner(message, options)
+    this.eventEmitter.emit(OpenfortEvents.ON_SIGNED_MESSAGE, { type: 'message', message, signature })
 
     return signature
+  }
+
+  /**
+   * Signs a transaction intent's `nextAction.hash`. Wiring for {@link ProxyApi};
+   * not a message-signing API.
+   *
+   * Never emits {@link OpenfortEvents.ON_SIGNED_MESSAGE} — a transaction intent is
+   * not a message the user signed, and counting it here would reintroduce the
+   * over-broad event this path used to produce by borrowing `signMessage`.
+   *
+   * @internal
+   */
+  async signTransactionIntentHash(hash: string | Uint8Array): Promise<string> {
+    return await this.signWithSigner(hash, { hashMessage: true, arrayifyMessage: true })
   }
 
   async signTypedData(
@@ -597,8 +626,11 @@ export class EmbeddedWalletApi {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { _TypedDataEncoder } = await import('@ethersproject/hash')
     const typedDataHash = _TypedDataEncoder.hash(domain, typesWithoutDomain, message)
+    // signMessage emits ON_SIGNED_MESSAGE itself — do not emit here too.
     return await signMessage({
       hash: typedDataHash,
+      type: 'typedData',
+      eventEmitter: this.eventEmitter,
       implementationType: (account.implementationType || account.type)!,
       chainId: Number(account.chainId),
       signer,

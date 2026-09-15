@@ -1,5 +1,7 @@
 import type { StaticJsonRpcProvider } from '@ethersproject/providers'
 import type { Account } from '../../core/configuration/account'
+import type { OpenfortEventMap } from '../../types/types'
+import type TypedEventEmitter from '../../utils/typedEventEmitter'
 import type { Signer } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import type { TypedDataPayload } from './types'
@@ -12,6 +14,7 @@ type SignTypedDataV4Params = {
   method: string
   params: any[]
   account: Account
+  eventEmitter: TypedEventEmitter<OpenfortEventMap>
 }
 
 const REQUIRED_TYPED_DATA_PROPERTIES = ['types', 'domain', 'primaryType', 'message']
@@ -80,6 +83,7 @@ export const signTypedDataV4 = async ({
   implementationType,
   rpcProvider,
   account,
+  eventEmitter,
 }: SignTypedDataV4Params): Promise<string> => {
   const fromAddress: unknown = params[0]
   const typedDataParam: string | object = params[1]
@@ -108,6 +112,8 @@ export const signTypedDataV4 = async ({
   const typedDataHash = _TypedDataEncoder.hash(typedData.domain, types, typedData.message)
   const signature = await signMessage({
     hash: typedDataHash,
+    type: 'typedData',
+    eventEmitter,
     implementationType,
     chainId,
     signer,
