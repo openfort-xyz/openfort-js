@@ -32,7 +32,10 @@ export enum OpenfortEvents {
   ON_LOGOUT = 'onLogout',
   /** Called when switching between accounts */
   ON_SWITCH_ACCOUNT = 'onSwitchAccount',
-  /** Called when the user signs a message */
+  /**
+   * Called when the user signs a message or typed data — never for
+   * transaction, user-operation, session-key or delegation signing.
+   */
   ON_SIGNED_MESSAGE = 'onSignedMessage',
   /** Called after embedded wallet is created for user */
   ON_EMBEDDED_WALLET_CREATED = 'onEmbeddedWalletCreated',
@@ -73,10 +76,16 @@ export type AuthInitPayload = {
 }
 
 /**
- * Signed message payload
+ * Payload for {@link OpenfortEvents.ON_SIGNED_MESSAGE}. Emitted for message and
+ * typed-data signatures only — never for transaction, user-operation, session-key
+ * or delegation signing.
  */
 export type SignedMessagePayload = {
+  /** `message` for personal_sign / signMessage(); `typedData` for EIP-712 (signTypedData / eth_signTypedData(_v4)). */
+  type: 'message' | 'typedData'
+  /** The raw input for signMessage(); for provider requests and typed data, the digest the caller asked to sign. */
   message: string | Uint8Array
+  /** The signature exactly as returned to the caller (ERC-6492-wrapped where applicable). */
   signature: string
 }
 

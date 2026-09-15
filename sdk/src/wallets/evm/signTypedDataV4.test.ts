@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { OpenfortEvents } from '../../types/types'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import { signTypedDataV4 } from './signTypedDataV4'
 
@@ -24,6 +25,7 @@ const params = (overrides: Partial<Parameters<typeof signTypedDataV4>[0]> = {}) 
     params: [ACCOUNT_ADDRESS, JSON.stringify(typedData())],
     method: 'eth_signTypedData_v4',
     signer: { sign: vi.fn().mockResolvedValue(`0x${'ab'.repeat(65)}`) },
+    eventEmitter: { emit: vi.fn() },
     implementationType: 'UPGRADEABLE_V6',
     rpcProvider: { detectNetwork: vi.fn().mockResolvedValue({ chainId: CHAIN_ID }) },
     account: {
@@ -87,5 +89,17 @@ describe('signTypedDataV4 request validation', () => {
     await expect(
       signTypedDataV4(params({ params: [ACCOUNT_ADDRESS, JSON.stringify(typedData({ chainId: hex }))] } as never))
     ).resolves.toMatch(/^0x[0-9a-f]+$/i)
+  })
+
+  it('reports the signature as typed data, exactly once', async () => {
+    const eventEmitter = { emit: vi.fn() }
+
+    const signature = await signTypedDataV4(params({ eventEmitter } as never))
+
+    expect(eventEmitter.emit).toHaveBeenCalledTimes(1)
+    expect(eventEmitter.emit).toHaveBeenCalledWith(
+      OpenfortEvents.ON_SIGNED_MESSAGE,
+      expect.objectContaining({ type: 'typedData', signature })
+    )
   })
 })

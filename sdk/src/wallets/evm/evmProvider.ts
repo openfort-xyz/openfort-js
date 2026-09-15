@@ -64,6 +64,8 @@ export class EvmProvider implements Provider {
 
   readonly #eventEmitter: TypedEventEmitter<ProviderEventMap>
 
+  readonly #openfortEventEmitter: TypedEventEmitter<OpenfortEventMap>
+
   #rpcProvider: StaticJsonRpcProvider | null = null
 
   readonly #backendApiClients: BackendApiClients
@@ -94,6 +96,8 @@ export class EvmProvider implements Provider {
     this.#backendApiClients = backendApiClients
 
     this.#eventEmitter = new TypedEventEmitter<ProviderEventMap>()
+
+    this.#openfortEventEmitter = openfortEventEmitter
 
     openfortEventEmitter.on(OpenfortEvents.ON_LOGOUT, this.#handleLogout)
     openfortEventEmitter.on(OpenfortEvents.ON_SWITCH_ACCOUNT, this.#handleSwitchAccount)
@@ -344,6 +348,7 @@ export class EvmProvider implements Provider {
           implementationType: (account.implementationType || account.type)!,
           rpcProvider,
           account,
+          eventEmitter: this.#openfortEventEmitter,
         })
       }
       case 'personal_sign': {
@@ -358,6 +363,7 @@ export class EvmProvider implements Provider {
           params: request.params || [],
           signer,
           account,
+          eventEmitter: this.#openfortEventEmitter,
         })
       }
       case 'eth_chainId': {

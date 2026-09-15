@@ -1,4 +1,6 @@
 import type { Account } from '../../core/configuration/account'
+import type { OpenfortEventMap } from '../../types/types'
+import type TypedEventEmitter from '../../utils/typedEventEmitter'
 import type { Signer as OpenfortSigner } from '../isigner'
 import { JsonRpcError, RpcErrorCode } from './JsonRpcError'
 import { signMessage } from './walletHelpers'
@@ -7,9 +9,10 @@ interface PersonalSignParams {
   signer: OpenfortSigner
   account: Account
   params: any[]
+  eventEmitter: TypedEventEmitter<OpenfortEventMap>
 }
 
-export const personalSign = async ({ params, signer, account }: PersonalSignParams): Promise<string> => {
+export const personalSign = async ({ params, signer, account, eventEmitter }: PersonalSignParams): Promise<string> => {
   const message: string = params[0]
   const fromAddress: string = params[1]
 
@@ -31,6 +34,8 @@ export const personalSign = async ({ params, signer, account }: PersonalSignPara
 
   return await signMessage({
     hash: hashMessage(data),
+    type: 'message',
+    eventEmitter,
     implementationType: (account.implementationType || account.type)!,
     chainId: Number(account.chainId),
     signer,
