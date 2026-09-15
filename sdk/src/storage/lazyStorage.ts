@@ -1,4 +1,5 @@
 import { ConfigurationError } from '../core/errors/openfortError'
+import { ChromeExtensionStorage, isChromeExtensionStorage } from './chromeExtensionStorage'
 import type { IStorage, StorageKeys } from './istorage'
 import { ScopedStorage } from './scopedStorage'
 import { StorageImplementation } from './storage'
@@ -32,6 +33,8 @@ export class LazyStorage implements IStorage {
       let baseStorage: IStorage
       if (this.customStorage) {
         baseStorage = this.customStorage
+      } else if (isChromeExtensionStorage()) {
+        baseStorage = new ChromeExtensionStorage()
       } else if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
         baseStorage = new StorageImplementation(localStorage)
       } else {

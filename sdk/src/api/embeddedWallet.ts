@@ -310,7 +310,11 @@ export class EmbeddedWalletApi {
     }
 
     const iframe = document.createElement('iframe')
-    iframe.style.display = 'none'
+    iframe.setAttribute('hidden', '')
+    iframe.setAttribute(
+      'style',
+      'display:none !important; width:0; height:0; border:0; position:absolute; top:-9999px; left:-9999px; visibility:hidden'
+    )
     iframe.id = 'openfort-iframe'
     iframe.referrerPolicy = 'strict-origin-when-cross-origin'
     // `allow-same-origin` is required for the embed's own localStorage
