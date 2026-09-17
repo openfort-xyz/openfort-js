@@ -27,7 +27,11 @@ vi.mock('../wallets/evm/provider/eip6963', () => ({
   announceProvider: vi.fn(),
   openfortProviderInfo: {},
 }))
-vi.mock('../wallets/evm/walletHelpers', () => ({
+// Stubbed by default so unrelated cases never reach a real signer, but the
+// real implementation stays reachable: the signTypedData case below restores
+// it to prove the whole path emits ON_SIGNED_MESSAGE exactly once.
+vi.mock('../wallets/evm/walletHelpers', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../wallets/evm/walletHelpers')>()),
   signMessage: vi.fn(),
 }))
 vi.mock('../core/errors/sentry', () => ({
@@ -43,6 +47,7 @@ vi.mock('../core/config/config', () => ({
 
 import { SDKConfiguration } from '../core/config/config'
 import { EmbeddedSigner } from '../wallets/embedded'
+import { signMessage } from '../wallets/evm/walletHelpers'
 
 function makeEventEmitter() {
   return {
@@ -424,6 +429,58 @@ describe('handleLogout()', () => {
     // The connection-scoped state is still cleared.
     expect((api as any).signer).toBeNull()
     expect((api as any).iframeManager).toBeNull()
+  })
+})
+
+describe('ON_SIGNED_MESSAGE scope', () => {
+  const ACCOUNT = {
+    id: 'acc_1',
+    chainId: 8453,
+    address: '0x1111111111111111111111111111111111111111',
+    ownerAddress: '0x1111111111111111111111111111111111111111',
+    type: 'Simple',
+  }
+
+  function makeSigningApi() {
+    const { api, storage, eventEmitter } = makeApi()
+    vi.mocked(storage.get).mockImplementation(async (key: string) =>
+      key === StorageKeys.ACCOUNT ? JSON.stringify(ACCOUNT) : null
+    )
+    const signer = { sign: vi.fn().mockResolvedValue(`0x${'ab'.repeat(65)}`) }
+    ;(api as any).signer = signer
+    return { api, eventEmitter, signer }
+  }
+
+  const signedMessageEvents = (eventEmitter: { emit: ReturnType<typeof vi.fn> }) =>
+    eventEmitter.emit.mock.calls.filter(([event]) => event === OpenfortEvents.ON_SIGNED_MESSAGE)
+
+  it('signMessage emits once, tagged as a message, carrying the message the caller passed', async () => {
+    const { api, eventEmitter } = makeSigningApi()
+
+    const signature = await api.signMessage('hello world')
+
+    expect(signedMessageEvents(eventEmitter)).toEqual([
+      [OpenfortEvents.ON_SIGNED_MESSAGE, { type: 'message', message: 'hello world', signature }],
+    ])
+  })
+
+  it('signTypedData emits once, tagged as typed data, and never as a plain message', async () => {
+    // The helper emits on behalf of this path; a direct emit here too would
+    // double-count every EIP-712 signature.
+    const { signMessage: realSignMessage } =
+      await vi.importActual<typeof import('../wallets/evm/walletHelpers')>('../wallets/evm/walletHelpers')
+    vi.mocked(signMessage).mockImplementation(realSignMessage)
+    const { api, eventEmitter } = makeSigningApi()
+
+    const signature = await api.signTypedData(
+      { name: 'Test', version: '1', chainId: ACCOUNT.chainId, verifyingContract: ACCOUNT.address },
+      { Mail: [{ name: 'contents', type: 'string' }] },
+      { contents: 'hello' }
+    )
+
+    const events = signedMessageEvents(eventEmitter)
+    expect(events).toHaveLength(1)
+    expect(events[0]?.[1]).toMatchObject({ type: 'typedData', signature })
   })
 })
 

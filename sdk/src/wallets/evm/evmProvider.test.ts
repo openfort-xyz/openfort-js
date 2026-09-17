@@ -21,7 +21,9 @@ const makeProvider = (ensureSigner: () => Promise<unknown>): EvmProvider =>
     storage: { get: vi.fn().mockResolvedValue(null) },
     ensureSigner,
     backendApiClients: {},
-    openfortEventEmitter: { on: vi.fn() },
+    // A real emitter, not `{ on }`: the provider now forwards this to the
+    // signing helpers, which emit on it.
+    openfortEventEmitter: new TypedEventEmitter(),
     validateAndRefreshSession: vi.fn().mockResolvedValue(undefined),
   } as unknown as ConstructorParameters<typeof EvmProvider>[0])
 

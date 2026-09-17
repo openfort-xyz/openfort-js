@@ -131,11 +131,9 @@ export class Openfort {
             throw new SignerError(OPENFORT_AUTH_ERROR_CODES.MISSING_SIGNER, 'Embedded wallet not initialized')
           }
           const signer = this.embeddedWalletInstance
-          return (message: string | Uint8Array) =>
-            signer.signMessage(message, {
-              hashMessage: true,
-              arrayifyMessage: true,
-            })
+          // NOT signMessage: what ProxyApi signs here is a transaction intent's
+          // hash, so it must not emit ON_SIGNED_MESSAGE.
+          return (hash: string | Uint8Array) => signer.signTransactionIntentHash(hash)
         }
       )
     } catch (error) {
