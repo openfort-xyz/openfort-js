@@ -53,6 +53,11 @@ export interface BackendApiClientsOptions {
 	storage?: IStorage;
 	onLogout?: () => void;
 	/**
+	 * Cookie sessions: send credentialed requests so the browser attaches the
+	 * HttpOnly session cookie; there is no session token to put in a header.
+	 */
+	withCredentials?: boolean;
+	/**
 	 * Called after every API request (successful or not) with its request id,
 	 * method, path, status, and duration. Intended for logging/observability;
 	 * exceptions thrown by the callback are swallowed.
@@ -148,8 +153,12 @@ export class BackendApiClients {
 
 		// Bounds requests against a stalled connection. Token refresh is
 		// promise-deduplicated, so one hung request blocks every caller.
-		this.axiosInstance = axios.create({ timeout: DEFAULT_TIMEOUT_MS });
-		this.fundingAxiosInstance = axios.create({ timeout: DEFAULT_TIMEOUT_MS });
+		const axiosDefaults = {
+			timeout: DEFAULT_TIMEOUT_MS,
+			withCredentials: options.withCredentials,
+		};
+		this.axiosInstance = axios.create(axiosDefaults);
+		this.fundingAxiosInstance = axios.create(axiosDefaults);
 
 		for (const instance of [this.axiosInstance, this.fundingAxiosInstance]) {
 			axiosRetry(instance, {
@@ -167,6 +176,9 @@ export class BackendApiClients {
 				shouldResetTimeout: true,
 			});
 			this.setupRequestIdCorrelation(instance, options.onRequest);
+			if (options.withCredentials) {
+				this.dropEmptyBearer(instance);
+			}
 		}
 
 		// Setup 401 error interceptor (shared instance only; funding opts out).
@@ -306,6 +318,23 @@ export class BackendApiClients {
 				return Promise.reject(error);
 			},
 		);
+	}
+
+	/**
+	 * Call sites build `authorization: Bearer <session token>`; a cookie session
+	 * has no token, which leaves an empty bearer. Drop it so only the cookie and
+	 * `x-project-key` authenticate the request.
+	 * ponytail: one interceptor instead of touching ~40 call sites; move to a
+	 * shared session-header builder if those call sites ever get consolidated.
+	 */
+	private dropEmptyBearer(instance: AxiosInstance): void {
+		instance.interceptors.request.use((config) => {
+			const authorization = config.headers.get("authorization");
+			if (typeof authorization === "string" && /^Bearer\s*$/i.test(authorization)) {
+				config.headers.delete("authorization");
+			}
+			return config;
+		});
 	}
 
 	/**

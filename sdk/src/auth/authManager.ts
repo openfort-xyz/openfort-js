@@ -93,9 +93,16 @@ export class AuthManager {
 
   private publishableKeyInstance?: string
 
-  public setBackendApiClients(backendApiClients: BackendApiClients, publishableKey: string): void {
+  private cookieSession = false
+
+  public setBackendApiClients(
+    backendApiClients: BackendApiClients,
+    publishableKey: string,
+    cookieSession = false
+  ): void {
     this.backendApiClientsInstance = backendApiClients
     this.publishableKeyInstance = publishableKey
+    this.cookieSession = cookieSession
   }
 
   private get backendApiClients(): BackendApiClients {
@@ -110,6 +117,20 @@ export class AuthManager {
       throw new ConfigurationError('Publishable key not initialized')
     }
     return this.publishableKeyInstance
+  }
+
+  /**
+   * Cookie-session projects never return a token: the session lives in an HttpOnly
+   * cookie the page cannot read. A credentialed get-session tells whether the API
+   * set one — '' then marks "signed in, no token", and null keeps meaning "no session"
+   * (e.g. email verification still required).
+   */
+  private async sessionToken(token: string | null | undefined): Promise<string | null> {
+    if (!this.cookieSession || token) return token ?? null
+    const response = await this.backendApiClients.authApi.getSessionGet(undefined, {
+      headers: { 'x-project-key': this.publishableKey },
+    })
+    return response.data?.session ? '' : null
   }
 
   private buildAuthHeaders(anonymousAuthToken?: string) {
@@ -181,7 +202,7 @@ export class AuthManager {
           },
         })
         return {
-          token: response.data.token,
+          token: await this.sessionToken(response.data.token),
           user: mapUser(response.data.user),
         }
       },
@@ -206,7 +227,7 @@ export class AuthManager {
           },
         })
         return {
-          token: response.data.token,
+          token: await this.sessionToken(response.data.token),
           user: mapUser(response.data.user),
         }
       },
@@ -311,7 +332,7 @@ export class AuthManager {
         })
         const userData = response.data.user as unknown as User
         return {
-          token: response.data.token,
+          token: await this.sessionToken(response.data.token),
           user: mapUser(userData),
         }
       },
@@ -337,7 +358,7 @@ export class AuthManager {
         )
         const data = response.data
         return {
-          token: data.token,
+          token: await this.sessionToken(data.token),
           user: mapUser(data.user),
         }
       },
@@ -443,13 +464,14 @@ export class AuthManager {
           }
         )
         const data = response.data
-        if (data.token === null) {
+        const token = await this.sessionToken(data.token)
+        if (token === null) {
           return {
             action: AuthActionRequiredActions.ACTION_VERIFY_EMAIL,
           }
         }
         return {
-          token: data.token as string,
+          token,
           user: mapUser(data.user),
         }
       },
@@ -733,7 +755,7 @@ export class AuthManager {
         )
         const data = response.data
         return {
-          token: data.token,
+          token: await this.sessionToken(data.token),
           user: mapUser(data.user),
         }
       },
@@ -782,7 +804,7 @@ export class AuthManager {
           status: boolean
         }
         return {
-          token: data.token,
+          token: await this.sessionToken(data.token),
           user: mapUser(data.user),
         }
       },
@@ -813,7 +835,7 @@ export class AuthManager {
           status: boolean
         }
         return {
-          token: data.token,
+          token: await this.sessionToken(data.token),
           user: mapUser(data.user),
         }
       },

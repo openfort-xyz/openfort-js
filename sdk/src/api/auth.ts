@@ -156,13 +156,14 @@ export class AuthApi {
     }
   }
 
-  async storeCredentials({ token, userId }: { token: string; userId: string }): Promise<void> {
+  /** `token` is absent for cookie sessions: the OAuth callback carries only `user_id`. */
+  async storeCredentials({ token, userId }: { token?: string; userId: string }): Promise<void> {
     await this.ensureInitialized()
     if (!userId) {
       throw new ConfigurationError('User ID is required to store credentials')
     }
 
-    const urlEncToken = encodeURIComponent(token)
+    const urlEncToken = encodeURIComponent(token ?? '')
 
     new Authentication('session', urlEncToken, userId).save(this.storage)
   }
@@ -193,7 +194,7 @@ export class AuthApi {
     const anonymous = auth ? (await this.authManager.getUser(auth)).isAnonymous : false
 
     try {
-      await this.authManager.requestEmailOTP(email, auth?.token && !anonymous ? 'email-verification' : 'sign-in')
+      await this.authManager.requestEmailOTP(email, auth && !anonymous ? 'email-verification' : 'sign-in')
     } catch (error) {
       this.eventEmitter.emit(OpenfortEvents.ON_OTP_FAILURE, error as Error)
       throw error

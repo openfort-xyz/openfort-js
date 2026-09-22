@@ -13,7 +13,12 @@ dotenv.config({ path: path.resolve(__dirname, '.env.local') })
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const allDevicesTestMatch = ['**/base.spec.ts', '**/auth.spec.ts', '**/linkedSocials.spec.ts']
+const allDevicesTestMatch = [
+  '**/base.spec.ts',
+  '**/auth.spec.ts',
+  '**/linkedSocials.spec.ts',
+  '**/cookieSession.spec.ts',
+]
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -41,7 +46,9 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://127.0.0.1:3000',
+    /* A cookie-session run (NEXT_PUBLIC_CUSTOM_AUTH_DOMAIN) needs the app on an https
+     * origin under the project's root domain, or the session cookie is third-party. */
+    baseURL: process.env.E2E_BASE_URL ?? 'http://127.0.0.1:3000',
 
     /* Traces embed request metadata and nothing in CI publishes them, so they
      * are recorded only locally, where the `html` report can open them. See

@@ -220,7 +220,9 @@ export class Openfort {
 
   /**
    * Get the current access token
-   * @returns Access token or null
+   * @returns Access token, or null when logged out or when the project uses
+   * cookie sessions (`overrides.customAuthDomain`): the session is then an
+   * HttpOnly cookie the page cannot read, so gate your backend on the cookie.
    */
   public async getAccessToken(): Promise<string | null> {
     await this.ensureInitialized()
@@ -250,6 +252,7 @@ export class Openfort {
       accessToken: this.configuration.baseConfiguration.publishableKey,
       nativeAppIdentifier: this.configuration.nativeAppIdentifier,
       storage: this.storage,
+      withCredentials: this.configuration.cookieSession,
       onLogout: () => {
         // Emit logout event when 401 error occurs
         this.eventEmitter.emit('onLogout')
@@ -301,7 +304,11 @@ export class Openfort {
       )
     }
 
-    this.authManager.setBackendApiClients(this.backendApiClients, this.configuration.baseConfiguration.publishableKey)
+    this.authManager.setBackendApiClients(
+      this.backendApiClients,
+      this.configuration.baseConfiguration.publishableKey,
+      this.configuration.cookieSession
+    )
   }
 
   /**

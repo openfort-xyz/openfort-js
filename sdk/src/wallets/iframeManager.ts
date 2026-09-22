@@ -707,14 +707,15 @@ export class IframeManager {
     const shieldAuthentication: IframeAuthentication = {
       auth: ShieldAuthType.OPENFORT,
       authProvider: authentication.thirdPartyProvider,
-      token: authentication.token,
+      token: authentication.token || undefined,
       tokenType: authentication.thirdPartyTokenType,
     }
 
     return {
       thirdPartyProvider: authentication.thirdPartyProvider,
       thirdPartyTokenType: authentication.thirdPartyTokenType,
-      token: authentication.token,
+      token: authentication.token || undefined,
+      cookieSession: this.sdkConfiguration.cookieSession || undefined,
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       openfortURL: this.sdkConfiguration.backendUrl,
       shieldAuthentication,
@@ -734,14 +735,14 @@ export class IframeManager {
     const shieldAuthentication: IframeAuthentication = {
       auth: ShieldAuthType.OPENFORT,
       authProvider: authentication.thirdPartyProvider,
-      token: authentication.token,
+      token: authentication.token || undefined,
       tokenType: authentication.thirdPartyTokenType,
     }
 
     const iframeConfiguration: IframeConfiguration = {
       thirdPartyTokenType: authentication.thirdPartyTokenType ?? null,
       thirdPartyProvider: authentication.thirdPartyProvider ?? null,
-      accessToken: authentication.token,
+      accessToken: authentication.token || null,
       playerID: authentication.userId,
       recovery: shieldAuthentication,
       chainId: null,
@@ -773,6 +774,7 @@ export class IframeManager {
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       accessToken: iframeConfiguration.accessToken,
+      cookieSession: this.sdkConfiguration.cookieSession || undefined,
       playerID: iframeConfiguration.playerID,
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
@@ -822,6 +824,7 @@ export class IframeManager {
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       accessToken: iframeConfiguration.accessToken,
+      cookieSession: this.sdkConfiguration.cookieSession || undefined,
       playerID: iframeConfiguration.playerID,
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
@@ -873,6 +876,7 @@ export class IframeManager {
       publishableKey: this.sdkConfiguration.baseConfiguration.publishableKey,
       shieldAPIKey: this.sdkConfiguration.shieldConfiguration?.shieldPublishableKey || '',
       accessToken: iframeConfiguration.accessToken,
+      cookieSession: this.sdkConfiguration.cookieSession || undefined,
       playerID: iframeConfiguration.playerID,
       thirdPartyProvider: iframeConfiguration.thirdPartyProvider,
       thirdPartyTokenType: iframeConfiguration.thirdPartyTokenType,
@@ -1059,6 +1063,11 @@ export class IframeManager {
     const remote = this.remote
     if (!remote) {
       debugLog('Connection was torn down during authentication update, skipping')
+      return
+    }
+
+    if (!authentication.token) {
+      debugLog('Cookie session holds no token, skipping authentication update')
       return
     }
 

@@ -52,8 +52,7 @@ export class OpenfortInternal {
     if (SDKConfiguration.getInstance()?.thirdPartyAuth) {
       return this.getThirdPartyAuthToken()
     }
-    const token = (await Authentication.fromStorage(this.storage))?.token ?? null
-    return token
+    return (await Authentication.fromStorage(this.storage))?.token || null
   }
 
   /**
