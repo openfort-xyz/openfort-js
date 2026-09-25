@@ -15,19 +15,11 @@ function makeAxiosError(options: { requestId?: string; status?: number; data?: u
           status: options.status,
           statusText: '',
           headers: {},
-          // biome-ignore lint/suspicious/noExplicitAny: test fixture
           config: config as any,
           data: options.data,
         }
       : undefined
-  return new AxiosError(
-    'Request failed',
-    'ERR_BAD_REQUEST',
-    // biome-ignore lint/suspicious/noExplicitAny: test fixture
-    config as any,
-    undefined,
-    response
-  )
+  return new AxiosError('Request failed', 'ERR_BAD_REQUEST', config as any, undefined, response)
 }
 
 describe('extractApiError request id correlation', () => {
