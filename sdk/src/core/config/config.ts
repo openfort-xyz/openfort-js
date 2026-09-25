@@ -5,6 +5,15 @@ import { setCryptoDigestOverride } from '../../utils/crypto'
 import type { IPasskeyHandler } from '../passkey'
 
 export interface SDKOverrides {
+  /**
+   * The hostname your project delegates to Openfort for first-party cookie
+   * sessions (e.g. "openfort-auth.example.com"), as verified in the dashboard.
+   * When set, the API, the embedded-wallet iframe and Shield are all reached
+   * through it, requests are credentialed, and the session lives in an HttpOnly
+   * cookie instead of a token held by the page. Takes precedence over
+   * `backendUrl`, `iframeUrl` and `shieldUrl`.
+   */
+  customAuthDomain?: string
   backendUrl?: string
   iframeUrl?: string
   shieldUrl?: string
@@ -116,6 +125,9 @@ export class SDKConfiguration {
 
   readonly backendUrl: string
 
+  /** True when the session is an HttpOnly cookie on `customAuthDomain` and the SDK holds no token. */
+  readonly cookieSession: boolean
+
   readonly storage?: IStorage
 
   readonly nativeAppIdentifier?: string
@@ -139,8 +151,10 @@ export class SDKConfiguration {
   }: OpenfortSDKConfiguration) {
     this.shieldConfiguration = shieldConfiguration
     this.baseConfiguration = baseConfiguration
-    this.backendUrl = overrides?.backendUrl || 'https://api.openfort.io'
-    this.iframeUrl = overrides?.iframeUrl || 'https://embed.openfort.io'
+    const authDomain = overrides?.customAuthDomain && `https://${overrides.customAuthDomain}`
+    this.cookieSession = Boolean(authDomain)
+    this.backendUrl = authDomain ? `${authDomain}/api` : overrides?.backendUrl || 'https://api.openfort.io'
+    this.iframeUrl = authDomain || overrides?.iframeUrl || 'https://embed.openfort.io'
     this.iframeUrl = `${this.iframeUrl}/iframe/${this.baseConfiguration.publishableKey}`
     this.debug = debug
     this.disableTelemetry = disableTelemetry
@@ -148,7 +162,7 @@ export class SDKConfiguration {
     if (shieldConfiguration?.debug) {
       this.iframeUrl = `${this.iframeUrl}?debug=true`
     }
-    this.shieldUrl = overrides?.shieldUrl || 'https://shield.openfort.io'
+    this.shieldUrl = authDomain ? `${authDomain}/shield` : overrides?.shieldUrl || 'https://shield.openfort.io'
     this.storage = overrides?.storage
     this.thirdPartyAuth = thirdPartyAuth
 

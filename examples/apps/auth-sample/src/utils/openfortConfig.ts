@@ -18,6 +18,9 @@ const openfort = new Openfort({
   },
   debug: true,
   overrides: {
+    // First-party cookie sessions: the delegated host verified in the dashboard,
+    // e.g. "openfort-auth.example.com". Takes precedence over the URLs below.
+    customAuthDomain: process.env.NEXT_PUBLIC_CUSTOM_AUTH_DOMAIN,
     shieldUrl: shieldUrl,
     backendUrl: backendUrl,
     iframeUrl: iframeUrl,

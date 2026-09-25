@@ -1,6 +1,7 @@
 import { type IStorage, StorageKeys } from '../../storage/istorage'
 
 export class Authentication {
+  /** `token` is '' for a cookie session: the session is an HttpOnly cookie, only type/userId are kept. */
   constructor(
     public readonly type: 'session' | 'third_party',
     public readonly token: string,
@@ -30,7 +31,7 @@ export class Authentication {
       StorageKeys.AUTHENTICATION,
       JSON.stringify({
         type: this.type,
-        token: isThirdParty ? undefined : this.token,
+        token: isThirdParty || !this.token ? undefined : this.token,
         userId: this.userId,
         thirdPartyProvider: this.thirdPartyProvider,
         thirdPartyTokenType: this.thirdPartyTokenType,
@@ -57,7 +58,7 @@ export class Authentication {
 
       return new Authentication(
         parsed.type,
-        parsed.token,
+        parsed.token ?? '',
         parsed.userId || parsed.player,
         parsed.thirdPartyProvider,
         parsed.thirdPartyTokenType

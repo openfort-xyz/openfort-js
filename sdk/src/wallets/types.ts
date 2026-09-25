@@ -102,6 +102,9 @@ export class CreateRequest implements IEventRequest {
 
   accessToken: string | null
 
+  /** Cookie session: no token is sent; the iframe relies on the same-origin session cookie. */
+  cookieSession?: boolean
+
   encryptionKey: string | null
 
   encryptionSession: string | null
@@ -180,6 +183,9 @@ export class ImportRequest implements IEventRequest {
 
   accessToken: string | null
 
+  /** Cookie session: no token is sent; the iframe relies on the same-origin session cookie. */
+  cookieSession?: boolean
+
   encryptionKey: string | null
 
   encryptionSession: string | null
@@ -251,6 +257,9 @@ export class RecoverRequest implements IEventRequest {
   shieldAPIKey: string
 
   accessToken: string | null
+
+  /** Cookie session: no token is sent; the iframe relies on the same-origin session cookie. */
+  cookieSession?: boolean
 
   encryptionKey: string | null
 
@@ -676,6 +685,7 @@ export interface IframeAuthentication extends ShieldAuthentication {
 
 export interface RequestConfiguration {
   token?: string
+  cookieSession?: boolean
   thirdPartyProvider?: string
   thirdPartyTokenType?: string
   publishableKey: string

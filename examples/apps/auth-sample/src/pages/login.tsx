@@ -59,14 +59,15 @@ function LoginPage() {
   // }, [router])
 
   useEffect(() => {
-    if (router.query.access_token && router.query.user_id) {
+    // Cookie-session projects redirect back with user_id only: the session is an HttpOnly cookie.
+    if (router.query.user_id && (router.query.access_token || process.env.NEXT_PUBLIC_CUSTOM_AUTH_DOMAIN)) {
       setStatus({
         type: 'loading',
         title: 'Signing in...',
       })
       openfort.auth.storeCredentials({
         userId: router.query.user_id as string,
-        token: router.query.access_token as string,
+        token: router.query.access_token as string | undefined,
       })
       location.href = '/'
     }
