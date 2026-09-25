@@ -165,6 +165,9 @@ export function extractApiError(axiosError: AxiosError): OpenfortError {
   }
 
   const error = createSpecificError(errorCode, errorDescription, statusCode)
+  if (statusCode !== undefined) {
+    error.statusCode = statusCode
+  }
   // The x-request-id set by BackendApiClients lives on the request config, so
   // it is available even when no response arrived (timeout, network error).
   // The API adopts it as its trace id — attach it for log/trace correlation.

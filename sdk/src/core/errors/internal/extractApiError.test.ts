@@ -15,19 +15,11 @@ function makeAxiosError(options: { requestId?: string; status?: number; data?: u
           status: options.status,
           statusText: '',
           headers: {},
-          // biome-ignore lint/suspicious/noExplicitAny: test fixture
           config: config as any,
           data: options.data,
         }
       : undefined
-  return new AxiosError(
-    'Request failed',
-    'ERR_BAD_REQUEST',
-    // biome-ignore lint/suspicious/noExplicitAny: test fixture
-    config as any,
-    undefined,
-    response
-  )
+  return new AxiosError('Request failed', 'ERR_BAD_REQUEST', config as any, undefined, response)
 }
 
 describe('extractApiError request id correlation', () => {
@@ -51,5 +43,19 @@ describe('extractApiError request id correlation', () => {
   it('leaves requestId undefined when the header was never set', () => {
     const error = extractApiError(makeAxiosError({ status: 404, data: { message: 'nope' } }))
     expect(error.requestId).toBeUndefined()
+  })
+})
+
+describe('extractApiError status code', () => {
+  it('sets statusCode on the base OpenfortError', () => {
+    const error = extractApiError(
+      makeAxiosError({ status: 401, data: { message: 'Access token authentication failed' } })
+    )
+    expect(error.constructor).toBe(OpenfortError)
+    expect(error.statusCode).toBe(401)
+  })
+
+  it('leaves statusCode undefined when no response arrived', () => {
+    expect(extractApiError(makeAxiosError({})).statusCode).toBeUndefined()
   })
 })
