@@ -393,7 +393,7 @@ window.callFunction = async (jsonData: string) => {
       }
       case OPENFORT_FUNCTIONS.createEmbeddedWallet: {
         const request = JSON.parse(data)
-        await openfortClient.embeddedWallet.create({
+        const account = await openfortClient.embeddedWallet.create({
           chainType: request.chainType,
           accountType: request.accountType,
           recoveryParams: request.recoveryParams,
@@ -401,23 +401,29 @@ window.callFunction = async (jsonData: string) => {
         })
 
         callbackToGame({
-          responseFor: fxName,
-          requestId,
-          success: true,
+          ...{
+            responseFor: fxName,
+            requestId,
+            success: true,
+          },
+          ...account,
         })
         break
       }
       case OPENFORT_FUNCTIONS.recoverEmbeddedWallet: {
         const request = JSON.parse(data)
-        await openfortClient.embeddedWallet.recover({
-          account: request.accountAddress,
+        const account = await openfortClient.embeddedWallet.recover({
+          account: request.account ?? request.accountAddress,
           recoveryParams: request.recoveryParams,
         })
 
         callbackToGame({
-          responseFor: fxName,
-          requestId,
-          success: true,
+          ...{
+            responseFor: fxName,
+            requestId,
+            success: true,
+          },
+          ...account,
         })
         break
       }
@@ -452,7 +458,7 @@ window.callFunction = async (jsonData: string) => {
       }
       case OPENFORT_FUNCTIONS.configureEmbeddedWallet: {
         const request = JSON.parse(data)
-        await openfortClient.embeddedWallet.configure({
+        const account = await openfortClient.embeddedWallet.configure({
           chainId: request.chainId,
           recoveryParams: request.recoveryParams,
           accountType: request.accountType,
@@ -460,9 +466,12 @@ window.callFunction = async (jsonData: string) => {
         })
 
         callbackToGame({
-          responseFor: fxName,
-          requestId,
-          success: true,
+          ...{
+            responseFor: fxName,
+            requestId,
+            success: true,
+          },
+          ...account,
         })
         break
       }
