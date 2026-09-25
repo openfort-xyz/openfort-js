@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.6.0
+
+### Minor Changes
+
+- [#376](https://github.com/openfort-xyz/openfort-js/pull/376) [`1702045`](https://github.com/openfort-xyz/openfort-js/commit/17020452c02dea01e6937ab14f13c5e405b6ab58) Thanks [@n00m4d](https://github.com/n00m4d)! - First party cookies
+
 ## 2.5.0
 
 ### Minor Changes
