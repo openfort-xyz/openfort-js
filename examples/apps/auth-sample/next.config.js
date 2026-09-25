@@ -3,7 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   // Playwright drives the app via http://127.0.0.1:3000 while `next dev`
   // binds to localhost — allow the alternate host for dev resources (HMR).
-  allowedDevOrigins: ['127.0.0.1'],
+  // ALLOWED_DEV_ORIGINS adds more hosts, e.g. a tunnel used to test cookie sessions.
+  allowedDevOrigins: ['127.0.0.1', ...(process.env.ALLOWED_DEV_ORIGINS?.split(',') ?? [])],
   transpilePackages: ['@rainbow-me/rainbowkit'],
   serverExternalPackages: ['pino', 'pino-pretty', 'thread-stream', 'lokijs', 'encoding'],
   turbopack: {
