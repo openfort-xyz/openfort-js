@@ -101,8 +101,8 @@ export class OpenfortError extends Error {
   public requestId?: string
 
   /**
-   * HTTP status of the failed API response. Undefined for errors that did not
-   * originate from an API response (timeouts, network errors, local checks).
+   * HTTP status of the API response this error came from. Undefined when
+   * there was no response: timeouts, network errors, checks done in the SDK.
    */
   public statusCode?: number
 

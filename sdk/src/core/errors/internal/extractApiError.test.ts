@@ -47,7 +47,7 @@ describe('extractApiError request id correlation', () => {
 })
 
 describe('extractApiError status code', () => {
-  it('carries the HTTP status on every error class, not only AuthenticationError', () => {
+  it('sets statusCode on the base OpenfortError', () => {
     const error = extractApiError(
       makeAxiosError({ status: 401, data: { message: 'Access token authentication failed' } })
     )
