@@ -101,6 +101,12 @@ export class OpenfortError extends Error {
   public requestId?: string
 
   /**
+   * HTTP status of the failed API response. Undefined for errors that did not
+   * originate from an API response (timeouts, network errors, local checks).
+   */
+  public statusCode?: number
+
+  /**
    * The SDK version that produced this error, so a bug report identifies the
    * exact build without having to ask.
    */
@@ -202,7 +208,7 @@ export class AuthenticationError extends OpenfortError {
   constructor(
     error: string,
     error_description: string,
-    public readonly statusCode?: number
+    public override readonly statusCode?: number
   ) {
     super(error, error_description)
     this.name = 'AuthenticationError'
@@ -339,7 +345,7 @@ export class RecoveryError extends OpenfortError {
 export class RequestError extends OpenfortError {
   constructor(
     error_description: string,
-    public readonly statusCode?: number
+    public override readonly statusCode?: number
   ) {
     super('request_error', error_description)
     this.name = 'RequestError'

@@ -1,6 +1,8 @@
+import type { Client } from '@sentry/core'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { OpenfortSDKConfiguration } from '../../types'
 import { PACKAGE, VERSION } from '../../version'
+import { OpenfortError } from './openfortError'
 
 // Each test re-imports ./sentry after configuring the mock, so the static
 // InternalSentry singleton starts fresh and the dynamic import('@sentry/browser')
@@ -79,5 +81,38 @@ describe('InternalSentry.init', () => {
     await InternalSentry.init({ configuration: makeConfig(false) })
     expect(ctorOptions).toHaveLength(1)
     expect(ctorOptions[0]?.release).toBe(`${PACKAGE}@${VERSION}`)
+  })
+})
+
+describe('captureError', () => {
+  const makeClient = () => {
+    const captureException = vi.fn()
+    const client = {
+      captureException,
+      getDsn: () => ({
+        projectId: '4509292415287296',
+        host: 'o4504593015242752.ingest.us.sentry.io',
+        publicKey: '64a03e4967fb4dad3ecb914918c777b6',
+      }),
+    } as unknown as Client
+    return { client, captureException }
+  }
+
+  it('drops 400/401 API errors and reports everything else', async () => {
+    const { client, captureException } = makeClient()
+    const { InternalSentry } = await import('./sentry')
+    await InternalSentry.init({ sentry: client })
+    for (const statusCode of [400, 401]) {
+      const error = new OpenfortError('REQUEST_ERROR', 'expected')
+      error.statusCode = statusCode
+      client.captureError('login', error)
+    }
+    expect(captureException).not.toHaveBeenCalled()
+
+    const serverError = new OpenfortError('REQUEST_ERROR', 'boom')
+    serverError.statusCode = 500
+    client.captureError('login', serverError)
+    client.captureError('login', new OpenfortError('REQUEST_ERROR', 'no response'))
+    expect(captureException).toHaveBeenCalledTimes(2)
   })
 })

@@ -53,3 +53,17 @@ describe('extractApiError request id correlation', () => {
     expect(error.requestId).toBeUndefined()
   })
 })
+
+describe('extractApiError status code', () => {
+  it('carries the HTTP status on every error class, not only AuthenticationError', () => {
+    const error = extractApiError(
+      makeAxiosError({ status: 401, data: { message: 'Access token authentication failed' } })
+    )
+    expect(error.constructor).toBe(OpenfortError)
+    expect(error.statusCode).toBe(401)
+  })
+
+  it('leaves statusCode undefined when no response arrived', () => {
+    expect(extractApiError(makeAxiosError({})).statusCode).toBeUndefined()
+  })
+})
