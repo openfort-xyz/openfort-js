@@ -10,7 +10,10 @@ import { Authentication } from './configuration/authentication'
 
 const baseConfiguration = new OpenfortConfiguration({ publishableKey: 'pk_test_placeholder' })
 
-/** Sends one GET through the shared axios instance and returns the request as it left the client. */
+/**
+ * Sends one request through a generated API method — which spreads the generated
+ * `baseOptions` into the request — and returns it as it left the client.
+ */
 async function sentRequest(withCredentials: boolean, authorization: string): Promise<InternalAxiosRequestConfig> {
   const clients = new BackendApiClients({
     basePath: 'https://auth.example.test/api',
@@ -23,7 +26,7 @@ async function sentRequest(withCredentials: boolean, authorization: string): Pro
     sent = config
     return { status: 200, statusText: '', data: {}, headers: {}, config }
   }
-  await instance.get('https://auth.example.test/api/v2/users/me', { headers: { authorization } })
+  await clients.authApi.getSessionGet(undefined, { headers: { authorization } })
   return sent as InternalAxiosRequestConfig
 }
 
@@ -66,7 +69,7 @@ describe('cookie session (customAuthDomain)', () => {
     const storage = makeStorage()
     new Authentication('session', '', 'usr_1').save(storage)
 
-    const [key, saved] = vi.mocked(storage.save).mock.calls[0]
+    const [key, saved] = vi.mocked(storage.save).mock.calls[0] as [string, string]
     expect(key).toBe(StorageKeys.AUTHENTICATION)
     expect(JSON.parse(saved)).toEqual({ type: 'session', userId: 'usr_1' })
 

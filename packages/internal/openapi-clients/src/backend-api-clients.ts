@@ -153,12 +153,8 @@ export class BackendApiClients {
 
 		// Bounds requests against a stalled connection. Token refresh is
 		// promise-deduplicated, so one hung request blocks every caller.
-		const axiosDefaults = {
-			timeout: DEFAULT_TIMEOUT_MS,
-			withCredentials: options.withCredentials,
-		};
-		this.axiosInstance = axios.create(axiosDefaults);
-		this.fundingAxiosInstance = axios.create(axiosDefaults);
+		this.axiosInstance = axios.create({ timeout: DEFAULT_TIMEOUT_MS });
+		this.fundingAxiosInstance = axios.create({ timeout: DEFAULT_TIMEOUT_MS });
 
 		for (const instance of [this.axiosInstance, this.fundingAxiosInstance]) {
 			axiosRetry(instance, {
@@ -188,6 +184,7 @@ export class BackendApiClients {
 			basePath: options.basePath,
 			accessToken: options.accessToken,
 			nativeAppIdentifier: options.nativeAppIdentifier,
+			withCredentials: options.withCredentials,
 		};
 
 		this.config = {
@@ -202,6 +199,7 @@ export class BackendApiClients {
 			basePath: `${options.basePath}/iam/v2/auth`,
 			accessToken: '',
 			nativeAppIdentifier: options.nativeAppIdentifier,
+			withCredentials: options.withCredentials,
 		};
 
 		const authConfig = createConfig(authConfigOptions);
