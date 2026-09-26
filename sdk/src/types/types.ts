@@ -509,17 +509,12 @@ export type EntropyResponse = {
   passkey?: PasskeyDetails
 }
 
-enum SortOrdering {
-  ASC = 'asc',
-  DESC = 'desc',
-}
-
 export type ListAccountsParams = {
   address?: string
   accountType?: AccountTypeEnum
   chainType?: ChainTypeEnum
   chainId?: number
-  order?: SortOrdering
+  order?: 'asc' | 'desc'
   limit?: number
   skip?: number
 }
