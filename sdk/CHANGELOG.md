@@ -1,5 +1,13 @@
 # @openfort/openfort-js
 
+## 2.6.1
+
+### Patch Changes
+
+- [#380](https://github.com/openfort-xyz/openfort-js/pull/380) [`b1f0069`](https://github.com/openfort-xyz/openfort-js/commit/b1f0069cf968dd457050e218d4e7b285175978b0) Thanks [@jamalavedra](https://github.com/jamalavedra)! - `ListAccountsParams.order` is now typed `'asc' | 'desc'`. It previously used an enum the package did not export, so callers had no way to pass it without a type error.
+
+- [#378](https://github.com/openfort-xyz/openfort-js/pull/378) [`90776a0`](https://github.com/openfort-xyz/openfort-js/commit/90776a0ca84133bf2b22fdce161e9a02f805af2a) Thanks [@jamalavedra](https://github.com/jamalavedra)! - Every `OpenfortError` raised from an API response now has `statusCode`. Telemetry reads that field to skip 400 and 401, so wrong OTPs, expired tokens and key mismatches no longer reach Sentry.
+
 ## 2.6.0
 
 ### Minor Changes
