@@ -1,7 +1,7 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import { OpenfortError, setErrorConfig } from './errors'
 import { type Openfort, openfortEvents } from './index'
-import type { AuthResponse, EmbeddedAccount, SignedMessagePayload, User } from './types/types'
+import type { AuthResponse, EmbeddedAccount, ListAccountsParams, SignedMessagePayload, User } from './types/types'
 import { EmbeddedState, OpenfortEvents } from './types/types'
 
 /**
@@ -27,6 +27,13 @@ describe('API return types', () => {
 
   it('exposes the enum as a value, not a bare number', () => {
     expectTypeOf(EmbeddedState.READY).toEqualTypeOf<EmbeddedState>()
+  })
+})
+
+describe('ListAccountsParams', () => {
+  it('accepts sort order as a string literal', () => {
+    expectTypeOf<{ order: 'desc' }>().toMatchTypeOf<ListAccountsParams>()
+    expectTypeOf<{ order: 'newest' }>().not.toMatchTypeOf<ListAccountsParams>()
   })
 })
 
