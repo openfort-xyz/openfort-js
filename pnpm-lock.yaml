@@ -213,7 +213,7 @@ importers:
         version: 2.23.9(typescript@5.9.3)(zod@3.25.76)
       axios:
         specifier: '>=1.18.0'
-        version: 1.18.1(supports-color@10.2.2)
+        version: 1.20.0(supports-color@10.2.2)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -301,7 +301,7 @@ importers:
         version: 5.99.0(react@18.3.1)
       axios:
         specifier: '>=1.18.0'
-        version: 1.18.1(supports-color@10.2.2)
+        version: 1.20.0(supports-color@10.2.2)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -429,7 +429,7 @@ importers:
         version: 5.99.0(react@18.3.1)
       axios:
         specifier: '>=1.18.0'
-        version: 1.18.1(supports-color@10.2.2)
+        version: 1.20.0(supports-color@10.2.2)
       next:
         specifier: '>=16.3.3'
         version: 16.3.5(@opentelemetry/api@1.9.1)(@playwright/test@1.61.0)(@types/node@22.19.17)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -484,7 +484,7 @@ importers:
         version: 5.99.0(react@18.3.1)
       axios:
         specifier: '>=1.18.0'
-        version: 1.18.1(supports-color@10.2.2)
+        version: 1.20.0(supports-color@10.2.2)
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -529,10 +529,10 @@ importers:
     dependencies:
       axios:
         specifier: '>=1.18.0'
-        version: 1.18.1(supports-color@10.2.2)
+        version: 1.20.0(supports-color@10.2.2)
       axios-retry:
         specifier: 4.5.0
-        version: 4.5.0(axios@1.18.1(supports-color@10.2.2))
+        version: 4.5.0(axios@1.20.0(supports-color@10.2.2))
     devDependencies:
       jest:
         specifier: ^29.7.0
@@ -551,10 +551,10 @@ importers:
         version: link:../../sdk
       axios:
         specifier: '>=1.18.0'
-        version: 1.18.1(supports-color@10.2.2)
+        version: 1.20.0(supports-color@10.2.2)
       axios-retry:
         specifier: 4.5.0
-        version: 4.5.0(axios@1.18.1(supports-color@10.2.2))
+        version: 4.5.0(axios@1.20.0(supports-color@10.2.2))
       ethers:
         specifier: ^5.8.0
         version: 5.8.0
@@ -612,10 +612,10 @@ importers:
         version: 9.47.1
       axios:
         specifier: '>=1.18.0'
-        version: 1.18.1(supports-color@10.2.2)
+        version: 1.20.0(supports-color@10.2.2)
       axios-retry:
         specifier: 4.5.0
-        version: 4.5.0(axios@1.18.1(supports-color@10.2.2))
+        version: 4.5.0(axios@1.20.0(supports-color@10.2.2))
       eventemitter3:
         specifier: 5.0.1
         version: 5.0.1
@@ -1950,6 +1950,10 @@ packages:
 
   '@metamask/safe-event-emitter@3.1.2':
     resolution: {integrity: sha512-5yb2gMI1BDm0JybZezeoX/3XhPDOtTbcFvpTXM9kxsoZjPZFh4XciqRbpD6N86HYZqWDhEaKUDuOyR0sQHEjMA==}
+    engines: {node: '>=12.0.0'}
+
+  '@metamask/safe-event-emitter@3.1.3':
+    resolution: {integrity: sha512-Pnl74ukgoOkSItBRmZ9nnhdBbRtBI1ZvpeYjKNgxjVzDWa/AtruKZc+7LjfZ0iO8iYqh7Ts3bPs2Gu7M2hSf7g==}
     engines: {node: '>=12.0.0'}
 
   '@metamask/sdk-analytics@0.0.5':
@@ -3859,8 +3863,8 @@ packages:
     peerDependencies:
       axios: '>=1.18.0'
 
-  axios@1.18.1:
-    resolution: {integrity: sha512-3nTvFlvpn9Zu/RkHUqtc7/+al4UpRW5az71ap5zccp6e8RAYEzhMTecX8Dz1wWDYrPpUoB1HAQEGEAEvUr7S9g==}
+  axios@1.20.0:
+    resolution: {integrity: sha512-r8aOh8j9cGKpgQAqpzrUHnSIc6a59Y3Xf/cv8sy1DrHCkZHzQGEuoq1tARk6qSyDdtQGSDgpb9kFlruzPvrgwg==}
 
   babel-jest@29.7.0:
     resolution: {integrity: sha512-BrvGY3xZSwEcCzKvKsCi2GgHqDqsYkOP4/by5xCgIwGXQxIEh+8ew3gmrE1y7XRR6LHZIj6yLYnUi/mm2KXKBg==}
@@ -3924,6 +3928,9 @@ packages:
 
   bn.js@5.2.3:
     resolution: {integrity: sha512-EAcmnPkxpntVL+DS7bO1zhcZNvCkxqtkd0ZY53h06GNQ3DEkkGZ/gKgmDv6DdZQGj9BgfSPKtJJ7Dp1GPP8f7w==}
+
+  bn.js@5.2.5:
+    resolution: {integrity: sha512-Vq886eXykuP5E6HcKSSStP3bJgrE6In5WKxVUvJ8XGpWWYs2xZHWqUwzCtGgEtBcxyd57KBFDPFoUfNzdaHCNg==}
 
   bowser@2.14.1:
     resolution: {integrity: sha512-tzPjzCxygAKWFOJP011oxFHs57HzIhOEracIgAePE4pqB3LikALKnSzUyU4MGs9/iCEUuHlAJTjTc5M+u7YEGg==}
@@ -4454,8 +4461,8 @@ packages:
   es-module-lexer@2.1.0:
     resolution: {integrity: sha512-n27zTYMjYu1aj4MjCWzSP7G9r75utsaoc8m61weK+W8JMBGGQybd43GstCXZ3WNmSFtGT9wi59qQTW6mhTR5LQ==}
 
-  es-object-atoms@1.1.1:
-    resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
+  es-object-atoms@1.1.2:
+    resolution: {integrity: sha512-HWcBoN6NileqtSydK2FqHbS/LoDd2pqrnQHLyJzBj4kOp/ky2MWMN694xOfkK8/SnUsW2DH7EfyVlydKCsm1Zw==}
     engines: {node: '>= 0.4'}
 
   es-set-tostringtag@2.1.0:
@@ -4633,8 +4640,8 @@ packages:
   firebase@11.10.0:
     resolution: {integrity: sha512-nKBXoDzF0DrXTBQJlZa+sbC5By99ysYU1D6PkMRYknm0nCW7rJly47q492Ht7Ndz5MeYSBuboKuhS1e6mFC03w==}
 
-  follow-redirects@1.16.0:
-    resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
+  follow-redirects@1.16.1:
+    resolution: {integrity: sha512-FNvFGzoMLWmE6Yj9spb/zjd7yiNCHiAW9/Tg9CXrQ8wuu32HtlJOwWO11OJafl5FfY3DxTdQ0vj42zU1kvv5jg==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -6035,8 +6042,13 @@ packages:
   preact@10.24.2:
     resolution: {integrity: sha512-1cSoF0aCC8uaARATfrlz4VCBqE8LwZwRfLgkxJOQwAlQt6ayTmi0D9OF7nXid1POI5SZidFuG9CnlXbDfLqY/Q==}
 
-  preact@10.29.1:
-    resolution: {integrity: sha512-gQCLc/vWroE8lIpleXtdJhTFDogTdZG9AjMUpVkDf2iTCNwYNWA+u16dL41TqUDJO4gm2IgrcMv3uTpjd4Pwmg==}
+  preact@10.29.8:
+    resolution: {integrity: sha512-ej2aVZ+vZ8WO7tvlQWRM9N63A0KzF9q4mWJfDUHgYaIofWY9hu74QdnQrjoPMmZi2/nZ5gN0bJCQF49xQqx09Q==}
+    peerDependencies:
+      preact-render-to-string: '>=5'
+    peerDependenciesMeta:
+      preact-render-to-string:
+        optional: true
 
   prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
@@ -7787,8 +7799,8 @@ snapshots:
       '@solana-program/token': 0.9.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))
       '@solana/kit': 5.5.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       abitype: 1.0.6(typescript@5.9.3)(zod@3.25.76)
-      axios: 1.18.1(supports-color@10.2.2)
-      axios-retry: 4.5.0(axios@1.18.1(supports-color@10.2.2))
+      axios: 1.20.0(supports-color@10.2.2)
+      axios-retry: 4.5.0(axios@1.20.0(supports-color@10.2.2))
       jose: 6.2.10
       md5: 2.3.0
       uncrypto: 0.1.3
@@ -7804,16 +7816,17 @@ snapshots:
 
   '@coinbase/wallet-sdk@3.9.3(supports-color@10.2.2)':
     dependencies:
-      bn.js: 5.2.3
+      bn.js: 5.2.5
       buffer: 6.0.3
       clsx: 1.2.1
       eth-block-tracker: 7.1.0(supports-color@10.2.2)
       eth-json-rpc-filters: 6.0.1
       eventemitter3: 5.0.1
       keccak: 3.0.4
-      preact: 10.29.1
+      preact: 10.29.8
       sha.js: 2.4.12
     transitivePeerDependencies:
+      - preact-render-to-string
       - supports-color
 
   '@coinbase/wallet-sdk@4.3.6(@types/react@18.3.28)(bufferutil@4.1.0)(react@18.3.1)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@3.25.76)':
@@ -9012,7 +9025,7 @@ snapshots:
   '@metamask/eth-json-rpc-provider@1.0.1(supports-color@10.2.2)':
     dependencies:
       '@metamask/json-rpc-engine': 7.3.3(supports-color@10.2.2)
-      '@metamask/safe-event-emitter': 3.1.2
+      '@metamask/safe-event-emitter': 3.1.3
       '@metamask/utils': 5.0.2(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
@@ -9020,7 +9033,7 @@ snapshots:
   '@metamask/json-rpc-engine@7.3.3(supports-color@10.2.2)':
     dependencies:
       '@metamask/rpc-errors': 6.4.0(supports-color@10.2.2)
-      '@metamask/safe-event-emitter': 3.1.2
+      '@metamask/safe-event-emitter': 3.1.3
       '@metamask/utils': 8.5.0(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
@@ -9085,6 +9098,8 @@ snapshots:
   '@metamask/safe-event-emitter@2.0.0': {}
 
   '@metamask/safe-event-emitter@3.1.2': {}
+
+  '@metamask/safe-event-emitter@3.1.3': {}
 
   '@metamask/sdk-analytics@0.0.5':
     dependencies:
@@ -9173,7 +9188,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
       '@types/debug': 4.1.13
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.3.4(supports-color@10.2.2)
       pony-cause: 2.1.11
       semver: 7.8.5
       uuid: 14.0.0
@@ -9187,7 +9202,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
       '@types/debug': 4.1.13
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.3.4(supports-color@10.2.2)
       pony-cause: 2.1.11
       semver: 7.8.5
       uuid: 14.0.0
@@ -9285,8 +9300,8 @@ snapshots:
   '@openfort/openfort-node@0.12.2(@solana-program/compute-budget@0.12.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana-program/system@0.10.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana-program/token@0.9.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/kora@0.1.1(@solana-program/token@0.9.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)))(viem@2.47.17(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))':
     dependencies:
       '@openfort/shield-js': 0.1.38
-      axios: 1.18.1(supports-color@10.2.2)
-      axios-retry: 4.5.0(axios@1.18.1(supports-color@10.2.2))
+      axios: 1.20.0(supports-color@10.2.2)
+      axios-retry: 4.5.0(axios@1.20.0(supports-color@10.2.2))
       bs58: 6.0.0
       jose: 6.2.10
       zod: 3.25.76
@@ -9303,16 +9318,16 @@ snapshots:
 
   '@openfort/shield-js@0.1.36':
     dependencies:
-      axios: 1.18.1(supports-color@10.2.2)
-      axios-retry: 4.5.0(axios@1.18.1(supports-color@10.2.2))
+      axios: 1.20.0(supports-color@10.2.2)
+      axios-retry: 4.5.0(axios@1.20.0(supports-color@10.2.2))
     transitivePeerDependencies:
       - debug
       - supports-color
 
   '@openfort/shield-js@0.1.38':
     dependencies:
-      axios: 1.18.1(supports-color@10.2.2)
-      axios-retry: 4.5.0(axios@1.18.1(supports-color@10.2.2))
+      axios: 1.20.0(supports-color@10.2.2)
+      axios-retry: 4.5.0(axios@1.20.0(supports-color@10.2.2))
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -11012,6 +11027,7 @@ snapshots:
       - fastestsmallesttextencoderdecoder
       - immer
       - ioredis
+      - preact-render-to-string
       - react
       - react-native
       - supports-color
@@ -11065,6 +11081,7 @@ snapshots:
       - fastestsmallesttextencoderdecoder
       - immer
       - ioredis
+      - preact-render-to-string
       - react
       - react-native
       - supports-color
@@ -11900,7 +11917,7 @@ snapshots:
 
   asn1.js@4.10.1:
     dependencies:
-      bn.js: 5.2.3
+      bn.js: 5.2.5
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
 
@@ -11938,14 +11955,14 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios-retry@4.5.0(axios@1.18.1(supports-color@10.2.2)):
+  axios-retry@4.5.0(axios@1.20.0(supports-color@10.2.2)):
     dependencies:
-      axios: 1.18.1(supports-color@10.2.2)
+      axios: 1.20.0(supports-color@10.2.2)
       is-retry-allowed: 2.2.0
 
-  axios@1.18.1(supports-color@10.2.2):
+  axios@1.20.0(supports-color@10.2.2):
     dependencies:
-      follow-redirects: 1.16.0
+      follow-redirects: 1.16.1
       form-data: 4.0.6
       https-proxy-agent: 5.0.1(supports-color@10.2.2)
       proxy-from-env: 2.1.0
@@ -12031,6 +12048,8 @@ snapshots:
   blakejs@1.2.1: {}
 
   bn.js@5.2.3: {}
+
+  bn.js@5.2.5: {}
 
   bowser@2.14.1: {}
 
@@ -12570,7 +12589,7 @@ snapshots:
 
   es-module-lexer@2.1.0: {}
 
-  es-object-atoms@1.1.1:
+  es-object-atoms@1.1.2:
     dependencies:
       es-errors: 1.3.0
 
@@ -12629,7 +12648,7 @@ snapshots:
   eth-block-tracker@7.1.0(supports-color@10.2.2):
     dependencies:
       '@metamask/eth-json-rpc-provider': 1.0.1(supports-color@10.2.2)
-      '@metamask/safe-event-emitter': 3.1.2
+      '@metamask/safe-event-emitter': 3.1.3
       '@metamask/utils': 5.0.2(supports-color@10.2.2)
       json-rpc-random-id: 1.0.1
       pify: 3.0.0
@@ -12638,7 +12657,7 @@ snapshots:
 
   eth-json-rpc-filters@6.0.1:
     dependencies:
-      '@metamask/safe-event-emitter': 3.1.2
+      '@metamask/safe-event-emitter': 3.1.3
       async-mutex: 0.2.6
       eth-query: 2.1.2
       json-rpc-engine: 6.1.0
@@ -12739,7 +12758,7 @@ snapshots:
 
   extension-port-stream@3.0.0:
     dependencies:
-      readable-stream: 4.7.0
+      readable-stream: 3.6.2
       webextension-polyfill: 0.10.0
 
   farmhash-modern@1.1.0: {}
@@ -12867,7 +12886,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
 
-  follow-redirects@1.16.0: {}
+  follow-redirects@1.16.1: {}
 
   for-each@0.3.5:
     dependencies:
@@ -12965,7 +12984,7 @@ snapshots:
       call-bind-apply-helpers: 1.0.2
       es-define-property: 1.0.1
       es-errors: 1.3.0
-      es-object-atoms: 1.1.1
+      es-object-atoms: 1.1.2
       function-bind: 1.1.2
       get-proto: 1.0.1
       gopd: 1.2.0
@@ -12980,7 +12999,7 @@ snapshots:
   get-proto@1.0.1:
     dependencies:
       dunder-proto: 1.0.1
-      es-object-atoms: 1.1.1
+      es-object-atoms: 1.1.2
 
   get-stream@6.0.1: {}
 
@@ -14574,7 +14593,7 @@ snapshots:
 
   preact@10.24.2: {}
 
-  preact@10.29.1: {}
+  preact@10.29.8: {}
 
   prettier@2.8.8: {}
 
@@ -15619,6 +15638,7 @@ snapshots:
       - fastestsmallesttextencoderdecoder
       - immer
       - ioredis
+      - preact-render-to-string
       - react-native
       - supports-color
       - uploadthing
@@ -15664,6 +15684,7 @@ snapshots:
       - fastestsmallesttextencoderdecoder
       - immer
       - ioredis
+      - preact-render-to-string
       - react-native
       - supports-color
       - uploadthing
