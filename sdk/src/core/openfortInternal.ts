@@ -7,7 +7,18 @@ import type TypedEventEmitter from '../utils/typedEventEmitter'
 import { SDKConfiguration } from './config/config'
 import { Authentication } from './configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from './errors/authErrorCodes'
-import { AuthenticationError, ConfigurationError, RequestError, SessionError } from './errors/openfortError'
+import {
+  AuthenticationError,
+  ConfigurationError,
+  OpenfortError,
+  RequestError,
+  SessionError,
+} from './errors/openfortError'
+
+function isSessionRejected(error: unknown): boolean {
+  if (error instanceof SessionError) return true
+  return error instanceof OpenfortError && (error.statusCode === 401 || error.statusCode === 403)
+}
 
 export class OpenfortInternal {
   constructor(
@@ -80,8 +91,12 @@ export class OpenfortInternal {
       try {
         credentials = await this.authManager.validateCredentials(auth, forceRefresh)
       } catch (error) {
-        Authentication.clear(this.storage)
-        this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
+        // A network error, timeout or 5xx says nothing about the session; ending it there
+        // logged users out every time they lost connection.
+        if (isSessionRejected(error)) {
+          Authentication.clear(this.storage)
+          this.eventEmitter.emit(OpenfortEvents.ON_LOGOUT)
+        }
         throw error
       }
       if (!credentials.user?.id) {
