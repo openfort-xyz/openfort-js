@@ -890,6 +890,8 @@ export class EmbeddedWalletApi {
     return unwatch!
   }
 
+  providerChains?: Record<number, string>
+
   async getEthereumProvider(options?: {
     feeSponsorship?: string
     chains?: Record<number, string>
@@ -910,6 +912,18 @@ export class EmbeddedWalletApi {
     const authentication = await Authentication.fromStorage(this.storage)
     const account = await Account.fromStorage(this.storage)
 
+    // The provider is memoized for the session and keeps the `chains` object it
+    // was constructed with by reference, so the first caller would otherwise win
+    // and a later getEthereumProvider({ chains }) - for example a wagmi transport
+    // supplying RPC URLs - would be silently dropped.
+    //
+    // Deliberately mutated in place rather than spread into a new object: the
+    // provider holds this reference, so replacing it would leave the instance
+    // built earlier still pointing at the previous chains.
+    if (finalOptions.chains) {
+      this.providerChains = Object.assign(this.providerChains ?? {}, finalOptions.chains)
+    }
+
     if (!this.provider) {
       this.provider = new EvmProvider({
         storage: this.storage,
@@ -920,7 +934,7 @@ export class EmbeddedWalletApi {
         backendApiClients: this.backendApiClients,
         feeSponsorshipId: finalOptions.feeSponsorship,
         validateAndRefreshSession: this.validateAndRefreshToken.bind(this),
-        chains: finalOptions.chains,
+        chains: this.providerChains,
       })
 
       if (finalOptions.announceProvider) {

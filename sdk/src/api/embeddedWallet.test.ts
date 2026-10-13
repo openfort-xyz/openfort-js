@@ -20,8 +20,15 @@ vi.mock('../wallets/embedded', () => ({
     constructor(public iframeManager: unknown) {}
   },
 }))
+const { evmProviderOptions } = vi.hoisted(() => ({
+  evmProviderOptions: [] as Record<string, unknown>[],
+}))
 vi.mock('../wallets/evm', () => ({
-  EvmProvider: class {},
+  EvmProvider: class {
+    constructor(options: Record<string, unknown>) {
+      evmProviderOptions.push(options)
+    }
+  },
 }))
 vi.mock('../wallets/evm/provider/eip6963', () => ({
   announceProvider: vi.fn(),
@@ -429,6 +436,30 @@ describe('handleLogout()', () => {
     // The connection-scoped state is still cleared.
     expect((api as any).signer).toBeNull()
     expect((api as any).iframeManager).toBeNull()
+  })
+})
+
+describe('getEthereumProvider() chains', () => {
+  it('keeps chains supplied by a later call on the provider that already exists', async () => {
+    // A single provider serves the session, and callers arrive in any order: the
+    // wagmi bridge supplies RPC URLs after the app may already have asked for a
+    // provider. The later call must not be discarded just because the instance
+    // was created earlier.
+    evmProviderOptions.length = 0
+    const { api } = makeApi()
+    const signer = { disconnect: vi.fn().mockResolvedValue(undefined) }
+    const manager = { hasFailed: false, isLoaded: () => true, destroy: vi.fn() }
+    ;(api as any).signer = signer
+    ;(api as any).iframeManager = manager
+
+    await (api as any).getEthereumProvider({ chains: { 8453: 'https://base.example' } })
+    await (api as any).getEthereumProvider({ chains: { 137: 'https://polygon.example' } })
+
+    expect(evmProviderOptions).toHaveLength(1)
+    expect(evmProviderOptions[0].chains).toEqual({
+      8453: 'https://base.example',
+      137: 'https://polygon.example',
+    })
   })
 })
 
