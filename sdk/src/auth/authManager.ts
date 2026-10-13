@@ -9,7 +9,7 @@ import type {
 } from '@openfort/openapi-clients/dist/backend'
 import type { Authentication } from '../core/configuration/authentication'
 import { OPENFORT_AUTH_ERROR_CODES } from '../core/errors/authErrorCodes'
-import { ConfigurationError, OpenfortError } from '../core/errors/openfortError'
+import { ConfigurationError, OpenfortError, SessionError } from '../core/errors/openfortError'
 import { withApiError } from '../core/errors/withApiError'
 import {
   AuthActionRequiredActions,
@@ -483,6 +483,10 @@ export class AuthManager {
     debugLog('Validating credentials...')
 
     const sessionData = await this.getSessionWithToken(authentication, _forceRefresh)
+    // The endpoint answers an expired or revoked session with 200 and a null body.
+    if (!sessionData?.session) {
+      throw new SessionError(OPENFORT_AUTH_ERROR_CODES.SESSION_EXPIRED, 'Session expired or revoked')
+    }
     return {
       token: sessionData.session.token,
       user: mapUser(sessionData.user),

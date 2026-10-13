@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Authentication } from '../core/configuration/authentication'
-import { ConfigurationError, OpenfortError } from '../core/errors/openfortError'
+import { ConfigurationError, OpenfortError, SessionError } from '../core/errors/openfortError'
 import { AuthManager } from './authManager'
 
 const PUBLISHABLE_KEY = 'pk_test_placeholder'
@@ -94,6 +94,14 @@ describe('AuthManager', () => {
       )
       const { manager } = createManager(backend)
       await expect(manager.validateCredentials(firstPartyAuth)).rejects.toBeInstanceOf(OpenfortError)
+    })
+
+    it('rejects with a SessionError when the session is no longer valid', async () => {
+      const backend = createBackendStub()
+      // The endpoint answers an expired or revoked session with 200 and a null body.
+      backend.authApi.getSessionGet.mockResolvedValue({ data: null })
+      const { manager } = createManager(backend)
+      await expect(manager.validateCredentials(firstPartyAuth)).rejects.toBeInstanceOf(SessionError)
     })
 
     it('propagates a 401 rather than returning a partial result', async () => {
