@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.6.2
+
+### Patch Changes
+
+- [#385](https://github.com/openfort-xyz/openfort-js/pull/385) [`12105c9`](https://github.com/openfort-xyz/openfort-js/commit/12105c95e57540417ede181ac6b292ca969aecf3) Thanks [@0xbri3t](https://github.com/0xbri3t)! - Kept the session when validating it fails on a network error, timeout or server error. Only a rejected session (401, 403, or an expired or revoked session) now logs the user out, so going offline no longer signs users out.
+
 ## 2.6.1
 
 ### Patch Changes
