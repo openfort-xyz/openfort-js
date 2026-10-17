@@ -1,6 +1,7 @@
 ---
 title: 'attw fails after successful npm pack'
 severity: 'minor'
+issue: 'openfort-xyz/openfort-js#353'
 ---
 
 ## Expected Behavior
