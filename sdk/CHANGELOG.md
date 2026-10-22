@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.6.3
+
+### Patch Changes
+
+- [#390](https://github.com/openfort-xyz/openfort-js/pull/390) [`3f7ade4`](https://github.com/openfort-xyz/openfort-js/commit/3f7ade417e62e7f1ce401c7beab5db56caff7b96) Thanks [@jamalavedra](https://github.com/jamalavedra)! - Updated axios to 1.20.0, which fixes the axios security advisories reported against 1.18.1 (including GHSA-vh66-26gq-q6x8 and GHSA-9fr6-4gfg-395g). follow-redirects in the lockfile is now 1.16.1.
+
 ## 2.6.2
 
 ### Patch Changes
