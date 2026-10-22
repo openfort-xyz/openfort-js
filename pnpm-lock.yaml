@@ -608,8 +608,8 @@ importers:
         specifier: 5.8.0
         version: 5.8.0
       '@openfort/shield-js':
-        specifier: 0.1.36
-        version: 0.1.36
+        specifier: 0.2.1
+        version: 0.2.1
       '@sentry/browser':
         specifier: 9.47.1
         version: 9.47.1
@@ -2152,11 +2152,11 @@ packages:
       viem:
         optional: true
 
-  '@openfort/shield-js@0.1.36':
-    resolution: {integrity: sha512-0vB5HvIxFr7IAzEFc7xr7FtiLvx6Zt+ByI48R8tywLb0+xp7ZAo/psB4sVz4aRyo+d+q5wW/5ulGP3mxkQeJyA==}
-
   '@openfort/shield-js@0.1.38':
     resolution: {integrity: sha512-vdQDHv8fY1s46rZ5Qd5RqdPZxOdeuya3QsFp5r5lLpyidqHOEktK3E1Novi/2UpK2oV9r3C+R68Ck3GZIhZXAQ==}
+
+  '@openfort/shield-js@0.2.1':
+    resolution: {integrity: sha512-4Mo850330TNu2tkXXTNq2Zn7rYDt68KbcRs335Tf/fQl+9sTgzxntNo0bPgU0aaf7k5juSpxvv8G/PCsoNaSAw==}
 
   '@opentelemetry/api@1.9.1':
     resolution: {integrity: sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q==}
@@ -9307,7 +9307,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@openfort/shield-js@0.1.36':
+  '@openfort/shield-js@0.1.38':
     dependencies:
       axios: 1.20.0(supports-color@10.2.2)
       axios-retry: 4.5.0(axios@1.20.0(supports-color@10.2.2))
@@ -9315,7 +9315,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@openfort/shield-js@0.1.38':
+  '@openfort/shield-js@0.2.1':
     dependencies:
       axios: 1.20.0(supports-color@10.2.2)
       axios-retry: 4.5.0(axios@1.20.0(supports-color@10.2.2))
