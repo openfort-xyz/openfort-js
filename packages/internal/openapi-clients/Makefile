@@ -46,6 +46,8 @@ generate-backend-api-client:
     -o /app/src/backend \
     -p platform=browser \
     -c /app/config/backend.config.json
+	@echo "Patching createRequestFunction return type (TS2527 with axios >=1.20)..."
+	perl -pi -e 's/(BASE_PATH\)) =>/$$1: Promise<R> =>/; s/(axios\.request<T, R>\(axiosRequestArgs\));/$$1 as Promise<R>;/' src/backend/common.ts
 
 .PHONY: clean-openapi
 clean-openapi:
