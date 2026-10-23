@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.6.4
+
+### Patch Changes
+
+- [#393](https://github.com/openfort-xyz/openfort-js/pull/393) [`34a13bb`](https://github.com/openfort-xyz/openfort-js/commit/34a13bb1b88fa303532177227f5c98da6911ea0d) Thanks [@jamalavedra](https://github.com/jamalavedra)! - Bump @openfort/shield-js to 0.2.2.
+
 ## 2.6.3
 
 ### Patch Changes
