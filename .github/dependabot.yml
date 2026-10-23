@@ -8,6 +8,10 @@ updates:
       actions:
         patterns:
           - "*"
+    ignore:
+      # changesets/action v2 requires Changesets CLI v3; the repo is on CLI v2.
+      - dependency-name: "changesets/action"
+        update-types: ["version-update:semver-major"]
     open-pull-requests-limit: 3
     commit-message:
       prefix: "chore"
