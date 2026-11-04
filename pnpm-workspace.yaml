@@ -77,5 +77,8 @@ auditConfig:
     - "GHSA-86w9-cpqp-85rv"
     # postcss-selector-parser has no patched 6.x and tailwindcss 3 needs ^6; example apps only.
     - "GHSA-rj75-hqrm-r3gf"
+    # deepmerge <=4.3.1 has no patched release (latest 4.3.1 is inside the vulnerable
+    # range); examples app only via @rainbow-me/rainbowkit > @vanilla-extract/css.
+    - "GHSA-gcqx-w48m-w2h4"
 onlyBuiltDependencies:
   - "simple-git-hooks"
