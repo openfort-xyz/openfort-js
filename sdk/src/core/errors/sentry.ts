@@ -86,7 +86,11 @@ declare module '@sentry/core' {
 
 // biome-ignore lint/complexity/noStaticOnlyClass: Sentry wrapper uses static-only pattern for singleton-like behavior
 export class InternalSentry {
-  private static sentryInstance: Client
+  private static sentryInstance: Client | undefined
+
+  private static disabled = false
+
+  private static initGeneration = 0
 
   private static queuedCalls: Array<{ fn: string; args: any[] }> = []
 
@@ -209,13 +213,18 @@ export class InternalSentry {
     sentry?: Client
     configuration?: OpenfortSDKConfiguration
   }): Promise<void> {
-    if (sentry) {
-      InternalSentry.sentry = sentry
+    const generation = ++InternalSentry.initGeneration
+    InternalSentry.disabled = configuration?.disableTelemetry === true
+
+    // The reporter is shared: opting out also discards earlier buffered events.
+    if (InternalSentry.disabled) {
+      InternalSentry.sentryInstance = undefined
+      InternalSentry.queuedCalls = []
       return
     }
 
-    // Telemetry is best-effort and opt-out. Skip it entirely when disabled.
-    if (configuration?.disableTelemetry) {
+    if (sentry) {
+      InternalSentry.sentry = sentry
       return
     }
 
@@ -226,6 +235,8 @@ export class InternalSentry {
     // Sentry defeats tree-shaking and ships Replay/Feedback, ~90 kB brotli.
     try {
       const { createSentryClient } = await import('./sentryClient')
+      // A later init (including opt-out) supersedes this in-flight import.
+      if (generation !== InternalSentry.initGeneration) return
 
       // `release` is applied by the client to every event it prepares (see
       // applyClientOptions in @sentry/core), so it covers the wrapped
@@ -238,7 +249,8 @@ export class InternalSentry {
         release: `${PACKAGE}@${VERSION}`,
         // Applies to every event the client prepares, including bare
         // captureException calls that skip the wrappers above.
-        beforeSend: (event) => scrubEvent(event),
+        beforeSend: (event) =>
+          InternalSentry.disabled || generation !== InternalSentry.initGeneration ? null : scrubEvent(event),
       })
 
       InternalSentry.baseTags = {
@@ -255,11 +267,11 @@ export class InternalSentry {
 
   private static proxy = new Proxy({} as Client, {
     get(_, prop: string) {
-      if (InternalSentry.sentryInstance && typeof (InternalSentry.sentryInstance as any)[prop] === 'function') {
-        return (...args: any[]) => (InternalSentry.sentryInstance as any)[prop](...args)
-      }
-
+      // Check on invocation too: callers may keep a delegate across init calls.
       return (...args: any[]) => {
+        if (InternalSentry.disabled) return
+        const client = InternalSentry.sentryInstance as Record<string, any> | undefined
+        if (typeof client?.[prop] === 'function') return client[prop](...args)
         InternalSentry.queuedCalls.push({ fn: prop, args })
       }
     },
@@ -269,8 +281,9 @@ export class InternalSentry {
     if (InternalSentry.sentryInstance) {
       // Process all queued calls
       InternalSentry.queuedCalls.forEach(({ fn, args }) => {
-        if (typeof (InternalSentry.sentryInstance as Record<string, any>)[fn] === 'function') {
-          ;(InternalSentry.sentryInstance as Record<string, any>)[fn](...args)
+        const client = InternalSentry.sentryInstance as Record<string, any> | undefined
+        if (!InternalSentry.disabled && typeof client?.[fn] === 'function') {
+          client[fn](...args)
         }
       })
       InternalSentry.queuedCalls = []
