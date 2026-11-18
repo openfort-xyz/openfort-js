@@ -148,6 +148,17 @@ describe('AuthManager', () => {
     })
   })
 
+  describe('getUser', () => {
+    it('returns the metadata set from the backend', async () => {
+      const metadata = { acceptedTerms: true, termsVersion: '2026-11', consent: { marketing: false } }
+      const backend = createBackendStub()
+      backend.userApi.meV2.mockResolvedValue({ data: { ...sessionResponse.data.user, metadata } })
+      const { manager } = createManager(backend)
+      const user = await manager.getUser(firstPartyAuth)
+      expect(user.metadata).toEqual(metadata)
+    })
+  })
+
   describe('credential handling', () => {
     it('sends the session token only in the authorization header', async () => {
       const { manager, backend } = createManager()

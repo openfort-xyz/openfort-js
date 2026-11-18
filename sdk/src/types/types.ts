@@ -386,6 +386,11 @@ export interface User {
   phoneNumberVerified?: boolean
   /** List of user linked accounts */
   linkedAccounts?: UserAccount[]
+  /**
+   * Custom key-value data set from your backend with your secret key.
+   * Returned by `user.get()`. Sign-in and sign-up responses do not include it.
+   */
+  metadata?: Record<string, unknown>
 }
 
 /**
