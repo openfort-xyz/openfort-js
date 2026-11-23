@@ -41,6 +41,7 @@ function mapUser(user: {
   phoneNumber?: string
   phoneNumberVerified?: boolean
   linkedAccounts?: UserAccount[]
+  metadata?: Record<string, unknown>
 }): User {
   if (!user) {
     throw new OpenfortError(OPENFORT_AUTH_ERROR_CODES.INTERNAL_ERROR, 'User data is missing')
@@ -57,6 +58,7 @@ function mapUser(user: {
     phoneNumber: user.phoneNumber,
     phoneNumberVerified: user.phoneNumberVerified,
     linkedAccounts: user.linkedAccounts,
+    metadata: user.metadata,
   }
 }
 
