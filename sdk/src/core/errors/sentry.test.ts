@@ -10,10 +10,20 @@ import { OpenfortError } from './openfortError'
 afterEach(() => {
   vi.resetModules()
   vi.doUnmock('@sentry/browser')
+  vi.doUnmock('./sentryClient')
 })
 
 const makeConfig = (disableTelemetry?: boolean) =>
   ({ baseConfiguration: { publishableKey: 'pk_test' }, disableTelemetry }) as unknown as OpenfortSDKConfiguration
+
+const makeTelemetryClient = () => ({
+  captureException: vi.fn(),
+  getDsn: () => ({
+    projectId: '4509292415287296',
+    host: 'o4504593015242752.ingest.us.sentry.io',
+    publicKey: '64a03e4967fb4dad3ecb914918c777b6',
+  }),
+})
 
 // Mock @sentry/browser with a BrowserClient that records its constructor options
 // and satisfies the DSN validation in InternalSentry's `set sentry`. Returns the
@@ -58,7 +68,7 @@ describe('InternalSentry.init', () => {
     expect(ctorOptions).toHaveLength(0)
   })
 
-  it('beforeSend scrubs a copy and leaves the original event untouched', async () => {
+  it('beforeSend scrubs a copy and retires the reporter after opt-out', async () => {
     const ctorOptions = mockSentryBrowser()
     const { InternalSentry } = await import('./sentry')
     await InternalSentry.init({ configuration: makeConfig(false) })
@@ -70,6 +80,15 @@ describe('InternalSentry.init', () => {
     expect(scrubbed.extra.data.accessToken).toBe('[redacted]')
     expect(scrubbed.extra.data.operation).toBe('signMessage')
     expect(live.accessToken).toBe('secret-token')
+
+    await InternalSentry.init({ configuration: makeConfig(true) })
+    expect(beforeSend({ extra: { data: live } })).toBeNull()
+    await InternalSentry.init({ configuration: makeConfig(false) })
+    expect(beforeSend({ extra: { data: live } })).toBeNull()
+    const currentBeforeSend = ctorOptions[1]?.beforeSend as typeof beforeSend
+    expect(currentBeforeSend({ extra: { data: live } })).toEqual({
+      extra: { data: { accessToken: '[redacted]', operation: 'signMessage' } },
+    })
   })
 
   it('initializes the client with the SDK release tag when not disabled', async () => {
@@ -114,5 +133,75 @@ describe('captureError', () => {
     client.captureError('login', serverError)
     client.captureError('login', new OpenfortError('REQUEST_ERROR', 'no response'))
     expect(captureException).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('telemetry reinitialization', () => {
+  it('stops capture through current and previously retrieved delegates when disabled', async () => {
+    const client = makeTelemetryClient()
+    vi.doMock('./sentryClient', () => ({ createSentryClient: () => client }))
+    const { InternalSentry } = await import('./sentry')
+    await InternalSentry.init({ configuration: makeConfig(false) })
+    const capture = InternalSentry.sentry.captureException
+    const event = Object.freeze({ message: 'UI unavailable', extra: Object.freeze({ screen: 'funding' }) })
+
+    await InternalSentry.init({ configuration: makeConfig(true) })
+    expect(() => capture(event)).not.toThrow()
+    InternalSentry.sentry.captureException(event)
+    expect(client.captureException).not.toHaveBeenCalled()
+    expect(event).toEqual({ message: 'UI unavailable', extra: { screen: 'funding' } })
+
+    await InternalSentry.init({ configuration: makeConfig(false) })
+    capture(event)
+    expect(client.captureException).toHaveBeenCalledExactlyOnceWith(event)
+  })
+
+  it('discards buffered and disabled events instead of replaying them on explicit re-enable', async () => {
+    const client = makeTelemetryClient()
+    vi.doMock('./sentryClient', () => ({ createSentryClient: () => client }))
+    const { InternalSentry } = await import('./sentry')
+    const capture = InternalSentry.sentry.captureException
+    capture(new Error('Before opt-out'))
+
+    await InternalSentry.init({ configuration: makeConfig(true) })
+    capture(new Error('During opt-out'))
+    await InternalSentry.init({ configuration: makeConfig(false) })
+    expect(client.captureException).not.toHaveBeenCalled()
+
+    const enabledEvent = new Error('After explicit re-enable')
+    capture(enabledEvent)
+    expect(client.captureException).toHaveBeenCalledExactlyOnceWith(enabledEvent)
+  })
+
+  it('does not create a reporter from an import that finishes after opt-out', async () => {
+    const client = makeTelemetryClient()
+    const createSentryClient = vi.fn(() => client)
+    let releaseImport!: () => void
+    let importStarted!: () => void
+    const pendingImport = new Promise<void>((resolve) => {
+      releaseImport = resolve
+    })
+    const started = new Promise<void>((resolve) => {
+      importStarted = resolve
+    })
+    vi.doMock('./sentryClient', async () => {
+      importStarted()
+      await pendingImport
+      return { createSentryClient }
+    })
+    const { InternalSentry } = await import('./sentry')
+    const initialization = InternalSentry.init({ configuration: makeConfig(false) })
+    await started
+    await InternalSentry.init({ configuration: makeConfig(true) })
+    releaseImport()
+    await initialization
+
+    expect(createSentryClient).not.toHaveBeenCalled()
+    InternalSentry.sentry.captureException(new Error('Still opted out'))
+    expect(client.captureException).not.toHaveBeenCalled()
+
+    await InternalSentry.init({ configuration: makeConfig(false) })
+    expect(createSentryClient).toHaveBeenCalledTimes(1)
+    expect(client.captureException).not.toHaveBeenCalled()
   })
 })
