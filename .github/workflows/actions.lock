@@ -5,28 +5,28 @@ version: 'v0.0.3'
 workflows:
     '.github/workflows/friction-log.yml':
         - 'actions/checkout@v7.0.1'
-        - 'wevm/frog@242e306ebb19fbe77b6b3bcffcd9430743f5117a'
+        - 'wevm/frog@ec05812cf8b7090dcfd2827c630bf85aea44d734'
     '.github/workflows/playwright.yml':
         - 'actions/cache@v6.1.0'
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
-        - 'pnpm/action-setup@v6.1.0'
+        - 'pnpm/action-setup@v6.1.1'
     '.github/workflows/preview.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
-        - 'pnpm/action-setup@v6.1.0'
+        - 'pnpm/action-setup@v6.1.1'
     '.github/workflows/release.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'changesets/action@v1.9.0'
-        - 'pnpm/action-setup@v6.1.0'
+        - 'pnpm/action-setup@v6.1.1'
     '.github/workflows/verify-lockfile.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/verify.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'actions/upload-artifact@v7.0.2'
-        - 'pnpm/action-setup@v6.1.0'
+        - 'pnpm/action-setup@v6.1.1'
 dependencies:
     'actions/cache@v6.1.0':
         ref: 'v6.1.0'
@@ -53,13 +53,13 @@ dependencies:
         commit: 'sha1-a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d'
         owner_id: 51163350
         repo_id: 202093906
-    'pnpm/action-setup@v6.1.0':
-        ref: 'v6.1.0'
-        commit: 'sha1-ea17c68df8912ef543352723c149a84f56e3d413'
+    'pnpm/action-setup@v6.1.1':
+        ref: 'v6.1.1'
+        commit: 'sha1-73e46992e05b19abd31f2f3c20e0e7370d762115'
         owner_id: 21320719
         repo_id: 262289747
-    'wevm/frog@242e306ebb19fbe77b6b3bcffcd9430743f5117a':
+    'wevm/frog@ec05812cf8b7090dcfd2827c630bf85aea44d734':
         ref: 'main'
-        commit: 'sha1-242e306ebb19fbe77b6b3bcffcd9430743f5117a'
+        commit: 'sha1-ec05812cf8b7090dcfd2827c630bf85aea44d734'
         owner_id: 109633172
         repo_id: 1312665350
