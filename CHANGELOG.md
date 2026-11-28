@@ -1,5 +1,11 @@
 # @openfort/openfort-js
 
+## 2.7.0
+
+### Minor Changes
+
+- [#406](https://github.com/openfort-xyz/openfort-js/pull/406) [`42610ef`](https://github.com/openfort-xyz/openfort-js/commit/42610ef2f12127a3bbe4beb04e6f4c12c50844a8) Thanks [@jamalavedra](https://github.com/jamalavedra)! - Add default public RPCs for MIZUHIKI Awaji testnet (6497) and MIZUHIKI mainnet (6498).
+
 ## 2.6.4
 
 ### Patch Changes
