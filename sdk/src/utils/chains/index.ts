@@ -14,6 +14,8 @@ export const defaultChainRpcs: { [key: number]: string } = {
   137: 'https://polygon-rpc.com',
   1946: 'https://rpc.minato.soneium.org',
   4337: 'https://build.onbeam.com/rpc',
+  6497: 'https://rpc.awaji.mizuhiki.io',
+  6498: 'https://rpc.mizuhiki.io',
   8453: 'https://mainnet.base.org',
   10143: 'https://testnet-rpc.monad.xyz',
   13337: 'https://build.onbeam.com/rpc/testnet',
